@@ -6,8 +6,8 @@ var ccpwgl = (function(tw2)
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        set: (bool) => tw2.SetDebug(bool),
-        get: () => tw2._debug
+        set: (bool) => tw2.debug = bool,
+        get: () => tw2.debug
     });
 
     // Allow debug to be set from the browser
@@ -198,7 +198,7 @@ var ccpwgl = (function(tw2)
                 var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
 
                 tw2
-                    .SetStandardStates(tw2.consts.RM_OPAQUE)
+                    .SetStandardStates(tw2.const.RM_OPAQUE)
                     .SetProjectionMatrix(camera.getProjection(tw2.aspect))
                     .SetViewMatrix(camera.getView())
                     .GLClearColor(clear)

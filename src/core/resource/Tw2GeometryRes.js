@@ -2,12 +2,8 @@ import { meta, box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "global
 import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { Tw2Resource } from "./Tw2Resource";
-import {
-    ErrGeometryFileType,
-    ErrGeometryMeshEffectBinding,
-    ErrGeometryMeshBoneNameInvalid,
-    ErrGeometryMeshAreaMissing, ErrResourceFormat
-} from "../Tw2Error";
+import { Tw2Error } from "../Tw2Error";
+import { ErrResourceFormatInvalid } from "core/engine";
 import {
     Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -165,7 +161,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
+                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
         }
     }
 
@@ -195,7 +191,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
+                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
         }
     }
 
@@ -1055,4 +1051,74 @@ export class Tw2GeometryRes extends Tw2Resource
         return curve;
     }
 
+}
+
+
+
+/**
+ * Throws when a geometry mesh lacks an element required for a particle system
+ */
+export class ErrGeometryMeshMissingParticleElement extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Input geometry mesh lacks element required by particle system");
+    }
+}
+
+
+/**
+ * Throws when a geometry mesh element doesn't have the required number of components
+ */
+export class ErrGeometryMeshElementComponentsMissing extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Input geometry mesh elements do not have the required number of components");
+    }
+}
+
+/**
+ * Throws when a geometry mesh area is missing
+ */
+export class ErrGeometryMeshAreaMissing extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Geometry mesh missing expected area at index %areaIndex%");
+    }
+}
+
+/**
+ * Throws when a geometry mesh has an invalid bone name for a model
+ */
+export class ErrGeometryMeshBoneNameInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Geometry mesh has invalid bone name for model");
+    }
+}
+
+
+/**
+ * Throws when there is an error binding a geometry mesh to an effect
+ */
+export class ErrGeometryMeshEffectBinding extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding geometry mesh to effect");
+    }
+}
+
+/**
+ * Throws when a geometry mesh has an invalid file type
+ */
+export class ErrGeometryFileType extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid geometry file type (%fileType%)");
+    }
 }

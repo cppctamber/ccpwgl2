@@ -1,4 +1,4 @@
-import { isFunction } from "../util";
+import { isFunction } from "global/util";
 
 /**
  * Tw2Notification

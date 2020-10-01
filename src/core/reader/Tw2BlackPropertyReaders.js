@@ -1,5 +1,6 @@
 import { vec2, vec3, vec4, mat4, tw2 } from "global";
-import { ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
+import { ErrFeatureNotImplemented } from "../Tw2Error";
+import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
 import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "global/util";
 
 import { Type } from "global/engine/Tw2Constant";

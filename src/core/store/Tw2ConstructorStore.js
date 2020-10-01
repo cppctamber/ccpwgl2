@@ -1,4 +1,4 @@
-import { Tw2GenericStore } from "./Tw2GenericStore";
+import { STORE, Tw2GenericStore } from "./Tw2GenericStore";
 import { isFunction } from "global/util";
 
 
@@ -6,6 +6,16 @@ export class Tw2ConstructorStore extends Tw2GenericStore
 {
 
     debug = true;
+
+    /**
+     * Constructor
+     * @param {Class|Function} Constructor
+     */
+    constructor(Constructor)
+    {
+        super();
+        STORE.get(this).Constructor = Constructor;
+    }
 
     /**
      * Checks value validity
@@ -19,15 +29,18 @@ export class Tw2ConstructorStore extends Tw2GenericStore
 
     /**
      * Function called before values are set
-     * @param {Class} Clazz
+     * @param {Class} Ctor
      * @param {String} key
      * @param {Tw2ConstructorStore} source
      */
-    static onBefore(Clazz, key, source)
+    static onBefore(Ctor, key, source)
     {
-        if (Clazz.hasOwnProperty("DEBUG_MODE"))
+        const { Constructor } = STORE.get(source);
+        if (Constructor) Constructor.prototype[key] = Ctor;
+
+        if (Ctor.hasOwnProperty("DEBUG_MODE"))
         {
-            Reflect.defineProperty(Clazz, "DEBUG_MODE", {
+            Reflect.defineProperty(Ctor, "DEBUG_MODE", {
                 get: () => source.debug
             });
         }
@@ -37,7 +50,7 @@ export class Tw2ConstructorStore extends Tw2GenericStore
      * Identifies stores that use classes
      * @type {boolean}
      */
-    static isConstructorStore =  true;
+    static isConstructorStore = true;
 
     /**
      * The store's name

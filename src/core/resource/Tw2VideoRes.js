@@ -1,6 +1,6 @@
 import { device, meta, resMan } from "global";
 import { Tw2Resource } from "./Tw2Resource";
-import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
+import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
 
 /**
  * Tw2VideoRes

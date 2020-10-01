@@ -1,63 +1,32 @@
-import { singleton } from "./meta";
-import { Tw2EventEmitter } from "./class";
-import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
-import * as math from "./math";
-import * as util from "./util";
-import * as consts from "./engine/Tw2Constant";
+import { singleton } from "global/meta";
+import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2ResMan } from "./Tw2ResMan";
+import { Tw2Device } from "./Tw2Device";
+import { Tw2Logger } from "./Tw2Logger";
+import { path } from "core/reader/Tw2BlackPropertyReaders";
+import * as consts from "global/engine/Tw2Constant";
+import * as math from "global/math";
+import * as util from "global/util";
 
 import {
-    isArray,
     isFunction,
     isPlain,
     isString,
     toArray,
     isDNA,
     enableUUID,
-    isObjectObject,
-    isTr2OrTri,
-    toTw2
-} from "./util";
+} from "global/util";
 
-import {
-    ErrStoreValueInvalid,
-    ErrStoreValueMissing,
-    ErrStoreInvalid,
-    ErrStoreKeyReserved
-} from "core/Tw2Error";
-
-/**
- *
- * @param {Tw2ResMan} resMan
- * @param {Tw2Device} device
- * @param {Tw2Logger} logger
- * @param {Object} math
- * @param {Object} util
- * @param {Object} consts
- * @param {Object} _store
- * @param {Boolean} _debug
- */
 @singleton
-class Tw2Library extends Tw2EventEmitter
+export class Tw2Library extends Tw2EventEmitter
 {
 
     math = math;
     util = util;
-
-    consts = consts;
-    logger = new Tw2Logger(this);
-    resMan = new Tw2ResMan(this);
-    device = new Tw2Device(this);
-
-    _store = {
-        variable: new Map(),
-        extension: new Map(),
-        class: new Map(),
-        path: new Map(),
-        dynamicPath: new Map(),
-        type: new Map()
-    };
-
-    _debug = false;
+    logger = new Tw2Logger();
+    resMan = null;
+    device = null;
+    store = null;
 
     /**
      * Alias for device.gl
@@ -134,9 +103,14 @@ class Tw2Library extends Tw2EventEmitter
     /**
      * Constructor
      */
-    constructor()
+    constructor(store)
     {
         super();
+
+        this.const = consts;
+        this.resMan = new Tw2ResMan(store);
+        this.device = new Tw2Device(store);
+        this.store = store;
 
         let eveSof;
         Object.defineProperty(this, "eveSof", {
@@ -151,41 +125,18 @@ class Tw2Library extends Tw2EventEmitter
             }
         });
 
-        Tw2EventEmitter.defaultLogger = this;
-    }
-
-    /**
-     * Sets debug mode
-     * @param {Boolean} bool
-     */
-    SetDebug(bool)
-    {
-        if (this._debug === bool) return;
-        this._debug = bool;
-
-        this._store.class.forEach(Constructor =>
-        {
-            if ("DEBUG_ENABLED" in Constructor)
+        let debug = false;
+        Object.defineProperty(this, "debug", {
+            get: () => debug,
+            set: (bool) =>
             {
-                Constructor.DEBUG_ENABLED = bool;
+                debug = !!bool;
+                this.store.debug = debug;
+                this.logger.debug = debug;
             }
         });
 
-        this.logger.Debug(bool);
-        this.emit("debug_mode", bool);
-        this.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
-    }
-
-    /**
-     * Sets an object's tw2 instantiation
-     * @param {*} target
-     */
-    SetLibrary(target)
-    {
-        if ("tw2" in target)
-        {
-            Reflect.defineProperty(target, "tw2", { value: this, writable: false, configurable: false });
-        }
+        Tw2EventEmitter.defaultLogger = this;
     }
 
     /**
@@ -221,6 +172,15 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Sets the black reader's path handler
+     * @param { Function } handler
+     */
+    SetBlackPathHandler(handler)
+    {
+        path.handler = handler;
+    }
+
+    /**
      * Start frame
      */
     StartFrame()
@@ -240,7 +200,7 @@ class Tw2Library extends Tw2EventEmitter
 
     /**
      * Requests an animation frame
-     * @param callback
+     * @param {Function} callback
      * @returns {*}
      */
     RequestAnimationFrame(callback)
@@ -283,29 +243,12 @@ class Tw2Library extends Tw2EventEmitter
      */
     Register(options = {})
     {
+        if (options.debug !== undefined) this.debug = options.debug;
         if (options.uuid) enableUUID(options.uuid);
         if (options.logger) this.logger.Register(options.logger);
-        if (options.debug) this.SetDebug(true);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);
-
-        const { store } = options;
-        if (store)
-        {
-            // Type must be first
-            if (store.type)
-            {
-                setStoreKeyValues(this, "type", store.type);
-            }
-
-            for (const key in store)
-            {
-                if (store.hasOwnProperty(key) && key !== "type")
-                {
-                    setStoreKeyValues(this, key, store[key]);
-                }
-            }
-        }
+        if (options.store) this.store.Register(options.store);
     }
 
     /**
@@ -547,7 +490,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasVariable(name)
     {
-        return hasStoreKey(this, "variable", name);
+        return this.store.variables.Has(name);
     }
 
     /**
@@ -557,20 +500,17 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetVariable(name)
     {
-        return getStoreKey(this, "variable", name);
+        return this.store.variables.Get(name);
     }
 
     /**
      * Gets a store variable's value
      * @param name
-     * @param out
      * @returns {*}
      */
-    GetVariableValue(name, out)
+    GetVariableValue(name)
     {
-        const variable = this.GetVariable(name);
-        if (variable.GetValue) return variable.GetValue(out);
-        throw new Error("Variable missing 'GetValue' method");
+        return this.store.variables.GetValue(name);
     }
 
     /**
@@ -581,12 +521,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetVariable(name, variable)
     {
-        if (!isObjectObject(variable))
-        {
-            variable = this.CreateVariable(name, variable);
-        }
-
-        return setStoreKey(this, "variable", name, variable);
+        return this.store.variables.Set(name, variable);
     }
 
     /**
@@ -598,9 +533,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetVariableValue(name, value, opt)
     {
-        const variable = this.GetVariable(name);
-        if (variable.SetValue) return variable.SetValue(value, opt);
-        throw new Error("Variable missing 'SetValue' method");
+        return this.store.variables.SetValue(name, value, opt);
     }
 
     /**
@@ -610,7 +543,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasExtension(extension)
     {
-        return hasStoreKey(this, "extension", extension);
+        return this.store.extensions.Has(extension);
     }
 
     /**
@@ -620,7 +553,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetExtension(extension)
     {
-        return getStoreKey(this, "extension", extension);
+        return this.store.extensions.Get(extension);
     }
 
     /**
@@ -631,7 +564,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetExtension(extension, value)
     {
-        return setStoreKey(this, "extension", extension, value, { isValue: isFunction });
+        return this.store.extensions.Set(extension, value);
     }
 
     /**
@@ -641,7 +574,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasClass(name)
     {
-        return hasStoreKey(this, "class", name, { isClassName: true });
+        return this.store.constructors.Has(name);
     }
 
     /**
@@ -651,7 +584,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetClass(name)
     {
-        return getStoreKey(this, "class", name, { isClassName: true });
+        return this.store.constructors.Get(name);
     }
 
     /**
@@ -662,16 +595,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetClass(name, Constructor)
     {
-        const Value = setStoreKey(this, "class", name, Constructor, { isValue: isFunction });
-
-        Tw2Library.prototype[name] = Value;
-
-        if ("DEBUG_ENABLED" in Value)
-        {
-            Value.DEBUG_ENABLED = this._debug;
-        }
-
-        return Value;
+        return this.store.constructors.Set(name, Constructor);
     }
 
     /**
@@ -681,7 +605,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasPath(prefix)
     {
-        return hasStoreKey(this, "path", prefix);
+        return this.store.paths.Has(prefix);
     }
 
     /**
@@ -691,7 +615,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetPath(prefix)
     {
-        return getStoreKey(this, "path", prefix);
+        return this.store.paths.Get(prefix);
     }
 
     /**
@@ -702,12 +626,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetPath(prefix, path)
     {
-        if (isString(path) && path.charAt(path.length - 1) !== "/") path += "/";
-
-        return setStoreKey(this, "path", prefix, path, {
-            isValue: isString,
-            onBeforeSet: value => value.toLowerCase()
-        });
+        return this.store.paths.Set(prefix, path);
     }
 
     /**
@@ -717,7 +636,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasDynamicPath(prefix)
     {
-        return hasStoreKey(this, "dynamicPath", prefix);
+        return this.store.dynamicPaths.Has(prefix);
     }
 
     /**
@@ -727,7 +646,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetDynamicPath(prefix)
     {
-        return getStoreKey(this, "dynamicPath", prefix);
+        return this.store.dynamicPaths.Get(prefix);
     }
 
     /**
@@ -738,21 +657,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetDynamicPath(prefix, value)
     {
-        return setStoreKey(this, "dynamicPath", prefix, value, {
-            isValue(a)
-            {
-                if (!isArray(a)) return false;
-                for (let i = 0; i < a.length; i++)
-                {
-                    if (!isString(a[i])) return false;
-                }
-                return true;
-            },
-            onBeforeSet(x)
-            {
-                x.forEach(value => value.toLowerCase());
-            }
-        });
+        return this.store.dynamicPaths.Set(prefix, value);
     }
 
     /**
@@ -762,7 +667,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasType(name)
     {
-        return hasStoreKey(this, "type", name);
+        return this.store.variableTypes.Has(name);
     }
 
     /**
@@ -772,7 +677,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetType(name)
     {
-        return getStoreKey(this, "type", name);
+        return this.store.variableTypes.Get(name);
     }
 
     /**
@@ -781,12 +686,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetTypeByValue(value)
     {
-        const types = this._store.type;
-        for (let [ key, type ] of types)
-        {
-            if ("isValue" in type && type.isValue(value)) return type;
-        }
-        throw new Error("Could not identify a type from the given value");
+        return this.store.variableTypes.GetByValue(value);
     }
 
     /**
@@ -797,176 +697,8 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetType(name, Constructor)
     {
-        return setStoreKey(this, "type", name, Constructor, isFunction);
+        return this.store.variableTypes.Set(name, Constructor);
     }
 
 }
 
-/**
- * Lazy loads a class
- * @param {Tw2Library} library
- * @param {String} propertyName
- * @param {String} className
- * @param args
- */
-function lazyLoadClass(library, propertyName, className, ...args)
-{
-    let value;
-    Object.defineProperty(library, propertyName, {
-        get: function()
-        {
-            if (!value)
-            {
-                const Constructor = library.GetClass(className);
-                value = new Constructor(...args);
-            }
-            return value;
-        }
-    });
-}
-
-/**
- * Validates a store
- * @param library
- * @param storeType
- */
-function validateStore(library, storeType)
-{
-    if (!library._store[storeType])
-    {
-        throw new ErrStoreInvalid({ store: storeType });
-    }
-}
-
-/**
- * Checks if a value exists for a store key
- * @param library
- * @param storeType
- * @param key
- * @param options
- * @returns {*}
- */
-function hasStoreKey(library, storeType, key, options)
-{
-    validateStore(library, storeType);
-    const store = library._store[storeType];
-    return store.has(key) || (options && options.isClassName && isTr2OrTri(key) && store.has(toTw2(key)));
-}
-
-/**
- * Gets a store key's value
- * @param library
- * @param storeType
- * @param key
- * @param options
- * @returns {*}
- */
-function getStoreKey(library, storeType, key, options)
-{
-    validateStore(library, storeType);
-
-    const store = library._store[storeType];
-
-    if (store.has(key))
-    {
-        return library._store[storeType].get(key);
-    }
-    // Allow substituting of Tr2 and Tri names
-    else if (options && options.isClassName && isTr2OrTri(key))
-    {
-        const newKey = toTw2(key);
-        if (store.has(newKey))
-        {
-            const Substitute = store.get(newKey);
-            library.emit("store.substituted", storeType, newKey, Substitute, key);
-            return Substitute;
-        }
-    }
-
-    library.emit("store.missing", storeType, key);
-    throw new ErrStoreValueMissing({ store: storeType, key });
-}
-
-/**
- * Sets a store key's value
- * @param library
- * @param storeType
- * @param key
- * @param value
- * @param {*} [options]
- * @param {Array<String>} [options.reserved]
- * @param {Function} [options.isValue]
- * @param {Function} [options.onBeforeSet]
- * @returns {*}
- */
-function setStoreKey(library, storeType, key, value, options)
-{
-    validateStore(library, storeType);
-
-    if (!value)
-    {
-        throw new ErrStoreValueInvalid({ store: storeType, key });
-    }
-
-    if (options)
-    {
-        if (options.reserved && options.reserved.includes(key))
-        {
-            throw new ErrStoreKeyReserved({ store: storeType, key });
-        }
-
-        if (options.isValue && !options.isValue(value))
-        {
-            throw new ErrStoreValueInvalid({ store: storeType, key });
-        }
-
-        if (options.onBeforeSet)
-        {
-            value = options.onBeforeSet(value);
-        }
-    }
-
-    library._store[storeType].set(key, value);
-
-    library
-        .emit("store.set", storeType, key, value)
-        .msg("debug", { name: "Store", message: `${storeType} registered: ${key}` });
-
-    return value;
-}
-
-/**
- * Sets store key values from an object or array of objects
- * @param library
- * @param storeType
- * @param values
- */
-function setStoreKeyValues(library, storeType, values)
-{
-    // Use the library method for setting in case of custom stuff(tm)
-    const setFunction = "Set" + storeType.charAt(0).toUpperCase() + storeType.substring(1);
-    if (!library[setFunction])
-    {
-        throw new Error(`Invalid store value setter '${setFunction}'`);
-    }
-
-    values = toArray(values);
-    for (let i = 0; i < values.length; i++)
-    {
-        for (const key in values[i])
-        {
-            if (values[i].hasOwnProperty(key))
-            {
-                library[setFunction](key, values[i][key]);
-            }
-        }
-    }
-}
-
-const
-    tw2 = new Tw2Library(),
-    // Temporarily export resMan and device
-    resMan = tw2.resMan,
-    device = tw2.device;
-
-export { tw2, resMan, device };

@@ -2,7 +2,7 @@ import { resMan } from "global";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
 import { Tw2BlackReader } from "../reader/Tw2BlackReader";
-import { ErrResourceExtensionUnregistered } from "../Tw2Error";
+import { ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
 
 /**
  * Tw2LoadingObject

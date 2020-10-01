@@ -11,7 +11,7 @@ export class Tw2VariableStore extends Tw2GenericStore
     constructor(typeStore)
     {
         super();
-        STORE.set(this, { map: new Map(), typeStore });
+        STORE.get(this).typeStore = typeStore;
     }
 
     /**
@@ -53,6 +53,29 @@ export class Tw2VariableStore extends Tw2GenericStore
         if (!Type) Type = typeStore.GetByValue(value);
 
         return new Type(name, value);
+    }
+
+    /**
+     * Sets a variables value
+     * @param {String} name
+     * @param {*} value
+     * @param {Object} [opt]
+     */
+    SetValue(name, value, opt)
+    {
+        const variable = this.Get(name);
+        return variable.SetValue(value, opt);
+    }
+
+    /**
+     * Gets a variable's value
+     * @param {String} name
+     * @returns {Number|?String|Array|Float32Array}
+     */
+    GetValue(name)
+    {
+        const variable = this.Get(name);
+        return variable.GetValue(name);
     }
 
     /**

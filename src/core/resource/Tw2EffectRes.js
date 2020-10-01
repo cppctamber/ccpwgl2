@@ -2,7 +2,7 @@ import { meta } from "global";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader } from "./Tw2Shader";
-import { ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion } from "../Tw2Error";
+import { Tw2Error } from "core/Tw2Error";
 
 
 /**
@@ -208,3 +208,40 @@ export class Tw2EffectRes extends Tw2Resource
     }
 
 }
+
+
+/**
+ * Throws when an effect has an invalid shader version
+ */
+export class ErrShaderVersion extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid version of effect file (%version%)");
+    }
+}
+
+
+/**
+ * Throws when an effect has no header
+ */
+export class ErrShaderHeaderSize extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Effect file contains no compiled effects");
+    }
+}
+
+
+/**
+ * Throws when a shader has an invalid permutation value
+ */
+export class ErrShaderPermutationValue extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid shader permutation value");
+    }
+}
+

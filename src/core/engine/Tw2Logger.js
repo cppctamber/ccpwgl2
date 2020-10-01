@@ -1,5 +1,5 @@
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
-import { assignIfExists, isError, isString } from "../util";
+import { assignIfExists, isError, isString } from "global/util";
 
 /**
  * eventLog
@@ -17,28 +17,14 @@ import { assignIfExists, isError, isString } from "../util";
  */
 
 
-/**
- * Handles basic event logging
- *
- * @property {String} name                   - The name of the logger
- * @property {Boolean} display               - Toggles console logging
- * @property {{}} visible                    - Visibility options
- * @property {Boolean} visible.log           - Toggles console log output
- * @property {Boolean} visible.info          - Toggles console info output
- * @property {Boolean} visible.debug         - Toggles console debug output
- * @property {Boolean} visible.warn          - Toggles console warn output
- * @property {Boolean} visible.error         - Toggles console error output
- * @property {number} history                - The maximum history to store
- * @property {number} throttle               - The maximum throttling per log type
- * @property {Array} _logs                   - Stored logs
- * @property {?{String:string[]}} _throttled - Throttles message cache
- * @property {Boolean} _debugMode            - When true all logs are forced to display
- */
 export class Tw2Logger extends Tw2EventEmitter
 {
 
     name = "";
     display = true;
+    debug = false;
+    history = 100;
+    throttle = 20;
     visible = {
         log: false,
         info: false,
@@ -46,33 +32,10 @@ export class Tw2Logger extends Tw2EventEmitter
         warn: false,
         error: true
     };
-    history = 100;
-    throttle = 20;
-
+    
     _logs = [];
     _throttled = null;
-    _debugMode = false;
-
-    /**
-     * Constructor
-     * @param {Tw2Library} tw2
-     */
-    constructor(tw2)
-    {
-        super();
-        tw2.SetLibrary(this);
-    }
-
-    /**
-     * Enables debugging
-     * - Forces all logs to show regardless of visibility settings
-     * @param {Boolean} bool
-     */
-    Debug(bool)
-    {
-        this._debugMode = bool;
-    }
-
+    
     /**
      * Sets the logger's properties
      * @param {*} [opt]
@@ -125,7 +88,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Throttle excessive output
-        if (!this.throttle || this._debugMode)
+        if (!this.throttle || this.debug)
         {
             this._throttled = null;
         }
@@ -149,7 +112,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Output to the console
-        if (!log.hide || this._debugMode)
+        if (!log.hide || this.debug)
         {
             // Optional details
             let subMessage = "";
@@ -172,7 +135,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Manage log history
-        const logsToKeep = this._debugMode ? 1000 : this.history;
+        const logsToKeep = this.debug ? 1000 : this.history;
         if (logsToKeep)
         {
             this._logs.unshift(log);
@@ -201,12 +164,5 @@ export class Tw2Logger extends Tw2EventEmitter
         LOG: "log",
         DEBUG: "debug"
     };
-
-    /**
-     * Logger category
-     * @type {string}
-     * @private
-     */
-    static __category = "Logger";
 
 }

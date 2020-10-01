@@ -1,16 +1,9 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "core/resource/Tw2LoadingObject";
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
-import {
-    Tw2Error,
-    ErrHTTPStatus,
-    ErrFeatureNotImplemented,
-    ErrResourceExtensionUndefined,
-    ErrResourceExtensionUnregistered,
-    ErrResourcePrefixUndefined,
-    ErrResourcePrefixUnregistered
-} from "core";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "../util";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "global/util";
+import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
+
 
 /**
  * Resource Manager
@@ -47,8 +40,6 @@ export class Tw2ResMan extends Tw2EventEmitter
     _pendingLoads = [];
     _noLoadFrames = 0;
 
-    tw2 = null;
-
     /**
      * Gets a count of pending loads
      * @returns {number}
@@ -60,12 +51,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Constructor
-     * @param {Tw2Library} tw2
+     * @param {Tw2Store} store
      */
-    constructor(tw2)
+    constructor(store)
     {
         super();
-        tw2.SetLibrary(this);
+        this.store = store;
     }
 
     /**
@@ -484,7 +475,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             throw new ErrResourceExtensionUndefined({ path });
         }
 
-        const Constructor = this.tw2.GetExtension(extension);
+        const Constructor = this.store.extensions.Get(extension);
         if (!Constructor)
         {
             throw new ErrResourceExtensionUnregistered({ path, extension });
@@ -515,7 +506,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = this.tw2.GetPath(prefix);
+        const fullPrefix = this.store.paths.Get(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({ path, prefix });
@@ -552,10 +543,99 @@ export class Tw2ResMan extends Tw2EventEmitter
         DEBUG: "debug"
     };
 
-    /**
-     * Logger category
-     * @type {String}
-     */
-    static __category = "Resource Manager";
+}
 
+
+
+
+/**
+ * Throws when a resource path has an unregistered prefix
+ */
+export class ErrResourcePrefixUnregistered extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Unregistered resource prefix (%prefix%)");
+    }
+}
+
+
+/**
+ * Throws when a resource path has no prefix
+ */
+export class ErrResourcePrefixUndefined extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Undefined resource prefix");
+    }
+}
+
+
+/**
+ * Throws when a resource path has an unregistered file extension
+ */
+export class ErrResourceExtensionUnregistered extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Unregistered resource extension (%extension%)");
+    }
+}
+
+
+/**
+ * Throws when a resource path has no file extension
+ */
+export class ErrResourceExtensionUndefined extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Undefined resource extension");
+    }
+}
+
+
+/**
+ * Throws on http request errors
+ */
+export class ErrHTTPRequest extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Communication error while requesting resource");
+    }
+}
+
+/**
+ * Throws on http status errors
+ */
+export class ErrHTTPStatus extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "%statusText=Communication status error while loading resource% (%status%)");
+    }
+}
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid resource format: %format% (%reason%)");
+    }
+}
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatUnsupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Unsupported resource format: %format%");
+    }
 }

@@ -4,7 +4,7 @@ import * as eve from "./eve";
 import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
-import { Tw2EventEmitter, Tw2Notifications } from "./global/class";
+
 import { path } from "./core/reader/Tw2BlackPropertyReaders";
 import { vec4, mat4 } from "./global/math";
 
@@ -74,11 +74,11 @@ export const config = {
 
     store: {
 
-        path: {
+        paths: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
         },
 
-        extension: {
+        extensions: {
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
             "wbg": core.Tw2GeometryRes,
@@ -93,17 +93,16 @@ export const config = {
             "red": core.Tw2LoadingObject
         },
 
-        class: [
+        constructors: [
             core,
             curve,
             eve,
             particle,
             sof,
-            unsupported,
-            { Tw2EventEmitter, Tw2Notifications }
+            unsupported
         ],
 
-        type: {
+        variableTypes: {
             "float": core.Tw2FloatParameter,
             "number": core.Tw2FloatParameter,
             "texture": core.Tw2TextureParameter,
@@ -113,7 +112,7 @@ export const config = {
             "matrix4": core.Tw2Matrix4Parameter
         },
 
-        variable: {
+        variables: {
             "WorldMat": mat4.create(),
             "ViewMat": mat4.create(),
             "ProjectionMat": mat4.create(),

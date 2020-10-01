@@ -1,7 +1,7 @@
 import { meta, vec4, Tw2BaseClass } from "global";
 import { Tw2Vector4Parameter } from "core/parameter";
 import { isArrayLike, isBoolean, isNumber } from "global/util";
-import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "core/Tw2Error";
+import { Tw2Error } from "core/Tw2Error";
 
 
 /**
@@ -581,4 +581,38 @@ export class Tw2ValueBinding extends Tw2BaseClass
         a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] ? 1 : 0;
     }
 
+}
+
+
+/**
+ * Throws when there's an error binding an object
+ */
+export class ErrBindingValueUndefined extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
+    }
+}
+
+/**
+ * Throws when there's an error binding a value
+ */
+export class ErrBindingType extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding '%name=unknown%', cannot identify binding type");
+    }
+}
+
+/**
+ * Throws when trying to bind an object by it's id and it can't be found
+ */
+export class ErrBindingReference extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding '%name=unknown%', could not find '%object%' object reference");
+    }
 }

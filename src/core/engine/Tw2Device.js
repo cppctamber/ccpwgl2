@@ -1,8 +1,10 @@
-import { num, vec3, vec4, mat4 } from "../math";
-import { get, isString } from "../util";
-import { Tw2Effect } from "core/mesh/Tw2Effect";
-import { Tw2VertexDeclaration } from "core/vertex/Tw2VertexDeclaration";
+import { num, vec3, vec4, mat4 } from "global/math";
+import { get, isString } from "global/util";
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2Effect } from "../mesh/Tw2Effect";
+import { Tw2VertexDeclaration } from "../vertex/Tw2VertexDeclaration";
+import { Tw2Error } from "core/Tw2Error";
+
 import {
     RM_ANY,
     RM_OPAQUE,
@@ -55,14 +57,8 @@ import {
     VendorWebglPrefixes,
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
-} from "./Tw2Constant";
-import {
-    ErrWebglContext,
-    ErrWebxrDeviceNotFound,
-    ErrWebxrNotSupported,
-    ErrWebxrRequestFailed,
-    ErrWebxrSessionNotSupported
-} from "core";
+} from "global/engine/Tw2Constant";
+
 
 /**
  * Tw2Device
@@ -119,8 +115,8 @@ export class Tw2Device extends Tw2EventEmitter
 
     gl = null;
     xr = null;
-    tw2 = null;
 
+    store = null;
     canvas2d = null;
 
     dt = 0;
@@ -197,12 +193,12 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Constructor
-     * @param {Tw2Library} tw2
+     * @param {Tw2Store} store
      */
-    constructor(tw2)
+    constructor(store)
     {
         super();
-        tw2.SetLibrary(this);
+        this.store = store;
         this.startTime = this.now;
         this.currentTime = this.startTime;
     }
@@ -448,7 +444,7 @@ export class Tw2Device extends Tw2EventEmitter
             }
         }
 
-        this.tw2.SetVariableValue("ViewportSize", [
+        this.store.variables.SetValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -485,7 +481,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
         this.previousTime = now;
 
-        this.tw2.SetVariableValue("Time", [
+        this.store.variables.SetValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
@@ -549,7 +545,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        this.tw2.SetVariableValue("ViewProjectionMat", this.viewProjection);
+        this.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**
@@ -1225,12 +1221,6 @@ break;
         return device;
     }
 
-    /**
-     * Logger category
-     * @type {String}
-     */
-    static __category = "Device";
-
 }
 
 // Render Modes
@@ -1243,3 +1233,59 @@ Tw2Device.prototype.RM_DEPTH = RM_DEPTH;
 Tw2Device.prototype.RM_DISTORTION = RM_DISTORTION;
 Tw2Device.prototype.RM_FULLSCREEN = RM_FULLSCREEN;
 Tw2Device.prototype.RM_PICKABLE = RM_PICKABLE;
+
+
+/**
+ * Throws when unable to create a webgl context
+ */
+export class ErrWebglContext extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Unable to create webgl context (%version%)");
+    }
+}
+
+/**
+ * Throws when webxr is not supported
+ */
+export class ErrWebxrNotSupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr not supported");
+    }
+}
+
+/**
+ * Throws when a webxr device is not found
+ */
+export class ErrWebxrDeviceNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr device not found");
+    }
+}
+
+/**
+ * Throws when there is an error requesting a webxr device
+ */
+export class ErrWebxrRequestFailed extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr request failed (%err%)");
+    }
+}
+
+/**
+ * Throws when a webxr session type is not supported
+ */
+export class ErrWebxrSessionNotSupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr session not supported (%err%)");
+    }
+}

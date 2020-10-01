@@ -1,8 +1,8 @@
-import { meta, Tw2EventEmitter } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 
 @meta.ctor("Tw2Animation")
-export class Tw2Animation extends Tw2EventEmitter
+export class Tw2Animation extends Tw2BaseClass
 {
 
     @meta.struct("Tw2GeometryAnimation")

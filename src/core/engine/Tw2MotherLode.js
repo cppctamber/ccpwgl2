@@ -1,10 +1,4 @@
-/**
- * Manages loaded resources
- *
- * @property {Object} _loadedObjects            - loaded resources
- * @property {{string:Array<eventLog>}} _errors - history of all errors for a path
- * @class
- */
+
 export class Tw2MotherLode
 {
     constructor()

@@ -132,3 +132,4 @@ export class Tw2BinaryReader
     }
 
 }
+

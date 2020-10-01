@@ -1,10 +1,12 @@
 import { Tw2Resource } from "./Tw2Resource";
 import {
-    ErrResourceFormat,
     ErrHTTPRequest,
-    ErrFeatureNotImplemented,
+    ErrResourceFormatUnsupported,
+    ErrResourceFormatInvalid,
     ErrResourceExtensionUnregistered
-} from "../Tw2Error";
+} from "../engine/Tw2ResMan";
+
+
 import {
     meta,
     resMan,
@@ -124,7 +126,7 @@ export class Tw2TextureRes extends Tw2Resource
                 // Ensure we have data to work with
                 if (!data.byteLength)
                 {
-                    throw new ErrResourceFormat("Invalid DDS, file is empty");
+                    throw new ErrResourceFormatInvalid({ format: "DDS", reason: "file is empty" });
                 }
 
                 const
@@ -138,9 +140,9 @@ export class Tw2TextureRes extends Tw2Resource
                 //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
 
                 // Check compatibility
-                if (!ext) throw new ErrResourceFormat("Compressed textures not supported by your device");
-                if (!isMagic) throw new ErrResourceFormat("Invalid DDS, missing magic number");
-                if (!isFourCC) throw new ErrResourceFormat("Invalid DDS, missing FourCC code");
+                if (!ext) throw new ErrResourceFormatUnsupported({ format: "DDS", reason: "device not supported" });
+                if (!isMagic) throw new ErrResourceFormatInvalid({ format: "DDS", reason: "missing magic number" });
+                if (!isFourCC) throw new ErrResourceFormatInvalid({ format: "DDS", reason: "missing FourCC code" });
 
                 let
                     width = header[DDS_HEADER_OFFSET_WIDTH],
@@ -168,7 +170,7 @@ export class Tw2TextureRes extends Tw2Resource
 
                     default:
                         const code = Tw2TextureRes.Int32ToFourCC(fourCC);
-                        throw new ErrResourceFormat(`Invalid DDS format: ${code}`);
+                        throw new ErrResourceFormatInvalid({ format: "DDS", reason: `Invalid type ${code}` });
                 }
 
                 this.hasMipMaps = mipmaps > 1;
@@ -179,7 +181,7 @@ export class Tw2TextureRes extends Tw2Resource
                 if (this.isCube)
                 {
                     // TODO: Add dds cube map support
-                    throw new ErrFeatureNotImplemented({ feature: "DDS cube maps" });
+                    throw new ErrResourceFormatUnsupported({ format: "DDS cube maps" });
                 }
                 else
                 {
@@ -201,7 +203,7 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
+                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
         }
 
         this._isAttached = false;

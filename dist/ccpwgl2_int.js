@@ -17142,10 +17142,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./particle */ "./particle/index.js");
 /* harmony import */ var _sof__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sof */ "./sof/index.js");
 /* harmony import */ var _unsupported__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unsupported */ "./unsupported/index.js");
-/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./global/class */ "./global/class/index.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
-
+/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
 
 
 
@@ -17160,7 +17158,7 @@ __webpack_require__.r(__webpack_exports__);
  * @returns {String}
  */
 
-_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__["path"].handler = function (filepath) {
+_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__["path"].handler = function (filepath) {
   // Because there are two sources for "res:" now we need to replace
   // any references from the eve cdn with a new res path mapping
   if (filepath.indexOf("res:") === 0) {
@@ -17211,10 +17209,10 @@ var config = {
     }
   },
   store: {
-    path: {
+    paths: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
     },
-    extension: {
+    extensions: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "sm_lo": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "wbg": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryRes"],
@@ -17228,11 +17226,8 @@ var config = {
       "black": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"],
       "red": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"]
     },
-    class: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _particle__WEBPACK_IMPORTED_MODULE_3__, _sof__WEBPACK_IMPORTED_MODULE_4__, _unsupported__WEBPACK_IMPORTED_MODULE_5__, {
-      Tw2EventEmitter: _global_class__WEBPACK_IMPORTED_MODULE_6__["Tw2EventEmitter"],
-      Tw2Notifications: _global_class__WEBPACK_IMPORTED_MODULE_6__["Tw2Notifications"]
-    }],
-    type: {
+    constructors: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _particle__WEBPACK_IMPORTED_MODULE_3__, _sof__WEBPACK_IMPORTED_MODULE_4__, _unsupported__WEBPACK_IMPORTED_MODULE_5__],
+    variableTypes: {
       "float": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
       "number": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
       "texture": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureParameter"],
@@ -17241,23 +17236,23 @@ var config = {
       "vector4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector4Parameter"],
       "matrix4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Matrix4Parameter"]
     },
-    variable: {
-      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
-      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
-      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
-      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
-      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
-      "Time": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
-      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
-      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+    variables: {
+      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
+      "Time": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
+      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
       "EveSpaceSceneEnvMap": "",
       "EnvMap1": "",
       "EnvMap2": "",
       "EnvMap3": "",
       "ShadowLightness": 0,
-      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create()
+      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create()
     }
   }
 };
@@ -17268,42 +17263,12 @@ var config = {
 /*!**************************!*\
   !*** ./core/Tw2Error.js ***!
   \**************************/
-/*! exports provided: Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped */
+/*! exports provided: Tw2Error, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return Tw2Error; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return ErrWebglContext; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return ErrWebxrNotSupported; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return ErrWebxrDeviceNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return ErrWebxrRequestFailed; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return ErrWebxrSessionNotSupported; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return ErrStoreKeyReserved; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return ErrStoreValueInvalid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueMissing", function() { return ErrStoreValueMissing; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreInvalid", function() { return ErrStoreInvalid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return ErrHTTPRequest; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return ErrHTTPStatus; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return ErrBinaryFormat; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryReaderReadError", function() { return ErrBinaryReaderReadError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return ErrBinaryObjectTypeNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return ErrGeometryMeshMissingParticleElement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return ErrGeometryMeshElementComponentsMissing; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return ErrGeometryMeshAreaMissing; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return ErrGeometryMeshBoneNameInvalid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return ErrGeometryMeshEffectBinding; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return ErrGeometryFileType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUnregistered", function() { return ErrResourcePrefixUnregistered; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUndefined", function() { return ErrResourcePrefixUndefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUnregistered", function() { return ErrResourceExtensionUnregistered; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUndefined", function() { return ErrResourceExtensionUndefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormat", function() { return ErrResourceFormat; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderVersion", function() { return ErrShaderVersion; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderHeaderSize", function() { return ErrShaderHeaderSize; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderPermutationValue", function() { return ErrShaderPermutationValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return ErrShaderCompile; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return ErrShaderLink; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrDeclarationValueType", function() { return ErrDeclarationValueType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return ErrSingletonInstantiation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrInvalidDecoratorUsage", function() { return ErrInvalidDecoratorUsage; });
@@ -17311,14 +17276,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return ErrAbstractMethod; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return ErrFeatureNotImplemented; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return ErrIndexBounds; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingValueUndefined", function() { return ErrBindingValueUndefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return ErrBindingType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return ErrBindingReference; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return ErrSOFHullNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return ErrSOFFactionNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return ErrSOFRaceNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return ErrSOFMaterialNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return ErrSOFPatternNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
@@ -17382,310 +17339,10 @@ class Tw2Error extends Error {
 
 }
 /**
- * Throws when unable to create a webgl context
- */
-
-Tw2Error.__category = "error";
-class ErrWebglContext extends Tw2Error {
-  constructor(data) {
-    super(data, "Unable to create webgl context (%version%)");
-  }
-
-}
-/**
- * Throws when webxr is not supported
- */
-
-class ErrWebxrNotSupported extends Tw2Error {
-  constructor(data) {
-    super(data, "Webxr not supported");
-  }
-
-}
-/**
- * Throws when a webxr device is not found
- */
-
-class ErrWebxrDeviceNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "Webxr device not found");
-  }
-
-}
-/**
- * Throws when there is an error requesting a webxr device
- */
-
-class ErrWebxrRequestFailed extends Tw2Error {
-  constructor(data) {
-    super(data, "Webxr request failed (%err%)");
-  }
-
-}
-/**
- * Throws when a webxr session type is not supported
- */
-
-class ErrWebxrSessionNotSupported extends Tw2Error {
-  constructor(data) {
-    super(data, "Webxr session not supported (%err%)");
-  }
-
-}
-/**
- * Throws when trying to register a reserved store key
- */
-
-class ErrStoreKeyReserved extends Tw2Error {
-  constructor(data) {
-    super(data, "Reserved key for '%store%' store (%key%)");
-  }
-
-}
-/**
- * Throws when trying to register an invalid store value
- */
-
-class ErrStoreValueInvalid extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid value for '%store%' store key (%key%)");
-  }
-
-}
-/**
- * Throws when trying to retrieve a store value that doesn't exist
- */
-
-class ErrStoreValueMissing extends Tw2Error {
-  constructor(data) {
-    super(data, "Missing '%store%' store key (%key%)");
-  }
-
-}
-/**
- * Throws when trying to do something with an invalid store
- */
-
-class ErrStoreInvalid extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid store");
-  }
-
-}
-/**
- * Throws on http request errors
- */
-
-class ErrHTTPRequest extends Tw2Error {
-  constructor(data) {
-    super(data, "Communication error while requesting resource");
-  }
-
-}
-/**
- * Throws on http status errors
- */
-
-class ErrHTTPStatus extends Tw2Error {
-  constructor(data) {
-    super(data, "%statusText=Communication status error while loading resource% (%status%)");
-  }
-
-}
-/**
- * Throws when xml is not a valid format
- */
-
-class ErrBinaryFormat extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid binary format (%formatError=undefined%)");
-  }
-
-}
-/**
- * Throws on binary reader read errors
- */
-
-class ErrBinaryReaderReadError extends Tw2Error {
-  constructor(data) {
-    super(data, "Error reading binary (%readError=undefined%)");
-  }
-
-}
-/**
- * Throws when an xml object type is undefined
- */
-
-class ErrBinaryObjectTypeNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "Binary object type not found (%type%)");
-  }
-
-}
-/**
- * Throws when a geometry mesh lacks an element required for a particle system
- */
-
-class ErrGeometryMeshMissingParticleElement extends Tw2Error {
-  constructor(data) {
-    super(data, "Input geometry mesh lacks element required by particle system");
-  }
-
-}
-/**
- * Throws when a geometry mesh element doesn't have the required number of components
- */
-
-class ErrGeometryMeshElementComponentsMissing extends Tw2Error {
-  constructor(data) {
-    super(data, "Input geometry mesh elements do not have the required number of components");
-  }
-
-}
-/**
- * Throws when a geometry mesh area is missing
- */
-
-class ErrGeometryMeshAreaMissing extends Tw2Error {
-  constructor(data) {
-    super(data, "Geometry mesh missing expected area at index %areaIndex%");
-  }
-
-}
-/**
- * Throws when a geometry mesh has an invalid bone name for a model
- */
-
-class ErrGeometryMeshBoneNameInvalid extends Tw2Error {
-  constructor(data) {
-    super(data, "Geometry mesh has invalid bone name for model");
-  }
-
-}
-/**
- * Throws when there is an error binding a geometry mesh to an effect
- */
-
-class ErrGeometryMeshEffectBinding extends Tw2Error {
-  constructor(data) {
-    super(data, "Error binding geometry mesh to effect");
-  }
-
-}
-/**
- * Throws when a geometry mesh has an invalid file type
- */
-
-class ErrGeometryFileType extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid geometry file type (%fileType%)");
-  }
-
-}
-/**
- * Throws when a resource path has an unregistered prefix
- */
-
-class ErrResourcePrefixUnregistered extends Tw2Error {
-  constructor(data) {
-    super(data, "Unregistered resource prefix (%prefix%)");
-  }
-
-}
-/**
- * Throws when a resource path has no prefix
- */
-
-class ErrResourcePrefixUndefined extends Tw2Error {
-  constructor(data) {
-    super(data, "Undefined resource prefix");
-  }
-
-}
-/**
- * Throws when a resource path has an unregistered file extension
- */
-
-class ErrResourceExtensionUnregistered extends Tw2Error {
-  constructor(data) {
-    super(data, "Unregistered resource extension (%extension%)");
-  }
-
-}
-/**
- * Throws when a resource path has no file extension
- */
-
-class ErrResourceExtensionUndefined extends Tw2Error {
-  constructor(data) {
-    super(data, "Undefined resource extension");
-  }
-
-}
-/**
- * Throws in invalid resource formats
- */
-
-class ErrResourceFormat extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid resource format");
-  }
-
-}
-/**
- * Throws when an effect has an invalid shader version
- */
-
-class ErrShaderVersion extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid version of effect file (%version%)");
-  }
-
-}
-/**
- * Throws when an effect has no header
- */
-
-class ErrShaderHeaderSize extends Tw2Error {
-  constructor(data) {
-    super(data, "Effect file contains no compiled effects");
-  }
-
-}
-/**
- * Throws when a shader has an invalid permutation value
- */
-
-class ErrShaderPermutationValue extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid shader permutation value");
-  }
-
-}
-/**
- * Throws when a shader cannot compile
- */
-
-class ErrShaderCompile extends Tw2Error {
-  constructor(data) {
-    super(data, "Error compiling %shaderType% shader (%infoLog%)");
-  }
-
-}
-/**
- * Throws when unable to link a vertex shader and fragment shader
- */
-
-class ErrShaderLink extends Tw2Error {
-  constructor(data) {
-    super(data, "Error linking shaders");
-  }
-
-}
-/**
  * Throws on invalid raw data declaration types
  */
 
+Tw2Error.__category = "error";
 class ErrDeclarationValueType extends Tw2Error {
   constructor(data) {
     super(data, "Invalid declaration value type (%declaration%:%valueType%)");
@@ -17749,86 +17406,6 @@ class ErrFeatureNotImplemented extends Tw2Error {
 class ErrIndexBounds extends Tw2Error {
   constructor(data) {
     super(data, "Array index out of bounds");
-  }
-
-}
-/**
- * Throws when there's an error binding an object
- */
-
-class ErrBindingValueUndefined extends Tw2Error {
-  constructor(data) {
-    super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
-  }
-
-}
-/**
- * Throws when there's an error binding a value
- */
-
-class ErrBindingType extends Tw2Error {
-  constructor(data) {
-    super(data, "Error binding '%name=unknown%', cannot identify binding type");
-  }
-
-}
-/**
- * Throws when trying to bind an object by it's id and it can't be found
- */
-
-class ErrBindingReference extends Tw2Error {
-  constructor(data) {
-    super(data, "Error binding '%name=unknown%', could not find '%object%' object reference");
-  }
-
-}
-/**
- * Fires when a sof hull is not found
- */
-
-class ErrSOFHullNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "SOF Hull not found (%name%)");
-  }
-
-}
-/**
- * Fires when a sof faction is not found
- */
-
-class ErrSOFFactionNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "SOF Faction not found (%name%)");
-  }
-
-}
-/**
- * Fires when a sof race is not found
- */
-
-class ErrSOFRaceNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "SOF Race not found (%name%)");
-  }
-
-}
-/**
- * Fires when a sof material is not found
- */
-
-class ErrSOFMaterialNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "SOF Material not found (%name%)");
-  }
-
-}
-/**
- * Fires when a sof pattern is not found
- */
-
-class ErrSOFPatternNotFound extends Tw2Error {
-  constructor(data) {
-    super(data, "SOF Pattern not found (%name%)");
   }
 
 }
@@ -18684,6 +18261,425 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./core/class/Tw2EventEmitter.js":
+/*!***************************************!*\
+  !*** ./core/class/Tw2EventEmitter.js ***!
+  \***************************************/
+/*! exports provided: Tw2EventEmitter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+/**
+ * Emitter privates
+ * @type {WeakMap<object, *>}
+ */
+
+var PRIVATE = new WeakMap();
+/**
+ * Tw2EventEmitter
+ */
+
+class Tw2EventEmitter {
+  /**
+   * Emits an event
+   * @param {String} eventName
+   * @param {*} args
+   * @returns {Tw2EventEmitter}
+   */
+  emit(eventName, ...args) {
+    var events = PRIVATE.get(this);
+    if (!events) return this;
+    eventName = eventName.toLowerCase();
+
+    if (eventName in events) {
+      events[eventName].forEach((value, key) => {
+        key.call(value.context, ...args);
+        if (value.once) events[eventName].delete(key);
+      });
+
+      if (events[eventName].size === 0) {
+        Reflect.deleteProperty(events, eventName);
+      }
+    }
+
+    return this;
+  }
+  /**
+   * Adds events from a plain object
+   * @param {Object} options
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  add(options) {
+    if (!options) return this;
+
+    for (var key in options) {
+      if (options.hasOwnProperty(key)) {
+        var listener = options[key],
+            eventName = key,
+            context = void 0,
+            once = void 0; // Append ".once" to event name to fire only once
+
+        if (key.indexOf(".once") !== -1) {
+          if (key.lastIndexOf(".once") === key.length - 5) {
+            eventName = key.substring(0, key.length - 5);
+            once = true;
+          }
+        } // options as an array/ arguments
+
+
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(listener)) {
+          listener = listener[0];
+          if (listener[1]) context = listener[1]; // .once in property key overrides array argument
+
+          if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(listener[2]) && !Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(once)) once = listener[2];
+        }
+
+        if (!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(listener)) {
+          throw new Error("Invalid listener");
+        }
+
+        this.on(eventName, listener, context, once);
+      }
+    }
+
+    return this;
+  }
+  /**
+   * Adds a listener to an event
+   * @param {Array|String} eventName
+   * @param {Function} listener
+   * @param {*} [context=undefined]
+   * @param {Boolean} [once=false]
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  on(eventName, listener, context = undefined, once = false) {
+    var events = PRIVATE.get(this);
+
+    if (!events) {
+      events = {};
+      PRIVATE.set(this, events);
+    }
+
+    eventName = eventName.toLowerCase();
+
+    if (!events[eventName]) {
+      events[eventName] = new Map();
+    } // Allow intercepting of a listener when its first added
+
+
+    if (!events[eventName].has(listener) && this.constructor.onListener) {
+      if (this.constructor.onListener(this, eventName, listener, context) && once) {
+        return this;
+      }
+    }
+
+    events[eventName].set(listener, {
+      context: context,
+      once: once
+    });
+    return this;
+  }
+  /**
+   * Adds a listener to an event, and clears it after it's first emit
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} [context]
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  once(eventName, listener, context) {
+    return this.on(eventName, listener, context, true);
+  }
+  /**
+   * Removes a listener from a specific event or from all events by passing "*"
+   * @param {String} eventName
+   * @param {Function} listener
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  off(eventName, listener) {
+    var events = PRIVATE.get(this);
+    if (!events) return this; // Remove listener from all events
+
+    if (eventName === "*") {
+      for (var _eventName in events) {
+        if (events.hasOwnProperty(_eventName)) {
+          events[_eventName].delete(listener);
+
+          if (events[_eventName].size === 0) {
+            Reflect.deleteProperty(events, _eventName);
+          }
+        }
+      }
+
+      return this;
+    }
+
+    eventName = eventName.toLowerCase();
+
+    if (eventName in events) {
+      events[eventName].delete(listener);
+
+      if (events[eventName].size === 0) {
+        Reflect.deleteProperty(events, eventName);
+      }
+    }
+
+    return this;
+  }
+  /**
+   * Checks if a listener exists on an event, or on any event by passing "*"
+   * @param {String} eventName
+   * @param {String|Function} listener
+   * @returns {boolean}
+   */
+
+
+  has(eventName, listener) {
+    var events = PRIVATE.get(this);
+    if (!events) return false; // Check all events
+
+    if (eventName === "*") {
+      for (var key in events) {
+        if (events.hasOwnProperty(key)) {
+          if (events[key].has(listener)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    if (listener && eventName in events) {
+      return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
+    }
+
+    return false;
+  }
+  /**
+   * Clears an event and it's listeners, or all events by passing "*"
+   * @param {String} eventName
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  del(eventName) {
+    var events = PRIVATE.get(this);
+    if (!events) return this; // Clear all
+
+    if (eventName === "*") {
+      this.emit("kill");
+
+      for (var e in events) {
+        if (events.hasOwnProperty(e)) {
+          events[e].clear();
+          Reflect.deleteProperty(events, e);
+        }
+      }
+
+      PRIVATE.delete(this);
+      return this;
+    }
+
+    eventName = eventName.toLowerCase();
+
+    if (eventName in events) {
+      events[eventName].clear();
+      Reflect.deleteProperty(events, eventName);
+    }
+
+    return this;
+  }
+  /**
+   * Logs a message
+   * @param {String} type
+   * @param {*|Error|Tw2Error} log
+   * @returns {eventLog|*}
+   */
+
+
+  msg(type, log) {
+    if (this.constructor.defaultLogger) {
+      return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
+    }
+
+    return log;
+  }
+  /**
+   * Fires before a listener is added
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} context
+   * @returns {Boolean} true if fired immediately
+   * @type {null|Function}
+   */
+
+
+}
+Tw2EventEmitter.onListener = null;
+Tw2EventEmitter.defaultLogger = null;
+Tw2EventEmitter.__category = null;
+
+/***/ }),
+
+/***/ "./core/class/Tw2Notifications.js":
+/*!****************************************!*\
+  !*** ./core/class/Tw2Notifications.js ***!
+  \****************************************/
+/*! exports provided: Tw2Notifications */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return Tw2Notifications; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+/**
+ * Tw2Notification
+ */
+
+class Tw2Notifications {
+  /**
+   * Registers a notification
+   * @param {*} notification
+   */
+  RegisterNotification(notification) {
+    if (this.HasNotification(notification)) {
+      return;
+    }
+
+    if (this.constructor.onNotification && this.constructor.onNotification(this, notification)) {
+      return;
+    }
+
+    this._notifications = this._notifications || new Set();
+
+    this._notifications.add(notification);
+  }
+  /**
+   * Updates notifications
+   * @param {String} funcName
+   * @param {Error|Tw2Error} [err]
+   */
+
+
+  UpdateNotifications(funcName, err) {
+    if (this._notifications) {
+      this._notifications.forEach(notification => {
+        var remove = false;
+
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(notification)) {
+          remove = notification(this, err, funcName);
+        } else if (funcName && funcName in notification) {
+          remove = notification[funcName](this, err);
+        }
+
+        if (remove) {
+          this.UnregisterNotification(notification);
+        }
+      });
+
+      if (this._notifications.size === 0) {
+        this.ClearNotifications();
+      }
+    }
+  }
+  /**
+   * Checks if a notification exists
+   * @param {*} notification
+   * @returns {boolean}
+   */
+
+
+  HasNotification(notification) {
+    return this._notifications ? this._notifications.has(notification) : false;
+  }
+  /**
+   * Unregisters a notification
+   * @param {*} notification
+   */
+
+
+  UnregisterNotification(notification) {
+    if (this._notifications) {
+      this._notifications.delete(notification);
+    }
+  }
+  /**
+   * Clears notifications
+   */
+
+
+  ClearNotifications() {
+    if (this._notifications) {
+      this._notifications.clear();
+
+      Reflect.deleteProperty(this, "_notifications");
+    }
+  }
+  /**
+   * Fires when a notification is registered
+   * @type {null| Function}
+   * @param {*} target
+   * @param {*} notification
+   * @returns {boolean}
+   */
+
+
+}
+Tw2Notifications.onNotification = null;
+
+/***/ }),
+
+/***/ "./core/class/Tw2Schema.js":
+/*!*********************************!*\
+  !*** ./core/class/Tw2Schema.js ***!
+  \*********************************/
+/*! exports provided: Tw2Schema */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return Tw2Schema; });
+class Tw2Schema {}
+
+/***/ }),
+
+/***/ "./core/class/index.js":
+/*!*****************************!*\
+  !*** ./core/class/index.js ***!
+  \*****************************/
+/*! exports provided: Tw2EventEmitter, Tw2Notifications, Tw2Schema */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"]; });
+
+/* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Notifications */ "./core/class/Tw2Notifications.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
+
+/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Schema */ "./core/class/Tw2Schema.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
+
+
+
+
+
+/***/ }),
+
 /***/ "./core/data/Tw2PerObjectData.js":
 /*!***************************************!*\
   !*** ./core/data/Tw2PerObjectData.js ***!
@@ -18937,6 +18933,2987 @@ __webpack_require__.r(__webpack_exports__);
  * @property {RawElementArray} [ps] Pixel shader data
  * @property {RawElementArray} [ffe] Fixed function emulation data
  */
+
+/***/ }),
+
+/***/ "./core/engine/Tw2Device.js":
+/*!**********************************!*\
+  !*** ./core/engine/Tw2Device.js ***!
+  \**********************************/
+/*! exports provided: Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return Tw2Device; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return ErrWebglContext; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return ErrWebxrNotSupported; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return ErrWebxrDeviceNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return ErrWebxrRequestFailed; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return ErrWebxrSessionNotSupported; });
+/* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
+/* harmony import */ var _vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+/**
+ * Tw2Device
+ *
+ * @property {WebGLRenderingContext} gl            - The device's gl context
+ * @property {*} xr                                - An optional xr handler
+ * @property {vec3} eyePosition                    - The device's current eye position
+ * @property {vec4} targetResolution               - The device's current target resolution
+ * @property {mat4} world                          - The device's current world matrix
+ * @property {mat4} view                           - The device's current view matrix
+ * @property {mat4} viewInverse                    - The device's current inverse view matrix
+ * @property {mat4} viewTranspose                  - The device's current view matrix transposed
+ * @property {mat4} projection                     - The device's current projection matrix
+ * @property {mat4} projectionInverse              - The device's current inverse projection matrix
+ * @property {mat4} projectionTranspose            - The device's current projection matrix transposed
+ * @property {mat4} viewProjection                 - The device's current view projection matrix
+ * @property {mat4} viewProjectionTranspose        - The device's current view projection matrix transposed
+ * @property {?HTMLCanvasElement} canvas           - The html canvas the gl context was created from
+ * @property {number} viewportWidth                - The canvas's current width
+ * @property {number} viewportHeight               - The canvas's current height
+ * @property {number} viewportAspect               - The canvas's current display aspect
+ * @property {number} viewportPixelRatio           - The canvas's pixel ratio
+ * @property {String} effectDir                    - The directory used to translate ccp effect file paths
+ * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
+ * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
+ * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
+ * @property {Boolean} enableAntialiasing          - Enables antialiasing
+ * @property {Boolean} enableWebgl2                - Enables webgl2
+ * @property {Boolean} enableWebxr                 - Enables webvr (Not yet supported)
+ * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
+ * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
+ * @property {number} msaaSamples                  - The amount of samples used for antialiasing
+ * @property {number[]} wrapModes                  - texture wrap modes
+ * @property {*} shadowHandles                     - unused
+ * @property {Tw2PerObjectData} perObjectData      - The current frame's per object data
+ * @property {Function} onResize                   - An optional function which is called on resize
+ * @property {{}} _extensions                      - Stores loaded extensions
+ * @property {{}} _alphaBlendState                 - Alpha states for blending
+ * @property {{}} _alphaTestState                  - Alpha test states
+ * @property {{}} _depthOffsetState                - Depth states
+ * @property {Float32Array} _shadowStateBuffer     - unused
+ * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
+ * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
+ * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
+ * @property {number} _currentRenderMode           - The device's current render mode
+ * @property {WebGLTexture} _fallbackCube          - A fallback cube texture
+ * @property {WebGLTexture} _fallbackTexture       - A fallback texture
+ * @property {Tw2Effect} _blitEffect               - The blit effect used for rendering textures
+ * @class
+ */
+
+class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+  /**
+   * Gets the current gl context version
+   * @returns {number}
+   */
+  get glVersion() {
+    return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
+  }
+  /**
+   * Gets the current gl canvas
+   * @returns {null}
+   */
+
+
+  get canvas() {
+    return this.gl ? this.gl.canvas : null;
+  }
+  /**
+   * Constructor
+   * @param {Tw2Store} store
+   */
+
+
+  constructor(store) {
+    super();
+    this.name = "Device";
+    this.gl = null;
+    this.xr = null;
+    this.store = null;
+    this.canvas2d = null;
+    this.dt = 0;
+    this.frameCounter = 0;
+    this.startTime = null;
+    this.currentTime = null;
+    this.previousTime = null;
+    this.eyePosition = global_math__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.targetResolution = global_math__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.world = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.view = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.viewInverse = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.viewTranspose = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.projection = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.projectionInverse = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.projectionTranspose = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.viewProjection = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.viewProjectionTranspose = global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.viewportWidth = 0;
+    this.viewportHeight = 0;
+    this.viewportAspect = 0;
+    this.viewportPixelRatio = "devicePixelRatio" in window ? window.devicePixelRatio : 1;
+    this.effectDir = "/effect.gles2/";
+    this.mipLevelSkipCount = 0;
+    this.shaderModel = "hi";
+    this.enableAnisotropicFiltering = true;
+    this.enableAntialiasing = true;
+    this.enableWebgl2 = true;
+    this.enableWebxr = true;
+    this.alphaBlendBackBuffer = false;
+    this.antialiasing = true;
+    this.msaaSamples = 0;
+    this.wrapModes = [];
+    this.shadowHandles = null;
+    this.perObjectData = null;
+    this.onResize = null;
+    this._extensions = {};
+    this._alphaBlendState = null;
+    this._alphaTestState = null;
+    this._depthOffsetState = null;
+    this._shadowStateBuffer = null;
+    this._quadBuffer = null;
+    this._quadDecl = null;
+    this._cameraQuadBuffer = null;
+    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
+    this._fallbackCube = null;
+    this._fallbackTexture = null;
+    this._blitEffect = null;
+    this._Date = Date;
+    this.store = store;
+    this.startTime = this.now;
+    this.currentTime = this.startTime;
+  }
+  /**
+   * Registers options
+   * @param {*} [opt]
+   * @param {Number} opt.textureQuality
+   * @param {Number} opt.shaderQuality
+   * @param {Boolean} opt.anisotropicFilter
+   * @param {Boolean} opt.antialiasing
+   * @param {Boolean} opt.webgl2
+   * @param {Boolean} opt.webvr
+   */
+
+
+  Register(opt) {
+    if (!opt) return;
+
+    if (this.gl) {
+      throw new Error("Setting device options after gl creation is not yet supported");
+    }
+
+    if ("performanceClock" in opt) {
+      if (opt.performance && "performance" in window) {
+        this._Date = performance;
+      } else {
+        this._Date = Date;
+      }
+    }
+
+    if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
+    if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
+    if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
+    if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
+    if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
+    if ("webxr" in opt) this.enableWebxr = opt.webxr;
+  }
+  /**
+   * Creates webgl Device
+   * @params {*} options
+   * @throws ErrWebglContext           - When unable to create a webgl context
+   */
+
+
+  CreateDevice({
+    canvas,
+    canvas2d,
+    glParams = {}
+  } = {}) {
+    this.gl = null;
+    this.effectDir = "/effect.gles2/";
+    var params = Object.assign({}, glParams);
+    params.alpha = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "alpha", false);
+    params.webgl2 = this.enableWebgl2;
+    params.xrCompatible = this.enableWebxr;
+    params.antialiasing = this.enableAntialiasing ? Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
+    var gl = this.gl = Tw2Device.CreateContext(params, canvas);
+    this.msg("debug", "Webgl".concat(this.glVersion, " context created")); // Allow for a 2d canvas
+
+    try {
+      if (canvas2d) {
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas2d)) {
+          canvas2d = document.getElementById(canvas2d);
+        }
+
+        this.canvas2d = {
+          canvas: canvas2d,
+          context: canvas2d.getContext("2d"),
+          enabled: true,
+          autoResize: true,
+          OnResize: null,
+          OnDraw: null
+        };
+      }
+    } catch (err) {
+      throw new Error("Invalid 2d canvas");
+    }
+
+    var returnFalse = () => false,
+        returnTrue = () => true;
+
+    if (this.glVersion === 1) {
+      this.GetExtension("OES_standard_derivatives");
+      this.GetExtension("OES_element_index_uint");
+      this.GetExtension("OES_texture_float");
+      this.GetExtension("EXT_shader_texture_lod");
+      var iArray = this.GetExtension("ANGLE_instanced_arrays");
+      gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
+      gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
+      gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
+      gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
+    } else {
+      gl.hasInstancedArrays = returnTrue;
+    }
+
+    var anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
+
+    if (anisotropicFilterExt) {
+      anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
+    } // CCP mobile shader binary (is this depreciated?)
+
+
+    var ccpShaderBinary = this.GetExtension("CCP_shader_binary");
+
+    if (ccpShaderBinary) {
+      var renderer = gl.getParameter(this.gl.RENDERER),
+          maliVer = renderer.match(/Mali-(\w+).*/);
+
+      if (maliVer) {
+        this.effectDir = "/effect.gles2.mali" + maliVer[1] + "/";
+      }
+    } // Quality
+
+
+    this.alphaBlendBackBuffer = params.alpha;
+    this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
+    this.antialiasing = this.msaaSamples > 1;
+    this.Resize();
+    var vertices = [1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0];
+    this._quadBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    this._cameraQuadBuffer = gl.createBuffer();
+    this._quadDecl = _vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_4__["Tw2VertexDeclaration"].from([{
+      usage: "POSITION",
+      usageIndex: 0,
+      elements: 4
+    }, {
+      usage: "TEXCOORD",
+      usageIndex: 0,
+      elements: 2
+    }]);
+    this.wrapModes = Array.from(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["WrapModes"]);
+    this._alphaBlendState = {
+      dirty: false,
+      states: {
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOPALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"]
+      }
+    };
+    this._alphaTestState = {
+      dirty: false,
+      states: {
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]]: -1,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPING"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPLANEENABLE"]]: 0
+      }
+    };
+    this._depthOffsetState = {
+      dirty: false,
+      states: {
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]]: 0
+      }
+    };
+    this._shadowStateBuffer = new Float32Array(24);
+  }
+  /**
+   * Sets the pixel aspect ratio and resizes afterwards
+   * @param {Number} value
+   */
+
+
+  SetPixelRatio(value) {
+    if (this.viewportPixelRatio !== value) {
+      this.viewportPixelRatio = value;
+      this.Resize();
+    }
+  }
+  /**
+   * Handles resize events
+   */
+
+
+  Resize() {
+    if (this.onResize) {
+      this.onResize(this.canvas);
+    }
+    /*
+    else if (this.enableWebxr && this.xr && this.xr.isGood)
+    {
+        this.xr.OnResize(this.canvas);
+    }
+    */
+    else {
+        this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
+        this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
+      }
+
+    this.viewportWidth = this.canvas.width;
+    this.viewportHeight = this.canvas.height;
+    this.viewportAspect = this.viewportWidth / this.viewportHeight;
+    var event = {
+      width: this.viewportWidth,
+      height: this.viewportHeight,
+      aspect: this.viewportAspect
+    }; // Handle 2d canvas
+
+    if (this.canvas2d && this.canvas2d.enabled) {
+      if (this.canvas2d.autoResize) {
+        this.canvas2d.canvas.width = this.viewportWidth;
+        this.canvas2d.canvas.height = this.viewportHeight;
+      }
+
+      if (this.canvas2d.OnResize) {
+        this.canvas2d.OnResize(event);
+      }
+    }
+
+    this.store.variables.SetValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
+    this.emit("resized", event);
+  }
+  /**
+   * Gets the current time
+   * @returns {number}
+   */
+
+
+  get now() {
+    return this._Date.now();
+  }
+  /**
+   * Fires on the start of a frame
+   */
+
+
+  StartFrame() {
+    if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight) {
+      this.Resize();
+    }
+
+    var previousTime = this.previousTime === null ? 0 : this.previousTime,
+        now = this.now;
+    this.currentTime = (now - this.startTime) * 0.001;
+    this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
+    this.previousTime = now;
+    this.store.variables.SetValue("Time", [this.currentTime, this.currentTime - Math.floor(this.currentTime), this.frameCounter, previousTime]);
+    this.frameCounter++;
+  }
+  /**
+   * Fires on the end of a frame
+   */
+
+
+  EndFrame() {
+    if (this.canvas2d && this.canvas2d.enabled && this.canvas2d.OnDraw) {
+      this.canvas2d.OnDraw();
+    }
+  }
+  /**
+   * Sets World transform matrix
+   * @param {mat4} matrix
+   */
+
+
+  SetWorld(matrix) {
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.world, matrix);
+  }
+  /**
+   * Sets view matrix
+   * @param {mat4} matrix
+   */
+
+
+  SetView(matrix) {
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.view, matrix);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this.viewInverse, this.view);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.viewTranspose, this.view);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.eyePosition, this.viewInverse);
+    this.UpdateViewProjection();
+  }
+  /**
+   * Sets projection matrix
+   * @param {mat4} matrix
+   * @param {Boolean} [forceUpdateViewProjection]
+   */
+
+
+  SetProjection(matrix, forceUpdateViewProjection) {
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.projection, matrix);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.projectionTranspose, this.projection);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this.projectionInverse, this.projection);
+    this.GetTargetResolution(this.targetResolution);
+    if (forceUpdateViewProjection) this.UpdateViewProjection();
+  }
+  /**
+   * Updates view projection matrices
+   */
+
+
+  UpdateViewProjection() {
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.viewProjection, this.projection, this.view);
+    global_math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.viewProjectionTranspose, this.viewProjection);
+    this.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+  }
+  /**
+   * Gets the device's target resolution
+   * @param {vec4} [out=vec4.create()]
+   * @returns {vec4} out
+   */
+
+
+  GetTargetResolution(out = global_math__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()) {
+    var aspectRatio = this.projection[0] ? this.projection[5] / this.projection[0] : 0.0;
+    var aspectAdjustment = 1.0;
+    if (aspectRatio > 1.6) aspectAdjustment = aspectRatio / 1.6;
+    var fov = 2.0 * Math.atan(aspectAdjustment / this.projection[5]);
+    out[0] = this.viewportWidth;
+    out[1] = this.viewportHeight;
+    out[2] = fov;
+    out[3] = fov * aspectRatio;
+    return out;
+  }
+  /**
+   * GetEyePosition
+   * @param {vec3} [out=vec3.create()]
+   * @return {vec3}
+   */
+
+
+  GetEyePosition(out = global_math__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()) {
+    return global_math__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(out, this.eyePosition);
+  }
+  /**
+   * Returns whether or not Alpha Test is enabled
+   * return {Boolean}
+   */
+
+
+  IsAlphaTestEnabled() {
+    return this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]];
+  }
+  /**
+   * Checks if a frame buffer is complete
+   *
+   * @param frameBuffer
+   * @returns {Boolean}
+   */
+
+
+  IsFrameBufferComplete(frameBuffer) {
+    return this.gl.checkFramebufferStatus(frameBuffer) === this.gl.FRAMEBUFFER_COMPLETE;
+  }
+  /**
+   * Gets a gl extension
+   * @param {String} extension - The gl extension name
+   * @returns {*}
+   */
+
+
+  GetExtension(extension) {
+    if (!(extension in this._extensions)) {
+      var ext;
+
+      for (var i = 0; i < global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorWebglPrefixes"].length; i++) {
+        ext = this.gl.getExtension(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorWebglPrefixes"][i] + extension);
+        if (ext) break;
+        ext = null;
+      }
+
+      this._extensions[extension] = ext;
+    }
+
+    return this._extensions[extension];
+  }
+  /**
+   * Gets a fallback texture
+   * @returns {*}
+   */
+
+
+  GetFallbackTexture() {
+    if (!this._fallbackTexture) {
+      this._fallbackTexture = this.CreateSolidTexture();
+    }
+
+    return this._fallbackTexture;
+  }
+  /**
+   * Gets a fallback cube map
+   * @returns {*}
+   */
+
+
+  GetFallbackCubeMap() {
+    if (!this._fallbackCube) {
+      this._fallbackCube = this.CreateSolidCube();
+    }
+
+    return this._fallbackCube;
+  }
+  /**
+   * Creates a solid colored texture
+   * @param {vec4|Array} [rgba] - The colour to create, if omitted defaults to completely transparent
+   * @returns {WebGLTexture}
+   */
+
+
+  CreateSolidTexture(rgba = [0, 0, 0, 0]) {
+    var gl = this.gl,
+        texture = this.gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    return texture;
+  }
+  /**
+   * Creates a solid coloured cube texture
+   * @param {vec4|Array} rgba
+   * @returns {WebGLTexture}
+   */
+
+
+  CreateSolidCube(rgba = [0, 0, 0, 0]) {
+    var gl = this.gl,
+        texture = this.gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+    for (var j = 0; j < 6; ++j) {
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
+    }
+
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST); //gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    return texture;
+  }
+  /**
+   * RenderFullScreenQuad
+   * @param {Tw2Effect} effect
+   * @param {String} technique - Technique name
+   * @returns {Boolean}
+   */
+
+
+  RenderFullScreenQuad(effect, technique = "Main") {
+    if (!effect || !effect.IsGood()) return false;
+    var gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
+
+    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
+      effect.ApplyPass(technique, pass);
+      if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
+      this.ApplyShadowState();
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    return true;
+  }
+  /**
+   * Renders a Texture to the screen
+   * @param {Tw2TextureRes} texture
+   * @returns {Boolean}
+   */
+
+
+  RenderTexture(texture) {
+    if (this._blitEffect === null) {
+      this._blitEffect = _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+        effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
+        textures: {
+          BlitSource: ""
+        }
+      });
+    }
+
+    this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
+
+    return this.RenderFullScreenQuad(this._blitEffect);
+  }
+  /**
+   * RenderCameraSpaceQuad
+   * @param {Tw2Effect} effect
+   * @param {String} technique - Technique name
+   * @returns {Boolean}
+   */
+
+
+  RenderCameraSpaceQuad(effect, technique = "Main") {
+    if (!effect || !effect.IsGood()) return false;
+    var vertices = new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0]);
+    var projInv = this.projectionInverse;
+
+    for (var i = 0; i < 4; ++i) {
+      var vec = vertices.subarray(i * 6, i * 6 + 4);
+      global_math__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(vec, vec, projInv);
+      global_math__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec, vec, 1 / vec[3]);
+      vec[3] = 1;
+    }
+
+    var gl = this.gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._cameraQuadBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
+      effect.ApplyPass(technique, pass);
+      if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
+      this.ApplyShadowState();
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    return true;
+  }
+  /**
+   * Set a render state
+   * @param state
+   * @param value
+   */
+
+
+  SetRenderState(state, value) {
+    var gl = this.gl;
+    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
+
+    switch (state) {
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"]:
+        if (value) {
+          gl.enable(gl.DEPTH_TEST);
+        } else {
+          gl.disable(gl.DEPTH_TEST);
+        }
+
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"]:
+        gl.depthMask(!!value);
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPING"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPLANEENABLE"]:
+        if (this._alphaTestState[state] !== value) {
+          this._alphaTestState.states[state] = value;
+          this._alphaTestState.dirty = true;
+        }
+
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOPALPHA"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]:
+        if (this._alphaBlendState[state] !== value) {
+          this._alphaBlendState.states[state] = value;
+          this._alphaBlendState.dirty = true;
+        }
+
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"]:
+        switch (value) {
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]:
+            gl.disable(gl.CULL_FACE);
+            return;
+
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]:
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.FRONT);
+            return;
+
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CCW"]:
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.BACK);
+            return;
+        }
+
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"]:
+        gl.depthFunc(0x0200 + value - 1);
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"]:
+        if (value) gl.enable(gl.BLEND);else gl.disable(gl.BLEND);
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"]:
+        gl.colorMask((value & 1) !== 0, (value & 2) !== 0, (value & 4) !== 0, (value & 8) !== 0);
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SCISSORTESTENABLE"]:
+        if (value) gl.enable(gl.SCISSOR_TEST);else gl.disable(gl.SCISSOR_TEST);
+        return;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]:
+        value = global_math__WEBPACK_IMPORTED_MODULE_0__["num"].dwordToFloat(value);
+
+        if (this._depthOffsetState[state] !== value) {
+          this._depthOffsetState.states[state] = value;
+          this._depthOffsetState.dirty = true;
+        }
+
+        return;
+    }
+  }
+  /**
+   * ApplyShadowState
+   */
+
+
+  ApplyShadowState() {
+    var gl = this.gl;
+
+    if (this._alphaBlendState.dirty) {
+      var blendOp = gl.FUNC_ADD;
+
+      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_SUBTRACT"]) {
+        blendOp = gl.FUNC_SUBTRACT;
+      } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_REVSUBTRACT"]) {
+        blendOp = gl.FUNC_REVERSE_SUBTRACT;
+      }
+
+      var srcBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]]],
+          destBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]]];
+
+      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]]) {
+        var blendOpAlpha = gl.FUNC_ADD;
+
+        if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_SUBTRACT"]) {
+          blendOpAlpha = gl.FUNC_SUBTRACT;
+        } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_REVSUBTRACT"]) {
+          blendOpAlpha = gl.FUNC_REVERSE_SUBTRACT;
+        }
+
+        var srcBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]]],
+            destBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]]];
+        gl.blendEquationSeparate(blendOp, blendOpAlpha);
+        gl.blendFuncSeparate(srcBlend, destBlend, srcBlendAlpha, destBlendAlpha);
+      } else {
+        gl.blendEquation(blendOp);
+        gl.blendFunc(srcBlend, destBlend);
+      }
+
+      this._alphaBlendState.dirty = false;
+    }
+
+    if (this._depthOffsetState.dirty) {
+      gl.polygonOffset(this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]], this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]]);
+      this._depthOffsetState.dirty = false;
+    }
+
+    var alphaTestFunc, invertedAlphaTest, alphaTestRef;
+
+    if (this.shadowHandles && this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]]) {
+      switch (this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]]) {
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_NEVER"]:
+          alphaTestFunc = 0;
+          invertedAlphaTest = 1;
+          alphaTestRef = -256;
+          break;
+
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LESS"]:
+          alphaTestFunc = 0;
+          invertedAlphaTest = -1;
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]] - 1;
+          break;
+
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_EQUAL"]:
+          alphaTestFunc = 1;
+          invertedAlphaTest = 0;
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          break;
+
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]:
+          alphaTestFunc = 0;
+          invertedAlphaTest = -1;
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          break;
+
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"]:
+          alphaTestFunc = 0;
+          invertedAlphaTest = 1;
+          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]] - 1;
+          break;
+
+        /*
+        case CMP_NOTEQUAL:
+        var alphaTestFunc = 1;
+        var invertedAlphaTest = 1;
+        var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+        break;
+        */
+
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATEREQUAL"]:
+          alphaTestFunc = 0;
+          invertedAlphaTest = 1;
+          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          break;
+
+        default:
+          alphaTestFunc = 0;
+          invertedAlphaTest = 0;
+          alphaTestRef = 1;
+          break;
+      }
+
+      var clipPlaneEnable = 0;
+      gl.uniform4f(this.shadowHandles.shadowStateInt, invertedAlphaTest, alphaTestRef, alphaTestFunc, clipPlaneEnable); //this._shadowStateBuffers
+    }
+  }
+  /**
+   * Sets a render mode
+   * @param {number} renderMode
+   */
+
+
+  SetStandardStates(renderMode) {
+    if (this._currentRenderMode === renderMode) return;
+    this.gl.frontFace(this.gl.CW);
+
+    switch (renderMode) {
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_OPAQUE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_PICKABLE"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        break;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DECAL"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"], 127);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        break;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_TRANSPARENT"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0); // -1.0
+
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        break;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ADDITIVE"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_ONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_ONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        break;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_FULLSCREEN"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_ALWAYS"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        break;
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DISTORTION"]: // Same as Fullscreen?
+
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DEPTH"]:
+        // TODO: Implement
+        return;
+
+      default:
+        return;
+    }
+
+    this._currentRenderMode = renderMode;
+  }
+  /**
+   * Requests an animation frame
+   * @param {Function} callback
+   */
+
+
+  RequestAnimationFrame(callback) {
+    return this.xr ? this.xr.RequestAnimationFrame(callback) : this.constructor.RequestAnimationFrame(callback);
+  }
+  /**
+   * Cancels an animation frame
+   * @param {Number} id
+   */
+
+
+  CancelAnimationFrame(id) {
+    return this.xr ? this.xr.CancelAnimationFrame(id) : this.constructor.CancelAnimationFrame(id);
+  }
+  /**
+   * Creates a webgl context
+   * @param params
+   * @param canvas
+   * @returns {null|WebGLRenderingContext|WebGL2RenderingContext}
+   * @throws on invalid context
+   */
+
+
+  static CreateContext(params = {}, canvas) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas)) {
+      canvas = document.getElementById(canvas);
+    }
+
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+    }
+
+    var contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
+    var context = null;
+
+    for (var contextType of contextTypes) {
+      context = canvas.getContext(contextType, params);
+      if (context) break;
+    }
+
+    if (!context) {
+      throw new ErrWebglContext({
+        version: params.webgl2 ? 2 : 1
+      });
+    }
+
+    return context;
+  }
+  /**
+   * Requests an animation frame
+   * @type {Function}
+   */
+
+
+  /**
+   * Finds an XR Device
+   * @param {{}} [sessionOptions]
+   * @returns {Promise<XRDevice>}
+   */
+  static FindXRDevice(sessionOptions) {
+    return _asyncToGenerator(function* () {
+      if (!navigator.xr) {
+        throw new ErrWebxrNotSupported();
+      }
+
+      var device;
+
+      try {
+        device = yield navigator.xr["requestDevice"]();
+      } catch (err) {
+        if (err.name === "NotFoundError" || err.message === "NotFoundError") {
+          throw new ErrWebxrDeviceNotFound({
+            err: err.message
+          });
+        }
+
+        throw new ErrWebxrRequestFailed({
+          err: err.message
+        });
+      } // Optionally pass session requirements
+
+
+      if (sessionOptions) {
+        try {
+          yield device["supportsSession"](sessionOptions);
+        } catch (err) {
+          throw new ErrWebxrSessionNotSupported({
+            err: err.message
+          });
+        }
+      }
+
+      return device;
+    })();
+  }
+
+} // Render Modes
+
+Tw2Device.RequestAnimationFrame = function () {
+  var request = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorRequestAnimationFrame"]);
+  return callback => request(callback);
+}();
+
+Tw2Device.CancelAnimationFrame = function () {
+  var cancel = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorCancelAnimationFrame"]);
+  return id => cancel(id);
+}();
+
+Tw2Device.prototype.RM_ANY = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
+Tw2Device.prototype.RM_OPAQUE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_OPAQUE"];
+Tw2Device.prototype.RM_DECAL = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DECAL"];
+Tw2Device.prototype.RM_TRANSPARENT = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_TRANSPARENT"];
+Tw2Device.prototype.RM_ADDITIVE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ADDITIVE"];
+Tw2Device.prototype.RM_DEPTH = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DEPTH"];
+Tw2Device.prototype.RM_DISTORTION = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DISTORTION"];
+Tw2Device.prototype.RM_FULLSCREEN = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_FULLSCREEN"];
+Tw2Device.prototype.RM_PICKABLE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_PICKABLE"];
+/**
+ * Throws when unable to create a webgl context
+ */
+
+class ErrWebglContext extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Unable to create webgl context (%version%)");
+  }
+
+}
+/**
+ * Throws when webxr is not supported
+ */
+
+class ErrWebxrNotSupported extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Webxr not supported");
+  }
+
+}
+/**
+ * Throws when a webxr device is not found
+ */
+
+class ErrWebxrDeviceNotFound extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Webxr device not found");
+  }
+
+}
+/**
+ * Throws when there is an error requesting a webxr device
+ */
+
+class ErrWebxrRequestFailed extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Webxr request failed (%err%)");
+  }
+
+}
+/**
+ * Throws when a webxr session type is not supported
+ */
+
+class ErrWebxrSessionNotSupported extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Webxr session not supported (%err%)");
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/engine/Tw2Library.js":
+/*!***********************************!*\
+  !*** ./core/engine/Tw2Library.js ***!
+  \***********************************/
+/*! exports provided: Tw2Library */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Library", function() { return Tw2Library; });
+/* harmony import */ var global_meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/meta */ "./global/meta/index.js");
+/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var _Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ResMan */ "./core/engine/Tw2ResMan.js");
+/* harmony import */ var _Tw2Device__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Device */ "./core/engine/Tw2Device.js");
+/* harmony import */ var _Tw2Logger__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Logger */ "./core/engine/Tw2Logger.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+var _class, _temp;
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+
+
+
+var Tw2Library = Object(global_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class = (_temp = class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"] {
+  /**
+   * Alias for device.gl
+   * @returns {*}
+   */
+  get gl() {
+    return this.device.gl;
+  }
+  /**
+   * Alias for device.now
+   * @returns {number}
+   */
+
+
+  get now() {
+    return this.device.now;
+  }
+  /**
+   * Alias for device.frameCounter
+   * @returns {number}
+   */
+
+
+  get frame() {
+    return this.device.frameCounter;
+  }
+  /**
+   * Alias for device.canvas
+   * @returns {*}
+   */
+
+
+  get canvas() {
+    return this.device.canvas;
+  }
+  /**
+   * Alias for device.dt
+   * @returns {number}
+   */
+
+
+  get dt() {
+    return this.device.dt;
+  }
+  /**
+   * Alias for device.viewportWidth
+   * @returns {number}
+   */
+
+
+  get width() {
+    return this.device.viewportWidth;
+  }
+  /**
+   * Alias for device.viewportHeight
+   * @returns {number}
+   */
+
+
+  get height() {
+    return this.device.viewportHeight;
+  }
+  /**
+   * Alias for device.viewportAspect
+   * @returns {number}
+   */
+
+
+  get aspect() {
+    return this.device.viewportAspect;
+  }
+  /**
+   * Constructor
+   */
+
+
+  constructor(store) {
+    super();
+    this.math = global_math__WEBPACK_IMPORTED_MODULE_7__;
+    this.util = global_util__WEBPACK_IMPORTED_MODULE_8__;
+    this.logger = new _Tw2Logger__WEBPACK_IMPORTED_MODULE_4__["Tw2Logger"]();
+    this.resMan = null;
+    this.device = null;
+    this.store = null;
+    this.const = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__;
+    this.resMan = new _Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__["Tw2ResMan"](store);
+    this.device = new _Tw2Device__WEBPACK_IMPORTED_MODULE_3__["Tw2Device"](store);
+    this.store = store;
+    var eveSof;
+    Object.defineProperty(this, "eveSof", {
+      get: () => {
+        if (!eveSof) {
+          var Constructor = this.GetClass("EveSOF");
+          eveSof = new Constructor(this);
+        }
+
+        return eveSof;
+      }
+    });
+    var debug = false;
+    Object.defineProperty(this, "debug", {
+      get: () => debug,
+      set: bool => {
+        debug = !!bool;
+        this.store.debug = debug;
+        this.logger.debug = debug;
+      }
+    });
+    _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"].defaultLogger = this;
+  }
+  /**
+   * Initializes the library
+   * @param {{}} [options]
+   * @param {String|HTMLCanvasElement} [options.canvas] - Canvas element or id
+   * @param {{}} [options.device]                       - Optional device parameters
+   * @param {{}} [options.resMan]                       - Optional resMan parameters
+   * @param {{}} [options.store]                        - Optional store parameters
+   * @param {{}} [options.glParams]                     - Optional gl parameters
+   * @param {Function} [options.render]                 - Optional render function
+   */
+
+
+  Initialize(options = {}) {
+    this.Register(options);
+    var {
+      render,
+      glParams,
+      canvas,
+      canvas2d
+    } = options;
+    this.device.CreateDevice({
+      canvas,
+      canvas2d,
+      glParams
+    });
+
+    if (render) {
+      this.on("tick", render);
+
+      var tick = () => {
+        this.RequestAnimationFrame(tick);
+        this.StartFrame();
+        this.EndFrame();
+      };
+
+      this.RequestAnimationFrame(tick);
+    }
+  }
+  /**
+   * Sets the black reader's path handler
+   * @param { Function } handler
+   */
+
+
+  SetBlackPathHandler(handler) {
+    core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_5__["path"].handler = handler;
+  }
+  /**
+   * Start frame
+   */
+
+
+  StartFrame() {
+    this.device.StartFrame();
+    this.resMan.Tick(this.device);
+  }
+  /**
+   * End frame
+   */
+
+
+  EndFrame() {
+    this.emit("tick", this.device.dt);
+    this.device.EndFrame();
+  }
+  /**
+   * Requests an animation frame
+   * @param {Function} callback
+   * @returns {*}
+   */
+
+
+  RequestAnimationFrame(callback) {
+    return this.device.RequestAnimationFrame(callback);
+  }
+  /**
+   * Cancels an animation frame
+   * @param id
+   * @returns {*}
+   */
+
+
+  CancelAnimationFrame(id) {
+    return this.device.CancelAnimationFrame(id);
+  }
+  /**
+   * Outputs a log to console
+   * @param {String} logType
+   * @param {String|{}} log
+   * @param {String} [fallbackTitle]
+   * @returns {*}
+   */
+
+
+  Log(logType, log, fallbackTitle = "Library") {
+    return this.logger.Log(logType, log, fallbackTitle);
+  }
+  /**
+   * Registers library options
+   * @param {*} options
+   * @param {Boolean} options.uuid
+   * @param {Boolean} options.debug
+   * @param {*} options.logger
+   * @param {*} options.client
+   * @param {*} options.resMan
+   * @param {*} options.device
+   * @param {*} options.store
+   */
+
+
+  Register(options = {}) {
+    if (options.debug !== undefined) this.debug = options.debug;
+    if (options.uuid) Object(global_util__WEBPACK_IMPORTED_MODULE_8__["enableUUID"])(options.uuid);
+    if (options.logger) this.logger.Register(options.logger);
+    if (options.resMan) this.resMan.Register(options.resMan);
+    if (options.device) this.device.Register(options.device);
+    if (options.store) this.store.Register(options.store);
+  }
+  /**
+   * Gets a res path's full url
+   * @param {String} resPath
+   * @returns {String}
+   */
+
+
+  GetFullURL(resPath) {
+    return this.resMan.BuildUrl(resPath);
+  }
+  /**
+   * Sets the device's standard states
+   * @param {Number} renderMode
+   */
+
+
+  SetStandardStates(renderMode) {
+    this.device.SetStandardStates(renderMode);
+    return this;
+  }
+  /**
+   * Sets the gl color mask
+   * @param colorMask
+   * @returns {Tw2Library}
+   */
+
+
+  GLColorMask(colorMask) {
+    this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+    return this;
+  }
+  /**
+   * Sets the gl clear color
+   * @param clearColor
+   * @returns {Tw2Library}
+   */
+
+
+  GLClearColor(clearColor) {
+    this.device.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+    return this;
+  }
+  /**
+   * Sets gl clear depth
+   * @param value
+   * @returns {Tw2Library}
+   */
+
+
+  GLClearDepth(value) {
+    this.device.gl.clearDepth(value);
+    return this;
+  }
+  /**
+   * Sets the gl viewport
+   * @param viewport
+   * @returns {Tw2Library}
+   */
+
+
+  GLViewport(viewport) {
+    this.device.gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    return this;
+  }
+  /**
+   * Clears gl
+   * @param value
+   * @returns {Tw2Library}
+   */
+
+
+  GLClear(value) {
+    this.device.gl.clear(value);
+    return this;
+  }
+  /**
+   * Sets the device projection matrix
+   * @param {mat4} m
+   * @returns {Tw2Library}
+   */
+
+
+  SetProjectionMatrix(m) {
+    this.device.SetProjection(m);
+    return this;
+  }
+  /**
+   * Sets the device view matrix
+   * @param {mat4} m
+   * @returns {Tw2Library}
+   */
+
+
+  SetViewMatrix(m) {
+    this.device.SetView(m);
+    return this;
+  }
+  /**
+   * Gets a device gl extension
+   * @param {String} name
+   * @returns {*}
+   */
+
+
+  GetDeviceExtension(name) {
+    return this.device.GetExtension(name);
+  }
+  /**
+   * Gets a resource
+   * @param {String} resPath
+   * @param {Function} [onResolved]
+   * @param {Function} [onRejected]
+   * @returns {Tw2Resource}
+   */
+
+
+  GetResource(resPath, onResolved, onRejected) {
+    return this.resMan.GetResource(resPath, onResolved, onRejected);
+  }
+  /**
+   * Gets a resource asynchronously
+   * @param {String} resPath
+     * @returns {Promise<Tw2Resource>}
+   */
+
+
+  FetchResource(resPath) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      return _this.resMan.FetchResource(resPath);
+    })();
+  }
+  /**
+   * Gets an object asynchronously
+   * @param {String} resPath
+   * @param {String|Class|Function|Array<String|Class|Function>} [expectedConstructor]
+   * @returns {Promise<*>}
+   */
+
+
+  FetchObject(resPath, expectedConstructor) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      var result;
+
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isDNA"])(resPath)) {
+        result = yield _this2.eveSof.FetchObject(resPath);
+      } else {
+        result = yield _this2.resMan.FetchObject(resPath);
+      }
+
+      if (!_this2.IsClass(result, expectedConstructor)) {
+        throw new Error("Unexpected constructor: " + result.constructor.name);
+      }
+
+      return result;
+    })();
+  }
+  /**
+   * Fetches a resPath's build constructor
+   * TODO: Add planets, moons and scenes?
+   * @param {String} resPath
+   * @returns {Promise<number>}
+   */
+
+
+  FetchBuildClass(resPath) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      return Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isDNA"])(resPath) ? yield _this3.eveSof.FetchHullBuildClass(resPath) : 2;
+    })();
+  }
+  /**
+   * Checks if an object is a valid class
+   * @param {*} object
+   * @param {String|Class|Function|Array<String|Class|Function>}expectedConstructor
+   * @returns {boolean}
+   */
+
+
+  IsClass(object, expectedConstructor) {
+    if (!expectedConstructor) {
+      return true;
+    }
+
+    expectedConstructor = Object(global_util__WEBPACK_IMPORTED_MODULE_8__["toArray"])(expectedConstructor);
+    var isGood;
+
+    for (var i = 0; i < expectedConstructor.length; i++) {
+      var Constructor = expectedConstructor[i],
+          exclude = false;
+
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isString"])(Constructor)) {
+        if (Constructor.charAt(0) === "!") {
+          exclude = true;
+          Constructor = Constructor.substring(1);
+        }
+
+        if (Constructor === "Array") Constructor = Array;else if (Constructor === "Object") Constructor = Object;else Constructor = this.GetClass(Constructor);
+      }
+
+      if (object instanceof Constructor) {
+        isGood = !exclude;
+        break;
+      }
+    }
+
+    return isGood;
+  }
+  /**
+   * Creates a variable from values and/or type
+   * @param {String} name
+   * @param {*} [value]
+   * @param {String| Function} [Type]
+   * @returns {*}
+   */
+
+
+  CreateVariable(name, value, Type) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isPlain"])(value)) {
+      Type = value["Type"] || value["type"];
+      value = value["value"];
+    }
+
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isFunction"])(Type)) return new Type(name, value);
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isString"])(Type)) Type = this.GetType(Type);
+    if (!Type) Type = this.GetTypeByValue(value);
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_8__["isFunction"])(Type)) return new Type(name, value);
+    throw new Error("Could not identify variable type");
+  }
+  /**
+   * Checks if a store variable exists
+   * @param name
+   * @returns {*}
+   */
+
+
+  HasVariable(name) {
+    return this.store.variables.Has(name);
+  }
+  /**
+   * Gets a store variable by it's name
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetVariable(name) {
+    return this.store.variables.Get(name);
+  }
+  /**
+   * Gets a store variable's value
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetVariableValue(name) {
+    return this.store.variables.GetValue(name);
+  }
+  /**
+   * Sets a store variable
+   * @param {String} name
+   * @param {*} variable
+   * @returns {Function}
+   */
+
+
+  SetVariable(name, variable) {
+    return this.store.variables.Set(name, variable);
+  }
+  /**
+   * Sets a store variable's value
+   * @param name
+   * @param value
+   * @param {*} [opt]
+   * @returns {void|*|Boolean}
+   */
+
+
+  SetVariableValue(name, value, opt) {
+    return this.store.variables.SetValue(name, value, opt);
+  }
+  /**
+   * Checks if a resource constructor exists for a file extension
+   * @param extension
+   * @returns {*}
+   */
+
+
+  HasExtension(extension) {
+    return this.store.extensions.Has(extension);
+  }
+  /**
+   * Gets a file extension's resource constructor
+   * @param extension
+   * @returns {*}
+   */
+
+
+  GetExtension(extension) {
+    return this.store.extensions.Get(extension);
+  }
+  /**
+   * Sets a file extension's resource constructor
+   * @param extension
+   * @param value
+   * @returns {*}
+   */
+
+
+  SetExtension(extension, value) {
+    return this.store.extensions.Set(extension, value);
+  }
+  /**
+   * Checks if a class exists
+   * @param name
+   * @returns {*}
+   */
+
+
+  HasClass(name) {
+    return this.store.constructors.Has(name);
+  }
+  /**
+   * Gets a class by it's name
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetClass(name) {
+    return this.store.constructors.Get(name);
+  }
+  /**
+   * Sets a class
+   * @param {String} name
+   * @param {Class|Function} Constructor
+   * @returns {Class|Function}
+   */
+
+
+  SetClass(name, Constructor) {
+    return this.store.constructors.Set(name, Constructor);
+  }
+  /**
+   * Checks if a resource path exists for a prefix
+   * @param {String} prefix
+   * @returns {Boolean}
+   */
+
+
+  HasPath(prefix) {
+    return this.store.paths.Has(prefix);
+  }
+  /**
+   * Gets a resource path from it's prefix
+   * @param {String} prefix
+   * @returns {String}
+   */
+
+
+  GetPath(prefix) {
+    return this.store.paths.Get(prefix);
+  }
+  /**
+   * Sets a resource path by it's prefix
+   * @param {String} prefix
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  SetPath(prefix, path) {
+    return this.store.paths.Set(prefix, path);
+  }
+  /**
+   * Checks if a dynamic path exists
+   * @param prefix
+   * @returns {*}
+   */
+
+
+  HasDynamicPath(prefix) {
+    return this.store.dynamicPaths.Has(prefix);
+  }
+  /**
+   * Gets a dynamic path by it's prefix
+   * @param {String} prefix
+   * @returns {*}
+   */
+
+
+  GetDynamicPath(prefix) {
+    return this.store.dynamicPaths.Get(prefix);
+  }
+  /**
+   * Sets a dynamic path by it's prefix
+   * @param prefix
+   * @param value
+   * @returns {*}
+   */
+
+
+  SetDynamicPath(prefix, value) {
+    return this.store.dynamicPaths.Set(prefix, value);
+  }
+  /**
+   * Checks if a type exists
+   * @param {String} name
+   * @returns {Boolean}
+   */
+
+
+  HasType(name) {
+    return this.store.variableTypes.Has(name);
+  }
+  /**
+   * Gets a type by name
+   * @param {String} name
+   * @returns {Function}
+   */
+
+
+  GetType(name) {
+    return this.store.variableTypes.Get(name);
+  }
+  /**
+   * Gets a type by value
+   * @param {*} value
+   */
+
+
+  GetTypeByValue(value) {
+    return this.store.variableTypes.GetByValue(value);
+  }
+  /**
+   * Sets a type
+   * @param {String} name
+   * @param {Function} Constructor
+   * @returns {Function} Constructor
+   */
+
+
+  SetType(name, Constructor) {
+    return this.store.variableTypes.Set(name, Constructor);
+  }
+
+}, _temp)) || _class;
+
+/***/ }),
+
+/***/ "./core/engine/Tw2Logger.js":
+/*!**********************************!*\
+  !*** ./core/engine/Tw2Logger.js ***!
+  \**********************************/
+/*! exports provided: Tw2Logger */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return Tw2Logger; });
+/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+
+/**
+ * eventLog
+ * @typedef {{}} eventLog
+ * @property {String} eventLog.type       - The log's type
+ * @property {String} eventLog.name       - The log's name
+ * @property {String} eventLog.message    - The log's message
+ * @property {String} [eventLog.path]     - optional related resource path
+ * @property {String} [eventLog.detail]   - optional extra detail
+ * @property {String} [eventLog.time]     - optional time taken
+ * @property {Boolean} [eventLog.hide]    - optional visibility
+ * @property {Boolean} [eventLog._logged] - Identifies if the log has been logged
+ * @property {Error} [eventLog.err]       - Optional error (output to the console)
+ * @property {*} [eventLog.data]          - Optional data (output to the console)
+ */
+
+class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+  constructor(...args) {
+    super(...args);
+    this.name = "";
+    this.display = true;
+    this.debug = false;
+    this.history = 100;
+    this.throttle = 20;
+    this.visible = {
+      log: false,
+      info: false,
+      debug: false,
+      warn: false,
+      error: true
+    };
+    this._logs = [];
+    this._throttled = null;
+  }
+
+  /**
+   * Sets the logger's properties
+   * @param {*} [opt]
+   */
+  Register(opt) {
+    if (!opt) return;
+    Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this, opt, ["name", "display", "history", "throttle"]);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this.visible, opt.visible, ["log", "info", "debug", "warn", "error"]);
+  }
+  /**
+   * Adds an event log and outputs it to the console
+   * @param {String}    type       - Log type
+   * @param {*} log                - The eventLog or error to log
+   * @param {String} [defaultName] - Default message name/ title
+   * @returns {eventLog} log
+   */
+
+
+  Log(type = "log", log, defaultName) {
+    if (!log) {
+      log = {
+        message: ""
+      };
+    } else if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(log)) {
+      log = {
+        message: log
+      };
+    } else if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
+      log = {
+        message: log.message,
+        err: log
+      };
+    }
+
+    if (log._logged) return log; // Normalize logs
+
+    log.type = type.toLowerCase();
+    log.name = log.name || defaultName || Tw2Logger.constructor.category;
+    log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
+
+    if (!Tw2Logger.LogType[log.type.toUpperCase()]) {
+      log.type = "log";
+    } // Set visibility
+
+
+    if (!this.display || !this.visible[log.type]) {
+      log.hide = true;
+    } // Throttle excessive output
+
+
+    if (!this.throttle || this.debug) {
+      this._throttled = null;
+    } else {
+      if (!log.hide) {
+        if (!this._throttled) this._throttled = {};
+        if (!this._throttled[log.type]) this._throttled[log.type] = [];
+        var t = this._throttled[log.type];
+
+        if (!t.includes(log.message)) {
+          t.unshift(log.message);
+          t.splice(this.throttle);
+        } else {
+          log.hide = true;
+        }
+      }
+    } // Output to the console
+
+
+    if (!log.hide || this.debug) {
+      // Optional details
+      var subMessage = "";
+      if (log.path && !log.message.includes(log.path)) subMessage += "'".concat(log.path, "' ");
+      if (log.time) subMessage += "in ".concat(log.time.toFixed(3), " secs ");
+      if (log.detail) subMessage += "(".concat(log.detail, ") ");
+      var header = "".concat(this.name, " ").concat(log.name, ":");
+
+      if (log.err || log.data) {
+        console.group(header, log.message, subMessage);
+        if (log.err) console.error(log.err.stack || log.err.toString());
+        if (log.data) console.debug(JSON.stringify(log.data, null, 4));
+        console.groupEnd();
+      } else {
+        console[log.type](header, log.message, subMessage);
+      }
+    } // Manage log history
+
+
+    var logsToKeep = this.debug ? 1000 : this.history;
+
+    if (logsToKeep) {
+      this._logs.unshift(log);
+
+      this._logs.splice(logsToKeep);
+    } else {
+      this._logs = [];
+    }
+
+    log._logged = true;
+    this.emit(log.type, log);
+    return log;
+  }
+  /**
+   * Log types
+   * @type {*}
+   */
+
+
+}
+Tw2Logger.LogType = {
+  ERROR: "error",
+  WARNING: "warn",
+  WARN: "warn",
+  INFO: "info",
+  LOG: "log",
+  DEBUG: "debug"
+};
+
+/***/ }),
+
+/***/ "./core/engine/Tw2MotherLode.js":
+/*!**************************************!*\
+  !*** ./core/engine/Tw2MotherLode.js ***!
+  \**************************************/
+/*! exports provided: Tw2MotherLode */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MotherLode", function() { return Tw2MotherLode; });
+class Tw2MotherLode {
+  constructor() {
+    this._loadedObjects = {};
+    this._errors = {};
+  }
+  /**
+   * Adds an error log for a given path
+   * @param {String} path
+   * @param {Tw2Error|Error} err
+   * @returns {Tw2Error|Error} err
+   */
+
+
+  AddError(path, err) {
+    this._errors[path] = this._errors[path] || []; // Ensure error includes file path
+
+    if (!err.message.includes(path)) {
+      err.message = "".concat(err.message, " \"").concat(path, "\"");
+    }
+
+    if (!this._errors[path].includes(err)) {
+      err.path = path;
+
+      this._errors[path].unshift(err);
+    }
+
+    return err;
+  }
+  /**
+   * Gets a path's error logs
+   * @param {String} path
+   * @returns {?Array<Tw2Error|Error>}
+   */
+
+
+  GetErrors(path) {
+    return path && path in this._errors ? Array.from(this._errors[path]) : [];
+  }
+  /**
+   * Gets the last error for a path
+   * @param path
+   * @returns {Tw2Error|Error|undefined}
+   */
+
+
+  GetLastError(path) {
+    return path && path in this._errors ? this._errors[path][0] : undefined;
+  }
+  /**
+   * Checks if a path has any errors
+   * @param {String} path
+   * @returns {*|Boolean}
+   */
+
+
+  HasErrors(path) {
+    return path && path in this._errors;
+  }
+  /**
+   * Finds a loaded object by it's file path
+   * @param {String} path
+   * @returns {Tw2LoadingObject|Tw2Resource}
+   */
+
+
+  Find(path) {
+    if (path in this._loadedObjects) {
+      return this._loadedObjects[path];
+    }
+
+    return null;
+  }
+  /**
+   * Adds a loaded object
+   * @param {String} path
+   * @param {Tw2LoadingObject|Tw2Resource} obj
+   */
+
+
+  Add(path, obj) {
+    this._loadedObjects[path] = obj;
+  }
+  /**
+   * Checks if a res exists
+   * @param {String} path
+   * @returns {boolean}
+   */
+
+
+  Has(path) {
+    return !!this._loadedObjects[path];
+  }
+  /**
+   * Removes a loaded object by it's file path
+   * @param {String} path
+   */
+
+
+  Remove(path) {
+    if (this._loadedObjects[path]) {
+      Reflect.deleteProperty(this._loadedObjects, path);
+    }
+  }
+  /**
+   * Clears the loaded object object
+   * @param {Function} [onClear] - Function that is called on each unloaded resource
+   */
+
+
+  Clear(onClear) {
+    for (var key in this._loadedObjects) {
+      if (this._loadedObjects.hasOwnProperty(key)) {
+        if (onClear) onClear(this._loadedObjects[key]);
+        this.Remove(key);
+      }
+    }
+  }
+  /**
+   * Unloads all loaded objects and then clears the loadedObject object
+   * @param {Function} [onClear] - Function that is called on each unloaded and cleared resource
+   * @param {eventLog} [eventLog]
+   */
+
+
+  UnloadAndClear(onClear, eventLog) {
+    this.Clear(res => {
+      res.Unload(eventLog);
+      if (onClear) onClear(res);
+    });
+  }
+  /**
+   * Purges inactive loaded objects (resources that have been loaded but are not being actively used)
+   * - Loaded objects can flagged with `doNotPurge` to ensure they are never removed
+   * - Resource auto purging can be managed in `ccpwgl` or `ccpwgl_int.resMan` - {@link Tw2ResMan}
+   *     ccpwgl.setResourceUnloadPolicy()
+   *     ccpwgl_int.resMan.autoPurgeResources=true
+   *     ccpwgl_int.resMan.purgeTime=30
+   * @param {Number} curFrame - the current frame count
+   * @param {Number} frameLimit - how many frames the object can stay alive for before being purged
+   * @param {Number} frameDistance - how long the resource has been alive for
+   */
+
+
+  PurgeInactive(curFrame, frameLimit, frameDistance) {
+    for (var path in this._loadedObjects) {
+      if (this._loadedObjects.hasOwnProperty(path)) {
+        var res = this._loadedObjects[path]; // Don't purge
+
+        if (res.doNotPurge) {
+          continue;
+        } // Already purged
+
+
+        if (res.IsPurged()) {
+          this.Remove(path);
+          continue;
+        }
+
+        var detail = void 0; // Has errors
+
+        if (res.HasErrors()) {
+          detail = "errored";
+        } // Waiting for purge
+        else if (res.IsUnloaded()) {
+            detail = "unloaded";
+          } // good but inactive
+          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
+              if (res.Unload({
+                hide: true,
+                detail: "inactivity"
+              })) {
+                detail = "inactivity";
+              }
+            }
+
+        if (detail) {
+          res.OnPurged({
+            detail
+          });
+          this.Remove(path);
+        }
+      }
+    }
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/engine/Tw2ResMan.js":
+/*!**********************************!*\
+  !*** ./core/engine/Tw2ResMan.js ***!
+  \**********************************/
+/*! exports provided: Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return Tw2ResMan; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUnregistered", function() { return ErrResourcePrefixUnregistered; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUndefined", function() { return ErrResourcePrefixUndefined; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUnregistered", function() { return ErrResourceExtensionUnregistered; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUndefined", function() { return ErrResourceExtensionUndefined; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return ErrHTTPRequest; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return ErrHTTPStatus; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatInvalid", function() { return ErrResourceFormatInvalid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return ErrResourceFormatUnsupported; });
+/* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MotherLode */ "./core/engine/Tw2MotherLode.js");
+/* harmony import */ var core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
+/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+/**
+ * Resource Manager
+ *
+ * @property {Tw2MotherLode} motherLode
+ * @property {Boolean} systemMirror - Toggles whether {@link Tw2GeometryRes} Index and Buffer data arrays are visible
+ * @property {Number} maxPrepareTime
+ * @property {Boolean} autoPurgeResources=true - Sets whether resources should be purged automatically
+ * @property {Number} purgeTime=30 = Sets how long resources can remain inactive before they are purged
+ * @property {Number} activeFrame
+ * @property {Number} _prepareBudget
+ * @property {Array} _prepareQueue
+ * @property {Number} _purgeTime
+ * @property {Number} _purgeFrame
+ * @property {Number} _purgeFrameLimit
+ * @property {Array<String>} _pendingLoads - an array of pending loads
+ * @property {Number} _noLoadFrames
+ */
+
+class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+  /**
+   * Gets a count of pending loads
+   * @returns {number}
+   */
+  get pendingLoads() {
+    return this._pendingLoads.length;
+  }
+  /**
+   * Constructor
+   * @param {Tw2Store} store
+   */
+
+
+  constructor(store) {
+    super();
+    this.motherLode = new _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__["Tw2MotherLode"]();
+    this.systemMirror = false;
+    this.maxPrepareTime = 0.05;
+    this.autoPurgeResources = true;
+    this.activeFrame = 0;
+    this.purgeTime = 30;
+    this._prepareBudget = 0;
+    this._prepareQueue = [];
+    this._purgeTime = 0;
+    this._purgeFrame = 0;
+    this._purgeFrameLimit = 1000;
+    this._pendingLoads = [];
+    this._noLoadFrames = 0;
+    this.store = store;
+  }
+  /**
+   * Sets resource manager options
+   * @param {*} [opt]
+   */
+
+
+  Register(opt) {
+    if (!opt) return;
+    Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
+  }
+  /**
+   * Fires on resource errors
+   * - Used when a resource can only be identified by it's path
+   * @param {String} path
+   * @param {Error} err
+   * @returns {Error} err
+   */
+
+
+  OnPathError(path, err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"]({
+    path
+  })) {
+    path = Tw2ResMan.NormalizePath(path);
+    var res = this.motherLode.Find(path);
+    if (res) return res.OnError(err);
+    this.OnPathEvent(path, "error", err);
+    return err;
+  }
+  /**
+   * Fires on path events
+   * @param {String} path      - Resource path
+   * @param {String} eventName - Resource state name
+   * @param {*} [log={}]       - Resource log
+   */
+
+
+  OnPathEvent(path, eventName, log = {}) {
+    var res = this.motherLode.Find(path),
+        err = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isError"])(log) ? log : undefined;
+
+    if (err) {
+      this.motherLode.AddError(path, err);
+      log = {
+        err,
+        message: err.message
+      };
+    }
+
+    log.path = path;
+    log.message = log.message || eventName;
+    this.emit(eventName, path, res, err).msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+  }
+  /**
+   * IsLoading
+   * @returns {Boolean}
+   *
+   */
+
+
+  IsLoading() {
+    return this._noLoadFrames < 2;
+  }
+  /**
+   * Clears the motherLode {@link Tw2MotherLode}
+   * @param {Function} [onClear] - An optional function which is called on each cleared resource
+   */
+
+
+  Clear(onClear) {
+    this.motherLode.Clear(onClear);
+  }
+  /**
+   * Unloads and Clears the motherLode {@link Tw2MotherLode}
+   * @param {Function} [onClear] - An optional function which is called on each cleared resource
+   * @param {eventLog} [eventLog]
+   */
+
+
+  UnloadAndClear(onClear, eventLog) {
+    this.motherLode.UnloadAndClear(onClear, eventLog);
+  }
+  /**
+   * Internal update function. It is called every frame.
+   * @param {Tw2Device} device
+   * @returns {Boolean}
+   */
+
+
+  Tick(device) {
+    if (this._prepareQueue.length === 0 && this._pendingLoads.length === 0) {
+      if (this._noLoadFrames < 2) {
+        this._noLoadFrames++;
+      }
+    } else {
+      this._noLoadFrames = 0;
+    }
+
+    this._prepareBudget = this.maxPrepareTime;
+    var startTime = device.now;
+
+    while (this._prepareQueue.length) {
+      var res = this._prepareQueue[0][0],
+          data = this._prepareQueue[0][1],
+          xml = this._prepareQueue[0][2];
+
+      this._prepareQueue.shift();
+
+      try {
+        res.Prepare(data, xml);
+        this._prepareBudget -= (device.now - startTime) * 0.001;
+        if (this._prepareBudget < 0) break;
+      } catch (err) {
+        this._prepareBudget = 0;
+        res.OnError(err);
+      }
+    }
+
+    this._purgeTime += device.dt;
+
+    if (this._purgeTime > 1) {
+      this.activeFrame += 1;
+      this._purgeTime -= Math.floor(this._purgeTime);
+      this._purgeFrame += 1;
+
+      if (this._purgeFrame >= 5) {
+        if (this.autoPurgeResources) {
+          this.motherLode.PurgeInactive(this._purgeFrame, this._purgeFrameLimit, this.purgeTime);
+        }
+      }
+    }
+
+    return true;
+  }
+  /**
+   * Adds a resource and response to the prepare queue
+   * @param {Tw2Resource} res
+   * @param {*} response
+   * @param {*} [meta]
+   */
+
+
+  Queue(res, response, meta) {
+    this._prepareQueue.push([res, response, meta]);
+  }
+  /**
+   * Gets a resource
+   * @param {String} path           - The path to load
+   * @param {Function} [onResolved] - Callback fired when the object has loaded
+   * @param {Function} [onRejected] - Callback fired when the object fails to load
+   * @returns {Tw2Resource|*} resource
+   */
+
+
+  GetResource(path, onResolved, onRejected) {
+    var res;
+    path = Tw2ResMan.NormalizePath(path); // Check if already loaded
+
+    res = this.motherLode.Find(path);
+
+    if (res) {
+      res.RegisterCallbacks(onResolved, onRejected);
+      return res;
+    }
+
+    try {
+      var Constructor = this.GetResourceConstructor(path);
+      res = new Constructor();
+    } catch (err) {
+      this.OnPathError(path, err);
+      if (onRejected) onRejected(err);
+      return null;
+    }
+
+    res.path = path;
+    res.RegisterCallbacks(onResolved, onRejected);
+    return this.LoadResource(res);
+  }
+  /**
+   * Fetches a resource
+   * @param {String} path
+   * @returns {Promise<Tw2Resource|null>}
+   */
+
+
+  FetchResource(path) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      return new Promise((resolve, reject) => {
+        _this.GetResource(path, resolve, reject);
+      });
+    })();
+  }
+  /**
+   * Gets a resource object
+   * @param {String} path           - The path to load
+   * @param {Function} [onResolved] - Callback fired when the object has loaded
+   * @param {Function} [onRejected] - Callback fired when the object fails to load
+   */
+
+
+  GetObject(path, onResolved, onRejected) {
+    path = Tw2ResMan.NormalizePath(path); // Check if already loaded
+
+    var res = this.motherLode.Find(path);
+
+    if (res) {
+      res.AddObject(onResolved, onRejected);
+      return;
+    }
+
+    res = new core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
+    res.path = path;
+    res.AddObject(onResolved, onRejected);
+    this.LoadResource(res);
+  }
+  /**
+   * Fetches an object
+   * @param {String} path
+   * @returns {Promise<any>}
+   */
+
+
+  FetchObject(path) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      return new Promise((resolve, reject) => {
+        _this2.GetObject(path, resolve, reject);
+      });
+    })();
+  }
+  /**
+   * Loads a resource
+   * TODO: Create a res object for each quality level rather than just one
+   * @param {Tw2Resource|*} res
+   * @param {eventLog} [eventLog]
+   */
+
+
+  LoadResource(res, eventLog) {
+    this.motherLode.Add(res.path, res); // Don't load if already errored
+
+    if (res.HasErrors()) {
+      return res;
+    }
+
+    try {
+      var url = this.BuildUrl(res.path);
+      res.OnRequested(eventLog);
+
+      if (res.DoCustomLoad && res.DoCustomLoad(url, Object(global_util__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"])(url))) {
+        return res;
+      }
+
+      if (!res.HasErrors()) {
+        this.Fetch(url, res.requestResponseType).then(response => {
+          res.OnLoaded();
+          this.Queue(res, response);
+        }).catch(err => {
+          res.OnError(err);
+        });
+      }
+    } catch (err) {
+      res.OnError(err);
+    }
+
+    return res;
+  }
+  /**
+   * Adds a pending url
+   * @param {String} url
+   */
+
+
+  AddPendingLoad(url) {
+    this._pendingLoads.push(url);
+  }
+  /**
+   * Removes a pending url
+   * @param {String} url
+   */
+
+
+  RemovePendingLoad(url) {
+    var index = this._pendingLoads.indexOf(url);
+
+    if (index !== -1) {
+      this._pendingLoads.splice(index, 1);
+    }
+  }
+  /**
+   * Fetches cache
+   * @param {String} url
+   * @param {String|Function} responseType
+   * @returns {Promise}
+   */
+
+
+  Fetch(url, responseType) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      _this3.AddPendingLoad(url);
+
+      return fetch(url).then(response => {
+        if (!response.ok) {
+          throw response;
+        }
+
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(responseType)) {
+          return responseType(response);
+        }
+
+        switch (responseType) {
+          case "arraybuffer":
+            return response.arrayBuffer();
+
+          case "text":
+            return response.text();
+
+          case "json":
+            return response.json();
+
+          case "blob":
+            return response.blob();
+
+          default:
+            throw new Error("Invalid fetch type: " + responseType);
+        }
+      }).then(result => {
+        _this3.RemovePendingLoad(url);
+
+        return result;
+      }).catch(err => {
+        _this3.RemovePendingLoad(url);
+
+        if (err.text) {
+          return err.text().then(text => {
+            var {
+              status,
+              statusText
+            } = err;
+            var json;
+
+            try {
+              json = JSON.parse(text);
+              statusText = json.message || json.msg || json.error || json.err;
+              if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(statusText)) statusText = undefined;
+            } catch (err) {
+              statusText = "Failed to fetch resource";
+            }
+
+            throw new ErrHTTPStatus({
+              status,
+              statusText,
+              json
+            });
+          });
+        } else {
+          throw err;
+        }
+      });
+    })();
+  }
+  /**
+   * Gets a resource constructor
+   * @param {String} path
+   * @returns {Tw2Resource}
+   * @throws {ErrFeatureNotImplemented} When passed an unsupported resource prefix
+   * @throws {ErrResourceExtensionUndefined} When passed a resource without an extension
+   * @throws {ErrResourceExtensionUnregistered} When passed a resource extension that isn't registered/ supported
+   */
+
+
+  GetResourceConstructor(path) {
+    path = Tw2ResMan.NormalizePath(path);
+
+    if (path.indexOf("dynamic:/") === 0) {
+      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrFeatureNotImplemented"]({
+        feature: "Dynamic resources"
+      });
+    }
+
+    var extension = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"])(path);
+
+    if (extension === null) {
+      throw new ErrResourceExtensionUndefined({
+        path
+      });
+    }
+
+    var Constructor = this.store.extensions.Get(extension);
+
+    if (!Constructor) {
+      throw new ErrResourceExtensionUnregistered({
+        path,
+        extension
+      });
+    }
+
+    return Constructor;
+  }
+  /**
+   * Builds a url from a resource path
+   * @param {String} path
+   * @returns {String}
+   * @throws {ErrResourcePrefixUndefined} When passed a url without a resource prefix
+   * @throws {ErrResourcePrefixUnregistered} When passed a url with an unregistered resource prefix
+   */
+
+
+  BuildUrl(path) {
+    var prefixIndex = path.indexOf(":/");
+
+    if (prefixIndex === -1) {
+      throw new ErrResourcePrefixUndefined({
+        path
+      });
+    }
+
+    var prefix = path.substr(0, prefixIndex);
+
+    if (prefix === "http" || prefix === "https") {
+      return path;
+    }
+
+    var fullPrefix = this.store.paths.Get(prefix);
+
+    if (!fullPrefix) {
+      throw new ErrResourcePrefixUnregistered({
+        path,
+        prefix
+      });
+    }
+
+    return fullPrefix + path.substr(prefixIndex + 2);
+  }
+  /**
+   * Normalizes a file path by making it lower case and replaces all '\\' with '/'
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  static NormalizePath(path) {
+    path = path.toLowerCase();
+    path = path.replace("\\", "/");
+    return path;
+  }
+  /**
+   * Log type
+   * @type {*}
+   */
+
+
+}
+/**
+ * Throws when a resource path has an unregistered prefix
+ */
+
+Tw2ResMan.LogType = {
+  ERROR: "error",
+  PURGED: "info",
+  UNLOADED: "info",
+  REQUESTED: "info",
+  RELOADING: "info",
+  LOADED: "info",
+  PREPARED: "log",
+  WARNING: "warn",
+  DEBUG: "debug"
+};
+class ErrResourcePrefixUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Unregistered resource prefix (%prefix%)");
+  }
+
+}
+/**
+ * Throws when a resource path has no prefix
+ */
+
+class ErrResourcePrefixUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Undefined resource prefix");
+  }
+
+}
+/**
+ * Throws when a resource path has an unregistered file extension
+ */
+
+class ErrResourceExtensionUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Unregistered resource extension (%extension%)");
+  }
+
+}
+/**
+ * Throws when a resource path has no file extension
+ */
+
+class ErrResourceExtensionUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Undefined resource extension");
+  }
+
+}
+/**
+ * Throws on http request errors
+ */
+
+class ErrHTTPRequest extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Communication error while requesting resource");
+  }
+
+}
+/**
+ * Throws on http status errors
+ */
+
+class ErrHTTPStatus extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "%statusText=Communication status error while loading resource% (%status%)");
+  }
+
+}
+/**
+ * Throws in invalid resource formats
+ */
+
+class ErrResourceFormatInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Invalid resource format: %format% (%reason%)");
+  }
+
+}
+/**
+ * Throws in invalid resource formats
+ */
+
+class ErrResourceFormatUnsupported extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Unsupported resource format: %format%");
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/engine/Tw2Store.js":
+/*!*********************************!*\
+  !*** ./core/engine/Tw2Store.js ***!
+  \*********************************/
+/*! exports provided: Tw2Store */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Store", function() { return Tw2Store; });
+/* harmony import */ var core_store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/store */ "./core/store/index.js");
+
+class Tw2Store {
+  constructor(LibraryConstructor) {
+    var debug = false;
+    Object.defineProperty(this, "debug", {
+      get: () => debug,
+      set: bool => {
+        debug = bool;
+        this.constructors.debug = bool;
+      }
+    });
+    this.variableTypes = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2VariableTypeStore"]();
+    this.variables = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2VariableStore"](this.variableTypes);
+    this.paths = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2ResourcePathStore"]();
+    this.dynamicPaths = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2ResourceDynamicPathStore"]();
+    this.extensions = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2ResourceExtensionStore"]();
+    this.constructors = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2ConstructorStore"](LibraryConstructor);
+  }
+  /**
+   * Registers store variables from an object
+   * @param {Object} opt
+   */
+
+
+  Register(opt) {
+    if (!opt) return;
+    if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
+    if (opt.constructors) this.constructors.Register(opt.constructors);
+    if (opt.variables) this.variables.Register(opt.variables);
+    if (opt.paths) this.paths.Register(opt.paths);
+    if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
+    if (opt.extensions) this.extensions.Register(opt.extensions);
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/engine/index.js":
+/*!******************************!*\
+  !*** ./core/engine/index.js ***!
+  \******************************/
+/*! exports provided: Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tw2Device__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Device */ "./core/engine/Tw2Device.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["Tw2Device"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["ErrWebglContext"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["ErrWebxrNotSupported"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["ErrWebxrDeviceNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["ErrWebxrRequestFailed"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["ErrWebxrSessionNotSupported"]; });
+
+/* harmony import */ var _Tw2Logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Logger */ "./core/engine/Tw2Logger.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_1__["Tw2Logger"]; });
+
+/* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2MotherLode */ "./core/engine/Tw2MotherLode.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MotherLode", function() { return _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_2__["Tw2MotherLode"]; });
+
+/* harmony import */ var _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2ResMan */ "./core/engine/Tw2ResMan.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["Tw2ResMan"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUnregistered", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUndefined", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUnregistered", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUndefined", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPRequest"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatInvalid", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]; });
+
+/* harmony import */ var _Tw2Library__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Library */ "./core/engine/Tw2Library.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Library", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_4__["Tw2Library"]; });
+
+/* harmony import */ var _Tw2Store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Store */ "./core/engine/Tw2Store.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Store", function() { return _Tw2Store__WEBPACK_IMPORTED_MODULE_5__["Tw2Store"]; });
+
+
+
+
+
+
+
 
 /***/ }),
 
@@ -20006,7 +22983,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget */
+/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2EventEmitter, Tw2Notifications, Tw2Schema, Tw2PerObjectData, Tw2RawData, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2ConstructorStore, Tw2GenericStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Error, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2Frustum, Tw2RenderTarget */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20024,230 +23001,248 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMeshBatch", function() { return _batch__WEBPACK_IMPORTED_MODULE_0__["Tw2InstancedMeshBatch"]; });
 
-/* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data */ "./core/data/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerObjectData", function() { return _data__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"]; });
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./class */ "./core/class/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RawData", function() { return _data__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
 
-/* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./geometry */ "./core/geometry/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlendShapeData", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2BlendShapeData"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Schema"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryAnimation", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryAnimation"]; });
+/* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data */ "./core/data/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerObjectData", function() { return _data__WEBPACK_IMPORTED_MODULE_2__["Tw2PerObjectData"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryBone", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryBone"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RawData", function() { return _data__WEBPACK_IMPORTED_MODULE_2__["Tw2RawData"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryCurve", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryCurve"]; });
+/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./engine */ "./core/engine/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2Device"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMesh", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryMesh"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrWebglContext"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMeshArea", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryMeshArea"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrWebxrNotSupported"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMeshBinding", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryMeshBinding"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrWebxrDeviceNotFound"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryModel", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryModel"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrWebxrRequestFailed"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometrySkeleton", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometrySkeleton"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrWebxrSessionNotSupported"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryTrackGroup", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryTrackGroup"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2Logger"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryTransformTrack", function() { return _geometry__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryTransformTrack"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MotherLode", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2MotherLode"]; });
 
-/* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./mesh */ "./core/mesh/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2ResMan"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2InstancedMesh"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUnregistered", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUndefined", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUnregistered", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshLineArea"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUndefined", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]; });
 
-/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./model */ "./core/model/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Animation", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2Animation"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPRequest"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2AnimationController", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2AnimationController"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Bone", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2Bone"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatInvalid", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BoneBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2BoneBinding"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshBinding"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Library", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2Library"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Model", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2Model"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Store", function() { return _engine__WEBPACK_IMPORTED_MODULE_3__["Tw2Store"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Track", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2Track"]; });
+/* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./geometry */ "./core/geometry/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlendShapeData", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2BlendShapeData"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TrackGroup", function() { return _model__WEBPACK_IMPORTED_MODULE_4__["Tw2TrackGroup"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryAnimation", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryAnimation"]; });
 
-/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./parameter */ "./core/parameter/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2Parameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryBone", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryBone"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2FloatParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2FloatParameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryCurve", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryCurve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Matrix4Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2Matrix4Parameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMesh", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryMesh"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MatrixParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2MatrixParameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMeshArea", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryMeshArea"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2TransformParameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMeshBinding", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryMeshBinding"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2VariableParameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryModel", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryModel"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2Vector2Parameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometrySkeleton", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometrySkeleton"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2Vector3Parameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryTrackGroup", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryTrackGroup"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector4Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2Vector4Parameter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryTransformTrack", function() { return _geometry__WEBPACK_IMPORTED_MODULE_4__["Tw2GeometryTransformTrack"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureParameter"]; });
+/* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./mesh */ "./core/mesh/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Effect"]; });
 
-/* harmony import */ var _post__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./post */ "./core/post/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_6__["Tw2PostEffect"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2InstancedMesh"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectManager", function() { return _post__WEBPACK_IMPORTED_MODULE_6__["Tw2PostEffectManager"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Mesh"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectStep", function() { return _post__WEBPACK_IMPORTED_MODULE_6__["Tw2PostEffectStep"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshArea"]; });
 
-/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./reader */ "./core/reader/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BinaryReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2BinaryReader"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshLineArea"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2BlackReader"]; });
+/* harmony import */ var _model__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./model */ "./core/model/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Animation", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2Animation"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2ObjectReader"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2AnimationController", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2AnimationController"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CakeReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2CakeReader"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Bone", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2Bone"]; });
 
-/* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2EffectRes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BoneBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2BoneBinding"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2GeometryRes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2MeshBinding"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2LoadingObject"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Model", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2Model"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2Resource"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Track", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2Shader"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TrackGroup", function() { return _model__WEBPACK_IMPORTED_MODULE_6__["Tw2TrackGroup"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2TextureRes"]; });
+/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./parameter */ "./core/parameter/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2Parameter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2VideoRes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2FloatParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2FloatParameter"]; });
 
-/* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./sampler */ "./core/sampler/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerState", function() { return _sampler__WEBPACK_IMPORTED_MODULE_9__["Tw2SamplerState"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Matrix4Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2Matrix4Parameter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return _sampler__WEBPACK_IMPORTED_MODULE_9__["Tw2SamplerOverride"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MatrixParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2MatrixParameter"]; });
 
-/* harmony import */ var _value__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./value */ "./core/value/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Float", function() { return _value__WEBPACK_IMPORTED_MODULE_10__["Tw2Float"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2TransformParameter"]; });
 
-/* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./vertex */ "./core/vertex/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexDeclaration", function() { return _vertex__WEBPACK_IMPORTED_MODULE_11__["Tw2VertexDeclaration"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2VariableParameter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexElement", function() { return _vertex__WEBPACK_IMPORTED_MODULE_11__["Tw2VertexElement"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2Vector2Parameter"]; });
 
-/* harmony import */ var _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Tw2RuntimeInstanceData */ "./core/Tw2RuntimeInstanceData.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RuntimeInstanceData", function() { return _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_12__["Tw2RuntimeInstanceData"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2Vector3Parameter"]; });
 
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Tw2Error */ "./core/Tw2Error.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["Tw2Error"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector4Parameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2Vector4Parameter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWebglContext"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureParameter", function() { return _parameter__WEBPACK_IMPORTED_MODULE_7__["Tw2TextureParameter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWebxrNotSupported"]; });
+/* harmony import */ var _post__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./post */ "./core/post/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_8__["Tw2PostEffect"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWebxrDeviceNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectManager", function() { return _post__WEBPACK_IMPORTED_MODULE_8__["Tw2PostEffectManager"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWebxrRequestFailed"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectStep", function() { return _post__WEBPACK_IMPORTED_MODULE_8__["Tw2PostEffectStep"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWebxrSessionNotSupported"]; });
+/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./reader */ "./core/reader/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BinaryReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["Tw2BinaryReader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrStoreKeyReserved"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["Tw2BlackReader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrStoreValueInvalid"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["ErrBinaryFormat"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrStoreValueMissing"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["ErrBinaryObjectTypeNotFound"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrStoreInvalid"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["Tw2ObjectReader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrHTTPRequest"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CakeReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["Tw2CakeReader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrHTTPStatus"]; });
+/* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2EffectRes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBinaryFormat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderVersion", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrShaderVersion"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryReaderReadError", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBinaryReaderReadError"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderHeaderSize", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrShaderHeaderSize"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBinaryObjectTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderPermutationValue", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrShaderPermutationValue"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryMeshMissingParticleElement"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2GeometryRes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryMeshElementComponentsMissing"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryMeshMissingParticleElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryMeshAreaMissing"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryMeshElementComponentsMissing"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryMeshBoneNameInvalid"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryMeshAreaMissing"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryMeshEffectBinding"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryMeshBoneNameInvalid"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrGeometryFileType"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryMeshEffectBinding"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUnregistered", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrResourcePrefixUnregistered"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrGeometryFileType"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourcePrefixUndefined", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrResourcePrefixUndefined"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2LoadingObject"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUnregistered", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrResourceExtensionUnregistered"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2Resource"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceExtensionUndefined", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrResourceExtensionUndefined"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2Shader"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormat", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrResourceFormat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrShaderCompile"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderVersion", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrShaderVersion"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["ErrShaderLink"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderHeaderSize", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrShaderHeaderSize"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2TextureRes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderPermutationValue", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrShaderPermutationValue"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2VideoRes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrShaderCompile"]; });
+/* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./sampler */ "./core/sampler/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerState", function() { return _sampler__WEBPACK_IMPORTED_MODULE_11__["Tw2SamplerState"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrShaderLink"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return _sampler__WEBPACK_IMPORTED_MODULE_11__["Tw2SamplerOverride"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrDeclarationValueType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrDeclarationValueType"]; });
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./store */ "./core/store/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ConstructorStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSingletonInstantiation"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2GenericStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrInvalidDecoratorUsage", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrInvalidDecoratorUsage"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableTypeStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2VariableTypeStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrAbstractClass"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreVariableTypeNotFoundByValue", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["ErrStoreVariableTypeNotFoundByValue"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrAbstractMethod"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2VariableStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrFeatureNotImplemented"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourcePathStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ResourcePathStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrIndexBounds"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStorePathUndefined", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["ErrStorePathUndefined"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingValueUndefined", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBindingValueUndefined"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceDynamicPathStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ResourceDynamicPathStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBindingType"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceExtensionStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ResourceExtensionStore"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrBindingReference"]; });
+/* harmony import */ var _value__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./value */ "./core/value/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Float", function() { return _value__WEBPACK_IMPORTED_MODULE_13__["Tw2Float"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSOFHullNotFound"]; });
+/* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./vertex */ "./core/vertex/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexDeclaration", function() { return _vertex__WEBPACK_IMPORTED_MODULE_14__["Tw2VertexDeclaration"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSOFFactionNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexElement", function() { return _vertex__WEBPACK_IMPORTED_MODULE_14__["Tw2VertexElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSOFRaceNotFound"]; });
+/* harmony import */ var _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Tw2RuntimeInstanceData */ "./core/Tw2RuntimeInstanceData.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RuntimeInstanceData", function() { return _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_15__["Tw2RuntimeInstanceData"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSOFMaterialNotFound"]; });
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Tw2Error */ "./core/Tw2Error.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["Tw2Error"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrSOFPatternNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrDeclarationValueType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrDeclarationValueType"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_13__["ErrWrapped"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSingletonInstantiation"]; });
 
-/* harmony import */ var _Tw2Frustum__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Tw2Frustum */ "./core/Tw2Frustum.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return _Tw2Frustum__WEBPACK_IMPORTED_MODULE_14__["Tw2Frustum"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrInvalidDecoratorUsage", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrInvalidDecoratorUsage"]; });
 
-/* harmony import */ var _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Tw2RenderTarget */ "./core/Tw2RenderTarget.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderTarget", function() { return _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_15__["Tw2RenderTarget"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrAbstractClass"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrAbstractMethod"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrFeatureNotImplemented"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrIndexBounds"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWrapped"]; });
+
+/* harmony import */ var _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Tw2Frustum */ "./core/Tw2Frustum.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__["Tw2Frustum"]; });
+
+/* harmony import */ var _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Tw2RenderTarget */ "./core/Tw2RenderTarget.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderTarget", function() { return _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_18__["Tw2RenderTarget"]; });
+
+
+
 
 
 
@@ -22281,7 +25276,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    * @param animationController
@@ -27383,12 +30378,13 @@ class Tw2BinaryReader {
 /*!*********************************************!*\
   !*** ./core/reader/Tw2BlackBinaryReader.js ***!
   \*********************************************/
-/*! exports provided: Tw2BlackBinaryReader */
+/*! exports provided: Tw2BlackBinaryReader, ErrBinaryReaderReadError */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackBinaryReader", function() { return Tw2BlackBinaryReader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryReaderReadError", function() { return ErrBinaryReaderReadError; });
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 
 /**
@@ -27504,13 +30500,13 @@ class Tw2BlackBinaryReader {
 
   ReadDataView(n) {
     if (n < 0) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "Argument should be positive: got \"".concat(n, "\"")
       });
     }
 
     if (this.length < n) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "Argument is too big: remaining ".concat(this.length, ", got \"").concat(n, "\"")
       });
     }
@@ -27552,7 +30548,7 @@ class Tw2BlackBinaryReader {
     var value = this.ReadU16();
 
     if (value > this.stringTable.length) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "Reading string \"".concat(value, "\" but only ").concat(this.stringTable.length, " exist")
       });
     }
@@ -27590,7 +30586,7 @@ class Tw2BlackBinaryReader {
 
   ReadU16Array(n) {
     if (n < 0) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "Argument should be positive but got \"".concat(n, "\"")
       });
     }
@@ -27623,7 +30619,7 @@ class Tw2BlackBinaryReader {
 
   ReadU32Array(n) {
     if (n < 0) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "Argument should be positive: got ".concat(n)
       });
     }
@@ -27644,7 +30640,7 @@ class Tw2BlackBinaryReader {
 
   ExpectEnd(message) {
     if (this.length !== 0) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "".concat(message, ": expected 0 bytes remaining, got ").concat(this.length)
       });
     }
@@ -27689,7 +30685,7 @@ class Tw2BlackBinaryReader {
 
   static expect(actual, expected, message) {
     if (actual !== expected) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
+      throw new ErrBinaryReaderReadError({
         readError: "".concat(message, ": expected ").concat(expected, ", got ").concat(actual)
       });
     }
@@ -27701,8 +30697,18 @@ class Tw2BlackBinaryReader {
 
 
 }
+/**
+ * Throws on binary reader read errors
+ */
+
 Tw2BlackBinaryReader.stringDecoder = new TextDecoder("utf-8");
 Tw2BlackBinaryReader.wstringDecoder = new TextDecoder("utf-16le");
+class ErrBinaryReaderReadError extends _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error reading binary (%readError=undefined%)");
+  }
+
+}
 
 /***/ }),
 
@@ -27738,34 +30744,36 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2BlackBinaryReader */ "./core/reader/Tw2BlackBinaryReader.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+
 
 
 
 
 var TypeReader = {
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].UNKNOWN]: notImplemented,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].BOOLEAN]: boolean,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].PATH]: path,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].STRING]: string,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].BYTE]: byte,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].UINT]: uint,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].USHORT]: ushort,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].FLOAT]: float,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].VECTOR2]: vector2,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].VECTOR3]: vector3,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].VECTOR4]: vector4,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].QUATERNION]: vector4,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].MATRIX4]: matrix,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].COLOR]: color,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].OBJECT]: object,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].RAW]: rawObject,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].LIST]: array,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].ARRAY]: array,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].PLAIN]: rawObject,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].INDEX_BUFFER]: indexBuffer,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].ENUM]: enums
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].UNKNOWN]: notImplemented,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].BOOLEAN]: boolean,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].PATH]: path,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].STRING]: string,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].BYTE]: byte,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].UINT]: uint,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].USHORT]: ushort,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].FLOAT]: float,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].VECTOR2]: vector2,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].VECTOR3]: vector3,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].VECTOR4]: vector4,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].QUATERNION]: vector4,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].MATRIX4]: matrix,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].COLOR]: color,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].OBJECT]: object,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].RAW]: rawObject,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].LIST]: array,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].ARRAY]: array,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].PLAIN]: rawObject,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].INDEX_BUFFER]: indexBuffer,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__["Type"].ENUM]: enums
 };
 /**
  * Reads objects
@@ -27806,24 +30814,24 @@ function object(reader, id) {
     if (blackReaders[propertyName]) {
       _reader = blackReaders[propertyName];
     } // Defined as black meta data
-    else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("black", result, propertyName)) {
-        _reader = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("black", result, propertyName);
+    else if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["hasMetadata"])("black", result, propertyName)) {
+        _reader = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["getMetadata"])("black", result, propertyName);
       } // Use property type meta data
-      else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("type", result, propertyName)) {
-          var propertyType = Number(Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("type", result, propertyName));
+      else if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["hasMetadata"])("type", result, propertyName)) {
+          var propertyType = Number(Object(global_util__WEBPACK_IMPORTED_MODULE_3__["getMetadata"])("type", result, propertyName));
           _reader = TypeReader[propertyType];
         }
 
     if (!_reader) {
       if (debugEnabled) console.dir(result);
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+      throw new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryReaderReadError"]({
         readError: "Unknown property \"".concat(propertyName, "\" for \"").concat(type, "\"")
       });
     }
 
-    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(_reader)) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(_reader)) {
       if (debugEnabled) console.dir(result);
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+      throw new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryReaderReadError"]({
         readError: "Invalid reader for property \"".concat(propertyName, "\" for \"").concat(type, "\"")
       });
     }
@@ -27841,7 +30849,7 @@ function object(reader, id) {
       }
     } catch (err) {
       if (debugEnabled) console.dir(result);
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+      throw new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryReaderReadError"]({
         message: "".concat(propertyName, " (").concat(result.constructor.name, ") > ") + err.message
       });
     }
@@ -28072,7 +31080,7 @@ function structList(struct) {
  */
 
 function fromList(options) {
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(options)) {
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(options)) {
     options = {
       key: options
     };
@@ -28089,7 +31097,7 @@ function fromList(options) {
     // Allows rerouting of results to a new target property
     var target = parent[reroute ? reroute : property]; // Target must be a plain object
 
-    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(target)) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isPlain"])(target)) {
       throw new Error("Target is not a plain object");
     }
 
@@ -28151,10 +31159,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return Tw2BlackReader; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BlackBinaryReader */ "./core/reader/Tw2BlackBinaryReader.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ObjectReader */ "./core/reader/Tw2ObjectReader.js");
 /* harmony import */ var _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
 
 
 
@@ -28198,16 +31204,16 @@ class Tw2BlackReader {
   Initialize() {
     // Validate binary
     if (!this.data || !(this.data instanceof DataView)) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
+      throw new _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
         formatError: "expected DataView"
       });
     }
 
     var reader = new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__["Tw2BlackBinaryReader"](this.data, this);
-    if (reader.ReadU32() !== 0xB1ACF11E) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
+    if (reader.ReadU32() !== 0xB1ACF11E) throw new _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
       formatError: "wrong FOURCC"
     });
-    if (reader.ReadU32() !== 1) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
+    if (reader.ReadU32() !== 1) throw new _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
       formatError: "wrong version"
     }); // String table
 
@@ -28261,7 +31267,7 @@ class Tw2BlackReader {
         _type: type
       };
     } else {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]({
+      throw new _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]({
         type
       });
     }
@@ -28516,11 +31522,13 @@ Tw2CakeReader.Usage = {
 /*!****************************************!*\
   !*** ./core/reader/Tw2ObjectReader.js ***!
   \****************************************/
-/*! exports provided: Tw2ObjectReader */
+/*! exports provided: ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return ErrBinaryFormat; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return ErrBinaryObjectTypeNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return Tw2ObjectReader; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2BinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BinaryReader */ "./core/reader/Tw2BinaryReader.js");
@@ -28528,6 +31536,26 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Throws when xml is not a valid format
+ */
+
+class ErrBinaryFormat extends _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Invalid binary format (%formatError=undefined%)");
+  }
+
+}
+/**
+ * Throws when an xml object type is undefined
+ */
+
+class ErrBinaryObjectTypeNotFound extends _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Binary object type not found (%type%)");
+  }
+
+}
 /**
  * Tw2ObjectReader
  *
@@ -28567,7 +31595,7 @@ class Tw2ObjectReader {
 
   Initialize() {
     if (!Tw2ObjectReader.IsValidXML(this.xmlNode)) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
+      throw new ErrBinaryFormat({
         formatError: "Invalid binary, expected binred"
       });
     }
@@ -28626,7 +31654,7 @@ class Tw2ObjectReader {
       if (Tw2ObjectReader.DEBUG_ENABLED) {
         Constructor = Object;
       } else {
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]({
+        throw new ErrBinaryObjectTypeNotFound({
           type: data.type
         });
       }
@@ -28913,7 +31941,7 @@ Tw2ObjectReader.ElementTypes = {
 /*!******************************!*\
   !*** ./core/reader/index.js ***!
   \******************************/
-/*! exports provided: Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2CakeReader */
+/*! exports provided: Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28925,6 +31953,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return _Tw2BlackReader__WEBPACK_IMPORTED_MODULE_1__["Tw2BlackReader"]; });
 
 /* harmony import */ var _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ObjectReader */ "./core/reader/Tw2ObjectReader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _Tw2CakeReader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
@@ -28941,17 +31973,20 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************!*\
   !*** ./core/resource/Tw2EffectRes.js ***!
   \***************************************/
-/*! exports provided: Tw2EffectRes */
+/*! exports provided: Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return Tw2EffectRes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderVersion", function() { return ErrShaderVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderHeaderSize", function() { return ErrShaderHeaderSize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderPermutationValue", function() { return ErrShaderPermutationValue; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 var _dec, _class, _temp;
 
 
@@ -29025,7 +32060,7 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
     var version = reader.ReadUInt32();
 
     if (version < 2 || version > 8) {
-      this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderVersion"]({
+      this.OnError(new ErrShaderVersion({
         path: this.path,
         version
       }));
@@ -29038,7 +32073,7 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
       headerSize = reader.ReadUInt32();
 
       if (headerSize === 0) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderHeaderSize"]({
+        this.OnError(new ErrShaderHeaderSize({
           path: this.path
         }));
         return;
@@ -29080,7 +32115,7 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
       headerSize = reader.ReadUInt32();
 
       if (headerSize === 0) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderHeaderSize"]({
+        this.OnError(new ErrShaderHeaderSize({
           path: this.path
         }));
         return;
@@ -29127,7 +32162,7 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
         var valueName = options[permutation.name];
 
         if (!permutation.options.hasOwnProperty(valueName)) {
-          this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderPermutationValue"]({
+          this.OnError(new ErrShaderPermutationValue({
             path: this.path,
             permutation: permutation.name,
             valueName: valueName
@@ -29161,6 +32196,36 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
   }
 
 }, _temp)) || _class);
+/**
+ * Throws when an effect has an invalid shader version
+ */
+
+class ErrShaderVersion extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Invalid version of effect file (%version%)");
+  }
+
+}
+/**
+ * Throws when an effect has no header
+ */
+
+class ErrShaderHeaderSize extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Effect file contains no compiled effects");
+  }
+
+}
+/**
+ * Throws when a shader has an invalid permutation value
+ */
+
+class ErrShaderPermutationValue extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Invalid shader permutation value");
+  }
+
+}
 
 /***/ }),
 
@@ -29168,20 +32233,28 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
 /*!*****************************************!*\
   !*** ./core/resource/Tw2GeometryRes.js ***!
   \*****************************************/
-/*! exports provided: Tw2GeometryRes */
+/*! exports provided: Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return Tw2GeometryRes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return ErrGeometryMeshMissingParticleElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return ErrGeometryMeshElementComponentsMissing; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return ErrGeometryMeshAreaMissing; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return ErrGeometryMeshBoneNameInvalid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return ErrGeometryMeshEffectBinding; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return ErrGeometryFileType; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../geometry */ "./core/geometry/index.js");
-/* harmony import */ var core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/reader/Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
+/* harmony import */ var core_engine__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/engine */ "./core/engine/index.js");
+/* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../geometry */ "./core/geometry/index.js");
+/* harmony import */ var core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core/reader/Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
 var _dec, _class, _temp;
+
 
 
 
@@ -29325,7 +32398,10 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
+        throw new core_engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
+          format: this._extension,
+          reason: "Unexpected extension"
+        });
     }
   }
   /**
@@ -29354,7 +32430,10 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
+        throw new core_engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
+          format: this._extension,
+          reason: "Unexpected extension"
+        });
     }
   }
   /**
@@ -29369,7 +32448,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
 
   PrepareCAKE(data) {
     var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-        result = new core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_6__["Tw2CakeReader"](data);
+        result = new core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_7__["Tw2CakeReader"](data);
     var {
       bufferData,
       indexData,
@@ -29378,7 +32457,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
       name = this.path
     } = result; // TODO: Add support for more than one mesh
 
-    var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMesh"]();
+    var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryMesh"]();
     this.meshes[0] = mesh;
     mesh.name = name;
     mesh.declaration = declaration;
@@ -29397,7 +32476,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         start,
         count
       } = areas[i];
-      var area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
+      var area = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryMeshArea"]();
       area.name = _name;
       area.start = start;
       area.count = count;
@@ -29452,7 +32531,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
     var meshCount = reader.ReadUInt8();
 
     for (var meshIx = 0; meshIx < meshCount; ++meshIx) {
-      var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMesh"]();
+      var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryMesh"]();
       mesh.name = reader.ReadString();
       var buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.declaration, this.path);
 
@@ -29479,7 +32558,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
       var areaCount = reader.ReadUInt8();
 
       for (var i = 0; i < areaCount; ++i) {
-        var area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
+        var area = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryMeshArea"]();
         mesh.areas.push(area);
         area.name = reader.ReadString();
         area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
@@ -29513,7 +32592,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         mesh.blendShapes = [];
 
         for (var _i2 = 0; _i2 < annotationSetCount; ++_i2) {
-          mesh.blendShapes[_i2] = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2BlendShapeData"]();
+          mesh.blendShapes[_i2] = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2BlendShapeData"]();
           mesh.blendShapes[_i2].name = reader.ReadString();
           mesh.blendShapes[_i2].buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.blendShapes[_i2].declaration, this.path);
           mesh.blendShapes[_i2].indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
@@ -29547,13 +32626,13 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
     var modelCount = reader.ReadUInt8();
 
     for (var modelIx = 0; modelIx < modelCount; ++modelIx) {
-      var model = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryModel"]();
+      var model = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryModel"]();
       model.name = reader.ReadString();
-      model.skeleton = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometrySkeleton"]();
+      model.skeleton = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometrySkeleton"]();
       var boneCount = reader.ReadUInt8();
 
       for (var _i3 = 0; _i3 < boneCount; ++_i3) {
-        var bone = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryBone"]();
+        var bone = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryBone"]();
         bone.name = reader.ReadString();
         var flags = reader.ReadUInt8();
         bone.parentIndex = reader.ReadUInt8();
@@ -29610,13 +32689,13 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
     var animationCount = reader.ReadUInt8();
 
     for (var _i6 = 0; _i6 < animationCount; ++_i6) {
-      var animation = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryAnimation"]();
+      var animation = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryAnimation"]();
       animation.name = reader.ReadString();
       animation.duration = reader.ReadFloat32();
       var groupCount = reader.ReadUInt8();
 
       for (var j = 0; j < groupCount; ++j) {
-        var group = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTrackGroup"]();
+        var group = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryTrackGroup"]();
         group.name = reader.ReadString();
 
         for (var m = 0; m < this.models.length; ++m) {
@@ -29629,7 +32708,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         var transformTrackCount = reader.ReadUInt8();
 
         for (var _k = 0; _k < transformTrackCount; ++_k) {
-          var track = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTransformTrack"]();
+          var track = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryTransformTrack"]();
           track.name = reader.ReadString();
           track.orientation = Tw2GeometryRes.ReadCurve(reader);
           track.position = Tw2GeometryRes.ReadCurve(reader);
@@ -29681,7 +32760,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
 
 
   static BindMeshToModel(mesh, model, res) {
-    var binding = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshBinding"]();
+    var binding = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryMeshBinding"]();
     binding.mesh = mesh;
 
     for (var b = 0; b < binding.mesh.boneBindings.length; ++b) {
@@ -29689,7 +32768,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
           bone = model.FindBoneByName(name);
 
       if (!bone) {
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshBoneNameInvalid"]({
+        throw new ErrGeometryMeshBoneNameInvalid({
           path: res.path,
           mesh: binding.mesh.name,
           bone: name,
@@ -29746,7 +32825,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
             area = mesh.areas[i + 1 + start];
 
             if (!area) {
-              this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+              this.OnError(new ErrGeometryMeshAreaMissing({
                 path: this.path,
                 areaIndex: i + 1 + start
               }));
@@ -29793,7 +32872,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
       var passInput = effect.GetPassInput(technique, pass);
 
       if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride)) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshEffectBinding"]({
+        this.OnError(new ErrGeometryMeshEffectBinding({
           path: this.path,
           pass: pass,
           passInput: passInput,
@@ -29814,7 +32893,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
             area = mesh.areas[i + 1 + start];
 
             if (!area) {
-              this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+              this.OnError(new ErrGeometryMeshAreaMissing({
                 path: this.path,
                 areaIndex: i + 1 + start
               }));
@@ -29859,7 +32938,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
       var passInput = effect.GetPassInput(technique, pass);
 
       if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride)) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshEffectBinding"]({
+        this.OnError(new ErrGeometryMeshEffectBinding({
           path: this.path,
           pass: pass,
           passInput: passInput,
@@ -29880,7 +32959,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
             area = mesh.areas[i + 1 + start];
 
             if (!area) {
-              this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+              this.OnError(new ErrGeometryMeshAreaMissing({
                 path: this.path,
                 areaIndex: i + 1 + start
               }));
@@ -30065,7 +33144,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
             break;
 
           default:
-            throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryFileType"]({
+            throw new ErrGeometryFileType({
               path: path,
               key: "fileType",
               value: el.fileType & 0xf
@@ -30115,7 +33194,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
   static ReadCurve(reader) {
     var type = reader.ReadUInt8();
     if (type === 0) return null;
-    var curve = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryCurve"]();
+    var curve = new _geometry__WEBPACK_IMPORTED_MODULE_6__["Tw2GeometryCurve"]();
     curve.dimension = reader.ReadUInt8();
     curve.degree = reader.ReadUInt8();
     var knotCount = reader.ReadUInt32();
@@ -30136,6 +33215,66 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
   }
 
 }, _temp)) || _class);
+/**
+ * Throws when a geometry mesh lacks an element required for a particle system
+ */
+
+class ErrGeometryMeshMissingParticleElement extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Input geometry mesh lacks element required by particle system");
+  }
+
+}
+/**
+ * Throws when a geometry mesh element doesn't have the required number of components
+ */
+
+class ErrGeometryMeshElementComponentsMissing extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Input geometry mesh elements do not have the required number of components");
+  }
+
+}
+/**
+ * Throws when a geometry mesh area is missing
+ */
+
+class ErrGeometryMeshAreaMissing extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Geometry mesh missing expected area at index %areaIndex%");
+  }
+
+}
+/**
+ * Throws when a geometry mesh has an invalid bone name for a model
+ */
+
+class ErrGeometryMeshBoneNameInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Geometry mesh has invalid bone name for model");
+  }
+
+}
+/**
+ * Throws when there is an error binding a geometry mesh to an effect
+ */
+
+class ErrGeometryMeshEffectBinding extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error binding geometry mesh to effect");
+  }
+
+}
+/**
+ * Throws when a geometry mesh has an invalid file type
+ */
+
+class ErrGeometryFileType extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Invalid geometry file type (%fileType%)");
+  }
+
+}
 
 /***/ }),
 
@@ -30153,7 +33292,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _reader_Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../reader/Tw2ObjectReader */ "./core/reader/Tw2ObjectReader.js");
 /* harmony import */ var _reader_Tw2BlackReader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../reader/Tw2BlackReader */ "./core/reader/Tw2BlackReader.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
 
 
 
@@ -30226,7 +33365,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
           break;
 
         default:
-          throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrResourceExtensionUnregistered"]({
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceExtensionUnregistered"]({
             extension: ext
           });
       }
@@ -30316,7 +33455,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/class/Tw2Notifications */ "./global/class/Tw2Notifications.js");
+/* harmony import */ var _class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../class/Tw2Notifications */ "./core/class/Tw2Notifications.js");
 var _dec, _class, _class2, _temp;
 
 
@@ -30335,7 +33474,7 @@ var _dec, _class, _class2, _temp;
  * @property {Set} _watchers
  */
 
-var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends _class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -30737,18 +33876,20 @@ Tw2Resource.prototype.DoCustomLoad = null;
 /*!************************************!*\
   !*** ./core/resource/Tw2Shader.js ***!
   \************************************/
-/*! exports provided: Tw2Shader */
+/*! exports provided: Tw2Shader, ErrShaderCompile, ErrShaderLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return Tw2Shader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return ErrShaderCompile; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return ErrShaderLink; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json");
-var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json", 1);
+/* harmony import */ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json");
+var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_3___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json", 1);
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 var _dec, _class, _class2, _temp;
 
 
@@ -31470,7 +34611,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       if (!skipError) {
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderCompile"]({
+        throw new ErrShaderCompile({
           path: path,
           shaderType: stageType === 0 ? "vertex" : "fragment",
           infoLog: gl.getShaderInfoLog(shader)
@@ -31503,7 +34644,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
     if (!gl.getProgramParameter(program.program, gl.LINK_STATUS)) {
       if (!skipError) {
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderLink"]({
+        throw new ErrShaderLink({
           path: path,
           infoLog: gl.getProgramInfoLog(program.program)
         });
@@ -31574,7 +34715,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
   static InspectShaderCode(code, path) {
     var fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
-        overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__[fileName];
+        overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_3__[fileName];
     if (!overrides) return code;
 
     function escapeRegExp(string) {
@@ -31600,6 +34741,26 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
 
 }, _class2.LinearColor = ["Linear red", "Linear green", "Linear blue", "Linear alpha"], _class2.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"], _class2.DEBUG_ENABLED = false, _temp)) || _class);
+/**
+ * Throws when a shader cannot compile
+ */
+
+class ErrShaderCompile extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error compiling %shaderType% shader (%infoLog%)");
+  }
+
+}
+/**
+ * Throws when unable to link a vertex shader and fragment shader
+ */
+
+class ErrShaderLink extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error linking shaders");
+  }
+
+}
 
 /***/ }),
 
@@ -31614,7 +34775,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return Tw2TextureRes; });
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _class, _temp;
 
@@ -31710,7 +34871,10 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
       case "dds":
         // Ensure we have data to work with
         if (!data.byteLength) {
-          throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, file is empty");
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatInvalid"]({
+            format: "DDS",
+            reason: "file is empty"
+          });
         }
 
         var ext = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
@@ -31723,9 +34887,18 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
         //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
         // Check compatibility
 
-        if (!ext) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Compressed textures not supported by your device");
-        if (!isMagic) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing magic number");
-        if (!isFourCC) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing FourCC code");
+        if (!ext) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatUnsupported"]({
+          format: "DDS",
+          reason: "device not supported"
+        });
+        if (!isMagic) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatInvalid"]({
+          format: "DDS",
+          reason: "missing magic number"
+        });
+        if (!isFourCC) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatInvalid"]({
+          format: "DDS",
+          reason: "missing FourCC code"
+        });
         var width = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]],
             height = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_HEIGHT"]],
             dataOffset = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_SIZE"]] + 4,
@@ -31750,7 +34923,10 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
 
           default:
             var code = Tw2TextureRes.Int32ToFourCC(fourCC);
-            throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS format: ".concat(code));
+            throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatInvalid"]({
+              format: "DDS",
+              reason: "Invalid type ".concat(code)
+            });
         }
 
         this.hasMipMaps = mipmaps > 1;
@@ -31760,8 +34936,8 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
 
         if (this.isCube) {
           // TODO: Add dds cube map support
-          throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
-            feature: "DDS cube maps"
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatUnsupported"]({
+            format: "DDS cube maps"
           });
         } else {
           this.texture = gl.createTexture();
@@ -31784,7 +34960,10 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormatInvalid"]({
+          format: this._extension,
+          reason: "Unexpected extension"
+        });
     }
 
     this._isAttached = false;
@@ -31822,7 +35001,7 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
         return true;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceExtensionUnregistered"]({
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrResourceExtensionUnregistered"]({
           path,
           extension
         });
@@ -31837,7 +35016,7 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw
 
     image.onerror = () => {
       global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
-      this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrHTTPRequest"]({
+      this.OnError(new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["ErrHTTPRequest"]({
         path
       }));
     };
@@ -32022,7 +35201,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return Tw2VideoRes; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
 var _dec, _class, _temp;
 
 
@@ -32134,7 +35313,7 @@ var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2V
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrResourceExtensionUnregistered"]({
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__["ErrResourceExtensionUnregistered"]({
           path: this.path,
           extension: this._extension
         });
@@ -32160,7 +35339,7 @@ var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2V
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrResourceExtensionUnregistered"]({
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__["ErrResourceExtensionUnregistered"]({
           path,
           extension
         });
@@ -32177,7 +35356,7 @@ var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2V
     this.video.onerror = () => {
       global__WEBPACK_IMPORTED_MODULE_0__["resMan"].RemovePendingLoad(path);
       this.video = null;
-      this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrHTTPRequest"]({
+      this.OnError(new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__["ErrHTTPRequest"]({
         path
       }));
     };
@@ -32282,7 +35461,7 @@ var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2V
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -32290,8 +35469,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2EffectRes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2EffectRes */ "./core/resource/Tw2EffectRes.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _Tw2EffectRes__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderVersion", function() { return _Tw2EffectRes__WEBPACK_IMPORTED_MODULE_0__["ErrShaderVersion"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderHeaderSize", function() { return _Tw2EffectRes__WEBPACK_IMPORTED_MODULE_0__["ErrShaderHeaderSize"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderPermutationValue", function() { return _Tw2EffectRes__WEBPACK_IMPORTED_MODULE_0__["ErrShaderPermutationValue"]; });
+
 /* harmony import */ var _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2GeometryRes */ "./core/resource/Tw2GeometryRes.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["Tw2GeometryRes"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshMissingParticleElement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshElementComponentsMissing"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshAreaMissing"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshBoneNameInvalid"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshEffectBinding"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return _Tw2GeometryRes__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryFileType"]; });
 
 /* harmony import */ var _Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_2__["Tw2LoadingObject"]; });
@@ -32301,6 +35498,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _Tw2Shader__WEBPACK_IMPORTED_MODULE_4__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return _Tw2Shader__WEBPACK_IMPORTED_MODULE_4__["ErrShaderCompile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return _Tw2Shader__WEBPACK_IMPORTED_MODULE_4__["ErrShaderLink"]; });
 
 /* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureRes"]; });
@@ -32782,6 +35983,710 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2SamplerOverride */ "./core/sampler/Tw2SamplerOverride.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return _Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerOverride"]; });
+
+
+
+
+/***/ }),
+
+/***/ "./core/store/Tw2ConstructorStore.js":
+/*!*******************************************!*\
+  !*** ./core/store/Tw2ConstructorStore.js ***!
+  \*******************************************/
+/*! exports provided: Tw2ConstructorStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return Tw2ConstructorStore; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+
+class Tw2ConstructorStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Constructor
+   * @param {Class|Function} Constructor
+   */
+  constructor(Constructor) {
+    super();
+    this.debug = true;
+    _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this).Constructor = Constructor;
+  }
+  /**
+   * Checks value validity
+   * @param {Function} value
+   * @returns {Boolean}
+   */
+
+
+  static isValue(value) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value);
+  }
+  /**
+   * Function called before values are set
+   * @param {Class} Ctor
+   * @param {String} key
+   * @param {Tw2ConstructorStore} source
+   */
+
+
+  static onBefore(Ctor, key, source) {
+    var {
+      Constructor
+    } = _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(source);
+    if (Constructor) Constructor.prototype[key] = Ctor;
+
+    if (Ctor.hasOwnProperty("DEBUG_MODE")) {
+      Reflect.defineProperty(Ctor, "DEBUG_MODE", {
+        get: () => source.debug
+      });
+    }
+  }
+  /**
+   * Identifies stores that use classes
+   * @type {boolean}
+   */
+
+
+}
+Tw2ConstructorStore.isConstructorStore = true;
+Tw2ConstructorStore.storeName = "Constructor";
+
+/***/ }),
+
+/***/ "./core/store/Tw2GenericStore.js":
+/*!***************************************!*\
+  !*** ./core/store/Tw2GenericStore.js ***!
+  \***************************************/
+/*! exports provided: STORE, Tw2GenericStore, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreKeyUnregistered */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "STORE", function() { return STORE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return Tw2GenericStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return ErrStoreKeyReserved; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return ErrStoreValueInvalid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyUnregistered", function() { return ErrStoreKeyUnregistered; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+
+
+
+var STORE = new WeakMap();
+/**
+ * Generic store
+ */
+
+class Tw2GenericStore extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+  /**
+   * Constructor
+   */
+  constructor() {
+    super();
+    STORE.set(this, {
+      map: new Map()
+    });
+  }
+  /**
+   * Sets a store key value
+   * @param {*} key
+   * @param {*} value
+   * @returns {*}
+   */
+
+
+  Set(key, value) {
+    var Ctor = this.constructor;
+    var {
+      storeName
+    } = Ctor;
+
+    if (Ctor.isValue && !Ctor.isValue(value)) {
+      throw new ErrStoreValueInvalid({
+        storeName,
+        key
+      });
+    }
+
+    if (Ctor.restrictedKeys && Ctor.restrictedKeys.includes(key)) {
+      throw new ErrStoreKeyReserved({
+        storeName,
+        key
+      });
+    }
+
+    if (Ctor.onBefore) {
+      var _value = Ctor.onBefore(value, key, this);
+
+      if (_value) value = _value;
+    }
+
+    STORE.get(this).map.set(key, value);
+    this.emit("stored", {
+      key,
+      value
+    });
+    return value;
+  }
+  /**
+   * Gets a store's value by it's key
+   * @param {*} key
+   * @returns {*} value
+   */
+
+
+  Get(key) {
+    var {
+      isConstructorStore,
+      storeName
+    } = this.constructor;
+    var [usedKey, value] = getUsedKey(this, key, isConstructorStore); // Keep track of missing values
+
+    if (!value) {
+      var p = STORE.get(this);
+      if (!p.missing) p.missing = [];
+
+      if (!p.missing.includes(key)) {
+        p.missing.push(key);
+        this.emit("missing", {
+          key
+        });
+      }
+
+      throw new ErrStoreKeyUnregistered({
+        storeName,
+        key
+      });
+    }
+
+    if (usedKey !== key) {
+      this.emit("substitute", {
+        original: key,
+        substitute: usedKey
+      });
+    }
+
+    return value;
+  }
+  /**
+   * Checks if a store key exists
+   * @param {*} key
+   * @returns {boolean}
+   */
+
+
+  Has(key) {
+    return !!getUsedKey(this, key, this.constructor.isConstructorStore)[1];
+  }
+  /**
+   * Registers store key: values from an object
+   * @param opt
+   */
+
+
+  Register(opt) {
+    opt = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["toArray"])(opt);
+
+    for (var i = 0; i < opt.length; i++) {
+      for (var key in opt[i]) {
+        if (opt[i].hasOwnProperty(key)) {
+          this.Set(key, opt[i][key]);
+        }
+      }
+    }
+  }
+  /**
+   * Gets missing keys
+   * @returns {Array}
+   */
+
+
+  GetMissing() {
+    var {
+      missing
+    } = STORE.get(this);
+    return missing ? Array.from(missing) : [];
+  }
+  /**
+   * Checks if a value is a valid store value
+   * @param {*} value
+   * @returns {boolean}
+   */
+
+
+  static isValue(value) {
+    return true;
+  }
+  /**
+   * Optional function called before values are set
+   * @type {Function|null}
+   */
+
+
+}
+/**
+ * Handles substituted keys
+ * @param {Tw2GenericStore} source
+ * @param {String} key
+ * @param {Boolean} isConstructorStore
+ * @returns {Array}
+ */
+
+Tw2GenericStore.onBefore = null;
+Tw2GenericStore.isConstructorStore = false;
+Tw2GenericStore.restrictedKeys = null;
+Tw2GenericStore.storeName = "Generic";
+
+function getUsedKey(source, key, isConstructorStore) {
+  var {
+    map
+  } = STORE.get(source);
+
+  if (map.has(key)) {
+    return [key, map.get(key)];
+  }
+
+  if (isConstructorStore && Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isTr2OrTri"])(key)) {
+    var substituteKey = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["toTw2"])(key);
+
+    if (map.has(substituteKey)) {
+      return [substituteKey, map.get(substituteKey)];
+    }
+  }
+
+  return [key];
+}
+/**
+ * Throws when trying to register a reserved store key
+ */
+
+
+class ErrStoreKeyReserved extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "'%storeName%' store key restricted (%key%)");
+  }
+
+}
+/**
+ * Throws when trying to register an invalid store value
+ */
+
+class ErrStoreValueInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "'%storeName%' store value invalid (%key%)");
+  }
+
+}
+/**
+ * Throws when trying to retrieve a store value that doesn't exist
+ */
+
+class ErrStoreKeyUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "'%storeName%' store key is unregistered (%key%)");
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/store/Tw2ResourceDynamicPathStore.js":
+/*!***************************************************!*\
+  !*** ./core/store/Tw2ResourceDynamicPathStore.js ***!
+  \***************************************************/
+/*! exports provided: Tw2ResourceDynamicPathStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceDynamicPathStore", function() { return Tw2ResourceDynamicPathStore; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var _Tw2ResourcePathStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ResourcePathStore */ "./core/store/Tw2ResourcePathStore.js");
+
+
+
+class Tw2ResourceDynamicPathStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Checks if a value is a valid store value
+   * @param {*} value
+   * @returns {boolean}
+   */
+  static isValue(value) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(value);
+  }
+  /**
+   * Fires before setting a store key value
+   * @param {Array} paths
+   * @returns {Array}
+   */
+
+
+  static onBefore(paths) {
+    paths = Array.from(paths);
+
+    for (var i = 0; i < paths.length; i++) {
+      paths[i] = _Tw2ResourcePathStore__WEBPACK_IMPORTED_MODULE_2__["Tw2ResourcePathStore"].normalizePath(paths[i]);
+    }
+
+    return paths;
+  }
+  /**
+   * The store's name
+   * @type {string}
+   */
+
+
+}
+Tw2ResourceDynamicPathStore.storeName = "Dynamic resource path";
+
+/***/ }),
+
+/***/ "./core/store/Tw2ResourceExtensionStore.js":
+/*!*************************************************!*\
+  !*** ./core/store/Tw2ResourceExtensionStore.js ***!
+  \*************************************************/
+/*! exports provided: Tw2ResourceExtensionStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceExtensionStore", function() { return Tw2ResourceExtensionStore; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+
+class Tw2ResourceExtensionStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Checks if a value is a valid store value
+   * @param {*} value
+   * @returns {boolean}
+   */
+  static isValue(value) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value);
+  }
+  /**
+   * Identifies stores that use classes
+   * @type {boolean}
+   */
+
+
+}
+Tw2ResourceExtensionStore.isConstructorStore = true;
+Tw2ResourceExtensionStore.storeName = "Resource extension";
+
+/***/ }),
+
+/***/ "./core/store/Tw2ResourcePathStore.js":
+/*!********************************************!*\
+  !*** ./core/store/Tw2ResourcePathStore.js ***!
+  \********************************************/
+/*! exports provided: Tw2ResourcePathStore, ErrStorePathUndefined */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourcePathStore", function() { return Tw2ResourcePathStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStorePathUndefined", function() { return ErrStorePathUndefined; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+
+
+
+class Tw2ResourcePathStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Gets a full url from a path
+   * @param {String} path
+   * @returns {String}
+   */
+  GetURL(path) {
+    path = Tw2ResourcePathStore.normalizePath(path);
+    var prefixIndex = path.indexOf(":/");
+
+    if (prefixIndex === -1) {
+      throw new ErrStorePathUndefined({
+        path
+      });
+    }
+
+    var prefix = path.substr(0, prefixIndex);
+
+    if (prefix === "http" || prefix === "https") {
+      return path;
+    }
+
+    return this.GetPath(prefix) + path.substr(prefixIndex + 2);
+  }
+  /**
+   * Checks if a value is a valid key value
+   * @param {String} value
+   * @returns {Boolean}
+   */
+
+
+  static isValue(value) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(value);
+  }
+  /**
+   * Fires before setting a store key's value
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  static onBefore(path) {
+    if (path.charAt(path.length - 1) !== "/") path += "/";
+    return this.normalizePath(path);
+  }
+  /**
+   * Normalizes a path
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  static normalizePath(path) {
+    path = path.toLowerCase();
+    path = path.replace("\\", "/");
+    return path;
+  }
+  /**
+   * The store's name
+   * @type {string}
+   */
+
+
+}
+/**
+ * Throws when a resource path is undefined
+ */
+
+Tw2ResourcePathStore.storeName = "Resource path";
+Tw2ResourcePathStore.restrictedKeys = ["rgba"];
+class ErrStorePathUndefined extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Undefined resource prefix");
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/store/Tw2VariableStore.js":
+/*!****************************************!*\
+  !*** ./core/store/Tw2VariableStore.js ***!
+  \****************************************/
+/*! exports provided: Tw2VariableStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableStore", function() { return Tw2VariableStore; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+
+class Tw2VariableStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Constructor
+   * @param {Tw2VariableTypeStore} typeStore
+   */
+  constructor(typeStore) {
+    super();
+    _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this).typeStore = typeStore;
+  }
+  /**
+   * Sets a store key value
+   * @param {String}  key
+   * @param {*} value
+   * @returns {Function}
+   */
+
+
+  Set(key, value) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(value)) {
+      value = this.Create(key, value);
+    }
+
+    return super.Set(key, value);
+  }
+  /**
+   * Creates a variable from a value
+   * @param {String} name
+   * @param {Object|String|Number|Float32Array}value
+   * @param {Function|Class} [Type]
+   * @returns {*}
+   */
+
+
+  Create(name, value, Type) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(value)) {
+      Type = value["Type"] || value["type"];
+      value = value["value"];
+    }
+
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(Type)) return new Type(name, value);
+    var {
+      typeStore
+    } = _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this);
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(Type)) Type = typeStore.Get(Type);
+    if (!Type) Type = typeStore.GetByValue(value);
+    return new Type(name, value);
+  }
+  /**
+   * Sets a variables value
+   * @param {String} name
+   * @param {*} value
+   * @param {Object} [opt]
+   */
+
+
+  SetValue(name, value, opt) {
+    var variable = this.Get(name);
+    return variable.SetValue(value, opt);
+  }
+  /**
+   * Gets a variable's value
+   * @param {String} name
+   * @returns {Number|?String|Array|Float32Array}
+   */
+
+
+  GetValue(name) {
+    var variable = this.Get(name);
+    return variable.GetValue(name);
+  }
+  /**
+   * Checks if a value is a valid store value
+   * @param {*} value
+   * @returns {boolean}
+   */
+
+
+  static isValue(value) {
+    return value && Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value.GetValue) && Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value.SetValue);
+  }
+  /**
+   * The store's name
+   * @type {string}
+   */
+
+
+}
+Tw2VariableStore.storeName = "Variable";
+
+/***/ }),
+
+/***/ "./core/store/Tw2VariableTypeStore.js":
+/*!********************************************!*\
+  !*** ./core/store/Tw2VariableTypeStore.js ***!
+  \********************************************/
+/*! exports provided: Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableTypeStore", function() { return Tw2VariableTypeStore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreVariableTypeNotFoundByValue", function() { return ErrStoreVariableTypeNotFoundByValue; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+
+
+
+class Tw2VariableTypeStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
+  /**
+   * Gets a type by value
+   * @param {*} value
+   * @returns {Class|Function}
+   */
+  GetByValue(value) {
+    var {
+      map
+    } = _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this);
+
+    for (var [key, Ctor] of map) {
+      if ("isValue" in Ctor && Ctor.isValue(value)) return Ctor;
+    }
+
+    throw new ErrStoreVariableTypeNotFoundByValue({
+      value
+    });
+  }
+  /**
+   * Checks if a value is a valid store value
+   * @param {*} value
+   * @returns {boolean}
+   */
+
+
+  static isValue(value) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value);
+  }
+  /**
+   * Identifies stores that use classes
+   * @type {boolean}
+   */
+
+
+}
+/**
+ * Throws when a variable type cannot be identified
+ */
+
+Tw2VariableTypeStore.isConstructorStore = true;
+Tw2VariableTypeStore.storeName = "Variable Type";
+class ErrStoreVariableTypeNotFoundByValue extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Could not identify variable type from value (%value%)");
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/store/index.js":
+/*!*****************************!*\
+  !*** ./core/store/index.js ***!
+  \*****************************/
+/*! exports provided: Tw2ConstructorStore, Tw2GenericStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ConstructorStore */ "./core/store/Tw2ConstructorStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_0__["Tw2ConstructorStore"]; });
+
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_1__["Tw2GenericStore"]; });
+
+/* harmony import */ var _Tw2VariableTypeStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2VariableTypeStore */ "./core/store/Tw2VariableTypeStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableTypeStore", function() { return _Tw2VariableTypeStore__WEBPACK_IMPORTED_MODULE_2__["Tw2VariableTypeStore"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreVariableTypeNotFoundByValue", function() { return _Tw2VariableTypeStore__WEBPACK_IMPORTED_MODULE_2__["ErrStoreVariableTypeNotFoundByValue"]; });
+
+/* harmony import */ var _Tw2VariableStore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2VariableStore */ "./core/store/Tw2VariableStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableStore", function() { return _Tw2VariableStore__WEBPACK_IMPORTED_MODULE_3__["Tw2VariableStore"]; });
+
+/* harmony import */ var _Tw2ResourcePathStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ResourcePathStore */ "./core/store/Tw2ResourcePathStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourcePathStore", function() { return _Tw2ResourcePathStore__WEBPACK_IMPORTED_MODULE_4__["Tw2ResourcePathStore"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStorePathUndefined", function() { return _Tw2ResourcePathStore__WEBPACK_IMPORTED_MODULE_4__["ErrStorePathUndefined"]; });
+
+/* harmony import */ var _Tw2ResourceDynamicPathStore__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ResourceDynamicPathStore */ "./core/store/Tw2ResourceDynamicPathStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceDynamicPathStore", function() { return _Tw2ResourceDynamicPathStore__WEBPACK_IMPORTED_MODULE_5__["Tw2ResourceDynamicPathStore"]; });
+
+/* harmony import */ var _Tw2ResourceExtensionStore__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ResourceExtensionStore */ "./core/store/Tw2ResourceExtensionStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResourceExtensionStore", function() { return _Tw2ResourceExtensionStore__WEBPACK_IMPORTED_MODULE_6__["Tw2ResourceExtensionStore"]; });
+
+
+
+
+
 
 
 
@@ -33523,12 +37428,15 @@ var Tw2CurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2C
 /*!**********************************!*\
   !*** ./curve/Tw2ValueBinding.js ***!
   \**********************************/
-/*! exports provided: Tw2ValueBinding */
+/*! exports provided: Tw2ValueBinding, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ValueBinding", function() { return Tw2ValueBinding; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingValueUndefined", function() { return ErrBindingValueUndefined; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return ErrBindingType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return ErrBindingReference; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
@@ -33713,7 +37621,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
         dest = this.destinationObject[this.destinationAttribute]; // Targets must be defined
 
     if (src === undefined) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
+      throw new ErrBindingValueUndefined({
         name: this.name,
         object: "source",
         property: this.sourceAttribute
@@ -33721,7 +37629,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
     }
 
     if (dest === undefined) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
+      throw new ErrBindingValueUndefined({
         name: this.name,
         object: "destination",
         property: this.destinationAttribute
@@ -33754,7 +37662,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
     }
 
     if (!copyFunc) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingType"]({
+      throw new ErrBindingType({
         name: this.name
       });
     }
@@ -34097,6 +38005,36 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
     return null;
   }
 })), _class2)) || _class);
+/**
+ * Throws when there's an error binding an object
+ */
+
+class ErrBindingValueUndefined extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
+  }
+
+}
+/**
+ * Throws when there's an error binding a value
+ */
+
+class ErrBindingType extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error binding '%name=unknown%', cannot identify binding type");
+  }
+
+}
+/**
+ * Throws when trying to bind an object by it's id and it can't be found
+ */
+
+class ErrBindingReference extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Error binding '%name=unknown%', could not find '%object%' object reference");
+  }
+
+}
 
 /***/ }),
 
@@ -37801,7 +41739,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************!*\
   !*** ./curve/index.js ***!
   \************************/
-/*! exports provided: Tw2CurveSet, Tw2ValueBinding, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
+/*! exports provided: Tw2CurveSet, Tw2ValueBinding, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37811,6 +41749,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ValueBinding */ "./curve/Tw2ValueBinding.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ValueBinding", function() { return _Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_1__["Tw2ValueBinding"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingValueUndefined", function() { return _Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_1__["ErrBindingValueUndefined"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return _Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_1__["ErrBindingType"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return _Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_1__["ErrBindingReference"]; });
 
 /* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./curve */ "./curve/curve/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2EventKey"]; });
@@ -53373,992 +57317,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./global/Tw2Library.js":
-/*!******************************!*\
-  !*** ./global/Tw2Library.js ***!
-  \******************************/
-/*! exports provided: tw2, resMan, device */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return tw2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta */ "./global/meta/index.js");
-/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./class */ "./global/class/index.js");
-/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
-/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-var _class, _temp;
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-
-/**
- *
- * @param {Tw2ResMan} resMan
- * @param {Tw2Device} device
- * @param {Tw2Logger} logger
- * @param {Object} math
- * @param {Object} util
- * @param {Object} consts
- * @param {Object} _store
- * @param {Boolean} _debug
- */
-
-var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class = (_temp = class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"] {
-  /**
-   * Alias for device.gl
-   * @returns {*}
-   */
-  get gl() {
-    return this.device.gl;
-  }
-  /**
-   * Alias for device.now
-   * @returns {number}
-   */
-
-
-  get now() {
-    return this.device.now;
-  }
-  /**
-   * Alias for device.frameCounter
-   * @returns {number}
-   */
-
-
-  get frame() {
-    return this.device.frameCounter;
-  }
-  /**
-   * Alias for device.canvas
-   * @returns {*}
-   */
-
-
-  get canvas() {
-    return this.device.canvas;
-  }
-  /**
-   * Alias for device.dt
-   * @returns {number}
-   */
-
-
-  get dt() {
-    return this.device.dt;
-  }
-  /**
-   * Alias for device.viewportWidth
-   * @returns {number}
-   */
-
-
-  get width() {
-    return this.device.viewportWidth;
-  }
-  /**
-   * Alias for device.viewportHeight
-   * @returns {number}
-   */
-
-
-  get height() {
-    return this.device.viewportHeight;
-  }
-  /**
-   * Alias for device.viewportAspect
-   * @returns {number}
-   */
-
-
-  get aspect() {
-    return this.device.viewportAspect;
-  }
-  /**
-   * Constructor
-   */
-
-
-  constructor() {
-    super();
-    this.math = _math__WEBPACK_IMPORTED_MODULE_3__;
-    this.util = _util__WEBPACK_IMPORTED_MODULE_4__;
-    this.consts = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__;
-    this.logger = new _engine__WEBPACK_IMPORTED_MODULE_2__["Tw2Logger"](this);
-    this.resMan = new _engine__WEBPACK_IMPORTED_MODULE_2__["Tw2ResMan"](this);
-    this.device = new _engine__WEBPACK_IMPORTED_MODULE_2__["Tw2Device"](this);
-    this._store = {
-      variable: new Map(),
-      extension: new Map(),
-      class: new Map(),
-      path: new Map(),
-      dynamicPath: new Map(),
-      type: new Map()
-    };
-    this._debug = false;
-    var eveSof;
-    Object.defineProperty(this, "eveSof", {
-      get: () => {
-        if (!eveSof) {
-          var Constructor = this.GetClass("EveSOF");
-          eveSof = new Constructor(this);
-        }
-
-        return eveSof;
-      }
-    });
-    _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"].defaultLogger = this;
-  }
-  /**
-   * Sets debug mode
-   * @param {Boolean} bool
-   */
-
-
-  SetDebug(bool) {
-    if (this._debug === bool) return;
-    this._debug = bool;
-
-    this._store.class.forEach(Constructor => {
-      if ("DEBUG_ENABLED" in Constructor) {
-        Constructor.DEBUG_ENABLED = bool;
-      }
-    });
-
-    this.logger.Debug(bool);
-    this.emit("debug_mode", bool);
-    this.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
-  }
-  /**
-   * Sets an object's tw2 instantiation
-   * @param {*} target
-   */
-
-
-  SetLibrary(target) {
-    if ("tw2" in target) {
-      Reflect.defineProperty(target, "tw2", {
-        value: this,
-        writable: false,
-        configurable: false
-      });
-    }
-  }
-  /**
-   * Initializes the library
-   * @param {{}} [options]
-   * @param {String|HTMLCanvasElement} [options.canvas] - Canvas element or id
-   * @param {{}} [options.device]                       - Optional device parameters
-   * @param {{}} [options.resMan]                       - Optional resMan parameters
-   * @param {{}} [options.store]                        - Optional store parameters
-   * @param {{}} [options.glParams]                     - Optional gl parameters
-   * @param {Function} [options.render]                 - Optional render function
-   */
-
-
-  Initialize(options = {}) {
-    this.Register(options);
-    var {
-      render,
-      glParams,
-      canvas,
-      canvas2d
-    } = options;
-    this.device.CreateDevice({
-      canvas,
-      canvas2d,
-      glParams
-    });
-
-    if (render) {
-      this.on("tick", render);
-
-      var tick = () => {
-        this.RequestAnimationFrame(tick);
-        this.StartFrame();
-        this.EndFrame();
-      };
-
-      this.RequestAnimationFrame(tick);
-    }
-  }
-  /**
-   * Start frame
-   */
-
-
-  StartFrame() {
-    this.device.StartFrame();
-    this.resMan.Tick(this.device);
-  }
-  /**
-   * End frame
-   */
-
-
-  EndFrame() {
-    this.emit("tick", this.device.dt);
-    this.device.EndFrame();
-  }
-  /**
-   * Requests an animation frame
-   * @param callback
-   * @returns {*}
-   */
-
-
-  RequestAnimationFrame(callback) {
-    return this.device.RequestAnimationFrame(callback);
-  }
-  /**
-   * Cancels an animation frame
-   * @param id
-   * @returns {*}
-   */
-
-
-  CancelAnimationFrame(id) {
-    return this.device.CancelAnimationFrame(id);
-  }
-  /**
-   * Outputs a log to console
-   * @param {String} logType
-   * @param {String|{}} log
-   * @param {String} [fallbackTitle]
-   * @returns {*}
-   */
-
-
-  Log(logType, log, fallbackTitle = "Library") {
-    return this.logger.Log(logType, log, fallbackTitle);
-  }
-  /**
-   * Registers library options
-   * @param {*} options
-   * @param {Boolean} options.uuid
-   * @param {Boolean} options.debug
-   * @param {*} options.logger
-   * @param {*} options.client
-   * @param {*} options.resMan
-   * @param {*} options.device
-   * @param {*} options.store
-   */
-
-
-  Register(options = {}) {
-    if (options.uuid) Object(_util__WEBPACK_IMPORTED_MODULE_4__["enableUUID"])(options.uuid);
-    if (options.logger) this.logger.Register(options.logger);
-    if (options.debug) this.SetDebug(true);
-    if (options.resMan) this.resMan.Register(options.resMan);
-    if (options.device) this.device.Register(options.device);
-    var {
-      store
-    } = options;
-
-    if (store) {
-      // Type must be first
-      if (store.type) {
-        setStoreKeyValues(this, "type", store.type);
-      }
-
-      for (var key in store) {
-        if (store.hasOwnProperty(key) && key !== "type") {
-          setStoreKeyValues(this, key, store[key]);
-        }
-      }
-    }
-  }
-  /**
-   * Gets a res path's full url
-   * @param {String} resPath
-   * @returns {String}
-   */
-
-
-  GetFullURL(resPath) {
-    return this.resMan.BuildUrl(resPath);
-  }
-  /**
-   * Sets the device's standard states
-   * @param {Number} renderMode
-   */
-
-
-  SetStandardStates(renderMode) {
-    this.device.SetStandardStates(renderMode);
-    return this;
-  }
-  /**
-   * Sets the gl color mask
-   * @param colorMask
-   * @returns {Tw2Library}
-   */
-
-
-  GLColorMask(colorMask) {
-    this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
-    return this;
-  }
-  /**
-   * Sets the gl clear color
-   * @param clearColor
-   * @returns {Tw2Library}
-   */
-
-
-  GLClearColor(clearColor) {
-    this.device.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-    return this;
-  }
-  /**
-   * Sets gl clear depth
-   * @param value
-   * @returns {Tw2Library}
-   */
-
-
-  GLClearDepth(value) {
-    this.device.gl.clearDepth(value);
-    return this;
-  }
-  /**
-   * Sets the gl viewport
-   * @param viewport
-   * @returns {Tw2Library}
-   */
-
-
-  GLViewport(viewport) {
-    this.device.gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-    return this;
-  }
-  /**
-   * Clears gl
-   * @param value
-   * @returns {Tw2Library}
-   */
-
-
-  GLClear(value) {
-    this.device.gl.clear(value);
-    return this;
-  }
-  /**
-   * Sets the device projection matrix
-   * @param {mat4} m
-   * @returns {Tw2Library}
-   */
-
-
-  SetProjectionMatrix(m) {
-    this.device.SetProjection(m);
-    return this;
-  }
-  /**
-   * Sets the device view matrix
-   * @param {mat4} m
-   * @returns {Tw2Library}
-   */
-
-
-  SetViewMatrix(m) {
-    this.device.SetView(m);
-    return this;
-  }
-  /**
-   * Gets a device gl extension
-   * @param {String} name
-   * @returns {*}
-   */
-
-
-  GetDeviceExtension(name) {
-    return this.device.GetExtension(name);
-  }
-  /**
-   * Gets a resource
-   * @param {String} resPath
-   * @param {Function} [onResolved]
-   * @param {Function} [onRejected]
-   * @returns {Tw2Resource}
-   */
-
-
-  GetResource(resPath, onResolved, onRejected) {
-    return this.resMan.GetResource(resPath, onResolved, onRejected);
-  }
-  /**
-   * Gets a resource asynchronously
-   * @param {String} resPath
-     * @returns {Promise<Tw2Resource>}
-   */
-
-
-  FetchResource(resPath) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      return _this.resMan.FetchResource(resPath);
-    })();
-  }
-  /**
-   * Gets an object asynchronously
-   * @param {String} resPath
-   * @param {String|Class|Function|Array<String|Class|Function>} [expectedConstructor]
-   * @returns {Promise<*>}
-   */
-
-
-  FetchObject(resPath, expectedConstructor) {
-    var _this2 = this;
-
-    return _asyncToGenerator(function* () {
-      var result;
-
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isDNA"])(resPath)) {
-        result = yield _this2.eveSof.FetchObject(resPath);
-      } else {
-        result = yield _this2.resMan.FetchObject(resPath);
-      }
-
-      if (!_this2.IsClass(result, expectedConstructor)) {
-        throw new Error("Unexpected constructor: " + result.constructor.name);
-      }
-
-      return result;
-    })();
-  }
-  /**
-   * Fetches a resPath's build constructor
-   * TODO: Add planets, moons and scenes?
-   * @param {String} resPath
-   * @returns {Promise<number>}
-   */
-
-
-  FetchBuildClass(resPath) {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      return Object(_util__WEBPACK_IMPORTED_MODULE_4__["isDNA"])(resPath) ? yield _this3.eveSof.FetchHullBuildClass(resPath) : 2;
-    })();
-  }
-  /**
-   * Checks if an object is a valid class
-   * @param {*} object
-   * @param {String|Class|Function|Array<String|Class|Function>}expectedConstructor
-   * @returns {boolean}
-   */
-
-
-  IsClass(object, expectedConstructor) {
-    if (!expectedConstructor) {
-      return true;
-    }
-
-    expectedConstructor = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toArray"])(expectedConstructor);
-    var isGood;
-
-    for (var i = 0; i < expectedConstructor.length; i++) {
-      var Constructor = expectedConstructor[i],
-          exclude = false;
-
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(Constructor)) {
-        if (Constructor.charAt(0) === "!") {
-          exclude = true;
-          Constructor = Constructor.substring(1);
-        }
-
-        if (Constructor === "Array") Constructor = Array;else if (Constructor === "Object") Constructor = Object;else Constructor = this.GetClass(Constructor);
-      }
-
-      if (object instanceof Constructor) {
-        isGood = !exclude;
-        break;
-      }
-    }
-
-    return isGood;
-  }
-  /**
-   * Creates a variable from values and/or type
-   * @param {String} name
-   * @param {*} [value]
-   * @param {String| Function} [Type]
-   * @returns {*}
-   */
-
-
-  CreateVariable(name, value, Type) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isPlain"])(value)) {
-      Type = value["Type"] || value["type"];
-      value = value["value"];
-    }
-
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(Type)) return new Type(name, value);
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(Type)) Type = this.GetType(Type);
-    if (!Type) Type = this.GetTypeByValue(value);
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(Type)) return new Type(name, value);
-    throw new Error("Could not identify variable type");
-  }
-  /**
-   * Checks if a store variable exists
-   * @param name
-   * @returns {*}
-   */
-
-
-  HasVariable(name) {
-    return hasStoreKey(this, "variable", name);
-  }
-  /**
-   * Gets a store variable by it's name
-   * @param name
-   * @returns {*}
-   */
-
-
-  GetVariable(name) {
-    return getStoreKey(this, "variable", name);
-  }
-  /**
-   * Gets a store variable's value
-   * @param name
-   * @param out
-   * @returns {*}
-   */
-
-
-  GetVariableValue(name, out) {
-    var variable = this.GetVariable(name);
-    if (variable.GetValue) return variable.GetValue(out);
-    throw new Error("Variable missing 'GetValue' method");
-  }
-  /**
-   * Sets a store variable
-   * @param {String} name
-   * @param {*} variable
-   * @returns {Function}
-   */
-
-
-  SetVariable(name, variable) {
-    if (!Object(_util__WEBPACK_IMPORTED_MODULE_4__["isObjectObject"])(variable)) {
-      variable = this.CreateVariable(name, variable);
-    }
-
-    return setStoreKey(this, "variable", name, variable);
-  }
-  /**
-   * Sets a store variable's value
-   * @param name
-   * @param value
-   * @param {*} [opt]
-   * @returns {void|*|Boolean}
-   */
-
-
-  SetVariableValue(name, value, opt) {
-    var variable = this.GetVariable(name);
-    if (variable.SetValue) return variable.SetValue(value, opt);
-    throw new Error("Variable missing 'SetValue' method");
-  }
-  /**
-   * Checks if a resource constructor exists for a file extension
-   * @param extension
-   * @returns {*}
-   */
-
-
-  HasExtension(extension) {
-    return hasStoreKey(this, "extension", extension);
-  }
-  /**
-   * Gets a file extension's resource constructor
-   * @param extension
-   * @returns {*}
-   */
-
-
-  GetExtension(extension) {
-    return getStoreKey(this, "extension", extension);
-  }
-  /**
-   * Sets a file extension's resource constructor
-   * @param extension
-   * @param value
-   * @returns {*}
-   */
-
-
-  SetExtension(extension, value) {
-    return setStoreKey(this, "extension", extension, value, {
-      isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isFunction"]
-    });
-  }
-  /**
-   * Checks if a class exists
-   * @param name
-   * @returns {*}
-   */
-
-
-  HasClass(name) {
-    return hasStoreKey(this, "class", name, {
-      isClassName: true
-    });
-  }
-  /**
-   * Gets a class by it's name
-   * @param name
-   * @returns {*}
-   */
-
-
-  GetClass(name) {
-    return getStoreKey(this, "class", name, {
-      isClassName: true
-    });
-  }
-  /**
-   * Sets a class
-   * @param {String} name
-   * @param {Class|Function} Constructor
-   * @returns {Class|Function}
-   */
-
-
-  SetClass(name, Constructor) {
-    var Value = setStoreKey(this, "class", name, Constructor, {
-      isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isFunction"]
-    });
-    Tw2Library.prototype[name] = Value;
-
-    if ("DEBUG_ENABLED" in Value) {
-      Value.DEBUG_ENABLED = this._debug;
-    }
-
-    return Value;
-  }
-  /**
-   * Checks if a resource path exists for a prefix
-   * @param {String} prefix
-   * @returns {Boolean}
-   */
-
-
-  HasPath(prefix) {
-    return hasStoreKey(this, "path", prefix);
-  }
-  /**
-   * Gets a resource path from it's prefix
-   * @param {String} prefix
-   * @returns {String}
-   */
-
-
-  GetPath(prefix) {
-    return getStoreKey(this, "path", prefix);
-  }
-  /**
-   * Sets a resource path by it's prefix
-   * @param {String} prefix
-   * @param {String} path
-   * @returns {String}
-   */
-
-
-  SetPath(prefix, path) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(path) && path.charAt(path.length - 1) !== "/") path += "/";
-    return setStoreKey(this, "path", prefix, path, {
-      isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isString"],
-      onBeforeSet: value => value.toLowerCase()
-    });
-  }
-  /**
-   * Checks if a dynamic path exists
-   * @param prefix
-   * @returns {*}
-   */
-
-
-  HasDynamicPath(prefix) {
-    return hasStoreKey(this, "dynamicPath", prefix);
-  }
-  /**
-   * Gets a dynamic path by it's prefix
-   * @param {String} prefix
-   * @returns {*}
-   */
-
-
-  GetDynamicPath(prefix) {
-    return getStoreKey(this, "dynamicPath", prefix);
-  }
-  /**
-   * Sets a dynamic path by it's prefix
-   * @param prefix
-   * @param value
-   * @returns {*}
-   */
-
-
-  SetDynamicPath(prefix, value) {
-    return setStoreKey(this, "dynamicPath", prefix, value, {
-      isValue(a) {
-        if (!Object(_util__WEBPACK_IMPORTED_MODULE_4__["isArray"])(a)) return false;
-
-        for (var i = 0; i < a.length; i++) {
-          if (!Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(a[i])) return false;
-        }
-
-        return true;
-      },
-
-      onBeforeSet(x) {
-        x.forEach(value => value.toLowerCase());
-      }
-
-    });
-  }
-  /**
-   * Checks if a type exists
-   * @param {String} name
-   * @returns {Boolean}
-   */
-
-
-  HasType(name) {
-    return hasStoreKey(this, "type", name);
-  }
-  /**
-   * Gets a type by name
-   * @param {String} name
-   * @returns {Function}
-   */
-
-
-  GetType(name) {
-    return getStoreKey(this, "type", name);
-  }
-  /**
-   * Gets a type by value
-   * @param {*} value
-   */
-
-
-  GetTypeByValue(value) {
-    var types = this._store.type;
-
-    for (var [key, type] of types) {
-      if ("isValue" in type && type.isValue(value)) return type;
-    }
-
-    throw new Error("Could not identify a type from the given value");
-  }
-  /**
-   * Sets a type
-   * @param {String} name
-   * @param {Function} Constructor
-   * @returns {Function} Constructor
-   */
-
-
-  SetType(name, Constructor) {
-    return setStoreKey(this, "type", name, Constructor, _util__WEBPACK_IMPORTED_MODULE_4__["isFunction"]);
-  }
-
-}, _temp)) || _class;
-/**
- * Lazy loads a class
- * @param {Tw2Library} library
- * @param {String} propertyName
- * @param {String} className
- * @param args
- */
-
-
-function lazyLoadClass(library, propertyName, className, ...args) {
-  var value;
-  Object.defineProperty(library, propertyName, {
-    get: function () {
-      if (!value) {
-        var Constructor = library.GetClass(className);
-        value = new Constructor(...args);
-      }
-
-      return value;
-    }
-  });
-}
-/**
- * Validates a store
- * @param library
- * @param storeType
- */
-
-
-function validateStore(library, storeType) {
-  if (!library._store[storeType]) {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreInvalid"]({
-      store: storeType
-    });
-  }
-}
-/**
- * Checks if a value exists for a store key
- * @param library
- * @param storeType
- * @param key
- * @param options
- * @returns {*}
- */
-
-
-function hasStoreKey(library, storeType, key, options) {
-  validateStore(library, storeType);
-  var store = library._store[storeType];
-  return store.has(key) || options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_4__["isTr2OrTri"])(key) && store.has(Object(_util__WEBPACK_IMPORTED_MODULE_4__["toTw2"])(key));
-}
-/**
- * Gets a store key's value
- * @param library
- * @param storeType
- * @param key
- * @param options
- * @returns {*}
- */
-
-
-function getStoreKey(library, storeType, key, options) {
-  validateStore(library, storeType);
-  var store = library._store[storeType];
-
-  if (store.has(key)) {
-    return library._store[storeType].get(key);
-  } // Allow substituting of Tr2 and Tri names
-  else if (options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_4__["isTr2OrTri"])(key)) {
-      var newKey = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toTw2"])(key);
-
-      if (store.has(newKey)) {
-        var Substitute = store.get(newKey);
-        library.emit("store.substituted", storeType, newKey, Substitute, key);
-        return Substitute;
-      }
-    }
-
-  library.emit("store.missing", storeType, key);
-  throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueMissing"]({
-    store: storeType,
-    key
-  });
-}
-/**
- * Sets a store key's value
- * @param library
- * @param storeType
- * @param key
- * @param value
- * @param {*} [options]
- * @param {Array<String>} [options.reserved]
- * @param {Function} [options.isValue]
- * @param {Function} [options.onBeforeSet]
- * @returns {*}
- */
-
-
-function setStoreKey(library, storeType, key, value, options) {
-  validateStore(library, storeType);
-
-  if (!value) {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
-      store: storeType,
-      key
-    });
-  }
-
-  if (options) {
-    if (options.reserved && options.reserved.includes(key)) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreKeyReserved"]({
-        store: storeType,
-        key
-      });
-    }
-
-    if (options.isValue && !options.isValue(value)) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
-        store: storeType,
-        key
-      });
-    }
-
-    if (options.onBeforeSet) {
-      value = options.onBeforeSet(value);
-    }
-  }
-
-  library._store[storeType].set(key, value);
-
-  library.emit("store.set", storeType, key, value).msg("debug", {
-    name: "Store",
-    message: "".concat(storeType, " registered: ").concat(key)
-  });
-  return value;
-}
-/**
- * Sets store key values from an object or array of objects
- * @param library
- * @param storeType
- * @param values
- */
-
-
-function setStoreKeyValues(library, storeType, values) {
-  // Use the library method for setting in case of custom stuff(tm)
-  var setFunction = "Set" + storeType.charAt(0).toUpperCase() + storeType.substring(1);
-
-  if (!library[setFunction]) {
-    throw new Error("Invalid store value setter '".concat(setFunction, "'"));
-  }
-
-  values = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toArray"])(values);
-
-  for (var i = 0; i < values.length; i++) {
-    for (var key in values[i]) {
-      if (values[i].hasOwnProperty(key)) {
-        library[setFunction](key, values[i][key]);
-      }
-    }
-  }
-}
-
-var tw2 = new Tw2Library(),
-    // Temporarily export resMan and device
-resMan = tw2.resMan,
-    device = tw2.device;
-
-
-/***/ }),
-
-/***/ "./global/class/Tw2BaseClass.js":
-/*!**************************************!*\
-  !*** ./global/class/Tw2BaseClass.js ***!
-  \**************************************/
+/***/ "./global/engine/Tw2BaseClass.js":
+/*!***************************************!*\
+  !*** ./global/engine/Tw2BaseClass.js ***!
+  \***************************************/
 /*! exports provided: Tw2BaseClass */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -54367,7 +57329,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return Tw2BaseClass; });
 /* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../meta */ "./global/meta/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
+/* harmony import */ var core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
 var _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -54379,7 +57341,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * Tw2BaseClass
  */
 
-var Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class = (_class2 = (_temp = _class3 = class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+var Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class = (_class2 = (_temp = _class3 = class Tw2BaseClass extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   constructor() {
     super();
     Tw2BaseClass.defineID(this);
@@ -54727,432 +57689,6 @@ function getKeys(obj) {
 
   return obj.constructor.__keys;
 }
-
-/***/ }),
-
-/***/ "./global/class/Tw2EventEmitter.js":
-/*!*****************************************!*\
-  !*** ./global/class/Tw2EventEmitter.js ***!
-  \*****************************************/
-/*! exports provided: Tw2EventEmitter */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/**
- * Emitter privates
- * @type {WeakMap<object, *>}
- */
-
-var PRIVATE = new WeakMap();
-/**
- * Tw2EventEmitter
- */
-
-class Tw2EventEmitter {
-  /**
-   * Emits an event
-   * @param {String} eventName
-   * @param {*} args
-   * @returns {Tw2EventEmitter}
-   */
-  emit(eventName, ...args) {
-    var events = PRIVATE.get(this);
-    if (!events) return this;
-    eventName = eventName.toLowerCase();
-
-    if (eventName in events) {
-      events[eventName].forEach((value, key) => {
-        key.call(value.context, ...args);
-        if (value.once) events[eventName].delete(key);
-      });
-
-      if (events[eventName].size === 0) {
-        Reflect.deleteProperty(events, eventName);
-      }
-    }
-
-    return this;
-  }
-  /**
-   * Adds events from a plain object
-   * @param {Object} options
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  add(options) {
-    if (!options) return this;
-
-    for (var key in options) {
-      if (options.hasOwnProperty(key)) {
-        var listener = options[key],
-            eventName = key,
-            context = void 0,
-            once = void 0; // Append ".once" to event name to fire only once
-
-        if (key.indexOf(".once") !== -1) {
-          if (key.lastIndexOf(".once") === key.length - 5) {
-            eventName = key.substring(0, key.length - 5);
-            once = true;
-          }
-        } // options as an array/ arguments
-
-
-        if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(listener)) {
-          listener = listener[0];
-          if (listener[1]) context = listener[1]; // .once in property key overrides array argument
-
-          if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(listener[2]) && !Object(_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(once)) once = listener[2];
-        }
-
-        if (!Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(listener)) {
-          throw new Error("Invalid listener");
-        }
-
-        this.on(eventName, listener, context, once);
-      }
-    }
-
-    return this;
-  }
-  /**
-   * Adds a listener to an event
-   * @param {Array|String} eventName
-   * @param {Function} listener
-   * @param {*} [context=undefined]
-   * @param {Boolean} [once=false]
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  on(eventName, listener, context = undefined, once = false) {
-    var events = PRIVATE.get(this);
-
-    if (!events) {
-      events = {};
-      PRIVATE.set(this, events);
-    }
-
-    eventName = eventName.toLowerCase();
-
-    if (!events[eventName]) {
-      events[eventName] = new Map();
-    } // Allow intercepting of a listener when its first added
-
-
-    if (!events[eventName].has(listener) && this.constructor.onListener) {
-      if (this.constructor.onListener(this, eventName, listener, context) && once) {
-        return this;
-      }
-    }
-
-    events[eventName].set(listener, {
-      context: context,
-      once: once
-    });
-    return this;
-  }
-  /**
-   * Adds a listener to an event, and clears it after it's first emit
-   * @param {String} eventName
-   * @param {Function} listener
-   * @param {*} [context]
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  once(eventName, listener, context) {
-    return this.on(eventName, listener, context, true);
-  }
-  /**
-   * Removes a listener from a specific event or from all events by passing "*"
-   * @param {String} eventName
-   * @param {Function} listener
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  off(eventName, listener) {
-    var events = PRIVATE.get(this);
-    if (!events) return this; // Remove listener from all events
-
-    if (eventName === "*") {
-      for (var _eventName in events) {
-        if (events.hasOwnProperty(_eventName)) {
-          events[_eventName].delete(listener);
-
-          if (events[_eventName].size === 0) {
-            Reflect.deleteProperty(events, _eventName);
-          }
-        }
-      }
-
-      return this;
-    }
-
-    eventName = eventName.toLowerCase();
-
-    if (eventName in events) {
-      events[eventName].delete(listener);
-
-      if (events[eventName].size === 0) {
-        Reflect.deleteProperty(events, eventName);
-      }
-    }
-
-    return this;
-  }
-  /**
-   * Checks if a listener exists on an event, or on any event by passing "*"
-   * @param {String} eventName
-   * @param {String|Function} listener
-   * @returns {boolean}
-   */
-
-
-  has(eventName, listener) {
-    var events = PRIVATE.get(this);
-    if (!events) return false; // Check all events
-
-    if (eventName === "*") {
-      for (var key in events) {
-        if (events.hasOwnProperty(key)) {
-          if (events[key].has(listener)) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-
-    if (listener && eventName in events) {
-      return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
-    }
-
-    return false;
-  }
-  /**
-   * Clears an event and it's listeners, or all events by passing "*"
-   * @param {String} eventName
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  del(eventName) {
-    var events = PRIVATE.get(this);
-    if (!events) return this; // Clear all
-
-    if (eventName === "*") {
-      this.emit("kill");
-
-      for (var e in events) {
-        if (events.hasOwnProperty(e)) {
-          events[e].clear();
-          Reflect.deleteProperty(events, e);
-        }
-      }
-
-      PRIVATE.delete(this);
-      return this;
-    }
-
-    eventName = eventName.toLowerCase();
-
-    if (eventName in events) {
-      events[eventName].clear();
-      Reflect.deleteProperty(events, eventName);
-    }
-
-    return this;
-  }
-  /**
-   * Logs a message
-   * @param {String} type
-   * @param {*|Error|Tw2Error} log
-   * @returns {eventLog|*}
-   */
-
-
-  msg(type, log) {
-    if (this.constructor.defaultLogger) {
-      return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
-    }
-
-    return log;
-  }
-  /**
-   * Fires before a listener is added
-   * @param {String} eventName
-   * @param {Function} listener
-   * @param {*} context
-   * @returns {Boolean} true if fired immediately
-   * @type {null|Function}
-   */
-
-
-}
-Tw2EventEmitter.onListener = null;
-Tw2EventEmitter.defaultLogger = null;
-Tw2EventEmitter.__category = null;
-
-/***/ }),
-
-/***/ "./global/class/Tw2Notifications.js":
-/*!******************************************!*\
-  !*** ./global/class/Tw2Notifications.js ***!
-  \******************************************/
-/*! exports provided: Tw2Notifications */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return Tw2Notifications; });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-
-/**
- * Tw2Notification
- */
-
-class Tw2Notifications {
-  /**
-   * Registers a notification
-   * @param {*} notification
-   */
-  RegisterNotification(notification) {
-    if (this.HasNotification(notification)) {
-      return;
-    }
-
-    if (this.constructor.onNotification && this.constructor.onNotification(this, notification)) {
-      return;
-    }
-
-    this._notifications = this._notifications || new Set();
-
-    this._notifications.add(notification);
-  }
-  /**
-   * Updates notifications
-   * @param {String} funcName
-   * @param {Error|Tw2Error} [err]
-   */
-
-
-  UpdateNotifications(funcName, err) {
-    if (this._notifications) {
-      this._notifications.forEach(notification => {
-        var remove = false;
-
-        if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(notification)) {
-          remove = notification(this, err, funcName);
-        } else if (funcName && funcName in notification) {
-          remove = notification[funcName](this, err);
-        }
-
-        if (remove) {
-          this.UnregisterNotification(notification);
-        }
-      });
-
-      if (this._notifications.size === 0) {
-        this.ClearNotifications();
-      }
-    }
-  }
-  /**
-   * Checks if a notification exists
-   * @param {*} notification
-   * @returns {boolean}
-   */
-
-
-  HasNotification(notification) {
-    return this._notifications ? this._notifications.has(notification) : false;
-  }
-  /**
-   * Unregisters a notification
-   * @param {*} notification
-   */
-
-
-  UnregisterNotification(notification) {
-    if (this._notifications) {
-      this._notifications.delete(notification);
-    }
-  }
-  /**
-   * Clears notifications
-   */
-
-
-  ClearNotifications() {
-    if (this._notifications) {
-      this._notifications.clear();
-
-      Reflect.deleteProperty(this, "_notifications");
-    }
-  }
-  /**
-   * Fires when a notification is registered
-   * @type {null| Function}
-   * @param {*} target
-   * @param {*} notification
-   * @returns {boolean}
-   */
-
-
-}
-Tw2Notifications.onNotification = null;
-
-/***/ }),
-
-/***/ "./global/class/Tw2Schema.js":
-/*!***********************************!*\
-  !*** ./global/class/Tw2Schema.js ***!
-  \***********************************/
-/*! exports provided: Tw2Schema */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return Tw2Schema; });
-/**
- * Tw2Schema
- * TODO: Implement
- */
-class Tw2Schema {}
-
-/***/ }),
-
-/***/ "./global/class/index.js":
-/*!*******************************!*\
-  !*** ./global/class/index.js ***!
-  \*******************************/
-/*! exports provided: Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2BaseClass__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _Tw2BaseClass__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]; });
-
-/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
-
-/* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Notifications */ "./global/class/Tw2Notifications.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
-
-/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Schema */ "./global/class/Tw2Schema.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__["Tw2Schema"]; });
-
-
-
-
-
 
 /***/ }),
 
@@ -56232,2812 +58768,749 @@ var VendorWebglPrefixes = ["", "MOZ_", "WEBKIT_", "WEBGL_"];
 
 /***/ }),
 
-/***/ "./global/engine/Tw2Device.js":
-/*!************************************!*\
-  !*** ./global/engine/Tw2Device.js ***!
-  \************************************/
-/*! exports provided: Tw2Device */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return Tw2Device; });
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../math */ "./global/math/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony import */ var core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core */ "./core/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-/**
- * Tw2Device
- *
- * @property {WebGLRenderingContext} gl            - The device's gl context
- * @property {*} xr                                - An optional xr handler
- * @property {vec3} eyePosition                    - The device's current eye position
- * @property {vec4} targetResolution               - The device's current target resolution
- * @property {mat4} world                          - The device's current world matrix
- * @property {mat4} view                           - The device's current view matrix
- * @property {mat4} viewInverse                    - The device's current inverse view matrix
- * @property {mat4} viewTranspose                  - The device's current view matrix transposed
- * @property {mat4} projection                     - The device's current projection matrix
- * @property {mat4} projectionInverse              - The device's current inverse projection matrix
- * @property {mat4} projectionTranspose            - The device's current projection matrix transposed
- * @property {mat4} viewProjection                 - The device's current view projection matrix
- * @property {mat4} viewProjectionTranspose        - The device's current view projection matrix transposed
- * @property {?HTMLCanvasElement} canvas           - The html canvas the gl context was created from
- * @property {number} viewportWidth                - The canvas's current width
- * @property {number} viewportHeight               - The canvas's current height
- * @property {number} viewportAspect               - The canvas's current display aspect
- * @property {number} viewportPixelRatio           - The canvas's pixel ratio
- * @property {String} effectDir                    - The directory used to translate ccp effect file paths
- * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
- * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
- * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
- * @property {Boolean} enableAntialiasing          - Enables antialiasing
- * @property {Boolean} enableWebgl2                - Enables webgl2
- * @property {Boolean} enableWebxr                 - Enables webvr (Not yet supported)
- * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
- * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
- * @property {number} msaaSamples                  - The amount of samples used for antialiasing
- * @property {number[]} wrapModes                  - texture wrap modes
- * @property {*} shadowHandles                     - unused
- * @property {Tw2PerObjectData} perObjectData      - The current frame's per object data
- * @property {Function} onResize                   - An optional function which is called on resize
- * @property {{}} _extensions                      - Stores loaded extensions
- * @property {{}} _alphaBlendState                 - Alpha states for blending
- * @property {{}} _alphaTestState                  - Alpha test states
- * @property {{}} _depthOffsetState                - Depth states
- * @property {Float32Array} _shadowStateBuffer     - unused
- * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
- * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
- * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
- * @property {number} _currentRenderMode           - The device's current render mode
- * @property {WebGLTexture} _fallbackCube          - A fallback cube texture
- * @property {WebGLTexture} _fallbackTexture       - A fallback texture
- * @property {Tw2Effect} _blitEffect               - The blit effect used for rendering textures
- * @class
- */
-
-class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"] {
-  /**
-   * Gets the current gl context version
-   * @returns {number}
-   */
-  get glVersion() {
-    return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
-  }
-  /**
-   * Gets the current gl canvas
-   * @returns {null}
-   */
-
-
-  get canvas() {
-    return this.gl ? this.gl.canvas : null;
-  }
-  /**
-   * Constructor
-   * @param {Tw2Library} tw2
-   */
-
-
-  constructor(tw2) {
-    super();
-    this.name = "Device";
-    this.gl = null;
-    this.xr = null;
-    this.tw2 = null;
-    this.canvas2d = null;
-    this.dt = 0;
-    this.frameCounter = 0;
-    this.startTime = null;
-    this.currentTime = null;
-    this.previousTime = null;
-    this.eyePosition = _math__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.targetResolution = _math__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.world = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.view = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.viewInverse = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.viewTranspose = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.projection = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.projectionInverse = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.projectionTranspose = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.viewProjection = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.viewProjectionTranspose = _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.viewportWidth = 0;
-    this.viewportHeight = 0;
-    this.viewportAspect = 0;
-    this.viewportPixelRatio = "devicePixelRatio" in window ? window.devicePixelRatio : 1;
-    this.effectDir = "/effect.gles2/";
-    this.mipLevelSkipCount = 0;
-    this.shaderModel = "hi";
-    this.enableAnisotropicFiltering = true;
-    this.enableAntialiasing = true;
-    this.enableWebgl2 = true;
-    this.enableWebxr = true;
-    this.alphaBlendBackBuffer = false;
-    this.antialiasing = true;
-    this.msaaSamples = 0;
-    this.wrapModes = [];
-    this.shadowHandles = null;
-    this.perObjectData = null;
-    this.onResize = null;
-    this._extensions = {};
-    this._alphaBlendState = null;
-    this._alphaTestState = null;
-    this._depthOffsetState = null;
-    this._shadowStateBuffer = null;
-    this._quadBuffer = null;
-    this._quadDecl = null;
-    this._cameraQuadBuffer = null;
-    this._currentRenderMode = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
-    this._fallbackCube = null;
-    this._fallbackTexture = null;
-    this._blitEffect = null;
-    this._Date = Date;
-    tw2.SetLibrary(this);
-    this.startTime = this.now;
-    this.currentTime = this.startTime;
-  }
-  /**
-   * Registers options
-   * @param {*} [opt]
-   * @param {Number} opt.textureQuality
-   * @param {Number} opt.shaderQuality
-   * @param {Boolean} opt.anisotropicFilter
-   * @param {Boolean} opt.antialiasing
-   * @param {Boolean} opt.webgl2
-   * @param {Boolean} opt.webvr
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-
-    if (this.gl) {
-      throw new Error("Setting device options after gl creation is not yet supported");
-    }
-
-    if ("performanceClock" in opt) {
-      if (opt.performance && "performance" in window) {
-        this._Date = performance;
-      } else {
-        this._Date = Date;
-      }
-    }
-
-    if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
-    if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
-    if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
-    if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
-    if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
-    if ("webxr" in opt) this.enableWebxr = opt.webxr;
-  }
-  /**
-   * Creates webgl Device
-   * @params {*} options
-   * @throws ErrWebglContext           - When unable to create a webgl context
-   */
-
-
-  CreateDevice({
-    canvas,
-    canvas2d,
-    glParams = {}
-  } = {}) {
-    this.gl = null;
-    this.effectDir = "/effect.gles2/";
-    var params = Object.assign({}, glParams);
-    params.alpha = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "alpha", false);
-    params.webgl2 = this.enableWebgl2;
-    params.xrCompatible = this.enableWebxr;
-    params.antialiasing = this.enableAntialiasing ? Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
-    var gl = this.gl = Tw2Device.CreateContext(params, canvas);
-    this.msg("debug", "Webgl".concat(this.glVersion, " context created")); // Allow for a 2d canvas
-
-    try {
-      if (canvas2d) {
-        if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas2d)) {
-          canvas2d = document.getElementById(canvas2d);
-        }
-
-        this.canvas2d = {
-          canvas: canvas2d,
-          context: canvas2d.getContext("2d"),
-          enabled: true,
-          autoResize: true,
-          OnResize: null,
-          OnDraw: null
-        };
-      }
-    } catch (err) {
-      throw new Error("Invalid 2d canvas");
-    }
-
-    var returnFalse = () => false,
-        returnTrue = () => true;
-
-    if (this.glVersion === 1) {
-      this.GetExtension("OES_standard_derivatives");
-      this.GetExtension("OES_element_index_uint");
-      this.GetExtension("OES_texture_float");
-      this.GetExtension("EXT_shader_texture_lod");
-      var iArray = this.GetExtension("ANGLE_instanced_arrays");
-      gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
-      gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
-      gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
-      gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
-    } else {
-      gl.hasInstancedArrays = returnTrue;
-    }
-
-    var anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
-
-    if (anisotropicFilterExt) {
-      anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
-    } // CCP mobile shader binary (is this depreciated?)
-
-
-    var ccpShaderBinary = this.GetExtension("CCP_shader_binary");
-
-    if (ccpShaderBinary) {
-      var renderer = gl.getParameter(this.gl.RENDERER),
-          maliVer = renderer.match(/Mali-(\w+).*/);
-
-      if (maliVer) {
-        this.effectDir = "/effect.gles2.mali" + maliVer[1] + "/";
-      }
-    } // Quality
-
-
-    this.alphaBlendBackBuffer = params.alpha;
-    this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
-    this.antialiasing = this.msaaSamples > 1;
-    this.Resize();
-    var vertices = [1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0];
-    this._quadBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    this._cameraQuadBuffer = gl.createBuffer();
-    this._quadDecl = core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__["Tw2VertexDeclaration"].from([{
-      usage: "POSITION",
-      usageIndex: 0,
-      elements: 4
-    }, {
-      usage: "TEXCOORD",
-      usageIndex: 0,
-      elements: 2
-    }]);
-    this.wrapModes = Array.from(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WrapModes"]);
-    this._alphaBlendState = {
-      dirty: false,
-      states: {
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]]: 0,
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOPALPHA"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"]
-      }
-    };
-    this._alphaTestState = {
-      dirty: false,
-      states: {
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]]: 0,
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]]: -1,
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]]: _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"],
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPING"]]: 0,
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPLANEENABLE"]]: 0
-      }
-    };
-    this._depthOffsetState = {
-      dirty: false,
-      states: {
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]]: 0,
-        [_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]]: 0
-      }
-    };
-    this._shadowStateBuffer = new Float32Array(24);
-  }
-  /**
-   * Sets the pixel aspect ratio and resizes afterwards
-   * @param {Number} value
-   */
-
-
-  SetPixelRatio(value) {
-    if (this.viewportPixelRatio !== value) {
-      this.viewportPixelRatio = value;
-      this.Resize();
-    }
-  }
-  /**
-   * Handles resize events
-   */
-
-
-  Resize() {
-    if (this.onResize) {
-      this.onResize(this.canvas);
-    }
-    /*
-    else if (this.enableWebxr && this.xr && this.xr.isGood)
-    {
-        this.xr.OnResize(this.canvas);
-    }
-    */
-    else {
-        this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
-        this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
-      }
-
-    this.viewportWidth = this.canvas.width;
-    this.viewportHeight = this.canvas.height;
-    this.viewportAspect = this.viewportWidth / this.viewportHeight;
-    var event = {
-      width: this.viewportWidth,
-      height: this.viewportHeight,
-      aspect: this.viewportAspect
-    }; // Handle 2d canvas
-
-    if (this.canvas2d && this.canvas2d.enabled) {
-      if (this.canvas2d.autoResize) {
-        this.canvas2d.canvas.width = this.viewportWidth;
-        this.canvas2d.canvas.height = this.viewportHeight;
-      }
-
-      if (this.canvas2d.OnResize) {
-        this.canvas2d.OnResize(event);
-      }
-    }
-
-    this.tw2.SetVariableValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
-    this.emit("resized", event);
-  }
-  /**
-   * Gets the current time
-   * @returns {number}
-   */
-
-
-  get now() {
-    return this._Date.now();
-  }
-  /**
-   * Fires on the start of a frame
-   */
-
-
-  StartFrame() {
-    if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight) {
-      this.Resize();
-    }
-
-    var previousTime = this.previousTime === null ? 0 : this.previousTime,
-        now = this.now;
-    this.currentTime = (now - this.startTime) * 0.001;
-    this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
-    this.previousTime = now;
-    this.tw2.SetVariableValue("Time", [this.currentTime, this.currentTime - Math.floor(this.currentTime), this.frameCounter, previousTime]);
-    this.frameCounter++;
-  }
-  /**
-   * Fires on the end of a frame
-   */
-
-
-  EndFrame() {
-    if (this.canvas2d && this.canvas2d.enabled && this.canvas2d.OnDraw) {
-      this.canvas2d.OnDraw();
-    }
-  }
-  /**
-   * Sets World transform matrix
-   * @param {mat4} matrix
-   */
-
-
-  SetWorld(matrix) {
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.world, matrix);
-  }
-  /**
-   * Sets view matrix
-   * @param {mat4} matrix
-   */
-
-
-  SetView(matrix) {
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.view, matrix);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this.viewInverse, this.view);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.viewTranspose, this.view);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.eyePosition, this.viewInverse);
-    this.UpdateViewProjection();
-  }
-  /**
-   * Sets projection matrix
-   * @param {mat4} matrix
-   * @param {Boolean} [forceUpdateViewProjection]
-   */
-
-
-  SetProjection(matrix, forceUpdateViewProjection) {
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.projection, matrix);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.projectionTranspose, this.projection);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this.projectionInverse, this.projection);
-    this.GetTargetResolution(this.targetResolution);
-    if (forceUpdateViewProjection) this.UpdateViewProjection();
-  }
-  /**
-   * Updates view projection matrices
-   */
-
-
-  UpdateViewProjection() {
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.viewProjection, this.projection, this.view);
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.viewProjectionTranspose, this.viewProjection);
-    this.tw2.SetVariableValue("ViewProjectionMat", this.viewProjection);
-  }
-  /**
-   * Gets the device's target resolution
-   * @param {vec4} [out=vec4.create()]
-   * @returns {vec4} out
-   */
-
-
-  GetTargetResolution(out = _math__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()) {
-    var aspectRatio = this.projection[0] ? this.projection[5] / this.projection[0] : 0.0;
-    var aspectAdjustment = 1.0;
-    if (aspectRatio > 1.6) aspectAdjustment = aspectRatio / 1.6;
-    var fov = 2.0 * Math.atan(aspectAdjustment / this.projection[5]);
-    out[0] = this.viewportWidth;
-    out[1] = this.viewportHeight;
-    out[2] = fov;
-    out[3] = fov * aspectRatio;
-    return out;
-  }
-  /**
-   * GetEyePosition
-   * @param {vec3} [out=vec3.create()]
-   * @return {vec3}
-   */
-
-
-  GetEyePosition(out = _math__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()) {
-    return _math__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(out, this.eyePosition);
-  }
-  /**
-   * Returns whether or not Alpha Test is enabled
-   * return {Boolean}
-   */
-
-
-  IsAlphaTestEnabled() {
-    return this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]];
-  }
-  /**
-   * Checks if a frame buffer is complete
-   *
-   * @param frameBuffer
-   * @returns {Boolean}
-   */
-
-
-  IsFrameBufferComplete(frameBuffer) {
-    return this.gl.checkFramebufferStatus(frameBuffer) === this.gl.FRAMEBUFFER_COMPLETE;
-  }
-  /**
-   * Gets a gl extension
-   * @param {String} extension - The gl extension name
-   * @returns {*}
-   */
-
-
-  GetExtension(extension) {
-    if (!(extension in this._extensions)) {
-      var ext;
-
-      for (var i = 0; i < _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
-        ext = this.gl.getExtension(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"][i] + extension);
-        if (ext) break;
-        ext = null;
-      }
-
-      this._extensions[extension] = ext;
-    }
-
-    return this._extensions[extension];
-  }
-  /**
-   * Gets a fallback texture
-   * @returns {*}
-   */
-
-
-  GetFallbackTexture() {
-    if (!this._fallbackTexture) {
-      this._fallbackTexture = this.CreateSolidTexture();
-    }
-
-    return this._fallbackTexture;
-  }
-  /**
-   * Gets a fallback cube map
-   * @returns {*}
-   */
-
-
-  GetFallbackCubeMap() {
-    if (!this._fallbackCube) {
-      this._fallbackCube = this.CreateSolidCube();
-    }
-
-    return this._fallbackCube;
-  }
-  /**
-   * Creates a solid colored texture
-   * @param {vec4|Array} [rgba] - The colour to create, if omitted defaults to completely transparent
-   * @returns {WebGLTexture}
-   */
-
-
-  CreateSolidTexture(rgba = [0, 0, 0, 0]) {
-    var gl = this.gl,
-        texture = this.gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    return texture;
-  }
-  /**
-   * Creates a solid coloured cube texture
-   * @param {vec4|Array} rgba
-   * @returns {WebGLTexture}
-   */
-
-
-  CreateSolidCube(rgba = [0, 0, 0, 0]) {
-    var gl = this.gl,
-        texture = this.gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-
-    for (var j = 0; j < 6; ++j) {
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
-    }
-
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST); //gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-    return texture;
-  }
-  /**
-   * RenderFullScreenQuad
-   * @param {Tw2Effect} effect
-   * @param {String} technique - Technique name
-   * @returns {Boolean}
-   */
-
-
-  RenderFullScreenQuad(effect, technique = "Main") {
-    if (!effect || !effect.IsGood()) return false;
-    var gl = this.gl;
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
-
-    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
-      effect.ApplyPass(technique, pass);
-      if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
-      this.ApplyShadowState();
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
-
-    return true;
-  }
-  /**
-   * Renders a Texture to the screen
-   * @param {Tw2TextureRes} texture
-   * @returns {Boolean}
-   */
-
-
-  RenderTexture(texture) {
-    if (this._blitEffect === null) {
-      this._blitEffect = core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
-        effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
-        textures: {
-          BlitSource: ""
-        }
-      });
-    }
-
-    this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
-
-    return this.RenderFullScreenQuad(this._blitEffect);
-  }
-  /**
-   * RenderCameraSpaceQuad
-   * @param {Tw2Effect} effect
-   * @param {String} technique - Technique name
-   * @returns {Boolean}
-   */
-
-
-  RenderCameraSpaceQuad(effect, technique = "Main") {
-    if (!effect || !effect.IsGood()) return false;
-    var vertices = new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0]);
-    var projInv = this.projectionInverse;
-
-    for (var i = 0; i < 4; ++i) {
-      var vec = vertices.subarray(i * 6, i * 6 + 4);
-      _math__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(vec, vec, projInv);
-      _math__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec, vec, 1 / vec[3]);
-      vec[3] = 1;
-    }
-
-    var gl = this.gl;
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._cameraQuadBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
-      effect.ApplyPass(technique, pass);
-      if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
-      this.ApplyShadowState();
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
-
-    return true;
-  }
-  /**
-   * Set a render state
-   * @param state
-   * @param value
-   */
-
-
-  SetRenderState(state, value) {
-    var gl = this.gl;
-    this._currentRenderMode = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
-
-    switch (state) {
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"]:
-        if (value) {
-          gl.enable(gl.DEPTH_TEST);
-        } else {
-          gl.disable(gl.DEPTH_TEST);
-        }
-
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"]:
-        gl.depthMask(!!value);
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPING"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPLANEENABLE"]:
-        if (this._alphaTestState[state] !== value) {
-          this._alphaTestState.states[state] = value;
-          this._alphaTestState.dirty = true;
-        }
-
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOPALPHA"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]:
-        if (this._alphaBlendState[state] !== value) {
-          this._alphaBlendState.states[state] = value;
-          this._alphaBlendState.dirty = true;
-        }
-
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"]:
-        switch (value) {
-          case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]:
-            gl.disable(gl.CULL_FACE);
-            return;
-
-          case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]:
-            gl.enable(gl.CULL_FACE);
-            gl.cullFace(gl.FRONT);
-            return;
-
-          case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CCW"]:
-            gl.enable(gl.CULL_FACE);
-            gl.cullFace(gl.BACK);
-            return;
-        }
-
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"]:
-        gl.depthFunc(0x0200 + value - 1);
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"]:
-        if (value) gl.enable(gl.BLEND);else gl.disable(gl.BLEND);
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"]:
-        gl.colorMask((value & 1) !== 0, (value & 2) !== 0, (value & 4) !== 0, (value & 8) !== 0);
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SCISSORTESTENABLE"]:
-        if (value) gl.enable(gl.SCISSOR_TEST);else gl.disable(gl.SCISSOR_TEST);
-        return;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]:
-        value = _math__WEBPACK_IMPORTED_MODULE_0__["num"].dwordToFloat(value);
-
-        if (this._depthOffsetState[state] !== value) {
-          this._depthOffsetState.states[state] = value;
-          this._depthOffsetState.dirty = true;
-        }
-
-        return;
-    }
-  }
-  /**
-   * ApplyShadowState
-   */
-
-
-  ApplyShadowState() {
-    var gl = this.gl;
-
-    if (this._alphaBlendState.dirty) {
-      var blendOp = gl.FUNC_ADD;
-
-      if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
-        blendOp = gl.FUNC_SUBTRACT;
-      } else if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_REVSUBTRACT"]) {
-        blendOp = gl.FUNC_REVERSE_SUBTRACT;
-      }
-
-      var srcBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]],
-          destBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]];
-
-      if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]]) {
-        var blendOpAlpha = gl.FUNC_ADD;
-
-        if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
-          blendOpAlpha = gl.FUNC_SUBTRACT;
-        } else if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_REVSUBTRACT"]) {
-          blendOpAlpha = gl.FUNC_REVERSE_SUBTRACT;
-        }
-
-        var srcBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]],
-            destBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]];
-        gl.blendEquationSeparate(blendOp, blendOpAlpha);
-        gl.blendFuncSeparate(srcBlend, destBlend, srcBlendAlpha, destBlendAlpha);
-      } else {
-        gl.blendEquation(blendOp);
-        gl.blendFunc(srcBlend, destBlend);
-      }
-
-      this._alphaBlendState.dirty = false;
-    }
-
-    if (this._depthOffsetState.dirty) {
-      gl.polygonOffset(this._depthOffsetState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]], this._depthOffsetState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]]);
-      this._depthOffsetState.dirty = false;
-    }
-
-    var alphaTestFunc, invertedAlphaTest, alphaTestRef;
-
-    if (this.shadowHandles && this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]]) {
-      switch (this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]]) {
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_NEVER"]:
-          alphaTestFunc = 0;
-          invertedAlphaTest = 1;
-          alphaTestRef = -256;
-          break;
-
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LESS"]:
-          alphaTestFunc = 0;
-          invertedAlphaTest = -1;
-          alphaTestRef = this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]] - 1;
-          break;
-
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_EQUAL"]:
-          alphaTestFunc = 1;
-          invertedAlphaTest = 0;
-          alphaTestRef = this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
-          break;
-
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]:
-          alphaTestFunc = 0;
-          invertedAlphaTest = -1;
-          alphaTestRef = this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
-          break;
-
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"]:
-          alphaTestFunc = 0;
-          invertedAlphaTest = 1;
-          alphaTestRef = -this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]] - 1;
-          break;
-
-        /*
-        case CMP_NOTEQUAL:
-        var alphaTestFunc = 1;
-        var invertedAlphaTest = 1;
-        var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-        break;
-        */
-
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATEREQUAL"]:
-          alphaTestFunc = 0;
-          invertedAlphaTest = 1;
-          alphaTestRef = -this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
-          break;
-
-        default:
-          alphaTestFunc = 0;
-          invertedAlphaTest = 0;
-          alphaTestRef = 1;
-          break;
-      }
-
-      var clipPlaneEnable = 0;
-      gl.uniform4f(this.shadowHandles.shadowStateInt, invertedAlphaTest, alphaTestRef, alphaTestFunc, clipPlaneEnable); //this._shadowStateBuffers
-    }
-  }
-  /**
-   * Sets a render mode
-   * @param {number} renderMode
-   */
-
-
-  SetStandardStates(renderMode) {
-    if (this._currentRenderMode === renderMode) return;
-    this.gl.frontFace(this.gl.CW);
-
-    switch (renderMode) {
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"]:
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_PICKABLE"]:
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
-        break;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DECAL"]:
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"], 127);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
-        break;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_TRANSPARENT"]:
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0); // -1.0
-
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
-        break;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ADDITIVE"]:
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ONE"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ONE"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
-        break;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_FULLSCREEN"]:
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_ALWAYS"]);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
-        break;
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DISTORTION"]: // Same as Fullscreen?
-
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DEPTH"]:
-        // TODO: Implement
-        return;
-
-      default:
-        return;
-    }
-
-    this._currentRenderMode = renderMode;
-  }
-  /**
-   * Requests an animation frame
-   * @param {Function} callback
-   */
-
-
-  RequestAnimationFrame(callback) {
-    return this.xr ? this.xr.RequestAnimationFrame(callback) : this.constructor.RequestAnimationFrame(callback);
-  }
-  /**
-   * Cancels an animation frame
-   * @param {Number} id
-   */
-
-
-  CancelAnimationFrame(id) {
-    return this.xr ? this.xr.CancelAnimationFrame(id) : this.constructor.CancelAnimationFrame(id);
-  }
-  /**
-   * Creates a webgl context
-   * @param params
-   * @param canvas
-   * @returns {null|WebGLRenderingContext|WebGL2RenderingContext}
-   * @throws on invalid context
-   */
-
-
-  static CreateContext(params = {}, canvas) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas)) {
-      canvas = document.getElementById(canvas);
-    }
-
-    if (!canvas) {
-      canvas = document.createElement("canvas");
-    }
-
-    var contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
-    var context = null;
-
-    for (var contextType of contextTypes) {
-      context = canvas.getContext(contextType, params);
-      if (context) break;
-    }
-
-    if (!context) {
-      throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebglContext"]({
-        version: params.webgl2 ? 2 : 1
-      });
-    }
-
-    return context;
-  }
-  /**
-   * Requests an animation frame
-   * @type {Function}
-   */
-
-
-  /**
-   * Finds an XR Device
-   * @param {{}} [sessionOptions]
-   * @returns {Promise<XRDevice>}
-   */
-  static FindXRDevice(sessionOptions) {
-    return _asyncToGenerator(function* () {
-      if (!navigator.xr) {
-        throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrNotSupported"]();
-      }
-
-      var device;
-
-      try {
-        device = yield navigator.xr["requestDevice"]();
-      } catch (err) {
-        if (err.name === "NotFoundError" || err.message === "NotFoundError") {
-          throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrDeviceNotFound"]({
-            err: err.message
-          });
-        }
-
-        throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrRequestFailed"]({
-          err: err.message
-        });
-      } // Optionally pass session requirements
-
-
-      if (sessionOptions) {
-        try {
-          yield device["supportsSession"](sessionOptions);
-        } catch (err) {
-          throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrSessionNotSupported"]({
-            err: err.message
-          });
-        }
-      }
-
-      return device;
-    })();
-  }
-  /**
-   * Logger category
-   * @type {String}
-   */
-
-
-} // Render Modes
-
-Tw2Device.RequestAnimationFrame = function () {
-  var request = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]);
-  return callback => request(callback);
-}();
-
-Tw2Device.CancelAnimationFrame = function () {
-  var cancel = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]);
-  return id => cancel(id);
-}();
-
-Tw2Device.__category = "Device";
-Tw2Device.prototype.RM_ANY = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
-Tw2Device.prototype.RM_OPAQUE = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"];
-Tw2Device.prototype.RM_DECAL = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DECAL"];
-Tw2Device.prototype.RM_TRANSPARENT = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_TRANSPARENT"];
-Tw2Device.prototype.RM_ADDITIVE = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ADDITIVE"];
-Tw2Device.prototype.RM_DEPTH = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DEPTH"];
-Tw2Device.prototype.RM_DISTORTION = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DISTORTION"];
-Tw2Device.prototype.RM_FULLSCREEN = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_FULLSCREEN"];
-Tw2Device.prototype.RM_PICKABLE = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_PICKABLE"];
-
-/***/ }),
-
-/***/ "./global/engine/Tw2Logger.js":
-/*!************************************!*\
-  !*** ./global/engine/Tw2Logger.js ***!
-  \************************************/
-/*! exports provided: Tw2Logger */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return Tw2Logger; });
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-
-
-/**
- * eventLog
- * @typedef {{}} eventLog
- * @property {String} eventLog.type       - The log's type
- * @property {String} eventLog.name       - The log's name
- * @property {String} eventLog.message    - The log's message
- * @property {String} [eventLog.path]     - optional related resource path
- * @property {String} [eventLog.detail]   - optional extra detail
- * @property {String} [eventLog.time]     - optional time taken
- * @property {Boolean} [eventLog.hide]    - optional visibility
- * @property {Boolean} [eventLog._logged] - Identifies if the log has been logged
- * @property {Error} [eventLog.err]       - Optional error (output to the console)
- * @property {*} [eventLog.data]          - Optional data (output to the console)
- */
-
-/**
- * Handles basic event logging
- *
- * @property {String} name                   - The name of the logger
- * @property {Boolean} display               - Toggles console logging
- * @property {{}} visible                    - Visibility options
- * @property {Boolean} visible.log           - Toggles console log output
- * @property {Boolean} visible.info          - Toggles console info output
- * @property {Boolean} visible.debug         - Toggles console debug output
- * @property {Boolean} visible.warn          - Toggles console warn output
- * @property {Boolean} visible.error         - Toggles console error output
- * @property {number} history                - The maximum history to store
- * @property {number} throttle               - The maximum throttling per log type
- * @property {Array} _logs                   - Stored logs
- * @property {?{String:string[]}} _throttled - Throttles message cache
- * @property {Boolean} _debugMode            - When true all logs are forced to display
- */
-
-class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
-  /**
-   * Constructor
-   * @param {Tw2Library} tw2
-   */
-  constructor(tw2) {
-    super();
-    this.name = "";
-    this.display = true;
-    this.visible = {
-      log: false,
-      info: false,
-      debug: false,
-      warn: false,
-      error: true
-    };
-    this.history = 100;
-    this.throttle = 20;
-    this._logs = [];
-    this._throttled = null;
-    this._debugMode = false;
-    tw2.SetLibrary(this);
-  }
-  /**
-   * Enables debugging
-   * - Forces all logs to show regardless of visibility settings
-   * @param {Boolean} bool
-   */
-
-
-  Debug(bool) {
-    this._debugMode = bool;
-  }
-  /**
-   * Sets the logger's properties
-   * @param {*} [opt]
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this, opt, ["name", "display", "history", "throttle"]);
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this.visible, opt.visible, ["log", "info", "debug", "warn", "error"]);
-  }
-  /**
-   * Adds an event log and outputs it to the console
-   * @param {String}    type       - Log type
-   * @param {*} log                - The eventLog or error to log
-   * @param {String} [defaultName] - Default message name/ title
-   * @returns {eventLog} log
-   */
-
-
-  Log(type = "log", log, defaultName) {
-    if (!log) {
-      log = {
-        message: ""
-      };
-    } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(log)) {
-      log = {
-        message: log
-      };
-    } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
-      log = {
-        message: log.message,
-        err: log
-      };
-    }
-
-    if (log._logged) return log; // Normalize logs
-
-    log.type = type.toLowerCase();
-    log.name = log.name || defaultName || Tw2Logger.constructor.category;
-    log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
-
-    if (!Tw2Logger.LogType[log.type.toUpperCase()]) {
-      log.type = "log";
-    } // Set visibility
-
-
-    if (!this.display || !this.visible[log.type]) {
-      log.hide = true;
-    } // Throttle excessive output
-
-
-    if (!this.throttle || this._debugMode) {
-      this._throttled = null;
-    } else {
-      if (!log.hide) {
-        if (!this._throttled) this._throttled = {};
-        if (!this._throttled[log.type]) this._throttled[log.type] = [];
-        var t = this._throttled[log.type];
-
-        if (!t.includes(log.message)) {
-          t.unshift(log.message);
-          t.splice(this.throttle);
-        } else {
-          log.hide = true;
-        }
-      }
-    } // Output to the console
-
-
-    if (!log.hide || this._debugMode) {
-      // Optional details
-      var subMessage = "";
-      if (log.path && !log.message.includes(log.path)) subMessage += "'".concat(log.path, "' ");
-      if (log.time) subMessage += "in ".concat(log.time.toFixed(3), " secs ");
-      if (log.detail) subMessage += "(".concat(log.detail, ") ");
-      var header = "".concat(this.name, " ").concat(log.name, ":");
-
-      if (log.err || log.data) {
-        console.group(header, log.message, subMessage);
-        if (log.err) console.error(log.err.stack || log.err.toString());
-        if (log.data) console.debug(JSON.stringify(log.data, null, 4));
-        console.groupEnd();
-      } else {
-        console[log.type](header, log.message, subMessage);
-      }
-    } // Manage log history
-
-
-    var logsToKeep = this._debugMode ? 1000 : this.history;
-
-    if (logsToKeep) {
-      this._logs.unshift(log);
-
-      this._logs.splice(logsToKeep);
-    } else {
-      this._logs = [];
-    }
-
-    log._logged = true;
-    this.emit(log.type, log);
-    return log;
-  }
-  /**
-   * Log types
-   * @type {*}
-   */
-
-
-}
-Tw2Logger.LogType = {
-  ERROR: "error",
-  WARNING: "warn",
-  WARN: "warn",
-  INFO: "info",
-  LOG: "log",
-  DEBUG: "debug"
-};
-Tw2Logger.__category = "Logger";
-
-/***/ }),
-
-/***/ "./global/engine/Tw2MotherLode.js":
-/*!****************************************!*\
-  !*** ./global/engine/Tw2MotherLode.js ***!
-  \****************************************/
-/*! exports provided: Tw2MotherLode */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MotherLode", function() { return Tw2MotherLode; });
-/**
- * Manages loaded resources
- *
- * @property {Object} _loadedObjects            - loaded resources
- * @property {{string:Array<eventLog>}} _errors - history of all errors for a path
- * @class
- */
-class Tw2MotherLode {
-  constructor() {
-    this._loadedObjects = {};
-    this._errors = {};
-  }
-  /**
-   * Adds an error log for a given path
-   * @param {String} path
-   * @param {Tw2Error|Error} err
-   * @returns {Tw2Error|Error} err
-   */
-
-
-  AddError(path, err) {
-    this._errors[path] = this._errors[path] || []; // Ensure error includes file path
-
-    if (!err.message.includes(path)) {
-      err.message = "".concat(err.message, " \"").concat(path, "\"");
-    }
-
-    if (!this._errors[path].includes(err)) {
-      err.path = path;
-
-      this._errors[path].unshift(err);
-    }
-
-    return err;
-  }
-  /**
-   * Gets a path's error logs
-   * @param {String} path
-   * @returns {?Array<Tw2Error|Error>}
-   */
-
-
-  GetErrors(path) {
-    return path && path in this._errors ? Array.from(this._errors[path]) : [];
-  }
-  /**
-   * Gets the last error for a path
-   * @param path
-   * @returns {Tw2Error|Error|undefined}
-   */
-
-
-  GetLastError(path) {
-    return path && path in this._errors ? this._errors[path][0] : undefined;
-  }
-  /**
-   * Checks if a path has any errors
-   * @param {String} path
-   * @returns {*|Boolean}
-   */
-
-
-  HasErrors(path) {
-    return path && path in this._errors;
-  }
-  /**
-   * Finds a loaded object by it's file path
-   * @param {String} path
-   * @returns {Tw2LoadingObject|Tw2Resource}
-   */
-
-
-  Find(path) {
-    if (path in this._loadedObjects) {
-      return this._loadedObjects[path];
-    }
-
-    return null;
-  }
-  /**
-   * Adds a loaded object
-   * @param {String} path
-   * @param {Tw2LoadingObject|Tw2Resource} obj
-   */
-
-
-  Add(path, obj) {
-    this._loadedObjects[path] = obj;
-  }
-  /**
-   * Checks if a res exists
-   * @param {String} path
-   * @returns {boolean}
-   */
-
-
-  Has(path) {
-    return !!this._loadedObjects[path];
-  }
-  /**
-   * Removes a loaded object by it's file path
-   * @param {String} path
-   */
-
-
-  Remove(path) {
-    if (this._loadedObjects[path]) {
-      Reflect.deleteProperty(this._loadedObjects, path);
-    }
-  }
-  /**
-   * Clears the loaded object object
-   * @param {Function} [onClear] - Function that is called on each unloaded resource
-   */
-
-
-  Clear(onClear) {
-    for (var key in this._loadedObjects) {
-      if (this._loadedObjects.hasOwnProperty(key)) {
-        if (onClear) onClear(this._loadedObjects[key]);
-        this.Remove(key);
-      }
-    }
-  }
-  /**
-   * Unloads all loaded objects and then clears the loadedObject object
-   * @param {Function} [onClear] - Function that is called on each unloaded and cleared resource
-   * @param {eventLog} [eventLog]
-   */
-
-
-  UnloadAndClear(onClear, eventLog) {
-    this.Clear(res => {
-      res.Unload(eventLog);
-      if (onClear) onClear(res);
-    });
-  }
-  /**
-   * Purges inactive loaded objects (resources that have been loaded but are not being actively used)
-   * - Loaded objects can flagged with `doNotPurge` to ensure they are never removed
-   * - Resource auto purging can be managed in `ccpwgl` or `ccpwgl_int.resMan` - {@link Tw2ResMan}
-   *     ccpwgl.setResourceUnloadPolicy()
-   *     ccpwgl_int.resMan.autoPurgeResources=true
-   *     ccpwgl_int.resMan.purgeTime=30
-   * @param {Number} curFrame - the current frame count
-   * @param {Number} frameLimit - how many frames the object can stay alive for before being purged
-   * @param {Number} frameDistance - how long the resource has been alive for
-   */
-
-
-  PurgeInactive(curFrame, frameLimit, frameDistance) {
-    for (var path in this._loadedObjects) {
-      if (this._loadedObjects.hasOwnProperty(path)) {
-        var res = this._loadedObjects[path]; // Don't purge
-
-        if (res.doNotPurge) {
-          continue;
-        } // Already purged
-
-
-        if (res.IsPurged()) {
-          this.Remove(path);
-          continue;
-        }
-
-        var detail = void 0; // Has errors
-
-        if (res.HasErrors()) {
-          detail = "errored";
-        } // Waiting for purge
-        else if (res.IsUnloaded()) {
-            detail = "unloaded";
-          } // good but inactive
-          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
-              if (res.Unload({
-                hide: true,
-                detail: "inactivity"
-              })) {
-                detail = "inactivity";
-              }
-            }
-
-        if (detail) {
-          res.OnPurged({
-            detail
-          });
-          this.Remove(path);
-        }
-      }
-    }
-  }
-
-}
-
-/***/ }),
-
-/***/ "./global/engine/Tw2ResMan.js":
-/*!************************************!*\
-  !*** ./global/engine/Tw2ResMan.js ***!
-  \************************************/
-/*! exports provided: Tw2ResMan */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return Tw2ResMan; });
-/* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MotherLode */ "./global/engine/Tw2MotherLode.js");
-/* harmony import */ var core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-/**
- * Resource Manager
- *
- * @property {Tw2MotherLode} motherLode
- * @property {Boolean} systemMirror - Toggles whether {@link Tw2GeometryRes} Index and Buffer data arrays are visible
- * @property {Number} maxPrepareTime
- * @property {Boolean} autoPurgeResources=true - Sets whether resources should be purged automatically
- * @property {Number} purgeTime=30 = Sets how long resources can remain inactive before they are purged
- * @property {Number} activeFrame
- * @property {Number} _prepareBudget
- * @property {Array} _prepareQueue
- * @property {Number} _purgeTime
- * @property {Number} _purgeFrame
- * @property {Number} _purgeFrameLimit
- * @property {Array<String>} _pendingLoads - an array of pending loads
- * @property {Number} _noLoadFrames
- */
-
-class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
-  /**
-   * Gets a count of pending loads
-   * @returns {number}
-   */
-  get pendingLoads() {
-    return this._pendingLoads.length;
-  }
-  /**
-   * Constructor
-   * @param {Tw2Library} tw2
-   */
-
-
-  constructor(tw2) {
-    super();
-    this.motherLode = new _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__["Tw2MotherLode"]();
-    this.systemMirror = false;
-    this.maxPrepareTime = 0.05;
-    this.autoPurgeResources = true;
-    this.activeFrame = 0;
-    this.purgeTime = 30;
-    this._prepareBudget = 0;
-    this._prepareQueue = [];
-    this._purgeTime = 0;
-    this._purgeFrame = 0;
-    this._purgeFrameLimit = 1000;
-    this._pendingLoads = [];
-    this._noLoadFrames = 0;
-    this.tw2 = null;
-    tw2.SetLibrary(this);
-  }
-  /**
-   * Sets resource manager options
-   * @param {*} [opt]
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-    Object(_util__WEBPACK_IMPORTED_MODULE_4__["assignIfExists"])(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
-  }
-  /**
-   * Fires on resource errors
-   * - Used when a resource can only be identified by it's path
-   * @param {String} path
-   * @param {Error} err
-   * @returns {Error} err
-   */
-
-
-  OnPathError(path, err = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"]({
-    path
-  })) {
-    path = Tw2ResMan.NormalizePath(path);
-    var res = this.motherLode.Find(path);
-    if (res) return res.OnError(err);
-    this.OnPathEvent(path, "error", err);
-    return err;
-  }
-  /**
-   * Fires on path events
-   * @param {String} path      - Resource path
-   * @param {String} eventName - Resource state name
-   * @param {*} [log={}]       - Resource log
-   */
-
-
-  OnPathEvent(path, eventName, log = {}) {
-    var res = this.motherLode.Find(path),
-        err = Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log) ? log : undefined;
-
-    if (err) {
-      this.motherLode.AddError(path, err);
-      log = {
-        err,
-        message: err.message
-      };
-    }
-
-    log.path = path;
-    log.message = log.message || eventName;
-    this.emit(eventName, path, res, err).msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
-  }
-  /**
-   * IsLoading
-   * @returns {Boolean}
-   *
-   */
-
-
-  IsLoading() {
-    return this._noLoadFrames < 2;
-  }
-  /**
-   * Clears the motherLode {@link Tw2MotherLode}
-   * @param {Function} [onClear] - An optional function which is called on each cleared resource
-   */
-
-
-  Clear(onClear) {
-    this.motherLode.Clear(onClear);
-  }
-  /**
-   * Unloads and Clears the motherLode {@link Tw2MotherLode}
-   * @param {Function} [onClear] - An optional function which is called on each cleared resource
-   * @param {eventLog} [eventLog]
-   */
-
-
-  UnloadAndClear(onClear, eventLog) {
-    this.motherLode.UnloadAndClear(onClear, eventLog);
-  }
-  /**
-   * Internal update function. It is called every frame.
-   * @param {Tw2Device} device
-   * @returns {Boolean}
-   */
-
-
-  Tick(device) {
-    if (this._prepareQueue.length === 0 && this._pendingLoads.length === 0) {
-      if (this._noLoadFrames < 2) {
-        this._noLoadFrames++;
-      }
-    } else {
-      this._noLoadFrames = 0;
-    }
-
-    this._prepareBudget = this.maxPrepareTime;
-    var startTime = device.now;
-
-    while (this._prepareQueue.length) {
-      var res = this._prepareQueue[0][0],
-          data = this._prepareQueue[0][1],
-          xml = this._prepareQueue[0][2];
-
-      this._prepareQueue.shift();
-
-      try {
-        res.Prepare(data, xml);
-        this._prepareBudget -= (device.now - startTime) * 0.001;
-        if (this._prepareBudget < 0) break;
-      } catch (err) {
-        this._prepareBudget = 0;
-        res.OnError(err);
-      }
-    }
-
-    this._purgeTime += device.dt;
-
-    if (this._purgeTime > 1) {
-      this.activeFrame += 1;
-      this._purgeTime -= Math.floor(this._purgeTime);
-      this._purgeFrame += 1;
-
-      if (this._purgeFrame >= 5) {
-        if (this.autoPurgeResources) {
-          this.motherLode.PurgeInactive(this._purgeFrame, this._purgeFrameLimit, this.purgeTime);
-        }
-      }
-    }
-
-    return true;
-  }
-  /**
-   * Adds a resource and response to the prepare queue
-   * @param {Tw2Resource} res
-   * @param {*} response
-   * @param {*} [meta]
-   */
-
-
-  Queue(res, response, meta) {
-    this._prepareQueue.push([res, response, meta]);
-  }
-  /**
-   * Gets a resource
-   * @param {String} path           - The path to load
-   * @param {Function} [onResolved] - Callback fired when the object has loaded
-   * @param {Function} [onRejected] - Callback fired when the object fails to load
-   * @returns {Tw2Resource|*} resource
-   */
-
-
-  GetResource(path, onResolved, onRejected) {
-    var res;
-    path = Tw2ResMan.NormalizePath(path); // Check if already loaded
-
-    res = this.motherLode.Find(path);
-
-    if (res) {
-      res.RegisterCallbacks(onResolved, onRejected);
-      return res;
-    }
-
-    try {
-      var Constructor = this.GetResourceConstructor(path);
-      res = new Constructor();
-    } catch (err) {
-      this.OnPathError(path, err);
-      if (onRejected) onRejected(err);
-      return null;
-    }
-
-    res.path = path;
-    res.RegisterCallbacks(onResolved, onRejected);
-    return this.LoadResource(res);
-  }
-  /**
-   * Fetches a resource
-   * @param {String} path
-   * @returns {Promise<Tw2Resource|null>}
-   */
-
-
-  FetchResource(path) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      return new Promise((resolve, reject) => {
-        _this.GetResource(path, resolve, reject);
-      });
-    })();
-  }
-  /**
-   * Gets a resource object
-   * @param {String} path           - The path to load
-   * @param {Function} [onResolved] - Callback fired when the object has loaded
-   * @param {Function} [onRejected] - Callback fired when the object fails to load
-   */
-
-
-  GetObject(path, onResolved, onRejected) {
-    path = Tw2ResMan.NormalizePath(path); // Check if already loaded
-
-    var res = this.motherLode.Find(path);
-
-    if (res) {
-      res.AddObject(onResolved, onRejected);
-      return;
-    }
-
-    res = new core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
-    res.path = path;
-    res.AddObject(onResolved, onRejected);
-    this.LoadResource(res);
-  }
-  /**
-   * Fetches an object
-   * @param {String} path
-   * @returns {Promise<any>}
-   */
-
-
-  FetchObject(path) {
-    var _this2 = this;
-
-    return _asyncToGenerator(function* () {
-      return new Promise((resolve, reject) => {
-        _this2.GetObject(path, resolve, reject);
-      });
-    })();
-  }
-  /**
-   * Loads a resource
-   * TODO: Create a res object for each quality level rather than just one
-   * @param {Tw2Resource|*} res
-   * @param {eventLog} [eventLog]
-   */
-
-
-  LoadResource(res, eventLog) {
-    this.motherLode.Add(res.path, res); // Don't load if already errored
-
-    if (res.HasErrors()) {
-      return res;
-    }
-
-    try {
-      var url = this.BuildUrl(res.path);
-      res.OnRequested(eventLog);
-
-      if (res.DoCustomLoad && res.DoCustomLoad(url, Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(url))) {
-        return res;
-      }
-
-      if (!res.HasErrors()) {
-        this.Fetch(url, res.requestResponseType).then(response => {
-          res.OnLoaded();
-          this.Queue(res, response);
-        }).catch(err => {
-          res.OnError(err);
-        });
-      }
-    } catch (err) {
-      res.OnError(err);
-    }
-
-    return res;
-  }
-  /**
-   * Adds a pending url
-   * @param {String} url
-   */
-
-
-  AddPendingLoad(url) {
-    this._pendingLoads.push(url);
-  }
-  /**
-   * Removes a pending url
-   * @param {String} url
-   */
-
-
-  RemovePendingLoad(url) {
-    var index = this._pendingLoads.indexOf(url);
-
-    if (index !== -1) {
-      this._pendingLoads.splice(index, 1);
-    }
-  }
-  /**
-   * Fetches cache
-   * @param {String} url
-   * @param {String|Function} responseType
-   * @returns {Promise}
-   */
-
-
-  Fetch(url, responseType) {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      _this3.AddPendingLoad(url);
-
-      return fetch(url).then(response => {
-        if (!response.ok) {
-          throw response;
-        }
-
-        if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(responseType)) {
-          return responseType(response);
-        }
-
-        switch (responseType) {
-          case "arraybuffer":
-            return response.arrayBuffer();
-
-          case "text":
-            return response.text();
-
-          case "json":
-            return response.json();
-
-          case "blob":
-            return response.blob();
-
-          default:
-            throw new Error("Invalid fetch type: " + responseType);
-        }
-      }).then(result => {
-        _this3.RemovePendingLoad(url);
-
-        return result;
-      }).catch(err => {
-        _this3.RemovePendingLoad(url);
-
-        if (err.text) {
-          return err.text().then(text => {
-            var {
-              status,
-              statusText
-            } = err;
-            var json;
-
-            try {
-              json = JSON.parse(text);
-              statusText = json.message || json.msg || json.error || json.err;
-              if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isBoolean"])(statusText)) statusText = undefined;
-            } catch (err) {
-              statusText = "Failed to fetch resource";
-            }
-
-            throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({
-              status,
-              statusText,
-              json
-            });
-          });
-        } else {
-          throw err;
-        }
-      });
-    })();
-  }
-  /**
-   * Gets a resource constructor
-   * @param {String} path
-   * @returns {Tw2Resource}
-   * @throws {ErrFeatureNotImplemented} When passed an unsupported resource prefix
-   * @throws {ErrResourceExtensionUndefined} When passed a resource without an extension
-   * @throws {ErrResourceExtensionUnregistered} When passed a resource extension that isn't registered/ supported
-   */
-
-
-  GetResourceConstructor(path) {
-    path = Tw2ResMan.NormalizePath(path);
-
-    if (path.indexOf("dynamic:/") === 0) {
-      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrFeatureNotImplemented"]({
-        feature: "Dynamic resources"
-      });
-    }
-
-    var extension = Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(path);
-
-    if (extension === null) {
-      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]({
-        path
-      });
-    }
-
-    var Constructor = this.tw2.GetExtension(extension);
-
-    if (!Constructor) {
-      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
-        path,
-        extension
-      });
-    }
-
-    return Constructor;
-  }
-  /**
-   * Builds a url from a resource path
-   * @param {String} path
-   * @returns {String}
-   * @throws {ErrResourcePrefixUndefined} When passed a url without a resource prefix
-   * @throws {ErrResourcePrefixUnregistered} When passed a url with an unregistered resource prefix
-   */
-
-
-  BuildUrl(path) {
-    var prefixIndex = path.indexOf(":/");
-
-    if (prefixIndex === -1) {
-      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]({
-        path
-      });
-    }
-
-    var prefix = path.substr(0, prefixIndex);
-
-    if (prefix === "http" || prefix === "https") {
-      return path;
-    }
-
-    var fullPrefix = this.tw2.GetPath(prefix);
-
-    if (!fullPrefix) {
-      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]({
-        path,
-        prefix
-      });
-    }
-
-    return fullPrefix + path.substr(prefixIndex + 2);
-  }
-  /**
-   * Normalizes a file path by making it lower case and replaces all '\\' with '/'
-   * @param {String} path
-   * @returns {String}
-   */
-
-
-  static NormalizePath(path) {
-    path = path.toLowerCase();
-    path = path.replace("\\", "/");
-    return path;
-  }
-  /**
-   * Log type
-   * @type {*}
-   */
-
-
-}
-Tw2ResMan.LogType = {
-  ERROR: "error",
-  PURGED: "info",
-  UNLOADED: "info",
-  REQUESTED: "info",
-  RELOADING: "info",
-  LOADED: "info",
-  PREPARED: "log",
-  WARNING: "warn",
-  DEBUG: "debug"
-};
-Tw2ResMan.__category = "Resource Manager";
-
-/***/ }),
-
 /***/ "./global/engine/index.js":
 /*!********************************!*\
   !*** ./global/engine/index.js ***!
   \********************************/
-/*! exports provided: Tw2Device, Tw2ResMan, Tw2Logger, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
+/*! exports provided: store, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, Tw2BaseClass */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2Device__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Device */ "./global/engine/Tw2Device.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["Tw2Device"]; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
+/* harmony import */ var core_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/engine */ "./core/engine/index.js");
+/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TextureQuality"]; });
 
-/* harmony import */ var _Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ResMan */ "./global/engine/Tw2ResMan.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["Tw2ResMan"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ShaderQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["ShaderQuality"]; });
 
-/* harmony import */ var _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Logger */ "./global/engine/Tw2Logger.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__["Tw2Logger"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ResourceUnloadPolicy", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["ResourceUnloadPolicy"]; });
 
-/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TextureQuality"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LodSettings", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["LodSettings"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ShaderQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ShaderQuality"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TurretState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TurretState"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ResourceUnloadPolicy", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ResourceUnloadPolicy"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AnimationState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["AnimationState"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LodSettings", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["LodSettings"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["AttachmentType"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TurretState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TurretState"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrappedType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["WrappedType"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AnimationState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AnimationState"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AttachmentType"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeLength", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TypeLength"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrappedType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["WrappedType"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_COLOR_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeLength", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeLength"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STENCIL_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_COLOR_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_CUBE_MAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STENCIL_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_MAG_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_CUBE_MAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_MIN_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_WRAP_S"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_MAG_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_WRAP_T"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_MIN_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_WRAP_S"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_WRAP_T"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_HALF_FLOAT_OES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT16"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_HALF_FLOAT_OES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT24"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT16"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT24"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TYPE_LENGTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TYPE_LENGTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_CUBE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_CUBE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_STENCIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_STENCIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB565"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R11F_G11F_B10F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB9_E5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB565"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R11F_G11F_B10F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB9_E5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB5_A1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB5_A1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CLAMP_TO_EDGE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_MIRRORED_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CLAMP_TO_EDGE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_MIRRORED_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_ALPHA_SATURATE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_ALPHA_SATURATE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_VERTEX_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRAGMENT_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRONT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_VERTEX_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRAGMENT_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRONT_AND_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRONT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRONT_AND_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_GEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_KEEP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_GEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_REPLACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INCR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_KEEP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DECR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_REPLACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INCR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INCR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DECR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DECR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INVERT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INCR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STREAM_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DECR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STATIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INVERT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DYNAMIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STREAM_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STATIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ELEMENT_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DYNAMIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_POINTS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ELEMENT_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINE_LOOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_POINTS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINE_LOOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLE_FAN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLE_FAN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CULL_FACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_TEST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CULL_FACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_ANY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_TEST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_ANY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_OPAQUE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DECAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_TRANSPARENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_FULLSCREEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_ADDITIVE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_FULLSCREEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_PICKABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FILLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DISTORTION"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SHADEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FILLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHATESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SHADEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LASTPIXEL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRCBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHATESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DESTBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LASTPIXEL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CULLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRCBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DESTBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHAREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CULLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHAFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DITHERENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHAREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHAFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DITHERENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SPECULARENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGTABLEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SPECULARENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGSTART"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGTABLEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGDENSITY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGSTART"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_RANGEFOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGDENSITY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_RANGEFOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILWRITEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TEXTUREFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP0"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILWRITEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TEXTUREFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP0"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP6"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP7"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CLIPPING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP6"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LIGHTING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP7"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_AMBIENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CLIPPING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGVERTEXMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LIGHTING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORVERTEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_AMBIENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LOCALVIEWER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGVERTEXMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_NORMALIZENORMALS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORVERTEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DIFFUSEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LOCALVIEWER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SPECULARMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_NORMALIZENORMALS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_AMBIENTMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DIFFUSEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_EMISSIVEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SPECULARMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_VERTEXBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_AMBIENTMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CLIPPLANEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_EMISSIVEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_VERTEXBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CLIPPLANEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSPRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_A"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSPRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_B"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_C"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_A"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_MULTISAMPLEANTIALIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_B"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_MULTISAMPLEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_C"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_PATCHEDGESTYLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_MULTISAMPLEANTIALIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DEBUGMONITORTOKEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_MULTISAMPLEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_PATCHEDGESTYLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_INDEXEDVERTEXBLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DEBUGMONITORTOKEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TWEENFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_INDEXEDVERTEXBLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POSITIONDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TWEENFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_NORMALDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SCISSORTESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POSITIONDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SLOPESCALEDEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_NORMALDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ANTIALIASEDLINEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SCISSORTESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TWOSIDEDSTENCILMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SLOPESCALEDEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ANTIALIASEDLINEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TWOSIDEDSTENCILMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRGBWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SEPARATEALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRGBWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRCBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DESTBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SEPARATEALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDOPALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRCBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_NONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DESTBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDOPALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_NONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_GREATEREQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_GREATEREQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVSRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVSRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_DESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVDESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_DESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_DESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVDESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVDESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCALPHASAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_DESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BOTHSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVDESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BOTHINVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCALPHASAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BOTHSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVBLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BOTHINVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_ADD"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_SUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVBLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_REVSUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_ADD"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_SUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_REVSUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RED"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_R"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RG"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RED"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_R"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_R_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RG"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RG_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGB_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_R_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGBA_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RG_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGB_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGBA_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_5_6_5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_24_8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_5_6_5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_24_8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["WrapModes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BlendTable"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["WrapModes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BlendTable"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_CAPS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["MipFilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_CAPS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_PITCH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_PIXELFORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_MIPMAPCOUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_PITCH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_LINEARSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_PIXELFORMAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_MIPMAPCOUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_COMPLEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_LINEARSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_MIPMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_TEXTURE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_COMPLEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_MIPMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_TEXTURE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_VOLUME"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_ALPHAPIXELS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_VOLUME"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_ALPHAPIXELS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_YUV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_LENGTH_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_YUV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_SIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_LENGTH_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_SIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_RGB_BPP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_R_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_G_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_RGB_BPP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_B_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_R_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_A_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_G_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_B_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_A_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT10"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_D3DFMT_R16G16B16A16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_D3DFMT_R32G32B32A32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT10"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_D3DFMT_R16G16B16A16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_D3DFMT_R32G32B32A32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorRequestAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorCancelAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorRequestFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorRequestAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorExitFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorCancelAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorGetFullScreenElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorRequestFullScreen"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorWebglPrefixes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorExitFullScreen"]; });
+/* harmony import */ var _Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2BaseClass */ "./global/engine/Tw2BaseClass.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorGetFullScreenElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorWebglPrefixes"]; });
-
-
-
+var store = new core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Store"](core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"]);
 
 
 
@@ -59047,7 +59520,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: meta, util, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
+/*! exports provided: meta, util, Tw2BaseClass, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59056,14 +59529,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "meta", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__; });
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "util", function() { return _util__WEBPACK_IMPORTED_MODULE_1__; });
-/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./class */ "./global/class/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
+/* harmony import */ var _engine_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./engine/Tw2BaseClass */ "./global/engine/Tw2BaseClass.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _engine_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"]; });
 
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TextureQuality"]; });
@@ -59823,12 +60290,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _math__WEBPACK_IMPORTED_MODULE_4__["sph3"]; });
 
-/* harmony import */ var _Tw2Library__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Library */ "./global/Tw2Library.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_5__["tw2"]; });
+/* harmony import */ var _tw2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./tw2 */ "./global/tw2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _tw2__WEBPACK_IMPORTED_MODULE_5__["tw2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_5__["resMan"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _tw2__WEBPACK_IMPORTED_MODULE_5__["resMan"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_5__["device"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _tw2__WEBPACK_IMPORTED_MODULE_5__["device"]; });
 
 
 
@@ -67190,6 +67657,29 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./global/tw2.js":
+/*!***********************!*\
+  !*** ./global/tw2.js ***!
+  \***********************/
+/*! exports provided: tw2, resMan, device */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return tw2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
+/* harmony import */ var core_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/engine */ "./core/engine/index.js");
+/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
+
+
+var tw2 = new core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"](_engine__WEBPACK_IMPORTED_MODULE_1__["store"]),
+    resMan = tw2.resMan,
+    device = tw2.device;
+
+
+/***/ }),
+
 /***/ "./global/util/arr.js":
 /*!****************************!*\
   !*** ./global/util/arr.js ***!
@@ -71302,12 +71792,17 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./sof/EveSOF.js ***!
   \***********************/
-/*! exports provided: EveSOF */
+/*! exports provided: EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return EveSOF; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return ErrSOFHullNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return ErrSOFFactionNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return ErrSOFRaceNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return ErrSOFMaterialNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return ErrSOFPatternNotFound; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! curve */ "./curve/index.js");
@@ -72496,7 +72991,7 @@ function EveSOF(tw2) {
 
   this.FetchHull = /*#__PURE__*/function () {
     var _ref8 = _asyncToGenerator(function* (hull) {
-      return getSofObjectKey("hull", hull, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFHullNotFound"]);
+      return getSofObjectKey("hull", hull, ErrSOFHullNotFound);
     });
 
     return function (_x12) {
@@ -72585,7 +73080,7 @@ function EveSOF(tw2) {
 
   this.FetchRace = /*#__PURE__*/function () {
     var _ref13 = _asyncToGenerator(function* (race) {
-      return getSofObjectKey("race", race, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFRaceNotFound"]);
+      return getSofObjectKey("race", race, ErrSOFRaceNotFound);
     });
 
     return function (_x17) {
@@ -72609,7 +73104,7 @@ function EveSOF(tw2) {
 
   this.FetchFaction = /*#__PURE__*/function () {
     var _ref15 = _asyncToGenerator(function* (faction) {
-      return getSofObjectKey("faction", faction, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFFactionNotFound"]);
+      return getSofObjectKey("faction", faction, ErrSOFFactionNotFound);
     });
 
     return function (_x18) {
@@ -72633,7 +73128,7 @@ function EveSOF(tw2) {
 
   this.FetchMaterial = /*#__PURE__*/function () {
     var _ref17 = _asyncToGenerator(function* (material) {
-      return getSofObjectKey("material", material, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFMaterialNotFound"]);
+      return getSofObjectKey("material", material, ErrSOFMaterialNotFound);
     });
 
     return function (_x19) {
@@ -72657,7 +73152,7 @@ function EveSOF(tw2) {
 
   this.FetchPattern = /*#__PURE__*/function () {
     var _ref19 = _asyncToGenerator(function* (pattern) {
-      return getSofObjectKey("pattern", pattern, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFPatternNotFound"]);
+      return getSofObjectKey("pattern", pattern, ErrSOFPatternNotFound);
     });
 
     return function (_x20) {
@@ -72673,6 +73168,56 @@ function EveSOF(tw2) {
   this.FetchPatternNames = /*#__PURE__*/_asyncToGenerator(function* () {
     return getSofObjectValueDescriptions("pattern");
   });
+}
+/**
+ * Fires when a sof hull is not found
+ */
+
+class ErrSOFHullNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "SOF Hull not found (%name%)");
+  }
+
+}
+/**
+ * Fires when a sof faction is not found
+ */
+
+class ErrSOFFactionNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "SOF Faction not found (%name%)");
+  }
+
+}
+/**
+ * Fires when a sof race is not found
+ */
+
+class ErrSOFRaceNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "SOF Race not found (%name%)");
+  }
+
+}
+/**
+ * Fires when a sof material is not found
+ */
+
+class ErrSOFMaterialNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "SOF Material not found (%name%)");
+  }
+
+}
+/**
+ * Fires when a sof pattern is not found
+ */
+
+class ErrSOFPatternNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "SOF Pattern not found (%name%)");
+  }
+
 }
 
 /***/ }),
@@ -77260,7 +77805,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, EveSOF */
+/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -77404,6 +77949,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _EveSOF__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOF */ "./sof/EveSOF.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["EveSOF"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["ErrSOFHullNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["ErrSOFFactionNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["ErrSOFRaceNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["ErrSOFMaterialNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["ErrSOFPatternNotFound"]; });
 
 
 

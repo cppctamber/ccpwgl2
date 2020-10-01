@@ -3,7 +3,7 @@ import * as util from "./util";
 
 export { meta, util };
 
-export * from "./class";
+export * from "./engine/Tw2BaseClass";
 export * from "./engine/Tw2Constant";
 export * from "./math";
-export * from "./Tw2Library";
+export * from "./tw2";

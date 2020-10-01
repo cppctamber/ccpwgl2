@@ -1,8 +1,8 @@
 import { meta, quat, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
-import { ErrShaderCompile, ErrShaderLink } from "../Tw2Error";
 import shaderOverrides from "./shaderOverrides.json";
+import { Tw2Error } from "core/Tw2Error";
 
 /**
  * Tw2Shader
@@ -918,4 +918,28 @@ export class Tw2Shader
 
     static DEBUG_ENABLED = false;
 
+}
+
+
+/**
+ * Throws when a shader cannot compile
+ */
+export class ErrShaderCompile extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error compiling %shaderType% shader (%infoLog%)");
+    }
+}
+
+
+/**
+ * Throws when unable to link a vertex shader and fragment shader
+ */
+export class ErrShaderLink extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error linking shaders");
+    }
 }

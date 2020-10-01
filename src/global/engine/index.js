@@ -1,4 +1,5 @@
-export * from "./Tw2Device";
-export * from "./Tw2ResMan";
-export * from "./Tw2Logger";
+import { Tw2Store, Tw2Library } from "core/engine";
+
+export const store = new Tw2Store(Tw2Library);
 export * from "./Tw2Constant";
+export * from "./Tw2BaseClass";

@@ -1,8 +1,8 @@
 import { tw2 } from "global";
 import { Tw2BlackBinaryReader } from "./Tw2BlackBinaryReader";
-import { ErrBinaryFormat, ErrBinaryObjectTypeNotFound, } from "../Tw2Error";
+import { ErrBinaryFormat, ErrBinaryObjectTypeNotFound, } from "./Tw2ObjectReader";
 import { object } from "./Tw2BlackPropertyReaders";
-import { isFunction } from "global/util";
+
 
 /**
  * Tw2BlackReader

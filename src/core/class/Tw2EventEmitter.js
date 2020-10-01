@@ -1,9 +1,9 @@
+import { isArray, isBoolean, isFunction } from "global/util";
+
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
-import { isArray, isBoolean, isFunction, isPlain, toArray } from "../util";
-
 const PRIVATE = new WeakMap();
 
 /**

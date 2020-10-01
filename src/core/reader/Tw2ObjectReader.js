@@ -1,6 +1,29 @@
 import { tw2 } from "global";
 import { Tw2BinaryReader } from "./Tw2BinaryReader";
-import { ErrFeatureNotImplemented, ErrBinaryFormat, ErrBinaryObjectTypeNotFound } from "../Tw2Error";
+import { ErrFeatureNotImplemented, Tw2Error } from "../Tw2Error";
+
+
+/**
+ * Throws when xml is not a valid format
+ */
+export class ErrBinaryFormat extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid binary format (%formatError=undefined%)");
+    }
+}
+
+/**
+ * Throws when an xml object type is undefined
+ */
+export class ErrBinaryObjectTypeNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Binary object type not found (%type%)");
+    }
+}
 
 /**
  * Tw2ObjectReader

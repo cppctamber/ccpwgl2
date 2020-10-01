@@ -1,5 +1,7 @@
 export * from "./batch";
+export * from "./class";
 export * from "./data";
+export * from "./engine";
 export * from "./geometry";
 export * from "./mesh";
 export * from "./model";

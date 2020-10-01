@@ -1,4 +1,5 @@
-import { ErrBinaryReaderReadError } from "../Tw2Error";
+import { Tw2Error } from "../Tw2Error";
+
 
 /**
  * Tw2BlackBinaryReader
@@ -333,4 +334,16 @@ export class Tw2BlackBinaryReader
      * @type {TextDecoder}
      */
     static wstringDecoder = new TextDecoder("utf-16le");
+}
+
+
+/**
+ * Throws on binary reader read errors
+ */
+export class ErrBinaryReaderReadError extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error reading binary (%readError=undefined%)");
+    }
 }
