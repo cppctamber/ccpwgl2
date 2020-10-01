@@ -1,27 +1,45 @@
 import { createDecorator, defineMetadata, getMetadata, hasMetadata, isString } from "global/util";
-import { ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
+import { Tw2Error } from "core/class/Tw2Error";
 
 
-export const has = function(name, target, property)
+/**
+ * Throws when a class can only be instantiated once
+ */
+export class ErrSingletonInstantiation extends Tw2Error
 {
-    return hasMetadata(name, target, property);
-};
+    constructor(data)
+    {
+        super(data, "Cannot re-instantiate singleton (%class%)");
+    }
+}
 
-export const get = function(name, target, property)
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+export class ErrAbstractClass extends Tw2Error
 {
-    return getMetadata(name, target, property);
-};
+    constructor(data)
+    {
+        super(data, "Abstract class cannot be directly instantiated (%class%)");
+    }
+}
 
-export const set = function(name, value, target, property)
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+export class ErrAbstractMethod extends Tw2Error
 {
-    return defineMetadata(name, value, target, property);
-};
+    constructor(data)
+    {
+        super(data, "Abstract class method not implemented on class '%class%': (%method%)");
+    }
+}
 
 export const abstract = createDecorator({
     noArgs: true,
     ctor({ target })
     {
-        defineMetadata("abstract", true, target);
+        //defineMetadata("abstract", true, target);
         return target;
     },
     method({ target, property, descriptor })
@@ -52,18 +70,6 @@ export const singleton = createDecorator({
     }
 });
 
-/**
- * Constructors by type
- * @type {Map<String, any>}
- */
-const byType = new Map();
-
-/**
- * Types by constructor
- * @type {Map<any, String>}
- */
-const byCtor = new Map();
-
 export const ctor = createDecorator({
     ctor({ target }, ...types)
     {
@@ -71,56 +77,11 @@ export const ctor = createDecorator({
         {
             if (isString(types[i]))
             {
-                byType.set(types[i], target);
-
-                if (i === 0)
-                {
-                    byCtor.set(target, types[i]);
-                    defineMetadata("type", types[i], target);
-
-                    // Temporary
-                    if (!target.getOwnTw2Type)
-                    {
-                        target.getOwnTw2Type = function()
-                        {
-                            return ctor.getType(this);
-                        };
-
-                        target.getTw2Type = function(Ctor)
-                        {
-                            return ctor.getType(Ctor);
-                        };
-
-                        target.getTw2Ctor = function(type)
-                        {
-                            return ctor.getCtor(type);
-                        };
-                    }
-                }
+                defineMetadata("type", types[i], target);
             }
         }
     }
 });
-
-ctor.getCtor = function(type)
-{
-    return byType.get(type);
-};
-
-ctor.getType = function(Ctor)
-{
-    return byCtor.get(Ctor);
-};
-
-ctor.getValues = function()
-{
-    const out = {};
-    for (const [ type, ctor ] of byType)
-    {
-        out[type] = ctor;
-    }
-    return out;
-};
 
 export const data = createDecorator({
     handler({ target, property }, value)

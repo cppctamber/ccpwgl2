@@ -2,7 +2,7 @@ import { meta } from "global";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader } from "./Tw2Shader";
-import { Tw2Error } from "core/Tw2Error";
+import { Tw2Error } from "../class";
 
 
 /**

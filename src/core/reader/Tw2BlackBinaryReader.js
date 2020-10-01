@@ -1,4 +1,4 @@
-import { Tw2Error } from "../Tw2Error";
+import { Tw2Error } from "../class/Tw2Error";
 
 
 /**

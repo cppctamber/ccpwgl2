@@ -62,60 +62,6 @@ export class Tw2Error extends Error
 
 }
 
-/**
- * Throws on invalid raw data declaration types
- */
-export class ErrDeclarationValueType extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Invalid declaration value type (%declaration%:%valueType%)");
-    }
-}
-
-/**
- * Throws when a class can only be instantiated once
- */
-export class ErrSingletonInstantiation extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Cannot re-instantiate singleton (%class%)");
-    }
-}
-
-/**
- * Throws when a decorators usage is invalid
- */
-export class ErrInvalidDecoratorUsage extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Invalid decorator usage (%reason%)");
-    }
-}
-
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-export class ErrAbstractClass extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Abstract class cannot be directly instantiated (%class%)");
-    }
-}
-
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-export class ErrAbstractMethod extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Abstract class method not implemented on class '%class%': (%method%)");
-    }
-}
 
 /**
  * Throws when a feature is not implemented

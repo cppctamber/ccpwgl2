@@ -1,3 +1,5 @@
+import { ErrIndexBounds } from "../class/Tw2Error";
+
 /**
  * Stores raw data for {@link Tw2PerObjectData}
  *
@@ -6,8 +8,6 @@
  * @property {Number} nextOffset
  * @class
  */
-import { ErrIndexBounds } from "../Tw2Error";
-
 export class Tw2RawData
 {
 

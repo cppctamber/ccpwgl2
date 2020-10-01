@@ -1,4 +1,4 @@
-import { ErrIndexBounds } from "../Tw2Error";
+import { ErrIndexBounds } from "../class/Tw2Error";
 import { util, Tw2BaseClass, meta } from "global";
 
 

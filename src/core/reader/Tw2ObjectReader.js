@@ -1,6 +1,6 @@
 import { tw2 } from "global";
 import { Tw2BinaryReader } from "./Tw2BinaryReader";
-import { ErrFeatureNotImplemented, Tw2Error } from "../Tw2Error";
+import { ErrFeatureNotImplemented, Tw2Error } from "../class/Tw2Error";
 
 
 /**

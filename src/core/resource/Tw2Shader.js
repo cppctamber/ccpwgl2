@@ -2,7 +2,7 @@ import { meta, quat, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import shaderOverrides from "./shaderOverrides.json";
-import { Tw2Error } from "core/Tw2Error";
+import { Tw2Error } from "../class";
 
 /**
  * Tw2Shader

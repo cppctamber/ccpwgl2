@@ -1,9 +1,8 @@
 import { num, vec3, vec4, mat4 } from "global/math";
 import { get, isString } from "global/util";
-import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2EventEmitter, Tw2Error } from "../class";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2VertexDeclaration } from "../vertex/Tw2VertexDeclaration";
-import { Tw2Error } from "core/Tw2Error";
 
 import {
     RM_ANY,

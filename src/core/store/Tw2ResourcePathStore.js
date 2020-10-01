@@ -1,6 +1,6 @@
 import { Tw2GenericStore } from "./Tw2GenericStore";
 import { isString } from "global/util";
-import { Tw2Error } from "core/Tw2Error";
+import { Tw2Error } from "../class";
 
 
 export class Tw2ResourcePathStore extends Tw2GenericStore

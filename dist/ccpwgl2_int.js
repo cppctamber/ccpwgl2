@@ -17259,169 +17259,6 @@ var config = {
 
 /***/ }),
 
-/***/ "./core/Tw2Error.js":
-/*!**************************!*\
-  !*** ./core/Tw2Error.js ***!
-  \**************************/
-/*! exports provided: Tw2Error, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return Tw2Error; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrDeclarationValueType", function() { return ErrDeclarationValueType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return ErrSingletonInstantiation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrInvalidDecoratorUsage", function() { return ErrInvalidDecoratorUsage; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return ErrAbstractClass; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return ErrAbstractMethod; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return ErrFeatureNotImplemented; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return ErrIndexBounds; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
-var HAS_CAPTURE_STACK_TRACE = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
-/**
- * Tw2Error
- *
- * @property {String} name    - The error's name
- * @property {String} message - The error's message
- * @property {Object} data    - Optional error data
- */
-
-class Tw2Error extends Error {
-  /**
-   * Constructor
-   * @param {String|Object} [data={}]                   - Error message or an object containing relevant data
-   * @param {String} [defaultMessage='Undefined Error'] - The default error message
-   */
-  constructor(data = {}, defaultMessage = "Undefined error") {
-    var message = defaultMessage;
-
-    if (typeof data === "string") {
-      message = data;
-      data = {};
-    } else if (data.message) {
-      message = data.message;
-      delete data.message;
-    }
-
-    super();
-    this.message = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["template"])(message, data);
-    this.name = this.constructor.name;
-    this.data = data;
-
-    if (HAS_CAPTURE_STACK_TRACE) {
-      Error["captureStackTrace"](this, Tw2Error);
-    } else {
-      this.stack = new Error(this.message).stack;
-    }
-  }
-  /**
-   * Emits an event on a target emitter
-   * @param {*} emitter
-   * @param {String} [eventName='error']
-   * @returns {Tw2Error}
-   */
-
-
-  emitOn(emitter, eventName = "error") {
-    if (emitter && emitter.emit) {
-      emitter.emit(eventName, this);
-    }
-
-    return this;
-  }
-  /**
-   * Class category
-   * @type {String}
-   */
-
-
-}
-/**
- * Throws on invalid raw data declaration types
- */
-
-Tw2Error.__category = "error";
-class ErrDeclarationValueType extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid declaration value type (%declaration%:%valueType%)");
-  }
-
-}
-/**
- * Throws when a class can only be instantiated once
- */
-
-class ErrSingletonInstantiation extends Tw2Error {
-  constructor(data) {
-    super(data, "Cannot re-instantiate singleton (%class%)");
-  }
-
-}
-/**
- * Throws when a decorators usage is invalid
- */
-
-class ErrInvalidDecoratorUsage extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid decorator usage (%reason%)");
-  }
-
-}
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-
-class ErrAbstractClass extends Tw2Error {
-  constructor(data) {
-    super(data, "Abstract class cannot be directly instantiated (%class%)");
-  }
-
-}
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-
-class ErrAbstractMethod extends Tw2Error {
-  constructor(data) {
-    super(data, "Abstract class method not implemented on class '%class%': (%method%)");
-  }
-
-}
-/**
- * Throws when a feature is not implemented
- */
-
-class ErrFeatureNotImplemented extends Tw2Error {
-  constructor(data) {
-    super(data, "%feature=Feature% not implemented");
-  }
-
-}
-/**
- * Throws when an index is out of bounds
- */
-
-class ErrIndexBounds extends Tw2Error {
-  constructor(data) {
-    super(data, "Array index out of bounds");
-  }
-
-}
-/**
- * Throws when invalid wrapped objects are passed as arguments
- */
-
-class ErrWrapped extends Tw2Error {
-  constructor(data) {
-    super(data, "Invalid wrapped object(s) (%reason%)");
-  }
-
-}
-
-/***/ }),
-
 /***/ "./core/Tw2Frustum.js":
 /*!****************************!*\
   !*** ./core/Tw2Frustum.js ***!
@@ -18261,6 +18098,108 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./core/class/Tw2Error.js":
+/*!********************************!*\
+  !*** ./core/class/Tw2Error.js ***!
+  \********************************/
+/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return Tw2Error; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return ErrFeatureNotImplemented; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return ErrIndexBounds; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+var HAS_CAPTURE_STACK_TRACE = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
+/**
+ * Tw2Error
+ *
+ * @property {String} name    - The error's name
+ * @property {String} message - The error's message
+ * @property {Object} data    - Optional error data
+ */
+
+class Tw2Error extends Error {
+  /**
+   * Constructor
+   * @param {String|Object} [data={}]                   - Error message or an object containing relevant data
+   * @param {String} [defaultMessage='Undefined Error'] - The default error message
+   */
+  constructor(data = {}, defaultMessage = "Undefined error") {
+    var message = defaultMessage;
+
+    if (typeof data === "string") {
+      message = data;
+      data = {};
+    } else if (data.message) {
+      message = data.message;
+      delete data.message;
+    }
+
+    super();
+    this.message = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["template"])(message, data);
+    this.name = this.constructor.name;
+    this.data = data;
+
+    if (HAS_CAPTURE_STACK_TRACE) {
+      Error["captureStackTrace"](this, Tw2Error);
+    } else {
+      this.stack = new Error(this.message).stack;
+    }
+  }
+  /**
+   * Emits an event on a target emitter
+   * @param {*} emitter
+   * @param {String} [eventName='error']
+   * @returns {Tw2Error}
+   */
+
+
+  emitOn(emitter, eventName = "error") {
+    if (emitter && emitter.emit) {
+      emitter.emit(eventName, this);
+    }
+
+    return this;
+  }
+
+}
+/**
+ * Throws when a feature is not implemented
+ */
+
+class ErrFeatureNotImplemented extends Tw2Error {
+  constructor(data) {
+    super(data, "%feature=Feature% not implemented");
+  }
+
+}
+/**
+ * Throws when an index is out of bounds
+ */
+
+class ErrIndexBounds extends Tw2Error {
+  constructor(data) {
+    super(data, "Array index out of bounds");
+  }
+
+}
+/**
+ * Throws when invalid wrapped objects are passed as arguments
+ */
+
+class ErrWrapped extends Tw2Error {
+  constructor(data) {
+    super(data, "Invalid wrapped object(s) (%reason%)");
+  }
+
+}
+
+/***/ }),
+
 /***/ "./core/class/Tw2EventEmitter.js":
 /*!***************************************!*\
   !*** ./core/class/Tw2EventEmitter.js ***!
@@ -18660,19 +18599,29 @@ class Tw2Schema {}
 /*!*****************************!*\
   !*** ./core/class/index.js ***!
   \*****************************/
-/*! exports provided: Tw2EventEmitter, Tw2Notifications, Tw2Schema */
+/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Schema */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"]; });
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Error */ "./core/class/Tw2Error.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"]; });
 
-/* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Notifications */ "./core/class/Tw2Notifications.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrFeatureNotImplemented"]; });
 
-/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Schema */ "./core/class/Tw2Schema.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrWrapped"]; });
+
+/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
+
+/* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Notifications */ "./core/class/Tw2Notifications.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
+
+/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Schema */ "./core/class/Tw2Schema.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__["Tw2Schema"]; });
+
 
 
 
@@ -18740,7 +18689,8 @@ class Tw2PerObjectData {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RawData", function() { return Tw2RawData; });
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class/Tw2Error */ "./core/class/Tw2Error.js");
+
 /**
  * Stores raw data for {@link Tw2PerObjectData}
  *
@@ -18791,7 +18741,7 @@ class Tw2RawData {
     var el = this.elements[name];
 
     if (index < 0 || index >= el.size) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
+      throw new _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
     }
 
     this.data[index + el.offset] = value;
@@ -18953,15 +18903,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return ErrWebxrSessionNotSupported; });
 /* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 /* harmony import */ var _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
 /* harmony import */ var _vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 
 
 
@@ -19019,7 +18967,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @class
  */
 
-class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+class Tw2Device extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   /**
    * Gets the current gl context version
    * @returns {number}
@@ -19091,7 +19039,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     this._quadBuffer = null;
     this._quadDecl = null;
     this._cameraQuadBuffer = null;
-    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
+    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
     this._fallbackCube = null;
     this._fallbackTexture = null;
     this._blitEffect = null;
@@ -19229,34 +19177,34 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       usageIndex: 0,
       elements: 2
     }]);
-    this.wrapModes = Array.from(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["WrapModes"]);
+    this.wrapModes = Array.from(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WrapModes"]);
     this._alphaBlendState = {
       dirty: false,
       states: {
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]]: 0,
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOPALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"]
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOPALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"]
       }
     };
     this._alphaTestState = {
       dirty: false,
       states: {
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]]: 0,
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]]: -1,
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"],
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPING"]]: 0,
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPLANEENABLE"]]: 0
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]]: -1,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]]: global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"],
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPING"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPLANEENABLE"]]: 0
       }
     };
     this._depthOffsetState = {
       dirty: false,
       states: {
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]]: 0,
-        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]]: 0
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]]: 0,
+        [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]]: 0
       }
     };
     this._shadowStateBuffer = new Float32Array(24);
@@ -19434,7 +19382,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   IsAlphaTestEnabled() {
-    return this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]];
+    return this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]];
   }
   /**
    * Checks if a frame buffer is complete
@@ -19458,8 +19406,8 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     if (!(extension in this._extensions)) {
       var ext;
 
-      for (var i = 0; i < global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorWebglPrefixes"].length; i++) {
-        ext = this.gl.getExtension(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorWebglPrefixes"][i] + extension);
+      for (var i = 0; i < global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
+        ext = this.gl.getExtension(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"][i] + extension);
         if (ext) break;
         ext = null;
       }
@@ -19623,10 +19571,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
   SetRenderState(state, value) {
     var gl = this.gl;
-    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
+    this._currentRenderMode = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
 
     switch (state) {
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"]:
         if (value) {
           gl.enable(gl.DEPTH_TEST);
         } else {
@@ -19635,15 +19583,15 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"]:
         gl.depthMask(!!value);
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPING"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CLIPPLANEENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPING"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPLANEENABLE"]:
         if (this._alphaTestState[state] !== value) {
           this._alphaTestState.states[state] = value;
           this._alphaTestState.dirty = true;
@@ -19651,13 +19599,13 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOPALPHA"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOPALPHA"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]:
         if (this._alphaBlendState[state] !== value) {
           this._alphaBlendState.states[state] = value;
           this._alphaBlendState.dirty = true;
@@ -19665,18 +19613,18 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"]:
         switch (value) {
-          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]:
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]:
             gl.disable(gl.CULL_FACE);
             return;
 
-          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]:
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]:
             gl.enable(gl.CULL_FACE);
             gl.cullFace(gl.FRONT);
             return;
 
-          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CCW"]:
+          case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CCW"]:
             gl.enable(gl.CULL_FACE);
             gl.cullFace(gl.BACK);
             return;
@@ -19684,24 +19632,24 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"]:
         gl.depthFunc(0x0200 + value - 1);
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"]:
         if (value) gl.enable(gl.BLEND);else gl.disable(gl.BLEND);
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"]:
         gl.colorMask((value & 1) !== 0, (value & 2) !== 0, (value & 4) !== 0, (value & 8) !== 0);
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SCISSORTESTENABLE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SCISSORTESTENABLE"]:
         if (value) gl.enable(gl.SCISSOR_TEST);else gl.disable(gl.SCISSOR_TEST);
         return;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]:
         value = global_math__WEBPACK_IMPORTED_MODULE_0__["num"].dwordToFloat(value);
 
         if (this._depthOffsetState[state] !== value) {
@@ -19723,26 +19671,26 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     if (this._alphaBlendState.dirty) {
       var blendOp = gl.FUNC_ADD;
 
-      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_SUBTRACT"]) {
+      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
         blendOp = gl.FUNC_SUBTRACT;
-      } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_REVSUBTRACT"]) {
+      } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_REVSUBTRACT"]) {
         blendOp = gl.FUNC_REVERSE_SUBTRACT;
       }
 
-      var srcBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"]]],
-          destBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"]]];
+      var srcBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]],
+          destBlend = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]];
 
-      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"]]) {
+      if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]]) {
         var blendOpAlpha = gl.FUNC_ADD;
 
-        if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_SUBTRACT"]) {
+        if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
           blendOpAlpha = gl.FUNC_SUBTRACT;
-        } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_REVSUBTRACT"]) {
+        } else if (this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_REVSUBTRACT"]) {
           blendOpAlpha = gl.FUNC_REVERSE_SUBTRACT;
         }
 
-        var srcBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLENDALPHA"]]],
-            destBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLENDALPHA"]]];
+        var srcBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]],
+            destBlendAlpha = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]];
         gl.blendEquationSeparate(blendOp, blendOpAlpha);
         gl.blendFuncSeparate(srcBlend, destBlend, srcBlendAlpha, destBlendAlpha);
       } else {
@@ -19754,42 +19702,42 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     }
 
     if (this._depthOffsetState.dirty) {
-      gl.polygonOffset(this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"]], this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"]]);
+      gl.polygonOffset(this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]], this._depthOffsetState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]]);
       this._depthOffsetState.dirty = false;
     }
 
     var alphaTestFunc, invertedAlphaTest, alphaTestRef;
 
-    if (this.shadowHandles && this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"]]) {
-      switch (this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"]]) {
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_NEVER"]:
+    if (this.shadowHandles && this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]]) {
+      switch (this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]]) {
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_NEVER"]:
           alphaTestFunc = 0;
           invertedAlphaTest = 1;
           alphaTestRef = -256;
           break;
 
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LESS"]:
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LESS"]:
           alphaTestFunc = 0;
           invertedAlphaTest = -1;
-          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]] - 1;
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]] - 1;
           break;
 
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_EQUAL"]:
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_EQUAL"]:
           alphaTestFunc = 1;
           invertedAlphaTest = 0;
-          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
           break;
 
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]:
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]:
           alphaTestFunc = 0;
           invertedAlphaTest = -1;
-          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          alphaTestRef = this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
           break;
 
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"]:
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"]:
           alphaTestFunc = 0;
           invertedAlphaTest = 1;
-          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]] - 1;
+          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]] - 1;
           break;
 
         /*
@@ -19800,10 +19748,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
         break;
         */
 
-        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATEREQUAL"]:
+        case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATEREQUAL"]:
           alphaTestFunc = 0;
           invertedAlphaTest = 1;
-          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"]];
+          alphaTestRef = -this._alphaTestState.states[global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]];
           break;
 
         default:
@@ -19828,85 +19776,85 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     this.gl.frontFace(this.gl.CW);
 
     switch (renderMode) {
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_OPAQUE"]:
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_PICKABLE"]:
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_PICKABLE"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
         break;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DECAL"]:
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_GREATER"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHAREF"], 127);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DECAL"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"], 127);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
         break;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_TRANSPARENT"]:
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_CW"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_SRCALPHA"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_INVSRCALPHA"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0); // -1.0
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_TRANSPARENT"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0); // -1.0
 
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
         break;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ADDITIVE"]:
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_ONE"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLEND_ONE"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["BLENDOP_ADD"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], true);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_LEQUAL"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ADDITIVE"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], true);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
         break;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_FULLSCREEN"]:
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ALPHATESTENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CULL_NONE"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZWRITEENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["CMP_ALWAYS"]);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SLOPESCALEDEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_DEPTHBIAS"], 0);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_SEPARATEALPHABLENDENABLE"], false);
-        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RS_COLORWRITEENABLE"], 0xf);
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_FULLSCREEN"]:
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"], global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_ALWAYS"]);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"], 0);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"], false);
+        this.SetRenderState(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"], 0xf);
         break;
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DISTORTION"]: // Same as Fullscreen?
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DISTORTION"]: // Same as Fullscreen?
 
-      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DEPTH"]:
+      case global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DEPTH"]:
         // TODO: Implement
         return;
 
@@ -20019,29 +19967,29 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 } // Render Modes
 
 Tw2Device.RequestAnimationFrame = function () {
-  var request = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorRequestAnimationFrame"]);
+  var request = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]);
   return callback => request(callback);
 }();
 
 Tw2Device.CancelAnimationFrame = function () {
-  var cancel = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["VendorCancelAnimationFrame"]);
+  var cancel = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]);
   return id => cancel(id);
 }();
 
-Tw2Device.prototype.RM_ANY = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ANY"];
-Tw2Device.prototype.RM_OPAQUE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_OPAQUE"];
-Tw2Device.prototype.RM_DECAL = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DECAL"];
-Tw2Device.prototype.RM_TRANSPARENT = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_TRANSPARENT"];
-Tw2Device.prototype.RM_ADDITIVE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_ADDITIVE"];
-Tw2Device.prototype.RM_DEPTH = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DEPTH"];
-Tw2Device.prototype.RM_DISTORTION = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_DISTORTION"];
-Tw2Device.prototype.RM_FULLSCREEN = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_FULLSCREEN"];
-Tw2Device.prototype.RM_PICKABLE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_6__["RM_PICKABLE"];
+Tw2Device.prototype.RM_ANY = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
+Tw2Device.prototype.RM_OPAQUE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"];
+Tw2Device.prototype.RM_DECAL = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DECAL"];
+Tw2Device.prototype.RM_TRANSPARENT = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_TRANSPARENT"];
+Tw2Device.prototype.RM_ADDITIVE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ADDITIVE"];
+Tw2Device.prototype.RM_DEPTH = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DEPTH"];
+Tw2Device.prototype.RM_DISTORTION = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DISTORTION"];
+Tw2Device.prototype.RM_FULLSCREEN = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_FULLSCREEN"];
+Tw2Device.prototype.RM_PICKABLE = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_PICKABLE"];
 /**
  * Throws when unable to create a webgl context
  */
 
-class ErrWebglContext extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+class ErrWebglContext extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Unable to create webgl context (%version%)");
   }
@@ -20051,7 +19999,7 @@ class ErrWebglContext extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Err
  * Throws when webxr is not supported
  */
 
-class ErrWebxrNotSupported extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+class ErrWebxrNotSupported extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Webxr not supported");
   }
@@ -20061,7 +20009,7 @@ class ErrWebxrNotSupported extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["T
  * Throws when a webxr device is not found
  */
 
-class ErrWebxrDeviceNotFound extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+class ErrWebxrDeviceNotFound extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Webxr device not found");
   }
@@ -20071,7 +20019,7 @@ class ErrWebxrDeviceNotFound extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__[
  * Throws when there is an error requesting a webxr device
  */
 
-class ErrWebxrRequestFailed extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+class ErrWebxrRequestFailed extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Webxr request failed (%err%)");
   }
@@ -20081,7 +20029,7 @@ class ErrWebxrRequestFailed extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["
  * Throws when a webxr session type is not supported
  */
 
-class ErrWebxrSessionNotSupported extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_5__["Tw2Error"] {
+class ErrWebxrSessionNotSupported extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Webxr session not supported (%err%)");
   }
@@ -21194,13 +21142,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return ErrResourceFormatUnsupported; });
 /* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MotherLode */ "./core/engine/Tw2MotherLode.js");
 /* harmony import */ var core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 
 
 
@@ -21224,7 +21170,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @property {Number} _noLoadFrames
  */
 
-class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+class Tw2ResMan extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   /**
    * Gets a count of pending loads
    * @returns {number}
@@ -21274,7 +21220,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    */
 
 
-  OnPathError(path, err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"]({
+  OnPathError(path, err = new _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]({
     path
   })) {
     path = Tw2ResMan.NormalizePath(path);
@@ -21634,7 +21580,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     path = Tw2ResMan.NormalizePath(path);
 
     if (path.indexOf("dynamic:/") === 0) {
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrFeatureNotImplemented"]({
+      throw new _class__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]({
         feature: "Dynamic resources"
       });
     }
@@ -21727,7 +21673,7 @@ Tw2ResMan.LogType = {
   WARNING: "warn",
   DEBUG: "debug"
 };
-class ErrResourcePrefixUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourcePrefixUnregistered extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Unregistered resource prefix (%prefix%)");
   }
@@ -21737,7 +21683,7 @@ class ErrResourcePrefixUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4
  * Throws when a resource path has no prefix
  */
 
-class ErrResourcePrefixUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourcePrefixUndefined extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Undefined resource prefix");
   }
@@ -21747,7 +21693,7 @@ class ErrResourcePrefixUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__[
  * Throws when a resource path has an unregistered file extension
  */
 
-class ErrResourceExtensionUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourceExtensionUnregistered extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Unregistered resource extension (%extension%)");
   }
@@ -21757,7 +21703,7 @@ class ErrResourceExtensionUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODUL
  * Throws when a resource path has no file extension
  */
 
-class ErrResourceExtensionUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourceExtensionUndefined extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Undefined resource extension");
   }
@@ -21767,7 +21713,7 @@ class ErrResourceExtensionUndefined extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4
  * Throws on http request errors
  */
 
-class ErrHTTPRequest extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrHTTPRequest extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Communication error while requesting resource");
   }
@@ -21777,7 +21723,7 @@ class ErrHTTPRequest extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] 
  * Throws on http status errors
  */
 
-class ErrHTTPStatus extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrHTTPStatus extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "%statusText=Communication status error while loading resource% (%status%)");
   }
@@ -21787,7 +21733,7 @@ class ErrHTTPStatus extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
  * Throws in invalid resource formats
  */
 
-class ErrResourceFormatInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourceFormatInvalid extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Invalid resource format: %format% (%reason%)");
   }
@@ -21797,7 +21743,7 @@ class ErrResourceFormatInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["T
  * Throws in invalid resource formats
  */
 
-class ErrResourceFormatUnsupported extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrResourceFormatUnsupported extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Unsupported resource format: %format%");
   }
@@ -22983,7 +22929,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2EventEmitter, Tw2Notifications, Tw2Schema, Tw2PerObjectData, Tw2RawData, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2ConstructorStore, Tw2GenericStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Error, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2Frustum, Tw2RenderTarget */
+/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Schema, Tw2PerObjectData, Tw2RawData, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23002,6 +22948,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMeshBatch", function() { return _batch__WEBPACK_IMPORTED_MODULE_0__["Tw2InstancedMeshBatch"]; });
 
 /* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./class */ "./core/class/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["ErrIndexBounds"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["ErrWrapped"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
@@ -23187,9 +23141,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return _sampler__WEBPACK_IMPORTED_MODULE_11__["Tw2SamplerOverride"]; });
 
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./store */ "./core/store/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ConstructorStore"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2GenericStore"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2ConstructorStore"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableTypeStore", function() { return _store__WEBPACK_IMPORTED_MODULE_12__["Tw2VariableTypeStore"]; });
 
@@ -23216,31 +23170,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Tw2RuntimeInstanceData */ "./core/Tw2RuntimeInstanceData.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RuntimeInstanceData", function() { return _Tw2RuntimeInstanceData__WEBPACK_IMPORTED_MODULE_15__["Tw2RuntimeInstanceData"]; });
 
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Tw2Error */ "./core/Tw2Error.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["Tw2Error"]; });
+/* harmony import */ var _Tw2Frustum__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Tw2Frustum */ "./core/Tw2Frustum.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return _Tw2Frustum__WEBPACK_IMPORTED_MODULE_16__["Tw2Frustum"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrDeclarationValueType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrDeclarationValueType"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSingletonInstantiation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrInvalidDecoratorUsage", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrInvalidDecoratorUsage"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrAbstractClass"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrAbstractMethod"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrFeatureNotImplemented", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrFeatureNotImplemented"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrIndexBounds", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrIndexBounds"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWrapped"]; });
-
-/* harmony import */ var _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Tw2Frustum */ "./core/Tw2Frustum.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__["Tw2Frustum"]; });
-
-/* harmony import */ var _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Tw2RenderTarget */ "./core/Tw2RenderTarget.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderTarget", function() { return _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_18__["Tw2RenderTarget"]; });
-
+/* harmony import */ var _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Tw2RenderTarget */ "./core/Tw2RenderTarget.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderTarget", function() { return _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_17__["Tw2RenderTarget"]; });
 
 
 
@@ -29209,7 +29143,7 @@ var Tw2Vector4Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorParameter", function() { return Tw2VectorParameter; });
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class/Tw2Error */ "./core/class/Tw2Error.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _class, _class2, _temp;
 
@@ -29259,7 +29193,7 @@ var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].cto
       return;
     }
 
-    throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
+    throw new _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
   }
   /**
    * Gets the parameter's value
@@ -29290,7 +29224,7 @@ var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].cto
       return this.value[index];
     }
 
-    throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
+    throw new _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
   }
   /**
    * Fires on value changes
@@ -30385,7 +30319,7 @@ class Tw2BinaryReader {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackBinaryReader", function() { return Tw2BlackBinaryReader; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryReaderReadError", function() { return ErrBinaryReaderReadError; });
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class/Tw2Error */ "./core/class/Tw2Error.js");
 
 /**
  * Tw2BlackBinaryReader
@@ -30703,7 +30637,7 @@ class Tw2BlackBinaryReader {
 
 Tw2BlackBinaryReader.stringDecoder = new TextDecoder("utf-8");
 Tw2BlackBinaryReader.wstringDecoder = new TextDecoder("utf-16le");
-class ErrBinaryReaderReadError extends _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+class ErrBinaryReaderReadError extends _class_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
     super(data, "Error reading binary (%readError=undefined%)");
   }
@@ -30743,7 +30677,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../class/Tw2Error */ "./core/class/Tw2Error.js");
 /* harmony import */ var _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2BlackBinaryReader */ "./core/reader/Tw2BlackBinaryReader.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
@@ -31139,7 +31073,7 @@ function fromList(options) {
  */
 
 function notImplemented(reader, target, property) {
-  throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
+  throw new _class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
     feature: "Black reader for property '".concat(property, "'")
   });
 }
@@ -31532,7 +31466,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return Tw2ObjectReader; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2BinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BinaryReader */ "./core/reader/Tw2BinaryReader.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2Error */ "./core/class/Tw2Error.js");
 
 
 
@@ -31540,7 +31474,7 @@ __webpack_require__.r(__webpack_exports__);
  * Throws when xml is not a valid format
  */
 
-class ErrBinaryFormat extends _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+class ErrBinaryFormat extends _class_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Invalid binary format (%formatError=undefined%)");
   }
@@ -31550,7 +31484,7 @@ class ErrBinaryFormat extends _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]
  * Throws when an xml object type is undefined
  */
 
-class ErrBinaryObjectTypeNotFound extends _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+class ErrBinaryObjectTypeNotFound extends _class_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Binary object type not found (%type%)");
   }
@@ -31761,7 +31695,7 @@ class Tw2ObjectReader {
             return objReader._reader.ReadFloat32();
 
           default:
-            throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]({
+            throw new _class_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]({
               feature: "Element raw type Float64"
             });
         }
@@ -31986,7 +31920,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 var _dec, _class, _temp;
 
 
@@ -32200,7 +32134,7 @@ var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
  * Throws when an effect has an invalid shader version
  */
 
-class ErrShaderVersion extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrShaderVersion extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Invalid version of effect file (%version%)");
   }
@@ -32210,7 +32144,7 @@ class ErrShaderVersion extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Er
  * Throws when an effect has no header
  */
 
-class ErrShaderHeaderSize extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrShaderHeaderSize extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Effect file contains no compiled effects");
   }
@@ -32220,7 +32154,7 @@ class ErrShaderHeaderSize extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw
  * Throws when a shader has an invalid permutation value
  */
 
-class ErrShaderPermutationValue extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrShaderPermutationValue extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Invalid shader permutation value");
   }
@@ -32249,8 +32183,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var core_engine__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/engine */ "./core/engine/index.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
+/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../engine */ "./core/engine/index.js");
 /* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../geometry */ "./core/geometry/index.js");
 /* harmony import */ var core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core/reader/Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
 var _dec, _class, _temp;
@@ -32398,7 +32332,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         break;
 
       default:
-        throw new core_engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
+        throw new _engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
           format: this._extension,
           reason: "Unexpected extension"
         });
@@ -32430,7 +32364,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
         break;
 
       default:
-        throw new core_engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
+        throw new _engine__WEBPACK_IMPORTED_MODULE_5__["ErrResourceFormatInvalid"]({
           format: this._extension,
           reason: "Unexpected extension"
         });
@@ -33219,7 +33153,7 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
  * Throws when a geometry mesh lacks an element required for a particle system
  */
 
-class ErrGeometryMeshMissingParticleElement extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryMeshMissingParticleElement extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Input geometry mesh lacks element required by particle system");
   }
@@ -33229,7 +33163,7 @@ class ErrGeometryMeshMissingParticleElement extends _Tw2Error__WEBPACK_IMPORTED_
  * Throws when a geometry mesh element doesn't have the required number of components
  */
 
-class ErrGeometryMeshElementComponentsMissing extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryMeshElementComponentsMissing extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Input geometry mesh elements do not have the required number of components");
   }
@@ -33239,7 +33173,7 @@ class ErrGeometryMeshElementComponentsMissing extends _Tw2Error__WEBPACK_IMPORTE
  * Throws when a geometry mesh area is missing
  */
 
-class ErrGeometryMeshAreaMissing extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryMeshAreaMissing extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Geometry mesh missing expected area at index %areaIndex%");
   }
@@ -33249,7 +33183,7 @@ class ErrGeometryMeshAreaMissing extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__[
  * Throws when a geometry mesh has an invalid bone name for a model
  */
 
-class ErrGeometryMeshBoneNameInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryMeshBoneNameInvalid extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Geometry mesh has invalid bone name for model");
   }
@@ -33259,7 +33193,7 @@ class ErrGeometryMeshBoneNameInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_
  * Throws when there is an error binding a geometry mesh to an effect
  */
 
-class ErrGeometryMeshEffectBinding extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryMeshEffectBinding extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Error binding geometry mesh to effect");
   }
@@ -33269,7 +33203,7 @@ class ErrGeometryMeshEffectBinding extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4_
  * Throws when a geometry mesh has an invalid file type
  */
 
-class ErrGeometryFileType extends _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrGeometryFileType extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Invalid geometry file type (%fileType%)");
   }
@@ -33453,11 +33387,9 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return Tw2Resource; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var _class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../class/Tw2Notifications */ "./core/class/Tw2Notifications.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 var _dec, _class, _class2, _temp;
-
 
 
 
@@ -33474,7 +33406,7 @@ var _dec, _class, _class2, _temp;
  * @property {Set} _watchers
  */
 
-var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends _class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -33654,7 +33586,7 @@ var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2R
    */
 
 
-  OnError(err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]()) {
+  OnError(err = new _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]()) {
     var wasGood = this.IsLoaded() || this.IsPrepared();
 
     if (!this._errors.includes(err)) {
@@ -33828,7 +33760,7 @@ var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2R
     } // Don't add notification if it returns true
 
 
-    if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(notification)) {
       return !!notification(resource, err, funcName);
     } else if (funcName && funcName in notification) {
       return !!notification[funcName](resource, err);
@@ -33889,7 +33821,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
 /* harmony import */ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json");
 var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_3___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json", 1);
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 var _dec, _class, _class2, _temp;
 
 
@@ -34745,7 +34677,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
  * Throws when a shader cannot compile
  */
 
-class ErrShaderCompile extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrShaderCompile extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Error compiling %shaderType% shader (%infoLog%)");
   }
@@ -34755,7 +34687,7 @@ class ErrShaderCompile extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Er
  * Throws when unable to link a vertex shader and fragment shader
  */
 
-class ErrShaderLink extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+class ErrShaderLink extends _class__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "Error linking shaders");
   }
@@ -36070,9 +36002,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return ErrStoreValueInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyUnregistered", function() { return ErrStoreKeyUnregistered; });
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
-
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 
 
 var STORE = new WeakMap();
@@ -36080,7 +36010,7 @@ var STORE = new WeakMap();
  * Generic store
  */
 
-class Tw2GenericStore extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+class Tw2GenericStore extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"] {
   /**
    * Constructor
    */
@@ -36264,7 +36194,7 @@ function getUsedKey(source, key, isConstructorStore) {
  */
 
 
-class ErrStoreKeyReserved extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrStoreKeyReserved extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "'%storeName%' store key restricted (%key%)");
   }
@@ -36274,7 +36204,7 @@ class ErrStoreKeyReserved extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Err
  * Throws when trying to register an invalid store value
  */
 
-class ErrStoreValueInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrStoreValueInvalid extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "'%storeName%' store value invalid (%key%)");
   }
@@ -36284,7 +36214,7 @@ class ErrStoreValueInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Er
  * Throws when trying to retrieve a store value that doesn't exist
  */
 
-class ErrStoreKeyUnregistered extends _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrStoreKeyUnregistered extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "'%storeName%' store key is unregistered (%key%)");
   }
@@ -36393,7 +36323,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStorePathUndefined", function() { return ErrStorePathUndefined; });
 /* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 
 
 
@@ -36467,7 +36397,7 @@ class Tw2ResourcePathStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__
 
 Tw2ResourcePathStore.storeName = "Resource path";
 Tw2ResourcePathStore.restrictedKeys = ["rgba"];
-class ErrStorePathUndefined extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+class ErrStorePathUndefined extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Undefined resource prefix");
   }
@@ -36594,7 +36524,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreVariableTypeNotFoundByValue", function() { return ErrStoreVariableTypeNotFoundByValue; });
 /* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 
 
 
@@ -36640,7 +36570,7 @@ class Tw2VariableTypeStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__
 
 Tw2VariableTypeStore.isConstructorStore = true;
 Tw2VariableTypeStore.storeName = "Variable Type";
-class ErrStoreVariableTypeNotFoundByValue extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+class ErrStoreVariableTypeNotFoundByValue extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
   constructor(data) {
     super(data, "Could not identify variable type from value (%value%)");
   }
@@ -36653,16 +36583,16 @@ class ErrStoreVariableTypeNotFoundByValue extends core_Tw2Error__WEBPACK_IMPORTE
 /*!*****************************!*\
   !*** ./core/store/index.js ***!
   \*****************************/
-/*! exports provided: Tw2ConstructorStore, Tw2GenericStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore */
+/*! exports provided: Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ConstructorStore */ "./core/store/Tw2ConstructorStore.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_0__["Tw2ConstructorStore"]; });
+/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"]; });
 
-/* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GenericStore", function() { return _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_1__["Tw2GenericStore"]; });
+/* harmony import */ var _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ConstructorStore */ "./core/store/Tw2ConstructorStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return _Tw2ConstructorStore__WEBPACK_IMPORTED_MODULE_1__["Tw2ConstructorStore"]; });
 
 /* harmony import */ var _Tw2VariableTypeStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2VariableTypeStore */ "./core/store/Tw2VariableTypeStore.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableTypeStore", function() { return _Tw2VariableTypeStore__WEBPACK_IMPORTED_MODULE_2__["Tw2VariableTypeStore"]; });
@@ -37438,9 +37368,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return ErrBindingType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return ErrBindingReference; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -37448,7 +37377,6 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
 
 
 
@@ -37555,7 +37483,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
       this._sourceElement = 3;
       this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
       this._sourceIsRGBA = srcSwizzle === ".a";
-    } else if (this.sourceObject instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
+    } else if (this.sourceObject instanceof core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
       if (this.sourceAttribute === "v1") {
         srcSwizzled = true;
         this._sourceElement = 0;
@@ -37597,7 +37525,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
       this._destinationElement = 3;
       this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
       this._destinationIsRGBA = destSwizzle === ".a";
-    } else if (this.destinationObject instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
+    } else if (this.destinationObject instanceof core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
       if (this.destinationAttribute === "v1") {
         destSwizzled = true;
         this._destinationElement = 0;
@@ -37758,7 +37686,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
 
   static GetAttribute(object, attribute, element, isRGBA) {
     // Looks to be deprecated
-    if (object instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
+    if (object instanceof core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
       switch (element) {
         case 0:
           return "v0";
@@ -37811,7 +37739,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
     } // Looks to be depreciated
 
 
-    if (object instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
+    if (object instanceof core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
       switch (element) {
         case 0:
           attribute = "v0";
@@ -38009,7 +37937,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
  * Throws when there's an error binding an object
  */
 
-class ErrBindingValueUndefined extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+class ErrBindingValueUndefined extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
   }
@@ -38019,7 +37947,7 @@ class ErrBindingValueUndefined extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3_
  * Throws when there's an error binding a value
  */
 
-class ErrBindingType extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+class ErrBindingType extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "Error binding '%name=unknown%', cannot identify binding type");
   }
@@ -38029,7 +37957,7 @@ class ErrBindingType extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Erro
  * Throws when trying to bind an object by it's id and it can't be found
  */
 
-class ErrBindingReference extends core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+class ErrBindingReference extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "Error binding '%name=unknown%', could not find '%object%' object reference");
   }
@@ -67024,14 +66952,14 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].hex = function (linear) {
 /*!*********************************!*\
   !*** ./global/meta/@generic.js ***!
   \*********************************/
-/*! exports provided: has, get, set, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
+/*! exports provided: ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "has", function() { return has; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return ErrSingletonInstantiation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return ErrAbstractClass; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return ErrAbstractMethod; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return abstract; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ctor", function() { return ctor; });
@@ -67043,25 +66971,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage", function() { return stage; });
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class/Tw2Error */ "./core/class/Tw2Error.js");
 
 
-var has = function (name, target, property) {
-  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["hasMetadata"])(name, target, property);
-};
-var get = function (name, target, property) {
-  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])(name, target, property);
-};
-var set = function (name, value, target, property) {
-  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])(name, value, target, property);
-};
+/**
+ * Throws when a class can only be instantiated once
+ */
+
+class ErrSingletonInstantiation extends core_class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Cannot re-instantiate singleton (%class%)");
+  }
+
+}
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+
+class ErrAbstractClass extends core_class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Abstract class cannot be directly instantiated (%class%)");
+  }
+
+}
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+
+class ErrAbstractMethod extends core_class_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Abstract class method not implemented on class '%class%': (%method%)");
+  }
+
+}
 var abstract = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
   noArgs: true,
 
   ctor({
     target
   }) {
-    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("abstract", true, target);
+    //defineMetadata("abstract", true, target);
     return target;
   },
 
@@ -67073,7 +67022,7 @@ var abstract = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"
     Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("abstract", true, target, property);
 
     descriptor.value = function () {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractMethod"]({
+      throw new ErrAbstractMethod({
         class: this.constructor.name,
         method: property
       });
@@ -67093,7 +67042,7 @@ var singleton = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator
     return class Singleton extends target {
       constructor(...args) {
         count++;
-        if (count > 1) throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrSingletonInstantiation"]({
+        if (count > 1) throw new ErrSingletonInstantiation({
           class: target.name
         });
         super(...args);
@@ -67103,68 +67052,18 @@ var singleton = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator
   }
 
 });
-/**
- * Constructors by type
- * @type {Map<String, any>}
- */
-
-var byType = new Map();
-/**
- * Types by constructor
- * @type {Map<any, String>}
- */
-
-var byCtor = new Map();
 var ctor = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
   ctor({
     target
   }, ...types) {
     for (var i = 0; i < types.length; i++) {
       if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isString"])(types[i])) {
-        byType.set(types[i], target);
-
-        if (i === 0) {
-          byCtor.set(target, types[i]);
-          Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("type", types[i], target); // Temporary
-
-          if (!target.getOwnTw2Type) {
-            target.getOwnTw2Type = function () {
-              return ctor.getType(this);
-            };
-
-            target.getTw2Type = function (Ctor) {
-              return ctor.getType(Ctor);
-            };
-
-            target.getTw2Ctor = function (type) {
-              return ctor.getCtor(type);
-            };
-          }
-        }
+        Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("type", types[i], target);
       }
     }
   }
 
 });
-
-ctor.getCtor = function (type) {
-  return byType.get(type);
-};
-
-ctor.getType = function (Ctor) {
-  return byCtor.get(Ctor);
-};
-
-ctor.getValues = function () {
-  var out = {};
-
-  for (var [type, _ctor] of byType) {
-    out[type] = _ctor;
-  }
-
-  return out;
-};
-
 var data = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
   handler({
     target,
@@ -67569,7 +67468,7 @@ var raw = createObjectType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Typ
 /*!******************************!*\
   !*** ./global/meta/index.js ***!
   \******************************/
-/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, has, get, set, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
+/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67626,11 +67525,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["raw"]; });
 
 /* harmony import */ var _generic__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./@generic */ "./global/meta/@generic.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "has", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["has"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSingletonInstantiation", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["ErrSingletonInstantiation"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["get"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractClass", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClass"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["set"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrAbstractMethod", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractMethod"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["abstract"]; });
 

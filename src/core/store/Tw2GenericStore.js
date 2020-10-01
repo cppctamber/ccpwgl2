@@ -1,6 +1,5 @@
 import { isTr2OrTri, toArray, toTw2 } from "global/util";
-import { Tw2Error } from "../Tw2Error";
-import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2EventEmitter, Tw2Error } from "../class";
 
 
 export const STORE = new WeakMap();

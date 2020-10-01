@@ -15,6 +15,5 @@ export * from "./value";
 export * from "./vertex";
 
 export * from "./Tw2RuntimeInstanceData";
-export * from "./Tw2Error";
 export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";
