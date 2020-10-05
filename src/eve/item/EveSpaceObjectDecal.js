@@ -104,7 +104,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
 
         if (!skipEvent)
         {
-            this.emit("unloaded");
+            this.EmitEvent("unloaded");
         }
     }
 
@@ -126,7 +126,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
         }
 
         this._dirty = false;
-        this.emit("rebuilt");
+        this.EmitEvent("rebuilt");
     }
 
     /**

@@ -3,7 +3,6 @@ import { meta } from "global";
 
 @meta.notImplemented
 @meta.ctor("Tr2GpuParticleSystem")
-@meta.todo("Handle conflict with Tw2BaseClass.emit")
 export class Tr2GpuParticleSystem
 {
 
@@ -43,7 +42,7 @@ export class Tr2GpuParticleSystem
     GetResources(out = [])
     {
         if (this.clear) this.clear.GetResources(out);
-        if (this.emit) this.emit.GetResources(out);
+        if (this.EmitEvent) this.EmitEvent.GetResources(out);
         if (this.render) this.render.GetResources(out);
         if (this.setDrawParameters) this.setDrawParameters.GetResources(out);
         if (this.setSortParameters) this.setSortParameters.GetResources(out);

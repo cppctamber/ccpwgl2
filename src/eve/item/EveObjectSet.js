@@ -64,12 +64,12 @@ export class EveObjectSet extends Tw2BaseClass
         if (this.items.includes(item))
         {
             this._dirty = true;
-            this.emit("item_modified", item, opt);
+            this.EmitEvent("item_modified", item, opt);
         }
         else
         {
-            this.emit("item_removed", item, opt);
-            item.off("modified", this.OnItemModified);
+            this.EmitEvent("item_removed", item, opt);
+            item.OffEvent("modified", this.OnItemModified);
         }
     }
 
@@ -88,7 +88,7 @@ export class EveObjectSet extends Tw2BaseClass
 
         if (!skipEvents)
         {
-            this.emit("item_created", item);
+            this.EmitEvent("item_created", item);
         }
 
         if (!skipUpdate)
@@ -112,11 +112,11 @@ export class EveObjectSet extends Tw2BaseClass
             this.items.push(item);
             this._dirty = true;
 
-            item.on("modified", this.OnItemModified, this);
+            item.OnEvent("modified", this.OnItemModified, this);
 
             if (!skipEvents)
             {
-                this.emit("item_added", item);
+                this.EmitEvent("item_added", item);
             }
 
             if (!skipUpdate)
@@ -143,11 +143,11 @@ export class EveObjectSet extends Tw2BaseClass
             this.items.splice(index, 1);
             this._dirty = true;
 
-            item.off("modified", this.OnItemModified);
+            item.OffEvent("modified", this.OnItemModified);
 
             if (!skipEvents)
             {
-                this.emit("item_removed", item);
+                this.EmitEvent("item_removed", item);
             }
 
             if (!skipUpdate)
@@ -181,7 +181,7 @@ export class EveObjectSet extends Tw2BaseClass
 
         if (!skipEvents)
         {
-            this.emit("items_cleared", items);
+            this.EmitEvent("items_cleared", items);
         }
 
         if (!skipUpdate)
@@ -200,10 +200,10 @@ export class EveObjectSet extends Tw2BaseClass
         {
             const item = this.items[i];
 
-            if (!item.has("modified", this.OnItemModified))
+            if (!item.HasEvent("modified", this.OnItemModified))
             {
-                this.emit("item_added", item);
-                item.on("modified", this.OnItemModified, this);
+                this.EmitEvent("item_added", item);
+                item.OnEvent("modified", this.OnItemModified, this);
             }
 
             if (item.display)
@@ -213,7 +213,7 @@ export class EveObjectSet extends Tw2BaseClass
 
             if (item._dirty)
             {
-                this.emit("item_rebuilt", item);
+                this.EmitEvent("item_rebuilt", item);
             }
 
             item._dirty = false;
@@ -262,7 +262,7 @@ export class EveObjectSet extends Tw2BaseClass
     {
         if (!skipEvent)
         {
-            this.emit("unloaded");
+            this.EmitEvent("unloaded");
         }
     }
 
@@ -271,7 +271,7 @@ export class EveObjectSet extends Tw2BaseClass
      */
     Rebuild()
     {
-        this.emit("rebuilt");
+        this.EmitEvent("rebuilt");
     }
 
     /**

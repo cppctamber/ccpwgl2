@@ -281,16 +281,14 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     /**
      * Gets the transforms' values
-     * @param {Object} [out={}]
+     * @param {Object} [out]
+     * @param {Object} [opt]
      * @returns {{}}
      */
-    GetValues(out = {})
+    GetValues(out, opt)
     {
-        if (this.name) out.name = this.name;
-        out.rotation = this.GetRotation([]);
-        out.translation = this.GetTranslation([]);
-        out.scaling = this.GetScale([]);
-        return out;
+        this.RebuildTransforms();
+        return super.GetValues(out, opt);
     }
 
     /**

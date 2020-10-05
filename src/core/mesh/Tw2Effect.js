@@ -161,9 +161,10 @@ export class Tw2Effect extends Tw2BaseClass
      */
     OnResPrepared(res)
     {
+        this.effectRes = res;
         this.shader = res.GetShader(this.options);
         this.BindParameters();
-        this.emit("loaded", { effect: this, shader: this.shader, resource: res });
+        this.EmitEvent("loaded", { effect: this, shader: this.shader, resource: res });
         return true;
     }
 
@@ -188,9 +189,9 @@ export class Tw2Effect extends Tw2BaseClass
                         }
                     }
                 }
+                Reflect.deleteProperty(this.techniques, t);
             }
         }
-        this.techniques = {};
     }
 
     /**
@@ -680,6 +681,28 @@ export class Tw2Effect extends Tw2BaseClass
     }
 
     /**
+     * Fires a function per child
+     * @param {Function} func
+     * @param {Boolean} [ignoreEmpty]
+     * @returns {*}
+     */
+    PerChild(func, ignoreEmpty)
+    {
+        const rv = super.PerChild(func, ignoreEmpty);
+        if (rv !== undefined) return rv;
+
+        const parent = this.parameters;
+        for (const key in parent)
+        {
+            if (parent.hasOwnProperty(key))
+            {
+                const rv = func({ struct: parent[key], parent, key, path: `/parameters/${key}` });
+                if (rv !== undefined) return rv;
+            }
+        }
+    }
+
+    /**
      * on Event Listener
      * @param {Tw2Effect} source
      * @param {String} eventName
@@ -744,19 +767,46 @@ export class Tw2Effect extends Tw2BaseClass
         {
             // TODO: Check if options and current options are the same
             a.options = Object.assign(options);
-            if (a.effectRes) a.shader = a.effectRes.GetShader(options);
+
+            if (a.effectRes)
+            {
+                a.shader = a.effectRes.GetShader(options);
+            }
+
             updated = true;
         }
 
-        // Only allow setting of effectFilePath on creation
-        if (opt.verb === "create" && effectFilePath)
+        if (effectFilePath && a.effectFilePath !== effectFilePath)
         {
             a.effectFilePath = effectFilePath.toLowerCase();
-            // Initialize is handled in Tw2BaseClass.from
-            // updated = true;
+
+            // Clear current effect
+            a.UnBindParameters();
+            a.shader = null;
+
+            if (a.effectRes)
+            {
+                a.effectRes.UnregisterNotification(this);
+                a.effectRes = null;
+            }
+
+            // New effect
+            if (a.effectFilePath !== "")
+            {
+                a.UpdateValues(opt);
+                const path = Tw2Effect.ToEffectResPath(a.effectFilePath);
+                tw2.GetResource(path, res => a.OnResPrepared(res));
+                return true;
+            }
+
+            updated = true;
         }
 
-        if (updated && !opt.skipUpdate) a.UpdateValues(opt);
+        if (updated && !opt.skipUpdate)
+        {
+            a.UpdateValues(opt);
+        }
+
         return updated;
     }
 

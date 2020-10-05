@@ -1,4 +1,4 @@
-import { isArray, isBoolean, isFunction } from "global/util";
+import { isArray, isFunction } from "global/util";
 
 /**
  * Emitter privates
@@ -11,13 +11,14 @@ const PRIVATE = new WeakMap();
  */
 export class Tw2EventEmitter
 {
+
     /**
      * Emits an event
      * @param {String} eventName
-     * @param {*} args
+     * @param args
      * @returns {Tw2EventEmitter}
      */
-    emit(eventName, ...args)
+    EmitEvent(eventName, ...args)
     {
         const events = PRIVATE.get(this);
         if (!events) return this;
@@ -45,7 +46,7 @@ export class Tw2EventEmitter
      * @param {Object} options
      * @returns {Tw2EventEmitter}
      */
-    add(options)
+    AddEvents(options)
     {
         if (!options) return this;
 
@@ -72,9 +73,7 @@ export class Tw2EventEmitter
                 if (isArray(listener))
                 {
                     listener = listener[0];
-                    if (listener[1]) context = listener[1];
-                    // .once in property key overrides array argument
-                    if (isBoolean(listener[2]) && !isBoolean(once)) once = listener[2];
+                    context = listener[1];
                 }
 
                 if (!isFunction(listener))
@@ -82,7 +81,7 @@ export class Tw2EventEmitter
                     throw new Error("Invalid listener");
                 }
 
-                this.on(eventName, listener, context, once);
+                this.OnEvent(eventName, listener, context, once);
             }
         }
 
@@ -93,13 +92,14 @@ export class Tw2EventEmitter
      * Adds a listener to an event
      * @param {Array|String} eventName
      * @param {Function} listener
-     * @param {*} [context=undefined]
-     * @param {Boolean} [once=false]
+     * @param {*} [context]
+     * @param {Boolean} [once]
      * @returns {Tw2EventEmitter}
      */
-    on(eventName, listener, context = undefined, once = false)
+    OnEvent(eventName, listener, context, once)
     {
         let events = PRIVATE.get(this);
+
         if (!events)
         {
             events = {};
@@ -114,11 +114,21 @@ export class Tw2EventEmitter
         }
 
         // Allow intercepting of a listener when its first added
-        if (!events[eventName].has(listener) && this.constructor.onListener)
+        if (!events[eventName].has(listener))
         {
-            if (this.constructor.onListener(this, eventName, listener, context) && once)
+            if (this.constructor.onListener)
             {
-                return this;
+                if (this.constructor.onListener(this, eventName, listener, context) && once)
+                {
+                    return this;
+                }
+            }
+            else if (this["OnEventFirstListener"])
+            {
+                if (this["OnEventFirstListener"](this, eventName, listener, context) && once)
+                {
+                    return this;
+                }
             }
         }
 
@@ -127,15 +137,15 @@ export class Tw2EventEmitter
     }
 
     /**
-     * Adds a listener to an event, and clears it after it's first emit
+     * Adds a listener to an event, and clears it after it's first EmitEvent
      * @param {String} eventName
      * @param {Function} listener
      * @param {*} [context]
      * @returns {Tw2EventEmitter}
      */
-    once(eventName, listener, context)
+    OnceEvent(eventName, listener, context)
     {
-        return this.on(eventName, listener, context, true);
+        return this.OnEvent(eventName, listener, context, true);
     }
 
     /**
@@ -144,7 +154,7 @@ export class Tw2EventEmitter
      * @param {Function} listener
      * @returns {Tw2EventEmitter}
      */
-    off(eventName, listener)
+    OffEvent(eventName, listener)
     {
         const events = PRIVATE.get(this);
         if (!events) return this;
@@ -185,7 +195,7 @@ export class Tw2EventEmitter
      * @param {String|Function} listener
      * @returns {boolean}
      */
-    has(eventName, listener)
+    HasEvent(eventName, listener)
     {
         const events = PRIVATE.get(this);
         if (!events) return false;
@@ -215,27 +225,17 @@ export class Tw2EventEmitter
     }
 
     /**
-     * Clears an event and it's listeners, or all events by passing "*"
+     * Clears an event of listeners
      * @param {String} eventName
      * @returns {Tw2EventEmitter}
      */
-    del(eventName)
+    ClearEvent(eventName)
     {
         const events = PRIVATE.get(this);
         if (!events) return this;
 
-        // Clear all
         if (eventName === "*")
         {
-            this.emit("kill");
-            for (const e in events)
-            {
-                if (events.hasOwnProperty(e))
-                {
-                    events[e].clear();
-                    Reflect.deleteProperty(events, e);
-                }
-            }
             PRIVATE.delete(this);
             return this;
         }
@@ -266,26 +266,9 @@ export class Tw2EventEmitter
     }
 
     /**
-     * Fires before a listener is added
-     * @param {String} eventName
-     * @param {Function} listener
-     * @param {*} context
-     * @returns {Boolean} true if fired immediately
-     * @type {null|Function}
-     */
-    static onListener = null;
-
-    /**
      * Default logger
      * @type {null|Tw2Logger}
      */
     static defaultLogger = null;
-
-    /**
-     * Class category
-     * @type {null}
-     * @private
-     */
-    static __category = null;
 
 }

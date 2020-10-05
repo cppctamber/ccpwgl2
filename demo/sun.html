@@ -22,7 +22,7 @@
             scene.loadSun("res:/fisfx/lensflare/orange_sun.red");
             scene.setSunDirection([ 1, 0, 0.7 ]);
 
-            ccpwgl.on("pre_render", function()
+            ccpwgl.OnEvent("pre_render", function()
             {
                 document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });

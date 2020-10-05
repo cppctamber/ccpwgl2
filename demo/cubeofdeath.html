@@ -80,7 +80,7 @@
             ccpwgl.getSofFactionNames(sofDataReceived("faction"));
             ccpwgl.getSofRaceNames(sofDataReceived("race"));
 
-            ccpwgl.on("pre_render", function()
+            ccpwgl.OnEvent("pre_render", function()
             {
                 document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });

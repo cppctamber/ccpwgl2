@@ -11,7 +11,10 @@ export class Tw2Model
     @meta.list("Tw2Bone")
     bones = [];
 
-    @meta.plain //("Tw2Bone")
+    @meta.plain
+    @meta.isPrivate
     bonesByName = {};
+
+    // Todo: Initialize: build bones by name
 
 }

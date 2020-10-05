@@ -1,4 +1,4 @@
-import { Type } from "../engine/Tw2Constant";
+import { Type } from "./types/consts";
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import {
     isFunction,
@@ -30,7 +30,38 @@ const typeHandler = function({ target, property }, type, ...typesOf)
         defineMetadata("typesOf", typesOf, target, property);
     }
 
-    if (property.charAt(0) === "_") defineMetadata("isPrivate", true, target, property);
+    if (property.charAt(0) === "_")
+    {
+        defineMetadata("isPrivate", true, target, property);
+    }
+
+    // Cache structs and structList properties
+    switch (type)
+    {
+        case Type.STRUCT_RAW:
+        case Type.STRUCT:
+            let structs = getMetadata("structs", target.constructor);
+            structs = structs ? Array.from(structs) : [];
+            if (!structs.includes(property))
+            {
+                structs.push(property);
+                structs.sort();
+            }
+            defineMetadata("structs", structs, target.constructor);
+            break;
+
+        case Type.STRUCT_LIST:
+            let structLists = getMetadata("structLists", target.constructor);
+            structLists = structLists ? Array.from(structLists) : [];
+            if (!structLists.includes(property))
+            {
+                structLists.push(property);
+                structLists.sort();
+            }
+            defineMetadata("structLists", structLists, target.constructor);
+            break;
+    }
+
 };
 
 /**
@@ -178,7 +209,7 @@ export const enums = createDecorator({
 
 /**
  * Plain property type
- * @type {PropertyDecorator}
+ * @type {Function}
  */
 export const plain = create(Type.PLAIN);
 
@@ -203,7 +234,7 @@ export const list = createDecorator({
             }
         }
 
-        typeHandler({ target, property }, Type.LIST, ...typesOf);
+        typeHandler({ target, property }, Type.STRUCT_LIST, ...typesOf);
     }
 });
 
@@ -267,11 +298,11 @@ function createObjectType(propertyType)
  * Structure property type
  * @type {Function}
  */
-export const struct = createObjectType(Type.OBJECT);
+export const struct = createObjectType(Type.STRUCT);
 
 /**
  * Raw structure property type
  * @type {Function}
  */
-export const raw = createObjectType(Type.RAW);
+export const raw = createObjectType(Type.STRUCT_RAW);
 

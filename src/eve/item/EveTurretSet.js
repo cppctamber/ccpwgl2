@@ -682,7 +682,7 @@ export class EveTurretSet extends EveObjectSet
                     }
                     this._fireCallbackPending = false;
 
-                    this.emit("fired", { turretSet: this, turret: activeTurret });
+                    this.EmitEvent("fired", { turretSet: this, turret: activeTurret });
                 }
             }
 

@@ -158,7 +158,7 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (render)
         {
-            this.on("tick", render);
+            this.OnEvent("tick", render);
 
             const tick = () =>
             {
@@ -194,7 +194,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     EndFrame()
     {
-        this.emit("tick", this.device.dt);
+        this.EmitEvent("tick", this.device.dt);
         this.device.EndFrame();
     }
 

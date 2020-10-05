@@ -175,7 +175,7 @@ var ccpwgl = (function(tw2)
         {
             if (updateEnabled)
             {
-                ccpwgl.emit("update", dt);
+                ccpwgl.EmitEvent("update", dt);
 
                 for (var i = 0; i < scene.objects.length; ++i)
                 {
@@ -206,9 +206,9 @@ var ccpwgl = (function(tw2)
                     .GLViewport([ 0, 0, tw2.width, tw2.height ])
                     .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT);
 
-                ccpwgl.emit("pre_render", dt);
+                ccpwgl.EmitEvent("pre_render", dt);
                 scene.wrappedScene.Render(dt);
-                ccpwgl.emit("post_scene_render", dt);
+                ccpwgl.EmitEvent("post_scene_render", dt);
 
                 if (!ccpwgl.post || !ccpwgl.post.Render())
                 {
@@ -222,7 +222,7 @@ var ccpwgl = (function(tw2)
             }
         }
 
-        ccpwgl.emit("post_render", dt);
+        ccpwgl.EmitEvent("post_render", dt);
         return true;
     };
 
@@ -242,10 +242,10 @@ var ccpwgl = (function(tw2)
     }
 
     ccpwgl
-        .on("update", oldEvents("onUpdate"))
-        .on("pre_render", oldEvents("onPreRender"))
-        .on("post_render", oldEvents("onPostRender"))
-        .on("post_scene_render", oldEvents("onPostSceneRender"));
+        .OnEvent("update", oldEvents("onUpdate"))
+        .OnEvent("pre_render", oldEvents("onPreRender"))
+        .OnEvent("post_render", oldEvents("onPostRender"))
+        .OnEvent("post_scene_render", oldEvents("onPostSceneRender"));
 
 
     /**
@@ -563,7 +563,7 @@ var ccpwgl = (function(tw2)
         this.wrappedObjects = [ null ];
         /** Transforms @type {Tw2Transform} **/
         this.transform = new tw2.Tw2TransformParameter("transform")
-            .on("modified", () =>
+            .OnEvent("modified", () =>
             {
                 if (!this.isLoaded()) return;
                 this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
@@ -748,7 +748,7 @@ var ccpwgl = (function(tw2)
         this.wrappedObjects = [ null ];
         /** Object transform @type {Tw2TransformParameter} **/
         this.transform = new tw2.Tw2TransformParameter("transform")
-            .on("modified", () =>
+            .OnEvent("modified", () =>
             {
                 if (this.isLoaded())
                 {
@@ -1577,7 +1577,7 @@ var ccpwgl = (function(tw2)
 
         /** Local transform **/
         this.transform = new tw2.Tw2TransformParameter("transform")
-            .on("modified", () =>
+            .OnEvent("modified", () =>
             {
                 this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
             });

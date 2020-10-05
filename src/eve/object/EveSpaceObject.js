@@ -8,6 +8,7 @@ export class EveSpaceObject extends EveObject
 {
 
     @meta.struct("Tw2AnimationController")
+    @meta.isPrivate
     animation = new Tw2AnimationController();
 
     @meta.vector3
@@ -105,7 +106,10 @@ export class EveSpaceObject extends EveObject
     {
         if (this.mesh)
         {
-            this.animation.SetGeometryResource(this.mesh.geometryResource);
+            if (!this.animation)
+            {
+                this.animation.SetGeometryResource(this.mesh.geometryResource);
+            }
 
             for (let i = 0; i < this.decals.length; ++i)
             {
@@ -344,7 +348,7 @@ export class EveSpaceObject extends EveObject
      */
     FindLocatorBoneByName(name)
     {
-        return this.animation.FindBoneForMesh(name, 0);
+        return this.animation ? this.animation.FindBoneForMesh(name, 0) : null;
     }
 
     /**
@@ -412,6 +416,15 @@ export class EveSpaceObject extends EveObject
             mat4.copy(this._worldTransform, this.transform);
         }
 
+        if (!this.animation)
+        {
+            if (this.mesh && this.mesh.IsGood())
+            {
+                this.animation = new Tw2AnimationController();
+                this.animation.SetGeometryResource(this.mesh.geometryResource);
+            }
+        }
+
         // Scale sprites to object scale
         const worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
         if (this._worldSpriteScale !== worldSpriteScale)
@@ -458,7 +471,7 @@ export class EveSpaceObject extends EveObject
             this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
         }
 
-        if (this.animation.animations.length)
+        if (this.animation && this.animation.animations.length)
         {
             this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
         }
@@ -517,7 +530,10 @@ export class EveSpaceObject extends EveObject
                 this.lineSets[i].Update(dt);
             }
 
-            this.animation.Update(dt);
+            if (this.animation)
+            {
+                this.animation.Update(dt);
+            }
         }
     }
 
@@ -612,7 +628,10 @@ export class EveSpaceObject extends EveObject
      */
     RenderDebugInfo(debugHelper)
     {
-        this.animation.RenderDebugInfo(debugHelper);
+        if (this.animation)
+        {
+            this.animation.RenderDebugInfo(debugHelper);
+        }
     }
 
     /**

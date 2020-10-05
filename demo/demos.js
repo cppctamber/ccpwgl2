@@ -440,7 +440,7 @@ function init()
         }
     };
 
-    tw2.logger.on("error", function(e)
+    tw2.logger.OnEvent("error", function(e)
     {
         if (!e.hide)
         {
@@ -454,7 +454,7 @@ function init()
         }
     });
 
-    tw2.logger.on("warn", function(e)
+    tw2.logger.OnEvent("warn", function(e)
     {
         if (!e.hide)
         {
@@ -468,7 +468,7 @@ function init()
         }
     });
 
-    tw2.logger.on("debug", function(e)
+    tw2.logger.OnEvent("debug", function(e)
     {
         Toasts.create({
             type: "warning",

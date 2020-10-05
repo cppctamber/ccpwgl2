@@ -1,0 +1,52 @@
+import * as ARRAY from "./ARRAY";
+import * as BOOLEAN from "./BOOLEAN";
+import * as BYTE from "./BYTE";
+import * as COLOR from "./COLOR";
+import * as EXPRESSION from "./EXPRESSION";
+import * as FLOAT from "./FLOAT";
+import * as INDEX_BUFFER from "./INDEX_BUFFER";
+import * as MATRIX3 from "./MATRIX3";
+import * as MATRIX4 from "./MATRIX4";
+import * as PATH from "./PATH";
+import * as PLAIN from "./PLAIN";
+import * as QUATERNION from "./QUATERNION";
+import * as STRING from "./STRING";
+import * as STRUCT from "./STRUCT";
+import * as STRUCT_RAW from "./STRUCT_RAW";
+import * as STRUCT_LIST from "./STRUCT_LIST";
+import * as UINT from "./UINT";
+import * as USHORT from "./USHORT";
+import * as VECTOR from "./VECTOR";
+import * as VECTOR2 from "./VECTOR2";
+import * as VECTOR3 from "./VECTOR3";
+import * as VECTOR4 from "./VECTOR4";
+
+import { Type } from "./consts";
+
+export const propTypes = new Map();
+
+propTypes.set(Type.ARRAY, ARRAY);
+propTypes.set(Type.BOOLEAN, BOOLEAN);
+propTypes.set(Type.BYTE, BYTE);
+propTypes.set(Type.COLOR, COLOR);
+propTypes.set(Type.EXPRESSION, EXPRESSION);
+propTypes.set(Type.FLOAT, FLOAT);
+propTypes.set(Type.INDEX_BUFFER, INDEX_BUFFER);
+propTypes.set(Type.MATRIX3, MATRIX3);
+propTypes.set(Type.MATRIX4, MATRIX4);
+propTypes.set(Type.PATH, PATH);
+propTypes.set(Type.PLAIN, PLAIN);
+propTypes.set(Type.QUATERNION, QUATERNION);
+propTypes.set(Type.STRING, STRING);
+propTypes.set(Type.STRUCT, STRUCT);
+propTypes.set(Type.STRUCT_RAW, STRUCT_RAW);
+propTypes.set(Type.STRUCT_LIST, STRUCT_LIST);
+propTypes.set(Type.UINT, UINT);
+propTypes.set(Type.USHORT, USHORT);
+propTypes.set(Type.VECTOR, VECTOR);
+propTypes.set(Type.VECTOR2, VECTOR2);
+propTypes.set(Type.VECTOR3, VECTOR3);
+propTypes.set(Type.VECTOR4, VECTOR4);
+propTypes.set(Type.USHORT, VECTOR4);
+propTypes.set(Type.USHORT, VECTOR4);
+

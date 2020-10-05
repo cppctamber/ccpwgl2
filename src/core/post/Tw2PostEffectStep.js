@@ -19,7 +19,8 @@ export class Tw2PostEffectStep extends Tw2BaseClass
     @meta.string
     target = null;
 
-    @meta.plain //Of("String")
+    @meta.plain
+    @meta.isPrivate
     inputs = {};
 
 

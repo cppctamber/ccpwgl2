@@ -106,7 +106,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         log.path = path;
         log.message = log.message || eventName;
 
-        this.emit(eventName, path, res, err)
+        this.EmitEvent(eventName, path, res, err)
             .msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
     }
 

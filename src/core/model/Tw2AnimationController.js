@@ -72,7 +72,7 @@ export class Tw2AnimationController extends Tw2BaseClass
             if (once) return this;
         }
 
-        return super.on(eventName, listener, context, once);
+        return super.OnEvent(eventName, listener, context, once);
     }
 
     /**
@@ -294,7 +294,7 @@ export class Tw2AnimationController extends Tw2BaseClass
              * @property {Tw2Animation} animation
              * @property {Tw2AnimationController} controller
              */
-            this.emit("removed", { animation, controller: this });
+            this.EmitEvent("removed", { animation, controller: this });
             animation.OnDestroy();
         }
 
@@ -740,7 +740,7 @@ export class Tw2AnimationController extends Tw2BaseClass
                  * @property {Tw2Animation} animation
                  * @property {Tw2AnimationController} controller
                  */
-                controller.emit("added", { controller, animation });
+                controller.EmitEvent("added", { controller, animation });
             }
         }
     }
@@ -888,7 +888,7 @@ export class Tw2AnimationController extends Tw2BaseClass
          * @property {Tw2Animation} animation
          * @property {Tw2AnimationController} controller
          */
-        controller.emit("loaded", { controller });
+        controller.EmitEvent("loaded", { controller });
 
         if (controller.animations.length)
         {

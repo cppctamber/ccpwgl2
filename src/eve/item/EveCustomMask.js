@@ -30,6 +30,7 @@ export class EveCustomMask extends Tw2TransformParameter
 
     @meta.plain //Of("Tw2Parameter")
     @meta.todo("Move to direct class properties")
+    @meta.isPrivate
     parameters = {
         PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),
         DiffuseColor: new Tw2Vector4Parameter("DiffuseColor"),
@@ -38,7 +39,6 @@ export class EveCustomMask extends Tw2TransformParameter
     };
 
     _worldInverseTranspose = mat4.create();
-
 
     /**
      * Sets a sof material by name
@@ -93,19 +93,19 @@ export class EveCustomMask extends Tw2TransformParameter
         if (DiffuseName)
         {
             DiffuseName.SetValue(DiffuseColor.GetValue());
-            DiffuseColor.on("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
+            DiffuseColor.OnEvent("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
         }
 
         if (FresnelName)
         {
             FresnelName.SetValue(FresnelColor.GetValue());
-            FresnelColor.on("modified", () => FresnelName.SetValue(FresnelColor.GetValue()));
+            FresnelColor.OnEvent("modified", () => FresnelName.SetValue(FresnelColor.GetValue()));
         }
 
         if (GlossName)
         {
             GlossName.SetValue(Gloss.GetValue());
-            Gloss.on("modified", () => GlossName.SetValue(Gloss.GetValue()));
+            Gloss.OnEvent("modified", () => GlossName.SetValue(Gloss.GetValue()));
         }
 
         if (PatternTexture)
@@ -114,7 +114,7 @@ export class EveCustomMask extends Tw2TransformParameter
             PatternTexture.SetOverrides(overrides);
             PatternTexture.SetValue(PatternMaskMap.GetValue());
 
-            PatternMaskMap.on("modified", ()=>
+            PatternMaskMap.OnEvent("modified", ()=>
             {
                 PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
                 PatternTexture.SetValue(PatternTexture.GetValue());

@@ -53,9 +53,9 @@ export class Tw2Error extends Error
      */
     emitOn(emitter, eventName = "error")
     {
-        if (emitter && emitter.emit)
+        if (emitter && emitter.EmitEvent)
         {
-            emitter.emit(eventName, this);
+            emitter.EmitEvent(eventName, this);
         }
         return this;
     }

@@ -147,7 +147,7 @@ export class Tw2Animation extends Tw2BaseClass
              * @property {Tw2Animation} animation
              * @property {Tw2AnimationController} controller
              */
-            this.emit("unpause", { animation: this, controller: this._controller });
+            this.EmitEvent("unpause", { animation: this, controller: this._controller });
         }
         else
         {
@@ -158,7 +158,7 @@ export class Tw2Animation extends Tw2BaseClass
              * @property {Tw2Animation} animation
              * @property {Tw2AnimationController} controller
              */
-            this.emit("play", { animation: this, controller: this._controller });
+            this.EmitEvent("play", { animation: this, controller: this._controller });
         }
     }
 
@@ -177,7 +177,7 @@ export class Tw2Animation extends Tw2BaseClass
              * @property {Tw2Animation} animation
              * @property {Tw2AnimationController} controller
              */
-            this.emit("pause", { animation: this, controller: this._controller });
+            this.EmitEvent("pause", { animation: this, controller: this._controller });
         }
     }
 
@@ -198,7 +198,7 @@ export class Tw2Animation extends Tw2BaseClass
              * @property {Tw2Animation} animation
              * @property {Tw2AnimationController} controller
              */
-            this.emit("end", { animation: this, controller: this._controller });
+            this.EmitEvent("end", { animation: this, controller: this._controller });
 
             this.UpdateCallback();
         }
@@ -268,7 +268,7 @@ export class Tw2Animation extends Tw2BaseClass
                  * @property {Tw2Animation} animation
                  * @property {Tw2AnimationController} controller
                  */
-                this.emit("cycle", { animation: this, controller: this._controller });
+                this.EmitEvent("cycle", { animation: this, controller: this._controller });
 
                 this.UpdateCallback();
             }

@@ -148,7 +148,7 @@ export class Tw2Logger extends Tw2EventEmitter
 
         log._logged = true;
 
-        this.emit(log.type, log);
+        this.EmitEvent(log.type, log);
         return log;
     }
 

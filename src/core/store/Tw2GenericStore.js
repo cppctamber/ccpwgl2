@@ -48,7 +48,7 @@ export class Tw2GenericStore extends Tw2EventEmitter
         }
 
         STORE.get(this).map.set(key, value);
-        this.emit("stored", { key, value });
+        this.EmitEvent("stored", { key, value });
         return value;
     }
 
@@ -70,14 +70,14 @@ export class Tw2GenericStore extends Tw2EventEmitter
             if (!p.missing.includes(key))
             {
                 p.missing.push(key);
-                this.emit("missing", { key });
+                this.EmitEvent("missing", { key });
             }
             throw new ErrStoreKeyUnregistered({ storeName, key });
         }
 
         if (usedKey !== key)
         {
-            this.emit("substitute", { original: key, substitute: usedKey });
+            this.EmitEvent("substitute", { original: key, substitute: usedKey });
         }
 
         return value;

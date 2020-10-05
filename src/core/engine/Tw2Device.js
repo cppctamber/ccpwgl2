@@ -450,7 +450,7 @@ export class Tw2Device extends Tw2EventEmitter
             this.viewportHeight
         ]);
 
-        this.emit("resized", event);
+        this.EmitEvent("resized", event);
     }
 
     /**

@@ -71,15 +71,9 @@ export const singleton = createDecorator({
 });
 
 export const ctor = createDecorator({
-    ctor({ target }, ...types)
+    ctor({ target }, type)
     {
-        for (let i = 0; i < types.length; i++)
-        {
-            if (isString(types[i]))
-            {
-                defineMetadata("type", types[i], target);
-            }
-        }
+        defineMetadata("type", type, target);
     }
 });
 
