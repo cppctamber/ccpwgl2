@@ -1,10 +1,10 @@
-import { meta, vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "global";
+import { meta, vec3, quat, mat4, util, device, tw2 } from "global";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core";
 import { Tw2Effect } from "core/mesh";
 
 
 @meta.ctor("EveSpaceObjectDecal", true)
-export class EveSpaceObjectDecal extends Tw2BaseClass
+export class EveSpaceObjectDecal extends meta.Model
 {
 
     @meta.string

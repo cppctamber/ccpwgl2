@@ -1,10 +1,10 @@
 import { Tw2VertexElement } from "core";
 import { Tw2ParticleElement } from "./Tw2ParticleElement";
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
-export class Tw2ParticleElementDeclaration extends Tw2BaseClass
+export class Tw2ParticleElementDeclaration extends meta.Model
 {
 
     @meta.string

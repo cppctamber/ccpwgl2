@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2KelvinColor")
-export class Tr2KelvinColor extends Tw2BaseClass
+export class Tr2KelvinColor extends meta.Model
 {
 
     @meta.float

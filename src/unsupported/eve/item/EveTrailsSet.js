@@ -1,4 +1,4 @@
-import { AttachmentType, meta, resMan, Tw2BaseClass } from "global";
+import { AttachmentType, meta, resMan } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
 
@@ -21,7 +21,7 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 
 @meta.notImplemented
 @meta.ctor("EveTrailSet")
-export class EveTrailsSet extends Tw2BaseClass
+export class EveTrailsSet extends meta.Model
 {
 
     @meta.struct()

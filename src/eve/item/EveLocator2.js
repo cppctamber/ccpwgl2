@@ -1,10 +1,10 @@
-import { meta, mat4, util, Tw2BaseClass } from "global";
+import { meta, mat4, util } from "global";
 import { vec3 } from "global/index";
 
 
 @meta.ctor("EveLocator2")
 @meta.stage(1)
-export class EveLocator2 extends Tw2BaseClass
+export class EveLocator2 extends meta.Model
 {
 
     @meta.string

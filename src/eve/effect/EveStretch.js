@@ -1,9 +1,9 @@
-import { meta, vec3, mat4, Tw2BaseClass } from "global";
+import { meta, vec3, mat4 } from "global";
 import { Tw2Float } from "core";
 
 
 @meta.ctor("EveStretch", true)
-export class EveStretch extends Tw2BaseClass
+export class EveStretch extends meta.Model
 {
 
     @meta.string

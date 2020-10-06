@@ -1,9 +1,9 @@
 import { ErrIndexBounds } from "../class/Tw2Error";
-import { util, Tw2BaseClass, meta } from "global";
+import { util, meta } from "global";
 
 
 @meta.ctor("Tw2VectorParameter")
-export class Tw2VectorParameter extends Tw2BaseClass
+export class Tw2VectorParameter extends meta.Model
 {
 
     /**

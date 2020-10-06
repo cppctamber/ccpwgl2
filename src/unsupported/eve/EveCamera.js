@@ -1,4 +1,4 @@
-import { meta, quat, vec3, Tw2BaseClass } from "global";
+import { meta, quat, vec3 } from "global";
 
 
 /**
@@ -23,7 +23,7 @@ import { meta, quat, vec3, Tw2BaseClass } from "global";
  */
 @meta.notImplemented
 @meta.ctor("EveCamera", true)
-export class EveCamera extends Tw2BaseClass
+export class EveCamera extends meta.Model
 {
 
     @meta.float

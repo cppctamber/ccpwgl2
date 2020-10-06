@@ -1,4 +1,4 @@
-import { meta, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "global";
+import { meta, vec3, quat, mat3, mat4, curve, util } from "global";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";
@@ -11,7 +11,7 @@ import { Tw2MeshBinding } from "./Tw2MeshBinding";
 
 @meta.ctor("Tw2AnimationController")
 @meta.todo("Handle rebuilding bounds in update function")
-export class Tw2AnimationController extends Tw2BaseClass
+export class Tw2AnimationController extends meta.Model
 {
 
     @meta.list("Tw2GeometryRes")

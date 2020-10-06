@@ -1,4 +1,4 @@
-import { meta, device, Tw2BaseClass } from "global";
+import { meta, device } from "global";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
@@ -7,7 +7,7 @@ import { assignIfExists } from "global/util";
 
 
 @meta.ctor("Tw2PostEffect")
-export class Tw2PostEffect extends Tw2BaseClass
+export class Tw2PostEffect extends meta.Model
 {
 
     @meta.boolean

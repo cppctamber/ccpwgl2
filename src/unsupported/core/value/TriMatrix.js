@@ -1,10 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("TriMatrix")
 @meta.todo("Should this default to a identity matrix?")
-export class TriMatrix extends Tw2BaseClass
+export class TriMatrix extends meta.Model
 {
 
     @meta.float

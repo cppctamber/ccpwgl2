@@ -1,8 +1,8 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("Tw2Animation")
-export class Tw2Animation extends Tw2BaseClass
+export class Tw2Animation extends meta.Model
 {
 
     @meta.struct("Tw2GeometryAnimation")

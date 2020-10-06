@@ -1,9 +1,9 @@
-import { meta, vec3, Tw2BaseClass } from "global";
+import { meta, vec3 } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("TriObserverLocal")
-export class TriObserverLocal extends Tw2BaseClass
+export class TriObserverLocal extends meta.Model
 {
 
     @meta.string

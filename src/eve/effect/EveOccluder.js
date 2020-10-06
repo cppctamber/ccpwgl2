@@ -1,9 +1,9 @@
-import { meta, vec4, mat4, tw2, Tw2BaseClass } from "global";
+import { meta, vec4, mat4, tw2 } from "global";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
 @meta.ctor("EveOccluder")
-export class EveOccluder extends Tw2BaseClass
+export class EveOccluder extends meta.Model
 {
 
     @meta.string

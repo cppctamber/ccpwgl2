@@ -1,4 +1,4 @@
-import { Tw2BaseClass, util, meta } from "global";
+import { util, meta } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -13,7 +13,7 @@ import {
 @meta.notImplemented
 @meta.ctor("Tr2MeshLod")
 @meta.todo("Implement LOD")
-export class Tr2MeshLod extends Tw2BaseClass
+export class Tr2MeshLod extends meta.Model
 {
 
     @meta.list("Tw2MeshArea")

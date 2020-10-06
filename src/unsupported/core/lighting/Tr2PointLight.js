@@ -1,9 +1,9 @@
-import { meta, vec3, vec4, Tw2BaseClass } from "global";
+import { meta, vec3, vec4 } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2PointLight")
-export class Tr2PointLight extends Tw2BaseClass
+export class Tr2PointLight extends meta.Model
 {
 
     @meta.string

@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2IntSkinnedObject")
-export class Tr2IntSkinnedObject extends Tw2BaseClass
+export class Tr2IntSkinnedObject extends meta.Model
 {
 
     @meta.list("Tw2CurveSet")

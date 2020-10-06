@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("WodPlaceableRes")
-export class WodPlaceableRes extends Tw2BaseClass
+export class WodPlaceableRes extends meta.Model
 {
 
     @meta.float

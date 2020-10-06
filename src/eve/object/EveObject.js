@@ -1,8 +1,8 @@
 /* eslint no-unused-vars:0 */
-import { meta, mat4, vec3, Tw2BaseClass, WrappedType } from "global";
+import { meta, mat4, vec3, WrappedType } from "global";
 
 
-export class EveObject extends Tw2BaseClass
+export class EveObject extends meta.Model
 {
 
     @meta.string

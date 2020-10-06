@@ -1,4 +1,4 @@
-import { meta, util, resMan, tw2, Tw2BaseClass } from "global";
+import { meta, util, resMan, tw2 } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -12,7 +12,7 @@ import { isString } from "global/util";
 
 
 @meta.ctor("Tw2Mesh", "Tr2Mesh")
-export class Tw2Mesh extends Tw2BaseClass
+export class Tw2Mesh extends meta.Model
 {
 
     @meta.string

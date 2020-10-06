@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2InteriorPlaceable")
-export class Tr2InteriorPlaceable extends Tw2BaseClass
+export class Tr2InteriorPlaceable extends meta.Model
 {
 
     @meta.path

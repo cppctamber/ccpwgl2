@@ -1,4 +1,4 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 /**
@@ -15,7 +15,7 @@ import { meta, Tw2BaseClass } from "global";
  */
 @meta.notImplemented
 @meta.ctor("EveTacticalOverlay")
-export class EveTacticalOverlay extends Tw2BaseClass
+export class EveTacticalOverlay extends meta.Model
 {
 
     @meta.struct()

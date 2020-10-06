@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2StateMachineState")
-export class Tr2StateMachineState extends Tw2BaseClass
+export class Tr2StateMachineState extends meta.Model
 {
 
     @meta.string

@@ -1,8 +1,8 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("Tw2CurveSet", "TriCurveSet")
-export class Tw2CurveSet extends Tw2BaseClass
+export class Tw2CurveSet extends meta.Model
 {
 
     @meta.string

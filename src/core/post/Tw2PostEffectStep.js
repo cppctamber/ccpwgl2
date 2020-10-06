@@ -1,9 +1,9 @@
-import { meta, util, Tw2BaseClass } from "global";
+import { meta, util } from "global";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 
 
 @meta.ctor("Tw2PostEffectStep")
-export class Tw2PostEffectStep extends Tw2BaseClass
+export class Tw2PostEffectStep extends meta.Model
 {
 
     @meta.uint

@@ -1,9 +1,9 @@
-import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass, WrappedType } from "global";
+import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, WrappedType } from "global";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
 @meta.ctor("EveSpaceScene", true)
-export class EveSpaceScene extends Tw2BaseClass
+export class EveSpaceScene extends meta.Model
 {
 
     @meta.color

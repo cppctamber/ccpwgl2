@@ -1,4 +1,4 @@
-import { meta, vec3, Tw2BaseClass } from "global";
+import { meta, vec3 } from "global";
 
 
 /**
@@ -8,7 +8,7 @@ import { meta, vec3, Tw2BaseClass } from "global";
  */
 @meta.notImplemented
 @meta.ctor("EveLocalPositionCurve")
-export class EveLocalPositionCurve extends Tw2BaseClass
+export class EveLocalPositionCurve extends meta.Model
 {
 
     @meta.vector3

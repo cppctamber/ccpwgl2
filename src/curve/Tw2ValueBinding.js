@@ -1,4 +1,4 @@
-import { meta, vec4, Tw2BaseClass } from "global";
+import { meta, vec4 } from "global";
 import { Tw2Vector4Parameter, Tw2Error } from "core";
 import { isArrayLike, isBoolean, isNumber } from "global/util";
 
@@ -25,7 +25,7 @@ import { isArrayLike, isBoolean, isNumber } from "global/util";
  * @property {Boolean} _sourceIsRGBA       -
  */
 @meta.ctor("Tw2ValueBinding", "TriValueBinding")
-export class Tw2ValueBinding extends Tw2BaseClass
+export class Tw2ValueBinding extends meta.Model
 {
 
     @meta.string

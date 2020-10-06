@@ -17144,8 +17144,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _unsupported__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unsupported */ "./unsupported/index.js");
 /* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
 /* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
 
 
 
@@ -17588,7 +17586,7 @@ var _dec, _class, _temp;
 
 
 
-var Tw2RuntimeInstanceData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec(_class = (_temp = class Tw2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2RuntimeInstanceData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec(_class = (_temp = class Tw2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
     this._count = 0;
@@ -20743,6 +20741,7 @@ var Tw2Library = Object(global_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_
   }
 
 }, _temp)) || _class;
+Tw2Library.prototype.Model = global_meta__WEBPACK_IMPORTED_MODULE_0__["Model"];
 
 /***/ }),
 
@@ -23237,7 +23236,7 @@ class Tw2ConstantParameter {
 
 }
 
-var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2EffectRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Shader"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = _class2 = class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2EffectRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Shader"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = _class2 = class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -24049,7 +24048,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -24514,7 +24513,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Mesh", "Tr2Mesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Mesh", "Tr2Mesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -24952,7 +24951,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2MeshArea", "Tr2MeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2MeshArea", "Tr2MeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -25236,7 +25235,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Constructor
    * @param animationController
@@ -25582,7 +25581,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2AnimationController = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2AnimationController"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle rebuilding bounds in update function"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Model"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Animation"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshBinding"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2AnimationController = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2AnimationController"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle rebuilding bounds in update function"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Model"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Animation"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshBinding"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Constructor
    * @param {Tw2GeometryRes} [geometryResource]
@@ -27111,7 +27110,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -29174,7 +29173,7 @@ var _dec, _class, _class2, _temp;
 
 
 
-var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2VectorParameter"), _dec(_class = (_temp = _class2 = class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2VectorParameter"), _dec(_class = (_temp = _class2 = class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["meta"].Model {
   /**
    * Gets the parameter's constant buffer size
    * @returns {Number} 0 if invalid
@@ -29418,7 +29417,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffect"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2PostEffectStep"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2PostEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffect"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2PostEffectStep"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -29816,7 +29815,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffectManager = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2PostEffectManager"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tw2PostEffect"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffectManager extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2PostEffectManager = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2PostEffectManager"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tw2PostEffect"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffectManager extends global__WEBPACK_IMPORTED_MODULE_1__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -30042,7 +30041,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffectStep = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffectStep"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2PostEffectStep extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2PostEffectStep = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffectStep"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2PostEffectStep extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -36668,7 +36667,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Float = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Float", "TriFloat"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2Float extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Float = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Float", "TriFloat"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2Float extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -37207,7 +37206,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2CurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSet", "TriCurveSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriCurveSetRange"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSet", "TriCurveSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriCurveSetRange"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -37428,7 +37427,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Boolean} _sourceIsRGBA       -
  */
 
-var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ValueBinding", "TriValueBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = (_class2 = (_temp = class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ValueBinding", "TriValueBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = (_class2 = (_temp = class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -38013,7 +38012,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, (_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, (_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -38037,7 +38036,7 @@ var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _d
     return 0;
   }
 })), _class));
-var Tw2Curve = (_dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Curve = (_dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -44863,7 +44862,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2ShLightingManager"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveStarField"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlanet"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PostProcess"), _dec54 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec56 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2ShLightingManager"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveStarField"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlanet"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PostProcess"), _dec54 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec56 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   // Should this come from the background effect?
 
   /**
@@ -45790,7 +45789,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 /* eslint no-unused-vars:0 */
 
-var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Per frame update
    * @param {number} dt
@@ -46783,7 +46782,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLensflare"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = (_class2 = (_temp = _class3 = class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLensflare"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = (_class2 = (_temp = _class3 = class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Constructor
    */
@@ -47213,7 +47212,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].struct("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].struct("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -47465,7 +47464,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveOccluder"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveTransform"), _dec(_class = (_class2 = (_temp = _class3 = class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveOccluder"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveTransform"), _dec(_class = (_class2 = (_temp = _class3 = class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Constructor
    */
@@ -47662,7 +47661,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveStretch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Float"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2PointLight"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStretch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Float"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2PointLight"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Constructor
    */
@@ -48103,7 +48102,7 @@ class EvePerMuzzleData {
 
 }
 
-var EveTurretFiringFX = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTurretFiringFX"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(["EveStretch", "EveStretch2"]), _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTurretFiringFX = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTurretFiringFX"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(["EveStretch", "EveStretch2"]), _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -50767,7 +50766,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocator2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Bone"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocator2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Bone"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -50963,7 +50962,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -50987,7 +50986,7 @@ var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boole
     return true;
   }
 })), _class));
-var EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -51809,7 +51808,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceObjectDecal", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, this may only be needed if created a SOF object from a decal"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].indexBuffer, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceObjectDecal", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, this may only be needed if created a SOF object from a decal"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].indexBuffer, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -55276,7 +55275,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -59071,7 +59070,7 @@ var store = new core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Store"](core_engine
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: meta, util, Tw2BaseClass, Type, TypeLength, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
+/*! exports provided: meta, util, Type, TypeLength, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59080,8 +59079,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "meta", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__; });
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "util", function() { return _util__WEBPACK_IMPORTED_MODULE_1__; });
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["Model"]; });
-
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["Type"]; });
 
@@ -59846,7 +59843,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["resMan"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["device"]; });
-
 
 
 
@@ -67139,6 +67135,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./types */ "./global/meta/types/index.js");
 /* harmony import */ var global_meta_generic__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/meta/@generic */ "./global/meta/@generic.js");
+var _class, _descriptor, _temp;
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -67153,24 +67151,21 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
-var id = 0;
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
-function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
-
-
-
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var _id = _classPrivateFieldLooseKey("_id");
 
-class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+
+
+var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
   constructor(...args) {
     super(...args);
-    Object.defineProperty(this, _id, {
-      writable: true,
-      value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])()
-    });
+
+    _initializerDefineProperty(this, "_id", _descriptor, this);
   }
 
   /**
@@ -67742,7 +67737,14 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     })();
   }
 
-}
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "_id", [global_meta_generic__WEBPACK_IMPORTED_MODULE_3__["readOnly"]], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])();
+  }
+})), _class);
 
 /***/ }),
 
@@ -69803,7 +69805,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Array} _vertexStride                              - Vertex stride
  */
 
-var Tw2ParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleConstraint"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleElementDeclaration"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleForce"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleConstraint"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleElementDeclaration"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleForce"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   //Float32Array
   //Float32Array
   // Array
@@ -70601,7 +70603,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleElementDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].enums(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+var Tw2ParticleElementDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].enums(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -70889,7 +70891,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), (_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), (_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -71416,7 +71418,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Applies forces
    * @param {Tw2ParticleElement} position - Position
@@ -71676,7 +71678,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Binds a particle system element to the generator
    * @param {Tw2ParticleSystem} ps
@@ -80134,7 +80136,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var AudEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEmitter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class AudEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var AudEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEmitter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class AudEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80226,7 +80228,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var TriObserverLocal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriObserverLocal"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class TriObserverLocal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var TriObserverLocal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriObserverLocal"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class TriObserverLocal extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80330,7 +80332,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2PointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PointLight"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PointLight extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2PointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PointLight"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PointLight extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80440,7 +80442,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2ShLightingManager = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ShLightingManager"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ShLightingManager extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2ShLightingManager = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ShLightingManager"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ShLightingManager extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80509,7 +80511,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2MeshLod = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2MeshLod"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2LodResource"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2MeshLod = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2MeshLod"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2LodResource"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80943,7 +80945,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2PostProcess = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PostProcess"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PostProcess extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2PostProcess = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PostProcess"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PostProcess extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -80999,7 +81001,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2LodResource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2LodResource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2LodResource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2LodResource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Gets the high detail resource
    * @returns {null|Tw2TextureRes}
@@ -81186,7 +81188,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var TriMatrix = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriMatrix"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Should this default to a identity matrix?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class TriMatrix extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var TriMatrix = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriMatrix"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Should this default to a identity matrix?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class TriMatrix extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -81375,7 +81377,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2CurveSetRange = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSetRange"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2CurveSetRange extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveSetRange = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSetRange"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2CurveSetRange extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -83795,7 +83797,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _class;
 
 
-var EveChildModifier = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifier"), _dec(_class = class EveChildModifier extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
+var EveChildModifier = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifier"), _dec(_class = class EveChildModifier extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {}) || _class);
 
 /***/ }),
 
@@ -84033,7 +84035,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveStarfield = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStarfield"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStarfield extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStarfield = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStarfield"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStarfield extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -84134,7 +84136,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveStretch2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStretch2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStretch2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStretch2 extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -84371,7 +84373,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBanner"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBanner"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -85086,7 +85088,7 @@ var EveTrailSetRenderBatch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   }
 
 }, _temp)) || _class);
-var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTrailSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = _class5 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTrailSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = _class5 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86203,7 +86205,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} type                        -
  */
 
-var EveConnector = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveConnector", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveConnector extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveConnector = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveConnector", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveConnector extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86328,7 +86330,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {vec3} value -
  */
 
-var EveLocalPositionCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocalPositionCurve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveLocalPositionCurve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveLocalPositionCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocalPositionCurve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveLocalPositionCurve extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86383,7 +86385,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} sortValueMultiplier    -
  */
 
-var EveSpherePin = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpherePin", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveSpherePin extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpherePin = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpherePin", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveSpherePin extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86557,7 +86559,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Tw2Effect} velocityEffect    -
  */
 
-var EveTacticalOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTacticalOverlay"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTacticalOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTacticalOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTacticalOverlay"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTacticalOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86667,7 +86669,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} modelScale           -
  */
 
-var EveUiObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveUiObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveUiObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveUiObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveUiObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveUiObject extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -86980,7 +86982,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Model"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Mesh"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Model extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Model"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Mesh"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Model extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87018,7 +87020,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2IntSkinnedObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2IntSkinnedObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2SkinnedModel"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2IntSkinnedObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2IntSkinnedObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2IntSkinnedObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2SkinnedModel"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2IntSkinnedObject extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87074,7 +87076,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2SkinnedModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SkinnedModel"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2SkinnedModel extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2SkinnedModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SkinnedModel"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2SkinnedModel extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87195,7 +87197,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorLightSource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorLightSource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2KelvinColor"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorLightSource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorLightSource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorLightSource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2KelvinColor"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorLightSource extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87332,7 +87334,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2KelvinColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2KelvinColor"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2KelvinColor extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2KelvinColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2KelvinColor"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2KelvinColor extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87399,7 +87401,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorPlaceable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorPlaceable"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorPlaceable extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorPlaceable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorPlaceable"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorPlaceable extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87446,7 +87448,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorScene"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2IntSkinnedObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2InteriorLightSource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorScene"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2IntSkinnedObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2InteriorLightSource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorScene extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87493,7 +87495,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var WodPlaceableRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("WodPlaceableRes"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2Model"), _dec(_class = _dec2(_class = (_class2 = (_temp = class WodPlaceableRes extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var WodPlaceableRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("WodPlaceableRes"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2Model"), _dec(_class = _dec2(_class = (_class2 = (_temp = class WodPlaceableRes extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -87745,7 +87747,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   /**
    * Applies constraints
    * @param {Array} buffers
@@ -88641,7 +88643,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachine"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineState"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachine extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachine"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineState"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachine extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -88697,7 +88699,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachineState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineState"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Action"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineTransition"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineState extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachineState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineState"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Action"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineTransition"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineState extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -88762,7 +88764,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachineTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineTransition"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineTransition extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachineTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineTransition"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineTransition extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -88803,7 +88805,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _dec2, _class;
 
 
-var Tr2SyncToAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SyncToAnimation"), _dec(_class = _dec2(_class = class Tr2SyncToAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class) || _class);
+var Tr2SyncToAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SyncToAnimation"), _dec(_class = _dec2(_class = class Tr2SyncToAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {}) || _class) || _class);
 
 /***/ }),
 
@@ -89298,7 +89300,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _class;
 
 
-var Tw2Action = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Action"), _dec(_class = class Tw2Action extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
+var Tw2Action = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Action"), _dec(_class = class Tw2Action extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {}) || _class);
 
 /***/ }),
 
@@ -89374,7 +89376,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2Controller = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Controller"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ControllerFloatVariable"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Controller extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2Controller = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Controller"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ControllerFloatVariable"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Controller extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -89439,7 +89441,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2ControllerReference = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ControllerReference"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerReference extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2ControllerReference = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ControllerReference"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerReference extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 

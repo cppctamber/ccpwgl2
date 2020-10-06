@@ -1,8 +1,8 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("EveChildModifier")
-export class EveChildModifier extends Tw2BaseClass
+export class EveChildModifier extends meta.Model
 {
 
 }

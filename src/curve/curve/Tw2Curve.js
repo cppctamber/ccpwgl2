@@ -1,8 +1,8 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, vec4, quat, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, quat } from "global";
 
 
-export class Tw2CurveKey extends Tw2BaseClass
+export class Tw2CurveKey extends meta.Model
 {
 
     @meta.string
@@ -14,7 +14,7 @@ export class Tw2CurveKey extends Tw2BaseClass
 }
 
 
-export class Tw2Curve extends Tw2BaseClass
+export class Tw2Curve extends meta.Model
 {
 
     @meta.string

@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, Tw2BaseClass } from "global";
+import { meta, vec3, vec4 } from "global";
 
 
 /**
@@ -19,7 +19,7 @@ import { meta, vec3, vec4, Tw2BaseClass } from "global";
  */
 @meta.notImplemented
 @meta.ctor("EveSpherePin", true)
-export class EveSpherePin extends Tw2BaseClass
+export class EveSpherePin extends meta.Model
 {
 
     @meta.string

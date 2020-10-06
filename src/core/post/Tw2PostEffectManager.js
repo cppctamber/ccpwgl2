@@ -1,9 +1,9 @@
 import { Tw2PostEffect } from "./Tw2PostEffect";
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("Tw2PostEffectManager")
-export class Tw2PostEffectManager extends Tw2BaseClass
+export class Tw2PostEffectManager extends meta.Model
 {
 
     @meta.string

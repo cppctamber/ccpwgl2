@@ -1,10 +1,10 @@
-import { meta, Tw2BaseClass, resMan } from "global";
+import { meta, resMan } from "global";
 import { toArray } from "global/util";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2LodResource")
-export class Tr2LodResource extends Tw2BaseClass
+export class Tr2LodResource extends meta.Model
 {
 
     @meta.string

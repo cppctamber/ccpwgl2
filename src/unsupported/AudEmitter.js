@@ -1,8 +1,8 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.ctor("AudEmitter", true)
-export class AudEmitter extends Tw2BaseClass
+export class AudEmitter extends meta.Model
 {
 
     @meta.string

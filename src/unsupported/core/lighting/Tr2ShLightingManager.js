@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tr2ShLightingManager")
-export class Tr2ShLightingManager extends Tw2BaseClass
+export class Tr2ShLightingManager extends meta.Model
 {
 
     @meta.float

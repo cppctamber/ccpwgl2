@@ -1,8 +1,8 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, vec4, mat4, Tw2BaseClass, AttachmentType } from "global";
+import { meta, vec3, vec4, mat4, AttachmentType } from "global";
 
 
-export class EveObjectSetItem extends Tw2BaseClass
+export class EveObjectSetItem extends meta.Model
 {
 
     @meta.boolean
@@ -21,7 +21,7 @@ export class EveObjectSetItem extends Tw2BaseClass
 }
 
 
-export class EveObjectSet extends Tw2BaseClass
+export class EveObjectSet extends meta.Model
 {
 
     @meta.boolean

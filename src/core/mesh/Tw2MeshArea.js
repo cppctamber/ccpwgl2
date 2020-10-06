@@ -1,11 +1,11 @@
 import { Tw2GeometryBatch } from "../batch";
-import { util, Tw2BaseClass, meta } from "global";
+import { util, meta } from "global";
 import { Tw2Effect } from "./Tw2Effect";
 
 
 @meta.ctor("Tw2MeshArea", "Tr2MeshArea")
 @meta.stage(1)
-export class Tw2MeshArea extends Tw2BaseClass
+export class Tw2MeshArea extends meta.Model
 {
 
     @meta.string

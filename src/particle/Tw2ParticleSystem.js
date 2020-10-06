@@ -1,4 +1,4 @@
-import { meta, vec3, mat4, device, Tw2BaseClass } from "global";
+import { meta, vec3, mat4, device } from "global";
 import { Tw2VertexDeclaration } from "core";
 import { Tw2ParticleElement } from "./element";
 
@@ -38,7 +38,7 @@ import { Tw2ParticleElement } from "./element";
  * @property {Array} _vertexStride                              - Vertex stride
  */
 @meta.ctor("Tw2ParticleSystem", "Tr2ParticleSystem")
-export class Tw2ParticleSystem extends Tw2BaseClass
+export class Tw2ParticleSystem extends meta.Model
 {
 
     @meta.string

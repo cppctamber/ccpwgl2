@@ -1,4 +1,4 @@
-import { singleton } from "global/meta";
+import { Model, singleton } from "global/meta";
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
 import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
@@ -14,7 +14,6 @@ import {
     isString,
     toArray,
     isDNA,
-    enableUUID,
 } from "global/util";
 
 @singleton
@@ -701,3 +700,4 @@ export class Tw2Library extends Tw2EventEmitter
 
 }
 
+Tw2Library.prototype.Model = Model;

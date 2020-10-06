@@ -1,10 +1,10 @@
-import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE, meta } from "global";
+import { vec3, vec4, mat4, device, tw2, RS_COLORWRITEENABLE, meta } from "global";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 
 @meta.ctor("EveLensflare")
-export class EveLensflare extends Tw2BaseClass
+export class EveLensflare extends meta.Model
 {
 
     @meta.string

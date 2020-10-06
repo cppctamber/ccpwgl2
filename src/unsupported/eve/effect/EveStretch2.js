@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("EveStretch2")
-export class EveStretch2 extends Tw2BaseClass
+export class EveStretch2 extends meta.Model
 {
 
     @meta.string

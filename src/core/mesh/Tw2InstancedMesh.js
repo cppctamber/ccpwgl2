@@ -1,4 +1,4 @@
-import { vec3, util, resMan, Tw2BaseClass, meta } from "global";
+import { vec3, util, resMan, meta } from "global";
 import { Tw2InstancedMeshBatch } from "../batch";
 import { Tw2Mesh } from "./Tw2Mesh";
 import {
@@ -14,7 +14,7 @@ import { isString } from "global/util";
 
 
 @meta.ctor("Tw2InstancedMesh", "Tr2InstancedMesh")
-export class Tw2InstancedMesh extends Tw2BaseClass
+export class Tw2InstancedMesh extends meta.Model
 {
 
     @meta.string

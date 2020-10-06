@@ -1,4 +1,4 @@
-import { meta, util, device, tw2, Tw2BaseClass } from "global";
+import { meta, util, device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
@@ -29,7 +29,7 @@ class Tw2ConstantParameter
 }
 
 
-export class Tw2Effect extends Tw2BaseClass
+export class Tw2Effect extends meta.Model
 {
 
     @meta.string

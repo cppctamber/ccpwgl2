@@ -1,4 +1,4 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 /**
  * EveUiObject
@@ -10,7 +10,7 @@ import { meta, Tw2BaseClass } from "global";
  */
 @meta.notImplemented
 @meta.ctor("EveUiObject")
-export class EveUiObject extends Tw2BaseClass
+export class EveUiObject extends meta.Model
 {
 
     @meta.string

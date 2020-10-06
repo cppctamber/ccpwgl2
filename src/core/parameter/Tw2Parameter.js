@@ -1,8 +1,8 @@
 /* eslint no-unused-vars:0 */
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
-export class Tw2Parameter extends Tw2BaseClass
+export class Tw2Parameter extends meta.Model
 {
 
     @meta.string

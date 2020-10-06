@@ -1,9 +1,9 @@
-import { meta, vec3, quat, Tw2BaseClass } from "global";
+import { meta, vec3, quat } from "global";
 
 
 @meta.ctor("EveLocatorSetItem")
 @meta.stage(1)
-export class EveLocatorSetItem extends Tw2BaseClass
+export class EveLocatorSetItem extends meta.Model
 {
 
     @meta.vector3
@@ -31,7 +31,7 @@ export class EveLocatorSetItem extends Tw2BaseClass
 
 
 @meta.ctor("EveLocatorSets", true)
-export class EveLocatorSets extends Tw2BaseClass
+export class EveLocatorSets extends meta.Model
 {
 
     @meta.string

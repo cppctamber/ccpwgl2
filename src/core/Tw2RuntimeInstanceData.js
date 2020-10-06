@@ -1,10 +1,10 @@
-import { Tw2BaseClass, device, meta } from "global";
+import { device, meta } from "global";
 import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 
 
 @meta.ctor("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
-export class Tw2RuntimeInstanceData extends Tw2BaseClass
+export class Tw2RuntimeInstanceData extends meta.Model
 {
 
     _count = 0;

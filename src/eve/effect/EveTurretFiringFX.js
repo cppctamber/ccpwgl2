@@ -1,4 +1,4 @@
-import { meta, vec3, mat4, Tw2BaseClass } from "global";
+import { meta, vec3, mat4 } from "global";
 
 
 class EvePerMuzzleData
@@ -17,7 +17,7 @@ class EvePerMuzzleData
 
 @meta.ctor("EveTurretFiringFX")
 @meta.stage(2)
-export class EveTurretFiringFX extends Tw2BaseClass
+export class EveTurretFiringFX extends meta.Model
 {
 
     @meta.string

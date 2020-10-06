@@ -1,9 +1,9 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
 
 
 @meta.notImplemented
 @meta.ctor("Tw2CurveSetRange")
-export class Tw2CurveSetRange extends Tw2BaseClass
+export class Tw2CurveSetRange extends meta.Model
 {
 
     @meta.string

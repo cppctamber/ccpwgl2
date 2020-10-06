@@ -3,7 +3,6 @@ import { Tw2CurveSet } from "curve";
 import {
     meta,
     util,
-    Tw2BaseClass,
     AttachmentType,
     RM_OPAQUE,
     RM_TRANSPARENT,
@@ -14,7 +13,7 @@ import {
 
 
 @meta.ctor("EveMeshOverlayEffect", true)
-export class EveMeshOverlayEffect extends Tw2BaseClass
+export class EveMeshOverlayEffect extends meta.Model
 {
 
     @meta.string
