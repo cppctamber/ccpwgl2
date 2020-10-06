@@ -244,7 +244,6 @@ export class Tw2Library extends Tw2EventEmitter
     Register(options = {})
     {
         if (options.debug !== undefined) this.debug = options.debug;
-        if (options.uuid) enableUUID(options.uuid);
         if (options.logger) this.logger.Register(options.logger);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);

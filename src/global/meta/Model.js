@@ -1,11 +1,13 @@
 import { Tw2EventEmitter } from "core/class/Tw2EventEmitter";
-import { generateID, getMetadata, hasMetadata, isNumber, isObjectObject, isPlain } from "../util";
+import { generateID, getMetadata, hasMetadata, isPlain } from "../util";
 import { propTypes } from "./types";
+import { readOnly } from "global/meta/@generic";
 
 
 export class Model extends Tw2EventEmitter
 {
 
+    @readOnly
     _id = generateID();
 
     /**
@@ -276,7 +278,7 @@ export class Model extends Tw2EventEmitter
      * @param {Array} [out=[]] - optional receiving array
      * @returns {Array} out    - all structs where the func returned true
      */
-    Filter(func, out=[])
+    Filter(func, out = [])
     {
         this.Traverse(opt =>
         {
@@ -341,7 +343,7 @@ export class Model extends Tw2EventEmitter
      */
     static copy(a, b, opt = {})
     {
-        return this.set(a, b.GetValues(), { clear: true, ...opt });
+        return this.set(a, b.GetValues(), { _clear: true, ...opt });
     }
 
     /**
@@ -362,32 +364,29 @@ export class Model extends Tw2EventEmitter
      * @param {Object} [opt={}] - options
      * @returns {Object} out
      */
-    static get(item, out={}, opt = {})
+    static get(item, out = {}, opt = {})
     {
-        if (item.constructor !== this)
+        if (!hasMetadata("type", this)) throw new ReferenceError("No meta type defined");
+
+        const isFirstGet = !opt._ids;
+
+        if (!opt._ids)
         {
-            throw new ReferenceError("Invalid constructor");
+            opt._ids = new Map();
+        }
+        else if (opt._ids.has(item))
+        {
+            const result = { __ref: item._id };
+            opt._ids.get(item).push(result);
+            return result;
         }
 
-        const { ids = new Map(), ...options } = opt;
+        out = {
+            __type: getMetadata("type", item.constructor),
+            __id: item._id
+        };
 
-        if (ids.has(item))
-        {
-            return { _ref: ids.get(item) };
-        }
-        else
-        {
-            ids.set(item, item._id);
-        }
-
-        options.ids = ids;
-
-        out = { __type: getMetadata("type", item.constructor) };
-
-        if (opt.includeIDs)
-        {
-            out.__id = ids.get(item);
-        }
+        opt._ids.set(item, [ out ]);
 
         for (const key in item)
         {
@@ -402,9 +401,38 @@ export class Model extends Tw2EventEmitter
                     throw new TypeError("Unknown type: " + type);
                 }
 
-                // Todo: Move id checks out of the handlers
-                out[key] = handler.get(item, key, options);
+                out[key] = handler.get(item, key, opt);
             }
+        }
+
+        // Strip out object ids
+        // Replace any duplicates with interim string ids
+        if (isFirstGet && !opt["useObjectIds"])
+        {
+            let count = 0;
+
+            opt._ids.forEach(value =>
+            {
+                // No need for the id if there is only one object
+                if (value.length === 1)
+                {
+                    Reflect.deleteProperty(value[0], "__id");
+                    return;
+                }
+
+                let id = "#" +  count++;
+                for (let i = 0; i < value.length; i++)
+                {
+                    if (i === 0)
+                    {
+                        value[i].__id = id;
+                    }
+                    else
+                    {
+                        value[i].__ref = id;
+                    }
+                }
+            });
         }
 
         return out;
@@ -425,16 +453,27 @@ export class Model extends Tw2EventEmitter
             throw new ReferenceError("Invalid constructor");
         }
 
+        if (!hasMetadata("type", this))
+        {
+            throw new ReferenceError("Not meta type defined");
+        }
+
         if (values && !isPlain(values))
         {
             throw new ReferenceError("Invalid values, expected plain object");
         }
 
-        const { clear, skipEvents, skipUpdate, ids = new Map(), ...options } = opt;
-        options.ids = ids;
+        let { _clear, _ids = new Map, skipEvents, skipUpdate, ...options } = opt;
+
+        if (_ids.has(item))
+        {
+            return _ids.get(item);
+        }
+
+        options._ids = _ids;
 
         // We'll need to clear all structs when copying...
-        if (clear)
+        if (_clear)
         {
             throw new Error("Copy feature not implemented");
             //if (!values) throw new ReferenceError("Unexpected...");
@@ -458,6 +497,17 @@ export class Model extends Tw2EventEmitter
                         throw new TypeError("Unknown type: " + type);
                     }
 
+                    // Delete
+                    if (value === null && handler.delete)
+                    {
+                        if (handler.delete(item, key, options))
+                        {
+                            updated = true;
+                        }
+
+                        continue;
+                    }
+
                     if (!handler.isValue(value, item[key], options))
                     {
                         throw new TypeError("Invalid value for property " + key);
@@ -468,8 +518,10 @@ export class Model extends Tw2EventEmitter
                         continue;
                     }
 
-                    handler.set(item, key, value, options);
-                    updated = true;
+                    if (handler.set(item, key, value, options))
+                    {
+                        updated = true;
+                    }
                 }
             }
         }
@@ -478,6 +530,8 @@ export class Model extends Tw2EventEmitter
         {
             item.UpdateValues(options);
         }
+
+        _ids.set(item, updated);
 
         return updated;
     }
@@ -546,4 +600,6 @@ export class Model extends Tw2EventEmitter
         throw new Error("Feature not implemented");
     }
 
+
 }
+

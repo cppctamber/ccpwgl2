@@ -7,6 +7,7 @@ import * as unsupported from "./unsupported";
 
 import { path } from "./core/reader/Tw2BlackPropertyReaders";
 import { vec4, mat4 } from "./global/math";
+import { enableUUID } from "global/util";
 
 /**
  * Black property path  handler

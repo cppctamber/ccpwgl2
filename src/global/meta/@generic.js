@@ -89,6 +89,16 @@ export const data = createDecorator({
     }
 });
 
+export const readOnly = createDecorator({
+    noArgs: true,
+    property({ descriptor })
+    {
+        descriptor.writable = false;
+        descriptor.enumerable = false;
+        return descriptor;
+    }
+});
+
 export const isPrivate = createDecorator({
     noArgs: true,
     property({ target, property })

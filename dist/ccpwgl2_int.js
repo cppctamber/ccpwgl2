@@ -17144,6 +17144,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _unsupported__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unsupported */ "./unsupported/index.js");
 /* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
 /* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
 
 
 
@@ -20284,7 +20286,6 @@ var Tw2Library = Object(global_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_
 
   Register(options = {}) {
     if (options.debug !== undefined) this.debug = options.debug;
-    if (options.uuid) Object(global_util__WEBPACK_IMPORTED_MODULE_8__["enableUUID"])(options.uuid);
     if (options.logger) this.logger.Register(options.logger);
     if (options.resMan) this.resMan.Register(options.resMan);
     if (options.device) this.device.Register(options.device);
@@ -23235,20 +23236,6 @@ class Tw2ConstantParameter {
   }
 
 }
-/**
- * Tw2Effect
- *
- * @property {String} name                              - The effect's name
- * @property {String} effectFilePath                    - The effect's resource file path
- * @property {Tw2EffectRes|null} effectRes              - The effect's resource
- * @property {Object.<string, Tw2Parameter>} parameters - Effect parameters
- * @property {Object.<string, Array>} techniques        - Shader techniques
- * @property {Object.<string, string>} options          - Shader options
- * @property {Tw2Shader|null} shader                    - The effect's shader
- * @property {Object} samplerOverrides                  - Sampler overrides (not used yet)
- * @property {Boolean} autoParameter                   - Identifies if the effect should automatically generate parameters
- */
-
 
 var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2EffectRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Shader"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = _class2 = class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
@@ -38393,8 +38380,8 @@ var Tw2PerlinCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("T
   /**
    * Sorts the curve
    */
-  Sort() {} // No operation
-
+  Sort() {// No operation
+  }
   /**
    * Gets the curve's length
    * @returns {number}
@@ -39463,8 +39450,8 @@ var Tw2RandomConstantCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   /**
    * Sorts the curve
    */
-  Sort() {} // No operation
-
+  Sort() {// No operation
+  }
   /**
    * Gets the curve's length
    * @returns {number}
@@ -40612,8 +40599,8 @@ var Tw2SineCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2
   /**
    * Sorts the curve
    */
-  Sort() {} // No operation
-
+  Sort() {// No operation
+  }
   /**
    * Gets the curve's length
    * @returns {number}
@@ -66587,7 +66574,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].hex = function (linear) {
 /*!*********************************!*\
   !*** ./global/meta/@generic.js ***!
   \*********************************/
-/*! exports provided: ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
+/*! exports provided: ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66599,6 +66586,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ctor", function() { return ctor; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "data", function() { return data; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readOnly", function() { return readOnly; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return isPrivate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return desc; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "todo", function() { return todo; });
@@ -66705,6 +66693,18 @@ var data = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
     }
 
     Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("data", value, target, property);
+  }
+
+});
+var readOnly = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
+
+  property({
+    descriptor
+  }) {
+    descriptor.writable = false;
+    descriptor.enumerable = false;
+    return descriptor;
   }
 
 });
@@ -67138,6 +67138,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/class/Tw2EventEmitter */ "./core/class/Tw2EventEmitter.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 /* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./types */ "./global/meta/types/index.js");
+/* harmony import */ var global_meta_generic__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/meta/@generic */ "./global/meta/@generic.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -67152,13 +67153,24 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
+var id = 0;
+
+function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
 
 
+
+
+
+
+var _id = _classPrivateFieldLooseKey("_id");
 
 class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
   constructor(...args) {
     super(...args);
-    this._id = Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])();
+    Object.defineProperty(this, _id, {
+      writable: true,
+      value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])()
+    });
   }
 
   /**
@@ -67422,10 +67434,10 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     }
   }
   /**
-   * Finds an object by itself, or i
-   * @param {Function} func
-   * @param {Array } out
-   * @returns {Array} out
+   * Filters all structs
+   * @param {Function} func  - the function to call on each struct
+   * @param {Array} [out=[]] - optional receiving array
+   * @returns {Array} out    - all structs where the func returned true
    */
 
 
@@ -67487,7 +67499,7 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
   static copy(a, b, opt = {}) {
     return this.set(a, b.GetValues(), _objectSpread({
-      clear: true
+      _clear: true
     }, opt));
   }
   /**
@@ -67502,24 +67514,36 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     return this.from(a.GetValues(), opt);
   }
   /**
-   *
-   * @param item
-   * @param [out={}]
-   * @param [opt={}]
-   * @returns {Object}
+   * Serializes an item
+   * @param {*} item          - the item to serialize
+   * @param {Object} [out={}] - optional receiving object
+   * @param {Object} [opt={}] - options
+   * @returns {Object} out
    */
 
 
   static get(item, out = {}, opt = {}) {
-    var {
-      ids = new Map()
-    } = opt,
-        options = _objectWithoutProperties(opt, ["ids"]);
+    if (!Object(_util__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", this)) throw new ReferenceError("No meta type defined");
+    var isFirstGet = !opt._ids;
 
-    options.ids = ids;
+    if (!opt._ids) {
+      opt._ids = new Map();
+    } else if (opt._ids.has(item)) {
+      var result = {
+        __ref: item._id
+      };
+
+      opt._ids.get(item).push(result);
+
+      return result;
+    }
+
     out = {
-      __type: Object(_util__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", item.constructor)
+      __type: Object(_util__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", item.constructor),
+      __id: item._id
     };
+
+    opt._ids.set(item, [out]);
 
     for (var key in item) {
       if (item.hasOwnProperty(key) && Object(_util__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", item, key) && !Object(_util__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("isPrivate", item, key)) {
@@ -67530,41 +67554,79 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
           throw new TypeError("Unknown type: " + type);
         }
 
-        out[key] = handler.get(item, key, options);
+        out[key] = handler.get(item, key, opt);
       }
+    } // Strip out object ids
+    // Replace any duplicates with interim string ids
+
+
+    if (isFirstGet && !opt["useObjectIds"]) {
+      var count = 0;
+
+      opt._ids.forEach(value => {
+        // No need for the id if there is only one object
+        if (value.length === 1) {
+          Reflect.deleteProperty(value[0], "__id");
+          return;
+        }
+
+        var id = "#" + count++;
+
+        for (var i = 0; i < value.length; i++) {
+          if (i === 0) {
+            value[i].__id = id;
+          } else {
+            value[i].__ref = id;
+          }
+        }
+      });
     }
 
     return out;
   }
   /**
-   *
-   * @param item
-   * @param values
-   * @param opt
-   * @returns {boolean}
+   * Sets an items values from a plain object
+   * TODO: Reduce values to only be those that would result in a change to the object?
+   * @param {*} item          - the item to set
+   * @param {Object} [values] - the values to set
+   * @param {Object} [opt={}] - set options
+   * @returns {boolean}       - true if updated
    */
 
 
   static set(item, values, opt = {}) {
-    var {
-      clear,
-      skipEvents,
-      skipUpdate,
-      ids = new Map()
-    } = opt,
-        options = _objectWithoutProperties(opt, ["clear", "skipEvents", "skipUpdate", "ids"]);
-
-    options.ids = ids; // Empty the instance
-
-    if (clear) {
-      if (!values) throw new ReferenceError("Unexpected...");
-      item.Clear({
-        skipUpdate: true,
-        skipEvents: true
-      });
+    if (item.constructor !== this) {
+      throw new ReferenceError("Invalid constructor");
     }
 
-    var updated;
+    if (!Object(_util__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", this)) {
+      throw new ReferenceError("Not meta type defined");
+    }
+
+    if (values && !Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(values)) {
+      throw new ReferenceError("Invalid values, expected plain object");
+    }
+
+    var {
+      _clear,
+      _ids = new Map(),
+      skipEvents,
+      skipUpdate
+    } = opt,
+        options = _objectWithoutProperties(opt, ["_clear", "_ids", "skipEvents", "skipUpdate"]);
+
+    if (_ids.has(item)) {
+      return _ids.get(item);
+    }
+
+    options._ids = _ids; // We'll need to clear all structs when copying...
+
+    if (_clear) {
+      throw new Error("Copy feature not implemented"); //if (!values) throw new ReferenceError("Unexpected...");
+      //item.Clear({ skipUpdate: true, skipEvents: true });
+    }
+
+    var updated = false;
 
     if (values) {
       for (var key in values) {
@@ -67575,6 +67637,15 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
           if (!handler) {
             throw new TypeError("Unknown type: " + type);
+          } // Delete
+
+
+          if (value === null && handler.delete) {
+            if (handler.delete(item, key, options)) {
+              updated = true;
+            }
+
+            continue;
           }
 
           if (!handler.isValue(value, item[key], options)) {
@@ -67585,8 +67656,9 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
             continue;
           }
 
-          handler.set(item, key, value, options);
-          updated = true;
+          if (handler.set(item, key, value, options)) {
+            updated = true;
+          }
         }
       }
     }
@@ -67595,13 +67667,16 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
       item.UpdateValues(options);
     }
 
+    _ids.set(item, updated);
+
     return updated;
   }
   /**
    * Creates an instance from values
-   * @param values
-   * @param opt
-   * @returns {{Initialize}}
+   * TODO: Ensure we are passed the correct values
+   * @param {Object} [values] - values to set
+   * @param {Object} [opt={}] - create options
+   * @returns {*}
    */
 
 
@@ -67613,7 +67688,11 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
     var item;
 
-    if (values instanceof this) {
+    if (values && values.__type && Object(_util__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", this) !== values.__type) {
+      throw new ReferenceError("Unexpected constructor " + values.__type);
+    }
+
+    if (values && values instanceof this) {
       item = values;
     } else {
       item = new this();
@@ -67671,7 +67750,7 @@ class Model extends core_class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 /*!******************************!*\
   !*** ./global/meta/index.js ***!
   \******************************/
-/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage, Model */
+/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod, abstract, singleton, ctor, data, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage, Model */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67742,6 +67821,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "data", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["data"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "readOnly", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["readOnly"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["isPrivate"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["desc"]; });
@@ -67763,597 +67844,205 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./global/meta/types/ARRAY.js":
-/*!************************************!*\
-  !*** ./global/meta/types/ARRAY.js ***!
-  \************************************/
-/*! exports provided: isValue, get */
+/***/ "./global/meta/types/PropertyTypes.js":
+/*!********************************************!*\
+  !*** ./global/meta/types/PropertyTypes.js ***!
+  \********************************************/
+/*! exports provided: boolean, byte, float, uint, ushort, string, expression, path, indexBuffer, vector, matrix3, matrix4, vector2, vector3, vector4, color, quaternion, plain, struct, structRaw, structList */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return isValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
-var isValue = global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"];
-var get = (a, key) => Array.from(a[key]);
-
-/***/ }),
-
-/***/ "./global/meta/types/BOOLEAN.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/BOOLEAN.js ***!
-  \**************************************/
-/*! exports provided: isValue, equals, set, get */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return isValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
-var isValue = global_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"];
-var equals = (a, b) => a === b;
-var set = (a, key, value) => a[key] = value;
-var get = (a, key) => a[key];
-
-/***/ }),
-
-/***/ "./global/meta/types/BYTE.js":
-/*!***********************************!*\
-  !*** ./global/meta/types/BYTE.js ***!
-  \***********************************/
-/*! exports provided: equals, get, set, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BOOLEAN */ "./global/meta/types/BOOLEAN.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isNumber"]; });
-
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/COLOR.js":
-/*!************************************!*\
-  !*** ./global/meta/types/COLOR.js ***!
-  \************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/EXPRESSION.js":
-/*!*****************************************!*\
-  !*** ./global/meta/types/EXPRESSION.js ***!
-  \*****************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _STRING__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./STRING */ "./global/meta/types/STRING.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/FLOAT.js":
-/*!************************************!*\
-  !*** ./global/meta/types/FLOAT.js ***!
-  \************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BYTE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BYTE */ "./global/meta/types/BYTE.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/INDEX_BUFFER.js":
-/*!*******************************************!*\
-  !*** ./global/meta/types/INDEX_BUFFER.js ***!
-  \*******************************************/
-/*! exports provided: get, set, isValue, equals */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR */ "./global/meta/types/VECTOR.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _VECTOR__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/MATRIX3.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/MATRIX3.js ***!
-  \**************************************/
-/*! exports provided: get, set, equals, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isMatrix3"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/MATRIX4.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/MATRIX4.js ***!
-  \**************************************/
-/*! exports provided: get, set, equals, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isMatrix4"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/PATH.js":
-/*!***********************************!*\
-  !*** ./global/meta/types/PATH.js ***!
-  \***********************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _STRING__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./STRING */ "./global/meta/types/STRING.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _STRING__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/PLAIN.js":
-/*!************************************!*\
-  !*** ./global/meta/types/PLAIN.js ***!
-  \************************************/
-/*! exports provided: equals, isValue, set, get */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return global_util__WEBPACK_IMPORTED_MODULE_0__["isEqual"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_0__["isPlain"]; });
-
-
-var set = (a, key, value) => a[key] = Object.assign({}, a[key], value);
-var get = (a, key) => Object.assign({}, a[key]);
-
-/***/ }),
-
-/***/ "./global/meta/types/QUATERNION.js":
-/*!*****************************************!*\
-  !*** ./global/meta/types/QUATERNION.js ***!
-  \*****************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/STRING.js":
-/*!*************************************!*\
-  !*** ./global/meta/types/STRING.js ***!
-  \*************************************/
-/*! exports provided: equals, get, set, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BOOLEAN */ "./global/meta/types/BOOLEAN.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _BOOLEAN__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isString"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/STRUCT.js":
-/*!*************************************!*\
-  !*** ./global/meta/types/STRUCT.js ***!
-  \*************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return isValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class */ "./core/class/index.js");
-
-
-function isValue(srcValue, destValue) {
-  if (srcValue !== null && !Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(srcValue)) {
-    return false;
-  }
-  /*
-  if ("_type" in srcValue)
-  {
-      const typesOf = getMetadata("typesOf", destValue.constructor);
-      if (typesOf)
-      {
-          if (typesOf.includes(srcValue._type))
-          {
-              return true;
-          }
-            // TODO: Check abstract classes...
-      }
-  }
-  */
-
-
-  return true;
-}
-function equals(srcValue, destValue, options) {
-  return false;
-}
-function get(a, key, options) {
-  if (!a[key]) {
-    return null;
-  }
-
-  if (options.ids.has(a[key])) {
-    var id = options.ids.get(a[key]);
-    return {
-      _ref: id
-    };
-  } else {
-    options.ids.set(a[key], a[key]._id);
-    return a[key].GetValues({}, options);
-  }
-}
-function set(a, key, value, options) {
-  throw new core_class__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
-    feature: "STRUCT.set"
-  });
-}
-
-/***/ }),
-
-/***/ "./global/meta/types/STRUCT_LIST.js":
-/*!******************************************!*\
-  !*** ./global/meta/types/STRUCT_LIST.js ***!
-  \******************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return isValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class */ "./core/class/index.js");
-
-
-function isValue(srcValue, destValue) {
-  if (!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(srcValue)) {
-    return false;
-  }
-  /*
-  const typesOf = getMetadata("typesOf", destValue.constructor);
-  if (typesOf)
-  {
-      for (let i = 0; i < srcValue.length; i++)
-      {
-          if (!isPlain(srcValue[i]) || srcValue[i] !== null)
-          {
-              return false;
-          }
-            if (srcValue[i] && srcValue[i]._type && typesOf.includes(srcValue[i]._type))
-          {
-              return true;
-          }
-            // TODO: Handle abstract classes...
-      }
-  }
-  */
-
-
-  return true;
-}
-function equals(srcValue, destValue, options) {
-  return false;
-}
-function get(a, key, options) {
-  var out = [];
-
-  for (var i = 0; i < a[key].length; i++) {
-    if (options.ids.has(a[key][i])) {
-      var id = options.ids.get(a[key][i]);
-      out.push({
-        _ref: id
-      });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return byte; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return expression; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector", function() { return vector; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return matrix3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return matrix4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return vector2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return vector3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return vector4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "color", function() { return color; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return quaternion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structRaw", function() { return structRaw; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structList", function() { return structList; });
+/* harmony import */ var _consts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./consts */ "./global/meta/types/consts.js");
+/* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
+
+ //  Helpers
+
+var getArray = (a, key) => Array.from(a[key]);
+
+var getPrimary = (a, key) => a[key];
+
+var setPrimary = (a, key, value) => a[key] = value;
+
+var equalsPrimary = (a, b) => a === b;
+
+var returnFalse = () => false;
+
+var notImplemented = () => {
+  throw new ReferenceError("Not implemented");
+}; // Boolean
+
+
+var boolean = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isBoolean"],
+  equals: equalsPrimary,
+  get: getPrimary,
+  set: setPrimary,
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN
+}; // Numbers
+
+var byte = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["num"].equals,
+  get: getPrimary,
+  set: setPrimary,
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE
+};
+var float = Object.assign({}, byte, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT
+});
+var uint = Object.assign({}, byte, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT
+});
+var ushort = Object.assign({}, byte, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT
+}); //  Strings
+
+var string = {
+  is: global_util__WEBPACK_IMPORTED_MODULE_2__["isString"],
+  equals: equalsPrimary,
+  get: getPrimary,
+  set: setPrimary,
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING
+};
+var expression = Object.assign({}, string, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].EXPRESSION
+});
+var path = Object.assign({}, string, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH
+}); // Vectors
+
+var indexBuffer = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isVector"],
+  equals: global_util__WEBPACK_IMPORTED_MODULE_2__["isVectorEqual"],
+  get: getArray,
+  set: (a, key, value) => {
+    if (a[key].length !== value.length) {
+      a[key] = new a[key].constructor(value);
     } else {
-      options.ids.set(a[key][i], a[key][i]._id);
-      var value = a[key][i].GetValues({}, options);
-      out.push(value);
+      a[key].set(value);
     }
-  }
+  },
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER
+};
+var vector = Object.assign({}, indexBuffer, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR
+});
+var matrix3 = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isMatrix3"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["mat3"].equals,
+  get: getArray,
+  set: (a, key, value) => global_math__WEBPACK_IMPORTED_MODULE_1__["mat3"].copy(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX3
+};
+var matrix4 = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isMatrix4"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].equals,
+  get: getArray,
+  set: (a, key, value) => global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX4
+};
+var vector2 = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isVector2"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["vec2"].equals,
+  get: getArray,
+  set: (a, key, value) => global_math__WEBPACK_IMPORTED_MODULE_1__["vec2"].copy(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2
+};
+var vector3 = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isVector3"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals,
+  get: getArray,
+  set: (a, key, value) => global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3
+};
+var vector4 = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isVector2"],
+  equals: global_math__WEBPACK_IMPORTED_MODULE_1__["vec4"].equals,
+  get: getArray,
+  set: (a, key, value) => global_math__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4
+};
+var color = Object.assign({}, vector4, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR
+});
+var quaternion = Object.assign({}, vector4, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION
+}); // Objects
 
-  return out;
-}
-function set(a, key, value, options) {
-  throw new core_class__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
-    feature: "STRUCT_LIST.set"
-  });
-}
+var plain = {
+  isValue: global_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"],
+  equals: global_util__WEBPACK_IMPORTED_MODULE_2__["isEqual"],
+  get: (a, key) => Object.assign({}, a[key]),
+  set: (a, key, value) => Object.assign(a[key], value),
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN
+};
+var struct = {
+  isValue(value, dest) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) return false; // TODO:  Handle struct type checking...
 
-/***/ }),
+    return true;
+  },
 
-/***/ "./global/meta/types/STRUCT_RAW.js":
-/*!*****************************************!*\
-  !*** ./global/meta/types/STRUCT_RAW.js ***!
-  \*****************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+  equals: returnFalse,
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _STRUCT__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./STRUCT */ "./global/meta/types/STRUCT.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _STRUCT__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
+  get(a, key, options) {
+    return a[key] === null ? null : a[key].GetValues({}, options);
+  },
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _STRUCT__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
+  set: notImplemented,
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].STRUCT
+};
+var structRaw = Object.assign({}, struct, {
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].STRUCT_RAW
+});
+var structList = {
+  isValue(value, dest) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(value)) return false; // TODO: Handle struct type checking...
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _STRUCT__WEBPACK_IMPORTED_MODULE_0__["get"]; });
+    return true;
+  },
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _STRUCT__WEBPACK_IMPORTED_MODULE_0__["set"]; });
+  equals: returnFalse,
 
+  get(a, key, options) {
+    var len = a[key].length;
+    if (!len) return null;
+    var out = [];
 
+    for (var i = 0; i < len; i++) {
+      out.push(a[key][i].GetValues({}, options));
+    }
 
-/***/ }),
+    return out;
+  },
 
-/***/ "./global/meta/types/UINT.js":
-/*!***********************************!*\
-  !*** ./global/meta/types/UINT.js ***!
-  \***********************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BYTE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BYTE */ "./global/meta/types/BYTE.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/USHORT.js":
-/*!*************************************!*\
-  !*** ./global/meta/types/USHORT.js ***!
-  \*************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _BYTE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BYTE */ "./global/meta/types/BYTE.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["isValue"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _BYTE__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/VECTOR.js":
-/*!*************************************!*\
-  !*** ./global/meta/types/VECTOR.js ***!
-  \*************************************/
-/*! exports provided: get, equals, isValue, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isVector"]; });
-
-
-
-function set(a, key, value) {
-  if (a[key].length === value.length) {
-    a[key].set(value);
-  } else {
-    a[key] = new a[key].constructor(value);
-  }
-}
-
-/***/ }),
-
-/***/ "./global/meta/types/VECTOR2.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/VECTOR2.js ***!
-  \**************************************/
-/*! exports provided: get, set, equals, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isVector2"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/VECTOR3.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/VECTOR3.js ***!
-  \**************************************/
-/*! exports provided: get, set, equals, isValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["get"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["set"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return _VECTOR4__WEBPACK_IMPORTED_MODULE_0__["equals"]; });
-
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_1__["isVector3"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/types/VECTOR4.js":
-/*!**************************************!*\
-  !*** ./global/meta/types/VECTOR4.js ***!
-  \**************************************/
-/*! exports provided: isValue, equals, get, set */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isValue", function() { return global_util__WEBPACK_IMPORTED_MODULE_0__["isVector4"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return global_util__WEBPACK_IMPORTED_MODULE_0__["isVectorEqual"]; });
-
-
-var get = (a, key) => Array.from(a[key]);
-var set = (a, key, value) => a[key].set(value);
+  set: notImplemented,
+  type: _consts__WEBPACK_IMPORTED_MODULE_0__["Type"].STRUCT_LIST
+};
 
 /***/ }),
 
@@ -68422,77 +68111,16 @@ var TypeLength = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "propTypes", function() { return propTypes; });
-/* harmony import */ var _ARRAY__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ARRAY */ "./global/meta/types/ARRAY.js");
-/* harmony import */ var _BOOLEAN__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BOOLEAN */ "./global/meta/types/BOOLEAN.js");
-/* harmony import */ var _BYTE__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BYTE */ "./global/meta/types/BYTE.js");
-/* harmony import */ var _COLOR__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./COLOR */ "./global/meta/types/COLOR.js");
-/* harmony import */ var _EXPRESSION__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EXPRESSION */ "./global/meta/types/EXPRESSION.js");
-/* harmony import */ var _FLOAT__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./FLOAT */ "./global/meta/types/FLOAT.js");
-/* harmony import */ var _INDEX_BUFFER__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./INDEX_BUFFER */ "./global/meta/types/INDEX_BUFFER.js");
-/* harmony import */ var _MATRIX3__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./MATRIX3 */ "./global/meta/types/MATRIX3.js");
-/* harmony import */ var _MATRIX4__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./MATRIX4 */ "./global/meta/types/MATRIX4.js");
-/* harmony import */ var _PATH__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./PATH */ "./global/meta/types/PATH.js");
-/* harmony import */ var _PLAIN__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./PLAIN */ "./global/meta/types/PLAIN.js");
-/* harmony import */ var _QUATERNION__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./QUATERNION */ "./global/meta/types/QUATERNION.js");
-/* harmony import */ var _STRING__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./STRING */ "./global/meta/types/STRING.js");
-/* harmony import */ var _STRUCT__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./STRUCT */ "./global/meta/types/STRUCT.js");
-/* harmony import */ var _STRUCT_RAW__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./STRUCT_RAW */ "./global/meta/types/STRUCT_RAW.js");
-/* harmony import */ var _STRUCT_LIST__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./STRUCT_LIST */ "./global/meta/types/STRUCT_LIST.js");
-/* harmony import */ var _UINT__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./UINT */ "./global/meta/types/UINT.js");
-/* harmony import */ var _USHORT__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./USHORT */ "./global/meta/types/USHORT.js");
-/* harmony import */ var _VECTOR__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./VECTOR */ "./global/meta/types/VECTOR.js");
-/* harmony import */ var _VECTOR2__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./VECTOR2 */ "./global/meta/types/VECTOR2.js");
-/* harmony import */ var _VECTOR3__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./VECTOR3 */ "./global/meta/types/VECTOR3.js");
-/* harmony import */ var _VECTOR4__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./VECTOR4 */ "./global/meta/types/VECTOR4.js");
-/* harmony import */ var _consts__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./consts */ "./global/meta/types/consts.js");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* harmony import */ var _PropertyTypes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PropertyTypes */ "./global/meta/types/PropertyTypes.js");
 
 var propTypes = new Map();
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].ARRAY, _ARRAY__WEBPACK_IMPORTED_MODULE_0__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].BOOLEAN, _BOOLEAN__WEBPACK_IMPORTED_MODULE_1__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].BYTE, _BYTE__WEBPACK_IMPORTED_MODULE_2__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].COLOR, _COLOR__WEBPACK_IMPORTED_MODULE_3__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].EXPRESSION, _EXPRESSION__WEBPACK_IMPORTED_MODULE_4__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].FLOAT, _FLOAT__WEBPACK_IMPORTED_MODULE_5__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].INDEX_BUFFER, _INDEX_BUFFER__WEBPACK_IMPORTED_MODULE_6__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].MATRIX3, _MATRIX3__WEBPACK_IMPORTED_MODULE_7__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].MATRIX4, _MATRIX4__WEBPACK_IMPORTED_MODULE_8__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].PATH, _PATH__WEBPACK_IMPORTED_MODULE_9__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].PLAIN, _PLAIN__WEBPACK_IMPORTED_MODULE_10__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].QUATERNION, _QUATERNION__WEBPACK_IMPORTED_MODULE_11__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].STRING, _STRING__WEBPACK_IMPORTED_MODULE_12__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].STRUCT, _STRUCT__WEBPACK_IMPORTED_MODULE_13__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].STRUCT_RAW, _STRUCT_RAW__WEBPACK_IMPORTED_MODULE_14__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].STRUCT_LIST, _STRUCT_LIST__WEBPACK_IMPORTED_MODULE_15__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].UINT, _UINT__WEBPACK_IMPORTED_MODULE_16__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].USHORT, _USHORT__WEBPACK_IMPORTED_MODULE_17__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].VECTOR, _VECTOR__WEBPACK_IMPORTED_MODULE_18__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].VECTOR2, _VECTOR2__WEBPACK_IMPORTED_MODULE_19__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].VECTOR3, _VECTOR3__WEBPACK_IMPORTED_MODULE_20__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].VECTOR4, _VECTOR4__WEBPACK_IMPORTED_MODULE_21__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].USHORT, _VECTOR4__WEBPACK_IMPORTED_MODULE_21__);
-propTypes.set(_consts__WEBPACK_IMPORTED_MODULE_22__["Type"].USHORT, _VECTOR4__WEBPACK_IMPORTED_MODULE_21__);
+var type = Object.assign({}, _PropertyTypes__WEBPACK_IMPORTED_MODULE_0__);
+
+for (var key in type) {
+  if (type.hasOwnProperty(key)) {
+    propTypes.set(type[key].type, type[key]);
+  }
+}
 
 /***/ }),
 
@@ -71804,8 +71432,8 @@ var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstr
    */
 
 
-  Update(dt) {} // Optional, not needed on all forces
-
+  Update(dt) {// Optional, not needed on all forces
+  }
   /**
    * Global and scratch variables
    * @type {*}
@@ -82133,8 +81761,8 @@ var Tr2CurveConstant = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notIm
   /**
    * Sorts the curve
    */
-  Sort() {} // No operation
-
+  Sort() {// No operation
+  }
   /**
    * Gets the curve's length
    * @returns {number}
@@ -85485,8 +85113,8 @@ var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImple
    */
 
 
-  OnResPrepared(res) {} //TODO: OnResPrepared
-
+  OnResPrepared(res) {//TODO: OnResPrepared
+  }
   /**
    * Gets resources
    * @param {Array} [out=[]]
@@ -87936,7 +87564,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuParticleSystem", function() { return Tr2GpuParticleSystem; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -87945,7 +87573,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2GpuParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2GpuParticleSystem"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle conflict with Tw2BaseClass.EmitEvent"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2GpuParticleSystem {
+var Tr2GpuParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2GpuParticleSystem"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2GpuParticleSystem {
   constructor() {
     _initializerDefineProperty(this, "clear", _descriptor, this);
 
@@ -87984,70 +87612,70 @@ var Tr2GpuParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].n
     return out;
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "clear", [_dec4], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "clear", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "emit", [_dec5], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "emit", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "render", [_dec6], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "render", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "setDrawParameters", [_dec7], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "setDrawParameters", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "setSortParameters", [_dec8], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "setSortParameters", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "sort", [_dec9], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "sort", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "sortInner", [_dec10], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "sortInner", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "sortStep", [_dec11], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "sortStep", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "update", [_dec12], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "update", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-})), _class2)) || _class) || _class) || _class);
+})), _class2)) || _class) || _class);
 
 /***/ }),
 

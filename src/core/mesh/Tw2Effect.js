@@ -29,19 +29,6 @@ class Tw2ConstantParameter
 }
 
 
-/**
- * Tw2Effect
- *
- * @property {String} name                              - The effect's name
- * @property {String} effectFilePath                    - The effect's resource file path
- * @property {Tw2EffectRes|null} effectRes              - The effect's resource
- * @property {Object.<string, Tw2Parameter>} parameters - Effect parameters
- * @property {Object.<string, Array>} techniques        - Shader techniques
- * @property {Object.<string, string>} options          - Shader options
- * @property {Tw2Shader|null} shader                    - The effect's shader
- * @property {Object} samplerOverrides                  - Sampler overrides (not used yet)
- * @property {Boolean} autoParameter                   - Identifies if the effect should automatically generate parameters
- */
 export class Tw2Effect extends Tw2BaseClass
 {
 
