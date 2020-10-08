@@ -8,6 +8,9 @@ export class EveSOFDataHullLightSet
     @meta.string
     name = "";
 
+    @meta.uint
+    boneIndex = -1;
+
     @meta.list("EveSOFDataHullLightSetItem")
     items = [];
 

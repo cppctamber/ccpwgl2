@@ -76783,7 +76783,7 @@ var EveSOFDataHullHazeSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return EveSOFDataHullLightSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -76792,17 +76792,19 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLightSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSet {
+var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLightSetItem"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "items", _descriptor2, this);
+    _initializerDefineProperty(this, "boneIndex", _descriptor2, this);
 
-    _initializerDefineProperty(this, "noiseAmplitude", _descriptor3, this);
+    _initializerDefineProperty(this, "items", _descriptor3, this);
 
-    _initializerDefineProperty(this, "noiseOctaves", _descriptor4, this);
+    _initializerDefineProperty(this, "noiseAmplitude", _descriptor4, this);
 
-    _initializerDefineProperty(this, "visibilityGroup", _descriptor5, this);
+    _initializerDefineProperty(this, "noiseOctaves", _descriptor5, this);
+
+    _initializerDefineProperty(this, "visibilityGroup", _descriptor6, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -76812,28 +76814,35 @@ var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "items", [_dec3], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "items", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec5], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroup", [_dec6], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroup", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -76963,7 +76972,7 @@ var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return EveSOFDataHullLightSetSpotLight; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -76972,29 +76981,31 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetSpotLight"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetSpotLight {
+var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetSpotLight"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetSpotLight {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "brightness", _descriptor2, this);
+    _initializerDefineProperty(this, "boneIndex", _descriptor2, this);
 
-    _initializerDefineProperty(this, "innerAngle", _descriptor3, this);
+    _initializerDefineProperty(this, "brightness", _descriptor3, this);
 
-    _initializerDefineProperty(this, "innerRadius", _descriptor4, this);
+    _initializerDefineProperty(this, "innerAngle", _descriptor4, this);
 
-    _initializerDefineProperty(this, "lightColor", _descriptor5, this);
+    _initializerDefineProperty(this, "innerRadius", _descriptor5, this);
 
-    _initializerDefineProperty(this, "noiseAmplitude", _descriptor6, this);
+    _initializerDefineProperty(this, "lightColor", _descriptor6, this);
 
-    _initializerDefineProperty(this, "noiseFrequency", _descriptor7, this);
+    _initializerDefineProperty(this, "noiseAmplitude", _descriptor7, this);
 
-    _initializerDefineProperty(this, "outerAngle", _descriptor8, this);
+    _initializerDefineProperty(this, "noiseFrequency", _descriptor8, this);
 
-    _initializerDefineProperty(this, "position", _descriptor9, this);
+    _initializerDefineProperty(this, "outerAngle", _descriptor9, this);
 
-    _initializerDefineProperty(this, "radius", _descriptor10, this);
+    _initializerDefineProperty(this, "position", _descriptor10, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor11, this);
+    _initializerDefineProperty(this, "radius", _descriptor11, this);
+
+    _initializerDefineProperty(this, "rotation", _descriptor12, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -77004,70 +77015,77 @@ var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0_
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "brightness", [_dec3], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "brightness", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "innerAngle", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "innerAngle", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "innerRadius", [_dec5], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "innerRadius", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "lightColor", [_dec6], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "lightColor", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec7], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseFrequency", [_dec8], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "noiseFrequency", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "outerAngle", [_dec9], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "outerAngle", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec10], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec11], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec12], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec12], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -77359,7 +77377,7 @@ var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return EveSOFDataHullPlaneSetItem; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77368,120 +77386,147 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSetItem {
+var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSetItem {
   constructor() {
-    _initializerDefineProperty(this, "boneIndex", _descriptor, this);
+    _initializerDefineProperty(this, "blinkRate", _descriptor, this);
 
-    _initializerDefineProperty(this, "color", _descriptor2, this);
+    _initializerDefineProperty(this, "blinkPhase", _descriptor2, this);
 
-    _initializerDefineProperty(this, "dutyCycle", _descriptor3, this);
+    _initializerDefineProperty(this, "blinkMode", _descriptor3, this);
 
-    _initializerDefineProperty(this, "groupIndex", _descriptor4, this);
+    _initializerDefineProperty(this, "boneIndex", _descriptor4, this);
 
-    _initializerDefineProperty(this, "layer1Scroll", _descriptor5, this);
+    _initializerDefineProperty(this, "color", _descriptor5, this);
 
-    _initializerDefineProperty(this, "layer1Transform", _descriptor6, this);
+    _initializerDefineProperty(this, "dutyCycle", _descriptor6, this);
 
-    _initializerDefineProperty(this, "layer2Scroll", _descriptor7, this);
+    _initializerDefineProperty(this, "groupIndex", _descriptor7, this);
 
-    _initializerDefineProperty(this, "layer2Transform", _descriptor8, this);
+    _initializerDefineProperty(this, "layer1Scroll", _descriptor8, this);
 
-    _initializerDefineProperty(this, "maskMapAtlasIndex", _descriptor9, this);
+    _initializerDefineProperty(this, "layer1Transform", _descriptor9, this);
 
-    _initializerDefineProperty(this, "position", _descriptor10, this);
+    _initializerDefineProperty(this, "layer2Scroll", _descriptor10, this);
 
-    _initializerDefineProperty(this, "rate", _descriptor11, this);
+    _initializerDefineProperty(this, "layer2Transform", _descriptor11, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor12, this);
+    _initializerDefineProperty(this, "maskMapAtlasIndex", _descriptor12, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor13, this);
+    _initializerDefineProperty(this, "position", _descriptor13, this);
+
+    _initializerDefineProperty(this, "rate", _descriptor14, this);
+
+    _initializerDefineProperty(this, "rotation", _descriptor15, this);
+
+    _initializerDefineProperty(this, "scaling", _descriptor16, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec2], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return -1;
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "dutyCycle", [_dec4], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "blinkRate", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return -1;
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec8], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec9], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "maskMapAtlasIndex", [_dec10], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "blinkPhase", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec11], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "blinkMode", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "dutyCycle", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec11], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "maskMapAtlasIndex", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "rate", [_dec12], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "rate", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec13], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec14], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,

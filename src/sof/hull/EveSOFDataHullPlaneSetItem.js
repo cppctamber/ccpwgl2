@@ -5,6 +5,15 @@ import { meta, quat, vec3, vec4 } from "global";
 export class EveSOFDataHullPlaneSetItem
 {
 
+    @meta.float
+    blinkRate = 0;
+
+    @meta.float
+    blinkPhase = 0;
+
+    @meta.uint
+    blinkMode = 0;
+
     @meta.uint
     boneIndex = -1;
 
