@@ -216,15 +216,23 @@ export class Tw2ValueBinding extends meta.Model
         // Targets must be defined
         if (src === undefined)
         {
-            throw new ErrBindingValueUndefined({ name: this.name, object: "source", property: this.sourceAttribute });
+            console.dir(this);
+            throw new ErrBindingValueUndefined({
+                name: this.name,
+                objectType: "source",
+                property: this.sourceAttribute,
+                object: src
+            });
         }
 
         if (dest === undefined)
         {
+            console.dir(this);
             throw new ErrBindingValueUndefined({
                 name: this.name,
-                object: "destination",
-                property: this.destinationAttribute
+                objectType: "destination",
+                property: this.destinationAttribute,
+                object: this.destinationObject
             });
         }
 
@@ -590,7 +598,7 @@ export class ErrBindingValueUndefined extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
+        super(data, "Error binding '%name=unknown%', %objectType%'s property is undefined (%property%)");
     }
 }
 

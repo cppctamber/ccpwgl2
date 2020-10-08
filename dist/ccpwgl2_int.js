@@ -18570,25 +18570,11 @@ Tw2Notifications.onNotification = null;
 
 /***/ }),
 
-/***/ "./core/class/Tw2Schema.js":
-/*!*********************************!*\
-  !*** ./core/class/Tw2Schema.js ***!
-  \*********************************/
-/*! exports provided: Tw2Schema */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return Tw2Schema; });
-class Tw2Schema {}
-
-/***/ }),
-
 /***/ "./core/class/index.js":
 /*!*****************************!*\
   !*** ./core/class/index.js ***!
   \*****************************/
-/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Schema */
+/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18607,10 +18593,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Notifications */ "./core/class/Tw2Notifications.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
-
-/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Schema */ "./core/class/Tw2Schema.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__["Tw2Schema"]; });
-
 
 
 
@@ -22918,7 +22900,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Schema, Tw2PerObjectData, Tw2RawData, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget */
+/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2PerObjectData, Tw2RawData, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22948,8 +22930,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Schema"]; });
 
 /* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data */ "./core/data/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerObjectData", function() { return _data__WEBPACK_IMPORTED_MODULE_2__["Tw2PerObjectData"]; });
@@ -37573,18 +37553,22 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
         dest = this.destinationObject[this.destinationAttribute]; // Targets must be defined
 
     if (src === undefined) {
+      console.dir(this);
       throw new ErrBindingValueUndefined({
         name: this.name,
-        object: "source",
-        property: this.sourceAttribute
+        objectType: "source",
+        property: this.sourceAttribute,
+        object: src
       });
     }
 
     if (dest === undefined) {
+      console.dir(this);
       throw new ErrBindingValueUndefined({
         name: this.name,
-        object: "destination",
-        property: this.destinationAttribute
+        objectType: "destination",
+        property: this.destinationAttribute,
+        object: this.destinationObject
       });
     }
 
@@ -37963,7 +37947,7 @@ var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
 
 class ErrBindingValueUndefined extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
-    super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
+    super(data, "Error binding '%name=unknown%', %objectType%'s property is undefined (%property%)");
   }
 
 }
@@ -67008,6 +66992,7 @@ var enums = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])(
       target,
       property
     }, _types_consts__WEBPACK_IMPORTED_MODULE_0__["Type"].ENUM);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("isPrivate", true, target, property);
     Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("enumerable", values, target, property);
   }
 
@@ -80165,7 +80150,7 @@ var AudEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEm
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2DistanceTracker", function() { return Tr2DistanceTracker; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -80174,13 +80159,17 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2DistanceTracker"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2DistanceTracker {
-  constructor() {
+var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2DistanceTracker"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2DistanceTracker extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  constructor(...args) {
+    super(...args);
+
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "direction", _descriptor2, this);
 
     _initializerDefineProperty(this, "targetPosition", _descriptor3, this);
+
+    _initializerDefineProperty(this, "value", _descriptor4, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
@@ -80203,6 +80192,13 @@ var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].not
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "value", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
   }
 })), _class2)) || _class) || _class);
 
@@ -82004,6 +82000,118 @@ var Tr2CurveScalar = (_dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
 
 /***/ }),
 
+/***/ "./unsupported/curve/curve/Tr2ScalarExprCurve.js":
+/*!*******************************************************!*\
+  !*** ./unsupported/curve/curve/Tr2ScalarExprCurve.js ***!
+  \*******************************************************/
+/*! exports provided: Tr2ScalarExprCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprCurve", function() { return Tr2ScalarExprCurve; });
+/* harmony import */ var curve_curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! curve/curve */ "./curve/curve/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+var Tr2ScalarExprCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tr2ScalarExprCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec13 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec14 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].expression, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ScalarExprCurve extends curve_curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "input1", _descriptor, this);
+
+    _initializerDefineProperty(this, "input2", _descriptor2, this);
+
+    _initializerDefineProperty(this, "input3", _descriptor3, this);
+
+    _initializerDefineProperty(this, "value", _descriptor4, this);
+
+    _initializerDefineProperty(this, "currentValue", _descriptor5, this);
+
+    _initializerDefineProperty(this, "cycle", _descriptor6, this);
+
+    _initializerDefineProperty(this, "length", _descriptor7, this);
+
+    _initializerDefineProperty(this, "name", _descriptor8, this);
+
+    _initializerDefineProperty(this, "expr", _descriptor9, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "input1", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "input2", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "input3", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "value", [_dec6, _dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "currentValue", [_dec8, _dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "cycle", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "length", [_dec11, _dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "expr", [_dec14], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
 /***/ "./unsupported/curve/curve/Tr2ScalarExprKeyCurve.js":
 /*!**********************************************************!*\
   !*** ./unsupported/curve/curve/Tr2ScalarExprKeyCurve.js ***!
@@ -82017,7 +82125,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKeyCurve", function() { return Tr2ScalarExprKeyCurve; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp, _dec12, _dec13, _dec14, _dec15, _dec16, _class4, _class5, _descriptor10, _descriptor11, _descriptor12, _temp2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _class4, _class5, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -82114,7 +82222,7 @@ var Tr2ScalarExprKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor(
     return 0;
   }
 })), _class2)) || _class);
-var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ScalarExprKeyCurve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ScalarExprKey"), _dec12(_class4 = _dec13(_class4 = (_class5 = (_temp2 = class Tr2ScalarExprKeyCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ScalarExprKeyCurve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ScalarExprKey"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12(_class4 = _dec13(_class4 = (_class5 = (_temp2 = class Tr2ScalarExprKeyCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -82123,6 +82231,8 @@ var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"
     _initializerDefineProperty(this, "interpolation", _descriptor11, this);
 
     _initializerDefineProperty(this, "keys", _descriptor12, this);
+
+    _initializerDefineProperty(this, "currentValue", _descriptor13, this);
   }
 
 }, _temp2), (_descriptor10 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec14], {
@@ -82146,6 +82256,13 @@ var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"
   initializer: function () {
     return [];
   }
+}), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "currentValue", [_dec17], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
 })), _class5)) || _class4) || _class4);
 
 /***/ }),
@@ -82154,7 +82271,7 @@ var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"
 /*!******************************************!*\
   !*** ./unsupported/curve/curve/index.js ***!
   \******************************************/
-/*! exports provided: AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve */
+/*! exports provided: AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -82179,6 +82296,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKey", function() { return _Tr2ScalarExprKeyCurve__WEBPACK_IMPORTED_MODULE_4__["Tr2ScalarExprKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKeyCurve", function() { return _Tr2ScalarExprKeyCurve__WEBPACK_IMPORTED_MODULE_4__["Tr2ScalarExprKeyCurve"]; });
+
+/* harmony import */ var _Tr2ScalarExprCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2ScalarExprCurve */ "./unsupported/curve/curve/Tr2ScalarExprCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprCurve", function() { return _Tr2ScalarExprCurve__WEBPACK_IMPORTED_MODULE_5__["Tr2ScalarExprCurve"]; });
+
 
 
 
@@ -82546,7 +82667,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************!*\
   !*** ./unsupported/curve/index.js ***!
   \************************************/
-/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange */
+/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -82572,6 +82693,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKeyCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprKeyCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprCurve"]; });
 
 /* harmony import */ var _expression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./expression */ "./unsupported/curve/expression/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveEulerRotationExpression"]; });
@@ -86738,7 +86861,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./unsupported/index.js ***!
   \******************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
+/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -86784,6 +86907,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprKeyCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprKeyCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ScalarExprCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2ScalarExprCurve"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveEulerRotationExpression"]; });
 

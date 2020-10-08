@@ -203,6 +203,7 @@ export const enums = createDecorator({
     property({ target, property }, values)
     {
         typeHandler({ target, property }, Type.ENUM);
+        defineMetadata("isPrivate", true, target, property);
         defineMetadata("enumerable", values, target, property);
     }
 });

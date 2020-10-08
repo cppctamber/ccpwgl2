@@ -51,4 +51,7 @@ export class Tr2ScalarExprKeyCurve extends Tw2Curve
     @meta.list("Tr2ScalarExprKey")
     keys = [];
 
+    @meta.float
+    currentValue = 0;
+
 }
