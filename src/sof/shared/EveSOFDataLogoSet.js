@@ -1,4 +1,5 @@
 import { meta } from "global";
+import { Tw2Error } from "core/class";
 
 
 @meta.ctor("EveSOFDataLogoSet")
@@ -19,46 +20,46 @@ export class EveSOFDataLogoSet
 
     @meta.struct("EveSOFDataLogo")
     Tertiary = null;
-
-
-    /**
-     * Gets a logo set by type
-     * @param {Number} type
-     * @returns {EveSOFDataLogo|null}
-     */
-    FindType(type)
-    {
-        const name = EveSOFDataLogoSet.Type[type];
-        return name && this[name] ? this[name] : null;
-    }
+    
 
     /**
-     * Checks if a logo type exists by type
-     * @param {Number} type
+     * Checks if a logo exists by usage type
+     * @param {Number} usageType
      * @returns {boolean}
      */
-    HasType(type)
+    Has(usageType)
     {
-        return this.FindType(type) !== null;
+        const name = EveSOFDataLogoSet.UsageIndex[usageType];
+        
+        if (name === undefined)
+        {
+            throw new ErrSOFDataLogoSetUsageTypeUnknown({ usageType });
+        }
+        
+        return !!this[name];
     }
 
     /**
-     * Assigns logo textures by type
-     * @param {Number} type
-     * @param {Object} [out={}]
+     * Gets a logo by usage type
+     * @param {Number} usageType
+     * @returns {EveSOFDataLogo}
      */
-    AssignType(type, out={})
+    Get(usageType)
     {
-        const logo = this.FindType(type);
-        if (!logo) throw new Error("Invalid type: " + type);
-        return logo.Assign(out);
+        if (!this.Has(usageType))
+        {
+            throw new ErrSOFDataLogoSetUsageTypeNotFound({ usageType });
+        }
+        
+        return this[EveSOFDataLogoSet.UsageIndex[usageType]];
     }
 
     /**
      * Usage index
-     * @type {String[]}
+     * TODO: Figure out how to automate this list
+     * @usageType {String[]}
      */
-    static Type = [
+    static UsageIndex = [
         "Primary",
         "Secondary",
         "Tertiary",
@@ -66,4 +67,22 @@ export class EveSOFDataLogoSet
         "Marking_02"
     ]
 
+}
+
+
+export class ErrSOFDataLogoSetUsageTypeUnknown extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "SOF logo set usage type unknown (%usageType%)");
+        this.unknownUsageType = true;
+    }
+}
+
+export class ErrSOFDataLogoSetUsageTypeNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "SOF logo set usage type not found (%usageType%)");
+    }
 }

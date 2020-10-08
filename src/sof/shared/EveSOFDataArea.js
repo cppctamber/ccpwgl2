@@ -1,5 +1,5 @@
 import { meta } from "global";
-import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
+import { Tw2Error } from "core/class";
 
 
 @meta.ctor("EveSOFDataArea")
@@ -75,4 +75,77 @@ export class EveSOFDataArea
     @meta.struct("EveSOFDataAreaMaterial")
     Yellow = null;
 
+    
+    /**
+     * Checks if a data area exists by usage usageType
+     * @param {Number} usageType
+     * @returns {boolean}
+     */
+    Has(usageType)
+    {
+        const name = EveSOFDataArea.UsageIndex[usageType];
+        
+        if (name === undefined)
+        {
+            throw new ErrSOFDataAreaUsageTypeUnknown({ usageType });
+        }
+        
+        return !!this[name];
+    }
+
+    /**
+     * Gets a data area by usage usageType
+     * @param {Number} usageType
+     * @returns {EveSOFDataAreaMaterial}
+     */
+    Get(usageType)
+    {
+        if (!this.Has(usageType))
+        {
+            throw new ErrSOFDataAreaUsageTypeNotFound({ usageType });
+        }
+        
+        return this[EveSOFDataArea.UsageIndex[usageType]];
+    }
+
+    /**
+     * Usage index
+     * TODO: Figure out how to automate the creation of this list
+     * @usageType {string[]}
+     */
+    static UsageIndex = [
+        "Primary",
+        "Glass",
+        "Sail",
+        "Reactor",
+        "Darkhull",
+        "Wreck",
+        "Rock",
+        "Monument",
+        undefined, // ????
+        undefined  // ????
+    ]
+}
+
+/**
+ * Throws when a feature is not implemented
+ */
+export class ErrSOFDataAreaUsageTypeUnknown extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "SOF area usage type unknown (%usageType%)");
+        this.unknownUsageType = true;
+    }
+}
+
+/**
+ * Throws when a feature is not implemented
+ */
+export class ErrSOFDataAreaUsageTypeNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "SOF area usage type not found (%usageType%)");
+    }
 }

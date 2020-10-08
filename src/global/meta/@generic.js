@@ -115,11 +115,15 @@ export const desc = createDecorator({
 });
 
 export const todo = createDecorator({
-    handler({ target, property }, todo, stage = 1)
+    handler({ target, property }, todo, stage = 0)
     {
         defineMetadata("todo", todo, target, property);
-        const currentStage = getMetadata("stage", target, property) || 0;
-        defineMetadata("stage", Math.max(stage, currentStage), target, property);
+
+        if (stage !== 0)
+        {
+            const currentStage = getMetadata("stage", target, property) || 0;
+            defineMetadata("stage", Math.max(stage, currentStage), target, property);
+        }
     }
 });
 
