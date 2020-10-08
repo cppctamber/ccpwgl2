@@ -23,4 +23,22 @@ export class EveSOFDataBoosterShape
     @meta.float
     noiseSpeed = 0;
 
+    /**
+     * Alias for noiseAmplitureEnd
+     * @returns {vec4}
+     */
+    get noiseAmplitudeEnd()
+    {
+        return this.noiseAmplitureEnd;
+    }
+
+    /**
+     * Alias for noiseAmplitureStart
+     * @returns {vec4}
+     */
+    get noiseAmplitudeStart()
+    {
+        return this.noiseAmplitureStart;
+    }
+
 }

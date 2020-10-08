@@ -1,5 +1,5 @@
 import { meta } from "global";
-import { ErrSOFDataLogoSetUsageTypeNotFound, ErrSOFDataAreaUsageTypeNotFound } from "sof/shared";
+import { ErrSOFLogoSetUsageTypeNotFound, ErrSOFAreaUsageTypeNotFound } from "sof/shared";
 
 
 @meta.ctor("EveSOFDataFaction", true)
@@ -95,7 +95,7 @@ export class EveSOFDataFaction
     {
         if (!this.areaTypes)
         {
-            throw new ErrSOFDataAreaUsageTypeNotFound({ usageType });
+            throw new ErrSOFAreaUsageTypeNotFound({ usageType });
         }
         
         return this.areaTypes.Get(usageType);
@@ -120,7 +120,7 @@ export class EveSOFDataFaction
     {
         if (!this.logoSet)
         {
-            throw new ErrSOFDataLogoSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFLogoSetUsageTypeNotFound({ usageType });
         }
         
         return this.logoSet.Get(usageType);

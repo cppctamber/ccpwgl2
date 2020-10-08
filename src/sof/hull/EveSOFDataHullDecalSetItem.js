@@ -44,4 +44,31 @@ export class EveSOFDataHullDecalSetItem
     @meta.string
     visibilityGroup = "";
 
+
+    /**
+     * Assigns parameters to an object
+     * @param {Object} [out={}]
+     */
+    AssignParameters(out = {})
+    {
+        for (let i = 0; i < this.parameters.length; i++)
+        {
+            this.parameters[i].Assign(out);
+        }
+        return out;
+    }
+
+    /**
+     * Assigns parameters to an object
+     * @param {Object} [out={}]
+     */
+    AssignTextures(out={})
+    {
+        for (let i = 0; i < this.textures.length; i++)
+        {
+            this.textures[i].Assign(out);
+        }
+        return out;
+    }
+
 }

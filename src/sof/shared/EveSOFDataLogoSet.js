@@ -33,7 +33,7 @@ export class EveSOFDataLogoSet
         
         if (name === undefined)
         {
-            throw new ErrSOFDataLogoSetUsageTypeUnknown({ usageType });
+            throw new ErrSOFLogoSetUsageTypeUnknown({ usageType });
         }
         
         return !!this[name];
@@ -48,7 +48,7 @@ export class EveSOFDataLogoSet
     {
         if (!this.Has(usageType))
         {
-            throw new ErrSOFDataLogoSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFLogoSetUsageTypeNotFound({ usageType });
         }
         
         return this[EveSOFDataLogoSet.UsageIndex[usageType]];
@@ -70,7 +70,7 @@ export class EveSOFDataLogoSet
 }
 
 
-export class ErrSOFDataLogoSetUsageTypeUnknown extends Tw2Error
+export class ErrSOFLogoSetUsageTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
@@ -79,7 +79,7 @@ export class ErrSOFDataLogoSetUsageTypeUnknown extends Tw2Error
     }
 }
 
-export class ErrSOFDataLogoSetUsageTypeNotFound extends Tw2Error
+export class ErrSOFLogoSetUsageTypeNotFound extends Tw2Error
 {
     constructor(data)
     {

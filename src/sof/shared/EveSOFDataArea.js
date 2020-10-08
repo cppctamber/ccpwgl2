@@ -87,7 +87,7 @@ export class EveSOFDataArea
         
         if (name === undefined)
         {
-            throw new ErrSOFDataAreaUsageTypeUnknown({ usageType });
+            throw new ErrSOFAreaUsageTypeUnknown({ usageType });
         }
         
         return !!this[name];
@@ -102,7 +102,7 @@ export class EveSOFDataArea
     {
         if (!this.Has(usageType))
         {
-            throw new ErrSOFDataAreaUsageTypeNotFound({ usageType });
+            throw new ErrSOFAreaUsageTypeNotFound({ usageType });
         }
         
         return this[EveSOFDataArea.UsageIndex[usageType]];
@@ -130,7 +130,7 @@ export class EveSOFDataArea
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFDataAreaUsageTypeUnknown extends Tw2Error
+export class ErrSOFAreaUsageTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
@@ -142,7 +142,7 @@ export class ErrSOFDataAreaUsageTypeUnknown extends Tw2Error
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFDataAreaUsageTypeNotFound extends Tw2Error
+export class ErrSOFAreaUsageTypeNotFound extends Tw2Error
 {
     constructor(data)
     {

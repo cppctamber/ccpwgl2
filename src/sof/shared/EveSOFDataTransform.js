@@ -1,4 +1,4 @@
-import { meta, quat, vec3 } from "global";
+import { meta, quat, vec3, mat4 } from "global";
 
 
 @meta.ctor("EveSOFDataTransform")
@@ -16,5 +16,16 @@ export class EveSOFDataTransform
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+
+    /**
+     * Gets a transform from the object
+     * @param {mat4} out
+     * @returns {mat4}
+     */
+    GetTransform(out)
+    {
+        return mat4.fromRotationTranslationScale(out, this.rotation, this.translation, this.scaling);
+    }
 
 }

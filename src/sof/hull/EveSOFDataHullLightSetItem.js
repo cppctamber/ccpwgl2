@@ -8,6 +8,9 @@ export class EveSOFDataHullLightSetItem
     @meta.string
     name = "";
 
+    @meta.uint
+    boneIndex = -1;
+
     @meta.float
     brightness = 0;
 

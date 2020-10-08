@@ -11,4 +11,18 @@ export class EveSOFDataParameter
     @meta.vector4
     value = vec4.create();
 
+
+    /**
+     * Assigns the parameters value to an object
+     * @param {Object} out
+     * @param {String} [prefix] - Optional prefix
+     * @returns {Object} out
+     */
+    Assign(out = {}, prefix)
+    {
+        const name = prefix ? prefix + this.name : this.name;
+        out[name] = Array.from(this.value);
+        return out;
+    }
+
 }

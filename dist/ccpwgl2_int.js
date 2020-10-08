@@ -66713,10 +66713,13 @@ var todo = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
   handler({
     target,
     property
-  }, todo, stage = 1) {
+  }, todo, stage = 0) {
     Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("todo", todo, target, property);
-    var currentStage = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])("stage", target, property) || 0;
-    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", Math.max(stage, currentStage), target, property);
+
+    if (stage !== 0) {
+      var currentStage = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])("stage", target, property) || 0;
+      Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", Math.max(stage, currentStage), target, property);
+    }
   }
 
 });
@@ -73780,7 +73783,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFaction", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionChild"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionColorSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogoSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionPlaneSet"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionSpotlightSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionVisibilityGroupSet"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Check if the 'this.resPathInsert' is always valid"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
+var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFaction", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionChild"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionColorSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogoSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionPlaneSet"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionSpotlightSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionVisibilityGroupSet"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Check if the 'this.resPathInsert' value is always valid"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -73853,7 +73856,7 @@ var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
 
   GetAreaType(usageType) {
     if (!this.areaTypes) {
-      throw new sof_shared__WEBPACK_IMPORTED_MODULE_1__["ErrSOFDataAreaUsageTypeNotFound"]({
+      throw new sof_shared__WEBPACK_IMPORTED_MODULE_1__["ErrSOFAreaUsageTypeNotFound"]({
         usageType
       });
     }
@@ -73879,7 +73882,7 @@ var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
 
   GetLogoType(usageType) {
     if (!this.logoSet) {
-      throw new sof_shared__WEBPACK_IMPORTED_MODULE_1__["ErrSOFDataLogoSetUsageTypeNotFound"]({
+      throw new sof_shared__WEBPACK_IMPORTED_MODULE_1__["ErrSOFLogoSetUsageTypeNotFound"]({
         usageType
       });
     }
@@ -74130,14 +74133,14 @@ var EveSOFDataFactionChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
 /*!**************************************************!*\
   !*** ./sof/faction/EveSOFDataFactionColorSet.js ***!
   \**************************************************/
-/*! exports provided: EveSOFDataFactionColorSet, ErrSOFDataFactionColorSetUsageTypeUnknown, ErrSOFDataFactionColorSetUsageTypeNotFound */
+/*! exports provided: EveSOFDataFactionColorSet, ErrSOFFactionColorSetUsageTypeUnknown, ErrSOFFactionColorSetUsageTypeNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return EveSOFDataFactionColorSet; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeUnknown", function() { return ErrSOFDataFactionColorSetUsageTypeUnknown; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeNotFound", function() { return ErrSOFDataFactionColorSetUsageTypeNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeUnknown", function() { return ErrSOFFactionColorSetUsageTypeUnknown; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeNotFound", function() { return ErrSOFFactionColorSetUsageTypeNotFound; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class */ "./core/class/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _class3, _temp;
@@ -74206,7 +74209,7 @@ var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
     var name = EveSOFDataFactionColorSet.UsageIndex[usageType];
 
     if (name === undefined) {
-      throw new ErrSOFDataFactionColorSetUsageTypeUnknown({
+      throw new ErrSOFFactionColorSetUsageTypeUnknown({
         usageType
       });
     }
@@ -74223,7 +74226,7 @@ var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
 
   Get(usageType, out = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()) {
     if (!this.Has(usageType)) {
-      throw new ErrSOFDataFactionColorSetUsageTypeNotFound({
+      throw new ErrSOFFactionColorSetUsageTypeNotFound({
         usageType
       });
     }
@@ -74396,7 +74399,7 @@ var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
  * Throws when a feature is not implemented
  */
 
-class ErrSOFDataFactionColorSetUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFFactionColorSetUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF faction color set usage type unknown (%usageType%)");
     this.unknownUsageType = true;
@@ -74407,7 +74410,7 @@ class ErrSOFDataFactionColorSetUsageTypeUnknown extends core_class__WEBPACK_IMPO
  * Throws when a feature is not implemented
  */
 
-class ErrSOFDataFactionColorSetUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFFactionColorSetUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF faction color set usage type not found (%usageType%)");
   }
@@ -74599,7 +74602,7 @@ var EveSOFDataFactionVisibilityGroupSet = (_dec = global__WEBPACK_IMPORTED_MODUL
 /*!******************************!*\
   !*** ./sof/faction/index.js ***!
   \******************************/
-/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFDataFactionColorSetUsageTypeUnknown, ErrSOFDataFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet */
+/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetUsageTypeUnknown, ErrSOFFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -74613,9 +74616,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataFactionColorSet */ "./sof/faction/EveSOFDataFactionColorSet.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataFactionColorSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeUnknown", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["ErrSOFDataFactionColorSetUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeUnknown", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["ErrSOFFactionColorSetUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeNotFound", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["ErrSOFDataFactionColorSetUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeNotFound", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["ErrSOFFactionColorSetUsageTypeNotFound"]; });
 
 /* harmony import */ var _EveSOFDataFactionPlaneSet__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataFactionPlaneSet */ "./sof/faction/EveSOFDataFactionPlaneSet.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return _EveSOFDataFactionPlaneSet__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataFactionPlaneSet"]; });
@@ -74696,6 +74699,188 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor
     _initializerDefineProperty(this, "variants", _descriptor16, this);
 
     _initializerDefineProperty(this, "visibilityGroups", _descriptor17, this);
+  }
+
+  /**
+   * Initializer
+   */
+  Initialize() {
+    if (this.bannerShader) {
+      // No banner.fx for gles effects
+      this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"; // TODO: Figure out default parameters and textures for unpacked banner shader
+    }
+  }
+  /**
+   * Gets a shader's configuration object
+   * @param {String} name
+   * @param {Boolean} isAnimated
+   * @param {Object} [provided]
+   * @returns {{effectFilePath: *, textures: *, parameters: *}}
+   */
+
+
+  GetShaderConfig(name, isAnimated, provided) {
+    var isDecal = this.HasDecalShader(name),
+        shader = isDecal ? this.GetDecalShader(name) : this.GetAreaShader(name),
+        effectFilePath = isDecal ? this.GetDecalShaderPath(name, isAnimated) : this.GetAreaShaderPath(name, isAnimated);
+    return {
+      effectFilePath,
+      hasPatternMaskMaps: !!shader.hasPatternMaskMaps,
+      parameters: shader.AssignParameters({}, provided ? provided.parameters : undefined),
+      textures: shader.AssignParameters({}, provided ? provided.textures : undefined)
+    };
+  }
+  /**
+   * Gets a shader's prefix
+   * @param {Boolean} [isAnimated]
+   * @returns {String}
+   */
+
+
+  GetShaderPrefix(isAnimated) {
+    return isAnimated ? this.shaderPrefixAnimated : "";
+  }
+  /**
+   * Gets a shader's full path
+   * @param {String} shader
+   * @param {Boolean} [isAnimated]
+   * @returns {string}
+   */
+
+
+  GetShaderPath(shader, isAnimated) {
+    var prefix = this.GetShaderPrefix(isAnimated);
+    if (shader.charAt(0) !== "/") shader = "/" + shader;
+    var index = shader.lastIndexOf("/");
+    return shader.substring(0, index + 1) + prefix + shader.substring(index + 1);
+  }
+  /**
+   * Gets an area shader's path
+   * @param shader
+   * @param isAnimated
+   * @returns {string}
+   */
+
+
+  GetAreaShaderPath(shader, isAnimated) {
+    return this.areaShaderLocation + this.GetShaderPath(shader, isAnimated);
+  }
+  /**
+   * Gets a decal shader's path
+   * @param shader
+   * @param isAnimated
+   * @returns {string}
+   */
+
+
+  GetDecalShaderPath(shader, isAnimated) {
+    return this.decalShaderLocation + this.GetShaderPath(shader, isAnimated);
+  }
+  /**
+   * Checks if an area shader exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasAreaShader(name) {
+    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name);
+  }
+  /**
+   * Gets area shader by it's short name
+   * @param {String} name
+   * @returns {null|EveSOFDataGenericShader}
+   */
+
+
+  GetAreaShader(name) {
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
+  }
+  /**
+   * Checks if a decal shader exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasDecalShader(name) {
+    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name);
+  }
+  /**
+   * Gets a decal shader by it's short name
+   * @param {String} name
+   * @returns {null|EveSOFDataGenericShader}
+   */
+
+
+  GetDecalShader(name) {
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
+  }
+  /**
+   * Gets material prefixes
+   * @returns {Array<String>}
+   */
+
+
+  GetMaterialPrefixes() {
+    var out = [];
+
+    for (var i = 0; i < this.materialPrefixes.length; i++) {
+      out.push(this.materialPrefixes[i].str);
+    }
+
+    return out;
+  }
+  /**
+   * Gets pattern material prefixes
+   * @returns {Array<String>}
+   */
+
+
+  GetPatternMaterialPrefixes() {
+    var out = [];
+
+    for (var i = 0; i < this.patternMaterialPrefixes.length; i++) {
+      out.push(this.patternMaterialPrefixes[i].str);
+    }
+
+    return out;
+  }
+  /**
+   * Gets a material prefix by it's index
+   * @param {Number} index
+   * @returns {String}
+   */
+
+
+  GetMaterialPrefix(index) {
+    var offByOne = index - 1;
+
+    if (this.materialPrefixes[offByOne] === undefined) {
+      throw new ErrSOFMaterialPrefixNotFound({
+        index
+      });
+    }
+
+    return this.materialPrefixes[offByOne].str;
+  }
+  /**
+   * Gets a pattern material prefix by it's index
+   * @param {Number} index
+   * @returns {String}
+   */
+
+
+  GetPatternMaterialPrefix(index) {
+    var offByOne = index - 1;
+
+    if (this.patternMaterialPrefixes[offByOne] === undefined) {
+      throw new ErrSOFPatternMaterialPrefixNotFound({
+        index
+      });
+    }
+
+    return this.patternMaterialPrefixes[offByOne].str;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "areaShaderLocation", [_dec2], {
@@ -74824,7 +75009,7 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor
 
 class ErrSOFAreaShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
-    super(data, "SOF Area shader not found: %name%");
+    super(data, "SOF Area shader not found (%name%)");
   }
 
 }
@@ -74834,7 +75019,7 @@ class ErrSOFAreaShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Err
 
 class ErrSOFDecalShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
-    super(data, "SOF Decal area shader not found: %name%");
+    super(data, "SOF Decal area shader not found (%name%)");
   }
 
 }
@@ -74844,7 +75029,7 @@ class ErrSOFDecalShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Er
 
 class ErrSOFMaterialPrefixNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
-    super(data, "SOF Material prefix index not found: %index%");
+    super(data, "SOF Material prefix index not found (%index%)");
   }
 
 }
@@ -74854,7 +75039,7 @@ class ErrSOFMaterialPrefixNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw
 
 class ErrSOFPatternMaterialPrefixNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
-    super(data, "SOF Pattern material prefix index not found: %index%");
+    super(data, "SOF Pattern material prefix index not found (%index%)");
   }
 
 }
@@ -75106,7 +75291,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericDecalShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDecalShader {
+var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericDecalShader"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDecalShader {
   constructor() {
     _initializerDefineProperty(this, "defaultTextures", _descriptor, this);
 
@@ -75115,6 +75300,55 @@ var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["
     _initializerDefineProperty(this, "parentTextures", _descriptor3, this);
 
     _initializerDefineProperty(this, "shader", _descriptor4, this);
+  }
+
+  /**
+   * Assigns the shader's parameters to a plain object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+  AssignParameters(out = {}, provided) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      var {
+        str
+      } = this.parameters[i];
+
+      if (provided && provided[str]) {
+        out[str] = Array.from(provided[str]);
+      } else {
+        out[str] = [0, 0, 0, 1];
+      }
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the shader's textures as a plain object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}, provided) {
+    for (var i = 0; i < this.defaultTextures.length; i++) {
+      this.defaultTextures[i].Assign(out);
+    }
+
+    for (var _i = 0; _i < this.parentTextures.length; _i++) {
+      var {
+        str
+      } = this.parentTextures[_i];
+
+      if (provided && provided[str]) {
+        out[str] = provided[str];
+      } else if (!out[str]) {
+        out[str] = "";
+      }
+    }
+
+    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultTextures", [_dec2], {
@@ -75327,6 +75561,68 @@ var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"
 
     _initializerDefineProperty(this, "transparencyTextureName", _descriptor6, this);
   }
+
+  /**
+   * Checks if the effect has pattern mask maps
+   * @returns {boolean}
+   */
+  get hasPatternMaskMaps() {
+    for (var i = 0; i < this.defaultTextures.length; i++) {
+      if (EveSOFDataGenericShader.PatternMaskMaps.includes(this.defaultTextures[i].name)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  /**
+   * Assigns the shader's parameters to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+
+
+  AssignParameters(out = {}, provided) {
+    for (var i = 0; i < this.defaultParameters.length; i++) {
+      this.defaultParameters[i].Assign(out);
+    }
+
+    for (var _i = 0; _i < this.parameters.length; _i++) {
+      var {
+        str
+      } = this.parameters[_i];
+
+      if (provided && provided[str]) {
+        out[str] = Array.from(provided[str]);
+      } else if (out[str]) {
+        out[str] = [0, 0, 0, 1];
+      }
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the shader's textures to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}, provided) {
+    for (var i = 0; i < this.defaultTextures.length; i++) {
+      this.defaultTextures[i].Assign(out);
+    } // No way to know what textures are allowed
+
+
+    return Object.assign(out, provided);
+  }
+  /**
+   * Pattern mask maps
+   * @type {string[]}
+   */
+
 
 }, _class3.PatternMaskMaps = ["PatternMask1Map", "PatternMask2Map"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultParameters", [_dec2], {
   configurable: true,
@@ -76177,6 +76473,33 @@ var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].cto
     _initializerDefineProperty(this, "textures", _descriptor8, this);
   }
 
+  /**
+   * Assigns the area's parameters to an object
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+  AssignParameters(out = {}) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      this.parameters[i].Assign(out);
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the area's textures to an object
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -76745,6 +77068,31 @@ var EveSOFDataHullDecalSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
     _initializerDefineProperty(this, "visibilityGroup", _descriptor13, this);
   }
 
+  /**
+   * Assigns parameters to an object
+   * @param {Object} [out={}]
+   */
+  AssignParameters(out = {}) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      this.parameters[i].Assign(out);
+    }
+
+    return out;
+  }
+  /**
+   * Assigns parameters to an object
+   * @param {Object} [out={}]
+   */
+
+
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -77094,7 +77442,7 @@ var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return EveSOFDataHullLightSetItem; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77103,25 +77451,27 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetItem {
+var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetItem {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "brightness", _descriptor2, this);
+    _initializerDefineProperty(this, "boneIndex", _descriptor2, this);
 
-    _initializerDefineProperty(this, "innerRadius", _descriptor3, this);
+    _initializerDefineProperty(this, "brightness", _descriptor3, this);
 
-    _initializerDefineProperty(this, "lightColor", _descriptor4, this);
+    _initializerDefineProperty(this, "innerRadius", _descriptor4, this);
 
-    _initializerDefineProperty(this, "noiseAmplitude", _descriptor5, this);
+    _initializerDefineProperty(this, "lightColor", _descriptor5, this);
 
-    _initializerDefineProperty(this, "noiseFrequency", _descriptor6, this);
+    _initializerDefineProperty(this, "noiseAmplitude", _descriptor6, this);
 
-    _initializerDefineProperty(this, "noiseOctaves", _descriptor7, this);
+    _initializerDefineProperty(this, "noiseFrequency", _descriptor7, this);
 
-    _initializerDefineProperty(this, "position", _descriptor8, this);
+    _initializerDefineProperty(this, "noiseOctaves", _descriptor8, this);
 
-    _initializerDefineProperty(this, "radius", _descriptor9, this);
+    _initializerDefineProperty(this, "position", _descriptor9, this);
+
+    _initializerDefineProperty(this, "radius", _descriptor10, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -77131,56 +77481,63 @@ var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "brightness", [_dec3], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "brightness", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "innerRadius", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "innerRadius", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "lightColor", [_dec5], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "lightColor", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec6], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "noiseFrequency", [_dec7], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseFrequency", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec8], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec9], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec10], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -78534,7 +78891,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFDataFactionColorSetUsageTypeUnknown, ErrSOFDataFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFDataAreaUsageTypeUnknown, ErrSOFDataAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFDataLogoSetUsageTypeUnknown, ErrSOFDataLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
+/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetUsageTypeUnknown, ErrSOFFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFAreaUsageTypeUnknown, ErrSOFAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetUsageTypeUnknown, ErrSOFLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78546,9 +78903,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataFactionColorSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeUnknown", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["ErrSOFDataFactionColorSetUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeUnknown", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["ErrSOFFactionColorSetUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataFactionColorSetUsageTypeNotFound", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["ErrSOFDataFactionColorSetUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionColorSetUsageTypeNotFound", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["ErrSOFFactionColorSetUsageTypeNotFound"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return _faction__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataFactionPlaneSet"]; });
 
@@ -78657,9 +79014,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./shared */ "./sof/shared/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataArea"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeUnknown", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFDataAreaUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeUnknown", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFAreaUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeNotFound", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFDataAreaUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeNotFound", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFAreaUsageTypeNotFound"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataAreaMaterial"]; });
 
@@ -78673,9 +79030,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataLogoSet", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataLogoSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeUnknown", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFDataLogoSetUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeUnknown", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFLogoSetUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeNotFound", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFDataLogoSetUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeNotFound", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["ErrSOFLogoSetUsageTypeNotFound"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataMaterial"]; });
 
@@ -78746,6 +79103,56 @@ var EveSOFDataPattern = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
     _initializerDefineProperty(this, "projections", _descriptor4, this);
   }
 
+  /**
+   * Checks if a pattern projection exists
+   * @param {string} name
+   * @returns {boolean}
+   */
+  Has(name) {
+    return this.IndexOfProjection(name) !== -1;
+  }
+  /**
+   * Gets a pattern projection
+   * @param {String} name
+   * @returns {*}
+   */
+
+
+  Get(name) {
+    var index = this.IndexOfProjection(name);
+
+    if (index === -1) {
+      throw new ErrSOFProjectionNotFound({
+        pattern: this.name,
+        projection: name
+      });
+    }
+
+    return {
+      name: this.name,
+      layer1: this.layer1,
+      layer2: this.layer2,
+      transformLayer1: this.projections[index].transformLayer1,
+      transformLayer2: this.projections[index].transformLayer2
+    };
+  }
+  /**
+   * Gets the index of a projection
+   * @param {String} name
+   * @returns {number}
+   */
+
+
+  IndexOfProjection(name) {
+    for (var i = 0; i < this.projections.length; i++) {
+      if (this.projections[i].name.toUpperCase() === name.toUpperCase()) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -78781,7 +79188,7 @@ var EveSOFDataPattern = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
 
 class ErrSOFProjectionNotFound extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
-    super(data, "SOF Pattern projection '%projection%' not found for pattern '%pattern%'");
+    super(data, "SOF pattern projection '%projection%' not found for pattern '%pattern%'");
   }
 
 }
@@ -79018,6 +79425,15 @@ var EveSOFDataPatternTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
     _initializerDefineProperty(this, "scaling", _descriptor4, this);
   }
 
+  /**
+   * Gets a transform from the object
+   * @param {mat4} out
+   * @returns {mat4}
+   */
+  GetTransform(out) {
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(out, this.rotation, this.position, this.scaling);
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "isMirrored", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -79165,6 +79581,47 @@ var EveSOFDataRaceDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].c
     _initializerDefineProperty(this, "shieldImpactTextures", _descriptor4, this);
   }
 
+  /**
+   * Assigns armour textures and parameters to an object
+   * @param {Object} [out={}]
+   * @returns {Object}
+   */
+  AssignArmor(out = {}) {
+    out.parameters = out.parameters || {};
+    out.textures = out.textures || {};
+
+    for (var i = 0; i < this.armorImpactParameters; i++) {
+      this.armorImpactParameters[i].Assign(out.parameters);
+    }
+
+    for (var _i = 0; _i < this.armorImpactTextures; _i++) {
+      this.armorImpactTextures[_i].Assign(out.textures);
+    }
+
+    return out;
+  }
+  /**
+   * Assigns shield textures and parameters to an object
+   * @param {Object} [out={}]
+   * @returns {Object}
+   */
+
+
+  AssignShield(out = {}) {
+    out.parameters = out.parameters || {};
+    out.textures = out.textures || {};
+
+    for (var i = 0; i < this.shieldImpactParameters; i++) {
+      this.shieldImpactParameters[i].Assign(out.parameters);
+    }
+
+    for (var _i2 = 0; _i2 < this.shieldImpactTextures; _i2++) {
+      this.shieldImpactTextures[_i2].Assign(out.textures);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "armorImpactParameters", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -79221,14 +79678,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************!*\
   !*** ./sof/shared/EveSOFDataArea.js ***!
   \**************************************/
-/*! exports provided: EveSOFDataArea, ErrSOFDataAreaUsageTypeUnknown, ErrSOFDataAreaUsageTypeNotFound */
+/*! exports provided: EveSOFDataArea, ErrSOFAreaUsageTypeUnknown, ErrSOFAreaUsageTypeNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return EveSOFDataArea; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeUnknown", function() { return ErrSOFDataAreaUsageTypeUnknown; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeNotFound", function() { return ErrSOFDataAreaUsageTypeNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeUnknown", function() { return ErrSOFAreaUsageTypeUnknown; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeNotFound", function() { return ErrSOFAreaUsageTypeNotFound; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class */ "./core/class/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _class3, _temp;
@@ -79299,7 +79756,7 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
     var name = EveSOFDataArea.UsageIndex[usageType];
 
     if (name === undefined) {
-      throw new ErrSOFDataAreaUsageTypeUnknown({
+      throw new ErrSOFAreaUsageTypeUnknown({
         usageType
       });
     }
@@ -79315,7 +79772,7 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
 
   Get(usageType) {
     if (!this.Has(usageType)) {
-      throw new ErrSOFDataAreaUsageTypeNotFound({
+      throw new ErrSOFAreaUsageTypeNotFound({
         usageType
       });
     }
@@ -79497,7 +79954,7 @@ undefined // ????
  * Throws when a feature is not implemented
  */
 
-class ErrSOFDataAreaUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFAreaUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF area usage type unknown (%usageType%)");
     this.unknownUsageType = true;
@@ -79508,7 +79965,7 @@ class ErrSOFDataAreaUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE
  * Throws when a feature is not implemented
  */
 
-class ErrSOFDataAreaUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFAreaUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF area usage type not found (%usageType%)");
   }
@@ -79550,6 +80007,19 @@ var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
     _initializerDefineProperty(this, "material3", _descriptor5, this);
 
     _initializerDefineProperty(this, "material4", _descriptor6, this);
+  }
+
+  /**
+   * Assigns the material's material names to an object
+   * @param {Object} [out={}]
+   * @returns {{}}
+   */
+  AssignMaterials(out = {}) {
+    if (this.material1) out.material1 = this.material1;
+    if (this.material2) out.material2 = this.material2;
+    if (this.material3) out.material3 = this.material3;
+    if (this.material4) out.material4 = this.material4;
+    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -79911,6 +80381,23 @@ var EveSOFDataBoosterShape = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
     _initializerDefineProperty(this, "noiseSpeed", _descriptor6, this);
   }
 
+  /**
+   * Alias for noiseAmplitureEnd
+   * @returns {vec4}
+   */
+  get noiseAmplitudeEnd() {
+    return this.noiseAmplitureEnd;
+  }
+  /**
+   * Alias for noiseAmplitureStart
+   * @returns {vec4}
+   */
+
+
+  get noiseAmplitudeStart() {
+    return this.noiseAmplitureStart;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -80078,6 +80565,19 @@ var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
     _initializerDefineProperty(this, "textures", _descriptor, this);
   }
 
+  /**
+   * Assigns the logo's textures to an object
+   * @param {Object} [out={}]
+   * @returns {Object}
+   */
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "textures", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -80093,14 +80593,14 @@ var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
 /*!*****************************************!*\
   !*** ./sof/shared/EveSOFDataLogoSet.js ***!
   \*****************************************/
-/*! exports provided: EveSOFDataLogoSet, ErrSOFDataLogoSetUsageTypeUnknown, ErrSOFDataLogoSetUsageTypeNotFound */
+/*! exports provided: EveSOFDataLogoSet, ErrSOFLogoSetUsageTypeUnknown, ErrSOFLogoSetUsageTypeNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataLogoSet", function() { return EveSOFDataLogoSet; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeUnknown", function() { return ErrSOFDataLogoSetUsageTypeUnknown; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeNotFound", function() { return ErrSOFDataLogoSetUsageTypeNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeUnknown", function() { return ErrSOFLogoSetUsageTypeUnknown; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeNotFound", function() { return ErrSOFLogoSetUsageTypeNotFound; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/class */ "./core/class/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _class3, _temp;
@@ -80135,7 +80635,7 @@ var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
     var name = EveSOFDataLogoSet.UsageIndex[usageType];
 
     if (name === undefined) {
-      throw new ErrSOFDataLogoSetUsageTypeUnknown({
+      throw new ErrSOFLogoSetUsageTypeUnknown({
         usageType
       });
     }
@@ -80151,7 +80651,7 @@ var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
 
   Get(usageType) {
     if (!this.Has(usageType)) {
-      throw new ErrSOFDataLogoSetUsageTypeNotFound({
+      throw new ErrSOFLogoSetUsageTypeNotFound({
         usageType
       });
     }
@@ -80201,14 +80701,14 @@ var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
     return null;
   }
 })), _class2)) || _class);
-class ErrSOFDataLogoSetUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFLogoSetUsageTypeUnknown extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF logo set usage type unknown (%usageType%)");
     this.unknownUsageType = true;
   }
 
 }
-class ErrSOFDataLogoSetUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFLogoSetUsageTypeNotFound extends core_class__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF logo set usage type not found (%usageType%)");
   }
@@ -80242,6 +80742,17 @@ var EveSOFDataMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].cto
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "parameters", _descriptor2, this);
+  }
+
+  /**
+   *
+   * @param {Object} [out={}]
+   * @param {String} [prefix]
+   */
+  AssignParameters(out = {}, prefix) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      this.parameters[i].Assign(out, prefix);
+    }
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -80289,6 +80800,18 @@ var EveSOFDataParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
     _initializerDefineProperty(this, "value", _descriptor2, this);
   }
 
+  /**
+   * Assigns the parameters value to an object
+   * @param {Object} out
+   * @param {String} [prefix] - Optional prefix
+   * @returns {Object} out
+   */
+  Assign(out = {}, prefix) {
+    var name = prefix ? prefix + this.name : this.name;
+    out[name] = Array.from(this.value);
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -80332,6 +80855,16 @@ var EveSOFDataTexture = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "resFilePath", _descriptor2, this);
+  }
+
+  /**
+   * Assigns the textures value to an object
+   * @param {{}} out
+   * @returns {{}} out
+   */
+  Assign(out = {}) {
+    out[this.name] = this.resFilePath;
+    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -80383,6 +80916,15 @@ var EveSOFDataTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
     _initializerDefineProperty(this, "scaling", _descriptor4, this);
   }
 
+  /**
+   * Gets a transform from the object
+   * @param {mat4} out
+   * @returns {mat4}
+   */
+  GetTransform(out) {
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(out, this.rotation, this.translation, this.scaling);
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -80419,7 +80961,7 @@ var EveSOFDataTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
 /*!*****************************!*\
   !*** ./sof/shared/index.js ***!
   \*****************************/
-/*! exports provided: EveSOFDataArea, ErrSOFDataAreaUsageTypeUnknown, ErrSOFDataAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFDataLogoSetUsageTypeUnknown, ErrSOFDataLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
+/*! exports provided: EveSOFDataArea, ErrSOFAreaUsageTypeUnknown, ErrSOFAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetUsageTypeUnknown, ErrSOFLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -80427,9 +80969,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataArea */ "./sof/shared/EveSOFDataArea.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataArea"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeUnknown", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["ErrSOFDataAreaUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeUnknown", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["ErrSOFAreaUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataAreaUsageTypeNotFound", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["ErrSOFDataAreaUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFAreaUsageTypeNotFound", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["ErrSOFAreaUsageTypeNotFound"]; });
 
 /* harmony import */ var _EveSOFDataAreaMaterial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataAreaMaterial */ "./sof/shared/EveSOFDataAreaMaterial.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return _EveSOFDataAreaMaterial__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataAreaMaterial"]; });
@@ -80449,9 +80991,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataLogoSet */ "./sof/shared/EveSOFDataLogoSet.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataLogoSet", function() { return _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataLogoSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeUnknown", function() { return _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__["ErrSOFDataLogoSetUsageTypeUnknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeUnknown", function() { return _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__["ErrSOFLogoSetUsageTypeUnknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDataLogoSetUsageTypeNotFound", function() { return _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__["ErrSOFDataLogoSetUsageTypeNotFound"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFLogoSetUsageTypeNotFound", function() { return _EveSOFDataLogoSet__WEBPACK_IMPORTED_MODULE_6__["ErrSOFLogoSetUsageTypeNotFound"]; });
 
 /* harmony import */ var _EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataMaterial */ "./sof/shared/EveSOFDataMaterial.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return _EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataMaterial"]; });

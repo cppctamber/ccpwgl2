@@ -84,7 +84,7 @@ export class EveSOFDataFactionColorSet
         
         if (name === undefined)
         {
-            throw new ErrSOFDataFactionColorSetUsageTypeUnknown({ usageType });
+            throw new ErrSOFFactionColorSetUsageTypeUnknown({ usageType });
         }
         
         return !!this[name];
@@ -100,7 +100,7 @@ export class EveSOFDataFactionColorSet
     {
         if (!this.Has(usageType))
         {
-            throw new ErrSOFDataFactionColorSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFFactionColorSetUsageTypeNotFound({ usageType });
         }
         
         return vec4.copy(out, this[EveSOFDataFactionColorSet.UsageIndex[usageType]]);
@@ -142,7 +142,7 @@ export class EveSOFDataFactionColorSet
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFDataFactionColorSetUsageTypeUnknown extends Tw2Error
+export class ErrSOFFactionColorSetUsageTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
@@ -154,7 +154,7 @@ export class ErrSOFDataFactionColorSetUsageTypeUnknown extends Tw2Error
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFDataFactionColorSetUsageTypeNotFound extends Tw2Error
+export class ErrSOFFactionColorSetUsageTypeNotFound extends Tw2Error
 {
     constructor(data)
     {

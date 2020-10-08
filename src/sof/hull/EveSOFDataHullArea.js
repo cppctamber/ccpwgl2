@@ -29,4 +29,33 @@ export class EveSOFDataHullArea
     @meta.list("EveSOFDataTexture")
     textures = [];
 
+
+    /**
+     * Assigns the area's parameters to an object
+     * @param {Object} [out={}]
+     * @returns {Object} out
+     */
+    AssignParameters(out={})
+    {
+        for (let i = 0; i < this.parameters.length; i++)
+        {
+            this.parameters[i].Assign(out);
+        }
+        return out;
+    }
+
+    /**
+     * Assigns the area's textures to an object
+     * @param {Object} [out={}]
+     * @returns {Object} out
+     */
+    AssignTextures(out={})
+    {
+        for (let i = 0; i < this.textures.length; i++)
+        {
+            this.textures[i].Assign(out);
+        }
+        return out;
+    }
+
 }
