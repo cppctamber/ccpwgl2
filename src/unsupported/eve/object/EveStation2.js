@@ -25,6 +25,9 @@ export class EveStation2 extends EveObject
     @meta.list("EveSpaceObjectDecal")
     decals = [];
 
+    @meta.string
+    dna = ""; // custom
+
     @meta.list("EveChild")
     effectChildren = [];
 
@@ -47,7 +50,7 @@ export class EveStation2 extends EveObject
     modelRotationCurve = null;
 
     @meta.float
-    modelScale = 0;
+    modelScale = 1;
 
     @meta.list("TriObserverLocal")
     observers = [];

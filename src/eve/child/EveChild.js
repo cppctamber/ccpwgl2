@@ -5,6 +5,11 @@ import { meta, vec3, mat4 } from "global";
 export class EveChild extends meta.Model
 {
 
+    get isEffectChild()
+    {
+        return true;
+    }
+
     /**
      * Per frame update
      * @param {number} dt

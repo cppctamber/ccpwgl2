@@ -629,6 +629,7 @@ export class Tw2Shader
             if (!annotations.widget && this.HasTexture(name))
             {
                 annotations.widget = "TEXTURE";
+                annotations.group = annotations.group || "Texture";
             }
 
             if (components.length)

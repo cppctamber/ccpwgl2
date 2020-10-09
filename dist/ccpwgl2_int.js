@@ -34422,6 +34422,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
       if (!annotations.widget && this.HasTexture(name)) {
         annotations.widget = "TEXTURE";
+        annotations.group = annotations.group || "Texture";
       }
 
       if (components.length) {
@@ -45775,11 +45776,16 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 /* eslint no-unused-vars:0 */
 
 var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  get isEffectChild() {
+    return true;
+  }
   /**
    * Per frame update
    * @param {number} dt
    * @param {mat4} parentTransform
    */
+
+
   Update(dt, parentTransform) {}
   /**
    * Gets object resources
@@ -67211,7 +67217,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
         options = _objectWithoutProperties(opt, ["skipEvents"]);
 
     if (!skipEvents) {
-      this.EmitEvent("modify", opt);
+      this.EmitEvent("modify", this, opt);
     }
 
     if (this["OnValueChanged"]) {
@@ -67219,7 +67225,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
     }
 
     if (!skipEvents) {
-      this.EmitEvent("modified", opt);
+      this.EmitEvent("modified", this, opt);
     }
   }
   /**
@@ -67259,7 +67265,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
         options = _objectWithoutProperties(opt, ["skipEvents", "clearChildren"]);
 
     if (!skipEvents) {
-      this.EmitEvent("destruct", options);
+      this.EmitEvent("destruct", this, options);
     }
 
     if (this["OnDestruct"]) {
@@ -67274,7 +67280,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
     }
 
     if (!skipEvents) {
-      this.EmitEvent("destructed", options);
+      this.EmitEvent("destructed", this, options);
     }
 
     this.ClearEvent("*");
@@ -67293,7 +67299,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
       let updated;
       if (!skipEvent)
     {
-        this.EmitEvent("clear");
+        this.EmitEvent("clear", this);
     }
       if (this["OnClear"])
     {
@@ -67346,7 +67352,7 @@ var Model = (_class = (_temp = class Model extends core_class_Tw2EventEmitter__W
     }
       if (!skipEvent)
     {
-        this.EmitEvent("cleared");
+        this.EmitEvent("cleared", this);
     }
       if (updated && !skipUpdate)
     {
@@ -73684,13 +73690,20 @@ class ErrSOFPatternNotFound extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"
 /*!***************************!*\
   !*** ./sof/EveSOFData.js ***!
   \***************************/
-/*! exports provided: EveSOFData */
+/*! exports provided: EveSOFData, ErrSOFDNAFormatInvalid */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDNAFormatInvalid", function() { return ErrSOFDNAFormatInvalid; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var curve_Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! curve/Tw2ValueBinding */ "./curve/Tw2ValueBinding.js");
+/* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
+/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
+/* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -73698,6 +73711,12 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+
 
 
 var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFData"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFaction"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataGeneric"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHull"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataMaterial"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataPattern"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataRace"), _dec(_class = (_class2 = (_temp = class EveSOFData {
@@ -73713,6 +73732,1075 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     _initializerDefineProperty(this, "pattern", _descriptor5, this);
 
     _initializerDefineProperty(this, "race", _descriptor6, this);
+
+    this._options = {
+      useSpotlightPool: false,
+      devColor: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.5, 0.5, 0.5, 1),
+      zeroColor: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1),
+      booster: {
+        glowScaleModifier: 0.125,
+        haloScaleModifier: 0.5,
+        symHaloModifier: 0.125,
+        brightnessModifier: 0.1
+      },
+      effect: {
+        sprite: null,
+        banner: null,
+        shadow: null
+      },
+      effectPath: {
+        plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
+        spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
+        spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
+        spotlightConePool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
+        spotlightGlowPool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
+        boosterVolumetric: "cdn:/graphics/effect/managed/space/booster/boostervolumetric.fx",
+        boosterGlow: "cdn:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
+        spriteSet: "cdn:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+        banner: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx",
+        shadow: "cdn:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx"
+      },
+      texturePath: {
+        noise: "res:/Texture/global/noise.dds.0.png",
+        noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+        whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+        hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
+        hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
+        hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+        bannerImage: "",
+        bannerBorder: ""
+      },
+      decalShaderUsage: ["decalv5.fx", // Looks correct, lots of random stuff
+      "decalcounterv5.fx", "decalholev5.fx", "decalcylindricv5.fx", // Unknown - HAZARD STRIPES  -
+      "decalglowcylindricv5.fx", // Unknown - GLOW ROTATION -
+      "decalglowv5.fx", "decalv5.fx"]
+    };
+  }
+
+  /**
+   * Initializes the sof data
+   * @param {Object}  options
+   */
+  Initialize(options) {
+    if (options) {
+      Object.assign(this._options, options);
+    }
+
+    var {
+      effect,
+      effectPath,
+      texturePath
+    } = this._options;
+
+    if (!effect.sprite) {
+      effect.sprite = core__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
+        name: "Shared sprite set effect",
+        effectFilePath: effectPath.spriteSet,
+        parameters: {
+          MainIntensity: 1,
+          GradientMap: texturePath.whiteSharp
+        }
+      });
+    }
+
+    if (!effect.banner) {
+      effect.banner = core__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
+        name: "Shared banner effect",
+        effectFilePath: effectPath.banner,
+        autoParameter: true,
+        parameters: {
+          // TODO: Figure out defaults
+          Layer1Transform: [1.5, // Scale U
+          1.5, // Scale V
+          0.0, // Offset U
+          0.0 // Offset V
+          ],
+          Layer2Transform: [1.0, 1.0, 0.0, 0.0],
+          Layer1Scroll: [0.1, // Scroll speed U
+          0.1, // Scroll speed V
+          0.1, // Scroll offset U
+          0.1 // Scroll offset U
+          ],
+          Layer2Scroll: [0.2, 0.2, 0.0, 0.0],
+          BaseColor: [1.388235330581665, 1.4980392456054688, 1.7882353067398071, 1]
+        },
+        textures: {
+          BorderMap: texturePath.bannerBorder,
+          ImageMap: texturePath.bannerImage,
+          Layer1Map: texturePath.hologramNoise,
+          Layer2Map: texturePath.hologramPulse,
+          MaskMap: texturePath.hologramInterlace
+        }
+      });
+    }
+
+    if (!effect.shadow) {
+      // TODO: Implement shadows
+      effect.shadow = core__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
+        name: "Shared shadow effect",
+        effectFilePath: effectPath.shadow
+      });
+    }
+  }
+  /**
+   * Gets a hull by it's name
+   * @param {String} name
+   * @returns {EveSOFDataHull|null}
+   */
+
+
+  GetHull(name) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.hull, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFHullNotFound"]);
+  }
+  /**
+   * Gets hull names
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  GetHullNames(out) {
+    return EveSOFData.GetNames(this.hull, out);
+  }
+  /**
+   * Checks if a hull exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasHull(name) {
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.hull, "name", name);
+  }
+  /**
+   * Gets a hull's build class
+   * @param {String} name
+   * @returns {Number}
+   */
+
+
+  GetHullBuildClass(name) {
+    return this.GetHull(name).buildClass === 2 ? 2 : 1;
+  }
+  /**
+   * Gets a hull's pattern names
+   * @param {String} name
+   */
+
+
+  GetHullPatternNames(name) {
+    this.GetHull(name);
+    var patternNames = [];
+
+    for (var i = 0; i < this.pattern.length; i++) {
+      if (this.pattern[i].Has(name)) {
+        patternNames.push(this.pattern[i].name);
+      }
+    }
+
+    return patternNames.sort();
+  }
+  /**
+   * Checks if a hull has a given pattern
+   * @param {String} hullName
+   * @param {String} patternName
+   * @returns {boolean}
+   */
+
+
+  HasHullPattern(hullName, patternName) {
+    var hull = this.GetHull(hullName);
+    return this.HasPattern(patternName) ? this.GetPattern(patternName).Has(hull.name) : false;
+  }
+  /**
+   * Gets a hull pattern
+   * @param {String} hullName
+   * @param {String} patternName
+   * @returns {*}
+   */
+
+
+  GetHullPattern(hullName, patternName) {
+    var hull = this.GetHull(hullName);
+    return this.GetPattern(patternName).Get(hullName);
+  }
+  /**
+   * Gets a faction by it's name
+   * @param {String} name
+   * @returns {EveSOFDataFaction|null}
+   */
+
+
+  GetFaction(name) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.faction, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFFactionNotFound"]);
+  }
+  /**
+   * Gets faction names
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  GetFactionNames(out) {
+    return EveSOFData.GetNames(this.faction, out);
+  }
+  /**
+   * Checks if a faction exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasFaction(name) {
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.faction, "name", name);
+  }
+  /**
+   * Gets a race
+   * @param {String} name
+   * @returns {EveSOFDataRace|null}
+   */
+
+
+  GetRace(name) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.race, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFRaceNotFound"]);
+  }
+  /**
+   * Gets race names
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  GetRaceNames(out) {
+    return EveSOFData.GetNames(this.race, out);
+  }
+  /**
+   * Checks if a race exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasRace(name) {
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.race, "name", name);
+  }
+  /**
+   * Gets a material
+   * @param {String} name
+   * @returns {EveSOFDataMaterial|null}
+   */
+
+
+  GetMaterial(name) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.material, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFMaterialNotFound"]);
+  }
+  /**
+   * Gets material names
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  GetMaterialNames(out) {
+    return EveSOFData.GetNames(this.material, out);
+  }
+  /**
+   * Checks if a material exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasMaterial(name) {
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.material, "name", name);
+  }
+  /**
+   * Gets a pattern
+   * @param {String} name
+   * @returns {EveSOFDataPattern|null}
+   */
+
+
+  GetPattern(name) {
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.pattern, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFPatternNotFound"]);
+  }
+  /**
+   * Gets pattern names
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  GetPatternNames(out) {
+    return EveSOFData.GetNames(this.pattern, out);
+  }
+  /**
+   * Checks if a pattern exists
+   * @param {String} name
+   * @returns {boolean}
+   */
+
+
+  HasPattern(name) {
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.pattern, "name", name);
+  }
+  /**
+   * Gets a shader's path
+   * @param {String} path
+   * @param {Boolean} [isAnimated]
+   * @returns {string}
+   */
+
+
+  GetShaderPath(path, isAnimated) {
+    var prefix = this.generic.GetShaderPrefix(isAnimated),
+        index = path.lastIndexOf("/");
+    return path.substring(0, index + 1) + prefix + path.substring(index + 1);
+  }
+  /**
+   * Parses a dna string
+   * @param {String} dna
+   * @returns {Object}
+   */
+
+
+  ParseDNA(dna) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isDNA"])(dna)) {
+      throw new ErrSOFDNAFormatInvalid({
+        dna
+      });
+    }
+
+    dna = dna.toLowerCase();
+    var parts = dna.split(":"),
+        commands = {};
+
+    for (var i = 3; i < parts.length; ++i) {
+      try {
+        var subParts = parts[i].split("?");
+        commands[subParts[0].toUpperCase()] = subParts[1].split(";");
+      } catch (err) {
+        throw new ErrSOFDNAFormatInvalid({
+          dna
+        });
+      }
+    }
+
+    var hull = this.GetHull(parts[0]),
+        faction = this.GetFaction(parts[1]),
+        race = this.GetRace(parts[2]),
+        materials = [null, null, null, null, null, null],
+        resPathInsert = null,
+        pattern = null;
+    var m = commands["MESH"];
+
+    if (m) {
+      for (var _i = 0; _i < m.length; _i++) {
+        this.generic.GetMaterialPrefix(_i + 1);
+        materials[_i] = !m[_i] || m[_i].toUpperCase() === "NONE" ? null : this.GetMaterial(m[_i]);
+      }
+    }
+
+    var p = commands["PATTERN"];
+
+    if (p) {
+      pattern = !p[0] || p[0].toUpperCase() === "NONE" ? null : this.GetHullPattern(hull.name, p[0]);
+
+      for (var _i2 = 1; _i2 < p.length; _i2++) {
+        this.generic.GetPatternMaterialPrefix(_i2 + 1);
+        materials[3 + _i2] = !p[_i2] || p[_i2].toUpperCase() === "NONE" ? null : this.GetMaterial(p[_i2]);
+      }
+    }
+
+    if (!pattern && faction.defaultPattern) {
+      pattern = this.GetHullPattern(hull.name, faction.defaultPattern);
+
+      if (!materials[4] && faction.defaultPatternLayer1MaterialName) {
+        materials[4] = this.GetMaterial(faction.defaultPatternLayer1MaterialName);
+      }
+    } // TODO: Check if the faction.resPathInsert actually exists...
+
+
+    resPathInsert = commands["RESPATHINSERT"] || faction.resPathInsert || null;
+    return {
+      hull,
+      faction,
+      race,
+      materials,
+      resPathInsert,
+      pattern,
+      dna
+    };
+  }
+  /**
+   * Builds an object from dna
+   * @param {String} dna
+   * @returns {EveStation2|EveShip2}
+   */
+
+
+  Build(dna) {
+    var sof = this.ParseDNA(dna),
+        object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveShip2"]();
+    object.dna = dna;
+    EveSOFData.Build(this, object, sof, this._options);
+    if (object.Initialize) object.Initialize();
+    return object;
+  }
+  /**
+   * Rebuilds an object's dna
+   * @param {EveStation2|EveShip2} object
+   * @param {Object} [opt]
+   * @returns {EveStation2|EveShip2}
+   */
+
+
+  Rebuild(object, opt) {
+    var sof = this.ParseDNA(object.dna);
+    EveSOFData.Build(this, object, sof, this._options);
+    object.UpdateValues(opt);
+    return object;
+  }
+  /**
+   * Gets the names from a sof array
+   * - If passed an array for out, returns names only in an array
+   * - If passed an object for out, returns names and descriptions
+   * @param {Array} arr
+   * @param {Object|Array} [out={}]
+   * @returns {Object|Array} out
+   */
+
+
+  static GetNames(arr, out = {}) {
+    var isArr = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(out);
+
+    for (var i = 0; i < arr.length; i++) {
+      if (isArr) {
+        out.push(arr[i].name);
+      } else {
+        out[arr[i].name] = arr[i].description || "";
+      }
+    }
+
+    if (isArr) {
+      out.sort();
+    }
+
+    return out;
+  }
+  /**
+   * Builds an object from dna
+   * @param {EveSOFData } data
+   * @param {*} obj
+   * @param {object} sof
+   * @param {object} [options={}]
+   * @returns {EveStation2|EveShip2}
+   */
+
+
+  static Build(data, obj, sof, options) {
+    this.SetupBounds(data, obj, sof, options);
+    this.SetupMesh(data, obj, sof, options);
+    this.SetupModelCurves(data, obj, sof, options);
+    this.SetupLights(data, obj, sof, options);
+    this.SetupObservers(data, obj, sof, options);
+    this.SetupCustomMasks(data, obj, sof, options);
+    this.SetupSpotlightSets(data, obj, sof, options);
+    this.SetupPlaneSets(data, obj, sof, options);
+    this.SetupSpriteSets(data, obj, sof, options);
+    this.SetupDecals(data, obj, sof, options);
+    this.SetupBoosters(data, obj, sof, options);
+    this.SetupLocators(data, obj, sof, options);
+    this.SetupAudio(data, obj, sof, options);
+    this.SetupChildren(data, obj, sof, options);
+    this.SetupInstancedMesh(data, obj, sof, options);
+    this.SetupControllers(data, obj, sof, options);
+    return obj;
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupModelCurves(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Model curves not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupLights(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Lights not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupObservers(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Observers not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupCustomMasks(data, obj, sof, options) {
+    if (obj.customMasks) {
+      obj.customMasks[0] = obj.customMasks[0] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern1");
+      obj.customMasks[1] = obj.customMasks[1] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern2");
+    }
+
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Custom masks not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupBounds(data, obj, sof, options) {
+    var bounds = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(sof.hull, "boundingSphere", [0, 0, 0, 0]);
+    obj.boundingSphereRadius = bounds[3];
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.boundingSphereCenter, bounds);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.shapeEllipsoidCenter, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(sof.hull, "boundingEllipsoidCenter", [0, 0, 0]));
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.shapeEllipsoidRadius, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(sof.hull, "boundingEllipsoidRadius", [0, 0, 0]));
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupMesh(data, obj, sof, options) {
+    obj.shadowEffect = obj.shadowEffect || options.effect.shadow;
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Mesh not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupSpriteSets(data, obj, sof, options) {
+    var {
+      isSkinned = false,
+      spriteSets = []
+    } = sof.hull;
+    spriteSets.forEach(srcSet => {
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]();
+      set.name = srcSet.name;
+      set.display = srcSet.visibilityGroup ? sof.faction.HasVisibilityGroup(srcSet.visibilityGroup) : true;
+      set.useQuads = true;
+      set.skinned = srcSet.skinned && isSkinned;
+      set.effect = options.effect.sprite;
+      srcSet.items.forEach(srcItem => {
+        var color = Array.from(options.devColor);
+
+        if (sof.faction.HasColorType(srcItem.colorType)) {
+          sof.faction.GetColorType(srcItem.colorType, color);
+        }
+
+        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSetItem"].from(Object.assign({
+          color
+        }, srcItem)));
+      });
+      set.Initialize();
+      var arr = obj.attachments || obj.spriteSets;
+      arr.push(set);
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupSpotlightSets(data, obj, sof, options) {
+    var {
+      isSkinned = false,
+      spotlightSets = []
+    } = sof.hull;
+    spotlightSets.forEach(srcSet => {
+      var animated = isSkinned && srcSet.skinned;
+      var coneShader = options.effectPath.spotlightConePool,
+          glowShader = options.effectPath.spotlightGlowPool;
+      /*
+      if (options.useSpotlightPool)
+      {
+          coneShader = options.effectPath.spotlightConePool;
+          glowShader = options.effectPath.spotlightGlowPool;
+      }
+      else
+      {
+          // TODO: Not supported on new ship/station constructors
+          coneShader = data.GetShaderPath(options.effectPath.spotlightCone, animated);
+          glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
+      }
+       */
+
+      var set = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpotlightSet"].from({
+        name: srcSet.name,
+        items: srcSet.items,
+        coneEffect: {
+          effectFilePath: coneShader,
+          parameters: {
+            zOffset: srcSet.zOffset
+          },
+          textures: {
+            TextureMap: srcSet.coneTextureResPath
+          }
+        },
+        glowEffect: {
+          effectFilePath: glowShader,
+          textures: {
+            TextureMap: srcSet.glowTextureResPath
+          }
+        }
+      });
+      set.items.forEach(item => {
+        var faction = sof.faction.FindSpotlightSetByGroupIndex(item.groupIndex);
+
+        if (faction) {
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.coneColor, faction.coneColor);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.flareColor, faction.flareColor);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.spriteColor, faction.spriteColor);
+        }
+
+        item.UpdateValues();
+      });
+      set.Initialize();
+      var arr = obj.attachments || obj.spotlightSets;
+      arr.push(set);
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupPlaneSets(data, obj, sof, options) {
+    var {
+      isSkinned = false,
+      planeSets = []
+    } = sof.hull;
+    planeSets.forEach(srcSet => {
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSet"]();
+      set.name = srcSet.name; // TODO: Usage
+      // TODO: AtlasSize
+
+      set.effect = core__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
+        effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
+        parameters: {
+          PlaneData: [0, // Power of Fade Angle
+          1, // srcSet.atlasSize doesn't work?
+          0, // Unused
+          0 // Unused
+          ]
+        },
+        textures: {
+          Layer1Map: srcSet.layer1MapResPath,
+          Layer2Map: srcSet.layer2MapResPath,
+          MaskMap: srcSet.maskMapResPath
+        }
+      });
+      srcSet.items.forEach(srcItem => {
+        var item = eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
+
+        var faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
+        if (faction) global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, faction.color);
+        set.items.push(item);
+      });
+      set.Initialize();
+      var arr = obj.attachments || obj.planeSets;
+      arr.push(set);
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupDecals(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Decals not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupBoosters(data, obj, sof, options) {
+    var {
+      hull,
+      race
+    } = sof; // No  boosters
+
+    if (!hull.booster || !race.booster) return;
+    var src = race.booster,
+        srcItems = hull.booster.items || [];
+
+    for (var i = 0; i < srcItems.length; ++i) {
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from({
+        name: "locator_booster_" + (i + 1),
+        transform: srcItems[i].transform,
+        atlasIndex0: srcItems[i].atlasIndex0,
+        atlasIndex1: srcItems[i].atlasIndex1 // TODO: Add support for new locator parameters
+        // hasTrail boolean
+        // lightScale float  <-- Can use instead of manual brightnessModifier?
+        // functionality vec4
+
+      }));
+    }
+
+    var {
+      shape0,
+      shape1,
+      warpShape0,
+      warpShape1
+    } = src; // obj.boosters = obj.boosters || new EveBoosterSet();
+    // obj.boosters.SetValues({
+    // TODO: Update to eve booster set 2
+
+    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveBoosterSet"].from({
+      glowColor: src.glowColor,
+      glowScale: src.glowScale * options.booster.glowScaleModifier,
+      haloColor: src.haloColor,
+      haloScaleX: src.haloScaleX * options.booster.haloScaleModifier,
+      haloScaleY: src.haloScaleY * options.booster.haloScaleModifier,
+      // TODO: Add support for new booster parameters
+      // lightColor vec4
+      // lightFlickerAmplitude float
+      // lightFlickerFrequency float
+      // lightRadius float
+      // lightWarpColor vec4
+      // lightWarpRadius float
+      // hasTrails boolean
+      // alwaysOn boolean
+      symHaloScale: src.symHaloScale * options.booster.symHaloModifier,
+      trailColor: src.trailColor,
+      trailSize: src.trailSize,
+      warpGlowColor: src.warpGlowColor,
+      warpHaloColor: src.warpHalpColor,
+      effect: {
+        effectFilePath: options.effectPath.boosterVolumetric,
+        parameters: {
+          NoiseFunction0: shape0.noiseFunction,
+          NoiseSpeed0: shape0.noiseSpeed,
+          NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
+          NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
+          NoiseFrequency0: shape0.noiseFrequency,
+          Color0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiplyScalar([], shape0.color, options.booster.brightnessModifier),
+          NoiseFunction1: shape1.noiseFunction,
+          NoiseSpeed1: shape1.noiseSpeed,
+          NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
+          NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
+          NoiseFrequency1: shape1.noiseFrequency,
+          Color1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiplyScalar([], shape1.color, options.booster.brightnessModifier),
+          WarpNoiseFunction0: warpShape0.noiseFunction,
+          WarpNoiseSpeed0: warpShape0.noiseSpeed,
+          WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
+          WarpNoiseAmplitudeEnd0: warpShape0.noiseAmplitureEnd,
+          WarpNoiseFrequency0: warpShape0.noiseFrequency,
+          WarpColor0: warpShape0.color,
+          WarpNoiseFunction1: warpShape1.noiseFunction,
+          WarpNoiseSpeed1: warpShape1.noiseSpeed,
+          WarpNoiseAmplitudeStart1: warpShape1.noiseAmplitureStart,
+          WarpNoiseAmplitudeEnd1: warpShape1.noiseAmplitureEnd,
+          WarpNoiseFrequency1: warpShape1.noiseFrequency,
+          WarpColor1: warpShape1.color,
+          ShapeAtlasSize: [src.shapeAtlasHeight, src.shapeAtlasCount, 0, 0],
+          BoosterScale: src.scale
+        },
+        textures: {
+          ShapeMap: src.shapeAtlasResPath,
+          GradientMap0: src.gradient0ResPath,
+          GradientMap1: src.gradient1ResPath,
+          NoiseMap: options.texturePath.noise32
+        }
+      },
+      glows: {
+        useQuads: true,
+        effect: {
+          effectFilePath: options.texturePath.boosterGlow,
+          textures: {
+            DiffuseMap: options.texturePath.whiteSharp,
+            NoiseMap: options.texturePath.noise
+          }
+        }
+      }
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupLocators(data, obj, sof, options) {
+    var {
+      locatorTurrets = []
+    } = sof.hull;
+    locatorTurrets.forEach(item => {
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from(item));
+    });
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Locator sets not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupAudio(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Audio not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   * @returns {Array}
+   */
+
+
+  static SetupAnimations(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Animations not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupChildren(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Child objects not implemented"
+    });
+    /*
+    const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
+      function onChildLoaded(child)
+    {
+        return function(loaded)
+        {
+            loaded.name = child.name;
+              if (loaded.isEffectChild)
+            {
+                obj.effectChildren.push(loaded);
+            }
+            else
+            {
+                obj.children.push(loaded);
+            }
+              vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+            quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
+            vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
+              const id = get(child, "id", -1);
+            if (id !== -1 && curves[id])
+            {
+                EveSOFData.BindParticleEmitters(loaded, curveSet, curves[id]);
+            }
+        };
+    }
+      const { children = [] } = sof.hull;
+    for (let i = 0; i < children.length; ++i)
+    {
+        const { redFilePath } = children[i];
+        if (redFilePath)
+        {
+            tw2.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
+        }
+        else
+        {
+            tw2.Log({
+                type: "warning",
+                name: "Space object factory",
+                message: `No resource path found for "${sof.hull.name}" child at index ${i}`
+            });
+        }
+    }
+     */
+  }
+  /**
+   *
+   * @param {*} obj
+   * @param {Tw2CurveSet} curveSet
+   * @param {Tw2Curve} curve
+   */
+
+
+  static BindParticleEmitters(obj, curveSet, curve) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Binding child particle emitters not implemented"
+    });
+    /*
+    if (isArray(obj.particleEmitters))
+    {
+        for (var i = 0; i < obj.particleEmitters.length; ++i)
+        {
+            if ("rate" in obj.particleEmitters[i])
+            {
+                var binding = new Tw2ValueBinding();
+                binding.sourceObject = curve;
+                binding.sourceAttribute = "currentValue";
+                binding.destinationObject = obj.particleEmitters[i];
+                binding.destinationAttribute = "rate";
+                binding.Initialize();
+                curveSet.bindings.push(binding);
+            }
+        }
+        for (i = 0; i < obj.children.length; ++i)
+        {
+            this.BindParticleEmitters(obj.children[i], curveSet, curve);
+        }
+    }
+    else
+    {
+        tw2.Log("warning", {
+            name: "Space object factory",
+            message: `Unable to bind particle emitters: ${obj.constructor.name}`
+        });
+    }
+     */
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupInstancedMesh(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Instance meshes not implemented"
+    });
+    /*
+    const { instancedMeshes=[] } = sof.hull;
+    for (var i = 0; i < instancedMeshes.length; ++i)
+    {
+        var him = instancedMeshes[i];
+        var mesh = new Tw2InstancedMesh();
+        mesh.instanceGeometryResPath = him.instanceGeometryResPath;
+        mesh.geometryResPath = him.geometryResPath;
+        mesh.Initialize();
+          this.FillMeshAreas(data, get(mesh, "opaqueAreas", []), sof, options, "opaqueAreas", him.shader);
+          var child = new EveChildMesh();
+        child.mesh = mesh;
+        obj.effectChildren.push(child);
+    }
+     */
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveStation2|EveShip2} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupControllers(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Animation controllers not implemented"
+    });
+  }
+  /**
+   *
+   * @param {EveSOFData} data
+   * @param {EveTurretSet} obj
+   * @param {Object} sof
+   * @param {Object} [options={}]
+   */
+
+
+  static SetupTurretMaterial(data, obj, sof, options) {
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].Log("warning", {
+      name: "Space object factory",
+      message: "Turret materials not implemented"
+    });
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "faction", [_dec2], {
@@ -73758,6 +74846,16 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     return [];
   }
 })), _class2)) || _class);
+/**
+ * Fires when a sof pattern is not found
+ */
+
+class ErrSOFDNAFormatInvalid extends core__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"] {
+  constructor(data) {
+    super(data, "DNA format invalid (%dnaString%)");
+  }
+
+}
 
 /***/ }),
 
@@ -77865,7 +78963,7 @@ var EveSOFDataHullLocatorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return EveSOFDataHullPlaneSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77874,7 +78972,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullPlaneSetItem"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSet {
+var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullPlaneSetItem"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -77942,7 +79040,7 @@ var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   initializer: function () {
     return false;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "usage", [_dec9], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "usage", [_dec9, _dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -78891,7 +79989,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetUsageTypeUnknown, ErrSOFFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFAreaUsageTypeUnknown, ErrSOFAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetUsageTypeUnknown, ErrSOFLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
+/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetUsageTypeUnknown, ErrSOFFactionColorSetUsageTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFAreaUsageTypeUnknown, ErrSOFAreaUsageTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetUsageTypeUnknown, ErrSOFLogoSetUsageTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, ErrSOFDNAFormatInvalid, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79044,6 +80142,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _EveSOFData__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFData */ "./sof/EveSOFData.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["EveSOFData"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDNAFormatInvalid", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFDNAFormatInvalid"]; });
 
 /* harmony import */ var _EveSOF__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOF */ "./sof/EveSOF.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["EveSOF"]; });
@@ -86886,7 +87986,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return EveStation2; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/object/EveObject */ "./eve/object/EveObject.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -86896,7 +87996,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStation2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriPointLight"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStation2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriPointLight"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -86912,29 +88012,31 @@ var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImpleme
 
     _initializerDefineProperty(this, "decals", _descriptor6, this);
 
-    _initializerDefineProperty(this, "effectChildren", _descriptor7, this);
+    _initializerDefineProperty(this, "dna", _descriptor7, this);
 
-    _initializerDefineProperty(this, "lights", _descriptor8, this);
+    _initializerDefineProperty(this, "effectChildren", _descriptor8, this);
 
-    _initializerDefineProperty(this, "locatorSets", _descriptor9, this);
+    _initializerDefineProperty(this, "lights", _descriptor9, this);
 
-    _initializerDefineProperty(this, "locators", _descriptor10, this);
+    _initializerDefineProperty(this, "locatorSets", _descriptor10, this);
 
-    _initializerDefineProperty(this, "mesh", _descriptor11, this);
+    _initializerDefineProperty(this, "locators", _descriptor11, this);
 
-    _initializerDefineProperty(this, "meshLod", _descriptor12, this);
+    _initializerDefineProperty(this, "mesh", _descriptor12, this);
 
-    _initializerDefineProperty(this, "modelRotationCurve", _descriptor13, this);
+    _initializerDefineProperty(this, "meshLod", _descriptor13, this);
 
-    _initializerDefineProperty(this, "modelScale", _descriptor14, this);
+    _initializerDefineProperty(this, "modelRotationCurve", _descriptor14, this);
 
-    _initializerDefineProperty(this, "observers", _descriptor15, this);
+    _initializerDefineProperty(this, "modelScale", _descriptor15, this);
 
-    _initializerDefineProperty(this, "rotationCurve", _descriptor16, this);
+    _initializerDefineProperty(this, "observers", _descriptor16, this);
 
-    _initializerDefineProperty(this, "shadowEffect", _descriptor17, this);
+    _initializerDefineProperty(this, "rotationCurve", _descriptor17, this);
 
-    _initializerDefineProperty(this, "translationCurve", _descriptor18, this);
+    _initializerDefineProperty(this, "shadowEffect", _descriptor18, this);
+
+    _initializerDefineProperty(this, "translationCurve", _descriptor19, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "attachments", [_dec3], {
@@ -86979,84 +88081,91 @@ var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImpleme
   initializer: function () {
     return [];
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "effectChildren", [_dec9], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "dna", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "effectChildren", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "lights", [_dec10], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "lights", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "locatorSets", [_dec11], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "locatorSets", [_dec12], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "locators", [_dec12], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "locators", [_dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec13], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "meshLod", [_dec14], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "meshLod", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "modelRotationCurve", [_dec15], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "modelRotationCurve", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "modelScale", [_dec16], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "modelScale", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return 1;
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "observers", [_dec17], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "observers", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "rotationCurve", [_dec18], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "rotationCurve", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec19], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "translationCurve", [_dec20], {
+}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "translationCurve", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,

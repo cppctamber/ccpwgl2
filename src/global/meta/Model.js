@@ -63,7 +63,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvents)
         {
-            this.EmitEvent("modify", opt);
+            this.EmitEvent("modify", this, opt);
         }
 
         if (this["OnValueChanged"])
@@ -73,7 +73,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvents)
         {
-            this.EmitEvent("modified", opt);
+            this.EmitEvent("modified", this, opt);
         }
     }
 
@@ -110,7 +110,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvents)
         {
-            this.EmitEvent("destruct", options);
+            this.EmitEvent("destruct", this, options);
         }
 
         if (this["OnDestruct"])
@@ -125,7 +125,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvents)
         {
-            this.EmitEvent("destructed", options);
+            this.EmitEvent("destructed", this, options);
         }
 
         this.ClearEvent("*");
@@ -147,7 +147,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvent)
         {
-            this.EmitEvent("clear");
+            this.EmitEvent("clear", this);
         }
 
         if (this["OnClear"])
@@ -206,7 +206,7 @@ export class Model extends Tw2EventEmitter
 
         if (!skipEvent)
         {
-            this.EmitEvent("cleared");
+            this.EmitEvent("cleared", this);
         }
 
         if (updated && !skipUpdate)

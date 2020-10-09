@@ -26,6 +26,7 @@ export class EveSOFDataHullPlaneSet
     @meta.boolean
     skinned = false;
 
+    @meta.notImplemented
     @meta.uint
     usage = 0;
 
