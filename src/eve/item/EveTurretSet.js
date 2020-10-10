@@ -696,9 +696,9 @@ export class EveTurretSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {Boolean} [hideFiringEffect]
+     * @param {Boolean} [showFiringEffect]
      */
-    GetBatches(mode, accumulator, perObjectData, hideFiringEffect)
+    GetBatches(mode, accumulator, perObjectData, showFiringEffect)
     {
         if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return;
 
@@ -735,7 +735,7 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        this.GetFiringEffectBatches(mode, accumulator, perObjectData, hideFiringEffect);
+        this.GetFiringEffectBatches(mode, accumulator, perObjectData, showFiringEffect);
     }
 
     /**
@@ -743,11 +743,11 @@ export class EveTurretSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {Boolean} [hideFiringEffect]
+     * @param {Boolean} [showFiringEffect]
      */
-    GetFiringEffectBatches(mode, accumulator, perObjectData, hideFiringEffect)
+    GetFiringEffectBatches(mode, accumulator, perObjectData, showFiringEffect)
     {
-        if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects && !hideFiringEffect)
+        if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects && showFiringEffect)
         {
             this.firingEffect.GetBatches(mode, accumulator, perObjectData);
         }

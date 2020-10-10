@@ -26,6 +26,9 @@ export class EveShip extends EveSpaceObject
         {
             this.RebuildBoosterSet();
         }
+
+        this.visible.boosters = true;
+        this.visible.firingEffect = true;
     }
 
     /**
