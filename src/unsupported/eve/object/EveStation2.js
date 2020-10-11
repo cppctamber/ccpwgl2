@@ -1,11 +1,17 @@
 import { meta, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
+import { Tw2Animation } from "core/model";
+import { EveShip2 } from "./EveShip2";
 
 
 @meta.notImplemented
 @meta.ctor("EveStation2")
-export class EveStation2 extends EveObject
+export class EveStation2 extends EveShip2
 {
+
+    @meta.struct("Tw2Animation")
+    @meta.isPrivate
+    animations = new Tw2Animation();
 
     @meta.list("EveObjectSet")
     attachments = [];

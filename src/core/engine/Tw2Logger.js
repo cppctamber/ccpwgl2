@@ -26,10 +26,10 @@ export class Tw2Logger extends Tw2EventEmitter
     history = 100;
     throttle = 20;
     visible = {
-        log: false,
-        info: false,
-        debug: false,
-        warn: false,
+        log: true,
+        info: true,
+        debug: true,
+        warn: true,
         error: true
     };
     
