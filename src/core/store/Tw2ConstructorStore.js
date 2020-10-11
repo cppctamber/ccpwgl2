@@ -5,8 +5,6 @@ import { isFunction } from "global/util";
 export class Tw2ConstructorStore extends Tw2GenericStore
 {
 
-    debug = true;
-
     /**
      * Constructor
      * @param {Class|Function} Constructor
@@ -14,7 +12,29 @@ export class Tw2ConstructorStore extends Tw2GenericStore
     constructor(Constructor)
     {
         super();
-        STORE.get(this).Constructor = Constructor;
+        const PRIVATE = STORE.get(this);
+        PRIVATE.Constructor = Constructor;
+        PRIVATE.DEBUG_MODE = false;
+    }
+
+    /**
+     * Toggles debug
+     * @param {Boolean}  bool
+     */
+    Debug(bool)
+    {
+        this.debug = bool;
+        const PRIVATE = STORE.get(this);
+        PRIVATE.DEBUG_ENABLED = bool;
+
+        for (const [ key, value ] of PRIVATE.map)
+        {
+            if ("DEBUG_ENABLED" in value)
+            {
+                console.log("Debug mode enabled for " + key);
+                value.DEBUG_ENABLED = bool;
+            }
+        }
     }
 
     /**
@@ -35,15 +55,9 @@ export class Tw2ConstructorStore extends Tw2GenericStore
      */
     static onBefore(Ctor, key, source)
     {
-        const { Constructor } = STORE.get(source);
+        const { Constructor,  DEBUG_MODE } = STORE.get(source);
         if (Constructor) Constructor.prototype[key] = Ctor;
-
-        if (Ctor.hasOwnProperty("DEBUG_MODE"))
-        {
-            Reflect.defineProperty(Ctor, "DEBUG_MODE", {
-                get: () => source.debug
-            });
-        }
+        if ("DEBUG_ENABLED" in Ctor) Ctor.DEBUG_ENABLED = DEBUG_MODE;
     }
 
     /**

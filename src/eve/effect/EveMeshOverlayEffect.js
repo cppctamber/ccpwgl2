@@ -3,7 +3,6 @@ import { Tw2CurveSet } from "curve";
 import {
     meta,
     util,
-    AttachmentType,
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_ADDITIVE,
@@ -124,12 +123,6 @@ export class EveMeshOverlayEffect extends meta.Model
         }
         return [];
     }
-
-    /**
-     * Attachment type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.MESH_OVERLAY_EFFECT;
 
     /**
      * Creates an area's effects

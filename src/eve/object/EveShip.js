@@ -115,10 +115,18 @@ export class EveShip extends EveSpaceObject
      * Updates view dependant data
      * @param {mat4} parentTransform
      * @param {Number} dt
+     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform, dt)
+    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
-        super.UpdateViewDependentData(parentTransform, dt);
+        let isWorldSpriteUpdated = this._worldSpriteScale !==  worldSpriteScale;
+
+        super.UpdateViewDependentData(parentTransform, dt, worldSpriteScale);
+
+        if (!isWorldSpriteUpdated && this.boosters)
+        {
+            this.boosters.SetWorldSpriteScale(this._worldSpriteScale);
+        }
 
         for (let i = 0; i < this.turretSets.length; ++i)
         {
@@ -188,10 +196,7 @@ export class EveShip extends EveSpaceObject
                 {
                     for (let i = 0; i < this.turretSets.length; ++i)
                     {
-                        if (this.turretSets[i].firingEffect)
-                        {
-                            this.turretSets[i].firingEffect.GetBatches(mode, accumulator, this._perObjectData);
-                        }
+                        this.turretSets[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
                     }
                 }
             }

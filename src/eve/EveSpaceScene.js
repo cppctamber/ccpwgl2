@@ -159,7 +159,6 @@ export class EveSpaceScene extends meta.Model
     };
 
     _localTransform = mat4.create();
-
     _debugHelper = null;
     _batches = new Tw2BatchAccumulator();
     _emptyTexture = null;
@@ -489,7 +488,8 @@ export class EveSpaceScene extends meta.Model
             d = device,
             g = EveSpaceScene.global,
             tr = this._localTransform,
-            show = this.visible;
+            show = this.visible,
+            worldSpriteScale = mat4.maxScaleOnAxis(this._localTransform);
 
         if (show["environment"] && this.backgroundEffect)
         {
@@ -514,7 +514,7 @@ export class EveSpaceScene extends meta.Model
             {
                 if (this.planets[i].UpdateViewDependentData)
                 {
-                    this.planets[i].UpdateViewDependentData(tr, dt);
+                    this.planets[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
                 }
             }
 
@@ -542,7 +542,7 @@ export class EveSpaceScene extends meta.Model
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
-                    this.objects[i].UpdateViewDependentData(tr, dt);
+                    this.objects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
                 }
             }
         }
@@ -553,7 +553,7 @@ export class EveSpaceScene extends meta.Model
             {
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
-                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
+                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
                 }
             }
         }
@@ -789,7 +789,7 @@ export class EveSpaceScene extends meta.Model
             [ "ShadowCameraRange", 4 ],
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
-            [ "MiscSettings", 4 ],
+            [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1
         ],
         vs: [
             [ "ViewInverseTransposeMat", 16 ],
@@ -804,7 +804,7 @@ export class EveSpaceScene extends meta.Model
             [ "FogFactors", 4 ],
             [ "TargetResolution", 4 ],
             [ "ViewportAdjustment", 4 ],
-            [ "MiscSettings", 4 ]
+            [ "MiscSettings", 4 ] // currentTime, 0, viewportWidth, viewportHeight
         ]
     };
 

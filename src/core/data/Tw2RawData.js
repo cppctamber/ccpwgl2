@@ -1,4 +1,4 @@
-import { ErrIndexBounds } from "../class/Tw2Error";
+import { ErrIndexBounds,  Tw2Error } from "../class/Tw2Error";
 
 /**
  * Stores raw data for {@link Tw2PerObjectData}
@@ -33,6 +33,12 @@ export class Tw2RawData
     Set(name, value)
     {
         const el = this.elements[name];
+
+        if (!el)
+        {
+            throw new ErrRawDataElementNotFound({ name });
+        }
+
         for (let i = 0; i < el.size; i++)
         {
             this.data[i + el.offset] = value[i];
@@ -49,6 +55,11 @@ export class Tw2RawData
     {
         const el = this.elements[name];
 
+        if (!el)
+        {
+            throw new ErrRawDataElementNotFound({ name });
+        }
+
         if (index < 0 || index >= el.size)
         {
             throw new ErrIndexBounds();
@@ -64,6 +75,11 @@ export class Tw2RawData
      */
     Get(name)
     {
+        if (!this.elements[name])
+        {
+            throw new ErrRawDataElementNotFound({ name });
+        }
+
         return this.elements[name].array;
     }
 
@@ -149,5 +165,17 @@ export class Tw2RawData
             if (!opt || !opt.skipUpdate) item.Create();
         }
         return item;
+    }
+}
+
+
+/**
+ * Throws when a feature is not implemented
+ */
+export class ErrRawDataElementNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Raw data element not found (%name%)");
     }
 }

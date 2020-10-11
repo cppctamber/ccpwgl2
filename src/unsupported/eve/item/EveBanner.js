@@ -1,4 +1,4 @@
-import { meta, quat, vec3, mat4, AttachmentType } from "global";
+import { meta, quat, vec3, mat4 } from "global";
 
 
 @meta.ctor("EveBanner")
@@ -43,11 +43,5 @@ export class EveBanner extends meta.Model
     {
         mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
     }
-
-    /**
-     * Item attachment type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.BANNER;
 
 }

@@ -1745,6 +1745,14 @@ var ccpwgl = (function(tw2)
         };
 
         /**
+         * Force rebuilds the scene
+         */
+        this.rebuild = function()
+        {
+            rebuildSceneObjects(this);
+        }
+
+        /**
          * Internal helper function that rebuilds a list of object in the wrapped
          * scene with alread loaded objects from Scene.objects array.
          **/

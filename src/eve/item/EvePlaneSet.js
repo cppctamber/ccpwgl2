@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, util, device, AttachmentType } from "global";
+import { meta, vec3, vec4, quat, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
@@ -141,7 +141,6 @@ export class EvePlaneSet extends EveObjectSet
     pickBufferID = 0;
 
 
-    _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
     _decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
@@ -174,17 +173,6 @@ export class EvePlaneSet extends EveObjectSet
     {
         if (this.effect) this.effect.GetResources(out);
         return out;
-    }
-
-    /**
-     * Per frame update
-     * @param {Number} dt - Delta Time
-     * @param {mat4} [parentMatrix]
-     */
-    Update(dt, parentMatrix)
-    {
-        this._time += dt;
-        super.Update(dt);
     }
 
     /**
@@ -392,12 +380,6 @@ export class EvePlaneSet extends EveObjectSet
         }
         return item;
     }
-
-    /**
-     * Set type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.PLANE_SET;
 
     /**
      * The plane set's item constructor

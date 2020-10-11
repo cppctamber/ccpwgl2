@@ -1,4 +1,4 @@
-import { AttachmentType, meta, vec4 } from "global";
+import { meta, vec4 } from "global";
 import { Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 
@@ -89,11 +89,5 @@ export class EveBoosterSet2 extends EveObjectSet
 
     @meta.color
     warpHaloColor = vec4.create();
-
-    /**
-     * Item attachment type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.BOOSTER_SET_2;
 
 }

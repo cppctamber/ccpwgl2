@@ -88,9 +88,9 @@ export class Tw2Shader
             if (el)
             {
                 const
-                    { name, offset } = el,
+                    { name, offset, array } = el,
                     ix = index - offset,
-                    propName = fullElement ? name : name + "." + ix;
+                    propName = fullElement ? name : name + "." + ix + " (" + array[ix] + ")";
 
                 if (!target.includes(propName))
                 {

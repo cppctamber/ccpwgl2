@@ -214,6 +214,7 @@ export class Tw2GeometryRes extends Tw2Resource
         // TODO: Add support for more than one mesh
         const mesh = new Tw2GeometryMesh();
         this.meshes[0] = mesh;
+        this.models[0] = new Tw2GeometryModel();
 
         mesh.name = name;
         mesh.declaration = declaration;

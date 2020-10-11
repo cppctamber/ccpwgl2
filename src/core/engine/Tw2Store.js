@@ -4,16 +4,6 @@ export class Tw2Store
 {
     constructor(LibraryConstructor)
     {
-        let debug = false;
-        Object.defineProperty(this, "debug" , {
-            get: () => debug,
-            set: (bool) =>
-            {
-                debug = bool;
-                this.constructors.debug = bool;
-            }
-        });
-
         this.variableTypes = new stores.Tw2VariableTypeStore();
         this.variables = new stores.Tw2VariableStore(this.variableTypes);
         this.paths = new stores.Tw2ResourcePathStore();
@@ -22,6 +12,14 @@ export class Tw2Store
         this.constructors = new stores.Tw2ConstructorStore(LibraryConstructor);
     }
 
+    /**
+     * Enables debug
+     * @param bool
+     */
+    Debug(bool)
+    {
+        this.constructors.Debug(bool);
+    }
     /**
      * Registers store variables from an object
      * @param {Object} opt

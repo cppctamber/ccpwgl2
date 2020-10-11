@@ -1,5 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, vec4, mat4, AttachmentType } from "global";
+import { meta, vec3, vec4, mat4 } from "global";
 
 
 export class EveObjectSetItem extends meta.Model
@@ -294,12 +294,6 @@ export class EveObjectSet extends meta.Model
     {
 
     }
-
-    /**
-     * The set's type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.GENERIC;
 
     /**
      * The object set's item

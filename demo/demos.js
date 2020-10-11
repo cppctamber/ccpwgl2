@@ -468,6 +468,7 @@ function init()
         }
     });
 
+    /*
     tw2.logger.OnEvent("debug", function(e)
     {
         Toasts.create({
@@ -478,6 +479,7 @@ function init()
             icon: "https://image.eveonline.com/Type/24589_64.png"
         });
     });
+    */
 }
 
 

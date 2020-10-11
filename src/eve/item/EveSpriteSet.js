@@ -1,4 +1,4 @@
-import { vec3, vec4, util, device, meta, AttachmentType } from "global";
+import { vec3, vec4, util, device, meta } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "global/util";
@@ -576,12 +576,6 @@ export class EveSpriteSet extends EveObjectSet
 
         return item;
     }
-
-    /**
-     * Set type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.SPRITE_SET;
 
     /**
      * The sprite set's item constructor

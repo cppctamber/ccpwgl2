@@ -106,15 +106,7 @@ export class EveSpaceObject extends EveObject
     {
         if (this.mesh)
         {
-            if (!this.animation)
-            {
-                this.animation.SetGeometryResource(this.mesh.geometryResource);
-            }
-
-            for (let i = 0; i < this.decals.length; ++i)
-            {
-                this.decals[i].SetParentGeometry(this.mesh.geometryResource);
-            }
+            this.animation.SetGeometryResource(this.mesh.geometryResource);
         }
     }
 
@@ -404,9 +396,12 @@ export class EveSpaceObject extends EveObject
      * A Per frame function that updates view dependent data
      * @param {undefined|mat4} parentTransform
      * @param {Number} dt
+     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform, dt)
+    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
+
         if (parentTransform)
         {
             mat4.multiply(this._worldTransform, parentTransform, this.transform);
@@ -416,20 +411,26 @@ export class EveSpaceObject extends EveObject
             mat4.copy(this._worldTransform, this.transform);
         }
 
-        if (!this.animation)
+        const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+
+        if (res)
         {
-            if (this.mesh && this.mesh.IsGood())
+            if (!this.animation.HasGeometryResource(res))
             {
-                this.animation = new Tw2AnimationController();
-                this.animation.SetGeometryResource(this.mesh.geometryResource);
+                this.animation.SetGeometryResource(res);
+            }
+
+            if (this.animation.animations.length)
+            {
+                this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
             }
         }
 
-        // Scale sprites to object scale
-        const worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
-        if (this._worldSpriteScale !== worldSpriteScale)
+        // Temporary
+        if  (this._worldSpriteScale !== worldSpriteScale)
         {
             this._worldSpriteScale = worldSpriteScale;
+
             for (let i = 0; i < this.spriteSets.length; i++)
             {
                 this.spriteSets[i].SetWorldSpriteScale(worldSpriteScale);
@@ -438,11 +439,10 @@ export class EveSpaceObject extends EveObject
 
         for (let i = 0; i < this.children.length; ++i)
         {
-            this.children[i].UpdateViewDependentData(this._worldTransform);
+            this.children[i].UpdateViewDependentData(this._worldTransform, dt, worldSpriteScale);
         }
 
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
         const
             center = this._perObjectData.vs.Get("EllipsoidCenter"),
@@ -457,9 +457,9 @@ export class EveSpaceObject extends EveObject
             radii[1] = this.shapeEllipsoidRadius[1];
             radii[2] = this.shapeEllipsoidRadius[2];
         }
-        else if (this.mesh && this.mesh.IsGood())
+        else if (res)
         {
-            const { maxBounds, minBounds } = this.mesh.geometryResource;
+            const { maxBounds, minBounds } = res;
             vec3.subtract(center, maxBounds, minBounds);
             vec3.scale(center, center, 0.5 * 1.732050807);
             vec3.add(radii, maxBounds, minBounds);
@@ -469,11 +469,6 @@ export class EveSpaceObject extends EveObject
         for (let i = 0; i < this.customMasks.length; ++i)
         {
             this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
-        }
-
-        if (this.animation && this.animation.animations.length)
-        {
-            this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
         }
 
         for (let i = 0; i < this.lineSets.length; ++i)
@@ -544,58 +539,63 @@ export class EveSpaceObject extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display)
-        {
-            const show = this.visible;
+        if (!this.display  ||  this._lod < 1) return;
 
-            if (show.mesh && this.mesh && this._lod > 0)
+        const
+            show = this.visible,
+            res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+
+        if (show.mesh && res)
+        {
+            this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+        }
+
+        if (this._lod > 1)
+        {
+            if (show.spriteSets)
             {
-                this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+                for (let i = 0; i < this.spriteSets.length; i++)
+                {
+                    this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                }
             }
 
-            if (this._lod > 1)
+            if (show.spotlightSets)
             {
-                if (show.spriteSets)
+                for (let i = 0; i < this.spotlightSets.length; i++)
                 {
-                    for (let i = 0; i < this.spriteSets.length; i++)
-                    {
-                        this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
-                    }
+                    this.spotlightSets[i].GetBatches(mode, accumulator, this._perObjectData);
                 }
+            }
 
-                if (show.spotlightSets)
+            if (show.planeSets)
+            {
+                for (let i = 0; i < this.planeSets.length; i++)
                 {
-                    for (let i = 0; i < this.spotlightSets.length; i++)
-                    {
-                        this.spotlightSets[i].GetBatches(mode, accumulator, this._perObjectData);
-                    }
+                    this.planeSets[i].GetBatches(mode, accumulator, this._perObjectData);
                 }
+            }
 
-                if (show.planeSets)
+
+            if (show.lineSets)
+            {
+                for (let i = 0; i < this.lineSets.length; i++)
                 {
-                    for (let i = 0; i < this.planeSets.length; i++)
-                    {
-                        this.planeSets[i].GetBatches(mode, accumulator, this._perObjectData);
-                    }
+                    this.lineSets[i].GetBatches(mode, accumulator);
                 }
+            }
 
+            if (res)
+            {
                 if (show.decals)
                 {
                     for (let i = 0; i < this.decals.length; i++)
                     {
-                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, show.killmarks ? this.killCount : 0);
+                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, show.killmarks ? this.killCount : 0);
                     }
                 }
 
-                if (show.lineSets)
-                {
-                    for (let i = 0; i < this.lineSets.length; i++)
-                    {
-                        this.lineSets[i].GetBatches(mode, accumulator);
-                    }
-                }
-
-                if (show.overlayEffects && this.mesh && this.mesh.IsGood())
+                if (show.overlayEffects)
                 {
                     for (let i = 0; i < this.overlayEffects.length; i++)
                     {
@@ -603,21 +603,21 @@ export class EveSpaceObject extends EveObject
                     }
                 }
             }
+        }
 
-            if (show.children)
+        if (show.children)
+        {
+            for (let i = 0; i < this.children.length; i++)
             {
-                for (let i = 0; i < this.children.length; i++)
-                {
-                    this.children[i].GetBatches(mode, accumulator, this._perObjectData);
-                }
+                this.children[i].GetBatches(mode, accumulator, this._perObjectData);
             }
+        }
 
-            if (show.effectChildren)
+        if (show.effectChildren)
+        {
+            for (let i = 0; i < this.effectChildren.length; i++)
             {
-                for (let i = 0; i < this.effectChildren.length; i++)
-                {
-                    this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
-                }
+                this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
             }
         }
     }

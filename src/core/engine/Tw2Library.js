@@ -130,7 +130,7 @@ export class Tw2Library extends Tw2EventEmitter
             set: (bool) =>
             {
                 debug = !!bool;
-                this.store.debug = debug;
+                this.store.Debug(debug);
                 this.logger.debug = debug;
             }
         });

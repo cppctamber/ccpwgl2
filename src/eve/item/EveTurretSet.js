@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, util, resMan, device, AttachmentType } from "global";
+import { meta, vec3, vec4, quat, mat4, util, resMan, device } from "global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
@@ -735,7 +735,10 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        this.GetFiringEffectBatches(mode, accumulator, perObjectData, showFiringEffect);
+        if (showFiringEffect && this.firingEffect && this.visible.firingEffects)
+        {
+            this.firingEffect.GetBatches(mode, accumulator, perObjectData);
+        }
     }
 
     /**
@@ -743,11 +746,10 @@ export class EveTurretSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {Boolean} [showFiringEffect]
      */
-    GetFiringEffectBatches(mode, accumulator, perObjectData, showFiringEffect)
+    GetFiringEffectBatches(mode, accumulator, perObjectData)
     {
-        if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects && showFiringEffect)
+        if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects)
         {
             this.firingEffect.GetBatches(mode, accumulator, perObjectData);
         }
@@ -873,13 +875,6 @@ export class EveTurretSet extends EveObjectSet
             this.firingEffect.StopFiring();
         }
     }
-
-    /**
-     * Set type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.TURRET_SET;
-
 
     /**
      * The eve turret set's item constructor

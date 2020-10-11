@@ -274,6 +274,16 @@ export class Tw2AnimationController extends meta.Model
     }
 
     /**
+     * Checks if the animation has a geometry resource
+     * @param {Tw2GeometryRes} geometryResource
+     * @returns {boolean}
+     */
+    HasGeometryResource(geometryResource)
+    {
+        return this.geometryResources.indexOf(geometryResource) !== -1;
+    }
+
+    /**
      * Clears any existing resources and loads the supplied geometry resource
      * @param {Tw2GeometryRes} geometryResource
      */
@@ -819,11 +829,14 @@ export class Tw2AnimationController extends meta.Model
 
         if (resource.models.length === 0)
         {
-            for (let i = 0; i < resource.meshes.length; ++i)
+            if (controller.geometryResources[0].models[0])
             {
-                Tw2GeometryRes.BindMeshToModel(resource.meshes[i], controller.geometryResources[0].models[0], resource);
+                for (let i = 0; i < resource.meshes.length; ++i)
+                {
+                    Tw2GeometryRes.BindMeshToModel(resource.meshes[i], controller.geometryResources[0].models[0], resource);
+                }
+                resource.models.push(controller.geometryResources[0].models[0]);
             }
-            resource.models.push(controller.geometryResources[0].models[0]);
         }
 
         for (let i = 0; i < resource.models.length; ++i)

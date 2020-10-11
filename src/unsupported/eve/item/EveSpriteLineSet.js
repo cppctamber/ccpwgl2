@@ -1,4 +1,4 @@
-import { vec3, quat, mat4, meta, AttachmentType } from "global";
+import { vec3, quat, mat4, meta } from "global";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 
 
@@ -91,11 +91,5 @@ export class EveSpriteLineSetItem extends EveObjectSetItem
 @meta.ctor("EveSpriteLineSet")
 export class EveSpriteLineSet extends EveObjectSet
 {
-
-    /**
-     * Item attachment type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.SPRITE_LINE_SET;
 
 }

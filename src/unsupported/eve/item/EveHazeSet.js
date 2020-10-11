@@ -1,4 +1,4 @@
-import { meta, quat, vec3, mat4, AttachmentType } from "global";
+import { meta, quat, vec3, mat4 } from "global";
 import { Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 
@@ -72,11 +72,5 @@ export class EveHazeSetItem extends EveObjectSetItem
 @meta.ctor("EveHazeSet")
 export class EveHazeSet extends EveObjectSet
 {
-
-    /**
-     * Item attachment type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.HAZE_SET;
 
 }

@@ -42,13 +42,10 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    _usage = 0;
-
     _dirty = true;
     _indexBuffer = null;
     _localTransform = mat4.create();
     _localTransformInverse = mat4.create();
-    _parentGeometry = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
 
 
@@ -80,15 +77,6 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
         mat4.invert(this._localTransformInverse, this._localTransform);
-    }
-
-    /**
-     * Sets the parent geometry
-     * @param {Tw2GeometryRes} geometryRes
-     */
-    SetParentGeometry(geometryRes)
-    {
-        this._parentGeometry = geometryRes;
     }
 
     /**
@@ -134,10 +122,16 @@ export class EveSpaceObjectDecal extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @param {Tw2GeometryRes} geometryRes
      * @param {Number} [counter=0]
      */
-    GetBatches(mode, accumulator, perObjectData, counter=0)
+    GetBatches(mode, accumulator, perObjectData, geometryRes, counter=0)
     {
+        if (!this.display || !geometryRes || !geometryRes.meshes[0] || !this._indexBuffer)
+        {
+            return;
+        }
+
         let effect;
         switch (mode)
         {
@@ -155,58 +149,55 @@ export class EveSpaceObjectDecal extends meta.Model
             this.Rebuild();
         }
 
-        if (!this.display || !effect || !this._parentGeometry || !this._parentGeometry.meshes[0] || !this._indexBuffer)
+        if (!effect || !effect.IsGood() || !geometryRes.IsGood())
         {
             return;
         }
 
-        if (effect.IsGood() && this._parentGeometry.IsGood())
+        const batch = new Tw2ForwardingRenderBatch();
+        this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
+        if (this.parentBoneIndex >= 0)
         {
-            const batch = new Tw2ForwardingRenderBatch();
-            this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
-            if (this.parentBoneIndex >= 0)
+            const
+                bones = perObjectData.vs.Get("JointMat"),
+                offset = this.parentBoneIndex * 12;
+
+            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
             {
-                const
-                    bones = perObjectData.vs.Get("JointMat"),
-                    offset = this.parentBoneIndex * 12;
-
-                if (bones[offset] || bones[offset + 4] || bones[offset + 8])
-                {
-                    const bone = this._perObjectData.vs.Get("parentBoneMatrix");
-                    bone[0] = bones[offset];
-                    bone[1] = bones[offset + 4];
-                    bone[2] = bones[offset + 8];
-                    bone[3] = 0;
-                    bone[4] = bones[offset + 1];
-                    bone[5] = bones[offset + 5];
-                    bone[6] = bones[offset + 9];
-                    bone[7] = 0;
-                    bone[8] = bones[offset + 2];
-                    bone[9] = bones[offset + 6];
-                    bone[10] = bones[offset + 10];
-                    bone[11] = 0;
-                    bone[12] = bones[offset + 3];
-                    bone[13] = bones[offset + 7];
-                    bone[14] = bones[offset + 11];
-                    bone[15] = 1;
-                    mat4.transpose(bone, bone);
-                }
+                const bone = this._perObjectData.vs.Get("parentBoneMatrix");
+                bone[0] = bones[offset];
+                bone[1] = bones[offset + 4];
+                bone[2] = bones[offset + 8];
+                bone[3] = 0;
+                bone[4] = bones[offset + 1];
+                bone[5] = bones[offset + 5];
+                bone[6] = bones[offset + 9];
+                bone[7] = 0;
+                bone[8] = bones[offset + 2];
+                bone[9] = bones[offset + 6];
+                bone[10] = bones[offset + 10];
+                bone[11] = 0;
+                bone[12] = bones[offset + 3];
+                bone[13] = bones[offset + 7];
+                bone[14] = bones[offset + 11];
+                bone[15] = 1;
+                mat4.transpose(bone, bone);
             }
-
-            mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
-            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
-            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
-
-            this._perObjectData.ps.SetIndex("displayData", 0, counter);
-            this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
-
-
-            batch.perObjectData = this._perObjectData;
-            batch.geometryProvider = this;
-            batch.renderMode = mode;
-            batch.effect = effect;
-            accumulator.Commit(batch);
         }
+
+        mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
+        mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
+        mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
+
+        this._perObjectData.ps.SetIndex("displayData", 0, counter);
+        this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
+
+        batch._geometryRes = geometryRes;
+        batch.perObjectData = this._perObjectData;
+        batch.geometryProvider = this;
+        batch.renderMode = mode;
+        batch.effect = effect;
+        accumulator.Commit(batch);
     }
 
     /**
@@ -217,7 +208,7 @@ export class EveSpaceObjectDecal extends meta.Model
     Render(batch, technique)
     {
         const
-            mesh = this._parentGeometry.meshes[0],
+            mesh = batch._geometryRes.meshes[0],
             bkIB = mesh.indexes,
             bkStart = mesh.areas[0].start,
             bkCount = mesh.areas[0].count,
@@ -231,7 +222,8 @@ export class EveSpaceObjectDecal extends meta.Model
         mesh.areas[0].count = this.indexBuffer.length;
         mesh.indexType = device.gl.UNSIGNED_SHORT;
 
-        this._parentGeometry.RenderAreas(0, 0, 1, batch.effect, technique);
+        batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);
+
         mesh.indexes = bkIB;
         mesh.areas[0].start = bkStart;
         mesh.areas[0].count = bkCount;

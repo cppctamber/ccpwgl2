@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, mat4, util, device, AttachmentType } from "global";
+import { meta, vec3, vec4, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
@@ -658,6 +658,5 @@ export class EveBoosterSet extends EveObjectSet
         ]
     ];
 
-    static attachmentType = AttachmentType.BOOSTER_SET;
 }
 

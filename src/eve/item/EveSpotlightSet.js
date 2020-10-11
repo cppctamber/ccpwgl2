@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, mat4, util, device, AttachmentType } from "global";
+import { meta, vec3, vec4, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists, isFunction } from "global/util";
@@ -108,6 +108,7 @@ export class EveSpotlightSet extends EveObjectSet
     _decl = Tw2VertexDeclaration.from(EveSpotlightSet.vertexDeclarations);
     _indexBuffer = null;
     _spriteVertexBuffer = null;
+    _worldSpriteScale = 1;
 
 
     /**
@@ -166,6 +167,19 @@ export class EveSpotlightSet extends EveObjectSet
         }
 
         super.Unload(skipEvent);
+    }
+
+    /**
+     * Sets the world sprite scale
+     * @param {Number} scale
+     */
+    SetWorldSpriteScale(scale)
+    {
+        if (this._worldSpriteScale !== scale)
+        {
+            this._worldSpriteScale = scale;
+            this._dirty = true;
+        }
     }
 
     /**
@@ -257,7 +271,7 @@ export class EveSpotlightSet extends EveObjectSet
                         spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity * this.intensity;
                         spriteArray[offset + 3] = item.spriteColor[3];
 
-                        spriteArray[offset + 16] = item.spriteScale[0];
+                        spriteArray[offset + 16] = item.spriteScale[0] * this._worldSpriteScale;
                         spriteArray[offset + 17] = 1;
                         spriteArray[offset + 18] = 1;
                     }
@@ -269,8 +283,8 @@ export class EveSpotlightSet extends EveObjectSet
                         spriteArray[offset + 3] = item.flareColor[3];
 
                         spriteArray[offset + 16] = 1;
-                        spriteArray[offset + 17] = item.spriteScale[1];
-                        spriteArray[offset + 18] = item.spriteScale[2];
+                        spriteArray[offset + 17] = item.spriteScale[1] * this._worldSpriteScale;
+                        spriteArray[offset + 18] = item.spriteScale[2] * this._worldSpriteScale;
                     }
 
                     spriteArray[offset + 4] = item.transform[0];
@@ -448,12 +462,6 @@ export class EveSpotlightSet extends EveObjectSet
 
         return item;
     }
-
-    /**
-     * Set type
-     * @type {number}
-     */
-    static attachmentType = AttachmentType.SPOTLIGHT_SET;
 
     /**
      * Spotlight set item constructor
