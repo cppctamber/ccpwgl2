@@ -24,12 +24,13 @@ export class EveSOFDataAreaMaterial
     material4 = "";
 
     /**
-     * Assigns the material's material names to an object
-     * @param {Object} [out={}]
+     * TEMPORARY
+     * @param {Object} out
      * @returns {{}}
      */
-    AssignMaterials(out={})
+    Assign(out={})
     {
+        out.colorType = this.colorType;
         if (this.material1) out.material1 = this.material1;
         if (this.material2) out.material2 = this.material2;
         if (this.material3) out.material3 = this.material3;

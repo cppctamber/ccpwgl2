@@ -75,16 +75,16 @@ export class EveSOFDataFactionColorSet
 
     /**
      * Checks if a color type exists
-     * @param {Number} usageType
+     * @param {Number} type
      * @returns {boolean}
      */
-    Has(usageType)
+    Has(type)
     {
-        const name = EveSOFDataFactionColorSet.UsageIndex[usageType];
+        const name = EveSOFDataFactionColorSet.Type[type];
         
         if (name === undefined)
         {
-            throw new ErrSOFFactionColorSetUsageTypeUnknown({ usageType });
+            throw new ErrSOFFactionColorSetTypeUnknown({ type });
         }
         
         return !!this[name];
@@ -92,18 +92,18 @@ export class EveSOFDataFactionColorSet
     
     /**
      * Gets a color type
-     * @param {Number} usageType
+     * @param {Number} type
      * @param {vec4} [out=vec4.create()]
      * @return {vec4} out
      */
-    Get(usageType, out = vec4.create())
+    Get(type, out = vec4.create())
     {
-        if (!this.Has(usageType))
+        if (!this.Has(type))
         {
-            throw new ErrSOFFactionColorSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFFactionColorSetTypeNotFound({ type });
         }
         
-        return vec4.copy(out, this[EveSOFDataFactionColorSet.UsageIndex[usageType]]);
+        return vec4.copy(out, this[EveSOFDataFactionColorSet.Type[type]]);
     }
 
     /**
@@ -111,7 +111,7 @@ export class EveSOFDataFactionColorSet
      * TODO: Figure out how to automate this array
      * @type {string[]}
      */
-    static UsageIndex = [
+    static Type = [
         "Primary",
         "Secondary",
         "Tertiary",
@@ -142,22 +142,22 @@ export class EveSOFDataFactionColorSet
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFFactionColorSetUsageTypeUnknown extends Tw2Error
+export class ErrSOFFactionColorSetTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF faction color set usage type unknown (%usageType%)");
-        this.unknownUsageType = true;
+        super(data, "SOF faction color set type unknown (%type%)");
+        this.unknownType = true;
     }
 }
 
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFFactionColorSetUsageTypeNotFound extends Tw2Error
+export class ErrSOFFactionColorSetTypeNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF faction color set usage type not found (%usageType%)");
+        super(data, "SOF faction color set type not found (%type%)");
     }
 }

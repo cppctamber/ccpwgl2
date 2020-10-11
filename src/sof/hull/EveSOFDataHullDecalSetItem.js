@@ -44,6 +44,17 @@ export class EveSOFDataHullDecalSetItem
     @meta.string
     visibilityGroup = "";
 
+    /**
+     * Assigns the object's textures and parameters to an effect config
+     * @param {Object} config={}]
+     * @returns {Object} config
+     */
+    Assign(config={})
+    {
+        config.textures = this.AssignTextures(config.textures);
+        config.parameters = this.AssignParameters(config.parameters);
+        return config;
+    }
 
     /**
      * Assigns parameters to an object

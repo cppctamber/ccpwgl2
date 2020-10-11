@@ -19,6 +19,19 @@ export class EveSOFDataGenericDecalShader
 
 
     /**
+     * Assigns the object's textures and parameters to an effect config
+     * @param {Object} config={}]
+     * @param {Object} [provided={}]
+     * @returns {Object} config
+     */
+    Assign(config={}, provided={})
+    {
+        config.textures = this.AssignTextures(config.textures, provided.textures);
+        config.parameters = this.AssignParameters(config.parameters, provided.parameters);
+        return config;
+    }
+
+    /**
      * Assigns the shader's parameters to a plain object
      * @param {Object} [out={}]
      * @param {Object} [provided]

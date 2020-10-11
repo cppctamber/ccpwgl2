@@ -1,5 +1,5 @@
 import { meta } from "global";
-import { ErrSOFLogoSetUsageTypeNotFound, ErrSOFAreaUsageTypeNotFound } from "sof/shared";
+import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
 
 
 @meta.ctor("EveSOFDataFaction", true)
@@ -57,73 +57,84 @@ export class EveSOFDataFaction
     
     /**
      * Checks if a color usage Type exists
-     * @param {Number} usageType
+     * @param {Number} type
      * @returns {Boolean}
      */
-    HasColorType(usageType)
+    HasColorType(type)
     {
-        return this.colorSet.Has(usageType);
+        return this.colorSet.Has(type);
     }
 
     /**
-     * Gets a color by usage type
-     * @param {Number} usageType
+     * Gets a color by type
+     * @param {Number} type
      * @param {vec4} out
      * @returns {vec4} out
      */
-    GetColorType(usageType, out)
+    GetColorType(type, out)
     {
-        return this.colorSet.Get(usageType, out);
+        return this.colorSet.Get(type, out);
     }
 
     /**
-     * Checks if an area exists by usage type
-     * @param {Number} usageType
+     * Checks if an area exists by type
+     * @param {Number} type
      * @returns {Boolean}
      */
-    HasAreaType(usageType)
+    HasAreaType(type)
     {
-        return this.areaTypes ? this.areaTypes.Has(usageType) : false;
+        return this.areaTypes ? this.areaTypes.Has(type) : false;
     }
 
     /**
-     * Gets an area by usage type
-     * @param {Number} usageType
+     * Gets an area by type
+     * @param {Number} type
      * @returns {Boolean}
      */
-    GetAreaType(usageType)
+    GetAreaType(type)
     {
         if (!this.areaTypes)
         {
-            throw new ErrSOFAreaUsageTypeNotFound({ usageType });
+            throw new ErrSOFAreaTypeNotFound({ type });
         }
-        
-        return this.areaTypes.Get(usageType);
+
+        return this.areaTypes.Get(type);
     }
 
     /**
-     * Checks if a logo exists by usage type
-     * @param {Number} usageType
+     * Assigns an area type
+     * @param {Number} type
+     * @param {Object} out
+     * @returns {Object} out
+     */
+    AssignAreaType(type, out)
+    {
+        return this.GetAreaType(type).Assign(out);
+    }
+
+    /**
+     * Checks if a logo exists by type
+     * @param {Number} type
      * @returns {Boolean}
      */
-    HasLogoType(usageType)
+    HasLogoType(type)
     {
-        return this.logoSet ? this.logoSet.Has(usageType) : false;
+        return this.logoSet ? this.logoSet.Has(type) : false;
     }
 
     /**
-     * Gets a logo by usage type
-     * @param {Number} usageType
+     * Gets a logo by type
+     * @param {Number} type
      * @returns {EveSOFDataLogo}
      */
-    GetLogoType(usageType)
+    GetLogoType(type)
     {
         if (!this.logoSet)
         {
-            throw new ErrSOFLogoSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFLogoSetTypeNotFound({ type });
         }
         
-        return this.logoSet.Get(usageType);
+        return this.logoSet.Get(type);
     }
 
     /**

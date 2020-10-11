@@ -42,7 +42,18 @@ export class EveSOFDataGenericShader
         return false;
     }
 
-
+    /**
+     * Assigns the object's textures and parameters to an effect config
+     * @param {Object} [config={}]]
+     * @param  {object} [provided={}]
+     * @returns {Object} config
+     */
+    Assign(config={}, provided={})
+    {
+        config.textures = this.AssignTextures(config.textures, provided.textures);
+        config.parameters = this.AssignParameters(config.parameters, provided.parameters);
+        return config;
+    }
     /**
      * Assigns the shader's parameters to an object
      * @param {Object} [out={}]

@@ -77,46 +77,46 @@ export class EveSOFDataArea
 
     
     /**
-     * Checks if a data area exists by usage usageType
-     * @param {Number} usageType
+     * Checks if a data area exists by type
+     * @param {Number} type
      * @returns {boolean}
      */
-    Has(usageType)
+    Has(type)
     {
-        const name = EveSOFDataArea.UsageIndex[usageType];
+        const name = EveSOFDataArea.Type[type];
         
         if (name === undefined)
         {
-            throw new ErrSOFAreaUsageTypeUnknown({ usageType });
+            throw new ErrSOFAreaTypeUnknown({ type });
         }
         
         return !!this[name];
     }
 
     /**
-     * Gets a data area by usage usageType
-     * @param {Number} usageType
+     * Gets a data area by type
+     * @param {Number} type
      * @returns {EveSOFDataAreaMaterial}
      */
-    Get(usageType)
+    Get(type)
     {
-        if (!this.Has(usageType))
+        if (!this.Has(type))
         {
-            throw new ErrSOFAreaUsageTypeNotFound({ usageType });
+            throw new ErrSOFAreaTypeNotFound({ type });
         }
         
-        return this[EveSOFDataArea.UsageIndex[usageType]];
+        return this[EveSOFDataArea.Type[type]];
     }
 
     /**
      * Usage index
      * TODO: Figure out how to automate the creation of this list
-     * @usageType {string[]}
+     * @type {string[]}
      */
-    static UsageIndex = [
+    static Type = [
         "Primary",
         "Glass",
-        "Sail",
+        "Sails",
         "Reactor",
         "Darkhull",
         "Wreck",
@@ -130,22 +130,22 @@ export class EveSOFDataArea
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFAreaUsageTypeUnknown extends Tw2Error
+export class ErrSOFAreaTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF area usage type unknown (%usageType%)");
-        this.unknownUsageType = true;
+        super(data, "SOF area type unknown (%type%)");
+        this.unknownType = true;
     }
 }
 
 /**
  * Throws when a feature is not implemented
  */
-export class ErrSOFAreaUsageTypeNotFound extends Tw2Error
+export class ErrSOFAreaTypeNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF area usage type not found (%usageType%)");
+        super(data, "SOF area type not found (%type%)");
     }
 }

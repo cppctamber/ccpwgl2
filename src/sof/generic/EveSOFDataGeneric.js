@@ -82,17 +82,12 @@ export class EveSOFDataGeneric
         const
             isDecal = this.HasDecalShader(name),
             shader = isDecal ? this.GetDecalShader(name) : this.GetAreaShader(name),
+            { hasPatternMaskMaps = false } = shader,
             effectFilePath = isDecal ?
                 this.GetDecalShaderPath(name, isAnimated) :
                 this.GetAreaShaderPath(name, isAnimated);
 
-        return {
-            effectFilePath,
-            hasPatternMaskMaps: !!shader.hasPatternMaskMaps,
-            parameters: shader.AssignParameters({}, provided ? provided.parameters : undefined),
-            textures: shader.AssignParameters({}, provided ? provided.textures : undefined)
-        };
-
+        return shader.Assign({ effectFilePath, hasPatternMaskMaps, overrides: {} }, provided);
     }
 
     /**

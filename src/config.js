@@ -15,24 +15,40 @@ import { vec4, mat4 } from "./global/math";
  */
 path.handler = function(filepath)
 {
+    filepath = filepath.toLowerCase();
+
     // Because there are two sources for "res:" now we need to replace
     // any references from the eve cdn with a new res path mapping
-    if (filepath.indexOf("res:") === 0)
-    {
-        filepath = "cdn:" + filepath.substring(4);
-    }
 
-    /*
     let ext = "";
     const dot = filepath.lastIndexOf(".");
     if (dot !== -1) ext = filepath.substr(dot + 1).toLowerCase();
-     */
+
+    if (filepath in remapTextures)
+    {
+        filepath = remapTextures[filepath];
+    }
+    else
+    {
+        filepath = filepath.replace("res:", "cdn:");
+
+        if (filepath.includes(".gr2"))
+        {
+            filepath=filepath.replace("gr2", "cake");
+        }
+    }
 
     return filepath;
 };
 
 
-
+const remapTextures = {
+    "res:/texture/global/noise.dds" : "res:/texture/global/noise.dds.0.png",
+    "res:/texture/global/spotramp.dds" : "res:/texture/global/spotramp.dds.0.png",
+    "res:/texture/global/whitesharp.dds" : "res:/texture/particle/whitesharp.dds.0.png",
+    "res:/texture/particle/whitesharp.dds" : "res:/texture/particle/whitesharp.dds.0.png",
+    "res:/dx9/texture/decal/deck_01_cube.dds": "cdn:/dx9/texture/decal/deck_01_cube.dds.0.png"
+};
 
 /**
  * Register global configurations

@@ -4,14 +4,14 @@ import {
     isDNA,
     isArray,
     get,
-    findElementByPropertyValue
+    findElementByPropertyValue, isString, getPathExtension
 } from "global/util";
 
 import {
     ErrFeatureNotImplemented,
     Tw2Error,
     Tw2Effect,
-    Tw2Mesh
+    Tw2Mesh, Tw2MeshArea, Tw2ResMan, Tw2AnimationController
 } from "core";
 
 import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
@@ -21,7 +21,7 @@ import {
     ErrSOFMaterialNotFound,
     ErrSOFFactionNotFound,
     ErrSOFPatternNotFound,
-    ErrSOFRaceNotFound
+    ErrSOFRaceNotFound, EveSOF
 } from "sof/EveSOF";
 
 import {
@@ -29,7 +29,7 @@ import {
     EveCustomMask,
     EveLocator2,
     EvePlaneSet,
-    EvePlaneSetItem,
+    EvePlaneSetItem, EveSpaceObjectDecal,
     EveSpotlightSet,
     EveSpriteSet,
     EveSpriteSetItem
@@ -70,16 +70,19 @@ export class EveSOFData
      */
     _options = {
 
+        // Allow reverting to old spotlight sets
+        // new ones have weird artifacts with standard textures
         useSpotlightPool: false,
 
-        devColor: vec4.fromValues(0.5, 0.5, 0.5, 1),
-        zeroColor: vec4.fromValues(0, 0, 0, 1),
-
-        booster: {
-            glowScaleModifier: 0.125,
-            haloScaleModifier: 0.5,
-            symHaloModifier: 0.125,
-            brightnessModifier: 0.1
+        multiplier: {
+            // Boost lights
+            generalGlowColor: [ 10, 10, 10, 1 ],
+            generalHeatGlowColor: [ 100, 100, 100, 1 ],
+            boosterGlowScale: 0.125,
+            boosterHaloScale: 0.5,
+            boosterSymHalo: 0.125,
+            boosterBrightness: 0.8,
+            boosterScale: [ 0.9, 0.9, 0.9 ]
         },
 
         effect: {
@@ -92,6 +95,7 @@ export class EveSOFData
             plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
             spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
+            // TODO: Fix weird artifacts
             spotlightConePool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
             spotlightGlowPool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
             boosterVolumetric: "cdn:/graphics/effect/managed/space/booster/boostervolumetric.fx",
@@ -112,7 +116,7 @@ export class EveSOFData
             bannerBorder: ""
         },
 
-        decalShaderUsage: [
+        decalUsage: [
             "decalv5.fx",              // Looks correct, lots of random stuff
             "decalcounterv5.fx",
             "decalholev5.fx",
@@ -123,6 +127,21 @@ export class EveSOFData
         ]
 
     };
+
+    Log(type, options = {})
+    {
+        if (isString(options))
+        {
+            options = { message: options };
+        }
+
+        if (!options.name)
+        {
+            options.name = "Space object factory";
+        }
+
+        return tw2.Log(type, options);
+    }
 
     /**
      * Initializes the sof data
@@ -433,7 +452,7 @@ export class EveSOFData
         {
             throw new ErrSOFDNAFormatInvalid({ dna });
         }
-        
+
         dna = dna.toLowerCase();
 
         const
@@ -456,7 +475,7 @@ export class EveSOFData
         let hull = this.GetHull(parts[0]),
             faction = this.GetFaction(parts[1]),
             race = this.GetRace(parts[2]),
-            materials = [ null, null, null, null, null, null ],
+            area = {},
             resPathInsert = null,
             pattern = null;
 
@@ -466,7 +485,10 @@ export class EveSOFData
             for (let i = 0; i < m.length; i++)
             {
                 this.generic.GetMaterialPrefix(i + 1);
-                materials[i] = !m[i] || m[i].toUpperCase() === "NONE" ? null : this.GetMaterial(m[i]);
+                if (m[i] && m[i].toUpperCase() !== "NONE")
+                {
+                    area[`material${i + 1}`] = this.GetMaterial(m[i]).name;
+                }
             }
         }
 
@@ -478,7 +500,10 @@ export class EveSOFData
             for (let i = 1; i < p.length; i++)
             {
                 this.generic.GetPatternMaterialPrefix(i + 1);
-                materials[3 + i] = !p[i] || p[i].toUpperCase() === "NONE" ? null : this.GetMaterial(p[i]);
+                if (p[i] && p[i].toUpperCase() !== "NONE")
+                {
+                    area[`patternMaterial${i + 1}`] = this.GetMaterial(p[i]).name;
+                }
             }
         }
 
@@ -486,16 +511,16 @@ export class EveSOFData
         {
             pattern = this.GetHullPattern(hull.name, faction.defaultPattern);
 
-            if (!materials[4] && faction.defaultPatternLayer1MaterialName)
+            if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName)
             {
-                materials[4] = this.GetMaterial(faction.defaultPatternLayer1MaterialName);
+                area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
             }
         }
 
         // TODO: Check if the faction.resPathInsert actually exists...
         resPathInsert = commands["RESPATHINSERT"] || faction.resPathInsert || null;
 
-        return { hull, faction, race, materials, resPathInsert, pattern, dna };
+        return { hull, faction, race, area, resPathInsert, pattern, dna };
     }
 
     /**
@@ -505,7 +530,7 @@ export class EveSOFData
      */
     Build(dna)
     {
-        const 
+        const
             sof = this.ParseDNA(dna),
             object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
 
@@ -523,10 +548,31 @@ export class EveSOFData
      */
     Rebuild(object, opt)
     {
+        throw new ErrFeatureNotImplemented({ feature: "Rebuilding existing sof object" });
+
+        /*
         const sof = this.ParseDNA(object.dna);
         EveSOFData.Build(this, object, sof, this._options);
         object.UpdateValues(opt);
         return object;
+         */
+    }
+
+    /**
+     *  TEMPORARY
+     * @param {Object} m
+     * @param {Object} [out={}]
+     * @returns {Object} out
+     */
+    AssignMaterialParameters(m = {}, out = {})
+    {
+        if (m.material1) this.GetMaterial(m.material1).AssignParameters(out, "Mtl1");
+        if (m.material2) this.GetMaterial(m.material2).AssignParameters(out, "Mtl2");
+        if (m.material3) this.GetMaterial(m.material3).AssignParameters(out, "Mtl3");
+        if (m.material4) this.GetMaterial(m.material4).AssignParameters(out, "Mtl4");
+        if (m.patternMaterial1) this.GetMaterial(m.patternMaterial1).AssignParameters(out, "PMtl1");
+        if (m.patternMaterial2) this.GetMaterial(m.patternMaterial2).AssignParameters(out, "PMtl2");
+        return out;
     }
 
     /**
@@ -599,10 +645,7 @@ export class EveSOFData
      */
     static SetupModelCurves(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Model curves not implemented"
-        });
+        data.Log("debug", "Model curves not implemented");
     }
 
     /**
@@ -614,10 +657,7 @@ export class EveSOFData
      */
     static SetupLights(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Lights not implemented"
-        });
+        data.Log("debug", "Lights not implemented");
     }
 
     /**
@@ -629,10 +669,7 @@ export class EveSOFData
      */
     static SetupObservers(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Observers not implemented"
-        });
+        data.Log("debug", "Observers not implemented");
     }
 
     /**
@@ -650,10 +687,7 @@ export class EveSOFData
             obj.customMasks[1] = obj.customMasks[1] || new EveCustomMask("Pattern2");
         }
 
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Custom masks not implemented"
-        });
+        data.Log("debug", "Custom masks not implemented");
     }
 
     /**
@@ -672,6 +706,8 @@ export class EveSOFData
         vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "boundingEllipsoidRadius", [ 0, 0, 0 ]));
     }
 
+    static knownGeometryResPath = {};
+
     /**
      *
      * @param {EveSOFData} data
@@ -683,11 +719,209 @@ export class EveSOFData
     {
         obj.shadowEffect = obj.shadowEffect || options.effect.shadow;
 
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Mesh not implemented"
-        });
+        // Mesh
+        const
+            { hull } = sof,
+            mesh = new Tw2Mesh();
+
+        let initialized = false;
+
+        /**** START TESTING ONLY *****/
+
+        let resPath  = get(hull, "geometryResFilePath", "");
+
+        if (resPath in EveSOFData.knownGeometryResPath)
+        {
+            mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
+        }
+        else
+        {
+            mesh.geometryResPath = resPath;
+
+            tw2.GetResource(resPath,
+                res =>
+                {
+                    EveSOFData.knownGeometryResPath[resPath] = resPath;
+                    if (initialized) mesh.Initialize();
+                },
+                err =>
+                {
+                    // Fallback to wbg...
+                    mesh.geometryResPath = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
+                    EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath;
+
+                    if (initialized)
+                    {
+                        mesh.Initialize();
+                        obj.Initialize();
+                    }
+                });
+        }
+
+        /**** END TESTING ONLY *****/
+
+        const setupMeshArea = (areasName) =>
+        {
+            const { generic } = this;
+
+            get(hull, areasName, []).forEach(hullArea =>
+            {
+                let { name = "", index = 0, count = 1, shader = "", areaType } = hullArea;
+
+                const area = new Tw2MeshArea();
+                area.name = name;
+                area.index = index;
+                area.count = count;
+                mesh[areasName].push(area);
+
+                const config = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
+                hullArea.Assign(config);
+
+                const effect = area.effect = new Tw2Effect();
+                effect.name = area.name + "_effect";
+                effect.effectFilePath = config.effectFilePath;
+                effect.autoParameter = true;
+
+                // Fix missing quadheatdetail shader
+                if (effect.effectFilePath.includes("quadheatdetail"))
+                {
+                    data.Log("debug", "Patching missing shader: " + effect.effectFilePath);
+                    effect.effectFilePath = effect.effectFilePath.replace("quadheatdetail", "quaddetail");
+                }
+
+                // Booster effect color
+                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] = [ 1, 1, 1, 1 ];
+                if (heatGlowColor)
+                {
+                    vec4.multiply(heatGlowColor, sof.race.booster.glowColor, options.multiplier.generalHeatGlowColor);
+                }
+
+                // Area parameters
+                // Todo: Clean this up
+                let areaData = { colorType: -1 };
+
+                if (sof.faction.HasAreaType(areaType))
+                {
+                    sof.faction.AssignAreaType(areaType, areaData);
+                }
+                else
+                {
+                    sof.faction.AssignAreaType(0, areaData);
+                    data.Log("error", "Could not resolve area type: " + areaType);
+                }
+
+                // Get custom materials
+                Object.assign(areaData, sof.area);
+
+                data.AssignMaterialParameters(areaData, config.parameters);
+
+                // Area lights colour
+                const glowColor = config.parameters["GeneralGlowColor"] = [ 1, 1, 1, 1 ];
+                if (glowColor)
+                {
+                    const { colorType } = areaData;
+
+                    if (sof.faction.HasColorType(colorType))
+                    {
+                        sof.faction.GetColorType(colorType, glowColor);
+                    }
+                    else
+                    {
+                        sof.faction.GetColorType(0, glowColor);
+                        data.Log("error", "Could not resolve general glow color type: " + colorType);
+                    }
+
+                    vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+                }
+
+                // Temporary overrides for dds files
+                for (const key in config.textures)
+                {
+                    if (config.textures.hasOwnProperty(key))
+                    {
+                        if (getPathExtension(config.textures[key]) === "dds")
+                        {
+                            config.overrides[key] = {
+                                useAllOverrides: true,
+                                forceAddressModes: true,
+                                mipFilterMode: 1
+                            };
+                        }
+                    }
+                }
+
+                // Update effect
+                effect.SetParameters(config.parameters);
+                effect.SetTextures(config.textures);
+                effect.SetOverrides(config.overrides);
+
+                // TODO: There is no way to identify what resPathInserts are available
+                //       unless we generate a file from the resFileIndex.
+                //       Until then, we'll just try to download what they asked for...
+
+                let pmdgResPathInsert = config.textures.PmdgMap ? sof.resPathInsert || sof.faction.resPathInsert : null;
+                if (pmdgResPathInsert)
+                {
+                    const resPathInsert = sof.faction.GetResPathInsert(config.textures.PmdgMap, pmdgResPathInsert);
+                    const { knownResPathInserts } = EveSOFData;
+
+                    if (resPathInsert in knownResPathInserts)
+                    {
+                        if (knownResPathInserts[resPathInsert])
+                        {
+                            effect.SetTextures({ "PmdgMap": resPathInsert });
+                        }
+                        else
+                        {
+                            data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+                        }
+                    }
+                    else
+                    {
+                        tw2.FetchResource(resPathInsert)
+                            .then(() =>
+                            {
+                                knownResPathInserts[resPathInsert] = true;
+                                effect.SetTextures({ "PmdgMap": resPathInsert });
+                            })
+                            .catch(err =>
+                            {
+                                knownResPathInserts[resPathInsert] = false;
+                                data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+                            });
+                    }
+                }
+
+                if (config.hasPatternMaskMaps)
+                {
+                    for (let i = 0; i < obj.customMasks.length; i++)
+                    {
+                        EveCustomMask.ApplyMaterials(effect, obj.customMasks[i], i);
+                    }
+                }
+
+                effect.Initialize();
+            });
+        };
+
+        setupMeshArea("additiveAreas");
+        setupMeshArea("decalAreas");
+        setupMeshArea("depthAreas");
+        setupMeshArea("distortionAreas");
+        setupMeshArea("opaqueAreas");
+        setupMeshArea("transparentAreas");
+
+        mesh.Initialize();
+        initialized = true;
+
+        obj.mesh = mesh;
     }
+
+    /**
+     * Temporary catchment for found res path inserts
+     * @type {{}}
+     */
+    static knownResPathInserts = {};
 
     /**
      *
@@ -711,12 +945,19 @@ export class EveSOFData
 
             srcSet.items.forEach(srcItem =>
             {
-                const color = Array.from(options.devColor);
+                const color = [ 1, 1, 1, 1 ];
+
                 if (sof.faction.HasColorType(srcItem.colorType))
                 {
                     sof.faction.GetColorType(srcItem.colorType, color);
                 }
-                set.items.push(EveSpriteSetItem.from(Object.assign({ color }, srcItem)));
+                else
+                {
+                    sof.faction.GetColorType(0, color);
+                    data.Log("debug", "Using primary color for spriteSet: " + srcItem.colorType);
+                }
+
+                set.items.push(EveSpriteSetItem.from(Object.assign({}, srcItem, { color })));
             });
 
             set.Initialize();
@@ -740,12 +981,7 @@ export class EveSOFData
 
         spotlightSets.forEach(srcSet =>
         {
-            const animated = isSkinned && srcSet.skinned;
-
-            let coneShader = options.effectPath.spotlightConePool,
-                glowShader = options.effectPath.spotlightGlowPool;
-
-            /*
+            let coneShader, glowShader;
             if (options.useSpotlightPool)
             {
                 coneShader = options.effectPath.spotlightConePool;
@@ -753,11 +989,10 @@ export class EveSOFData
             }
             else
             {
-                // TODO: Not supported on new ship/station constructors
+                const animated = isSkinned && srcSet.skinned;
                 coneShader = data.GetShaderPath(options.effectPath.spotlightCone, animated);
                 glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
             }
-             */
 
             const set = EveSpotlightSet.from({
                 name: srcSet.name,
@@ -808,7 +1043,7 @@ export class EveSOFData
      */
     static SetupPlaneSets(data, obj, sof, options)
     {
-        const { isSkinned = false, planeSets = [] } = sof.hull;
+        const { isSkinned, planeSets } = sof.hull;
 
         planeSets.forEach(srcSet =>
         {
@@ -820,18 +1055,19 @@ export class EveSOFData
 
             set.effect = Tw2Effect.from({
                 effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
+                autoParameter: true,
                 parameters: {
                     PlaneData: [
                         0,  // Power of Fade Angle
-                        1,  // srcSet.atlasSize doesn't work?
+                        1, //srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
                         0,  // Unused
                         0   // Unused
                     ]
                 },
                 textures: {
-                    Layer1Map: srcSet.layer1MapResPath,
-                    Layer2Map: srcSet.layer2MapResPath,
-                    MaskMap: srcSet.maskMapResPath,
+                    Layer1Map: srcSet.layer1MapResPath.replace(".dds", ".png"),
+                    Layer2Map: srcSet.layer2MapResPath.replace(".dds", ".png"),
+                    MaskMap: srcSet.maskMapResPath.replace(".dds", ".png")
                 }
             });
 
@@ -841,7 +1077,16 @@ export class EveSOFData
                 // TODO: Lots of new properties to add...
 
                 const faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
-                if (faction) vec4.copy(item.color, faction.color);
+                if (faction)
+                {
+                    vec4.copy(item.color, faction.color);
+                }
+
+                // TEMPORARY
+                if (item.color[0] === 0 && item.color[1] === 0 && item.color[2] === 0 && item.color[3] === 0)
+                {
+                    vec4.copy(item.color, [ 1, 1, 1, 1 ]);
+                }
 
                 set.items.push(item);
             });
@@ -862,9 +1107,82 @@ export class EveSOFData
      */
     static SetupDecals(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Decals not implemented"
+        const { hull, faction } = sof;
+
+        // Get this properly...
+        const
+            PmdgMaps = obj.mesh.FindParameters("PmdgMap"),
+            NoMaps = obj.mesh.FindParameters("NoMap"),
+            PmdgMap = PmdgMaps[0] ? PmdgMaps[0].resourcePath : "",
+            NoMap = NoMaps[0] ? NoMaps[0].resourcePath : "";
+
+        const provided = { textures: { PmdgMap, NoMap } };
+
+        hull.decalSets.forEach(setData =>
+        {
+            // Don't process irrelevant decals
+            if (setData.visibilityGroup && !faction.HasVisibilityGroup(setData.visibilityGroup))
+            {
+                return;
+            }
+
+            setData.items.forEach(itemData =>
+            {
+                const { name, visibilityGroup, logoType, usage, glowColorType } = itemData;
+
+                // Don't add irrelevant decals (Should already have been caught)
+                if (visibilityGroup && !faction.HasVisibilityGroup(visibilityGroup))
+                {
+                    return;
+                }
+
+                const
+                    // How to tell what kind of effect to load??
+                    shader = options.decalUsage[usage],
+                    config = data.generic.GetShaderConfig(shader, false, provided);
+
+
+                let display = true;
+
+                if (faction.HasLogoType(logoType))
+                {
+                    faction.GetLogoType(logoType).Assign(config);
+                }
+                else
+                {
+                    data.Log("error", `Could not find logo type for decal: ${name} (${logoType})`);
+                    display = false;
+                }
+
+                const { DecalGlowColor } = config.parameters;
+                if (DecalGlowColor)
+                {
+                    if (faction.HasColorType(glowColorType))
+                    {
+                        faction.GetColorType(glowColorType, DecalGlowColor);
+                    }
+                    else
+                    {
+                        faction.GetColorType(0, DecalGlowColor);
+                        data.Log("debug", `Using primary color for decal glow: ${name} (${glowColorType})`);
+                    }
+                }
+
+                // Item's values override logo types
+                itemData.Assign(config);
+
+                /*
+                for (const key in config.textures)
+                {
+                    if (config.textures.hasOwnProperty(key))
+                    {
+                        config.textures[key] = config.textures[key].replace(".dds", ".png");
+                    }
+                }
+                 */
+
+                obj.decals.push(EveSpaceObjectDecal.from(Object.assign({}, itemData, { effect: config, display })));
+            });
         });
     }
 
@@ -889,9 +1207,12 @@ export class EveSOFData
 
         for (let i = 0; i < srcItems.length; ++i)
         {
+
+            const scaled = mat4.scale([], srcItems[i].transform, options.multiplier.boosterScale);
+
             obj.locators.push(EveLocator2.from({
                 name: "locator_booster_" + (i + 1),
-                transform: srcItems[i].transform,
+                transform: scaled,
                 atlasIndex0: srcItems[i].atlasIndex0,
                 atlasIndex1: srcItems[i].atlasIndex1,
                 // TODO: Add support for new locator parameters
@@ -902,17 +1223,20 @@ export class EveSOFData
         }
 
         const { shape0, shape1, warpShape0, warpShape1 } = src;
+        const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1 } = options.multiplier;
 
         // obj.boosters = obj.boosters || new EveBoosterSet();
         // obj.boosters.SetValues({
         // TODO: Update to eve booster set 2
+        // TODO: Boosters are slightly too big
 
         obj.boosters = EveBoosterSet.from({
+            name: src.name,
             glowColor: src.glowColor,
-            glowScale: src.glowScale * options.booster.glowScaleModifier,
+            glowScale: src.glowScale * boosterGlowScale,
             haloColor: src.haloColor,
-            haloScaleX: src.haloScaleX * options.booster.haloScaleModifier,
-            haloScaleY: src.haloScaleY * options.booster.haloScaleModifier,
+            haloScaleX: src.haloScaleX * boosterHaloScale,
+            haloScaleY: src.haloScaleY * boosterHaloScale,
             // TODO: Add support for new booster parameters
             // lightColor vec4
             // lightFlickerAmplitude float
@@ -922,26 +1246,27 @@ export class EveSOFData
             // lightWarpRadius float
             // hasTrails boolean
             // alwaysOn boolean
-            symHaloScale: src.symHaloScale * options.booster.symHaloModifier,
+            symHaloScale: src.symHaloScale * boosterSymHalo,
             trailColor: src.trailColor,
             trailSize: src.trailSize,
             warpGlowColor: src.warpGlowColor,
             warpHaloColor: src.warpHalpColor,
             effect: {
                 effectFilePath: options.effectPath.boosterVolumetric,
+                autoParameter: true,
                 parameters: {
                     NoiseFunction0: shape0.noiseFunction,
                     NoiseSpeed0: shape0.noiseSpeed,
                     NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
                     NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
                     NoiseFrequency0: shape0.noiseFrequency,
-                    Color0: vec3.multiplyScalar([], shape0.color, options.booster.brightnessModifier),
+                    Color0: vec3.multiplyScalar([], shape0.color, boosterBrightness),
                     NoiseFunction1: shape1.noiseFunction,
                     NoiseSpeed1: shape1.noiseSpeed,
                     NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
                     NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
                     NoiseFrequency1: shape1.noiseFrequency,
-                    Color1: vec3.multiplyScalar([], shape1.color, options.booster.brightnessModifier),
+                    Color1: vec3.multiplyScalar([], shape1.color, boosterBrightness),
                     WarpNoiseFunction0: warpShape0.noiseFunction,
                     WarpNoiseSpeed0: warpShape0.noiseSpeed,
                     WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
@@ -993,10 +1318,7 @@ export class EveSOFData
             obj.locators.push(EveLocator2.from(item));
         });
 
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Locator sets not implemented"
-        });
+        data.Log("debug", "Locator sets not implemented");
     }
 
     /**
@@ -1008,10 +1330,7 @@ export class EveSOFData
      */
     static SetupAudio(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Audio not implemented"
-        });
+        data.Log("debug", "Audio not implemented");
     }
 
 
@@ -1025,10 +1344,7 @@ export class EveSOFData
      */
     static SetupAnimations(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Animations not implemented"
-        });
+        data.Log("debug", "Animations not implemented");
     }
 
     /**
@@ -1040,10 +1356,7 @@ export class EveSOFData
      */
     static SetupChildren(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Child objects not implemented"
-        });
+        data.Log("debug", "Child objects not implemented");
 
         /*
         const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
@@ -1070,7 +1383,7 @@ export class EveSOFData
                 const id = get(child, "id", -1);
                 if (id !== -1 && curves[id])
                 {
-                    EveSOFData.BindParticleEmitters(loaded, curveSet, curves[id]);
+                    EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
                 }
             };
         }
@@ -1085,8 +1398,8 @@ export class EveSOFData
             }
             else
             {
-                tw2.Log({
-                    type: "warning",
+                data.Log({
+                    type: "debug",
                     name: "Space object factory",
                     message: `No resource path found for "${sof.hull.name}" child at index ${i}`
                 });
@@ -1097,16 +1410,14 @@ export class EveSOFData
 
     /**
      *
+     * @param {EveSOFData} data
      * @param {*} obj
      * @param {Tw2CurveSet} curveSet
      * @param {Tw2Curve} curve
      */
-    static BindParticleEmitters(obj, curveSet, curve)
+    static BindParticleEmitters(data, obj, curveSet, curve)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Binding child particle emitters not implemented"
-        });
+        data.Log("debug", "Binding child particle emitters not implemented");
 
         /*
         if (isArray(obj.particleEmitters))
@@ -1131,7 +1442,7 @@ export class EveSOFData
         }
         else
         {
-            tw2.Log("warning", {
+            data.Log("debug", {
                 name: "Space object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
             });
@@ -1148,10 +1459,7 @@ export class EveSOFData
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Instance meshes not implemented"
-        });
+        data.Log("debug", "Instance meshes not implemented");
 
         /*
         const { instancedMeshes=[] } = sof.hull;
@@ -1181,10 +1489,7 @@ export class EveSOFData
      */
     static SetupControllers(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Animation controllers not implemented"
-        });
+        data.Log("debug", "Animation controllers not implemented");
     }
 
     /**
@@ -1196,10 +1501,7 @@ export class EveSOFData
      */
     static SetupTurretMaterial(data, obj, sof, options)
     {
-        tw2.Log("warning", {
-            name: "Space object factory",
-            message: "Turret materials not implemented"
-        });
+        data.Log("debug", "Turret materials not implemented");
     }
 
 }

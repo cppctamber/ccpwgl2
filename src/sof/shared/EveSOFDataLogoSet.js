@@ -23,66 +23,66 @@ export class EveSOFDataLogoSet
     
 
     /**
-     * Checks if a logo exists by usage type
-     * @param {Number} usageType
+     * Checks if a logo exists by type
+     * @param {Number} type
      * @returns {boolean}
      */
-    Has(usageType)
+    Has(type)
     {
-        const name = EveSOFDataLogoSet.UsageIndex[usageType];
+        const name = EveSOFDataLogoSet.LogoType[type];
         
         if (name === undefined)
         {
-            throw new ErrSOFLogoSetUsageTypeUnknown({ usageType });
+            throw new ErrSOFLogoSetTypeUnknown({ type });
         }
         
         return !!this[name];
     }
 
     /**
-     * Gets a logo by usage type
-     * @param {Number} usageType
+     * Gets a logo by type
+     * @param {Number} type
      * @returns {EveSOFDataLogo}
      */
-    Get(usageType)
+    Get(type)
     {
-        if (!this.Has(usageType))
+        if (!this.Has(type))
         {
-            throw new ErrSOFLogoSetUsageTypeNotFound({ usageType });
+            throw new ErrSOFLogoSetTypeNotFound({ type });
         }
         
-        return this[EveSOFDataLogoSet.UsageIndex[usageType]];
+        return this[EveSOFDataLogoSet.LogoType[type]];
     }
 
     /**
      * Usage index
      * TODO: Figure out how to automate this list
-     * @usageType {String[]}
+     * @type {String[]}
      */
-    static UsageIndex = [
+    static LogoType = [
         "Primary",
         "Secondary",
         "Tertiary",
         "Marking_01",
-        "Marking_02"
+        "Marking_02",
     ]
 
 }
 
 
-export class ErrSOFLogoSetUsageTypeUnknown extends Tw2Error
+export class ErrSOFLogoSetTypeUnknown extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF logo set usage type unknown (%usageType%)");
-        this.unknownUsageType = true;
+        super(data, "SOF logo set type unknown (%type%)");
+        this.unknownType = true;
     }
 }
 
-export class ErrSOFLogoSetUsageTypeNotFound extends Tw2Error
+export class ErrSOFLogoSetTypeNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF logo set usage type not found (%usageType%)");
+        super(data, "SOF logo set type not found (%type%)");
     }
 }
