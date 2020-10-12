@@ -97,7 +97,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     GetValue()
     {
-        return this.isTextureAttached ? null : this.resourcePath;
+        return this.isTextureAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
     }
 
     /**

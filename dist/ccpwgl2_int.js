@@ -27312,7 +27312,7 @@ var Tw2TextureParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
 
 
   GetValue() {
-    return this.isTextureAttached ? null : this.resourcePath;
+    return this.isTextureAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
   }
   /**
    * Sets the texture's resource manually
@@ -27671,6 +27671,20 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
         skipUpdate: true
       });
     }
+  }
+  /**
+   * Reverts the object to an identity matrix
+   * @returns {Tw2TransformParameter}
+   */
+
+
+  Identity() {
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].identity(this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, this._localTransform);
+    this._rebuildWorld = true;
+    return this;
   }
   /**
    * Rebuilds transforms
@@ -28033,6 +28047,7 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
 
 
   GetTransform(out) {
+    this.RebuildTransforms();
     return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
   }
   /**
@@ -50620,10 +50635,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -50656,37 +50667,12 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
   }
 
   /**
-   * Sets a sof material by name
-   * @param {String} name
-   * @returns {Promise<void>}
-   */
-  SetMaterial(name) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      var material = yield global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
-      var {
-        DiffuseColor,
-        FresnelColor,
-        Gloss
-      } = material.parameters;
-
-      _this.parameters.DiffuseColor.SetValue(DiffuseColor);
-
-      _this.parameters.FresnelColor.SetValue(FresnelColor);
-
-      _this.parameters.Gloss.SetValue(Gloss);
-    })();
-  }
-  /**
    * Updates the parent's per object data
    * @param {mat4} parentTransform
    * @param {Tw2PerObjectData} perObjectData
    * @param {Number} index
    * @param {Boolean} visible
    */
-
-
   UpdatePerObjectData(parentTransform, perObjectData, index, visible) {
     this.SetParentTransform(parentTransform);
     var targets = this.display && visible ? this.targetMaterials : global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
@@ -50697,10 +50683,10 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
   }
   /**
    * Applies custom mask's parameters to an effect
+   * TODO: Clean this up
    * @param {Tw2Effect} effect
    * @param {EveCustomMask} mask
    * @param index
-   * @constructor
    */
 
 
@@ -50708,11 +50694,13 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
     var prefix = index === 0 ? "PMtl1" : "PMtl2",
         patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map",
         DiffuseName = effect.parameters[prefix + "DiffuseColor"],
+        DustDiffuseName = effect.parameters[prefix + "DustDiffuseColor"],
         FresnelName = effect.parameters[prefix + "FresnelColor"],
         GlossName = effect.parameters[prefix + "Gloss"],
         PatternTexture = effect.parameters[patternName];
     var {
       DiffuseColor,
+      DustDiffuseColor,
       FresnelColor,
       Gloss,
       PatternMaskMap
@@ -50721,6 +50709,11 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
     if (DiffuseName) {
       DiffuseName.SetValue(DiffuseColor.GetValue());
       DiffuseColor.OnEvent("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
+    }
+
+    if (DustDiffuseName) {
+      DustDiffuseName.SetValue(DustDiffuseColor.GetValue());
+      DustDiffuseColor.OnEvent("modified", () => DustDiffuseName.SetValue(DustDiffuseName.GetValue()));
     }
 
     if (FresnelName) {
@@ -50791,7 +50784,7 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
   enumerable: true,
   writable: true,
   initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
   }
 }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "parameters", [_dec10, _dec11, _dec12], {
   configurable: true,
@@ -50799,10 +50792,11 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
   writable: true,
   initializer: function () {
     return {
-      PatternMaskMap: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap"),
-      DiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor"),
-      FresnelColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor"),
-      Gloss: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss")
+      PatternMaskMap: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap", "res:/texture/global/black.dds.0.png"),
+      DiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor", [0, 0, 0, 1]),
+      DustDiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DustDiffuseColor", [0, 0, 0, 1]),
+      FresnelColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor", [0, 0, 0, 1]),
+      Gloss: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss", [0, 0, 0, 0])
     };
   }
 })), _class2)) || _class) || _class);
@@ -73751,6 +73745,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
 /* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
 /* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
+/* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -73758,6 +73753,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 
@@ -74177,10 +74173,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
       pattern = !p[0] || p[0].toUpperCase() === "NONE" ? null : this.GetHullPattern(hull.name, p[0]);
 
       for (var _i2 = 1; _i2 < p.length; _i2++) {
-        this.generic.GetPatternMaterialPrefix(_i2 + 1);
+        this.generic.GetPatternMaterialPrefix(_i2);
 
         if (p[_i2] && p[_i2].toUpperCase() !== "NONE") {
-          area["patternMaterial".concat(_i2 + 1)] = this.GetMaterial(p[_i2]).name;
+          area["patternMaterial".concat(_i2)] = this.GetMaterial(p[_i2]).name;
         }
       }
     }
@@ -74242,6 +74238,12 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
   /**
    *  TEMPORARY
    * @param {Object} m
+   * @param {String} [m.material1]
+   * @param {String} [m.material2]
+   * @param {String} [m.material3]
+   * @param {String} [m.material4]
+   * @param {String} [m.patternMaterial1]
+   * @param {String} [m.patternMaterial2]
    * @param {Object} [out={}]
    * @returns {Object} out
    */
@@ -74295,18 +74297,19 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
   static Build(data, obj, sof, options) {
     this.SetupBounds(data, obj, sof, options);
-    this.SetupMesh(data, obj, sof, options);
-    this.SetupModelCurves(data, obj, sof, options);
-    this.SetupLights(data, obj, sof, options);
-    this.SetupObservers(data, obj, sof, options);
     this.SetupCustomMasks(data, obj, sof, options);
+    this.SetupMesh(data, obj, sof, options);
     this.SetupSpotlightSets(data, obj, sof, options);
     this.SetupPlaneSets(data, obj, sof, options);
     this.SetupSpriteSets(data, obj, sof, options);
     this.SetupDecals(data, obj, sof, options);
     this.SetupBoosters(data, obj, sof, options);
-    this.SetupLocators(data, obj, sof, options);
+    this.SetupLocators(data, obj, sof, options); //  TODO
+
     this.SetupAudio(data, obj, sof, options);
+    this.SetupModelCurves(data, obj, sof, options);
+    this.SetupLights(data, obj, sof, options);
+    this.SetupObservers(data, obj, sof, options);
     this.SetupChildren(data, obj, sof, options);
     this.SetupInstancedMesh(data, obj, sof, options);
     this.SetupControllers(data, obj, sof, options);
@@ -74349,6 +74352,60 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     data.Log("debug", "Observers not implemented");
   }
   /**
+   * Sets up a custom mask (or empties it)
+   * @param {EveCustomMask} mask
+   * @param {EveSOFDataPatternLayer} layer
+   * @param {EveSOFDataPatternTransform} transformLayer
+   * @param {EveSOFDataMaterial} material
+   */
+
+
+  static SetupCustomMask(mask, layer, transformLayer, material) {
+    if (transformLayer) {
+      mask.isMirrored = transformLayer.isMirrored;
+      mask.Compose(transformLayer.rotation, transformLayer.position, transformLayer.scaling).RebuildTransforms();
+    } else {
+      mask.isMirrored = false;
+      mask.Identity().RebuildTransforms();
+    }
+
+    var pU = 0,
+        pV = 0;
+    var ext;
+
+    if (layer) {
+      ext = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["getPathExtension"])(layer.textureResFilePath);
+      mask.display = true;
+      mask.materialIndex = layer.materialSource;
+      mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, layer.isTargetMtl1 ? 1 : 0, layer.isTargetMtl2 ? 1 : 0, layer.isTargetMtl3 ? 1 : 0, layer.isTargetMtl4 ? 1 : 0);
+      pU = layer.projectionTypeU;
+      pV = layer.projectionTypeV;
+    } else {
+      mask.display = false;
+      mask.materialIndex = 0;
+      mask.parameters.PatternMaskMap.SetValue("res:/texture/global/black.dds.0.png");
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, 0, 0, 0, 0);
+    }
+
+    mask.parameters.PatternMaskMap.SetOverrides({
+      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pU),
+      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pV),
+      forceAddressModes: ext === "dds",
+      // Temporary
+      useAllOverrides: true
+    });
+
+    if (material) {
+      var p = material.parameters;
+      mask.parameters.DiffuseColor.SetValue(p["DiffuseColor"]);
+      mask.parameters.FresnelColor.SetValue(p["FresnelColor"]);
+      mask.parameters.DustDiffuseColor.SetValue(p["DustDiffuseColor"]);
+      mask.parameters.Gloss.SetValue(p["Gloss"]);
+    } else {// Don't reset any custom material for now
+    }
+  }
+  /**
    *
    * @param {EveSOFData} data
    * @param {EveStation2|EveShip2} obj
@@ -74363,7 +74420,12 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
       obj.customMasks[1] = obj.customMasks[1] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern2");
     }
 
-    data.Log("debug", "Custom masks not implemented");
+    var patternMaterial1 = sof.patternMaterial1 ? data.GetMaterial(sof.patternMaterial1) : null,
+        patternMaterial2 = sof.patternMaterial2 ? data.GetMaterial(sof.patternMaterial2) : null,
+        pattern = sof.pattern || {};
+    console.dir(pattern);
+    this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);
+    this.SetupCustomMask(obj.customMasks[1], pattern.layer2, pattern.transformLayer2, patternMaterial2);
   }
   /**
    *
@@ -74381,6 +74443,11 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.shapeEllipsoidCenter, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(sof.hull, "boundingEllipsoidCenter", [0, 0, 0]));
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.shapeEllipsoidRadius, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(sof.hull, "boundingEllipsoidRadius", [0, 0, 0]));
   }
+  /**
+   * Temporary
+   * @type {{}}
+   */
+
 
   /**
    *

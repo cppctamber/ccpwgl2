@@ -78,6 +78,20 @@ export class Tw2TransformParameter extends Tw2Parameter
     }
 
     /**
+     * Reverts the object to an identity matrix
+     * @returns {Tw2TransformParameter}
+     */
+    Identity()
+    {
+        mat4.identity(this._localTransform);
+        mat4.getRotation(this.rotation,  this._localTransform);
+        mat4.getTranslation(this.translation, this._localTransform);
+        mat4.getScaling(this.scaling,  this._localTransform);
+        this._rebuildWorld = true;
+        return this;
+    }
+
+    /**
      * Rebuilds transforms
      * @param {Object} [opt]
      * @param {Boolean} [opt.force]      - Forces transforms to be updated
@@ -474,6 +488,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetTransform(out)
     {
+        this.RebuildTransforms();
         return mat4.copy(out, this._localTransform);
     }
 

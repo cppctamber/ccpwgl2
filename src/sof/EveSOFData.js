@@ -4,7 +4,7 @@ import {
     isDNA,
     isArray,
     get,
-    findElementByPropertyValue, isString, getPathExtension
+    findElementByPropertyValue, isString, getPathExtension, assignIfExists
 } from "global/util";
 
 import {
@@ -39,6 +39,7 @@ import {
     EveShip2,
     EveStation2
 } from "../unsupported/eve/object";
+import { EveSOFDataPatternLayer } from "sof/pattern";
 
 
 @meta.ctor("EveSOFData")
@@ -484,7 +485,7 @@ export class EveSOFData
         {
             for (let i = 0; i < m.length; i++)
             {
-                this.generic.GetMaterialPrefix(i + 1);
+                this.generic.GetMaterialPrefix(i + 1); // off by one
                 if (m[i] && m[i].toUpperCase() !== "NONE")
                 {
                     area[`material${i + 1}`] = this.GetMaterial(m[i]).name;
@@ -499,10 +500,10 @@ export class EveSOFData
 
             for (let i = 1; i < p.length; i++)
             {
-                this.generic.GetPatternMaterialPrefix(i + 1);
+                this.generic.GetPatternMaterialPrefix(i);
                 if (p[i] && p[i].toUpperCase() !== "NONE")
                 {
-                    area[`patternMaterial${i + 1}`] = this.GetMaterial(p[i]).name;
+                    area[`patternMaterial${i}`] = this.GetMaterial(p[i]).name;
                 }
             }
         }
@@ -561,6 +562,12 @@ export class EveSOFData
     /**
      *  TEMPORARY
      * @param {Object} m
+     * @param {String} [m.material1]
+     * @param {String} [m.material2]
+     * @param {String} [m.material3]
+     * @param {String} [m.material4]
+     * @param {String} [m.patternMaterial1]
+     * @param {String} [m.patternMaterial2]
      * @param {Object} [out={}]
      * @returns {Object} out
      */
@@ -618,21 +625,25 @@ export class EveSOFData
     static Build(data, obj, sof, options)
     {
         this.SetupBounds(data, obj, sof, options);
-        this.SetupMesh(data, obj, sof, options);
-        this.SetupModelCurves(data, obj, sof, options);
-        this.SetupLights(data, obj, sof, options);
-        this.SetupObservers(data, obj, sof, options);
         this.SetupCustomMasks(data, obj, sof, options);
+        this.SetupMesh(data, obj, sof, options);
+
         this.SetupSpotlightSets(data, obj, sof, options);
         this.SetupPlaneSets(data, obj, sof, options);
         this.SetupSpriteSets(data, obj, sof, options);
         this.SetupDecals(data, obj, sof, options);
         this.SetupBoosters(data, obj, sof, options);
         this.SetupLocators(data, obj, sof, options);
+
+        //  TODO
         this.SetupAudio(data, obj, sof, options);
+        this.SetupModelCurves(data, obj, sof, options);
+        this.SetupLights(data, obj, sof, options);
+        this.SetupObservers(data, obj, sof, options);
         this.SetupChildren(data, obj, sof, options);
         this.SetupInstancedMesh(data, obj, sof, options);
         this.SetupControllers(data, obj, sof, options);
+
         return obj;
     }
 
@@ -673,6 +684,76 @@ export class EveSOFData
     }
 
     /**
+     * Sets up a custom mask (or empties it)
+     * @param {EveCustomMask} mask
+     * @param {EveSOFDataPatternLayer} layer
+     * @param {EveSOFDataPatternTransform} transformLayer
+     * @param {EveSOFDataMaterial} material
+     */
+    static SetupCustomMask(mask, layer, transformLayer, material)
+    {
+        if (transformLayer)
+        {
+            mask.isMirrored = transformLayer.isMirrored;
+            mask.Compose(transformLayer.rotation, transformLayer.position, transformLayer.scaling).RebuildTransforms();
+        }
+        else
+        {
+            mask.isMirrored = false;
+            mask.Identity().RebuildTransforms();
+        }
+
+        let pU = 0,
+            pV = 0;
+
+        let ext;
+
+        if (layer)
+        {
+            ext = getPathExtension(layer.textureResFilePath);
+
+            mask.display = true;
+            mask.materialIndex = layer.materialSource;
+            mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
+            vec4.set(mask.targetMaterials,
+                layer.isTargetMtl1 ? 1 : 0,
+                layer.isTargetMtl2 ? 1 : 0,
+                layer.isTargetMtl3 ? 1 : 0,
+                layer.isTargetMtl4 ? 1 : 0
+            );
+            pU = layer.projectionTypeU;
+            pV = layer.projectionTypeV;
+        }
+        else
+        {
+            mask.display = false;
+            mask.materialIndex = 0;
+            mask.parameters.PatternMaskMap.SetValue("res:/texture/global/black.dds.0.png");
+            vec4.set(mask.targetMaterials, 0, 0, 0, 0);
+        }
+
+        mask.parameters.PatternMaskMap.SetOverrides({
+            addressUMode: EveSOFDataPatternLayer.ToAddress(pU),
+            addressVMode: EveSOFDataPatternLayer.ToAddress(pV),
+            forceAddressModes: ext === "dds", // Temporary
+            useAllOverrides: true
+        });
+
+        if (material)
+        {
+            const p = material.parameters;
+            mask.parameters.DiffuseColor.SetValue(p["DiffuseColor"]);
+            mask.parameters.FresnelColor.SetValue(p["FresnelColor"]);
+            mask.parameters.DustDiffuseColor.SetValue(p["DustDiffuseColor"]);
+            mask.parameters.Gloss.SetValue(p["Gloss"]);
+        }
+        else
+        {
+            // Don't reset any custom material for now
+        }
+    }
+
+    /**
      *
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
@@ -687,7 +768,14 @@ export class EveSOFData
             obj.customMasks[1] = obj.customMasks[1] || new EveCustomMask("Pattern2");
         }
 
-        data.Log("debug", "Custom masks not implemented");
+        const
+            patternMaterial1 = sof.patternMaterial1 ? data.GetMaterial(sof.patternMaterial1) : null,
+            patternMaterial2 = sof.patternMaterial2 ? data.GetMaterial(sof.patternMaterial2) : null,
+            pattern = sof.pattern || {};
+
+        console.dir(pattern);
+        this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);
+        this.SetupCustomMask(obj.customMasks[1], pattern.layer2, pattern.transformLayer2, patternMaterial2);
     }
 
     /**
@@ -706,6 +794,10 @@ export class EveSOFData
         vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "boundingEllipsoidRadius", [ 0, 0, 0 ]));
     }
 
+    /**
+     * Temporary
+     * @type {{}}
+     */
     static knownGeometryResPath = {};
 
     /**
@@ -728,7 +820,7 @@ export class EveSOFData
 
         /**** START TESTING ONLY *****/
 
-        let resPath  = get(hull, "geometryResFilePath", "");
+        let resPath = get(hull, "geometryResFilePath", "");
 
         if (resPath in EveSOFData.knownGeometryResPath)
         {

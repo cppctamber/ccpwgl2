@@ -26,33 +26,20 @@ export class EveCustomMask extends Tw2TransformParameter
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.vector4
-    targetMaterials = vec4.create();
+    targetMaterials = vec4.fromValues(1,1,1,1);
 
     @meta.plain //Of("Tw2Parameter")
     @meta.todo("Move to direct class properties")
     @meta.isPrivate
     parameters = {
-        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),
-        DiffuseColor: new Tw2Vector4Parameter("DiffuseColor"),
-        FresnelColor: new Tw2Vector4Parameter("FresnelColor"),
-        Gloss: new Tw2Vector4Parameter("Gloss")
+        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap", "res:/texture/global/black.dds.0.png"),
+        DiffuseColor: new Tw2Vector4Parameter("DiffuseColor", [ 0, 0, 0, 1 ]),
+        DustDiffuseColor: new Tw2Vector4Parameter("DustDiffuseColor", [ 0, 0, 0, 1 ]),
+        FresnelColor: new Tw2Vector4Parameter("FresnelColor", [ 0, 0, 0, 1 ]),
+        Gloss: new Tw2Vector4Parameter("Gloss", [ 0, 0, 0, 0 ])
     };
 
     _worldInverseTranspose = mat4.create();
-
-    /**
-     * Sets a sof material by name
-     * @param {String} name
-     * @returns {Promise<void>}
-     */
-    async SetMaterial(name)
-    {
-        const material = await tw2.eveSof.FetchMaterial(name);
-        const { DiffuseColor, FresnelColor, Gloss } = material.parameters;
-        this.parameters.DiffuseColor.SetValue(DiffuseColor);
-        this.parameters.FresnelColor.SetValue(FresnelColor);
-        this.parameters.Gloss.SetValue(Gloss);
-    }
 
     /**
      * Updates the parent's per object data
@@ -73,10 +60,10 @@ export class EveCustomMask extends Tw2TransformParameter
 
     /**
      * Applies custom mask's parameters to an effect
+     * TODO: Clean this up
      * @param {Tw2Effect} effect
      * @param {EveCustomMask} mask
      * @param index
-     * @constructor
      */
     static ApplyMaterials(effect, mask, index)
     {
@@ -84,16 +71,23 @@ export class EveCustomMask extends Tw2TransformParameter
             prefix = index === 0 ? "PMtl1" : "PMtl2",
             patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map",
             DiffuseName = effect.parameters[prefix + "DiffuseColor"],
+            DustDiffuseName = effect.parameters[prefix + "DustDiffuseColor"],
             FresnelName = effect.parameters[prefix + "FresnelColor"],
             GlossName = effect.parameters[prefix + "Gloss"],
             PatternTexture = effect.parameters[patternName];
 
-        const { DiffuseColor, FresnelColor, Gloss, PatternMaskMap } = mask.parameters;
+        const { DiffuseColor, DustDiffuseColor, FresnelColor, Gloss, PatternMaskMap } = mask.parameters;
 
         if (DiffuseName)
         {
             DiffuseName.SetValue(DiffuseColor.GetValue());
             DiffuseColor.OnEvent("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
+        }
+
+        if (DustDiffuseName)
+        {
+            DustDiffuseName.SetValue(DustDiffuseColor.GetValue());
+            DustDiffuseColor.OnEvent("modified", () => DustDiffuseName.SetValue(DustDiffuseName.GetValue()));
         }
 
         if (FresnelName)
@@ -114,7 +108,7 @@ export class EveCustomMask extends Tw2TransformParameter
             PatternTexture.SetOverrides(overrides);
             PatternTexture.SetValue(PatternMaskMap.GetValue());
 
-            PatternMaskMap.OnEvent("modified", ()=>
+            PatternMaskMap.OnEvent("modified", () =>
             {
                 PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
                 PatternTexture.SetValue(PatternTexture.GetValue());
