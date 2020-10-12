@@ -74159,7 +74159,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
     if (m) {
       for (var _i = 0; _i < m.length; _i++) {
-        this.generic.GetMaterialPrefix(_i + 1);
+        this.generic.GetMaterialPrefix(_i + 1); // off by one
 
         if (m[_i] && m[_i].toUpperCase() !== "NONE") {
           area["material".concat(_i + 1)] = this.GetMaterial(m[_i]).name;
@@ -74420,8 +74420,8 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
       obj.customMasks[1] = obj.customMasks[1] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern2");
     }
 
-    var patternMaterial1 = sof.patternMaterial1 ? data.GetMaterial(sof.patternMaterial1) : null,
-        patternMaterial2 = sof.patternMaterial2 ? data.GetMaterial(sof.patternMaterial2) : null,
+    var patternMaterial1 = sof.area.patternMaterial1 ? data.GetMaterial(sof.area.patternMaterial1) : null,
+        patternMaterial2 = sof.area.patternMaterial2 ? data.GetMaterial(sof.area.patternMaterial2) : null,
         pattern = sof.pattern || {};
     console.dir(pattern);
     this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);

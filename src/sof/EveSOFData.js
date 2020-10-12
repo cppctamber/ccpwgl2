@@ -769,8 +769,8 @@ export class EveSOFData
         }
 
         const
-            patternMaterial1 = sof.patternMaterial1 ? data.GetMaterial(sof.patternMaterial1) : null,
-            patternMaterial2 = sof.patternMaterial2 ? data.GetMaterial(sof.patternMaterial2) : null,
+            patternMaterial1 = sof.area.patternMaterial1 ? data.GetMaterial(sof.area.patternMaterial1) : null,
+            patternMaterial2 = sof.area.patternMaterial2 ? data.GetMaterial(sof.area.patternMaterial2) : null,
             pattern = sof.pattern || {};
 
         console.dir(pattern);
