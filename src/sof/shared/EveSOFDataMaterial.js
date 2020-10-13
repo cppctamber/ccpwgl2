@@ -22,6 +22,7 @@ export class EveSOFDataMaterial
         {
             this.parameters[i].Assign(out, prefix);
         }
+        return out;
     }
 
 }

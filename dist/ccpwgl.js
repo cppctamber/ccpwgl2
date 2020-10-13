@@ -562,11 +562,11 @@ var ccpwgl = (function(tw2)
         /** Wrapped tw2 object **/
         this.wrappedObjects = [ null ];
         /** Transforms @type {Tw2Transform} **/
-        this.transform = new tw2.Tw2TransformParameter("transform")
-            .OnEvent("modified", () =>
+        this.transform = new tw2.Tw2Transforms()
+            .OnWorldModified(world =>
             {
                 if (!this.isLoaded()) return;
-                this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
+                this.wrappedObjects[0].SetTransform(world);
             });
 
         /** Per-frame on update callback @type {!function(dt): void} **/
@@ -602,7 +602,7 @@ var ccpwgl = (function(tw2)
         {
             obj.display = display;
             self.wrappedObjects[0] = obj;
-            obj.SetTransform(self.transform._worldTransform);
+            self.transform.RebuildTransforms({ force: true, skipUpdate: true });
             rebuildOverlays();
             if (onload)
             {
@@ -670,16 +670,24 @@ var ccpwgl = (function(tw2)
 
         function rebuildOverlays()
         {
-            if (self.wrappedObjects[0])
+            if (!self.isLoaded())
             {
-                self.wrappedObjects[0].overlayEffects = [];
-                for (var i = 0; i < self.overlays.length; ++i)
+                return;
+            }
+
+            var o = [];
+
+            for (var i = 0; i < self.overlays.length; i++)
+            {
+                if (self.overlays[i].overlay)
                 {
-                    if (self.overlays[i].overlay)
-                    {
-                        self.wrappedObjects[0].overlayEffects.push(self.overlays[i].overlay);
-                    }
+                    o.push(self.overlays[i].overlay);
                 }
+            }
+
+            for (var i = 0; i < self.wrappedObjects.length; i++)
+            {
+                self.wrappedObjects[0].RebuildOverlays(o);
             }
         }
 
@@ -746,28 +754,25 @@ var ccpwgl = (function(tw2)
     {
         /** Wrapped tw2 ship object @type {tw2.EveShip} **/
         this.wrappedObjects = [ null ];
-        /** Object transform @type {Tw2TransformParameter} **/
-        this.transform = new tw2.Tw2TransformParameter("transform")
-            .OnEvent("modified", () =>
+        /** Object transform @type {Tw2Transforms} **/
+        this.transform = new tw2.Tw2Transforms()
+            .OnWorldModified(world =>
             {
-                if (this.isLoaded())
+                if (!this.isLoaded()) return;
+                const len = this.wrappedObjects.length;
+                for (let i = 0; i < len; i++)
                 {
-                    const { _worldTransform } = this.transform;
-
-                    const len = this.wrappedObjects.length;
-                    for (let i = 0; i < len; i++)
+                    if (len === 1)
                     {
-                        if (len === 1)
-                        {
-                            this.wrappedObjects[i].SetTransform(_worldTransform);
-                        }
-                        else
-                        {
-                            this.wrappedObjects[i].SetTransform(_worldTransform, this.partTransforms[i]);
-                        }
+                        this.wrappedObjects[i].SetTransform(world);
+                    }
+                    else
+                    {
+                        this.wrappedObjects[i].SetTransform(world, this.partTransforms[i]);
                     }
                 }
             });
+
         /** Internal boosters object @type {tw2.EveBoosterSet} **/
         this.boosters = [ null ];
         /** Current siege state @type {ccpwgl.ShipSiegeState} **/
@@ -836,8 +841,7 @@ var ccpwgl = (function(tw2)
                 obj.display = display;
                 self.wrappedObjects[index] = obj;
 
-                const { _worldTransform } = self.transform;
-                self.wrappedObjects[index].SetTransform(_worldTransform);
+                self.transform.RebuildTransforms({ force: true, skipUpdate: true });
 
                 if (self.boosters[index])
                 {
@@ -891,19 +895,24 @@ var ccpwgl = (function(tw2)
 
         function rebuildOverlays()
         {
-            if (self.isLoaded())
+            if (!self.isLoaded())
             {
-                for (var j = 0; j < self.wrappedObjects.length; ++j)
+                return;
+            }
+
+            var o = [];
+
+            for (var i = 0; i < self.overlays.length; i++)
+            {
+                if (self.overlays[i].overlay)
                 {
-                    self.wrappedObjects[j].overlayEffects = [];
-                    for (var i = 0; i < self.overlays.length; ++i)
-                    {
-                        if (self.overlays[i].overlay)
-                        {
-                            self.wrappedObjects[j].overlayEffects.push(self.overlays[i].overlay);
-                        }
-                    }
+                    o.push(self.overlays[i].overlay);
                 }
+            }
+
+            for (var i = 0; i < self.wrappedObjects.length; i++)
+            {
+                self.wrappedObjects[0].RebuildOverlays(o);
             }
         }
 
@@ -1576,10 +1585,10 @@ var ccpwgl = (function(tw2)
         this.wrappedObjects = [ new tw2.EvePlanet() ];
 
         /** Local transform **/
-        this.transform = new tw2.Tw2TransformParameter("transform")
-            .OnEvent("modified", () =>
+        this.transform = new tw2.Tw2Transforms()
+            .OnWorldModified(world =>
             {
-                this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
+                this.wrappedObjects[0].SetTransform(world);
             });
 
         var self = this;
@@ -1750,7 +1759,7 @@ var ccpwgl = (function(tw2)
         this.rebuild = function()
         {
             rebuildSceneObjects(this);
-        }
+        };
 
         /**
          * Internal helper function that rebuilds a list of object in the wrapped

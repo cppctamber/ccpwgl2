@@ -285,7 +285,8 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     * @param local
+     * Sets the local transform
+     * @param {mat4} local
      */
     SetTransform(local)
     {
@@ -303,7 +304,7 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     *
+     * Gets resources
      * @param {Array} [out=[]]
      * @returns {Array}
      */
@@ -319,6 +320,10 @@ export class EveShip2 extends EveObject
         return out;
     }
 
+    /**
+     * Rebuilds boosters
+     * @return {boolean}
+     */
     RebuildBoosterSet()
     {
         if (this.boosters)
@@ -329,6 +334,63 @@ export class EveShip2 extends EveObject
         return false;
     }
 
+    /**
+     * Gets a turret set by it's locator name
+     * @param {String} locatorName
+     * @return {null|EveTurretSet}
+     */
+    GetTurretSetByLocatorName(locatorName)
+    {
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i] instanceof EveTurretSet && this.attachments[i].locatorName === locatorName)
+            {
+                return this.attachments[i];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes a turret set
+     * @param {EveTurretSet} turretSet
+     * @returns {Boolean} true if updated
+     */
+    RemoveTurretSet(turretSet)
+    {
+        const index = this.attachments.indexOf(turretSet);
+        if (index === -1) return false;
+        this.attachments.splice(index, 1);
+        return true;
+    }
+
+    /**
+     * Adds a turret set
+     * @param {EveTurretSet} turretSet
+     * @returns {Boolean} true if updated
+     */
+    AddTurretSet(turretSet)
+    {
+        if (!turretSet.locatorName)
+        {
+            throw new ReferenceError("Turret set must have a locator name");
+        }
+
+        const existingTurretSet = this.GetTurretSetByLocatorName(turretSet.locatorName);
+        if (existingTurretSet === turretSet) return false;
+
+        this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
+        this.attachments.push(turretSet);
+        this.RebuildTurretSet(turretSet);
+        return true;
+    }
+
+    /**
+     * Rebuilds a turret set
+     * @param {EveTurretSet} turretSet
+     * @return {boolean}
+     */
     RebuildTurretSet(turretSet)
     {
         const
@@ -353,6 +415,11 @@ export class EveShip2 extends EveObject
         return true;
     }
 
+    /**
+     * Rebuilds overlays from a supplied array
+     * @param {Array<EveMeshOverlayEffect>} overlays
+     * @return {boolean}
+     */
     RebuildOverlays(overlays=[])
     {
         let updated = false;
@@ -375,6 +442,10 @@ export class EveShip2 extends EveObject
         return updated;
     }
 
+    /**
+     * Per frame update
+     * @param {Number} dt
+     */
     Update(dt)
     {
         if (this._lod < 1 || !this.display)
@@ -551,7 +622,7 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     *
+     * Per frame update
      * @param {mat4} parentTransform
      * @param {Number} dt
      * @param {Number} worldSpriteScale

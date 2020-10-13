@@ -122,8 +122,9 @@ export class EveSOFDataArea
         "Wreck",
         "Rock",
         "Monument",
-        undefined, // ????
-        undefined  // ????
+        // Below are incorrect, figure out what they are
+        "Primary",
+        "Primary"
     ]
 }
 

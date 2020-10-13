@@ -18583,11 +18583,1027 @@ Tw2Notifications.onNotification = null;
 
 /***/ }),
 
+/***/ "./core/class/Tw2Transform.js":
+/*!************************************!*\
+  !*** ./core/class/Tw2Transform.js ***!
+  \************************************/
+/*! exports provided: Tw2Transforms */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Transforms", function() { return Tw2Transforms; });
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _dec2, _dec3, _class, _descriptor, _descriptor2, _descriptor3, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var vec3_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+    quat_0 = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
+    mat4_0 = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+var Tw2Transforms = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, (_class = (_temp = class Tw2Transforms extends global__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "rotation", _descriptor, this);
+
+    _initializerDefineProperty(this, "translation", _descriptor2, this);
+
+    _initializerDefineProperty(this, "scaling", _descriptor3, this);
+
+    this._localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._rebuildLocal = true;
+    this._rebuildWorld = true;
+  }
+
+  // Optional parameters
+  //_parentTransform = null;
+  //_worldInverse = null;
+  //_worldTranspose = null;
+  //_worldInverseTranspose = null;
+
+  /**
+   * Adds a function which is called when the world transform is modified
+   * @param {Function} [onWorldTransformModified]
+   */
+  OnWorldModified(onWorldTransformModified) {
+    this.onWorldTransformModified = onWorldTransformModified;
+    return this;
+  }
+  /**
+   * Initializes the transform parameter
+   */
+
+
+  Initialize() {
+    this.RebuildTransforms({
+      force: true,
+      skipUpdate: true
+    });
+  }
+  /**
+   * Fires on value changes
+   * @param {Object} [opt]
+   */
+
+
+  OnValueChanged(opt) {
+    // Do not call if it was already called!
+    if (!opt || !opt.skipTransforms) {
+      this.RebuildTransforms({
+        force: true,
+        skipUpdate: true
+      });
+    }
+  }
+  /**
+   * Rebuilds transforms
+   * @param {Object} [opt]
+   * @returns {Boolean} true if updated
+   */
+
+
+  RebuildTransforms(opt) {
+    var force = opt && opt.force,
+        skipUpdate = opt && opt.skipUpdate;
+
+    if (force || this._rebuildLocal) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
+      this._rebuildLocal = false;
+      force = true;
+    }
+
+    if (!force && !this._rebuildWorld) {
+      return false;
+    }
+
+    var {
+      _worldInverse,
+      _worldInverseTranspose,
+      _worldTranspose,
+      _parentTransform
+    } = this;
+
+    if (_parentTransform) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, _parentTransform, this._localTransform);
+    } else {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this._localTransform);
+    }
+
+    if (_worldInverse) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(_worldInverse, this._worldTransform);
+    }
+
+    if (_worldTranspose) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(_worldTranspose, this._worldTransform);
+    }
+
+    if (_worldInverseTranspose) {
+      if (_worldTranspose) {
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(_worldInverseTranspose, _worldTranspose);
+      } else {
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(_worldInverseTranspose, this._worldTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(_worldInverseTranspose, _worldInverseTranspose);
+      }
+    }
+
+    if (this["onWorldTransformModified"]) {
+      this["onWorldTransformModified"](this._worldTransform);
+    }
+
+    if (!skipUpdate) {
+      this.UpdateValues({
+        skipTransforms: true
+      });
+    }
+
+    this._rebuildWorld = false;
+  }
+  /**
+   * Sets the parent transform
+   * @param {null|mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetParentTransform(m) {
+    // Clear
+    if (!m && this._parentTransform) {
+      this._parentTransform = null;
+      this._rebuildWorld = true;
+    } // Set new parent
+    else if (!this._parentTransform) {
+        this._parentTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].clone(m);
+        this._rebuildWorld = true;
+      } // Update parent
+      else if (!global__WEBPACK_IMPORTED_MODULE_0__["mat4"].equals(m, this._parentTransform)) {
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, m);
+          this._rebuildWorld = true;
+        }
+
+    return this;
+  }
+  /**
+   * Gets the world transform
+   * @param {mat4} out
+   * @returns {mat4}
+   */
+
+
+  GetWorldTransform(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(out, this._worldTransform);
+  }
+  /**
+   * Decomposes the world transform
+   * @param {quat} rotation
+   * @param {vec3} translation
+   * @param {vec3} scaling
+   * @returns {Tw2Transforms}
+   */
+
+
+  DecomposeWorld(rotation, translation, scaling) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(rotation, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(translation, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(scaling, this._worldTransform);
+    return this;
+  }
+  /**
+   * Gets the world rotation
+   * @param {quat} out
+   * @returns {quat}
+   */
+
+
+  GetWorldRotation(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(out, this._worldTransform);
+  }
+  /**
+   * Gets world direction
+   * @param {vec3} out
+   * @returns {vec3} out
+   */
+
+
+  GetWorldDirection(out) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
+  }
+  /**
+   * Gets the world rotation as a euler
+   * @param {vec3} out
+   * @returns {vec3} out
+   */
+
+
+  GetWorldEuler(out) {
+    this.GetWorldRotation(quat_0);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuat(out, quat_0);
+  }
+  /**
+   * Gets the world axis angle
+   * @param {vec3} axis
+   * @returns {Number}
+   */
+
+
+  GetWorldAxisAngle(axis) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(quat_0, this._worldTransform);
+    return global__WEBPACK_IMPORTED_MODULE_0__["quat"].getAxisAngle(axis, quat_0);
+  }
+  /**
+   * Gets the world translation
+   * @param {vec3} out
+   * @returns {vec3} out
+   */
+
+
+  GetWorldTranslation(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(out, this._worldTransform);
+  }
+  /**
+   * Gets the world scaling
+   * @param {vec3} out
+   * @returns {vec3} out
+   */
+
+
+  GetWorldScaling(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(out, this._worldTransform);
+  }
+  /**
+   * Gets the world max scale
+   * @returns {number}
+   */
+
+
+  GetWorldMaxScale() {
+    this.GetWorldScaling(vec3_0);
+    return Math.max(vec3_0[0], vec3_0[1], vec3_0[2]);
+  }
+  /**
+   * Converts a world coordinate to local co-ordinate
+   * @param {vec3} out
+   * @param {vec3} v
+   * @returns {vec3} out
+   */
+
+
+  GetWorldToLocal(out, v) {
+    this.RebuildTransforms();
+
+    if (this["_worldInverse"]) {
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, v, this["_worldInverse"]);
+    }
+
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(mat4_0, this._worldTransform);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, v, mat4_0);
+  }
+  /**
+   * Reverts the object's transform to an identity matrix
+   * @returns {Tw2Transforms}
+   */
+
+
+  Identity() {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, this._localTransform);
+    this._rebuildWorld = true;
+    return this;
+  }
+  /**
+   * Gets the local transform
+   * @param {mat4} out
+   * @returns {mat4}
+   */
+
+
+  GetTransform(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(out, this._localTransform);
+  }
+  /**
+   * Sets the local transform
+   * @param {mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetTransform(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._localTransform, m);
+    this._rebuildWorld = true;
+    return this;
+  }
+  /**
+   * Composes the local transform from rotation, translation and scaling
+   * @param {quat} rotation
+   * @param {vec3} translation
+   * @param {vec3} scaling
+   * @returns {Tw2Transforms}
+   */
+
+
+  Compose(rotation, translation, scaling) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(this.rotation, rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.translation, translation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.scaling, scaling);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Decomposes the local transform to rotation, translation and scaling
+   * @param {quat} rotation
+   * @param {vec3} translation
+   * @param {vec3} scaling
+   * @returns {Tw2Transforms}
+   */
+
+
+  Decompose(rotation, translation, scaling) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(rotation, this.rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(translation, this.translation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(scaling, this.scaling);
+    return this;
+  }
+  /**
+   * Converts local coordinate to world co-ordinate
+   * @param {vec3} out
+   * @param {vec3} v
+   * @returns {vec3} out
+   */
+
+
+  GetLocalToWorld(out, v) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, v, this._worldTransform);
+  }
+  /**
+   * Gets local direction
+   * @param {vec3} out
+   * @returns {vec3} out
+   */
+
+
+  GetDirection(out) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
+  }
+  /**
+   * Gets the local rotation
+   * @param {quat} out
+   * @returns {quat}
+   */
+
+
+  GetRotation(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(out, this.rotation);
+  }
+  /**
+   * Gets the local rotation as a euler
+   * @param {vec3} out
+   * @returns {vec3}
+   */
+
+
+  GetEuler(out) {
+    this.GetRotation(quat_0);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuat(out, quat_0);
+  }
+  /**
+   * Gets a matrix from the local rotation
+   * @param {mat4} out
+   * @return {mat4} out
+   */
+
+
+  GetRotationMatrix(out) {
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotation(out, this.rotation);
+  }
+  /**
+   * Sets the the local rotation from a quat
+   * @param {quat} q
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotation(q) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(this.rotation, q);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local rotation from values
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} z
+   * @param {Number} w
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromValues(x, y, z, w) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].set(this.rotation, x, y, z, w);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local rotation from axes
+   * @param {vec3} view
+   * @param {vec3} right
+   * @param {vec3} up
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromAxes(view, right, up) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].setAxes(this.rotation, view, right, up);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local rotation from an axis and angle
+   * @param {vec3} axis
+   * @param {Number} radians
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromAxisAngle(axis, radians) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].setAxisAngle(this.rotation, axis, radians);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local rotation from a euler
+   * @param {vec3} e
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromEuler(e) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuat(this.rotation, e);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local rotation from euler values
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} z
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromEulerValues(x, y, z) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, x, y, z);
+    return this.SetRotationFromEuler(vec3_0);
+  }
+  /**
+   * Sets the local rotation from a mat4
+   * @param {mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetRotationFromMat4(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(quat_0, m);
+    return this.SetRotation(quat_0);
+  }
+  /**
+   * Local rotation on the x axis
+   * @param {Number} radians
+   * @returns {Tw2Transforms}
+   */
+
+
+  RotateX(radians) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].rotateX(this.rotation, this.rotation, radians);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local rotation on the y axis
+   * @param {Number} radians
+   * @returns {Tw2Transforms}
+   */
+
+
+  RotateY(radians) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].rotateY(this.rotation, this.rotation, radians);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local rotation on the z axis
+   * @param {Number} radians
+   * @returns {Tw2Transforms}
+   */
+
+
+  RotateZ(radians) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].rotateZ(this.rotation, this.rotation, radians);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local rotation on an axis angle
+   * @param {vec3} axis
+   * @param {Number} radians
+   * @returns {Tw2Transforms}
+   */
+
+
+  RotateOnAxisAngle(axis, radians) {
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].setAxisAngle(quat_0, axis, radians);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(this.rotation, this.rotation, quat_0);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Gets the local axis angle
+   * @param {vec3} out
+   * @returns {Number}
+   */
+
+
+  GetAxisAngle(out) {
+    return global__WEBPACK_IMPORTED_MODULE_0__["quat"].getAxisAngle(out, this.rotation);
+  }
+  /**
+   * Local rotation to look at a local coordinate
+   * @param {vec3} v
+   * @param {Boolean} [flip]
+   * @returns {Tw2Transforms}
+   */
+
+
+  LookAt(v, flip) {
+    this.RebuildTransforms();
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(mat4_0, this._localTransform);
+
+    if (flip) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL(mat4_0, this.translation, v, global__WEBPACK_IMPORTED_MODULE_0__["vec3"].Y_AXIS);
+    } else {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL(mat4_0, v, this.translation, global__WEBPACK_IMPORTED_MODULE_0__["vec3"].Y_AXIS);
+    }
+
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, mat4_0);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local rotation to look at a world coordinate
+   * @param {vec3} v
+   * @param {Boolean} [flip]
+   * @returns {Tw2Transforms}
+   */
+
+
+  LookAtWorld(v, flip) {
+    this.GetWorldToLocal(vec3_0, v);
+    return this.LookAt(vec3_0, flip);
+  }
+  /**
+   * Gets the local translation
+   * @param {vec3} out
+   * @returns {vec3}
+   */
+
+
+  GetTranslation(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(out, this.translation);
+  }
+  /**
+   * Sets the local translation from a vector
+   * @param {vec3} v
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetTranslation(v) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.translation, v);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local translation from values
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} z
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetTranslationFromValues(x, y, z) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(this.translation, x, y, z);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets the local translation from a mat4's translation
+   * @param {mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetTranslationFromMat4(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local translation on an axis
+   * @param {vec3} axis
+   * @param {Number} distance
+   * @returns {Tw2Transforms}
+   */
+
+
+  TranslateOnAxis(axis, distance) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformQuat(vec3_0, axis, this.rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(this.translation, this.translation, vec3_0, distance);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Local translation on the x axis
+   * @param {Number} distance
+   * @returns {Tw2Transforms}
+   */
+
+
+  TranslateX(distance) {
+    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].X_AXIS, distance);
+  }
+  /**
+   * Local translation on the y axis
+   * @param {Number} distance
+   * @returns {Tw2Transforms}
+   */
+
+
+  TranslateY(distance) {
+    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].Y_AXIS, distance);
+  }
+  /**
+   * Local translation on the z axis
+   * @param {Number} distance
+   * @returns {Tw2Transforms}
+   */
+
+
+  TranslateZ(distance) {
+    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].Z_AXIS, distance);
+  }
+  /**
+   * Gets the local scaling
+   * @param {vec3} out
+   * @returns {vec3}
+   */
+
+
+  GetScale(out) {
+    this.RebuildTransforms();
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(out, this.scaling);
+  }
+  /**
+   * Gets the maximum local scale
+   * @returns {Number}
+   */
+
+
+  GetMaxScale() {
+    return Math.max(this.scaling[0], this.scaling[1], this.scaling[2]);
+  }
+  /**
+   * Sets local scaling from a vector
+   * @param {vec3} v
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScale(v) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.scaling, v);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Sets local scaling from values
+   * @param {Number} x
+   * @param {Number}  y
+   * @param {Number}  z
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleFromValues(x, y, z) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, x, y, z);
+    return this.SetScale(vec3_0);
+  }
+  /**
+   * Sets the local x axis scale
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleX(s) {
+    return this.SetScaleFromValues(s, this.scaling[1], this.scaling[2]);
+  }
+  /**
+   * Sets the local y axis scale
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleY(s) {
+    return this.SetScaleFromValues(this.scaling[0], s, this.scaling[2]);
+  }
+  /**
+   * Sets the local z axis scale
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleZ(s) {
+    return this.SetScaleFromValues(this.scaling[0], this.scaling[1], s);
+  }
+  /**
+   * Sets local scaling from a scalar
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleUniform(s) {
+    return this.SetScaleFromValues(s, s, s);
+  }
+  /**
+   * Sets local scaling from a mat4's scale
+   * @param {mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  SetScaleFromMat4(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Scales the local scale by a vector
+   * @param {vec3} v
+   * @returns {Tw2Transforms}
+   */
+
+
+  Scale(v) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(this.scaling, this.scaling, v);
+    this._rebuildLocal = true;
+    return this;
+  }
+  /**
+   * Scales the local scale by values
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} z
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleValues(x, y, z) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, x, y, z);
+    return this.Scale(vec3_0);
+  }
+  /**
+   * Scales the local scale by a mat4's scale
+   * @param {mat4} m
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleMat4(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(vec3_0, m);
+    return this.Scale(vec3_0);
+  }
+  /**
+   * Scales the local scale by a scalar
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleUniform(s) {
+    return this.ScaleValues(s, s, s);
+  }
+  /**
+   * Scales the local x axis
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleX(s) {
+    return this.ScaleValues(s, 1, 1);
+  }
+  /**
+   * Scales the local y axis
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleY(s) {
+    return this.ScaleValues(1, s, 1);
+  }
+  /**
+   * Scales the local z axis
+   * @param {Number} s
+   * @returns {Tw2Transforms}
+   */
+
+
+  ScaleZ(s) {
+    return this.ScaleValues(1, 1, s);
+  }
+  /**
+   * TEMPORARY SET.
+   * @param a
+   * @param values
+   * @param opt
+   * @returns {boolean}
+   */
+
+
+  static set(a, values, opt) {
+    if (!values) return false;
+    var {
+      transform,
+      rotation,
+      euler,
+      scale,
+      scaling,
+      radius,
+      translation,
+      position
+    } = values; // Handle alternates
+
+    if (scale === undefined) scale = scaling;
+    if (scale === undefined && radius) scale = radius * 2;
+    if (!rotation) rotation = euler;
+    if (!translation) translation = position;
+
+    if (!transform && !rotation && !scale && !translation) {
+      return false;
+    }
+
+    var updated;
+
+    if (transform) {
+      updated = true;
+
+      if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isMatrix4) {
+        a.SetTransform(transform);
+      } else {
+        throw new TypeError("Invalid transform matrix");
+      }
+    }
+
+    if (rotation) {
+      updated = true;
+
+      if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isVector3(rotation)) {
+        a.SetRotationFromEuler(rotation);
+      } else if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isVector4(rotation)) {
+        a.SetRotation(rotation);
+      } else {
+        throw new TypeError("Invalid rotation value");
+      }
+    }
+
+    if (scale !== undefined) {
+      updated = true;
+
+      if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isNumber(scale)) {
+        a.SetScaleUniform(scale);
+      } else if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isVector3) {
+        a.SetScale(scale);
+      } else {
+        throw new TypeError("Invalid scale");
+      }
+    }
+
+    if (translation) {
+      updated = true;
+      a.SetTranslation(translation);
+    }
+
+    if (updated && !opt || !opt.skipUpdate) {
+      a.UpdateValues(opt);
+    }
+
+    return updated;
+  }
+  /**
+   * Gets the classes values
+   * @param {Tw2Transforms} a
+   * @param {Object} [out={}]
+   * @param {Object} [opt]
+   * @returns {Object}
+   */
+
+
+  static get(a, out, opt) {
+    a.RebuildTransforms(opt);
+    return super.get(a, out, opt);
+  }
+  /**
+   * Gets a vector 3 from an object
+   * @param {Object} obj
+   * @returns {Float32Array}
+   */
+
+
+  static Vector3FromObject(obj) {
+    if ("r" in obj) {
+      return new Float32Array([obj.r, obj.g, obj.b]);
+    } else if ("x" in obj) {
+      return new Float32Array([obj.x, obj.y, obj.z]);
+    } else {
+      throw new Error("Invalid vector3 object");
+    }
+  }
+  /**
+   * Gets a quat from an object
+   * @param {Object} obj
+   * @returns {Float32Array}
+   */
+
+
+  static Vector4FromObject(obj) {
+    if ("r" in obj) {
+      return new Float32Array([obj.r, obj.g, obj.b, "a" in obj ? obj.a : 1]);
+    } else if ("x" in obj) {
+      return new Float32Array([obj.x, obj.y, obj.z, obj.w]);
+    } else {
+      throw new Error("Invalid vector4 object");
+    }
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "rotation", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "translation", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "scaling", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+  }
+})), _class));
+
+/***/ }),
+
 /***/ "./core/class/index.js":
 /*!*****************************!*\
   !*** ./core/class/index.js ***!
   \*****************************/
-/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications */
+/*! exports provided: Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Transforms */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18606,6 +19622,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Notifications */ "./core/class/Tw2Notifications.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
+
+/* harmony import */ var _Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Transform */ "./core/class/Tw2Transform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Transforms", function() { return _Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transforms"]; });
+
 
 
 
@@ -22945,7 +23965,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2PerObjectData, Tw2RawData, ErrRawDataElementNotFound, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget */
+/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, Tw2EventEmitter, Tw2Notifications, Tw2Transforms, Tw2PerObjectData, Tw2RawData, ErrRawDataElementNotFound, Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22975,6 +23995,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Notifications"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Transforms", function() { return _class__WEBPACK_IMPORTED_MODULE_1__["Tw2Transforms"]; });
 
 /* harmony import */ var _data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./data */ "./core/data/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerObjectData", function() { return _data__WEBPACK_IMPORTED_MODULE_2__["Tw2PerObjectData"]; });
@@ -27601,7 +28623,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformParameter", function() { return Tw2TransformParameter; });
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -27610,141 +28632,62 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
+ // TODO: Revert to the standard Tw2TransformParameter
 
-var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2TransformParameter", "Tr2TransformParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
-  //_parentTransform = null;
-  //_worldTranspose = null;
-  //_worldInverse = null;
-  //_worldInverseTranspose = null;
+var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2TransformParameter", "Tr2TransformParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].matrix4, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].matrix4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
+  constructor(...args) {
+    super(...args);
 
-  /**
-   * Constructor
-   * @param {String} [name]
-   * @param {quat|mat4} [value]
-   */
-  constructor(name, value) {
-    Tw2TransformParameter.init();
-    super();
+    _initializerDefineProperty(this, "scaling", _descriptor, this);
 
-    _initializerDefineProperty(this, "name", _descriptor, this);
+    _initializerDefineProperty(this, "rotationCenter", _descriptor2, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor2, this);
+    _initializerDefineProperty(this, "rotation", _descriptor3, this);
 
-    _initializerDefineProperty(this, "translation", _descriptor3, this);
+    _initializerDefineProperty(this, "translation", _descriptor4, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor4, this);
+    _initializerDefineProperty(this, "transform", _descriptor5, this);
 
-    this._localTransform = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._rebuildLocal = true;
-    this._rebuildWorld = true;
-    if (name) this.name = name;
-
-    if (value) {
-      if (value.length === 4) {
-        this.SetRotation(value);
-      } else {
-        this.SetTransform(value);
-      }
-
-      this.RebuildTransforms();
-    }
+    _initializerDefineProperty(this, "worldTransform", _descriptor6, this);
   }
+
   /**
    * Initializes the transform parameter
    */
-
-
   Initialize() {
     this.UpdateValues();
   }
   /**
-   * Fires on value changes
-   * @param {*} opt
+   * Sets the parameter's value
+   * @param {mat4} value
+   * @param {Object} [opt]
+   */
+
+
+  SetValue(value, opt) {
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, value);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, value);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, value);
+    this.UpdateValues(opt);
+  }
+  /**
+   * Gets the parameter's value
+   * @returns {Array|mat4}
+   */
+
+
+  GetValue(out) {
+    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this.worldTransform);
+  }
+  /**
+   * Fire on value changes
+   * @param {Object} [opt]
    */
 
 
   OnValueChanged(opt) {
-    if (!opt || !opt.skipRebuild) {
-      this.RebuildTransforms({
-        force: true,
-        skipUpdate: true
-      });
-    }
-  }
-  /**
-   * Reverts the object to an identity matrix
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  Identity() {
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].identity(this._localTransform);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, this._localTransform);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, this._localTransform);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, this._localTransform);
-    this._rebuildWorld = true;
-    return this;
-  }
-  /**
-   * Rebuilds transforms
-   * @param {Object} [opt]
-   * @param {Boolean} [opt.force]      - Forces transforms to be updated
-   * @param {Boolean} [opt.skipUpdate] - Skips updating the object if there's a change
-   * @returns {Boolean} true if updated
-   */
-
-
-  RebuildTransforms(opt) {
-    var force = opt ? opt.force : false,
-        skipUpdate = opt ? opt.skipUpdate : false;
-
-    if (force || this._rebuildLocal) {
-      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
-      this._rebuildLocal = false;
-      force = true;
-    }
-
-    if (force || this._rebuildWorld) {
-      if (this._parentTransform) {
-        global__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, this._parentTransform, this._localTransform);
-      } else {
-        global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransform, this._localTransform);
-      }
-
-      if (this._worldInverse) {
-        global__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverse, this._worldTransform);
-      }
-
-      if (this._worldTranspose) {
-        global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
-      }
-
-      if (this._worldInverseTranspose) {
-        if (this._worldInverse) {
-          global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverse);
-        } else {
-          global__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverseTranspose, this._worldTransform);
-          global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverseTranspose);
-        }
-      }
-
-      if (this._constantBuffer) {
-        this.Apply(this._constantBuffer, this._offset, this.size);
-      }
-
-      this._rebuildWorld = false;
-
-      if (!skipUpdate) {
-        this.UpdateValues({
-          skipRebuild: true
-        });
-      }
-
-      force = true;
-    }
-
-    return force;
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScaleOrigin(this.transform, this.rotation, this.translation, this.scaling, this.rotationCenter);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this.worldTransform, this.transform);
   }
   /**
    * Binds the parameter to a constant buffer
@@ -27774,899 +28717,10 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
 
 
   Apply(constantBuffer, offset, size) {
-    if (!this._worldTranspose) {
-      this.RebuildTransforms();
-      this._worldTranspose = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
-    }
-
     if (size >= this.constructor.constantBufferSize) {
-      constantBuffer.set(this._worldTranspose, offset);
+      constantBuffer.set(this.worldTransform, offset);
     } else {
-      constantBuffer.set(this._worldTranspose.subarray(0, size), offset);
-    }
-  }
-  /**
-   * Sets the transform from an object
-   * @param {Object} options
-   * @param {Boolean} [skipUpdate]
-   */
-
-
-  SetValues(options = {}, skipUpdate) {
-    var {
-      transform,
-      rotation,
-      euler,
-      scale,
-      scaling,
-      radius,
-      translation,
-      position,
-      name
-    } = options;
-    if (name) this.name = name;
-    if (scale === undefined) scale = scaling;
-    if (scale === undefined && radius) scale = radius * 2;
-    if (!rotation) rotation = euler;
-    if (!translation) translation = position;
-
-    if (!transform && !rotation && !scale && !translation) {
-      return;
-    }
-
-    if (transform) {
-      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isMatrix4) {
-        this.SetTransform(transform);
-      } else {
-        throw new Error("Invalid transform matrix");
-      }
-    }
-
-    if (rotation) {
-      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector3(rotation)) {
-        this.SetRotationFromEuler(rotation);
-      } else if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector4(rotation)) {
-        this.SetRotation(rotation);
-      } else {
-        throw new Error("Invalid rotation value");
-      }
-    }
-
-    if (scale !== undefined) {
-      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isNumber(scale)) {
-        this.SetScaleUniform(scale);
-      } else if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector3) {
-        this.SetScale(scale);
-      } else {
-        throw new Error("Invalid scale");
-      }
-    }
-
-    if (translation) {
-      this.SetTranslation(translation);
-    }
-
-    if (!skipUpdate) {
-      this.UpdateValues();
-    }
-  }
-  /**
-   * Gets the transforms' values
-   * @param {Object} [out]
-   * @param {Object} [opt]
-   * @returns {{}}
-   */
-
-
-  GetValues(out, opt) {
-    this.RebuildTransforms();
-    return super.GetValues(out, opt);
-  }
-  /**
-   * Gets the world transpose
-   * @param {mat4} out
-   * @returns {mat4}
-   */
-
-
-  GetValue(out) {
-    this.RebuildTransforms();
-
-    if (!this._worldTranspose) {
-      this._worldTranspose = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
-    }
-
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTranspose);
-  }
-  /**
-   * Sets the parent transform
-   * @param {null|mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetParentTransform(m) {
-    // Clear
-    if (!m && this._parentTransform) {
-      this._parentTransform = null;
-      this._rebuildWorld = true;
-    } // Set new parent
-    else if (!this._parentTransform) {
-        this._parentTransform = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].clone(m);
-        this._rebuildWorld = true;
-      } // Update parent
-      else if (!global__WEBPACK_IMPORTED_MODULE_1__["mat4"].equals(m, this._parentTransform)) {
-          global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._parentTransform, m);
-          this._rebuildWorld = true;
-        }
-
-    return this;
-  }
-  /**
-   * Gets the world transform
-   * @param {mat4} out
-   * @returns {mat4}
-   */
-
-
-  GetWorldTransform(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTransform);
-  }
-  /**
-   * Decomposes the world transform
-   * @param {quat} rotation
-   * @param {vec3} translation
-   * @param {vec3} scaling
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  DecomposeWorld(rotation, translation, scaling) {
-    this.RebuildTransforms();
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(rotation, this._worldTransform);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(translation, this._worldTransform);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(scaling, this._worldTransform);
-    return this;
-  }
-  /**
-   * Gets the world rotation
-   * @param {quat} out
-   * @returns {quat}
-   */
-
-
-  GetWorldRotation(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(out, this._worldTransform);
-  }
-  /**
-   * Gets world direction
-   * @param {vec3} out
-   * @returns {vec3} out
-   */
-
-
-  GetWorldDirection(out) {
-    this.RebuildTransforms();
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
-  }
-  /**
-   * Gets the world rotation as a euler
-   * @param {vec3} out
-   * @returns {vec3} out
-   */
-
-
-  GetWorldEuler(out) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    this.GetWorldRotation(quat_0);
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
-  }
-  /**
-   * Gets the world axis angle
-   * @param {vec3} axis
-   * @returns {Number}
-   */
-
-
-  GetWorldAxisAngle(axis) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    this.RebuildTransforms();
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, this._worldTransform);
-    return global__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(axis, quat_0);
-  }
-  /**
-   * Gets the world translation
-   * @param {vec3} out
-   * @returns {vec3} out
-   */
-
-
-  GetWorldTranslation(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(out, this._worldTransform);
-  }
-  /**
-   * Gets the world scaling
-   * @param {vec3} out
-   * @returns {vec3} out
-   */
-
-
-  GetWorldScaling(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(out, this._worldTransform);
-  }
-  /**
-   * Gets the world max scale
-   * @returns {number}
-   */
-
-
-  GetWorldMaxScale() {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    this.GetWorldScaling(vec3_0);
-    return Math.max(vec3_0[0], vec3_0[1], vec3_0[2]);
-  }
-  /**
-   * Converts a world coordinate to local co-ordinate
-   * @param {vec3} out
-   * @param {vec3} v
-   * @returns {vec3} out
-   */
-
-
-  GetWorldToLocal(out, v) {
-    this.RebuildTransforms();
-
-    if (this._worldInverse) {
-      return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldInverse);
-    }
-
-    var {
-      mat4_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(mat4_0, this._worldTransform);
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, mat4_0);
-  }
-  /**
-   * Gets the local transform
-   * @param {mat4} out
-   * @returns {mat4}
-   */
-
-
-  GetTransform(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
-  }
-  /**
-   * Sets the local transform
-   * @param {mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetTransform(m) {
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, m);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._localTransform, m);
-    this._rebuildWorld = true;
-    return this;
-  }
-  /**
-   * Composes the local transform from rotation, translation and scaling
-   * @param {quat} rotation
-   * @param {vec3} translation
-   * @param {vec3} scaling
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  Compose(rotation, translation, scaling) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, rotation);
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, translation);
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, scaling);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Decomposes the local transform to rotation, translation and scaling
-   * @param {quat} rotation
-   * @param {vec3} translation
-   * @param {vec3} scaling
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  Decompose(rotation, translation, scaling) {
-    this.RebuildTransforms();
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(rotation, this.rotation);
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(translation, this.translation);
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(scaling, this.scaling);
-    return this;
-  }
-  /**
-   * Converts local coordinate to world co-ordinate
-   * @param {vec3} out
-   * @param {vec3} v
-   * @returns {vec3} out
-   */
-
-
-  GetLocalToWorld(out, v) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldTransform);
-  }
-  /**
-   * Gets local direction
-   * @param {vec3} out
-   * @returns {vec3} out
-   */
-
-
-  GetDirection(out) {
-    this.RebuildTransforms();
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
-  }
-  /**
-   * Gets the local rotation
-   * @param {quat} out
-   * @returns {quat}
-   */
-
-
-  GetRotation(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(out, this.rotation);
-  }
-  /**
-   * Gets the local rotation as a euler
-   * @param {vec3} out
-   * @returns {vec3}
-   */
-
-
-  GetEuler(out) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    this.GetRotation(quat_0);
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
-  }
-  /**
-   * Gets a matrix from the local rotation
-   * @param {mat4} out
-   * @return {mat4} out
-   */
-
-
-  GetRotationMatrix(out) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotation(out, this.rotation);
-  }
-  /**
-   * Sets the the local rotation from a quat
-   * @param {quat} q
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotation(q) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, q);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets the local rotation from values
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} z
-   * @param {Number} w
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromValues(x, y, z, w) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].set(quat_0, x, y, z, w);
-    return this.SetRotation(quat_0);
-  }
-  /**
-   * Sets the local rotation from axes
-   * @param {vec3} view
-   * @param {vec3} right
-   * @param {vec3} up
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromAxes(view, right, up) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxes(quat_0, view, right, up);
-    return this.SetRotation(quat_0);
-  }
-  /**
-   * Sets the local rotation from an axis and angle
-   * @param {vec3} axis
-   * @param {Number} radians
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromAxisAngle(axis, radians) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(this.rotation, axis, radians);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets the local rotation from a euler
-   * @param {vec3} e
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromEuler(e) {
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(this.rotation, e);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets the local rotation from euler values
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} z
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromEulerValues(x, y, z) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
-    return this.SetRotationFromEuler(vec3_0);
-  }
-  /**
-   * Sets the local rotation from a mat4
-   * @param {mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetRotationFromMat4(m) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, m);
-    return this.SetRotation(quat_0);
-  }
-  /**
-   * Local rotation on the x axis
-   * @param {Number} radians
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  RotateX(radians) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateX(this.rotation, this.rotation, radians);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local rotation on the y axis
-   * @param {Number} radians
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  RotateY(radians) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateY(this.rotation, this.rotation, radians);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local rotation on the z axis
-   * @param {Number} radians
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  RotateZ(radians) {
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateZ(this.rotation, this.rotation, radians);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local rotation on an axis angle
-   * @param {vec3} axis
-   * @param {Number} radians
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  RotateOnAxisAngle(axis, radians) {
-    var {
-      quat_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(quat_0, axis, radians);
-    global__WEBPACK_IMPORTED_MODULE_1__["quat"].multiply(this.rotation, this.rotation, quat_0);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Gets the local axis angle
-   * @param {vec3} out
-   * @returns {Number}
-   */
-
-
-  GetAxisAngle(out) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(out, this.rotation);
-  }
-  /**
-   * Local rotation to look at a local coordinate
-   * @param {vec3} v
-   * @param {Boolean} [flip]
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  LookAt(v, flip) {
-    this.RebuildTransforms();
-    var {
-      mat4_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(mat4_0, this._localTransform);
-
-    if (flip) {
-      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, this.translation, v, global__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
-    } else {
-      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, v, this.translation, global__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
-    }
-
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, mat4_0);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local rotation to look at a world coordinate
-   * @param {vec3} v
-   * @param {Boolean} [flip]
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  LookAtWorld(v, flip) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    this.GetWorldToLocal(vec3_0, v);
-    return this.LookAt(vec3_0, flip);
-  }
-  /**
-   * Gets the local translation
-   * @param {vec3} out
-   * @returns {vec3}
-   */
-
-
-  GetTranslation(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.translation);
-  }
-  /**
-   * Sets the local translation from a vector
-   * @param {vec3} v
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetTranslation(v) {
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, v);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets the local translation from values
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} z
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetTranslationFromValues(x, y, z) {
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.translation, x, y, z);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets the local translation from a mat4's translation
-   * @param {mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetTranslationFromMat4(m) {
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local translation on an axis
-   * @param {vec3} axis
-   * @param {Number} distance
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  TranslateOnAxis(axis, distance) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformQuat(vec3_0, axis, this.rotation);
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.translation, this.translation, vec3_0, distance);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Local translation on the x axis
-   * @param {Number} distance
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  TranslateX(distance) {
-    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_1__["vec3"].X_AXIS, distance);
-  }
-  /**
-   * Local translation on the y axis
-   * @param {Number} distance
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  TranslateY(distance) {
-    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS, distance);
-  }
-  /**
-   * Local translation on the z axis
-   * @param {Number} distance
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  TranslateZ(distance) {
-    return this.TranslateOnAxis(global__WEBPACK_IMPORTED_MODULE_1__["vec3"].Z_AXIS, distance);
-  }
-  /**
-   * Gets the local scaling
-   * @param {vec3} out
-   * @returns {vec3}
-   */
-
-
-  GetScale(out) {
-    this.RebuildTransforms();
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.scaling);
-  }
-  /**
-   * Gets the maximum local scale
-   * @returns {Number}
-   */
-
-
-  GetMaxScale() {
-    return Math.max(this.scaling[0], this.scaling[1], this.scaling[2]);
-  }
-  /**
-   * Sets local scaling from a vector
-   * @param {vec3} v
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScale(v) {
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, v);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Sets local scaling from values
-   * @param {Number} x
-   * @param {Number}  y
-   * @param {Number}  z
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleFromValues(x, y, z) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
-    return this.SetScale(vec3_0);
-  }
-  /**
-   * Sets the local x axis scale
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleX(s) {
-    return this.SetScaleFromValues(s, this.scaling[1], this.scaling[2]);
-  }
-  /**
-   * Sets the local y axis scale
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleY(s) {
-    return this.SetScaleFromValues(this.scaling[0], s, this.scaling[2]);
-  }
-  /**
-   * Sets the local z axis scale
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleZ(s) {
-    return this.SetScaleFromValues(this.scaling[0], this.scaling[1], s);
-  }
-  /**
-   * Sets local scaling from a scalar
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleUniform(s) {
-    return this.SetScaleFromValues(s, s, s);
-  }
-  /**
-   * Sets local scaling from a mat4's scale
-   * @param {mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  SetScaleFromMat4(m) {
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Scales the local scale by a vector
-   * @param {vec3} v
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  Scale(v) {
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].multiply(this.scaling, this.scaling, v);
-    this._rebuildLocal = true;
-    return this;
-  }
-  /**
-   * Scales the local scale by values
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} z
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleValues(x, y, z) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
-    return this.Scale(vec3_0);
-  }
-  /**
-   * Scales the local scale by a mat4's scale
-   * @param {mat4} m
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleMat4(m) {
-    var {
-      vec3_0
-    } = Tw2TransformParameter.global;
-    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_0, m);
-    return this.Scale(vec3_0);
-  }
-  /**
-   * Scales the local scale by a scalar
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleUniform(s) {
-    return this.ScaleValues(s, s, s);
-  }
-  /**
-   * Scales the local x axis
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleX(s) {
-    return this.ScaleValues(s, 1, 1);
-  }
-  /**
-   * Scales the local y axis
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleY(s) {
-    return this.ScaleValues(1, s, 1);
-  }
-  /**
-   * Scales the local z axis
-   * @param {Number} s
-   * @returns {Tw2TransformParameter}
-   */
-
-
-  ScaleZ(s) {
-    return this.ScaleValues(1, 1, s);
-  }
-  /**
-   * Gets a vector 3 from an object
-   * @param {Object} obj
-   * @returns {Float32Array}
-   */
-
-
-  static Vector3FromObject(obj) {
-    if ("r" in obj) {
-      return new Float32Array([obj.r, obj.g, obj.b]);
-    } else if ("x" in obj) {
-      return new Float32Array([obj.x, obj.y, obj.z]);
-    } else {
-      throw new Error("Invalid vector3 object");
-    }
-  }
-  /**
-   * Gets a quat from an object
-   * @param {Object} obj
-   * @returns {Float32Array}
-   */
-
-
-  static Vector4FromObject(obj) {
-    if ("r" in obj) {
-      return new Float32Array([obj.r, obj.g, obj.b, "a" in obj ? obj.a : 1]);
-    } else if ("x" in obj) {
-      return new Float32Array([obj.x, obj.y, obj.z, obj.w]);
-    } else {
-      throw new Error("Invalid vector4 object");
+      constantBuffer.set(this.worldTransform.subarray(0, size), offset);
     }
   }
   /**
@@ -28675,80 +28729,47 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
    */
 
 
-  /**
-   * Sets the parameter's values from a plain object
-   * @param {Tw2TransformParameter} a
-   * @param {Object} [values]
-   * @param {Object} [opt]
-   */
-  static set(a, values, opt = {}) {
-    if (values) {
-      values = Object.assign({}, values);
-
-      if (values.transform) {
-        values.rotation = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation([], values.transform);
-        values.scaling = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling([], values.transform);
-        values.translation = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation([], values.translation);
-        Reflect.deleteProperty(values, "transform");
-      }
-
-      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isNumber(values.scaling)) {
-        values.scaling = [values.scaling, values.scaling, values.scaling];
-      }
-
-      if (values.rotation && values.rotation.length === 3) {
-        values.rotation = global__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat([], values.rotation);
-      }
-    }
-
-    return _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"].set(a, values, opt);
-  }
-  /**
-   * Global and scratch parameters
-   * @type {null|Object}
-   */
-
-
-  /**
-   * Initializes global and scratch parameters
-   */
-  static init() {
-    if (this.global) return;
-    this.global = {
-      vec3_0: global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      vec3_1: global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      quat_0: global__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
-      mat4_0: global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()
-    };
-  }
-
-}, _class3.constantBufferSize = 16, _class3.global = null, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+}, _class3.constantBufferSize = 16, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return "";
+    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "translation", [_dec4], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "rotationCenter", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec5], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
+    return global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "translation", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "transform", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "worldTransform", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
   }
 })), _class2)) || _class);
 
@@ -50632,8 +50653,8 @@ var EveCurveLineSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCustomMask", function() { return EveCustomMask; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -50643,25 +50664,27 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveCustomMask"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to direct class properties"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
+var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveCustomMask"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to direct class properties"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveCustomMask extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Transforms"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "display", _descriptor, this);
+    _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "isMirrored", _descriptor2, this);
+    _initializerDefineProperty(this, "display", _descriptor2, this);
 
-    _initializerDefineProperty(this, "materialIndex", _descriptor3, this);
+    _initializerDefineProperty(this, "isMirrored", _descriptor3, this);
 
-    _initializerDefineProperty(this, "position", _descriptor4, this);
+    _initializerDefineProperty(this, "materialIndex", _descriptor4, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor5, this);
+    _initializerDefineProperty(this, "position", _descriptor5, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor6, this);
+    _initializerDefineProperty(this, "rotation", _descriptor6, this);
 
-    _initializerDefineProperty(this, "targetMaterials", _descriptor7, this);
+    _initializerDefineProperty(this, "scaling", _descriptor7, this);
 
-    _initializerDefineProperty(this, "parameters", _descriptor8, this);
+    _initializerDefineProperty(this, "targetMaterials", _descriptor8, this);
+
+    _initializerDefineProperty(this, "parameters", _descriptor9, this);
 
     this._worldInverseTranspose = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
@@ -50732,71 +50755,78 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
       PatternTexture.SetValue(PatternMaskMap.GetValue());
       PatternMaskMap.OnEvent("modified", () => {
         PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
-        PatternTexture.SetValue(PatternTexture.GetValue());
+        PatternTexture.SetValue(PatternMaskMap.resourcePath);
       });
     }
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "isMirrored", [_dec4], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "isMirrored", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "materialIndex", [_dec5], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "materialIndex", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec6], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec7], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec8], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "targetMaterials", [_dec9], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "targetMaterials", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "parameters", [_dec10, _dec11, _dec12], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "parameters", [_dec11, _dec12, _dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return {
-      PatternMaskMap: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap", "res:/texture/global/black.dds.0.png"),
-      DiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor", [0, 0, 0, 1]),
-      DustDiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DustDiffuseColor", [0, 0, 0, 1]),
-      FresnelColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor", [0, 0, 0, 1]),
-      Gloss: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss", [0, 0, 0, 0])
+      PatternMaskMap: new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap", "res:/texture/global/black.dds.0.png"),
+      DiffuseColor: new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor", [0, 0, 0, 1]),
+      DustDiffuseColor: new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DustDiffuseColor", [0, 0, 0, 1]),
+      FresnelColor: new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor", [0, 0, 0, 1]),
+      Gloss: new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss", [0, 0, 0, 0])
     };
   }
 })), _class2)) || _class) || _class);
@@ -56410,15 +56440,22 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
   /**
    * Rebuilds overlay effects
    * @param {Array<EveMeshOverlayEffect>} [overlays=[]] - The overlays that should be in effect
+   * @return {Boolean} true if updated
    */
 
 
   RebuildOverlays(overlays = []) {
+    if (overlays.length === 0 && this.overlayEffects.length === 0) {
+      return false;
+    }
+
     this.overlayEffects.splice(0);
 
     for (var i = 0; i < overlays.length; i++) {
       this.overlayEffects.push(overlays[i]);
     }
+
+    return true;
   }
   /**
    * A Per frame function that updates view dependent data
@@ -74397,11 +74434,11 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     });
 
     if (material) {
-      var p = material.parameters;
-      mask.parameters.DiffuseColor.SetValue(p["DiffuseColor"]);
-      mask.parameters.FresnelColor.SetValue(p["FresnelColor"]);
-      mask.parameters.DustDiffuseColor.SetValue(p["DustDiffuseColor"]);
-      mask.parameters.Gloss.SetValue(p["Gloss"]);
+      var values = material.AssignParameters({});
+      mask.parameters.DiffuseColor.SetValue(values["DiffuseColor"]);
+      mask.parameters.FresnelColor.SetValue(values["FresnelColor"]);
+      mask.parameters.DustDiffuseColor.SetValue(values["DustDiffuseColor"]);
+      mask.parameters.Gloss.SetValue(values["Gloss"]);
     } else {// Don't reset any custom material for now
     }
   }
@@ -74416,8 +74453,15 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
   static SetupCustomMasks(data, obj, sof, options) {
     if (obj.customMasks) {
-      obj.customMasks[0] = obj.customMasks[0] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern1");
-      obj.customMasks[1] = obj.customMasks[1] || new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]("Pattern2");
+      if (!obj.customMasks[0]) {
+        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
+        obj.customMasks[0].name = "Pattern1";
+      }
+
+      if (!obj.customMasks[1]) {
+        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
+        obj.customMasks[1].name = "Pattern2";
+      }
     }
 
     var patternMaterial1 = sof.area.patternMaterial1 ? data.GetMaterial(sof.area.patternMaterial1) : null,
@@ -74608,10 +74652,8 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
           }
         }
 
-        if (config.hasPatternMaskMaps) {
-          for (var i = 0; i < obj.customMasks.length; i++) {
-            eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
-          }
+        for (var i = 0; i < obj.customMasks.length; i++) {
+          eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
         }
 
         effect.Initialize();
@@ -81334,9 +81376,8 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("E
    */
 
 
-}, _class3.Type = ["Primary", "Glass", "Sails", "Reactor", "Darkhull", "Wreck", "Rock", "Monument", undefined, // ????
-undefined // ????
-], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Black", [_dec2], {
+}, _class3.Type = ["Primary", "Glass", "Sails", "Reactor", "Darkhull", "Wreck", "Rock", "Monument", // Below are incorrect, figure out what they are
+"Primary", "Primary"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Black", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -82313,6 +82354,8 @@ var EveSOFDataMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].cto
     for (var i = 0; i < this.parameters.length; i++) {
       this.parameters[i].Assign(out, prefix);
     }
+
+    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -88541,6 +88584,48 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     }
 
     return false;
+  }
+
+  GetTurretSetByLocatorName(locatorName) {
+    for (var i = 0; i < this.attachments.length; i++) {
+      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_4__["EveTurretSet"] && this.attachments[i].locatorName === locatorName) {
+        return this.attachments[i];
+      }
+    }
+
+    return null;
+  }
+  /**
+   * Removes a turret set
+   * @param {EveTurretSet} turretSet
+   * @returns {Boolean} true if updated
+   */
+
+
+  RemoveTurretSet(turretSet) {
+    var index = this.attachments.indexOf(turretSet);
+    if (index === -1) return false;
+    this.attachments.splice(index, 1);
+    return true;
+  }
+  /**
+   * Adds a turret set
+   * @param {EveTurretSet} turretSet
+   * @returns {Boolean} true if updated
+   */
+
+
+  AddTurretSet(turretSet) {
+    if (!turretSet.locatorName) {
+      throw new ReferenceError("Turret set must have a locator name");
+    }
+
+    var existingTurretSet = this.GetTurretSetByLocatorName(turretSet.locatorName);
+    if (existingTurretSet === turretSet) return false;
+    this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
+    this.attachments.push(turretSet);
+    this.RebuildTurretSet(turretSet);
+    return true;
   }
 
   RebuildTurretSet(turretSet) {

@@ -381,15 +381,23 @@ export class EveSpaceObject extends EveObject
     /**
      * Rebuilds overlay effects
      * @param {Array<EveMeshOverlayEffect>} [overlays=[]] - The overlays that should be in effect
+     * @return {Boolean} true if updated
      */
     RebuildOverlays(overlays=[])
     {
+        if (overlays.length === 0 && this.overlayEffects.length === 0)
+        {
+            return false;
+        }
+
         this.overlayEffects.splice(0);
 
         for (let i = 0; i < overlays.length; i++)
         {
             this.overlayEffects.push(overlays[i]);
         }
+
+        return true;
     }
 
     /**

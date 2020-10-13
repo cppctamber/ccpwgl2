@@ -741,11 +741,11 @@ export class EveSOFData
 
         if (material)
         {
-            const p = material.parameters;
-            mask.parameters.DiffuseColor.SetValue(p["DiffuseColor"]);
-            mask.parameters.FresnelColor.SetValue(p["FresnelColor"]);
-            mask.parameters.DustDiffuseColor.SetValue(p["DustDiffuseColor"]);
-            mask.parameters.Gloss.SetValue(p["Gloss"]);
+            const values = material.AssignParameters({});
+            mask.parameters.DiffuseColor.SetValue(values["DiffuseColor"]);
+            mask.parameters.FresnelColor.SetValue(values["FresnelColor"]);
+            mask.parameters.DustDiffuseColor.SetValue(values["DustDiffuseColor"]);
+            mask.parameters.Gloss.SetValue(values["Gloss"]);
         }
         else
         {
@@ -764,8 +764,17 @@ export class EveSOFData
     {
         if (obj.customMasks)
         {
-            obj.customMasks[0] = obj.customMasks[0] || new EveCustomMask("Pattern1");
-            obj.customMasks[1] = obj.customMasks[1] || new EveCustomMask("Pattern2");
+            if (!obj.customMasks[0])
+            {
+                obj.customMasks[0] = new EveCustomMask();
+                obj.customMasks[0].name = "Pattern1";
+            }
+
+            if (!obj.customMasks[1])
+            {
+                obj.customMasks[1] = new EveCustomMask();
+                obj.customMasks[1].name = "Pattern2";
+            }
         }
 
         const
@@ -984,12 +993,9 @@ export class EveSOFData
                     }
                 }
 
-                if (config.hasPatternMaskMaps)
+                for (let i = 0; i < obj.customMasks.length; i++)
                 {
-                    for (let i = 0; i < obj.customMasks.length; i++)
-                    {
-                        EveCustomMask.ApplyMaterials(effect, obj.customMasks[i], i);
-                    }
+                    EveCustomMask.ApplyMaterials(effect, obj.customMasks[i], i);
                 }
 
                 effect.Initialize();

@@ -1,11 +1,14 @@
-import { meta, vec3, quat, vec4, mat4, tw2 } from "global";
-import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "core/parameter";
+import { meta, vec3, quat, vec4, mat4 } from "global";
+import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transforms } from "core";
 
 
 @meta.ctor("EveCustomMask")
 @meta.stage(1)
-export class EveCustomMask extends Tw2TransformParameter
+export class EveCustomMask extends Tw2Transforms
 {
+
+    @meta.string
+    name = "";
 
     @meta.boolean
     display = true;
@@ -28,7 +31,7 @@ export class EveCustomMask extends Tw2TransformParameter
     @meta.vector4
     targetMaterials = vec4.fromValues(1,1,1,1);
 
-    @meta.plain //Of("Tw2Parameter")
+    @meta.plain
     @meta.todo("Move to direct class properties")
     @meta.isPrivate
     parameters = {
@@ -111,8 +114,9 @@ export class EveCustomMask extends Tw2TransformParameter
             PatternMaskMap.OnEvent("modified", () =>
             {
                 PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
-                PatternTexture.SetValue(PatternTexture.GetValue());
+                PatternTexture.SetValue(PatternMaskMap.resourcePath);
             });
+
         }
     }
 
