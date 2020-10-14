@@ -2,6 +2,7 @@ import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "core/resource/Tw2LoadingObject";
 import { Tw2EventEmitter, Tw2Error, ErrFeatureNotImplemented } from "../class";
 import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "global/util";
+import { logger } from "global/tw2";
 
 
 /**
@@ -105,9 +106,10 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         log.path = path;
         log.message = log.message || eventName;
+        log.name = "Resource manager";
 
-        this.EmitEvent(eventName, path, res, err)
-            .msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+        this.EmitEvent(eventName, path, res, err);
+        logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
     }
 
     /**

@@ -19,11 +19,10 @@ export class Tw2ConstructorStore extends Tw2GenericStore
 
     /**
      * Toggles debug
-     * @param {Boolean}  bool
+     * @param {Boolean} bool
      */
-    Debug(bool)
+    SetDebugMode(bool)
     {
-        this.debug = bool;
         const PRIVATE = STORE.get(this);
         PRIVATE.DEBUG_ENABLED = bool;
 
@@ -35,6 +34,15 @@ export class Tw2ConstructorStore extends Tw2GenericStore
                 value.DEBUG_ENABLED = bool;
             }
         }
+    }
+
+    /**
+     * Checks if debug is enabled
+     * @return {Boolean}
+     */
+    GetDebugMode()
+    {
+        return STORE.get(this).DEBUG_ENABLED;
     }
 
     /**

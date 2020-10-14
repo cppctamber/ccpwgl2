@@ -130,12 +130,10 @@ export class Tw2Library extends Tw2EventEmitter
             set: (bool) =>
             {
                 debug = !!bool;
-                this.store.Debug(debug);
-                this.logger.debug = debug;
+                this.store.SetDebugMode(debug);
+                this.logger.SetDebugMode(debug);
             }
         });
-
-        Tw2EventEmitter.defaultLogger = this;
     }
 
     /**
@@ -226,7 +224,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     Log(logType, log, fallbackTitle = "Library")
     {
-        return this.logger.Log(logType, log, fallbackTitle);
+        return this.logger.Add(logType, log, fallbackTitle);
     }
 
     /**

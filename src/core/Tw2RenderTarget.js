@@ -1,4 +1,4 @@
-import { meta, util, tw2 } from "global";
+import { meta, util, device } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
@@ -44,7 +44,7 @@ export class Tw2RenderTarget
      */
     Destroy()
     {
-        const { gl } = tw2.device;
+        const { gl } = device;
 
         if (this.texture)
         {
@@ -78,7 +78,7 @@ export class Tw2RenderTarget
      */
     Create(width, height, hasDepth)
     {
-        const { gl } = tw2.device;
+        const { gl } = device;
 
         this.Destroy();
         this.texture = new Tw2TextureRes();
@@ -122,7 +122,7 @@ export class Tw2RenderTarget
      */
     Set()
     {
-        const { gl } = tw2.device;
+        const { gl } = device;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
     }
@@ -132,7 +132,7 @@ export class Tw2RenderTarget
      */
     Unset()
     {
-        const { gl, viewportWidth, viewportHeight } = tw2.device;
+        const { gl, viewportWidth, viewportHeight } = device;
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, viewportWidth, viewportHeight);
     }

@@ -1,4 +1,4 @@
-import { meta, util, device, tw2 } from "global";
+import { meta, util, device, resMan, store } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
@@ -28,7 +28,8 @@ class Tw2ConstantParameter
 
 }
 
-
+@meta.ctor("Tw2Effect")
+@meta.stage(1)
 export class Tw2Effect extends meta.Model
 {
 
@@ -74,7 +75,7 @@ export class Tw2Effect extends meta.Model
         {
             this.effectFilePath = this.effectFilePath.toLowerCase();
             const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-            this.effectRes = tw2.GetResource(path, res => this.OnResPrepared(res));
+            this.effectRes = resMan.GetResource(path, res => this.OnResPrepared(res));
         }
     }
 
@@ -190,6 +191,8 @@ export class Tw2Effect extends meta.Model
         this.UnBindParameters();
         if (!this.IsGood()) return false;
 
+        const { variables } = store;
+
         for (let techniqueName in this.shader.techniques)
         {
             if (this.shader.techniques.hasOwnProperty(techniqueName))
@@ -239,10 +242,10 @@ export class Tw2Effect extends meta.Model
                                     });
                                 }
                             }
-                            else if (tw2.HasVariable(name))
+                            else if (variables.Has(name))
                             {
                                 stage.parameters.push({
-                                    parameter: tw2.GetVariable(name),
+                                    parameter: variables.Get(name),
                                     constantBuffer: stage.constantBuffer,
                                     offset: constant.offset,
                                     size: constant.size
@@ -250,7 +253,7 @@ export class Tw2Effect extends meta.Model
                             }
                             else if (constant.isAutoregister && Type)
                             {
-                                const variable = tw2.CreateVariable(name, undefined, Type);
+                                const variable = variables.Create(name, undefined, Type);
                                 if (variable)
                                 {
                                     stage.parameters.push({
@@ -273,7 +276,7 @@ export class Tw2Effect extends meta.Model
                                     value = value[0];
                                 }
 
-                                const param = tw2.CreateVariable(name, value, Type);
+                                const param = variables.Create(name, value, Type);
                                 if (param)
                                 {
                                     this.parameters[name] = param;
@@ -302,13 +305,13 @@ export class Tw2Effect extends meta.Model
                             {
                                 param = this.parameters[name];
                             }
-                            else if (tw2.HasVariable(name))
+                            else if (variables.Has(name))
                             {
-                                param = tw2.GetVariable(name);
+                                param = variables.Get(name);
                             }
                             else if (stageRes.textures[k].isAutoregister)
                             {
-                                param = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
+                                param = variables.Create(name, undefined, Tw2TextureParameter);
                             }
                             else if (this.autoParameter)
                             {
@@ -568,7 +571,7 @@ export class Tw2Effect extends meta.Model
                 }
                 else
                 {
-                    const parameter = tw2.CreateVariable(key, value);
+                    const parameter = store.variables.Create(key, value);
                     if (parameter)
                     {
                         this.parameters[key] = parameter;
@@ -782,7 +785,7 @@ export class Tw2Effect extends meta.Model
             {
                 a.UpdateValues(opt);
                 const path = Tw2Effect.ToEffectResPath(a.effectFilePath);
-                tw2.GetResource(path, res => a.OnResPrepared(res));
+                resMan.GetResource(path, res => a.OnResPrepared(res));
                 return true;
             }
 
@@ -841,11 +844,5 @@ export class Tw2Effect extends meta.Model
         })
 
     };
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

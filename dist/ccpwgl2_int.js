@@ -17451,7 +17451,7 @@ var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
   Destroy() {
     var {
       gl
-    } = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device;
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
 
     if (this.texture) {
       gl.deleteTexture(this.texture.texture);
@@ -17484,7 +17484,7 @@ var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
   Create(width, height, hasDepth) {
     var {
       gl
-    } = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device;
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
     this.Destroy();
     this.texture = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureRes"]();
     this.texture.Attach(gl.createTexture());
@@ -17523,7 +17523,7 @@ var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
   Set() {
     var {
       gl
-    } = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device;
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
     gl.viewport(0, 0, this.width, this.height);
   }
@@ -17537,7 +17537,7 @@ var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("
       gl,
       viewportWidth,
       viewportHeight
-    } = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device;
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, viewportWidth, viewportHeight);
   }
@@ -18448,29 +18448,8 @@ class Tw2EventEmitter {
 
     return this;
   }
-  /**
-   * Logs a message
-   * @param {String} type
-   * @param {*|Error|Tw2Error} log
-   * @returns {eventLog|*}
-   */
-
-
-  msg(type, log) {
-    if (this.constructor.defaultLogger) {
-      return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
-    }
-
-    return log;
-  }
-  /**
-   * Default logger
-   * @type {null|Tw2Logger}
-   */
-
 
 }
-Tw2EventEmitter.defaultLogger = null;
 
 /***/ }),
 
@@ -19942,9 +19921,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
 /* harmony import */ var _vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
 /* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -20137,7 +20118,10 @@ class Tw2Device extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
     params.xrCompatible = this.enableWebxr;
     params.antialiasing = this.enableAntialiasing ? Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
     var gl = this.gl = Tw2Device.CreateContext(params, canvas);
-    this.msg("debug", "Webgl".concat(this.glVersion, " context created")); // Allow for a 2d canvas
+    global_tw2__WEBPACK_IMPORTED_MODULE_6__["logger"].Debug({
+      name: "Device",
+      message: "Webgl".concat(this.glVersion, " context created")
+    }); // Allow for a 2d canvas
 
     try {
       if (canvas2d) {
@@ -21212,11 +21196,10 @@ var Tw2Library = Object(global_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_
       get: () => debug,
       set: bool => {
         debug = !!bool;
-        this.store.Debug(debug);
-        this.logger.debug = debug;
+        this.store.SetDebugMode(debug);
+        this.logger.SetDebugMode(debug);
       }
     });
-    _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"].defaultLogger = this;
   }
   /**
    * Initializes the library
@@ -21313,7 +21296,7 @@ var Tw2Library = Object(global_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_
 
 
   Log(logType, log, fallbackTitle = "Library") {
-    return this.logger.Log(logType, log, fallbackTitle);
+    return this.logger.Add(logType, log, fallbackTitle);
   }
   /**
    * Registers library options
@@ -21825,7 +21808,6 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     super(...args);
     this.name = "";
     this.display = true;
-    this.debug = false;
     this.history = 100;
     this.throttle = 20;
     this.visible = {
@@ -21837,27 +21819,86 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     };
     this._logs = [];
     this._throttled = null;
+    this._debugMode = false;
   }
 
+  /**
+   * Sets the debug mode
+   * @param {Boolean} bool
+   */
+  SetDebugMode(bool) {
+    this._debugMode = true;
+  }
   /**
    * Sets the logger's properties
    * @param {*} [opt]
    */
+
+
   Register(opt) {
     if (!opt) return;
     Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this, opt, ["name", "display", "history", "throttle"]);
     Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(this.visible, opt.visible, ["log", "info", "debug", "warn", "error"]);
   }
   /**
+   * Adds a debug log
+   * @param {Object|String} log
+   * @return {eventLog}
+   */
+
+
+  Debug(log) {
+    return this.Add("debug", log);
+  }
+  /**
+   * Adds an info log
+   * @param {Object|String} log
+   * @return {eventLog}
+   */
+
+
+  Info(log) {
+    return this.Add("info", log);
+  }
+  /**
+   * Adds a warning log
+   * @param {Object|String} log
+   * @return {eventLog}
+   */
+
+
+  Warn(log) {
+    return this.Add("warn", log);
+  }
+  /**
+   * Adds an error log
+   * @param {Object|String} log
+   * @return {eventLog}
+   */
+
+
+  Error(log) {
+    return this.Add("error", log);
+  }
+  /**
+   * Adds a general log
+   * @param {Object|String} log
+   * @return {eventLog}
+   */
+
+
+  Log(log) {
+    return this.Add("log", log);
+  }
+  /**
    * Adds an event log and outputs it to the console
-   * @param {String}    type       - Log type
-   * @param {*} log                - The eventLog or error to log
-   * @param {String} [defaultName] - Default message name/ title
+   * @param {String} type    - Log type
+   * @param {*} log          - The eventLog or error to log
    * @returns {eventLog} log
    */
 
 
-  Log(type = "log", log, defaultName) {
+  Add(type = "log", log) {
     if (!log) {
       log = {
         message: ""
@@ -21876,7 +21917,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     if (log._logged) return log; // Normalize logs
 
     log.type = type.toLowerCase();
-    log.name = log.name || defaultName || Tw2Logger.constructor.category;
+    log.name = log.name || "Logger";
     log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
 
     if (!Tw2Logger.LogType[log.type.toUpperCase()]) {
@@ -21889,7 +21930,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } // Throttle excessive output
 
 
-    if (!this.throttle || this.debug) {
+    if (!this.throttle || this._debugMode) {
       this._throttled = null;
     } else {
       if (!log.hide) {
@@ -21907,7 +21948,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } // Output to the console
 
 
-    if (!log.hide || this.debug) {
+    if (!log.hide || this._debugMode) {
       // Optional details
       var subMessage = "";
       if (log.path && !log.message.includes(log.path)) subMessage += "'".concat(log.path, "' ");
@@ -21926,7 +21967,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } // Manage log history
 
 
-    var logsToKeep = this.debug ? 1000 : this.history;
+    var logsToKeep = this._debugMode ? 1000 : this.history;
 
     if (logsToKeep) {
       this._logs.unshift(log);
@@ -22179,9 +22220,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
 /* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class */ "./core/class/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -22286,7 +22329,9 @@ class Tw2ResMan extends _class__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
 
     log.path = path;
     log.message = log.message || eventName;
-    this.EmitEvent(eventName, path, res, err).msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+    log.name = "Resource manager";
+    this.EmitEvent(eventName, path, res, err);
+    global_tw2__WEBPACK_IMPORTED_MODULE_4__["logger"].Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
   }
   /**
    * IsLoading
@@ -22809,13 +22854,13 @@ class Tw2Store {
     this.constructors = new core_store__WEBPACK_IMPORTED_MODULE_0__["Tw2ConstructorStore"](LibraryConstructor);
   }
   /**
-   * Enables debug
-   * @param bool
+   * Sets the debug mode
+   * @param {Boolean} bool
    */
 
 
-  Debug(bool) {
-    this.constructors.Debug(bool);
+  SetDebugMode(bool) {
+    this.constructors.SetDebugMode(bool);
   }
   /**
    * Registers store variables from an object
@@ -24318,7 +24363,7 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
     if (this.effectFilePath !== "") {
       this.effectFilePath = this.effectFilePath.toLowerCase();
       var path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-      this.effectRes = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(path, res => this.OnResPrepared(res));
+      this.effectRes = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path, res => this.OnResPrepared(res));
     }
   }
   /**
@@ -24433,6 +24478,9 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
   BindParameters() {
     this.UnBindParameters();
     if (!this.IsGood()) return false;
+    var {
+      variables
+    } = global__WEBPACK_IMPORTED_MODULE_0__["store"];
 
     for (var techniqueName in this.shader.techniques) {
       if (this.shader.techniques.hasOwnProperty(techniqueName)) {
@@ -24471,15 +24519,15 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
                     size: constant.size
                   });
                 }
-              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
+              } else if (variables.Has(name)) {
                 stage.parameters.push({
-                  parameter: global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name),
+                  parameter: variables.Get(name),
                   constantBuffer: stage.constantBuffer,
                   offset: constant.offset,
                   size: constant.size
                 });
               } else if (constant.isAutoregister && Type) {
-                var variable = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
+                var variable = variables.Create(name, undefined, Type);
 
                 if (variable) {
                   stage.parameters.push({
@@ -24498,7 +24546,7 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
                   value = value[0];
                 }
 
-                var _param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
+                var _param = variables.Create(name, value, Type);
 
                 if (_param) {
                   this.parameters[name] = _param;
@@ -24523,10 +24571,10 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
 
               if (_name in this.parameters) {
                 _param2 = this.parameters[_name];
-              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(_name)) {
-                _param2 = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(_name);
+              } else if (variables.Has(_name)) {
+                _param2 = variables.Get(_name);
               } else if (stageRes.textures[_k].isAutoregister) {
-                _param2 = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(_name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
+                _param2 = variables.Create(_name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
                 _param2 = this.parameters[_name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](_name);
               } else {
@@ -24752,7 +24800,7 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
             }
           }
         } else {
-          var parameter = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
+          var parameter = global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(key, value);
 
           if (parameter) {
             this.parameters[key] = parameter;
@@ -24961,7 +25009,7 @@ var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec
       if (a.effectFilePath !== "") {
         a.UpdateValues(opt);
         var path = Tw2Effect.ToEffectResPath(a.effectFilePath);
-        global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(path, res => a.OnResPrepared(res));
+        global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path, res => a.OnResPrepared(res));
         return true;
       }
 
@@ -25816,7 +25864,7 @@ var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Mesh"
       if (name in src && name in dest) {
         for (var _i = 0; _i < src[name].length; _i++) {
           var type = src[name][_i].__type || "Tw2MeshArea",
-              Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+              Constructor = global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.Get(type);
           dest[name].push(Constructor.from(src[name][_i], {
             index: _i
           }));
@@ -28820,7 +28868,7 @@ var Tw2VariableParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].c
 
 
   get variable() {
-    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(this.variableName);
+    return global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(this.variableName);
   }
   /**
    * Gets the linked variable's size
@@ -28840,7 +28888,7 @@ var Tw2VariableParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].c
 
 
   SetValue(value, opt) {
-    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue(this.variableName, value, opt);
+    return global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue(this.variableName, value, opt);
   }
   /**
    * Gets the variable's value
@@ -28850,7 +28898,7 @@ var Tw2VariableParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].c
 
 
   GetValue(out = []) {
-    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariableValue(this.variableName, out);
+    return global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.GetValue(this.variableName);
   }
   /**
    * Apply
@@ -30818,7 +30866,7 @@ var TypeReader = {
 function object(reader, id) {
   var context = reader.context,
       givenId = id !== undefined,
-      debugEnabled = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].constructor.DEBUG_ENABLED;
+      debugEnabled = global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.GetDebugMode();
 
   if (!givenId) {
     id = reader.ReadU32();
@@ -31292,8 +31340,8 @@ class Tw2BlackReader {
 
 
   ConstructType(type) {
-    if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(type)) {
-      var Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+    if (global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.Has(type)) {
+      var Constructor = global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.Get(type);
       return new Constructor();
     } else if (Tw2BlackReader.DEBUG_ENABLED) {
       return {
@@ -31683,7 +31731,7 @@ class Tw2ObjectReader {
 
     var Constructor;
 
-    if (!global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(data.type)) {
+    if (!global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.Has(data.type)) {
       if (Tw2ObjectReader.DEBUG_ENABLED) {
         Constructor = Object;
       } else {
@@ -31692,7 +31740,7 @@ class Tw2ObjectReader {
         });
       }
     } else {
-      Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(data.type);
+      Constructor = global__WEBPACK_IMPORTED_MODULE_0__["store"].constructors.Get(data.type);
     }
 
     var object = new Constructor();
@@ -33955,15 +34003,15 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
       vs: {
         frame: {},
         object: {},
-        parameter: {} //texture: [],
-        //override: []
+        parameter: {} //texture: {},
+        //override: {}}
 
       },
       ps: {
         frame: {},
         object: {},
-        parameter: {} //texture: [],
-        //override: []
+        parameter: {} //texture: {},
+        //override: {}
 
       },
       ffe: {
@@ -36047,12 +36095,11 @@ class Tw2ConstructorStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__[
   }
   /**
    * Toggles debug
-   * @param {Boolean}  bool
+   * @param {Boolean} bool
    */
 
 
-  Debug(bool) {
-    this.debug = bool;
+  SetDebugMode(bool) {
     var PRIVATE = _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this);
     PRIVATE.DEBUG_ENABLED = bool;
 
@@ -36062,6 +36109,15 @@ class Tw2ConstructorStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__[
         value.DEBUG_ENABLED = bool;
       }
     }
+  }
+  /**
+   * Checks if debug is enabled
+   * @return {Boolean}
+   */
+
+
+  GetDebugMode() {
+    return _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["STORE"].get(this).DEBUG_ENABLED;
   }
   /**
    * Checks value validity
@@ -45537,9 +45593,9 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Ev
     var envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
         envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
         envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap1").SetTextureRes(envMap1);
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap2").SetTextureRes(envMap2);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EnvMap1").SetTextureRes(envMap1);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EnvMap2").SetTextureRes(envMap2);
   }
   /**
    * Initializes class global and scratch variables
@@ -46007,7 +46063,7 @@ var EveChildBillboard = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
     var viewInverse = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.mat4_0,
         finalScale = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.vec3_0;
-    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(viewInverse, global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device.eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(viewInverse, global__WEBPACK_IMPORTED_MODULE_0__["device"].eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(viewInverse, viewInverse);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(finalScale, parentTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, finalScale, this.scaling);
@@ -47020,7 +47076,7 @@ var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Eve
     }
 
     this.backgroundOcclusionIntensity = this.occlusionIntensity;
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
     g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
   }
   /**
@@ -47079,7 +47135,7 @@ var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Eve
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]); //mat4.multiply(scaleMat, scaleMat, this._transform);
 
     var dir = this._direction;
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(dist, dir[0], dir[1], dir[2], 0);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].view);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection);
@@ -47583,8 +47639,8 @@ var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveO
 
 
   UpdateValue(parentTransform, index) {
-    if (!global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device.alphaBlendBackBuffer) return;
-    var d = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device,
+    if (!global__WEBPACK_IMPORTED_MODULE_0__["device"].alphaBlendBackBuffer) return;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         g = EveOccluder.global,
         worldViewProj = g.mat4_0,
         center = g.vec4_0;
@@ -47595,7 +47651,7 @@ var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveO
       this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
     }
 
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
     g.accumulator.Render();
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0]._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
@@ -47622,7 +47678,7 @@ var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveO
 
 
   static CollectSamples(tex, index, total, samples) {
-    var d = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device,
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         g = this.global,
         effect = g.effect,
         vertexBuffer = g.vertexBuffer,
@@ -47649,7 +47705,7 @@ var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveO
 
   static init() {
     if (EveOccluder.global) return;
-    var d = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].device,
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         g = EveOccluder.global = {};
     g.mat4_0 = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     g.vec4_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
@@ -51870,7 +51926,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObjectDecal", function() { return EveSpaceObjectDecal; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
-/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -51878,7 +51933,6 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
 
 
 
@@ -52071,8 +52125,8 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
         bkStart = mesh.areas[0].start,
         bkCount = mesh.areas[0].count,
         bkIndexType = mesh.indexType;
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_DecalMatrix", this._localTransform);
-    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_InvDecalMatrix", this._localTransformInverse);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("u_DecalMatrix", this._localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("u_InvDecalMatrix", this._localTransformInverse);
     mesh.indexes = this._indexBuffer;
     mesh.areas[0].start = 0;
     mesh.areas[0].count = this.indexBuffer.length;
@@ -52104,13 +52158,13 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ct
       }
 
       if (values.pickEffect) {
-        item.pickEffect = core_mesh__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from(values.pickEffect);
+        item.pickEffect = core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from(values.pickEffect);
       }
 
       var decalEffect = values.decalEffect || values.effect;
 
       if (decalEffect) {
-        item.decalEffect = core_mesh__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from(decalEffect);
+        item.decalEffect = core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from(decalEffect);
       }
     }
 
@@ -59138,7 +59192,7 @@ var store = new core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Store"](core_engine
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: meta, util, Type, TypeLength, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, WrappedType, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
+/*! exports provided: meta, util, Type, TypeLength, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, WrappedType, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device, store, logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59909,6 +59963,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["resMan"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["device"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["store"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return _tw2__WEBPACK_IMPORTED_MODULE_4__["logger"]; });
 
 
 
@@ -68200,7 +68258,7 @@ for (var key in type) {
 /*!***********************!*\
   !*** ./global/tw2.js ***!
   \***********************/
-/*! exports provided: tw2, resMan, device */
+/*! exports provided: tw2, resMan, device, store, logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68208,13 +68266,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return tw2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return logger; });
 /* harmony import */ var core_engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/engine */ "./core/engine/index.js");
 /* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _engine__WEBPACK_IMPORTED_MODULE_1__["store"]; });
+
 
 
 var tw2 = new core_engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"](_engine__WEBPACK_IMPORTED_MODULE_1__["store"]),
     resMan = tw2.resMan,
-    device = tw2.device;
+    device = tw2.device,
+    logger = tw2.logger;
 
 
 /***/ }),
@@ -73127,8 +73189,7 @@ function EveSOF(tw2) {
         BindParticleEmitters(obj.children[i], curveSet, curve);
       }
     } else {
-      tw2.Log({
-        type: "warning",
+      global__WEBPACK_IMPORTED_MODULE_0__["logger"].Warn({
         name: "Space object factory",
         message: "Unable to bind particle emitters: ".concat(obj.constructor.name)
       });
@@ -73161,10 +73222,9 @@ function EveSOF(tw2) {
       var resPath = children[i]["redFilePath"];
 
       if (resPath) {
-        tw2.resMan.GetObject(resPath, onChildLoaded(children[i]));
+        global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, onChildLoaded(children[i]));
       } else {
-        tw2.Log({
-          type: "warning",
+        global__WEBPACK_IMPORTED_MODULE_0__["logger"].Warn({
           name: "Space object factory",
           message: "No resource path found for \"".concat(hull.name, "\" child at index ").concat(i)
         });
@@ -73331,9 +73391,8 @@ function EveSOF(tw2) {
             GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
           }
         });
-        sofPromise = tw2.FetchObject("res:/dx9/model/spaceobjectfactory/data.red").then(sof => data = sof).catch(err => {
-          tw2.Log({
-            type: "error",
+        sofPromise = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject("res:/dx9/model/spaceobjectfactory/data.red").then(sof => data = sof).catch(err => {
+          global__WEBPACK_IMPORTED_MODULE_0__["logger"].Error({
             name: "Space object factory",
             message: "Could not load data"
           });
@@ -74359,7 +74418,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupModelCurves(data, obj, sof, options) {
-    data.Log("debug", "Model curves not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Model curves not implemented"
+    });
   }
   /**
    *
@@ -74371,7 +74433,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupLights(data, obj, sof, options) {
-    data.Log("debug", "Lights not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Lights not implemented"
+    });
   }
   /**
    *
@@ -74383,7 +74448,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupObservers(data, obj, sof, options) {
-    data.Log("debug", "Observers not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Observers not implemented"
+    });
   }
   /**
    * Sets up a custom mask (or empties it)
@@ -74464,7 +74532,6 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     var patternMaterial1 = sof.area.patternMaterial1 ? data.GetMaterial(sof.area.patternMaterial1) : null,
         patternMaterial2 = sof.area.patternMaterial2 ? data.GetMaterial(sof.area.patternMaterial2) : null,
         pattern = sof.pattern || {};
-    console.dir(pattern);
     this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);
     this.SetupCustomMask(obj.customMasks[1], pattern.layer2, pattern.transformLayer2, patternMaterial2);
   }
@@ -74513,7 +74580,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
       mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
     } else {
       mesh.geometryResPath = resPath;
-      global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(resPath, res => {
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(resPath, res => {
         EveSOFData.knownGeometryResPath[resPath] = resPath;
         if (initialized) mesh.Initialize();
       }, err => {
@@ -74555,15 +74622,19 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         effect.autoParameter = true; // Fix missing quadheatdetail shader
 
         if (effect.effectFilePath.includes("quadheatdetail")) {
-          data.Log("debug", "Patching missing shader: " + effect.effectFilePath);
           effect.effectFilePath = effect.effectFilePath.replace("quadheatdetail", "quaddetail");
+          global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+            name: "Space object factory",
+            message: "Patching missing shader: " + effect.effectFilePath
+          });
         } // Booster effect color
 
 
-        var heatGlowColor = config.parameters["GeneralHeatGlowColor"] = [1, 1, 1, 1];
+        var heatGlowColor = config.parameters["GeneralHeatGlowColor"] || global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1); // Temp
 
         if (heatGlowColor) {
           global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(heatGlowColor, sof.race.booster.glowColor, options.multiplier.generalHeatGlowColor);
+          config.parameters.GeneralHeatGlowColor = heatGlowColor; // temp
         } // Area parameters
         // Todo: Clean this up
 
@@ -74576,14 +74647,17 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
           sof.faction.AssignAreaType(areaType, areaData);
         } else {
           sof.faction.AssignAreaType(0, areaData);
-          data.Log("error", "Could not resolve area type: " + areaType);
+          global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+            name: "Space object factory",
+            message: "Could not resolve area type: " + areaType
+          });
         } // Get custom materials
 
 
         Object.assign(areaData, sof.area);
         data.AssignMaterialParameters(areaData, config.parameters); // Area lights colour
 
-        var glowColor = config.parameters["GeneralGlowColor"] = [1, 1, 1, 1];
+        var glowColor = config.parameters["GeneralGlowColor"] || global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1); // Temp
 
         if (glowColor) {
           var {
@@ -74594,10 +74668,14 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
             sof.faction.GetColorType(colorType, glowColor);
           } else {
             sof.faction.GetColorType(0, glowColor);
-            data.Log("error", "Could not resolve general glow color type: " + colorType);
+            global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+              name: "Space object factory",
+              message: "Using primary colours, could not resolve glow color type: " + colorType
+            });
           }
 
           global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+          config.parameters.GeneralGlowColor = glowColor; //temp
         } // Temporary overrides for dds files
 
 
@@ -74619,6 +74697,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         effect.SetOverrides(config.overrides); // TODO: There is no way to identify what resPathInserts are available
         //       unless we generate a file from the resFileIndex.
         //       Until then, we'll just try to download what they asked for...
+        //       then fall back to the default
 
         var pmdgResPathInsert = config.textures.PmdgMap ? sof.resPathInsert || sof.faction.resPathInsert : null;
 
@@ -74634,17 +74713,23 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
                 "PmdgMap": resPathInsert
               });
             } else {
-              data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+              global__WEBPACK_IMPORTED_MODULE_0__["logger"].Error({
+                name: "Space object factory",
+                message: "Invalid resPathInsert: " + resPathInsert
+              });
             }
           } else {
-            global__WEBPACK_IMPORTED_MODULE_0__["tw2"].FetchResource(resPathInsert).then(() => {
+            global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchResource(resPathInsert).then(() => {
               knownResPathInserts[resPathInsert] = true;
               effect.SetTextures({
                 "PmdgMap": resPathInsert
               });
             }).catch(err => {
               knownResPathInserts[resPathInsert] = false;
-              data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+              global__WEBPACK_IMPORTED_MODULE_0__["logger"].Error({
+                name: "Space object factory",
+                message: "Invalid resPathInsert: " + resPathInsert
+              });
             });
           }
         }
@@ -74693,13 +74778,16 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
       set.skinned = srcSet.skinned && isSkinned;
       set.effect = options.effect.sprite;
       srcSet.items.forEach(srcItem => {
-        var color = [1, 1, 1, 1];
+        var color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
 
         if (sof.faction.HasColorType(srcItem.colorType)) {
           sof.faction.GetColorType(srcItem.colorType, color);
         } else {
           sof.faction.GetColorType(0, color);
-          data.Log("debug", "Using primary color for spriteSet: " + srcItem.colorType);
+          global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+            ame: "Space object factory",
+            message: "Using primary color for spriteSet: " + srcItem.colorType
+          });
         }
 
         set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
@@ -74803,8 +74891,11 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         },
         textures: {
           Layer1Map: srcSet.layer1MapResPath.replace(".dds", ".png"),
+          // Temporary
           Layer2Map: srcSet.layer2MapResPath.replace(".dds", ".png"),
-          MaskMap: srcSet.maskMapResPath.replace(".dds", ".png")
+          // Temporary
+          MaskMap: srcSet.maskMapResPath.replace(".dds", ".png") // Temporary
+
         }
       });
       srcSet.items.forEach(srcItem => {
@@ -74818,7 +74909,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
         if (item.color[0] === 0 && item.color[1] === 0 && item.color[2] === 0 && item.color[3] === 0) {
-          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, [1, 1, 1, 1]);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(item.color, 1, 1, 1, 1);
         }
 
         set.items.push(item);
@@ -74866,7 +74957,16 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
           logoType,
           usage,
           glowColorType
-        } = itemData; // Don't add irrelevant decals (Should already have been caught)
+        } = itemData; // If we can't find the logo type ignore the logo
+
+        if (!faction.HasLogoType(logoType)) {
+          global__WEBPACK_IMPORTED_MODULE_0__["logger"].Log({
+            name: "Space object factory",
+            message: "Could not find logo type for decal: ".concat(name, " (").concat(logoType, ")")
+          });
+          return;
+        } // Don't add irrelevant decals (Should already have been caught)
+
 
         if (visibilityGroup && !faction.HasVisibilityGroup(visibilityGroup)) {
           return;
@@ -74875,15 +74975,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         var // How to tell what kind of effect to load??
         shader = options.decalUsage[usage],
             config = data.generic.GetShaderConfig(shader, false, provided);
-        var display = true;
-
-        if (faction.HasLogoType(logoType)) {
-          faction.GetLogoType(logoType).Assign(config);
-        } else {
-          data.Log("error", "Could not find logo type for decal: ".concat(name, " (").concat(logoType, ")"));
-          display = false;
-        }
-
+        faction.GetLogoType(logoType).Assign(config);
         var {
           DecalGlowColor
         } = config.parameters;
@@ -74893,25 +74985,17 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
             faction.GetColorType(glowColorType, DecalGlowColor);
           } else {
             faction.GetColorType(0, DecalGlowColor);
-            data.Log("debug", "Using primary color for decal glow: ".concat(name, " (").concat(glowColorType, ")"));
+            global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+              name: "Space object factory",
+              message: "Using primary color for decal glow: ".concat(name, " (").concat(glowColorType, ")")
+            });
           }
         } // Item's values override logo types
 
 
         itemData.Assign(config);
-        /*
-        for (const key in config.textures)
-        {
-            if (config.textures.hasOwnProperty(key))
-            {
-                config.textures[key] = config.textures[key].replace(".dds", ".png");
-            }
-        }
-         */
-
         obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
-          effect: config,
-          display
+          effect: config
         })));
       });
     });
@@ -74936,7 +75020,7 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         srcItems = hull.booster.items || [];
 
     for (var i = 0; i < srcItems.length; ++i) {
-      var scaled = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale([], srcItems[i].transform, options.multiplier.boosterScale);
+      var scaled = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), srcItems[i].transform, options.multiplier.boosterScale);
       obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: scaled,
@@ -75052,7 +75136,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     locatorTurrets.forEach(item => {
       obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from(item));
     });
-    data.Log("debug", "Locator sets not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Locator sets not implemented"
+    });
   }
   /**
    *
@@ -75064,7 +75151,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupAudio(data, obj, sof, options) {
-    data.Log("debug", "Audio not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Audio not implemented"
+    });
   }
   /**
    *
@@ -75077,7 +75167,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupAnimations(data, obj, sof, options) {
-    data.Log("debug", "Animations not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Animations not implemented"
+    });
   }
   /**
    *
@@ -75089,7 +75182,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupChildren(data, obj, sof, options) {
-    data.Log("debug", "Child objects not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Child objects not implemented"
+    });
     /*
     const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
       function onChildLoaded(child)
@@ -75121,12 +75217,11 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
         const { redFilePath } = children[i];
         if (redFilePath)
         {
-            tw2.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
+            resMan.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
         }
         else
         {
-            data.Log({
-                type: "debug",
+            logger.Debug({
                 name: "Space object factory",
                 message: `No resource path found for "${sof.hull.name}" child at index ${i}`
             });
@@ -75144,7 +75239,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static BindParticleEmitters(data, obj, curveSet, curve) {
-    data.Log("debug", "Binding child particle emitters not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Binding child particle emitters not implemented"
+    });
     /*
     if (isArray(obj.particleEmitters))
     {
@@ -75168,8 +75266,8 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
     }
     else
     {
-        data.Log("debug", {
-            name: "Space object factory",
+        logger.Debug({
+            name: "Space  object factory",
             message: `Unable to bind particle emitters: ${obj.constructor.name}`
         });
     }
@@ -75185,7 +75283,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupInstancedMesh(data, obj, sof, options) {
-    data.Log("debug", "Instance meshes not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Instance meshes not implemented"
+    });
     /*
     const { instancedMeshes=[] } = sof.hull;
     for (var i = 0; i < instancedMeshes.length; ++i)
@@ -75212,7 +75313,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupControllers(data, obj, sof, options) {
-    data.Log("debug", "Animation controllers not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space object factory",
+      message: "Animation controllers not implemented"
+    });
   }
   /**
    *
@@ -75224,7 +75328,10 @@ var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSO
 
 
   static SetupTurretMaterial(data, obj, sof, options) {
-    data.Log("debug", "Turret materials not implemented");
+    global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
+      name: "Space  object factory",
+      message: "Turret materials not implemented"
+    });
   }
 
 }, _class3.knownGeometryResPath = {}, _class3.knownResPathInserts = {}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "faction", [_dec2], {

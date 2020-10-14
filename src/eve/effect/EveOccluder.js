@@ -1,4 +1,4 @@
-import { meta, vec4, mat4, tw2 } from "global";
+import { meta, vec4, mat4, device, store } from "global";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
@@ -29,10 +29,10 @@ export class EveOccluder extends meta.Model
      */
     UpdateValue(parentTransform, index)
     {
-        if (!tw2.device.alphaBlendBackBuffer) return;
+        if (!device.alphaBlendBackBuffer) return;
 
         const
-            d = tw2.device,
+            d = device,
             g = EveOccluder.global,
             worldViewProj = g.mat4_0,
             center = g.vec4_0;
@@ -45,7 +45,7 @@ export class EveOccluder extends meta.Model
             this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
         }
 
-        tw2.SetVariableValue("OccluderValue", [ (1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0 ]);
+        store.variables.SetValue("OccluderValue", [ (1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0 ]);
 
         g.accumulator.Render();
 
@@ -82,7 +82,7 @@ export class EveOccluder extends meta.Model
     static CollectSamples(tex, index, total, samples)
     {
         const
-            d = tw2.device,
+            d = device,
             g = this.global,
             effect = g.effect,
             vertexBuffer = g.vertexBuffer,
@@ -114,7 +114,7 @@ export class EveOccluder extends meta.Model
         if (EveOccluder.global) return;
 
         const
-            d = tw2.device,
+            d = device,
             g = EveOccluder.global = {};
 
         g.mat4_0 = mat4.create();

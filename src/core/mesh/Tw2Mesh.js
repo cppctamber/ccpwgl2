@@ -1,4 +1,4 @@
-import { meta, util, resMan, tw2 } from "global";
+import { meta, util, resMan, store } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -301,7 +301,7 @@ export class Tw2Mesh extends meta.Model
                 {
                     const
                         type = src[name][i].__type || "Tw2MeshArea",
-                        Constructor = tw2.GetClass(type);
+                        Constructor = store.constructors.Get(type);
 
                     dest[name].push(Constructor.from(src[name][i], { index: i }));
                 }

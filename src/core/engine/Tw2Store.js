@@ -1,5 +1,6 @@
 import * as stores from "core/store";
 
+
 export class Tw2Store
 {
     constructor(LibraryConstructor)
@@ -13,13 +14,14 @@ export class Tw2Store
     }
 
     /**
-     * Enables debug
-     * @param bool
+     * Sets the debug mode
+     * @param {Boolean} bool
      */
-    Debug(bool)
+    SetDebugMode(bool)
     {
-        this.constructors.Debug(bool);
+        this.constructors.SetDebugMode(bool);
     }
+
     /**
      * Registers store variables from an object
      * @param {Object} opt

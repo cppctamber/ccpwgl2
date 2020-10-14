@@ -249,26 +249,4 @@ export class Tw2EventEmitter
         return this;
     }
 
-    /**
-     * Logs a message
-     * @param {String} type
-     * @param {*|Error|Tw2Error} log
-     * @returns {eventLog|*}
-     */
-    msg(type, log)
-    {
-        if (this.constructor.defaultLogger)
-        {
-            return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
-        }
-
-        return log;
-    }
-
-    /**
-     * Default logger
-     * @type {null|Tw2Logger}
-     */
-    static defaultLogger = null;
-
 }

@@ -1,4 +1,4 @@
-import { meta, tw2 } from "global";
+import { meta, store } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
@@ -31,7 +31,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     get variable()
     {
-        return tw2.GetVariable(this.variableName);
+        return store.variables.Get(this.variableName);
     }
 
     /**
@@ -51,7 +51,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     SetValue(value, opt)
     {
-        return tw2.SetVariableValue(this.variableName, value, opt);
+        return store.variables.SetValue(this.variableName, value, opt);
     }
 
     /**
@@ -61,7 +61,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     GetValue(out = [])
     {
-        return tw2.GetVariableValue(this.variableName, out);
+        return store.variables.GetValue(this.variableName);
     }
 
     /**

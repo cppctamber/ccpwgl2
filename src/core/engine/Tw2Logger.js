@@ -22,9 +22,10 @@ export class Tw2Logger extends Tw2EventEmitter
 
     name = "";
     display = true;
-    debug = false;
+
     history = 100;
     throttle = 20;
+    
     visible = {
         log: true,
         info: true,
@@ -35,6 +36,16 @@ export class Tw2Logger extends Tw2EventEmitter
     
     _logs = [];
     _throttled = null;
+    _debugMode = false;
+
+    /**
+     * Sets the debug mode
+     * @param {Boolean} bool
+     */
+    SetDebugMode(bool)
+    {
+        this._debugMode = true;
+    }
     
     /**
      * Sets the logger's properties
@@ -48,13 +59,62 @@ export class Tw2Logger extends Tw2EventEmitter
     }
 
     /**
+     * Adds a debug log
+     * @param {Object|String} log
+     * @return {eventLog}
+     */
+    Debug(log)
+    {
+        return this.Add("debug", log);
+    }
+
+    /**
+     * Adds an info log
+     * @param {Object|String} log
+     * @return {eventLog}
+     */
+    Info(log)
+    {
+        return this.Add("info", log);
+    }
+
+    /**
+     * Adds a warning log
+     * @param {Object|String} log
+     * @return {eventLog}
+     */
+    Warn(log)
+    {
+        return this.Add("warn", log);
+    }
+
+    /**
+     * Adds an error log
+     * @param {Object|String} log
+     * @return {eventLog}
+     */
+    Error(log)
+    {
+        return this.Add("error", log);
+    }
+
+    /**
+     * Adds a general log
+     * @param {Object|String} log
+     * @return {eventLog}
+     */
+    Log(log)
+    {
+        return this.Add("log", log);
+    }
+
+    /**
      * Adds an event log and outputs it to the console
-     * @param {String}    type       - Log type
-     * @param {*} log                - The eventLog or error to log
-     * @param {String} [defaultName] - Default message name/ title
+     * @param {String} type    - Log type
+     * @param {*} log          - The eventLog or error to log
      * @returns {eventLog} log
      */
-    Log(type = "log", log, defaultName)
+    Add(type = "log", log)
     {
         if (!log)
         {
@@ -73,7 +133,7 @@ export class Tw2Logger extends Tw2EventEmitter
 
         // Normalize logs
         log.type = type.toLowerCase();
-        log.name = log.name || defaultName || Tw2Logger.constructor.category;
+        log.name = log.name || "Logger";
         log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
 
         if (!Tw2Logger.LogType[log.type.toUpperCase()])
@@ -88,7 +148,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Throttle excessive output
-        if (!this.throttle || this.debug)
+        if (!this.throttle || this._debugMode)
         {
             this._throttled = null;
         }
@@ -112,7 +172,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Output to the console
-        if (!log.hide || this.debug)
+        if (!log.hide || this._debugMode)
         {
             // Optional details
             let subMessage = "";
@@ -135,7 +195,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Manage log history
-        const logsToKeep = this.debug ? 1000 : this.history;
+        const logsToKeep = this._debugMode ? 1000 : this.history;
         if (logsToKeep)
         {
             this._logs.unshift(log);

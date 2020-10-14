@@ -1,4 +1,4 @@
-import { tw2 } from "global";
+import { store } from "global";
 import { Tw2BlackBinaryReader } from "./Tw2BlackBinaryReader";
 import { ErrBinaryFormat, ErrBinaryObjectTypeNotFound, } from "./Tw2ObjectReader";
 import { object } from "./Tw2BlackPropertyReaders";
@@ -102,9 +102,9 @@ export class Tw2BlackReader
      */
     ConstructType(type)
     {
-        if (tw2.HasClass(type))
+        if (store.constructors.Has(type))
         {
-            const Constructor = tw2.GetClass(type);
+            const Constructor = store.constructors.Get(type);
             return new Constructor();
         }
         else if (Tw2BlackReader.DEBUG_ENABLED)

@@ -57,6 +57,7 @@ import {
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
 } from "global/engine/Tw2Constant";
+import { logger } from "global/tw2";
 
 
 /**
@@ -258,7 +259,11 @@ export class Tw2Device extends Tw2EventEmitter
         params.antialiasing = this.enableAntialiasing ? get(params, "antialiasing", true) : false;
 
         const gl = this.gl = Tw2Device.CreateContext(params, canvas);
-        this.msg("debug", `Webgl${this.glVersion} context created`);
+
+        logger.Debug({
+            name: "Device",
+            message: `Webgl${this.glVersion} context created`
+        });
 
         // Allow for a 2d canvas
         try

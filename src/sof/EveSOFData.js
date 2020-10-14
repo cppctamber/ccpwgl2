@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, tw2 } from "global";
+import { meta, vec3, vec4, quat, mat4, resMan, tw2, logger } from "global";
 
 import {
     isDNA,
@@ -656,7 +656,10 @@ export class EveSOFData
      */
     static SetupModelCurves(data, obj, sof, options)
     {
-        data.Log("debug", "Model curves not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Model curves not implemented"
+        });
     }
 
     /**
@@ -668,7 +671,10 @@ export class EveSOFData
      */
     static SetupLights(data, obj, sof, options)
     {
-        data.Log("debug", "Lights not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Lights not implemented"
+        });
     }
 
     /**
@@ -680,7 +686,10 @@ export class EveSOFData
      */
     static SetupObservers(data, obj, sof, options)
     {
-        data.Log("debug", "Observers not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Observers not implemented"
+        });
     }
 
     /**
@@ -782,7 +791,6 @@ export class EveSOFData
             patternMaterial2 = sof.area.patternMaterial2 ? data.GetMaterial(sof.area.patternMaterial2) : null,
             pattern = sof.pattern || {};
 
-        console.dir(pattern);
         this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);
         this.SetupCustomMask(obj.customMasks[1], pattern.layer2, pattern.transformLayer2, patternMaterial2);
     }
@@ -839,7 +847,7 @@ export class EveSOFData
         {
             mesh.geometryResPath = resPath;
 
-            tw2.GetResource(resPath,
+            resMan.GetResource(resPath,
                 res =>
                 {
                     EveSOFData.knownGeometryResPath[resPath] = resPath;
@@ -886,15 +894,19 @@ export class EveSOFData
                 // Fix missing quadheatdetail shader
                 if (effect.effectFilePath.includes("quadheatdetail"))
                 {
-                    data.Log("debug", "Patching missing shader: " + effect.effectFilePath);
                     effect.effectFilePath = effect.effectFilePath.replace("quadheatdetail", "quaddetail");
+                    logger.Debug({
+                        name: "Space object factory",
+                        message: "Patching missing shader: " + effect.effectFilePath
+                    });
                 }
 
                 // Booster effect color
-                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] = [ 1, 1, 1, 1 ];
+                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] || vec4.fromValues(1,1,1,1); // Temp
                 if (heatGlowColor)
                 {
                     vec4.multiply(heatGlowColor, sof.race.booster.glowColor, options.multiplier.generalHeatGlowColor);
+                    config.parameters.GeneralHeatGlowColor = heatGlowColor; // temp
                 }
 
                 // Area parameters
@@ -908,7 +920,10 @@ export class EveSOFData
                 else
                 {
                     sof.faction.AssignAreaType(0, areaData);
-                    data.Log("error", "Could not resolve area type: " + areaType);
+                    logger.Debug({
+                        name: "Space object factory",
+                        message: "Could not resolve area type: " + areaType
+                    });
                 }
 
                 // Get custom materials
@@ -917,7 +932,7 @@ export class EveSOFData
                 data.AssignMaterialParameters(areaData, config.parameters);
 
                 // Area lights colour
-                const glowColor = config.parameters["GeneralGlowColor"] = [ 1, 1, 1, 1 ];
+                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1,1,1,1); // Temp
                 if (glowColor)
                 {
                     const { colorType } = areaData;
@@ -929,10 +944,14 @@ export class EveSOFData
                     else
                     {
                         sof.faction.GetColorType(0, glowColor);
-                        data.Log("error", "Could not resolve general glow color type: " + colorType);
+                        logger.Debug({
+                            name: "Space object factory",
+                            message: "Using primary colours, could not resolve glow color type: " + colorType
+                        });
                     }
 
                     vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+                    config.parameters.GeneralGlowColor = glowColor; //temp
                 }
 
                 // Temporary overrides for dds files
@@ -959,6 +978,7 @@ export class EveSOFData
                 // TODO: There is no way to identify what resPathInserts are available
                 //       unless we generate a file from the resFileIndex.
                 //       Until then, we'll just try to download what they asked for...
+                //       then fall back to the default
 
                 let pmdgResPathInsert = config.textures.PmdgMap ? sof.resPathInsert || sof.faction.resPathInsert : null;
                 if (pmdgResPathInsert)
@@ -974,12 +994,15 @@ export class EveSOFData
                         }
                         else
                         {
-                            data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+                            logger.Error({
+                                name: "Space object factory",
+                                message: "Invalid resPathInsert: " + resPathInsert
+                            });
                         }
                     }
                     else
                     {
-                        tw2.FetchResource(resPathInsert)
+                        resMan.FetchResource(resPathInsert)
                             .then(() =>
                             {
                                 knownResPathInserts[resPathInsert] = true;
@@ -988,7 +1011,10 @@ export class EveSOFData
                             .catch(err =>
                             {
                                 knownResPathInserts[resPathInsert] = false;
-                                data.Log("error", "Invalid resPathInsert: " + resPathInsert);
+                                logger.Error({
+                                    name: "Space object factory",
+                                    message: "Invalid resPathInsert: " + resPathInsert
+                                });
                             });
                     }
                 }
@@ -1043,7 +1069,7 @@ export class EveSOFData
 
             srcSet.items.forEach(srcItem =>
             {
-                const color = [ 1, 1, 1, 1 ];
+                const color = vec4.fromValues(1, 1, 1, 1);
 
                 if (sof.faction.HasColorType(srcItem.colorType))
                 {
@@ -1052,7 +1078,10 @@ export class EveSOFData
                 else
                 {
                     sof.faction.GetColorType(0, color);
-                    data.Log("debug", "Using primary color for spriteSet: " + srcItem.colorType);
+                    logger.Debug({
+                        ame: "Space object factory",
+                        message: "Using primary color for spriteSet: " + srcItem.colorType
+                    });
                 }
 
                 set.items.push(EveSpriteSetItem.from(Object.assign({}, srcItem, { color })));
@@ -1157,15 +1186,15 @@ export class EveSOFData
                 parameters: {
                     PlaneData: [
                         0,  // Power of Fade Angle
-                        1, //srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
+                        1,  //srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
                         0,  // Unused
                         0   // Unused
                     ]
                 },
                 textures: {
-                    Layer1Map: srcSet.layer1MapResPath.replace(".dds", ".png"),
-                    Layer2Map: srcSet.layer2MapResPath.replace(".dds", ".png"),
-                    MaskMap: srcSet.maskMapResPath.replace(".dds", ".png")
+                    Layer1Map: srcSet.layer1MapResPath.replace(".dds", ".png"), // Temporary
+                    Layer2Map: srcSet.layer2MapResPath.replace(".dds", ".png"), // Temporary
+                    MaskMap: srcSet.maskMapResPath.replace(".dds", ".png")      // Temporary
                 }
             });
 
@@ -1183,7 +1212,7 @@ export class EveSOFData
                 // TEMPORARY
                 if (item.color[0] === 0 && item.color[1] === 0 && item.color[2] === 0 && item.color[3] === 0)
                 {
-                    vec4.copy(item.color, [ 1, 1, 1, 1 ]);
+                    vec4.set(item.color, 1, 1, 1, 1);
                 }
 
                 set.items.push(item);
@@ -1228,6 +1257,16 @@ export class EveSOFData
             {
                 const { name, visibilityGroup, logoType, usage, glowColorType } = itemData;
 
+                // If we can't find the logo type ignore the logo
+                if (!faction.HasLogoType(logoType))
+                {
+                    logger.Log({
+                        name: "Space object factory",
+                        message: `Could not find logo type for decal: ${name} (${logoType})`
+                    });
+                    return;
+                }
+
                 // Don't add irrelevant decals (Should already have been caught)
                 if (visibilityGroup && !faction.HasVisibilityGroup(visibilityGroup))
                 {
@@ -1239,18 +1278,7 @@ export class EveSOFData
                     shader = options.decalUsage[usage],
                     config = data.generic.GetShaderConfig(shader, false, provided);
 
-
-                let display = true;
-
-                if (faction.HasLogoType(logoType))
-                {
-                    faction.GetLogoType(logoType).Assign(config);
-                }
-                else
-                {
-                    data.Log("error", `Could not find logo type for decal: ${name} (${logoType})`);
-                    display = false;
-                }
+                faction.GetLogoType(logoType).Assign(config);
 
                 const { DecalGlowColor } = config.parameters;
                 if (DecalGlowColor)
@@ -1262,24 +1290,17 @@ export class EveSOFData
                     else
                     {
                         faction.GetColorType(0, DecalGlowColor);
-                        data.Log("debug", `Using primary color for decal glow: ${name} (${glowColorType})`);
+                        logger.Debug({
+                            name: "Space object factory",
+                            message: `Using primary color for decal glow: ${name} (${glowColorType})`
+                        });
                     }
                 }
 
                 // Item's values override logo types
                 itemData.Assign(config);
 
-                /*
-                for (const key in config.textures)
-                {
-                    if (config.textures.hasOwnProperty(key))
-                    {
-                        config.textures[key] = config.textures[key].replace(".dds", ".png");
-                    }
-                }
-                 */
-
-                obj.decals.push(EveSpaceObjectDecal.from(Object.assign({}, itemData, { effect: config, display })));
+                obj.decals.push(EveSpaceObjectDecal.from(Object.assign({}, itemData, { effect: config })));
             });
         });
     }
@@ -1305,8 +1326,7 @@ export class EveSOFData
 
         for (let i = 0; i < srcItems.length; ++i)
         {
-
-            const scaled = mat4.scale([], srcItems[i].transform, options.multiplier.boosterScale);
+            const scaled = mat4.scale(mat4.create(), srcItems[i].transform, options.multiplier.boosterScale);
 
             obj.locators.push(EveLocator2.from({
                 name: "locator_booster_" + (i + 1),
@@ -1416,7 +1436,10 @@ export class EveSOFData
             obj.locators.push(EveLocator2.from(item));
         });
 
-        data.Log("debug", "Locator sets not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Locator sets not implemented"
+        });
     }
 
     /**
@@ -1428,7 +1451,10 @@ export class EveSOFData
      */
     static SetupAudio(data, obj, sof, options)
     {
-        data.Log("debug", "Audio not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Audio not implemented"
+        });
     }
 
 
@@ -1442,7 +1468,10 @@ export class EveSOFData
      */
     static SetupAnimations(data, obj, sof, options)
     {
-        data.Log("debug", "Animations not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Animations not implemented"
+        });
     }
 
     /**
@@ -1454,7 +1483,10 @@ export class EveSOFData
      */
     static SetupChildren(data, obj, sof, options)
     {
-        data.Log("debug", "Child objects not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Child objects not implemented"
+        });
 
         /*
         const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
@@ -1492,12 +1524,11 @@ export class EveSOFData
             const { redFilePath } = children[i];
             if (redFilePath)
             {
-                tw2.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
+                resMan.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
             }
             else
             {
-                data.Log({
-                    type: "debug",
+                logger.Debug({
                     name: "Space object factory",
                     message: `No resource path found for "${sof.hull.name}" child at index ${i}`
                 });
@@ -1515,7 +1546,10 @@ export class EveSOFData
      */
     static BindParticleEmitters(data, obj, curveSet, curve)
     {
-        data.Log("debug", "Binding child particle emitters not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Binding child particle emitters not implemented"
+        });
 
         /*
         if (isArray(obj.particleEmitters))
@@ -1540,8 +1574,8 @@ export class EveSOFData
         }
         else
         {
-            data.Log("debug", {
-                name: "Space object factory",
+            logger.Debug({
+                name: "Space  object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
             });
         }
@@ -1557,7 +1591,10 @@ export class EveSOFData
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        data.Log("debug", "Instance meshes not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Instance meshes not implemented"
+        });
 
         /*
         const { instancedMeshes=[] } = sof.hull;
@@ -1587,7 +1624,10 @@ export class EveSOFData
      */
     static SetupControllers(data, obj, sof, options)
     {
-        data.Log("debug", "Animation controllers not implemented");
+        logger.Debug({
+            name: "Space object factory",
+            message: "Animation controllers not implemented"
+        });
     }
 
     /**
@@ -1599,7 +1639,10 @@ export class EveSOFData
      */
     static SetupTurretMaterial(data, obj, sof, options)
     {
-        data.Log("debug", "Turret materials not implemented");
+        logger.Debug({
+            name: "Space  object factory",
+            message: "Turret materials not implemented"
+        });
     }
 
 }

@@ -1,4 +1,4 @@
-import { vec3, vec4, quat, mat4 } from "global";
+import { vec3, vec4, quat, resMan, logger } from "global";
 import { get, assignIfExists, isArray, isDNA } from "global/util";
 import {
     Tw2ScalarCurve2,
@@ -893,8 +893,7 @@ export function EveSOF(tw2)
         }
         else
         {
-            tw2.Log({
-                type: "warning",
+            logger.Warn({
                 name: "Space object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
             });
@@ -932,12 +931,11 @@ export function EveSOF(tw2)
             const resPath = children[i]["redFilePath"];
             if (resPath)
             {
-                tw2.resMan.GetObject(resPath, onChildLoaded(children[i]));
+                resMan.GetObject(resPath, onChildLoaded(children[i]));
             }
             else
             {
-                tw2.Log({
-                    type: "warning",
+                logger.Warn({
                     name: "Space object factory",
                     message: `No resource path found for "${hull.name}" child at index ${i}`
                 });
@@ -1113,12 +1111,11 @@ export function EveSOF(tw2)
                     }
                 });
 
-                sofPromise = tw2.FetchObject("res:/dx9/model/spaceobjectfactory/data.red")
+                sofPromise = resMan.FetchObject("res:/dx9/model/spaceobjectfactory/data.red")
                     .then(sof => data = sof)
                     .catch(err =>
                     {
-                        tw2.Log({
-                            type: "error",
+                        logger.Error({
                             name: "Space object factory",
                             message: "Could not load data"
                         });
