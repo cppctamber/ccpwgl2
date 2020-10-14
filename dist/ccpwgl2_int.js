@@ -33939,7 +33939,7 @@ var _dec, _class, _class2, _temp;
 
 var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Shader"), _dec(_class = (_temp = _class2 = class Tw2Shader {
   /**
-   * Finds per object data usages in a shader
+   * Finds per object data usages in a shader and retrieves the current values
    * @param {Tw2PerObjectData} perObjectData
    * @param {String } [technique=Main]
    * @returns {{ps: {parameter: [], frame: [], object: []}, ffe: {object: []}, vs: {parameter: [], frame: [], object: []}}}
@@ -33953,21 +33953,21 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
 
     var result = {
       vs: {
-        frame: [],
-        object: [],
-        parameter: [] //texture: [],
+        frame: {},
+        object: {},
+        parameter: {} //texture: [],
         //override: []
 
       },
       ps: {
-        frame: [],
-        object: [],
-        parameter: [] //texture: [],
+        frame: {},
+        object: {},
+        parameter: {} //texture: [],
         //override: []
 
       },
       ffe: {
-        object: []
+        object: {}
       }
     };
     var {
@@ -33975,8 +33975,13 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
       perFrameVSData
     } = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         [stage0, stage1] = this.techniques[technique].passes[0].stages,
-        code = stage0.shaderCode + stage1.shaderCode,
-        lines = code.split(/\r\n|\r|\n/);
+        code = stage0.shaderCode + stage1.shaderCode;
+
+    if (!code) {
+      throw new Error("Debug mode must be enabled when the shader was created");
+    }
+
+    var lines = code.split(/\r\n|\r|\n/);
     var CBH = {
       cb0: {
         name: "ConstantVertex",
@@ -34025,7 +34030,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
     };
     var Swizzle = ["x", "y", "z", "w"];
 
-    function parsePer(per, index, fullElement) {
+    function parsePer(per, index) {
       var {
         target
       } = per;
@@ -34037,14 +34042,9 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
           offset,
           array
         } = el,
-            ix = index - offset,
-            propName = fullElement ? name : name + "." + ix + " (" + array[ix] + ")";
-
-        if (!target.includes(propName)) {
-          target.push(propName);
-          target.sort();
-        }
-
+            ix = index - offset;
+        target[name] = target[name] || {};
+        target[name][ix] = array[ix];
         return;
       }
 
@@ -34057,7 +34057,8 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
         source
       } = stage,
           {
-        constants
+        constants,
+        constantValues
       } = source;
 
       for (var i = 0; i < constants.length; i++) {
@@ -34076,12 +34077,8 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Sha
           parsePer(CBH[CBHReverse[name]], ix);
         } // Parameter
         else {
-            var propName = name + "." + ix;
-
-            if (!target.includes(propName)) {
-              target.push(propName);
-              target.sort();
-            }
+            target[name] = target[name] || {};
+            target[name][ix] = constantValues[offset + ix];
           }
 
         return;
@@ -88544,7 +88541,8 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     }
   }
   /**
-   * @param local
+   * Sets the local transform
+   * @param {mat4} local
    */
 
 
@@ -88562,7 +88560,7 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(out, this._localTransform);
   }
   /**
-   *
+   * Gets resources
    * @param {Array} [out=[]]
    * @returns {Array}
    */
@@ -88576,6 +88574,11 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     });
     return out;
   }
+  /**
+   * Rebuilds boosters
+   * @return {boolean}
+   */
+
 
   RebuildBoosterSet() {
     if (this.boosters) {
@@ -88585,6 +88588,12 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
 
     return false;
   }
+  /**
+   * Gets a turret set by it's locator name
+   * @param {String} locatorName
+   * @return {null|EveTurretSet}
+   */
+
 
   GetTurretSetByLocatorName(locatorName) {
     for (var i = 0; i < this.attachments.length; i++) {
@@ -88627,6 +88636,12 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     this.RebuildTurretSet(turretSet);
     return true;
   }
+  /**
+   * Rebuilds a turret set
+   * @param {EveTurretSet} turretSet
+   * @return {boolean}
+   */
+
 
   RebuildTurretSet(turretSet) {
     var prefix = turretSet.locatorName,
@@ -88646,6 +88661,12 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
     turretSet.UpdateItemsFromLocators(locators);
     return true;
   }
+  /**
+   * Rebuilds overlays from a supplied array
+   * @param {Array<EveMeshOverlayEffect>} overlays
+   * @return {boolean}
+   */
+
 
   RebuildOverlays(overlays = []) {
     var updated = false;
@@ -88665,6 +88686,11 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
 
     return updated;
   }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
 
   Update(dt) {
     if (this._lod < 1 || !this.display) {
@@ -88819,7 +88845,7 @@ var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip
 
   }
   /**
-   *
+   * Per frame update
    * @param {mat4} parentTransform
    * @param {Number} dt
    * @param {Number} worldSpriteScale

@@ -19,7 +19,7 @@ export class Tw2Shader
     annotations = {};
 
     /**
-     * Finds per object data usages in a shader
+     * Finds per object data usages in a shader and retrieves the current values
      * @param {Tw2PerObjectData} perObjectData
      * @param {String } [technique=Main]
      * @returns {{ps: {parameter: [], frame: [], object: []}, ffe: {object: []}, vs: {parameter: [], frame: [], object: []}}}
@@ -36,29 +36,35 @@ export class Tw2Shader
 
         const result = {
             vs: {
-                frame: [],
-                object: [],
-                parameter: [],
-                //texture: [],
-                //override: []
+                frame: {},
+                object: {},
+                parameter: {}
+                //texture: {},
+                //override: {}}
             },
             ps: {
-                frame: [],
-                object: [],
-                parameter: [],
-                //texture: [],
-                //override: []
+                frame: {},
+                object: {},
+                parameter: {}
+                //texture: {},
+                //override: {}
             },
             ffe: {
-                object: [],
+                object: {}
             }
         };
 
         const
             { perFramePSData, perFrameVSData } = device,
             [ stage0, stage1 ] = this.techniques[technique].passes[0].stages,
-            code = stage0.shaderCode + stage1.shaderCode,
-            lines = code.split(/\r\n|\r|\n/);
+            code = stage0.shaderCode + stage1.shaderCode;
+
+        if (!code)
+        {
+            throw new Error("Debug mode must be enabled when the shader was created");
+        }
+
+        const lines = code.split(/\r\n|\r|\n/);
 
         const CBH = {
             cb0: { name: "ConstantVertex", source: stage0, target: result.vs.parameter, isStage: true },
@@ -80,7 +86,7 @@ export class Tw2Shader
 
         const Swizzle = [ "x", "y", "z", "w" ];
 
-        function parsePer(per, index, fullElement)
+        function parsePer(per, index)
         {
             const { target } = per;
 
@@ -89,14 +95,10 @@ export class Tw2Shader
             {
                 const
                     { name, offset, array } = el,
-                    ix = index - offset,
-                    propName = fullElement ? name : name + "." + ix + " (" + array[ix] + ")";
+                    ix = index - offset;
 
-                if (!target.includes(propName))
-                {
-                    target.push(propName);
-                    target.sort();
-                }
+                target[name] = target[name] || {};
+                target[name][ix] = array[ix];
                 return;
             }
 
@@ -107,7 +109,7 @@ export class Tw2Shader
         {
             const
                 { target, source } = stage,
-                { constants } = source;
+                { constants, constantValues } = source;
 
             for (let i = 0; i < constants.length; i++)
             {
@@ -124,12 +126,8 @@ export class Tw2Shader
                 // Parameter
                 else
                 {
-                    const propName = name + "." + ix;
-                    if (!target.includes(propName))
-                    {
-                        target.push(propName);
-                        target.sort();
-                    }
+                    target[name] = target[name] || {};
+                    target[name][ix] = constantValues[offset + ix];
                 }
                 return;
             }
