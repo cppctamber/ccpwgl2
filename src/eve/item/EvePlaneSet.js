@@ -95,28 +95,20 @@ export class EvePlaneSetItem extends EveObjectSetItem
     }
 
     /**
-     * Creates a plane set item from an object
-     * @param {*} [values]
-     * @returns {EvePlaneSetItem}
+     *
+     * @param {EvePlaneSetItem} a
+     * @param {Object} values
+     * @param {Object} [obj]
+     * @return {boolean}
      */
-    static from(values)
+    static set(a, values, obj)
     {
-        const item = new EvePlaneSetItem();
-
-        if (values)
+        if (values && values.maskMapAtlasIndex !== undefined)
         {
-            util.assignIfExists(item, values, [
-                "name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation",
-                "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll", "maskAtlasID"
-            ]);
-
-            // Allow alias for maskAtlasID
-            if (values.maskMapAtlasIndex !== undefined)
-            {
-                item.maskAtlasID = values.maskMapAtlasIndex;
-            }
+            values.maskAtlasID = values.maskMapAtlasIndex;
         }
-        return item;
+
+        return super.set(a, values, obj);
     }
 
 }
@@ -356,6 +348,7 @@ export class EvePlaneSet extends EveObjectSet
     static from(values, options)
     {
         const item = new EvePlaneSet();
+
         if (values)
         {
             util.assignIfExists(item, values, [ "name", "display", "hideOnLowQuality" ]);

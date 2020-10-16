@@ -28,6 +28,37 @@ class Tw2ConstantParameter
 
 }
 
+class Tw2EffectOption
+{
+
+    name = "";
+    value = "";
+
+    /**
+     * Black reader
+     * @param {Tw2BlackBinaryReader} r
+     * @returns {Tw2EffectOption}
+     */
+    static blackStruct(r)
+    {
+        const item = new this();
+        item.name = r.ReadStringU16();
+
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+
+        item.value = r.ReadStringU16();
+
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+
+        return item;
+    }
+}
+
+
 @meta.ctor("Tw2Effect")
 @meta.stage(1)
 export class Tw2Effect extends meta.Model
@@ -831,6 +862,12 @@ export class Tw2Effect extends meta.Model
     static blackReaders = {
 
         parameters: fromList({ key: "name" }),
+
+        options: fromList({
+            key: "name",
+            value: "value",
+            struct: Tw2EffectOption
+        }),
 
         resources: fromList({
             key: "name",

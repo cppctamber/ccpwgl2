@@ -11,7 +11,7 @@ import {
     isString,
     isVector,
     isVector2,
-    isVector3,
+    isVector3, isVector4,
     isVectorEqual
 } from "global/util";
 
@@ -28,7 +28,7 @@ const notImplemented = () => { throw new ReferenceError("Not implemented"); };
 // Boolean
 
 export const boolean = {
-    isValue: isBoolean,
+    is: isBoolean,
     equals: equalsPrimary,
     get: getPrimary,
     set: setPrimary,
@@ -39,7 +39,7 @@ export const boolean = {
 // Numbers
 
 export const byte = {
-    isValue: isNumber,
+    is: isNumber,
     equals: num.equals,
     get: getPrimary,
     set: setPrimary,
@@ -71,14 +71,14 @@ export const path = Object.assign({}, string, { type: Type.PATH });
 // Vectors
 
 export const indexBuffer = {
-    isValue: isVector,
+    is: isVector,
     equals: isVectorEqual,
     get: getArray,
     set: (a, key, value) =>
     {
         if (a[key].length !== value.length)
         {
-            a[key] = new a[key].constructor(value);
+            a[key] = new Uint16Array(value);
         }
         else
         {
@@ -91,7 +91,7 @@ export const indexBuffer = {
 export const vector = Object.assign({}, indexBuffer, { type: Type.VECTOR });
 
 export const matrix3 = {
-    isValue: isMatrix3,
+    is: isMatrix3,
     equals: mat3.equals,
     get: getArray,
     set: (a, key, value) => mat3.copy(a[key], value),
@@ -99,7 +99,7 @@ export const matrix3 = {
 };
 
 export const matrix4 = {
-    isValue: isMatrix4,
+    is: isMatrix4,
     equals: mat4.equals,
     get: getArray,
     set: (a, key, value) => mat4.copy(a[key], value),
@@ -107,7 +107,7 @@ export const matrix4 = {
 };
 
 export const vector2 = {
-    isValue: isVector2,
+    is: isVector2,
     equals: vec2.equals,
     get: getArray,
     set: (a, key, value) => vec2.copy(a[key], value),
@@ -115,7 +115,7 @@ export const vector2 = {
 };
 
 export const vector3 = {
-    isValue: isVector3,
+    is: isVector3,
     equals: vec3.equals,
     get: getArray,
     set: (a, key, value) => vec3.copy(a[key], value),
@@ -123,7 +123,7 @@ export const vector3 = {
 };
 
 export const vector4 = {
-    isValue: isVector2,
+    is: isVector4,
     equals: vec4.equals,
     get: getArray,
     set: (a, key, value) => vec4.copy(a[key], value),
@@ -138,7 +138,7 @@ export const quaternion = Object.assign({}, vector4, { type: Type.QUATERNION });
 // Objects
 
 export const plain = {
-    isValue: isPlain,
+    is: isPlain,
     equals: isEqual,
     get: (a, key) => Object.assign({}, a[key]),
     set: (a, key, value) => Object.assign(a[key], value),
@@ -146,7 +146,7 @@ export const plain = {
 };
 
 export const struct = {
-    isValue(value, dest)
+    is(value, dest)
     {
         if (!isPlain(value)) return false;
         // TODO:  Handle struct type checking...
@@ -155,7 +155,15 @@ export const struct = {
     equals: returnFalse,
     get(a, key, options)
     {
-        return a[key] === null ? null : a[key].GetValues({}, options);
+        try
+        {
+            return a[key] === null ? null : a[key].GetValues({}, options);
+        }
+        catch(err)
+        {
+            console.dir(a[key]);
+            throw err;
+        }
     },
     set: notImplemented,
     type: Type.STRUCT
@@ -164,7 +172,7 @@ export const struct = {
 export const structRaw = Object.assign({}, struct, { type: Type.STRUCT_RAW });
 
 export const structList = {
-    isValue(value, dest)
+    is(value, dest)
     {
         if (!isArray(value)) return false;
         // TODO: Handle struct type checking...
@@ -178,7 +186,15 @@ export const structList = {
         let out = [];
         for (let i = 0; i < len; i++)
         {
-            out.push(a[key][i].GetValues({}, options));
+            try
+            {
+                out.push(a[key][i].GetValues({}, options));
+            }
+            catch(err)
+            {
+                console.dir(a[key][i]);
+                throw err;
+            }
         }
         return out;
     },

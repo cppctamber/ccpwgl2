@@ -34,6 +34,14 @@ export class EveTurretSetItem extends EveObjectSetItem
 
 
     /**
+     * Fires on initialization
+     */
+    Initialize()
+    {
+        this.UpdateValues();
+    }
+
+    /**
      * Fires on value changes
      */
     OnValueChanged()
@@ -58,21 +66,6 @@ export class EveTurretSetItem extends EveObjectSetItem
         {
             quat.copy(this._localRotation, this.rotation);
         }
-    }
-
-    /**
-     * Creates a turret item from an object
-     * @param {*} [opt={}]
-     * @returns {EveTurretSetItem}
-     */
-    static from(opt = {})
-    {
-        const item = new this();
-        util.assignIfExists(item, opt, [
-            "name", "display", "locatorName", "updateFromLocator", "position", "rotation", "canFireWhenHidden"
-        ]);
-        item.UpdateValues();
-        return item;
     }
 
 }

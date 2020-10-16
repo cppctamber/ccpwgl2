@@ -744,7 +744,7 @@ export class EveSOFData
         mask.parameters.PatternMaskMap.SetOverrides({
             addressUMode: EveSOFDataPatternLayer.ToAddress(pU),
             addressVMode: EveSOFDataPatternLayer.ToAddress(pV),
-            forceAddressModes: ext === "dds", // Temporary
+            forceMipMaps: ext === "dds", // Temporary
             useAllOverrides: true
         });
 
@@ -963,7 +963,7 @@ export class EveSOFData
                         {
                             config.overrides[key] = {
                                 useAllOverrides: true,
-                                forceAddressModes: true,
+                                forceMipMaps: true,
                                 mipFilterMode: 1
                             };
                         }
@@ -1295,6 +1295,12 @@ export class EveSOFData
                             message: `Using primary color for decal glow: ${name} (${glowColorType})`
                         });
                     }
+                }
+
+                // TODO: Fix mipmaps on dds
+                if (usage === 1)
+                {
+                    config.overrides.DecalAtMap =  { useAllOverrides: true, forceMipMaps: true };
                 }
 
                 // Item's values override logo types

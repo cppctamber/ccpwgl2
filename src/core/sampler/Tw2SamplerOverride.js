@@ -56,7 +56,7 @@ export class Tw2SamplerOverride
     maxAnisotropy = 0;
 
     @meta.boolean
-    forceAddressModes = false;
+    forceMipMaps = false;
 
 
     _sampler = null;
@@ -93,7 +93,7 @@ export class Tw2SamplerOverride
         const sampler = this._sampler;
         sampler.registerIndex = originalSampler.registerIndex;
         sampler.name = originalSampler.name;
-        sampler.forceAddressModes = this.forceAddressModes;
+        sampler.forceMipMaps = this.forceMipMaps;
 
         const { wrapModes, gl } = device;
 

@@ -1,7 +1,8 @@
 import { Tw2EventEmitter } from "core/class/Tw2EventEmitter";
-import { generateID, getMetadata, hasMetadata, isPlain } from "../util";
+import { generateID, getMetadata, hasMetadata, isObjectObject, isPlain } from "../util";
 import { propTypes } from "./types";
 import { readOnly } from "global/meta/@generic";
+import { logger } from "global/tw2";
 
 
 export class Model extends Tw2EventEmitter
@@ -85,7 +86,7 @@ export class Model extends Tw2EventEmitter
      */
     OnModified(method, context, once)
     {
-        console.log("OnModified is deprecated, use OnModified");
+        logger.Debug("OnModified is deprecated, use OnEvent");
         this.OnEvent("modified", method, context, once);
     }
 
@@ -96,7 +97,7 @@ export class Model extends Tw2EventEmitter
      */
     OffModified(method)
     {
-        console.log("OffModified is deprecated, use OffEvent");
+        logger.Debug("OffModified is deprecated, use OffEvent");
         this.OffEvent("modified", method);
     }
 
@@ -458,9 +459,9 @@ export class Model extends Tw2EventEmitter
             throw new ReferenceError("Not meta type defined");
         }
 
-        if (values && !isPlain(values))
+        if (values && !isObjectObject(values))
         {
-            throw new ReferenceError("Invalid values, expected plain object");
+            throw new ReferenceError("Invalid values, expected plain object or object");
         }
 
         let { _clear, _ids = new Map, skipEvents, skipUpdate, ...options } = opt;
@@ -508,7 +509,7 @@ export class Model extends Tw2EventEmitter
                         continue;
                     }
 
-                    if (!handler.isValue(value, item[key], options))
+                    if (!handler.is(value, item[key], options))
                     {
                         throw new TypeError("Invalid value for property " + key);
                     }
@@ -575,31 +576,6 @@ export class Model extends Tw2EventEmitter
 
         return item;
     }
-
-    /**
-     * Creates an instance from values async
-     * @param values
-     * @param opt
-     * @returns {Promise<{Initialize}>}
-     */
-    static async fromAsync(values, opt)
-    {
-        const item = this.from(values, opt);
-        await Promise.all(Array.from(item.GetAsyncTasks()));
-        return item;
-    }
-
-    /**
-     * Loads an instance and sets values async
-     * @param values
-     * @param opt
-     * @returns {Promise<void>}
-     */
-    static async fetch(values, opt)
-    {
-        throw new Error("Feature not implemented");
-    }
-
 
 }
 

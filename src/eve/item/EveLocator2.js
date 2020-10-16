@@ -1,4 +1,4 @@
-import { meta, mat4, util } from "global";
+import { meta, mat4, } from "global";
 import { vec3 } from "global/index";
 
 
@@ -15,11 +15,11 @@ export class EveLocator2 extends meta.Model
 
     @meta.uint
     @meta.todo("Move to EveLocator only?")
-    atlasIndex0 = null;
+    atlasIndex0 = 0;
 
     @meta.uint
     @meta.todo("Move to EveLocator only?")
-    atlasIndex1 = null;
+    atlasIndex1 = 0;
 
     @meta.struct("Tw2Bone")
     @meta.isPrivate
@@ -117,22 +117,6 @@ export class EveLocator2 extends meta.Model
         vec3_0: vec3.create(),
         mat4_0: mat4.create()
     };
-
-    /**
-     * Creates a locator from options
-     * @param {*} [values]
-     * @param {*} [options]
-     * @returns {EveLocator2}
-     */
-    static from(values, options)
-    {
-        const item = new EveLocator2();
-        if (values)
-        {
-            util.assignIfExists(item, values, [ "transform", "name", "atlasIndex0", "atlasIndex1" ]);
-        }
-        return item;
-    }
 
     /**
      * Locator types

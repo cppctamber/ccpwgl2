@@ -30,8 +30,8 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.string
     name = "";
 
-    @meta.float
-    boosterGainInfluence = 0;
+    @meta.boolean
+    boosterGainInfluence = false;
 
     @meta.uint
     boneIndex = 0;                  // retain from EveSOF?
@@ -61,28 +61,11 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.float
     spriteIntensity = 0;            // Non-standard Faction intensity
 
-    @meta.color
+    @meta.vector3
     spriteScale = vec3.fromValues(1, 1, 1);
 
     @meta.matrix4
     transform = mat4.create();
-
-
-    /**
-     * Creates a spotlight set item from an object
-     * @param {*} [opt={}
-     * @returns {EveSpotlightSetItem}
-     */
-    static from(opt = {})
-    {
-        const item = new this();
-        util.assignIfExists(item, opt, [
-            "name", "display", "boosterGainInfluence", "boneIndex", "groupIndex",
-            "coneIntensity", "spriteIntensity", "flareIntensity", "transform",
-            "coneColor", "spriteColor", "flareColor", "spriteScale"
-        ]);
-        return item;
-    }
 
 }
 

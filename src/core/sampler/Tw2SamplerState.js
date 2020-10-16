@@ -46,7 +46,7 @@ export class Tw2SamplerState
     hash = 0;
 
     @meta.boolean
-    forceAddressModes = false;
+    forceMipMaps = false;
 
     // Not used
     _borderColor = null;
@@ -90,7 +90,7 @@ export class Tw2SamplerState
         this.hash ^= this.addressV;
         this.hash *= 16777619;
         this.hash ^= this.anisotropy;
-        this.hash += this.forceAddressModes ? 1 : 0;
+        this.hash += this.forceMipMaps ? 1 : 0;
     }
 
     /**
@@ -104,7 +104,7 @@ export class Tw2SamplerState
             targetType = this.samplerType,
             gl = device.gl,
             ext = device.GetExtension("EXT_texture_filter_anisotropic"),
-            useAddress = hasMipMaps || this.forceAddressModes;
+            useAddress = hasMipMaps || this.forceMipMaps;
 
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);

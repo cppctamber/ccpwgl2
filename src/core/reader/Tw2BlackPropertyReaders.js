@@ -10,6 +10,7 @@ const TypeReader = {
     [Type.BOOLEAN]: boolean,
     [Type.PATH]: path,
     [Type.STRING]: string,
+    [Type.EXPRESSION]: string,
     [Type.BYTE]: byte,
     [Type.UINT]: uint,
     [Type.USHORT]: ushort,

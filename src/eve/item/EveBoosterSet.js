@@ -98,25 +98,6 @@ export class EveBoosterSetItem extends EveObjectSetItem
         return Math.max(vec3.length([ tr[0], tr[1], tr[2] ]), vec3.length([ tr[4], tr[5], tr[6] ]));
     }
 
-    /**
-     * Creates an item from an object
-     * @param {*} [values]
-     * @returns {EveBoosterSetItem}
-     */
-    static from(values)
-    {
-        const item = new this();
-        if (values)
-        {
-            util.assignIfExists(item.visible, values.visible, [ "glow", "symHalo", "halo", "trail" ]);
-            util.assignIfExists(item, values, [
-                "name", "display", "seed", "wavePhase", "transform",
-                "locatorName", "updateFromLocator", "atlas0", "atlas1"
-            ]);
-        }
-        return item;
-    }
-
 }
 
 

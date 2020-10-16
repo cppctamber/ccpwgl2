@@ -79,25 +79,6 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.todo("Remove this after testing")
     colorType = -1;
 
-    /**
-     * Creates a sprite set item from an object
-     * @param {*} [values]
-     * @returns {EveSpriteSetItem}
-     */
-    static from(values)
-    {
-        const item = new this();
-        if (values)
-        {
-            util.assignIfExists(item, values, [
-                "name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale",
-                "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor",
-                "groupName", "colorType"
-            ]);
-        }
-        return item;
-    }
-
 }
 
 
