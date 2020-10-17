@@ -1,4 +1,5 @@
-import { box3, meta, sph3, vec3 } from "global";
+import { meta } from "utils";
+import { box3, sph3, vec3 } from "math";
 
 
 @meta.ctor("Tw2GeometryMeshArea")

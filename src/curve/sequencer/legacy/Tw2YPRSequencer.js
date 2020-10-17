@@ -1,4 +1,5 @@
-import { meta, quat, vec3 } from "global";
+import { meta } from "utils";
+import { quat, vec3 } from "math";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 

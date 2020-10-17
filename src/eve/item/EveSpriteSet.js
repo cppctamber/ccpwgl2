@@ -1,7 +1,9 @@
-import { vec3, vec4, util, device, meta } from "global";
+import { meta, isObjectLike } from "utils";
+import { device } from "global";
+import { vec3, vec4 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
-import { assignIfExists } from "global/util";
+import { assignIfExists } from "utils";
 import { Tw2Effect } from "core/mesh";
 
 

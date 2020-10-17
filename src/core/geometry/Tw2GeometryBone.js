@@ -1,4 +1,5 @@
-import { meta, mat3, mat4, quat, vec3 } from "global";
+import { meta } from "utils";
+import { mat3, mat4, quat, vec3 } from "math";
 
 
 @meta.ctor("Tw2GeometryBone")

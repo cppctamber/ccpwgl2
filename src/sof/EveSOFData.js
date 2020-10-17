@@ -1,11 +1,15 @@
-import { meta, vec3, vec4, quat, mat4, resMan, tw2, logger } from "global";
-
+import { resMan, tw2, logger } from "global";
+import { vec3, vec4, mat4 } from "math";
 import {
+    meta,
     isDNA,
     isArray,
     get,
-    findElementByPropertyValue, isString, getPathExtension, assignIfExists
-} from "global/util";
+    findElementByPropertyValue,
+    isString,
+    getPathExtension,
+    assignIfExists
+} from "utils";
 
 import {
     ErrFeatureNotImplemented,
@@ -902,7 +906,7 @@ export class EveSOFData
                 }
 
                 // Booster effect color
-                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] || vec4.fromValues(1,1,1,1); // Temp
+                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
                 if (heatGlowColor)
                 {
                     vec4.multiply(heatGlowColor, sof.race.booster.glowColor, options.multiplier.generalHeatGlowColor);
@@ -932,7 +936,7 @@ export class EveSOFData
                 data.AssignMaterialParameters(areaData, config.parameters);
 
                 // Area lights colour
-                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1,1,1,1); // Temp
+                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
                 if (glowColor)
                 {
                     const { colorType } = areaData;
@@ -1300,7 +1304,7 @@ export class EveSOFData
                 // TODO: Fix mipmaps on dds
                 if (usage === 1)
                 {
-                    config.overrides.DecalAtMap =  { useAllOverrides: true, forceMipMaps: true };
+                    config.overrides.DecalAtMap = { useAllOverrides: true, forceMipMaps: true };
                 }
 
                 // Item's values override logo types

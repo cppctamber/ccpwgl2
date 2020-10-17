@@ -1,4 +1,5 @@
-import { meta, vec4 } from "global";
+import { meta } from "utils";
+import { vec4 } from "math";
 import { Tw2Error } from "core/class";
 
 
@@ -81,15 +82,15 @@ export class EveSOFDataFactionColorSet
     Has(type)
     {
         const name = EveSOFDataFactionColorSet.Type[type];
-        
+
         if (name === undefined)
         {
             throw new ErrSOFFactionColorSetTypeUnknown({ type });
         }
-        
+
         return !!this[name];
     }
-    
+
     /**
      * Gets a color type
      * @param {Number} type
@@ -102,7 +103,7 @@ export class EveSOFDataFactionColorSet
         {
             throw new ErrSOFFactionColorSetTypeNotFound({ type });
         }
-        
+
         return vec4.copy(out, this[EveSOFDataFactionColorSet.Type[type]]);
     }
 
@@ -134,8 +135,8 @@ export class EveSOFDataFactionColorSet
         "SecondaryLight",
         "TertiaryLight",
         "WhiteLight"
-    ]
-    
+    ];
+
 }
 
 

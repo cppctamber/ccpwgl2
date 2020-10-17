@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2GeometryLineBatch } from "../batch";
 import { Tw2MeshArea } from "./Tw2MeshArea";
 

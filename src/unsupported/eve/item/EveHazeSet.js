@@ -1,4 +1,5 @@
-import { meta, quat, vec3, mat4 } from "global";
+import { meta } from "utils";
+import { quat, vec3, mat4 } from "math";
 import { Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 

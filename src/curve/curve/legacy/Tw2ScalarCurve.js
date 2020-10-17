@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 

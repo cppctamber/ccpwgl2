@@ -1,5 +1,7 @@
 /* eslint no-unused-vars:0 */
-import { meta, mat4, vec3, WrappedType } from "global";
+import { meta } from "utils";
+import { WrappedType } from "global";
+import { mat4, vec3 } from "math";
 
 
 export class EveObject extends meta.Model

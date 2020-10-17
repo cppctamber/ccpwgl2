@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2Error } from "core";
 
 
@@ -28,6 +28,7 @@ export class EveSOFDataPattern
     {
         return this.IndexOfProjection(name) !== -1;
     }
+
     /**
      * Gets a pattern projection
      * @param {String} name

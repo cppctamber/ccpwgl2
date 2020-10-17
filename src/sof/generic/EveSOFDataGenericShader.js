@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataGenericShader")
@@ -48,25 +48,26 @@ export class EveSOFDataGenericShader
      * @param  {object} [provided={}]
      * @returns {Object} config
      */
-    Assign(config={}, provided={})
+    Assign(config = {}, provided = {})
     {
         config.textures = this.AssignTextures(config.textures, provided.textures);
         config.parameters = this.AssignParameters(config.parameters, provided.parameters);
         return config;
     }
+
     /**
      * Assigns the shader's parameters to an object
      * @param {Object} [out={}]
      * @param {Object} [provided]
      * @returns {Object} out
      */
-    AssignParameters(out={}, provided)
+    AssignParameters(out = {}, provided)
     {
         for (let i = 0; i < this.defaultParameters.length; i++)
         {
             this.defaultParameters[i].Assign(out);
         }
-        
+
         for (let i = 0; i < this.parameters.length; i++)
         {
             const { str } = this.parameters[i];
@@ -80,7 +81,7 @@ export class EveSOFDataGenericShader
                 out[str] = [ 0, 0, 0, 1 ];
             }
         }
-        
+
         return out;
     }
 
@@ -96,7 +97,7 @@ export class EveSOFDataGenericShader
         {
             this.defaultTextures[i].Assign(out);
         }
-        
+
         // No way to know what textures are allowed
         return Object.assign(out, provided);
     }

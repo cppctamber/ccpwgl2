@@ -1,5 +1,5 @@
 import { Tw2CurveKey, Tw2Curve } from "./Tw2Curve";
-import { meta } from "global/index";
+import { meta } from "utils";
 
 
 const Extrapolation = {

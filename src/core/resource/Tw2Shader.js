@@ -1,4 +1,6 @@
-import { meta, quat, util, device } from "global";
+import { meta, isString } from "utils";
+import { device } from "global";
+import { quat } from "math";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import shaderOverrides from "./shaderOverrides.json";
@@ -761,7 +763,7 @@ export class Tw2Shader
         }
         else
         {
-            let source = prefix + (util.isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
+            let source = prefix + (isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
             source = source.substr(0, source.length - 1);
             gl.shaderSource(shader, source);
             gl.compileShader(shader);

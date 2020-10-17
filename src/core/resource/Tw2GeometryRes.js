@@ -1,4 +1,6 @@
-import { meta, box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "global";
+import { meta } from "utils";
+import { resMan, device } from "global";
+import { box3, sph3, vec3, quat, mat3, mat4 } from "math";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { Tw2Resource } from "./Tw2Resource";
@@ -180,7 +182,7 @@ export class Tw2GeometryRes extends Tw2Resource
         vec3.set(this.boundsSpherePosition, 0, 0, 0);
         this.boundsSphereRadius = 0;
 
-        switch(this._extension)
+        switch (this._extension)
         {
             case "wbg":
                 this.PrepareWBG(data);
@@ -1053,7 +1055,6 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
 }
-
 
 
 /**

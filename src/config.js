@@ -7,7 +7,7 @@ import * as unsupported from "./unsupported";
 import * as wrapped from "./wrapped";
 
 import { path } from "./core/reader/Tw2BlackPropertyReaders";
-import { vec4, mat4 } from "./global/math";
+import { vec4, mat4 } from "./math";
 
 /**
  * Black property path  handler
@@ -35,7 +35,7 @@ path.handler = function(filepath)
 
         if (filepath.includes(".gr2"))
         {
-            filepath=filepath.replace("gr2", "cake");
+            filepath = filepath.replace("gr2", "cake");
         }
     }
 
@@ -44,10 +44,10 @@ path.handler = function(filepath)
 
 
 const remapTextures = {
-    "res:/texture/global/noise.dds" : "res:/texture/global/noise.dds.0.png",
-    "res:/texture/global/spotramp.dds" : "res:/texture/global/spotramp.dds.0.png",
-    "res:/texture/global/whitesharp.dds" : "res:/texture/particle/whitesharp.dds.0.png",
-    "res:/texture/particle/whitesharp.dds" : "res:/texture/particle/whitesharp.dds.0.png",
+    "res:/texture/global/noise.dds": "res:/texture/global/noise.dds.0.png",
+    "res:/texture/global/spotramp.dds": "res:/texture/global/spotramp.dds.0.png",
+    "res:/texture/global/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
+    "res:/texture/particle/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
     "res:/dx9/texture/decal/deck_01_cube.dds": "cdn:/dx9/texture/decal/deck_01_cube.dds.0.png"
 };
 

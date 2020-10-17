@@ -1,5 +1,6 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, vec4, quat } from "global";
+import { meta } from "utils";
+import { vec3, vec4, quat } from "math";
 
 
 export class Tw2CurveKey extends meta.Model

@@ -1,5 +1,5 @@
 import { Tw2GeometryBatch } from "../batch";
-import { util, meta } from "global";
+import { meta, assignIfExists } from "utils";
 import { Tw2Effect } from "./Tw2Effect";
 
 
@@ -55,7 +55,7 @@ export class Tw2MeshArea extends meta.Model
      * @param {Array} out
      * @returns {Array<Tw2Resource>} out
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         return this.effect ? this.effect.GetResources(out) : out;
     }
@@ -79,11 +79,11 @@ export class Tw2MeshArea extends meta.Model
     static from(values, options)
     {
         const item = new this();
-        util.assignIfExists(item, options, "index");
+        assignIfExists(item, options, "index");
 
         if (values)
         {
-            util.assignIfExists(item, values, [
+            assignIfExists(item, values, [
                 "name", "display", "count", "index", "reversed", "useSHLighting"
             ]);
 

@@ -1,7 +1,7 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "core/resource/Tw2LoadingObject";
 import { Tw2EventEmitter, Tw2Error, ErrFeatureNotImplemented } from "../class";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "global/util";
+import { assignIfExists, getPathExtension, isBoolean, isDNA, isError, isFunction } from "utils";
 import { logger } from "global/tw2";
 
 
@@ -21,6 +21,7 @@ import { logger } from "global/tw2";
  * @property {Number} _purgeFrameLimit
  * @property {Array<String>} _pendingLoads - an array of pending loads
  * @property {Number} _noLoadFrames
+ * @property {EveSOF} _eveSof
  */
 export class Tw2ResMan extends Tw2EventEmitter
 {
@@ -39,6 +40,8 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeFrameLimit = 1000;
     _pendingLoads = [];
     _noLoadFrames = 0;
+
+    _eveSof = null;
 
     /**
      * Gets a count of pending loads
@@ -274,6 +277,15 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     GetObject(path, onResolved, onRejected)
     {
+        if (isDNA(path))
+        {
+            if (!this._eveSof) throw new ReferenceError("Eve sof not provided");
+
+            return this._eveSof.FetchObject(path)
+                .then(onResolved)
+                .catch(onRejected);
+        }
+
         path = Tw2ResMan.NormalizePath(path);
 
         // Check if already loaded
@@ -297,6 +309,12 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     async FetchObject(path)
     {
+        if (isDNA(path))
+        {
+            if (!this._eveSof) throw new ReferenceError("Eve sof not provided");
+            return this._eveSof.FetchObject(path);
+        }
+
         return new Promise((resolve, reject) =>
         {
             this.GetObject(path, resolve, reject);
@@ -545,8 +563,6 @@ export class Tw2ResMan extends Tw2EventEmitter
     };
 
 }
-
-
 
 
 /**

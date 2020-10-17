@@ -1,4 +1,4 @@
-import { meta, util } from "global";
+import { meta, assignIfExists } from "utils";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 
 
@@ -77,7 +77,7 @@ export class Tw2PostEffectStep extends meta.Model
     static from(opt = {})
     {
         const item = new this();
-        util.assignIfExists(item, opt, [ "name", "display", "target", "index" ]);
+        assignIfExists(item, opt, [ "name", "display", "target", "index" ]);
 
         if (opt.inputs)
         {

@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("Tw2Animation")
@@ -72,7 +72,7 @@ export class Tw2Animation extends meta.Model
      * - If the callback returns true it will be removed once fired
      * @param {Function} [callback=null]
      */
-    AddCallback(callback=null)
+    AddCallback(callback = null)
     {
         this._callback = callback;
     }

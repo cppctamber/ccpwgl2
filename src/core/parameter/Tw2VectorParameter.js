@@ -1,5 +1,5 @@
 import { ErrIndexBounds } from "../class/Tw2Error";
-import { util, meta } from "global";
+import { meta, isArrayLike } from "utils";
 
 
 @meta.ctor("Tw2VectorParameter")
@@ -156,7 +156,7 @@ export class Tw2VectorParameter extends meta.Model
      */
     static isValue(value)
     {
-        return (util.isArrayLike(value) && value.length === this.constantBufferSize);
+        return (isArrayLike(value) && value.length === this.constantBufferSize);
     }
 
     /**

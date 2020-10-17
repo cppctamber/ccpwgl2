@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataAreaMaterial")
@@ -6,7 +6,7 @@ export class EveSOFDataAreaMaterial
 {
 
     @meta.string
-    name ="";
+    name = "";
 
     @meta.uint
     colorType = 0;
@@ -28,7 +28,7 @@ export class EveSOFDataAreaMaterial
      * @param {Object} out
      * @returns {{}}
      */
-    Assign(out={})
+    Assign(out = {})
     {
         out.colorType = this.colorType;
         if (this.material1) out.material1 = this.material1;

@@ -1,4 +1,5 @@
-import { meta, vec3, quat } from "global";
+import { meta } from "utils";
+import { vec3, quat } from "math";
 
 
 @meta.ctor("EveLocatorSetItem")

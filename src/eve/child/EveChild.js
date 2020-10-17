@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, mat4 } from "global";
-
+import { meta } from "utils";
+import { vec3, mat4 } from "math";
 
 export class EveChild extends meta.Model
 {

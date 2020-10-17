@@ -1,4 +1,5 @@
-import { meta, noise } from "global";
+import { meta } from "utils";
+import { noise } from "math";
 import { Tw2Curve } from "./Tw2Curve";
 
 

@@ -1,5 +1,5 @@
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
-import { meta } from "global/index";
+import { meta } from "utils";
 
 
 @meta.notImplemented

@@ -1,5 +1,5 @@
-import { Tw2GenericStore,  STORE } from "./Tw2GenericStore";
-import { isFunction, isPlain, isString } from "global/util";
+import { Tw2GenericStore, STORE } from "./Tw2GenericStore";
+import { isFunction, isPlain, isString } from "utils";
 
 
 export class Tw2VariableStore extends Tw2GenericStore

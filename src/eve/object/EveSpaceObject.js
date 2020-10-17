@@ -1,4 +1,5 @@
-import { meta, box3, vec3, mat4, util, sph3 } from "global";
+import { meta, perArrayChild } from "utils";
+import { box3, vec3, mat4, sph3 } from "math";
 import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
@@ -140,7 +141,7 @@ export class EveSpaceObject extends EveObject
      * Rebuilds the object's bounds
      * @param {boolean} force
      */
-    RebuildBounds(force=this._boundsDirty)
+    RebuildBounds(force = this._boundsDirty)
     {
         if (!this._boundingSphere)
         {
@@ -210,15 +211,16 @@ export class EveSpaceObject extends EveObject
     {
         if (this.mesh) this.mesh.GetResources(out);
         if (this.animation) this.animation.GetResources(out);
-        util.perArrayChild(this.spriteSets, "GetResources", out);
-        util.perArrayChild(this.turretSets, "GetResources", out);
-        util.perArrayChild(this.decals, "GetResources", out);
-        util.perArrayChild(this.spotlightSets, "GetResources", out);
-        util.perArrayChild(this.planeSets, "GetResources", out);
-        util.perArrayChild(this.lineSets, "GetResources", out);
-        util.perArrayChild(this.overlayEffects, "GetResources", out);
-        util.perArrayChild(this.effectChildren, "GetResources", out);
-        util.perArrayChild(this.children, "GetResources", out);
+        const per = perArrayChild;
+        per(this.spriteSets, "GetResources", out);
+        per(this.turretSets, "GetResources", out);
+        per(this.decals, "GetResources", out);
+        per(this.spotlightSets, "GetResources", out);
+        per(this.planeSets, "GetResources", out);
+        per(this.lineSets, "GetResources", out);
+        per(this.overlayEffects, "GetResources", out);
+        per(this.effectChildren, "GetResources", out);
+        per(this.children, "GetResources", out);
         return out;
     }
 
@@ -383,7 +385,7 @@ export class EveSpaceObject extends EveObject
      * @param {Array<EveMeshOverlayEffect>} [overlays=[]] - The overlays that should be in effect
      * @return {Boolean} true if updated
      */
-    RebuildOverlays(overlays=[])
+    RebuildOverlays(overlays = [])
     {
         if (overlays.length === 0 && this.overlayEffects.length === 0)
         {
@@ -435,7 +437,7 @@ export class EveSpaceObject extends EveObject
         }
 
         // Temporary
-        if  (this._worldSpriteScale !== worldSpriteScale)
+        if (this._worldSpriteScale !== worldSpriteScale)
         {
             this._worldSpriteScale = worldSpriteScale;
 
@@ -547,7 +549,7 @@ export class EveSpaceObject extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display  ||  this._lod < 1) return;
+        if (!this.display || this._lod < 1) return;
 
         const
             show = this.visible,

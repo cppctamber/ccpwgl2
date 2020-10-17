@@ -1,4 +1,5 @@
-import { meta, resMan, } from "global";
+import { meta } from "utils";
+import { resMan, } from "global";
 import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "core";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 

@@ -1,4 +1,5 @@
-import { meta, mat4, vec3 } from "global";
+import { meta } from "utils";
+import { mat4, vec3 } from "math";
 
 
 @meta.ctor("EveSOFDataHullSpotlightSetItem")

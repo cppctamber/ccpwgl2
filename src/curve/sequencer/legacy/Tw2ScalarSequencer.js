@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 

@@ -1,4 +1,5 @@
-import { meta, util, device, resMan, store } from "global";
+import { meta, assignIfExists } from "utils";
+import { device, resMan, store } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
@@ -251,8 +252,7 @@ export class Tw2Effect extends meta.Model
                         {
                             const
                                 constant = stageRes.constants[k],
-                                name = constant.name,
-                                Type = constant.Type;
+                                { name, Type } = constant;
 
                             if (Tw2Effect.ConstantIgnore.includes(name)) continue;
 
@@ -778,7 +778,7 @@ export class Tw2Effect extends meta.Model
 
         const { parameters, textures, overrides, options, effectFilePath = "" } = values;
 
-        let updated = util.assignIfExists(a, values, [ "name", "display", "autoParameter" ]);
+        let updated = assignIfExists(a, values, [ "name", "display", "autoParameter" ]);
 
         if (parameters && a.SetParameters(parameters, true)) updated = true;
         if (overrides && a.SetOverrides(overrides, true)) updated = true;
@@ -839,7 +839,7 @@ export class Tw2Effect extends meta.Model
      */
     static get(a, out = {})
     {
-        util.assignIfExists(out, a, [ "name", "display", "effectFilePath" ]);
+        assignIfExists(out, a, [ "name", "display", "effectFilePath" ]);
         out.parameters = a.GetParameters();
         out.textures = a.GetTextures();
         out.overrides = a.GetOverrides();

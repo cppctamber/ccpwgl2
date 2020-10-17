@@ -1,12 +1,12 @@
-import { Model, singleton } from "global/meta";
+import { Model, singleton } from "utils/meta";
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
 import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
 import { path } from "core/reader/Tw2BlackPropertyReaders";
 import * as consts from "global/engine/Tw2Constant";
-import * as math from "global/math";
-import * as util from "global/util";
+import * as math from "math";
+import * as util from "utils";
 
 import {
     isFunction,
@@ -14,7 +14,7 @@ import {
     isString,
     toArray,
     isDNA,
-} from "global/util";
+} from "utils";
 
 @singleton
 export class Tw2Library extends Tw2EventEmitter

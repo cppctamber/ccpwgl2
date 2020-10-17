@@ -1,4 +1,5 @@
-import { meta, vec4, quat } from "global";
+import { meta } from "utils";
+import { vec4, quat } from "math";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 

@@ -1,8 +1,8 @@
-import { meta, vec3, vec4, mat4, util, device } from "global";
-import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
+import { meta, assignIfExists, isFunction } from "utils";
+import { device } from "global";
+import { vec3, vec4, mat4 } from "math";
+import { Tw2VertexDeclaration, Tw2RenderBatch, Tw2Effect } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
-import { assignIfExists, isFunction } from "global/util";
-import { Tw2Effect } from "core/mesh";
 
 
 class EveSpotlightSetBatch extends Tw2RenderBatch

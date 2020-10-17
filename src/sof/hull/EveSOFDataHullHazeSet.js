@@ -1,4 +1,4 @@
-import { meta } from "global/index";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataHullHazeSet")

@@ -1,5 +1,5 @@
 import { STORE, Tw2GenericStore } from "./Tw2GenericStore";
-import { isFunction } from "global/util";
+import { isFunction } from "utils";
 
 
 export class Tw2ConstructorStore extends Tw2GenericStore
@@ -63,7 +63,7 @@ export class Tw2ConstructorStore extends Tw2GenericStore
      */
     static onBefore(Ctor, key, source)
     {
-        const { Constructor,  DEBUG_MODE } = STORE.get(source);
+        const { Constructor, DEBUG_MODE } = STORE.get(source);
         if (Constructor) Constructor.prototype[key] = Ctor;
         if ("DEBUG_ENABLED" in Ctor) Ctor.DEBUG_ENABLED = DEBUG_MODE;
     }

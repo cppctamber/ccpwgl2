@@ -1,4 +1,5 @@
-import { meta, curve, util, vec4 } from "global";
+import { meta, generateID } from "utils";
+import { curve, vec4 } from "math";
 import { ErrFeatureNotImplemented } from "core";
 
 
@@ -15,8 +16,9 @@ export class Tw2MayaAnimationEngine
     @meta.list()
     bezierSegments = [];
 
+    @meta.readOnly
+    _id = generateID();
 
-    _id = util.generateID();
     _currentCurveIndex = 0;
     _evalCache = null;
 

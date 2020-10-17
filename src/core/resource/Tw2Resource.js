@@ -1,5 +1,5 @@
-import { meta, resMan } from "global";
-import { isFunction } from "global/util";
+import { resMan } from "global";
+import { meta, isFunction } from "utils";
 import { Tw2Notifications, Tw2Error } from "../class";
 
 /**

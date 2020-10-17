@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataRaceDamage")
@@ -22,7 +22,7 @@ export class EveSOFDataRaceDamage
      * @param {Object} [out={}]
      * @returns {Object}
      */
-    AssignArmor(out={})
+    AssignArmor(out = {})
     {
         out.parameters = out.parameters || {};
         out.textures = out.textures || {};
@@ -45,7 +45,7 @@ export class EveSOFDataRaceDamage
      * @param {Object} [out={}]
      * @returns {Object}
      */
-    AssignShield(out={})
+    AssignShield(out = {})
     {
         out.parameters = out.parameters || {};
         out.textures = out.textures || {};

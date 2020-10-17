@@ -1,5 +1,6 @@
+import { meta } from "utils";
+import { vec4 } from "math";
 import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
-import { meta, vec4 } from "global";
 
 
 @meta.notImplemented

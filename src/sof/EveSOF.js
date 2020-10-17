@@ -1,5 +1,6 @@
-import { vec3, vec4, quat, resMan, logger } from "global";
-import { get, assignIfExists, isArray, isDNA } from "global/util";
+import { resMan, logger } from "global";
+import { vec3, vec4, quat } from "math";
+import { get, assignIfExists, isArray, isDNA } from "utils";
 import {
     Tw2ScalarCurve2,
     Tw2ScalarKey2,
@@ -27,7 +28,6 @@ import {
     EveShip,
     EveCustomMask
 } from "../eve";
-
 
 
 export function EveSOF(tw2)

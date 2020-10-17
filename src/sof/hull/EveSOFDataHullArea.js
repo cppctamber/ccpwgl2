@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataHullArea")
@@ -34,7 +34,7 @@ export class EveSOFDataHullArea
      * @param {Object} config={}]
      * @returns {Object} config
      */
-    Assign(config={})
+    Assign(config = {})
     {
         config.textures = this.AssignTextures(config.textures);
         config.parameters = this.AssignParameters(config.parameters);
@@ -46,7 +46,7 @@ export class EveSOFDataHullArea
      * @param {Object} [out={}]
      * @returns {Object} out
      */
-    AssignParameters(out={})
+    AssignParameters(out = {})
     {
         for (let i = 0; i < this.parameters.length; i++)
         {
@@ -60,7 +60,7 @@ export class EveSOFDataHullArea
      * @param {Object} [out={}]
      * @returns {Object} out
      */
-    AssignTextures(out={})
+    AssignTextures(out = {})
     {
         for (let i = 0; i < this.textures.length; i++)
         {

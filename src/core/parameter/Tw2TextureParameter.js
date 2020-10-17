@@ -1,4 +1,5 @@
-import { resMan, device, util, meta } from "global";
+import { meta, assignIfExists, isString } from "utils";
+import { resMan, device } from "global";
 import { Tw2SamplerState } from "../sampler";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
@@ -185,7 +186,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     SetOverrides(opt = {})
     {
-        if (util.assignIfExists(this, opt, Tw2TextureParameter.overrideProperties))
+        if (assignIfExists(this, opt, Tw2TextureParameter.overrideProperties))
         {
             this.UpdateValues();
             return true;
@@ -199,7 +200,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     GetOverrides(out = {})
     {
-        util.assignIfExists(out, this, Tw2TextureParameter.overrideProperties);
+        assignIfExists(out, this, Tw2TextureParameter.overrideProperties);
         return out;
     }
 
@@ -299,7 +300,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     static isValue(a)
     {
-        return util.isString(a);
+        return isString(a);
     }
 
     /**

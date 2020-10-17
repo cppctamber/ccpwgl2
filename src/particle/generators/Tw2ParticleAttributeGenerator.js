@@ -1,5 +1,6 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3 } from "global";
+import { meta } from "utils";
+import { vec3 } from "math";
 
 
 export class Tw2ParticleAttributeGenerator extends meta.Model

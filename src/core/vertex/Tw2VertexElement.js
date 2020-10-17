@@ -1,4 +1,4 @@
-import { meta, GL_FLOAT, util } from "global";
+import { meta, isString } from "utils";
 import * as consts from "global/engine/Tw2Constant";
 
 
@@ -54,7 +54,7 @@ export class Tw2VertexElement
         {
             // Compulsory
             let { usage, usageIndex } = values;
-            item.usage = util.isString(usage) ? this.Type[usage.toUpperCase()] : usage;
+            item.usage = isString(usage) ? this.Type[usage.toUpperCase()] : usage;
             item.usageIndex = usageIndex;
 
             // Optional
@@ -65,8 +65,8 @@ export class Tw2VertexElement
             item.customSetter = customSetter;
 
             // Optional
-            let { type = GL_FLOAT } = values;
-            if (util.isString(type))
+            let { type = consts.GL_FLOAT } = values;
+            if (isString(type))
             {
                 if (type.substring(0, 3) !== "GL_") type = "GL_" + type;
                 type = consts[type];

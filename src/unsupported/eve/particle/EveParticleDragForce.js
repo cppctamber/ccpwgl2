@@ -1,5 +1,5 @@
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
-import { meta } from "global";
+import { meta } from "utils";
 
 /**
  * EveParticleDragForce

@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataGenericDecalShader")
@@ -24,7 +24,7 @@ export class EveSOFDataGenericDecalShader
      * @param {Object} [provided={}]
      * @returns {Object} config
      */
-    Assign(config={}, provided={})
+    Assign(config = {}, provided = {})
     {
         config.textures = this.AssignTextures(config.textures, provided.textures);
         config.parameters = this.AssignParameters(config.parameters, provided.parameters);
@@ -62,7 +62,7 @@ export class EveSOFDataGenericDecalShader
      * @param {Object} [provided]
      * @returns {Object} out
      */
-    AssignTextures(out={}, provided)
+    AssignTextures(out = {}, provided)
     {
         for (let i = 0; i < this.defaultTextures.length; i++)
         {

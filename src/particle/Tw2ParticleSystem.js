@@ -1,4 +1,6 @@
-import { meta, vec3, mat4, device } from "global";
+import { meta } from "utils";
+import { device } from "global";
+import { vec3, mat4 } from "math";
 import { Tw2VertexDeclaration } from "core";
 import { Tw2ParticleElement } from "./element";
 

@@ -1,4 +1,5 @@
-import { meta, vec3, vec4, quat } from "global";
+import { meta } from "utils";
+import { vec3, vec4, quat } from "math";
 
 
 @meta.ctor("EveSOFDataHullLightSetSpotLight")

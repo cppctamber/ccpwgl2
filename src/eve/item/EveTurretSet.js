@@ -1,4 +1,6 @@
-import { meta, vec3, vec4, quat, mat4, util, resMan, device } from "global";
+import { meta } from "utils";
+import { resMan, device } from "global";
+import { vec3, vec4, quat, mat4 } from "math";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,

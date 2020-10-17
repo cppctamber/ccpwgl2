@@ -1,5 +1,6 @@
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
-import { util, GL_FLOAT } from "global";
+import { GL_FLOAT } from "global";
+import { isString, isVector, isVector3 } from "utils";
 
 
 export class Tw2CakeReader
@@ -23,7 +24,7 @@ export class Tw2CakeReader
      */
     constructor(data)
     {
-        if (!util.isString(data))
+        if (!isString(data))
         {
             throw new ReferenceError("Invalid format, expected string");
         }
@@ -94,7 +95,7 @@ export class Tw2CakeReader
                         const face = parseLine();
                         if (face.name === "FACE")
                         {
-                            if (!util.isVector3(face.value))
+                            if (!isVector3(face.value))
                             {
                                 throw new ReferenceError("Unexpected face value: " + face.value);
                             }
@@ -135,7 +136,7 @@ export class Tw2CakeReader
                         declarations.push(declaration);
                     }
 
-                    if (!util.isVector(value) || value.length !== declaration.elements)
+                    if (!isVector(value) || value.length !== declaration.elements)
                     {
                         throw new ReferenceError(`Invalid value for declaration "${name}": ${value}`);
                     }

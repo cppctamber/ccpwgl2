@@ -1,5 +1,5 @@
-import { meta, resMan } from "global";
-import { toArray } from "global/util";
+import { resMan } from "global";
+import { meta, toArray } from "utils";
 
 
 @meta.notImplemented

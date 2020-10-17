@@ -1,5 +1,6 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { meta, vec3 } from "global";
+import { meta } from "utils";
+import { vec3 } from "math";
 
 
 @meta.ctor("Tw2CurveVector3", "Tr2CurveVector3")

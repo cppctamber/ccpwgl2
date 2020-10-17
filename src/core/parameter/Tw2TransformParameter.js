@@ -1,8 +1,7 @@
+import { meta } from "utils";
+import { vec3, quat, mat4 } from "math";
 import { Tw2Parameter } from "./Tw2Parameter";
-import { meta, vec3, quat, mat4, util } from "global";
 
-
-// TODO: Revert to the standard Tw2TransformParameter
 
 @meta.ctor("Tw2TransformParameter", "Tr2TransformParameter")
 export class Tw2TransformParameter extends Tw2Parameter
@@ -43,7 +42,7 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         mat4.getRotation(this.rotation, value);
         mat4.getTranslation(this.translation, value);
-        mat4.getScaling(this.scaling,  value);
+        mat4.getScaling(this.scaling, value);
         this.UpdateValues(opt);
     }
 

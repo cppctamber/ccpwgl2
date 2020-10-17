@@ -1,4 +1,5 @@
-import { meta, vec3, quat, mat4, util } from "global";
+import { meta, isVector3, isVector4, isMatrix4, isNumber } from "utils";
+import { vec3, quat, mat4 } from "math";
 
 
 const
@@ -906,7 +907,7 @@ export class Tw2Transforms extends meta.Model
         if (transform)
         {
             updated = true;
-            if (util.isMatrix4)
+            if (isMatrix4)
             {
                 a.SetTransform(transform);
             }
@@ -920,11 +921,11 @@ export class Tw2Transforms extends meta.Model
         {
             updated = true;
 
-            if (util.isVector3(rotation))
+            if (isVector3(rotation))
             {
                 a.SetRotationFromEuler(rotation);
             }
-            else if (util.isVector4(rotation))
+            else if (isVector4(rotation))
             {
                 a.SetRotation(rotation);
             }
@@ -938,11 +939,11 @@ export class Tw2Transforms extends meta.Model
         {
             updated = true;
 
-            if (util.isNumber(scale))
+            if (isNumber(scale))
             {
                 a.SetScaleUniform(scale);
             }
-            else if (util.isVector3)
+            else if (isVector3)
             {
                 a.SetScale(scale);
             }

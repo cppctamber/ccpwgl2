@@ -1,4 +1,6 @@
-import { meta, vec3, mat4, WrappedType } from "global";
+import { meta } from "utils";
+import { WrappedType } from "global";
+import { vec3, mat4 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
@@ -74,11 +76,15 @@ export class EveShip2 extends EveObject
     @meta.float
     boosterGain = 1;
 
+    @meta.list("EveChild")
+    @meta.todo("How to handle serializing these? They are loaded from the sof")
+    effectChildren = [];
+
     @meta.plain
     visible = {
         mesh: true,
         children: true,
-        //effectChildren: true,
+        effectChildren: true,
         planeSets: true,
         spotlightSets: true,
         decals: true,
@@ -116,7 +122,7 @@ export class EveShip2 extends EveObject
      */
     FindTurretSetByLocatorName(locator)
     {
-        for (let  i = 0; i < this.attachments.length; i++)
+        for (let i = 0; i < this.attachments.length; i++)
         {
             if (this.attachments[i] instanceof EveTurretSet && this.attachments[i].locatorName === locator)
             {
@@ -290,7 +296,7 @@ export class EveShip2 extends EveObject
      */
     SetTransform(local)
     {
-        mat4.copy(this._localTransform,  local);
+        mat4.copy(this._localTransform, local);
     }
 
     /**
@@ -308,7 +314,7 @@ export class EveShip2 extends EveObject
      * @param {Array} [out=[]]
      * @returns {Array}
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         this.PerChild(x =>
         {
@@ -420,7 +426,7 @@ export class EveShip2 extends EveObject
      * @param {Array<EveMeshOverlayEffect>} overlays
      * @return {boolean}
      */
-    RebuildOverlays(overlays=[])
+    RebuildOverlays(overlays = [])
     {
         let updated = false;
         for (let i = 0; i < this.attachments.length; i++)
@@ -474,18 +480,15 @@ export class EveShip2 extends EveObject
             this.attachments[i].Update(dt, this);
         }
 
-        for  (let i = 0; i < this.children.length;  i++)
+        for (let i = 0; i < this.children.length; i++)
         {
-            this.children[i].Update(dt);
+            this.children[i].Update(dt, this._worldTransform);
         }
 
-        /*
-        // Where have these gone?
-        for  (let i =  0;  i < this.effectChildren.length; i++)
+        for (let i = 0; i < this.effectChildren.length; i++)
         {
             this.effectChildren[i].Update(dt, this._worldTransform, this._lod);
         }
-         */
 
         if (this.animation)
         {
@@ -526,7 +529,7 @@ export class EveShip2 extends EveObject
             for (let i = 0; i < this.attachments.length; i++)
             {
                 const item = this.attachments[i];
-                switch(item.constructor)
+                switch (item.constructor)
                 {
                     case EveTurretSet:
                         if (show.turretSets)
@@ -609,7 +612,6 @@ export class EveShip2 extends EveObject
             }
         }
 
-        /* Where have these gone?
         if (show.effectChildren)
         {
             for (let i = 0; i < this.effectChildren.length; i++)
@@ -617,7 +619,6 @@ export class EveShip2 extends EveObject
                 this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
             }
         }
-         */
 
     }
 
@@ -627,7 +628,7 @@ export class EveShip2 extends EveObject
      * @param {Number} dt
      * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform,  dt, worldSpriteScale)
+    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
         mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
@@ -636,7 +637,7 @@ export class EveShip2 extends EveObject
             const
                 rotation = EveObject.global.quat_0,
                 translation = EveObject.global.vec3_0,
-                scaling =  mat4.getScaling(EveObject.global.vec3_0, this._localTransform);
+                scaling = mat4.getScaling(EveObject.global.vec3_0, this._localTransform);
 
             if (this.rotationCurve)
             {
@@ -676,7 +677,7 @@ export class EveShip2 extends EveObject
         }
 
         // TODO: Replace in Update or ViewDependantUpdate
-        if (worldSpriteScale  !== this._worldSpriteScale)
+        if (worldSpriteScale !== this._worldSpriteScale)
         {
             this._worldSpriteScale = worldSpriteScale;
 

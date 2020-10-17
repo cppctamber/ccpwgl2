@@ -1,5 +1,5 @@
 import { EveChild } from "eve/child";
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.notImplemented

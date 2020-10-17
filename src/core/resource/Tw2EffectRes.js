@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader } from "./Tw2Shader";

@@ -1,34 +1,46 @@
-import { vec2, vec3, vec4, mat4, store } from "global";
+import { store } from "global";
+import { vec2, vec3, vec4, mat4 } from "math";
 import { ErrFeatureNotImplemented } from "../class/Tw2Error";
 import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
-import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "global/util";
+import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "utils";
 
-import { Type } from "global/engine/Tw2Constant";
+import { Type } from "utils/meta/types/ModelConstants";
 
-const TypeReader = {
-    [Type.UNKNOWN]: notImplemented,
-    [Type.BOOLEAN]: boolean,
-    [Type.PATH]: path,
-    [Type.STRING]: string,
-    [Type.EXPRESSION]: string,
-    [Type.BYTE]: byte,
-    [Type.UINT]: uint,
-    [Type.USHORT]: ushort,
-    [Type.FLOAT]: float,
-    [Type.VECTOR2]: vector2,
-    [Type.VECTOR3]: vector3,
-    [Type.VECTOR4]: vector4,
-    [Type.QUATERNION]: vector4,
-    [Type.MATRIX4]: matrix,
-    [Type.COLOR]: color,
-    [Type.STRUCT]: object,
-    [Type.STRUCT_RAW]: rawObject,
-    [Type.STRUCT_LIST]: array,
-    [Type.ARRAY]: array,
-    [Type.PLAIN]: rawObject,
-    [Type.INDEX_BUFFER]: indexBuffer,
-    [Type.ENUM]: enums
-};
+
+let Types;
+
+function getReaderFromType(type)
+{
+    if (!Types)
+    {
+        Types = {
+            [Type.UNKNOWN]: notImplemented,
+            [Type.BOOLEAN]: boolean,
+            [Type.PATH]: path,
+            [Type.STRING]: string,
+            [Type.EXPRESSION]: string,
+            [Type.BYTE]: byte,
+            [Type.UINT]: uint,
+            [Type.USHORT]: ushort,
+            [Type.FLOAT]: float,
+            [Type.VECTOR2]: vector2,
+            [Type.VECTOR3]: vector3,
+            [Type.VECTOR4]: vector4,
+            [Type.QUATERNION]: vector4,
+            [Type.MATRIX4]: matrix,
+            [Type.COLOR]: color,
+            [Type.STRUCT]: object,
+            [Type.STRUCT_RAW]: rawObject,
+            [Type.STRUCT_LIST]: array,
+            [Type.ARRAY]: array,
+            [Type.PLAIN]: rawObject,
+            [Type.INDEX_BUFFER]: indexBuffer,
+            [Type.ENUM]: enums
+        };
+    }
+
+    return Types[Number(type)] || notImplemented;
+}
 
 
 /**
@@ -87,8 +99,7 @@ export function object(reader, id)
         // Use property type meta data
         else if (hasMetadata("type", result, propertyName))
         {
-            const propertyType = Number(getMetadata("type", result, propertyName));
-            reader = TypeReader[propertyType];
+            reader = getReaderFromType(getMetadata("type", result, propertyName));
         }
 
         if (!reader)

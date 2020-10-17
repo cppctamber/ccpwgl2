@@ -1,4 +1,6 @@
-import { vec3, util, resMan, meta } from "global";
+import { meta, isString, perArrayChild, get, assignIfExists } from "utils";
+import { resMan } from "global";
+import { vec3 } from "math";
 import { Tw2InstancedMeshBatch } from "../batch";
 import { Tw2Mesh } from "./Tw2Mesh";
 import {
@@ -10,7 +12,6 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "global/engine";
-import { isString } from "global/util";
 
 
 @meta.ctor("Tw2InstancedMesh", "Tr2InstancedMesh")
@@ -124,7 +125,7 @@ export class Tw2InstancedMesh extends meta.Model
      * @param {Array} [out=[]]
      * @returns {Array} out
      */
-    FindParameters(options, out=[])
+    FindParameters(options, out = [])
     {
         if (isString(options)) options = { name: options };
         const { name, areaName, areaType } = options;
@@ -200,7 +201,7 @@ export class Tw2InstancedMesh extends meta.Model
             this.instanceGeometryResource.GetResources(out);
         }
 
-        const per = util.perArrayChild;
+        const per = perArrayChild;
         per(this.additiveAreas, "GetResources", out);
         per(this.decalAreas, "GetResources", out);
         per(this.depthAreas, "GetResources", out);
@@ -307,7 +308,7 @@ export class Tw2InstancedMesh extends meta.Model
     static from(values, options)
     {
         const item = new Tw2InstancedMesh();
-        item.meshIndex = util.get(options, "index", 0);
+        item.meshIndex = get(options, "index", 0);
 
         if (values)
         {
@@ -318,7 +319,7 @@ export class Tw2InstancedMesh extends meta.Model
             }
             */
 
-            util.assignIfExists(item, values, [
+            assignIfExists(item, values, [
                 "name", "display", "geometryResPath",
                 "instanceGeometryResPath", "instanceMeshIndex"
             ]);
@@ -329,7 +330,7 @@ export class Tw2InstancedMesh extends meta.Model
                 "transparentAreas"
             ];
 
-            util.assignIfExists(item.visible, values.visible, areaNames);
+            assignIfExists(item.visible, values.visible, areaNames);
             Tw2Mesh.createAreaIfExists(item, values, areaNames);
         }
 

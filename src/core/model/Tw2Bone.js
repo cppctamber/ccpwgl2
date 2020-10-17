@@ -1,4 +1,5 @@
-import { meta, mat4 } from "global";
+import { meta } from "utils";
+import { mat4 } from "math";
 
 
 @meta.ctor("Tw2Bone")

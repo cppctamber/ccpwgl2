@@ -1,4 +1,5 @@
-import { meta, vec3, quat, mat3, mat4, curve, util } from "global";
+import { meta, toArray } from "utils";
+import { vec3, quat, mat3, mat4, curve } from "math";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";
@@ -216,7 +217,7 @@ export class Tw2AnimationController extends meta.Model
             return;
         }
 
-        names = util.toArray(names);
+        names = toArray(names);
 
         for (let i = 0; i < this.animations.length; ++i)
         {
@@ -262,7 +263,7 @@ export class Tw2AnimationController extends meta.Model
             return;
         }
 
-        names = util.toArray(names);
+        names = toArray(names);
 
         for (let i = 0; i < this.animations.length; ++i)
         {

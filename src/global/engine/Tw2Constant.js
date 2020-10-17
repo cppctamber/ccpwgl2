@@ -1,5 +1,3 @@
-export { Type, TypeLength } from "../meta/types/consts";
-
 /**
  * Values for textureQuality option that can be passed to ccpwgl.initialize.
  */

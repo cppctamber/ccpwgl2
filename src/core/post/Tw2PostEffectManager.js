@@ -1,5 +1,5 @@
 import { Tw2PostEffect } from "./Tw2PostEffect";
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("Tw2PostEffectManager")

@@ -1,4 +1,5 @@
-import { meta, vec4 } from "global";
+import { meta } from "utils";
+import { vec4 } from "math";
 import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 

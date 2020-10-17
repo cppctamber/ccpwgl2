@@ -1,4 +1,6 @@
-import { meta, vec3, quat, mat4, util, device, store } from "global";
+import { meta, assignIfExists } from "utils";
+import { device, store } from "global";
+import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
@@ -124,7 +126,7 @@ export class EveSpaceObjectDecal extends meta.Model
      * @param {Tw2GeometryRes} geometryRes
      * @param {Number} [counter=0]
      */
-    GetBatches(mode, accumulator, perObjectData, geometryRes, counter=0)
+    GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0)
     {
         if (!this.display || !geometryRes || !geometryRes.meshes[0] || !this._indexBuffer)
         {
@@ -241,7 +243,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
         if (values)
         {
-            util.assignIfExists(item, values, [
+            assignIfExists(item, values, [
                 "name", "display", "pickable",
                 "position", "rotation", "scaling",
                 "groupIndex", "parentBoneIndex"

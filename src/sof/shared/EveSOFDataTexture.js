@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataTexture")
@@ -17,7 +17,7 @@ export class EveSOFDataTexture
      * @param {{}} out
      * @returns {{}} out
      */
-    Assign(out={})
+    Assign(out = {})
     {
         out[this.name] = this.resFilePath;
         return out;

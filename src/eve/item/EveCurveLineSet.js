@@ -1,4 +1,6 @@
-import { vec3, vec4, quat, mat4, util, device, meta } from "global";
+import { device } from "global";
+import { meta } from "utils";
+import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 

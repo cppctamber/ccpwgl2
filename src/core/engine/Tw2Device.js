@@ -1,5 +1,5 @@
-import { num, vec3, vec4, mat4 } from "global/math";
-import { get, isString } from "global/util";
+import { num, vec3, vec4, mat4 } from "math";
+import { get, isString } from "utils";
 import { Tw2EventEmitter, Tw2Error } from "../class";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2VertexDeclaration } from "../vertex/Tw2VertexDeclaration";
@@ -285,7 +285,7 @@ export class Tw2Device extends Tw2EventEmitter
                 };
             }
         }
-        catch(err)
+        catch (err)
         {
             throw new Error("Invalid 2d canvas");
         }
@@ -973,7 +973,7 @@ export class Tw2Device extends Tw2EventEmitter
                     alphaTestRef = -this._alphaTestState.states[RS_ALPHAREF] - 1;
                     break;
 
-                    /*
+                /*
 case CMP_NOTEQUAL:
 var alphaTestFunc = 1;
 var invertedAlphaTest = 1;

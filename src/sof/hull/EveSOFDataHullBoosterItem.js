@@ -1,4 +1,5 @@
-import { mat4, meta, vec4 } from "global";
+import { meta } from "utils";
+import { vec4, mat4 } from "math";
 
 
 @meta.ctor("EveSOFDataHullBoosterItem")

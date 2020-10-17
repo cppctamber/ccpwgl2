@@ -1,5 +1,5 @@
 import { Tw2Curve } from "curve/curve";
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("Tr2ScalarExprCurve")

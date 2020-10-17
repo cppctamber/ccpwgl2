@@ -1,6 +1,5 @@
-import { createDecorator, defineMetadata, getMetadata, hasMetadata, isString } from "global/util";
 import { Tw2Error } from "core/class/Tw2Error";
-
+import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../reflect";
 
 /**
  * Throws when a class can only be instantiated once
@@ -144,7 +143,7 @@ export const notImplemented = createDecorator({
 });
 
 export const stage = createDecorator({
-    ctor({ target, property }, stage=0)
+    ctor({ target, property }, stage = 0)
     {
         defineMetadata("stage", stage, target, property);
     }

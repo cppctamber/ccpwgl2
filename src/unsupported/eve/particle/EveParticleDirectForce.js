@@ -1,4 +1,5 @@
-import { vec3, meta } from "global";
+import { meta } from "utils";
+import { vec3 } from "math";
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 /**

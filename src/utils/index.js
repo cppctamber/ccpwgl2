@@ -3,7 +3,11 @@ export * from "./obj";
 export * from "./type";
 export * from "./uuid";
 export * from "./url";
-export * from "./meta";
+export * from "./reflect";
+
+import * as meta from "./meta";
+
+export { meta };
 
 /**
  * Gets a path's extension

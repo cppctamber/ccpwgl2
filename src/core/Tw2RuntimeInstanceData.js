@@ -1,4 +1,5 @@
-import { device, meta } from "global";
+import { meta } from "utils";
+import { device } from "global";
 import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 

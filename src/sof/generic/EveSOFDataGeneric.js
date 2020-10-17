@@ -1,5 +1,5 @@
 import { Tw2Error } from "core";
-import { meta, util } from "global";
+import { meta, findElementByPropertyValue } from "utils";
 
 
 @meta.ctor("EveSOFDataGeneric", true)
@@ -143,7 +143,7 @@ export class EveSOFDataGeneric
      */
     HasAreaShader(name)
     {
-        return !!util.findElementByPropertyValue(this.areaShaders, "shader", name);
+        return !!findElementByPropertyValue(this.areaShaders, "shader", name);
     }
 
     /**
@@ -153,7 +153,7 @@ export class EveSOFDataGeneric
      */
     GetAreaShader(name)
     {
-        return util.findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
+        return findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
     }
 
     /**
@@ -163,7 +163,7 @@ export class EveSOFDataGeneric
      */
     HasDecalShader(name)
     {
-        return !!util.findElementByPropertyValue(this.decalShaders, "shader", name);
+        return !!findElementByPropertyValue(this.decalShaders, "shader", name);
     }
 
     /**
@@ -173,7 +173,7 @@ export class EveSOFDataGeneric
      */
     GetDecalShader(name)
     {
-        return util.findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
+        return findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
     }
 
     /**

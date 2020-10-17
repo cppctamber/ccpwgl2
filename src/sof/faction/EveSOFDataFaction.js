@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
 
 
@@ -54,7 +54,7 @@ export class EveSOFDataFaction
     @meta.struct("EveSOFDataFactionVisibilityGroupSet")
     visibilityGroupSet = null;
 
-    
+
     /**
      * Checks if a color usage Type exists
      * @param {Number} type
@@ -133,7 +133,7 @@ export class EveSOFDataFaction
         {
             throw new ErrSOFLogoSetTypeNotFound({ type });
         }
-        
+
         return this.logoSet.Get(type);
     }
 
@@ -212,6 +212,6 @@ export class EveSOFDataFaction
             }
         }
     }
-    
+
 }
 

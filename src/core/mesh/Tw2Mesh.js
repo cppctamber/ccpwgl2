@@ -1,4 +1,5 @@
-import { meta, util, resMan, store } from "global";
+import { meta, isString, perArrayChild, assignIfExists, get, toArray } from "utils";
+import { resMan, store } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -8,7 +9,6 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "global/engine";
-import { isString } from "global/util";
 
 
 @meta.ctor("Tw2Mesh", "Tr2Mesh")
@@ -113,7 +113,7 @@ export class Tw2Mesh extends meta.Model
      * @param {Array} [out=[]]
      * @returns {Array} out
      */
-    FindParameters(options, out=[])
+    FindParameters(options, out = [])
     {
         if (isString(options)) options = { name: options };
         const { name, areaName, areaType } = options;
@@ -179,7 +179,7 @@ export class Tw2Mesh extends meta.Model
             out.push(this._geometryResource);
         }
 
-        const per = util.perArrayChild;
+        const per = perArrayChild;
         per(this.additiveAreas, "GetResources", out);
         per(this.decalAreas, "GetResources", out);
         per(this.depthAreas, "GetResources", out);
@@ -291,7 +291,7 @@ export class Tw2Mesh extends meta.Model
      */
     static createAreaIfExists(dest, src, names)
     {
-        names = util.toArray(names);
+        names = toArray(names);
         for (let i = 0; i < names.length; i++)
         {
             const name = names[i];
@@ -318,11 +318,11 @@ export class Tw2Mesh extends meta.Model
     static from(values, options)
     {
         const item = new Tw2Mesh();
-        item.index = util.get(options, "index", 0);
+        item.index = get(options, "index", 0);
 
         if (values)
         {
-            util.assignIfExists(item, values, [
+            assignIfExists(item, values, [
                 "name", "display", "deferGeometryLoad",
                 "geometryResPath", "meshIndex"
             ]);
@@ -333,7 +333,7 @@ export class Tw2Mesh extends meta.Model
                 "opaquePrepassAreas", "pickableAreas", "transparentAreas"
             ];
 
-            util.assignIfExists(item.visible, values.visible, areaNames);
+            assignIfExists(item.visible, values.visible, areaNames);
             this.createAreaIfExists(item, values, areaNames);
         }
 

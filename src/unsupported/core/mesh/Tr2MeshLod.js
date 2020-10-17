@@ -1,4 +1,4 @@
-import { util, meta } from "global";
+import { meta, perArrayChild } from "utils";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -125,7 +125,7 @@ export class Tr2MeshLod extends meta.Model
         }
 
         //return super.GetResources(out);
-        const per = util.perArrayChild;
+        const per = perArrayChild;
         per(this.additiveAreas, "GetResources", out);
         per(this.decalAreas, "GetResources", out);
         per(this.depthAreas, "GetResources", out);

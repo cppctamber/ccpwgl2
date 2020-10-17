@@ -1,5 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { meta } from "global";
+import { meta } from "utils";
 
 
 export class Tw2Parameter extends meta.Model

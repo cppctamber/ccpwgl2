@@ -1,5 +1,5 @@
 import { Tw2GenericStore } from "./Tw2GenericStore";
-import { isArray } from "global/util";
+import { isArray } from "utils";
 import { Tw2ResourcePathStore } from "./Tw2ResourcePathStore";
 
 
@@ -25,7 +25,7 @@ export class Tw2ResourceDynamicPathStore extends Tw2GenericStore
     {
         paths = Array.from(paths);
 
-        for (let i =0; i < paths.length; i++)
+        for (let i = 0; i < paths.length; i++)
         {
             paths[i] = Tw2ResourcePathStore.normalizePath(paths[i]);
         }

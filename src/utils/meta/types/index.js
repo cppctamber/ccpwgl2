@@ -1,4 +1,5 @@
-import * as types from  "./PropertyTypes";
+import * as types from "./ModelPropertyTypes";
+
 export const propTypes = new Map();
 
 const type = Object.assign({}, types);

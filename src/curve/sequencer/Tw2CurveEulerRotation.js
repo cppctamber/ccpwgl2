@@ -1,5 +1,6 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { meta, quat } from "global";
+import { meta } from "utils";
+import { quat } from "math";
 
 
 @meta.ctor("Tw2CurveEulerRotation", "Tr2CurveEulerRotation")

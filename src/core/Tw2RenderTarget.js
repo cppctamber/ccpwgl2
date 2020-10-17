@@ -1,4 +1,5 @@
-import { meta, util, device } from "global";
+import { meta, generateID } from "utils";
+import { device } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
@@ -26,7 +27,7 @@ export class Tw2RenderTarget
     hasDepth = false;
 
 
-    _id = util.generateID();
+    _id = generateID();
     _frameBuffer = null;
     _renderBuffer = null;
 

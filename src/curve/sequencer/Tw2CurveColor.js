@@ -1,4 +1,5 @@
-import { meta, vec4 } from "global";
+import { meta } from "utils";
+import { vec4 } from "math";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 

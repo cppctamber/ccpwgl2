@@ -1,5 +1,5 @@
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
-import { assignIfExists, isError, isString } from "global/util";
+import { assignIfExists, isError, isString } from "utils";
 
 /**
  * eventLog
@@ -25,7 +25,7 @@ export class Tw2Logger extends Tw2EventEmitter
 
     history = 100;
     throttle = 20;
-    
+
     visible = {
         log: true,
         info: true,
@@ -33,7 +33,7 @@ export class Tw2Logger extends Tw2EventEmitter
         warn: true,
         error: true
     };
-    
+
     _logs = [];
     _throttled = null;
     _debugMode = false;
@@ -46,7 +46,7 @@ export class Tw2Logger extends Tw2EventEmitter
     {
         this._debugMode = true;
     }
-    
+
     /**
      * Sets the logger's properties
      * @param {*} [opt]

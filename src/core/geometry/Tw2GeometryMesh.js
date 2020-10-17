@@ -1,6 +1,6 @@
-import { meta, box3, sph3, vec3 } from "global";
+import { meta, isNumber } from "utils";
+import { box3, sph3, vec3 } from "math";
 import { Tw2VertexDeclaration } from "../vertex";
-import { isNumber } from "global/util";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 
 

@@ -135,7 +135,7 @@ vec4.fromRGBA = function(out, rgba, denormalizedAlpha)
  * @param {Number} [alpha=1]
  * @returns {vec4} out
  */
-vec4.fromRGB = function(out, rgb, alpha=1)
+vec4.fromRGB = function(out, rgb, alpha = 1)
 {
     out[0] = num.linearFromColor(rgb[0]);
     out[1] = num.linearFromColor(rgb[1]);

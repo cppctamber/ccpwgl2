@@ -1,5 +1,5 @@
 import { Tw2GenericStore } from "./Tw2GenericStore";
-import { isString } from "global/util";
+import { isString } from "utils";
 import { Tw2Error } from "../class";
 
 
@@ -47,7 +47,7 @@ export class Tw2ResourcePathStore extends Tw2GenericStore
      */
     static onBefore(path)
     {
-        if (path.charAt(path.length -1) !== "/") path += "/";
+        if (path.charAt(path.length - 1) !== "/") path += "/";
         return this.normalizePath(path);
     }
 

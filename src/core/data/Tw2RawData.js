@@ -1,4 +1,4 @@
-import { ErrIndexBounds,  Tw2Error } from "../class/Tw2Error";
+import { ErrIndexBounds, Tw2Error } from "../class/Tw2Error";
 
 /**
  * Stores raw data for {@link Tw2PerObjectData}

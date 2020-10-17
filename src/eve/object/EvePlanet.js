@@ -1,4 +1,6 @@
-import { meta, mat4, util, device, resMan, WrappedType } from "global";
+import { meta, isObjectLike } from "utils";
+import { device, resMan, WrappedType } from "global";
+import { mat4 } from "math";
 import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
@@ -189,7 +191,7 @@ export class EvePlanet extends EveObject
         {
             if (obj.hasOwnProperty(prop))
             {
-                if (util.isObjectLike(obj[prop]))
+                if (isObjectLike(obj[prop]))
                 {
                     this.GetPlanetResources(obj[prop], visited, result);
                 }

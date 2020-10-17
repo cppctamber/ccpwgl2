@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 
 
 @meta.ctor("EveSOFDataLogo")
@@ -14,7 +14,7 @@ export class EveSOFDataLogo
      * @param {Object} config={}]
      * @returns {Object} config
      */
-    Assign(config={})
+    Assign(config = {})
     {
         config.textures = this.AssignTextures(config.textures);
         return config;
@@ -26,7 +26,7 @@ export class EveSOFDataLogo
      * @param {Object} [out={}]
      * @returns {Object}
      */
-    AssignTextures(out={})
+    AssignTextures(out = {})
     {
         for (let i = 0; i < this.textures.length; i++)
         {

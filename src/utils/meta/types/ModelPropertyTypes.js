@@ -1,5 +1,5 @@
-import { Type } from "./consts";
-import { num, vec2, vec3, vec4, mat3, mat4 } from "global/math";
+import { Type } from "./ModelConstants";
+import { num, vec2, vec3, vec4, mat3, mat4 } from "math";
 import {
     isArray,
     isBoolean,
@@ -13,7 +13,7 @@ import {
     isVector2,
     isVector3, isVector4,
     isVectorEqual
-} from "global/util";
+} from "utils";
 
 //  Helpers
 
@@ -159,7 +159,7 @@ export const struct = {
         {
             return a[key] === null ? null : a[key].GetValues({}, options);
         }
-        catch(err)
+        catch (err)
         {
             console.dir(a[key]);
             throw err;
@@ -190,7 +190,7 @@ export const structList = {
             {
                 out.push(a[key][i].GetValues({}, options));
             }
-            catch(err)
+            catch (err)
             {
                 console.dir(a[key][i]);
                 throw err;

@@ -1,4 +1,5 @@
-import { meta, util, WrappedType } from "global";
+import { meta, isNumber } from "utils";
+import { WrappedType } from "global";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
@@ -82,7 +83,7 @@ export class EveShip extends EveSpaceObject
     RebuildTurretSet(index)
     {
         // Allow rebuilding from a turret
-        if (!util.isNumber(index))
+        if (!isNumber(index))
         {
             index = this.turretSets.indexOf(index);
         }
@@ -119,7 +120,7 @@ export class EveShip extends EveSpaceObject
      */
     UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
-        let isWorldSpriteUpdated = this._worldSpriteScale !==  worldSpriteScale;
+        let isWorldSpriteUpdated = this._worldSpriteScale !== worldSpriteScale;
 
         super.UpdateViewDependentData(parentTransform, dt, worldSpriteScale);
 

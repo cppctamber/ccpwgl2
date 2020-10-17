@@ -1,4 +1,6 @@
-import { vec3, vec4, mat4, device, store, RS_COLORWRITEENABLE, meta } from "global";
+import { meta } from "utils";
+import { device, store, RS_COLORWRITEENABLE } from "global";
+import { vec3, vec4, mat4 } from "math";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 

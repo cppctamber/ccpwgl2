@@ -1,4 +1,5 @@
-import { meta, vec3, quat, mat4 } from "global";
+import { meta } from "utils";
+import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { EveSpaceObject } from "./EveSpaceObject";

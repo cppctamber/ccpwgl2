@@ -363,7 +363,7 @@ export function isVector2(a)
  */
 export function isVector3(a)
 {
-    return isVector(a,  3);
+    return isVector(a, 3);
 }
 
 /**

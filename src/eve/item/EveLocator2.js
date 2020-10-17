@@ -1,5 +1,5 @@
-import { meta, mat4, } from "global";
-import { vec3 } from "global/index";
+import { meta } from "utils";
+import { vec3, mat4 } from "math";
 
 
 @meta.ctor("EveLocator2")
@@ -53,7 +53,7 @@ export class EveLocator2 extends meta.Model
         vec3.normalize(transform.subarray(0, 3), transform.subarray(0, 3));
         vec3.normalize(transform.subarray(4, 7), transform.subarray(4, 7));
         vec3.normalize(transform.subarray(8, 11), transform.subarray(8, 11));
-        if (worldTransform) mat4.multiply(transform, worldTransform,  transform);
+        if (worldTransform) mat4.multiply(transform, worldTransform, transform);
         mat4.getRotation(outRotation, transform);
         mat4.getTranslation(outTranslation, transform);
     }

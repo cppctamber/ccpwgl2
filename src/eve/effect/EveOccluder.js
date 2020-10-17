@@ -1,4 +1,6 @@
-import { meta, vec4, mat4, device, store } from "global";
+import { meta } from "utils";
+import { device, store } from "global";
+import { vec4, mat4 } from "math";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 

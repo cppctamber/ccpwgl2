@@ -1,4 +1,5 @@
-import { quat, vec3, meta } from "global";
+import { meta } from "utils";
+import { vec3, quat } from "math";
 import { EveChildModifier } from "./EveChildModifier";
 
 

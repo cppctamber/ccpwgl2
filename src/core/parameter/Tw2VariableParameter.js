@@ -1,4 +1,5 @@
-import { meta, store } from "global";
+import { meta } from "utils";
+import { store } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 

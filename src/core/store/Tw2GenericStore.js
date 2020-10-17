@@ -1,4 +1,4 @@
-import { isTr2OrTri, toArray, toTw2 } from "global/util";
+import { isTr2OrTri, toArray, toTw2 } from "utils";
 import { Tw2EventEmitter, Tw2Error } from "../class";
 
 
@@ -82,7 +82,7 @@ export class Tw2GenericStore extends Tw2EventEmitter
 
         return value;
     }
-    
+
     /**
      * Checks if a store key exists
      * @param {*} key

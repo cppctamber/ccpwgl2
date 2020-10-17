@@ -1,4 +1,5 @@
-import { meta, vec3, quat, vec4, mat4 } from "global";
+import { vec3, quat, vec4, mat4 } from "math";
+import { meta } from "utils";
 import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transforms } from "core";
 
 
@@ -29,7 +30,7 @@ export class EveCustomMask extends Tw2Transforms
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.vector4
-    targetMaterials = vec4.fromValues(1,1,1,1);
+    targetMaterials = vec4.fromValues(1, 1, 1, 1);
 
     @meta.plain
     @meta.todo("Move to direct class properties")

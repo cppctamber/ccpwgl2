@@ -273,7 +273,7 @@ sph3.union = function(out, a, b)
 
     vec3.subtract(toBPosition, bPosition, aPosition);
     const separation = vec3.length(toBPosition);
-    
+
     if (aRadius >= separation + bRadius)
     {
         return out === a ? out : sph3.copy(out, a);

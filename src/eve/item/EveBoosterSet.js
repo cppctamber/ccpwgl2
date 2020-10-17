@@ -1,4 +1,6 @@
-import { meta, vec3, vec4, mat4, util, device } from "global";
+import { meta, assignIfExists } from "utils";
+import { device } from "global";
+import { vec3, vec4, mat4 } from "math";
 import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
@@ -518,7 +520,7 @@ export class EveBoosterSet extends EveObjectSet
         const item = new EveBoosterSet();
         if (values)
         {
-            util.assignIfExists(item, values, [
+            assignIfExists(item, values, [
                 "alwaysOn", "glowColor", "glowScale", "haloColor", "haloScaleX", "haloScaleY",
                 "maxVel", "symHaloScale", "trailColor", "trailSize", "warpGlowColor",
                 "name", "display", "glowDistance", "haloDistance", "symHaloDistance", "warpHaloColor"
@@ -532,7 +534,7 @@ export class EveBoosterSet extends EveObjectSet
 
             if (values.visible)
             {
-                util.assignIfExists(item.visible, values.visible, [ "glows", "symHalos", "halos", "trails" ]);
+                assignIfExists(item.visible, values.visible, [ "glows", "symHalos", "halos", "trails" ]);
             }
 
             if (values.effect)

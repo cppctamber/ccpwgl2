@@ -291,7 +291,7 @@ tri3.getClosestPointToPoint = (function()
             out[1] = projectedPoint[1];
             out[2] = projectedPoint[2];
         }
-        // if not, the point falls outside the triangle.
+            // if not, the point falls outside the triangle.
         // the result is the closest point to the triangle's edges or vertices
         else
         {

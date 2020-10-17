@@ -1,4 +1,5 @@
 import { Tw2Resource } from "./Tw2Resource";
+
 import {
     ErrHTTPRequest,
     ErrResourceFormatUnsupported,
@@ -6,9 +7,9 @@ import {
     ErrResourceExtensionUnregistered
 } from "../engine/Tw2ResMan";
 
+import { meta } from "utils";
 
 import {
-    meta,
     resMan,
     device,
     DDS_HEADER_LENGTH_INT,

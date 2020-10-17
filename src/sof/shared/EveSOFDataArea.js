@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2Error } from "core/class";
 
 
@@ -75,7 +75,7 @@ export class EveSOFDataArea
     @meta.struct("EveSOFDataAreaMaterial")
     Yellow = null;
 
-    
+
     /**
      * Checks if a data area exists by type
      * @param {Number} type
@@ -84,12 +84,12 @@ export class EveSOFDataArea
     Has(type)
     {
         const name = EveSOFDataArea.Type[type];
-        
+
         if (name === undefined)
         {
             throw new ErrSOFAreaTypeUnknown({ type });
         }
-        
+
         return !!this[name];
     }
 
@@ -104,7 +104,7 @@ export class EveSOFDataArea
         {
             throw new ErrSOFAreaTypeNotFound({ type });
         }
-        
+
         return this[EveSOFDataArea.Type[type]];
     }
 
@@ -125,7 +125,7 @@ export class EveSOFDataArea
         // Below are incorrect, figure out what they are
         "Primary",
         "Primary"
-    ]
+    ];
 }
 
 /**

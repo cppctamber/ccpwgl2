@@ -1,6 +1,7 @@
-import { meta, vec4 } from "global";
+import { meta } from "utils";
+import { vec4 } from "math";
 import { Tw2Vector4Parameter, Tw2Error } from "core";
-import { isArrayLike, isBoolean, isNumber } from "global/util";
+import { isArrayLike, isBoolean, isNumber } from "utils";
 
 
 /**

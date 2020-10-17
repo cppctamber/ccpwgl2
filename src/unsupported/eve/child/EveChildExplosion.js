@@ -1,4 +1,5 @@
-import { meta, mat4, quat, vec3 } from "global";
+import { meta } from "utils";
+import { quat, vec3, mat4 } from "math";
 import { EveChild } from "eve/child";
 
 

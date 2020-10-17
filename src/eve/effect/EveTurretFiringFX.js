@@ -1,4 +1,5 @@
-import { meta, vec3, mat4 } from "global";
+import { meta } from "utils";
+import { vec3, mat4 } from "math";
 
 
 class EvePerMuzzleData

@@ -1,4 +1,5 @@
-import { vec3, quat, meta } from "global";
+import { meta } from "utils";
+import { quat, vec3 } from "math";
 
 
 @meta.ctor("EveSOFDataHullDecalSetItem")
@@ -49,7 +50,7 @@ export class EveSOFDataHullDecalSetItem
      * @param {Object} config={}]
      * @returns {Object} config
      */
-    Assign(config={})
+    Assign(config = {})
     {
         config.textures = this.AssignTextures(config.textures);
         config.parameters = this.AssignParameters(config.parameters);
@@ -73,7 +74,7 @@ export class EveSOFDataHullDecalSetItem
      * Assigns parameters to an object
      * @param {Object} [out={}]
      */
-    AssignTextures(out={})
+    AssignTextures(out = {})
     {
         for (let i = 0; i < this.textures.length; i++)
         {

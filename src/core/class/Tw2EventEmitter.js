@@ -1,4 +1,4 @@
-import { isArray, isFunction } from "global/util";
+import { isArray, isFunction } from "utils";
 
 /**
  * Emitter privates

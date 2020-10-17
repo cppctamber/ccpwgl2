@@ -1,4 +1,4 @@
-import { isFunction, isPlain } from "global/util/type";
+import { isFunction, isPlain } from "./type";
 
 const
     url = {},
@@ -15,7 +15,7 @@ for (let i = 0; i < split.length; i++)
     if (key)
     {
         let v = value.toLowerCase();
-        switch(v)
+        switch (v)
         {
             case "true":
                 v = true;

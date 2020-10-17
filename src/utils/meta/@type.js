@@ -1,4 +1,4 @@
-import { Type } from "./types/consts";
+import { Type } from "./types/ModelConstants";
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import {
     isFunction,
@@ -8,7 +8,7 @@ import {
     defineMetadata,
     getMetadata,
     hasMetadata
-} from "global/util";
+} from "utils";
 
 
 /**

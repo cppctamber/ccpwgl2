@@ -1,8 +1,7 @@
+import { meta, toArray, assignIfExists } from "utils";
 import { Tw2GeometryBatch, Tw2Effect } from "core";
 import { Tw2CurveSet } from "curve";
 import {
-    meta,
-    util,
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_ADDITIVE,
@@ -132,7 +131,7 @@ export class EveMeshOverlayEffect extends meta.Model
      */
     static createAreaEffects(dest, src, names)
     {
-        names = util.toArray(names);
+        names = toArray(names);
         for (let i = 0; i < names.length; i++)
         {
             const name = names[i];
@@ -158,7 +157,7 @@ export class EveMeshOverlayEffect extends meta.Model
 
         if (values)
         {
-            util.assignIfExists(item, values, [ "name", "display", "update" ]);
+            assignIfExists(item, values, [ "name", "display", "update" ]);
 
             if (values.curveSet)
             {
@@ -171,7 +170,7 @@ export class EveMeshOverlayEffect extends meta.Model
 
             if (values.visible)
             {
-                util.assignIfExists(item.visible, values.visible, areas);
+                assignIfExists(item.visible, values.visible, areas);
             }
 
             this.createAreaEffects(item, values, areas);

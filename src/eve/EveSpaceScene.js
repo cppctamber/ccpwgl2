@@ -1,4 +1,6 @@
-import { meta, vec3, vec4, quat, mat4, device, resMan, store, WrappedType } from "global";
+import { meta } from "utils";
+import { device, resMan, store, WrappedType } from "global";
+import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
@@ -758,7 +760,7 @@ export class EveSpaceScene extends meta.Model
         if (!EveSpaceScene.global)
         {
             EveSpaceScene.global = {
-                vec3_ZERO : vec3.create(),
+                vec3_ZERO: vec3.create(),
                 vec3_0: vec3.create(),
                 vec4_0: vec4.create(),
                 mat4_0: mat4.create(),

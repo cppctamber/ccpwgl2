@@ -1,5 +1,5 @@
 import { isTyped, isArrayLike, isArray, isObjectObject, isNumber, isVector } from "./type";
-import { num } from "../math";
+import { num } from "math";
 
 /**
  * Assigns property values if they exist in a source object
@@ -230,7 +230,7 @@ export function getKeyFromValue(obj, value)
     {
         if (obj.hasOwnProperty(key))
         {
-            if(obj[key] === value)
+            if (obj[key] === value)
             {
                 return key;
             }

@@ -1,4 +1,6 @@
-import { meta, curve, vec3, quat, mat4, util, resMan } from "global";
+import { meta, generateID } from "utils";
+import { resMan } from "global";
+import { curve, vec3, quat, mat4 } from "math";
 
 
 @meta.ctor("Tw2TransformTrack")
@@ -44,8 +46,8 @@ export class Tw2TransformTrack
     @meta.struct()
     scaleCurve = null;
 
-
-    _id = util.generateID();
+    @meta.readOnly
+    _id = generateID();
 
     /**
      * Initializes the Curve

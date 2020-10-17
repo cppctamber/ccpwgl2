@@ -1,4 +1,5 @@
-import { vec3, quat, mat4, meta } from "global";
+import { meta } from "utils";
+import { vec3, quat, mat4 } from "math";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 
 

@@ -1,5 +1,5 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { meta, util } from "global";
+import { meta, isArrayLike, isNumber } from "utils";
 
 
 @meta.ctor("Tw2FloatParameter", "Tr2FloatParameter")
@@ -26,7 +26,7 @@ export class Tw2FloatParameter extends Tw2Parameter
 
         if (value !== undefined)
         {
-            this.value = util.isArrayLike(value) ? value[0] : value;
+            this.value = isArrayLike(value) ? value[0] : value;
         }
     }
 
@@ -110,7 +110,7 @@ export class Tw2FloatParameter extends Tw2Parameter
      */
     static isValue(a)
     {
-        return util.isNumber(a);
+        return isNumber(a);
     }
 
     /**

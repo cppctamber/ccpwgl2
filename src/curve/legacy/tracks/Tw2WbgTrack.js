@@ -1,5 +1,6 @@
-import { vec3, quat, mat4, curve, util, resMan } from "global";
-
+import { generateID, defineMetadata } from "utils";
+import { resMan } from "global";
+import { vec3, quat, mat4, curve } from "math";
 
 /**
  * Tw2WbgTrack
@@ -22,7 +23,7 @@ export function Tw2WbgTrack()
     this.duration = 0;
     this.cycle = false;
 
-    this._id = util.generateID();
+    this._id = generateID();
 
     /**
      * SetCurves
@@ -72,7 +73,7 @@ export function Tw2WbgTrack()
     };
 }
 
-util.defineMetadata("type", "Tw2WbgTrack", Tw2WbgTrack);
+defineMetadata("type", "Tw2WbgTrack", Tw2WbgTrack);
 
 /**
  * Tw2WbgTransformTrack
@@ -84,7 +85,7 @@ util.defineMetadata("type", "Tw2WbgTrack", Tw2WbgTrack);
  */
 export function Tw2WbgTransformTrack()
 {
-    this._id = util.generateID();
+    this._id = generateID();
     this.translation = vec3.create();
     this.rotation = quat.create();
     this.rotation[3] = 1;
@@ -162,4 +163,4 @@ export function Tw2WbgTransformTrack()
  */
 Tw2WbgTransformTrack.prototype = new Tw2WbgTrack();
 
-util.defineMetadata("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);
+defineMetadata("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);

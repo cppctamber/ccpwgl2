@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 

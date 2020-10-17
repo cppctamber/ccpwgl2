@@ -1,4 +1,4 @@
-import { meta } from "global";
+import { meta } from "utils";
 import { Tw2Error } from "core/class";
 
 
@@ -20,7 +20,7 @@ export class EveSOFDataLogoSet
 
     @meta.struct("EveSOFDataLogo")
     Tertiary = null;
-    
+
 
     /**
      * Checks if a logo exists by type
@@ -30,12 +30,12 @@ export class EveSOFDataLogoSet
     Has(type)
     {
         const name = EveSOFDataLogoSet.LogoType[type];
-        
+
         if (name === undefined)
         {
             throw new ErrSOFLogoSetTypeUnknown({ type });
         }
-        
+
         return !!this[name];
     }
 
@@ -50,7 +50,7 @@ export class EveSOFDataLogoSet
         {
             throw new ErrSOFLogoSetTypeNotFound({ type });
         }
-        
+
         return this[EveSOFDataLogoSet.LogoType[type]];
     }
 
@@ -65,7 +65,7 @@ export class EveSOFDataLogoSet
         "Tertiary",
         "Marking_01",
         "Marking_02",
-    ]
+    ];
 
 }
 

@@ -1,4 +1,5 @@
-import { meta, resMan } from "global";
+import { meta } from "utils";
+import { resMan } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
 
