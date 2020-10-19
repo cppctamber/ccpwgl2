@@ -121,9 +121,9 @@ vec4.toRGBA = function(out, linear, denormalizeAlpha)
  */
 vec4.fromRGBA = function(out, rgba, denormalizedAlpha)
 {
-    out[0] = num.linearFromColor(rgba[0]);
-    out[1] = num.linearFromColor(rgba[1]);
-    out[2] = num.linearFromColor(rgba[2]);
+    out[0] = rgba[0] / 255;
+    out[1] = rgba[1] / 255;
+    out[2] = rgba[2] / 255;
     out[3] = denormalizedAlpha ? num.linearFromColor(rgba[3]) : rgba[3];
     return out;
 };
@@ -132,16 +132,30 @@ vec4.fromRGBA = function(out, rgba, denormalizedAlpha)
  * Converts to linear color from rgb
  * @param {vec4} out
  * @param {vec3} rgb
- * @param {Number} [alpha=1]
+ * @param {Number} [linearAlpha=1]
  * @returns {vec4} out
  */
-vec4.fromRGB = function(out, rgb, alpha = 1)
+vec4.fromRGB = function(out, rgb, linearAlpha = 1)
 {
-    out[0] = num.linearFromColor(rgb[0]);
-    out[1] = num.linearFromColor(rgb[1]);
-    out[2] = num.linearFromColor(rgb[2]);
-    out[3] = alpha;
+    out[0] = rgb[0] / 255;
+    out[1] = rgb[1] / 255;
+    out[2] = rgb[2] / 255;
+    out[3] = linearAlpha;
     return out;
+};
+
+/**
+ * Gets hex value with alpha from linear color
+ * @param {vec4} linear
+ * @returns {string} hex value
+ */
+vec4.toHexA = function(linear)
+{
+    return "#" +
+        num.hexFromLinear(linear[0]) +
+        num.hexFromLinear(linear[1]) +
+        num.hexFromLinear(linear[2]) +
+        num.hexFromLinear(linear[3]);
 };
 
 /**
@@ -149,11 +163,49 @@ vec4.fromRGB = function(out, rgb, alpha = 1)
  * @param {vec4} linear
  * @returns {string} hex value
  */
-vec4.hex = function(linear)
+vec4.toHex = function(linear)
 {
     return "#" +
         num.hexFromLinear(linear[0]) +
         num.hexFromLinear(linear[1]) +
-        num.hexFromLinear(linear[2]) +
-        num.hexFromLinear(linear[3]);
+        num.hexFromLinear(linear[2]);
+};
+
+/**
+ * Gets linear color from hex or hex with alpha
+ * @param {vec4} out
+ * @param {String} hex
+ * @param {Number} [defaultAlpha=1]
+ * @return {vec4}
+ */
+vec4.fromHex = function(out, hex, defaultAlpha = 1)
+{
+    // Set empty color in case of error
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = defaultAlpha;
+
+    // RGB hex
+    if (hex.length === 4 || hex.length === 5)
+    {
+        out[0] = ("0x" + hex[1] + hex[1]) / 255;
+        out[1] = ("0x" + hex[2] + hex[2]) / 255;
+        out[2] = ("0x" + hex[3] + hex[3]) / 255;
+        if (hex.length === 5) out[3] = ("0x" + hex[4] + hex[4]) / 255;
+    }
+    // RGB hex
+    else if (hex.length === 7 || hex.length === 9)
+    {
+        out[0] = ("0x" + hex[1] + hex[2]) / 255;
+        out[1] = ("0x" + hex[3] + hex[4]) / 255;
+        out[2] = ("0x" + hex[5] + hex[6]) / 255;
+        if (hex.length === 9) out[3] = ("0x" + hex[7] + hex[8]) / 255;
+    }
+    else
+    {
+        throw new TypeError("Invalid hex");
+    }
+
+    return out;
 };
