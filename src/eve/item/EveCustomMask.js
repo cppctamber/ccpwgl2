@@ -1,11 +1,11 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
-import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transforms } from "core";
+import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform } from "core";
 
 
 @meta.ctor("EveCustomMask")
 @meta.stage(1)
-export class EveCustomMask extends Tw2Transforms
+export class EveCustomMask extends Tw2Transform
 {
 
     @meta.string

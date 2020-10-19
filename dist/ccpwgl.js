@@ -562,7 +562,7 @@ var ccpwgl = (function(tw2)
         /** Wrapped tw2 object **/
         this.wrappedObjects = [ null ];
         /** Transforms @type {Tw2Transform} **/
-        this.transform = new tw2.Tw2Transforms()
+        this.transform = new tw2.Tw2Transform()
             .OnWorldModified(world =>
             {
                 if (!this.isLoaded()) return;
@@ -754,8 +754,8 @@ var ccpwgl = (function(tw2)
     {
         /** Wrapped tw2 ship object @type {tw2.EveShip} **/
         this.wrappedObjects = [ null ];
-        /** Object transform @type {Tw2Transforms} **/
-        this.transform = new tw2.Tw2Transforms()
+        /** Object transform @type {Tw2Transform} **/
+        this.transform = new tw2.Tw2Transform()
             .OnWorldModified(world =>
             {
                 if (!this.isLoaded()) return;
@@ -1585,7 +1585,7 @@ var ccpwgl = (function(tw2)
         this.wrappedObjects = [ new tw2.EvePlanet() ];
 
         /** Local transform **/
-        this.transform = new tw2.Tw2Transforms()
+        this.transform = new tw2.Tw2Transform()
             .OnWorldModified(world =>
             {
                 this.wrappedObjects[0].SetTransform(world);

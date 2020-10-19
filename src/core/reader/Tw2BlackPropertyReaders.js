@@ -1,10 +1,10 @@
 import { store } from "global";
 import { vec2, vec3, vec4, mat4 } from "math";
-import { ErrFeatureNotImplemented } from "../class/Tw2Error";
+import { ErrFeatureNotImplemented } from "../Tw2Error";
 import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
 import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "utils";
 
-import { Type } from "utils/meta/types/ModelConstants";
+import { Type } from "utils/meta/ModelConstants";
 
 
 let Types;

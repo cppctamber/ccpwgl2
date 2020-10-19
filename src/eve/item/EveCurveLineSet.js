@@ -234,7 +234,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveCurveLineSet", true)
+@meta.ctor("EveCurveLineSet")
 export class EveCurveLineSet extends EveObjectSet
 {
 

@@ -2,7 +2,7 @@ import { Tw2Error } from "core";
 import { meta, findElementByPropertyValue } from "utils";
 
 
-@meta.ctor("EveSOFDataGeneric", true)
+@meta.ctor("EveSOFDataGeneric")
 export class EveSOFDataGeneric
 {
 

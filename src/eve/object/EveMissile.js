@@ -4,7 +4,7 @@ import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
 
-@meta.ctor("EveMissileWarhead", true)
+@meta.ctor("EveMissileWarhead")
 @meta.stage(2)
 export class EveMissileWarhead extends EveObject
 {
@@ -227,7 +227,7 @@ export class EveMissileWarhead extends EveObject
 }
 
 
-@meta.ctor("EveMissile", true)
+@meta.ctor("EveMissile")
 @meta.stage(2)
 export class EveMissile extends EveObject
 {

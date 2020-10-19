@@ -64,7 +64,22 @@ export class Tw2LoadingObject extends Tw2Resource
             switch (ext)
             {
                 case "red":
-                    this._constructor = new Tw2ObjectReader(response);
+                    try
+                    {
+                        this._constructor = new Tw2ObjectReader(response);
+                    }
+                    catch(originalError)
+                    {
+                        // Some files are passed as .red but they are actually .black
+                        try
+                        {
+                            this._constructor = new Tw2BlackReader(response);
+                        }
+                        catch(err)
+                        {
+                            throw originalError;
+                        }
+                    }
                     break;
 
                 case "black":

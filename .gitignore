@@ -25,3 +25,4 @@ node_modules/
 
 #cdn proxy resource folder
 cdn/cache
+/_dev/

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { vec4 } from "math";
-import { Tw2Error } from "core/class";
+import { Tw2Error } from "core";
 
 
 @meta.ctor("EveSOFDataFactionColorSet")

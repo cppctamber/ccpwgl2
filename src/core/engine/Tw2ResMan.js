@@ -1,6 +1,7 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "core/resource/Tw2LoadingObject";
-import { Tw2EventEmitter, Tw2Error, ErrFeatureNotImplemented } from "../class";
+import { Tw2EventEmitter } from "../Tw2EventEmitter";
+import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isDNA, isError, isFunction } from "utils";
 import { logger } from "global/tw2";
 

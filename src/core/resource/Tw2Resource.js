@@ -1,6 +1,7 @@
 import { resMan } from "global";
 import { meta, isFunction } from "utils";
-import { Tw2Notifications, Tw2Error } from "../class";
+import { Tw2Error } from "../Tw2Error";
+import { Tw2Notifications } from "./Tw2Notifications";
 
 /**
  * Tw2Resource base class

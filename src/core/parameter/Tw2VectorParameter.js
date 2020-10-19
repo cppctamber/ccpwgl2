@@ -1,4 +1,4 @@
-import { ErrIndexBounds } from "../class/Tw2Error";
+import { ErrIndexBounds } from "../Tw2Error";
 import { meta, isArrayLike } from "utils";
 
 

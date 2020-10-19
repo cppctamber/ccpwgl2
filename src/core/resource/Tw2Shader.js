@@ -4,7 +4,7 @@ import { quat } from "math";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import shaderOverrides from "./shaderOverrides.json";
-import { Tw2Error } from "../class";
+import { Tw2Error } from "../Tw2Error";
 
 /**
  * Tw2Shader

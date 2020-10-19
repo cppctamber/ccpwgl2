@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataGenericString", true)
+@meta.ctor("EveSOFDataGenericString")
 export class EveSOFDataGenericString
 {
 

@@ -1,4 +1,4 @@
-import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { assignIfExists, isError, isString } from "utils";
 
 /**

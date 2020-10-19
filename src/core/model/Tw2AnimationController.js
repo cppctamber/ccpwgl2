@@ -61,9 +61,9 @@ export class Tw2AnimationController extends meta.Model
      * @param {Function} listener
      * @param {*} [context]
      * @param {Boolean} [once]
-     * @returns {Tw2EventEmitter}
+     * @returns {Tw2AnimationController}
      */
-    on(eventName, listener, context, once)
+    OnEvent(eventName, listener, context, once)
     {
 
         // Ensure "loaded" event is handled if called after the controller has already loaded

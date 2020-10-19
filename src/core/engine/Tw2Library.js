@@ -1,5 +1,5 @@
 import { Model, singleton } from "utils/meta";
-import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";

@@ -1,4 +1,4 @@
-import { Type } from "./types/ModelConstants";
+import { Type } from "./ModelConstants";
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import {
     isFunction,

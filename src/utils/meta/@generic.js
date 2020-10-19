@@ -1,4 +1,4 @@
-import { Tw2Error } from "core/class/Tw2Error";
+import { Tw2Error } from "core/Tw2Error";
 import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../reflect";
 
 /**
@@ -70,9 +70,10 @@ export const singleton = createDecorator({
 });
 
 export const ctor = createDecorator({
-    ctor({ target }, type)
+    ctor({ target }, type, ccp=type)
     {
         defineMetadata("type", type, target);
+        defineMetadata("ccp", ccp, target);
     }
 });
 

@@ -33,7 +33,9 @@ module.exports = {
             "particle": path.resolve(__dirname, "./src/particle"),
             "sof" : path.resolve(__dirname, "./src/sof"),
             "state" : path.resolve(__dirname, "./src/state"),
-            "wrapped" : path.resolve(__dirname, "./src/wrapped")
+            "wrapped" : path.resolve(__dirname, "./src/wrapped"),
+            "math" : path.resolve(__dirname, "./src/math"),
+            "utils" : path.resolve(__dirname, "./src/utils")
         }
     },
 

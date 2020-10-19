@@ -1,6 +1,6 @@
 import { Tw2GenericStore, STORE } from "./Tw2GenericStore";
 import { isFunction } from "utils";
-import { Tw2Error } from "../class";
+import { Tw2Error } from "../Tw2Error";
 
 
 export class Tw2VariableTypeStore extends Tw2GenericStore

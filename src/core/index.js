@@ -1,5 +1,4 @@
 export * from "./batch";
-export * from "./class";
 export * from "./data";
 export * from "./engine";
 export * from "./geometry";
@@ -17,3 +16,8 @@ export * from "./vertex";
 export * from "./Tw2RuntimeInstanceData";
 export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";
+
+// Custom Class
+export * from "./Tw2Transform";
+export * from "./Tw2EventEmitter";
+export * from "./Tw2Error";

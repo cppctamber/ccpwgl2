@@ -4,7 +4,7 @@ import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
-@meta.ctor("EveSpaceScene", true)
+@meta.ctor("EveSpaceScene")
 export class EveSpaceScene extends meta.Model
 {
 

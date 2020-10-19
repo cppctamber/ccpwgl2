@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataGenericShader", true)
+@meta.ctor("EveSOFDataGenericShader")
 export class EveSOFDataGenericSwarm
 {
 

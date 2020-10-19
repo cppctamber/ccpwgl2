@@ -10,7 +10,7 @@ import {
 } from "global";
 
 
-@meta.ctor("EveMeshOverlayEffect", true)
+@meta.ctor("EveMeshOverlayEffect")
 export class EveMeshOverlayEffect extends meta.Model
 {
 

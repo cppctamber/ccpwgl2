@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
 
 
-@meta.ctor("EveSOFDataFaction", true)
+@meta.ctor("EveSOFDataFaction")
 export class EveSOFDataFaction
 {
 

@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { Tw2Error } from "core/class";
+import { Tw2Error } from "core";
 
 
 @meta.ctor("EveSOFDataLogoSet")

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec2, vec4 } from "math";
 
 
-@meta.ctor("EveSOFDataGenericDamage", true)
+@meta.ctor("EveSOFDataGenericDamage")
 export class EveSOFDataGenericDamage
 {
 

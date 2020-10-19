@@ -8,7 +8,7 @@ const
     mat4_0 = mat4.create();
 
 
-export class Tw2Transforms extends meta.Model
+export class Tw2Transform extends meta.Model
 {
 
     @meta.quaternion
@@ -135,7 +135,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the parent transform
      * @param {null|mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetParentTransform(m)
     {
@@ -177,7 +177,7 @@ export class Tw2Transforms extends meta.Model
      * @param {quat} rotation
      * @param {vec3} translation
      * @param {vec3} scaling
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     DecomposeWorld(rotation, translation, scaling)
     {
@@ -288,7 +288,7 @@ export class Tw2Transforms extends meta.Model
 
     /**
      * Reverts the object's transform to an identity matrix
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     Identity()
     {
@@ -314,7 +314,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local transform
      * @param {mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetTransform(m)
     {
@@ -331,7 +331,7 @@ export class Tw2Transforms extends meta.Model
      * @param {quat} rotation
      * @param {vec3} translation
      * @param {vec3} scaling
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     Compose(rotation, translation, scaling)
     {
@@ -347,7 +347,7 @@ export class Tw2Transforms extends meta.Model
      * @param {quat} rotation
      * @param {vec3} translation
      * @param {vec3} scaling
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     Decompose(rotation, translation, scaling)
     {
@@ -417,7 +417,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the the local rotation from a quat
      * @param {quat} q
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotation(q)
     {
@@ -432,7 +432,7 @@ export class Tw2Transforms extends meta.Model
      * @param {Number} y
      * @param {Number} z
      * @param {Number} w
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromValues(x, y, z, w)
     {
@@ -446,7 +446,7 @@ export class Tw2Transforms extends meta.Model
      * @param {vec3} view
      * @param {vec3} right
      * @param {vec3} up
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromAxes(view, right, up)
     {
@@ -459,7 +459,7 @@ export class Tw2Transforms extends meta.Model
      * Sets the local rotation from an axis and angle
      * @param {vec3} axis
      * @param {Number} radians
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromAxisAngle(axis, radians)
     {
@@ -471,7 +471,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local rotation from a euler
      * @param {vec3} e
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromEuler(e)
     {
@@ -485,7 +485,7 @@ export class Tw2Transforms extends meta.Model
      * @param {Number} x
      * @param {Number} y
      * @param {Number} z
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromEulerValues(x, y, z)
     {
@@ -496,7 +496,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local rotation from a mat4
      * @param {mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetRotationFromMat4(m)
     {
@@ -507,7 +507,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local rotation on the x axis
      * @param {Number} radians
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     RotateX(radians)
     {
@@ -519,7 +519,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local rotation on the y axis
      * @param {Number} radians
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     RotateY(radians)
     {
@@ -531,7 +531,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local rotation on the z axis
      * @param {Number} radians
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     RotateZ(radians)
     {
@@ -544,7 +544,7 @@ export class Tw2Transforms extends meta.Model
      * Local rotation on an axis angle
      * @param {vec3} axis
      * @param {Number} radians
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     RotateOnAxisAngle(axis, radians)
     {
@@ -568,7 +568,7 @@ export class Tw2Transforms extends meta.Model
      * Local rotation to look at a local coordinate
      * @param {vec3} v
      * @param {Boolean} [flip]
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     LookAt(v, flip)
     {
@@ -595,7 +595,7 @@ export class Tw2Transforms extends meta.Model
      * Local rotation to look at a world coordinate
      * @param {vec3} v
      * @param {Boolean} [flip]
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     LookAtWorld(v, flip)
     {
@@ -617,7 +617,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local translation from a vector
      * @param {vec3} v
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetTranslation(v)
     {
@@ -631,7 +631,7 @@ export class Tw2Transforms extends meta.Model
      * @param {Number} x
      * @param {Number} y
      * @param {Number} z
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetTranslationFromValues(x, y, z)
     {
@@ -643,7 +643,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local translation from a mat4's translation
      * @param {mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetTranslationFromMat4(m)
     {
@@ -656,7 +656,7 @@ export class Tw2Transforms extends meta.Model
      * Local translation on an axis
      * @param {vec3} axis
      * @param {Number} distance
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     TranslateOnAxis(axis, distance)
     {
@@ -669,7 +669,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local translation on the x axis
      * @param {Number} distance
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     TranslateX(distance)
     {
@@ -679,7 +679,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local translation on the y axis
      * @param {Number} distance
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     TranslateY(distance)
     {
@@ -689,7 +689,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Local translation on the z axis
      * @param {Number} distance
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     TranslateZ(distance)
     {
@@ -719,7 +719,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets local scaling from a vector
      * @param {vec3} v
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScale(v)
     {
@@ -733,7 +733,7 @@ export class Tw2Transforms extends meta.Model
      * @param {Number} x
      * @param {Number}  y
      * @param {Number}  z
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleFromValues(x, y, z)
     {
@@ -744,7 +744,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local x axis scale
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleX(s)
     {
@@ -754,7 +754,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local y axis scale
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleY(s)
     {
@@ -764,7 +764,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets the local z axis scale
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleZ(s)
     {
@@ -774,7 +774,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets local scaling from a scalar
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleUniform(s)
     {
@@ -784,7 +784,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Sets local scaling from a mat4's scale
      * @param {mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     SetScaleFromMat4(m)
     {
@@ -796,7 +796,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local scale by a vector
      * @param {vec3} v
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     Scale(v)
     {
@@ -810,7 +810,7 @@ export class Tw2Transforms extends meta.Model
      * @param {Number} x
      * @param {Number} y
      * @param {Number} z
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleValues(x, y, z)
     {
@@ -821,7 +821,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local scale by a mat4's scale
      * @param {mat4} m
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleMat4(m)
     {
@@ -832,7 +832,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local scale by a scalar
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleUniform(s)
     {
@@ -842,7 +842,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local x axis
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleX(s)
     {
@@ -852,7 +852,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local y axis
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleY(s)
     {
@@ -862,7 +862,7 @@ export class Tw2Transforms extends meta.Model
     /**
      * Scales the local z axis
      * @param {Number} s
-     * @returns {Tw2Transforms}
+     * @returns {Tw2Transform}
      */
     ScaleZ(s)
     {
@@ -969,7 +969,7 @@ export class Tw2Transforms extends meta.Model
 
     /**
      * Gets the classes values
-     * @param {Tw2Transforms} a
+     * @param {Tw2Transform} a
      * @param {Object} [out={}]
      * @param {Object} [opt]
      * @returns {Object}
