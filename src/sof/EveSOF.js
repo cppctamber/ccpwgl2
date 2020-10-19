@@ -30,7 +30,7 @@ import {
 } from "../eve";
 
 
-export function EveSOF(tw2)
+export function EveSOF()
 {
     const self = this;
 

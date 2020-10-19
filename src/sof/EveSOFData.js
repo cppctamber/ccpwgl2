@@ -1,4 +1,4 @@
-import { resMan, tw2, logger } from "global";
+import { resMan, logger } from "global";
 import { vec3, vec4, mat4 } from "math";
 import {
     meta,
@@ -132,21 +132,6 @@ export class EveSOFData
         ]
 
     };
-
-    Log(type, options = {})
-    {
-        if (isString(options))
-        {
-            options = { message: options };
-        }
-
-        if (!options.name)
-        {
-            options.name = "Space object factory";
-        }
-
-        return tw2.Log(type, options);
-    }
 
     /**
      * Initializes the sof data
