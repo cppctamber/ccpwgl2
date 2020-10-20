@@ -3,7 +3,7 @@ import { meta, toArray } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2LodResource")
+@meta.type("Tr2LodResource")
 export class Tr2LodResource extends meta.Model
 {
 

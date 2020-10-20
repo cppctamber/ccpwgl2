@@ -4,7 +4,7 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildModifierSRT")
+@meta.type("EveChildModifierSRT")
 export class EveChildModifierSRT extends EveChildModifier
 {
 

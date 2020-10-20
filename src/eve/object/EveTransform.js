@@ -18,7 +18,7 @@ const Modifier = {
 };
 
 
-@meta.ctor("EveTransform")
+@meta.type("EveTransform")
 export class EveTransform extends EveObject
 {
 

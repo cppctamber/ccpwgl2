@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.ctor("Tw2ParticleDragForce", "Tr2ParticleDragForce")
+@meta.type("Tw2ParticleDragForce", "Tr2ParticleDragForce")
 export class Tw2ParticleDragForce extends Tw2ParticleForce
 {
 

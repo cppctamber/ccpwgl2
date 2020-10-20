@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.ctor("EveSOFDataHullSoundEmitter")
+@meta.type("EveSOFDataHullSoundEmitter")
 export class EveSOFDataHullSoundEmitter
 {
 

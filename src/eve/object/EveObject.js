@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
 import { meta } from "utils";
-import { WrappedType } from "global";
 import { mat4, vec3 } from "math";
 
 
@@ -45,12 +44,6 @@ export class EveObject extends meta.Model
     {
 
     }
-
-    /**
-     * Identifies the object's wrapped type'
-     * @type {Number}
-     */
-    static wrappedType = WrappedType.SPACE_OBJECT;
 
     /**
      * Global and scratch variables

@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ControllerFloatVariable")
+@meta.type("Tr2ControllerFloatVariable")
 export class Tr2ControllerFloatVariable
 {
 

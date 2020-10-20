@@ -1,10 +1,10 @@
 import { meta } from "utils";
-import { device, resMan, store, WrappedType } from "global";
+import { device, resMan, store } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
-@meta.ctor("EveSpaceScene")
+@meta.type("EveSpaceScene")
 export class EveSpaceScene extends meta.Model
 {
 
@@ -809,12 +809,6 @@ export class EveSpaceScene extends meta.Model
             [ "MiscSettings", 4 ] // currentTime, 0, viewportWidth, viewportHeight
         ]
     };
-
-    /**
-     * The object's wrapped type
-     * @type {number}
-     */
-    static wrappedType = WrappedType.SPACE_SCENE;
 
     /**
      * Class global and scratch variables

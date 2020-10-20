@@ -21,7 +21,7 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 
 
 @meta.notImplemented
-@meta.ctor("EveTrailSet")
+@meta.type("EveTrailSet")
 export class EveTrailsSet extends meta.Model
 {
 

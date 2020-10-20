@@ -1,3 +1,5 @@
+import { meta } from "utils";
+import { resMan, device } from "global";
 import { Tw2Resource } from "./Tw2Resource";
 
 import {
@@ -7,11 +9,7 @@ import {
     ErrResourceExtensionUnregistered
 } from "../engine/Tw2ResMan";
 
-import { meta } from "utils";
-
 import {
-    resMan,
-    device,
     DDS_HEADER_LENGTH_INT,
     DDS_HEADER_OFFSET_CAPS2,
     DDS_HEADER_OFFSET_FLAGS,
@@ -27,22 +25,10 @@ import {
     FOURCC_DXT1,
     FOURCC_DXT3,
     FOURCC_DXT5
-} from "global";
+} from "constant";
 
-/**
- * Tw2TextureRes
- *
- * @property {WebGLTexture} texture        - The texture
- * @property {Boolean} isCube              - Identifies if the texture is a cube map
- * @property {Number} width                - The texture's width
- * @property {Number} height               - The texture's height
- * @property {Boolean} hasMipMaps          - Identifies if the texture has mip maps
- * @property {?String} requestResponseType - Request response type for the resource
- * @property {Number} _currentSampler      - The current sampler
- * @property {Boolean} _isAttached         - identifies if the texture was attached rather than loaded
- * @property {?String} _extension          - loading file extension
- */
-@meta.ctor("Tw2TextureRes")
+
+@meta.type("Tw2TextureRes")
 export class Tw2TextureRes extends Tw2Resource
 {
 

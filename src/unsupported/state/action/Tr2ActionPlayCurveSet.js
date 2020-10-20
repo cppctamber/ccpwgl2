@@ -3,7 +3,7 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ActionPlayCurveSet")
+@meta.type("Tr2ActionPlayCurveSet")
 export class Tr2ActionPlayCurveSet extends Tw2Action
 {
 

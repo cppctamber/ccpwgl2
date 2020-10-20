@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Curve } from "curve";
 
 
-@meta.ctor("Tw2CurveAdapter")
+@meta.type("Tw2CurveAdapter")
 export class Tw2CurveAdapter extends Tw2Curve
 {
 

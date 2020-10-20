@@ -3,7 +3,7 @@ import { EveAnimationStateTransition } from "./EveAnimationStateTransition";
 
 
 @meta.notImplemented
-@meta.ctor("EveAnimationState")
+@meta.type("EveAnimationState")
 export class EveAnimationState
 {
 

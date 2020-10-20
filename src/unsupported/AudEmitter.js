@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("AudEmitter", true)
+@meta.type("AudEmitter", true)
 export class AudEmitter extends meta.Model
 {
 

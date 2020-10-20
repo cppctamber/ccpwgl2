@@ -36,7 +36,7 @@ class EveSpriteSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.ctor("EveSpriteSetItem", true)
+@meta.type("EveSpriteSetItem", true)
 export class EveSpriteSetItem extends EveObjectSetItem
 {
 
@@ -84,7 +84,7 @@ export class EveSpriteSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveSpriteSet", true)
+@meta.type("EveSpriteSet", true)
 export class EveSpriteSet extends EveObjectSet
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Error } from "core";
 
 
-@meta.ctor("EveSOFDataLogoSet")
+@meta.type("EveSOFDataLogoSet")
 export class EveSOFDataLogoSet
 {
 

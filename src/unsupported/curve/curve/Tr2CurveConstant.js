@@ -4,7 +4,7 @@ import { Tw2Curve } from "curve";
 
 
 @meta.notImplemented
-@meta.ctor("Tw2CurveConstant")
+@meta.type("Tw2CurveConstant")
 @meta.todo("Is this a curve or a key?")
 export class Tr2CurveConstant extends Tw2Curve
 {

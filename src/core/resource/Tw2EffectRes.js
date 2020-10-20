@@ -18,7 +18,7 @@ import { Tw2Error } from "../Tw2Error";
  * @property {*} shaders
  * @inherits Tw2Resource
  */
-@meta.ctor("Tw2EffectRes")
+@meta.type("Tw2EffectRes")
 export class Tw2EffectRes extends Tw2Resource
 {
 

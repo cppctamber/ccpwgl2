@@ -5,7 +5,7 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
 
-@meta.ctor("Tw2TextureParameter", "TriTextureParameter")
+@meta.type("Tw2TextureParameter", "TriTextureParameter")
 export class Tw2TextureParameter extends Tw2Parameter
 {
 

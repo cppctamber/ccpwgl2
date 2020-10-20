@@ -1,11 +1,12 @@
 import { meta } from "utils";
-import { device, store, RS_COLORWRITEENABLE } from "global";
+import { store, device } from "global";
+import { RS_COLORWRITEENABLE } from "constant";
 import { vec3, vec4, mat4 } from "math";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 
-@meta.ctor("EveLensflare")
+@meta.type("EveLensflare")
 export class EveLensflare extends meta.Model
 {
 

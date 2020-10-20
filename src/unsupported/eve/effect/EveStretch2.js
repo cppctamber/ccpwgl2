@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("EveStretch2")
+@meta.type("EveStretch2")
 export class EveStretch2 extends meta.Model
 {
 

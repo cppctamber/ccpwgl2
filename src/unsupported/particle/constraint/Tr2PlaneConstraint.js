@@ -3,7 +3,7 @@ import { Tw2ParticleConstraint } from "./Tw2ParticleConstraint";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2PlaneConstraint")
+@meta.type("Tr2PlaneConstraint")
 export class Tr2PlaneConstraint extends Tw2ParticleConstraint
 {
 

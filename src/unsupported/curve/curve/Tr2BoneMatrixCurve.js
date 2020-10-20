@@ -3,7 +3,7 @@ import { Tw2Curve } from "curve";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2BoneMatrixCurve")
+@meta.type("Tr2BoneMatrixCurve")
 export class Tr2BoneMatrixCurve extends Tw2Curve
 {
 

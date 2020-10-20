@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataMaterial")
+@meta.type("EveSOFDataMaterial")
 export class EveSOFDataMaterial
 {
 

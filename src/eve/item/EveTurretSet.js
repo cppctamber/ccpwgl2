@@ -10,7 +10,7 @@ import {
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 
-@meta.ctor("EveTurretSetItem")
+@meta.type("EveTurretSetItem")
 export class EveTurretSetItem extends EveObjectSetItem
 {
 
@@ -73,7 +73,7 @@ export class EveTurretSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveTurretSet", true)
+@meta.type("EveTurretSet", true)
 @meta.stage(1)
 export class EveTurretSet extends EveObjectSet
 {

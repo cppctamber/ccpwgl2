@@ -3,7 +3,7 @@ import { vec3, quat } from "math";
 import { Tw2Curve } from "curve";
 
 
-@meta.ctor("Tw2MayaEulerRotationCurve")
+@meta.type("Tw2MayaEulerRotationCurve")
 export class Tw2MayaEulerRotationCurve extends Tw2Curve
 {
 

@@ -2,12 +2,12 @@ var ccpwgl = (function(tw2)
 {
     var ccpwgl = new tw2.Tw2EventEmitter();
 
-    const { vec3, vec4, quat, mat4 } = tw2.math;
+    const { vec3, vec4, mat4 } = tw2.math;
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        set: (bool) => tw2.debug = bool,
-        get: () => tw2.debug
+        set: (bool) => tw2.SetDebugMode(bool),
+        get: () => tw2.GetDebugMode()
     });
 
     // Allow debug to be set from the browser

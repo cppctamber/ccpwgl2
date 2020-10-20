@@ -3,7 +3,7 @@ import { resMan } from "global";
 import { curve, vec3, quat, mat4 } from "math";
 
 
-@meta.ctor("Tw2TransformTrack")
+@meta.type("Tw2TransformTrack")
 export class Tw2TransformTrack
 {
 

@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2Animation")
+@meta.type("Tw2Animation")
 export class Tw2Animation extends meta.Model
 {
 

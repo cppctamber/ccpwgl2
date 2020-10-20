@@ -4,7 +4,7 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildQuad")
+@meta.type("EveChildQuad")
 export class EveChildQuad extends EveChild
 {
 

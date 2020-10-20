@@ -30,7 +30,7 @@ class EveSOFDataInstancedMeshInstanceReader
 }
 
 
-@meta.ctor("EveSOFDataInstancedMesh")
+@meta.type("EveSOFDataInstancedMesh")
 export class EveSOFDataInstancedMesh
 {
 

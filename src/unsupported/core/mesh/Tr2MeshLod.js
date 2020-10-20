@@ -7,11 +7,11 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "global/engine/Tw2Constant";
+} from "constant";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2MeshLod")
+@meta.type("Tr2MeshLod")
 @meta.todo("Implement LOD")
 export class Tr2MeshLod extends meta.Model
 {

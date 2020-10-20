@@ -17,7 +17,7 @@ import { vec3, vec4 } from "math";
  * @property {Number} type                        -
  */
 @meta.notImplemented
-@meta.ctor("EveConnector", true)
+@meta.type("EveConnector")
 export class EveConnector extends meta.Model
 {
 

@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2MeshBinding")
+@meta.type("Tw2MeshBinding")
 export class Tw2MeshBinding
 {
 

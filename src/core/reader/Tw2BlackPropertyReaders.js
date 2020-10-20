@@ -4,8 +4,29 @@ import { ErrFeatureNotImplemented } from "../Tw2Error";
 import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
 import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "utils";
 
-import { Type } from "utils/meta/ModelConstants";
-
+import {
+    PT_ARRAY,
+    PT_BOOLEAN,
+    PT_PATH,
+    PT_STRING,
+    PT_EXPRESSION,
+    PT_BYTE,
+    PT_UINT,
+    PT_USHORT,
+    PT_FLOAT,
+    PT_VECTOR2,
+    PT_VECTOR3,
+    PT_VECTOR4,
+    PT_MATRIX4,
+    PT_QUATERNION,
+    PT_STRUCT_LIST,
+    PT_STRUCT,
+    PT_STRUCT_RAW,
+    PT_COLOR,
+    PT_PLAIN,
+    PT_INDEX_BUFFER,
+    PT_ENUM
+} from "constant/type";
 
 let Types;
 
@@ -14,28 +35,27 @@ function getReaderFromType(type)
     if (!Types)
     {
         Types = {
-            [Type.UNKNOWN]: notImplemented,
-            [Type.BOOLEAN]: boolean,
-            [Type.PATH]: path,
-            [Type.STRING]: string,
-            [Type.EXPRESSION]: string,
-            [Type.BYTE]: byte,
-            [Type.UINT]: uint,
-            [Type.USHORT]: ushort,
-            [Type.FLOAT]: float,
-            [Type.VECTOR2]: vector2,
-            [Type.VECTOR3]: vector3,
-            [Type.VECTOR4]: vector4,
-            [Type.QUATERNION]: vector4,
-            [Type.MATRIX4]: matrix,
-            [Type.COLOR]: color,
-            [Type.STRUCT]: object,
-            [Type.STRUCT_RAW]: rawObject,
-            [Type.STRUCT_LIST]: array,
-            [Type.ARRAY]: array,
-            [Type.PLAIN]: rawObject,
-            [Type.INDEX_BUFFER]: indexBuffer,
-            [Type.ENUM]: enums
+            [PT_BOOLEAN]: boolean,
+            [PT_PATH]: path,
+            [PT_STRING]: string,
+            [PT_EXPRESSION]: string,
+            [PT_BYTE]: byte,
+            [PT_UINT]: uint,
+            [PT_USHORT]: ushort,
+            [PT_FLOAT]: float,
+            [PT_VECTOR2]: vector2,
+            [PT_VECTOR3]: vector3,
+            [PT_VECTOR4]: vector4,
+            [PT_QUATERNION]: vector4,
+            [PT_MATRIX4]: matrix,
+            [PT_COLOR]: color,
+            [PT_STRUCT]: object,
+            [PT_STRUCT_RAW]: rawObject,
+            [PT_STRUCT_LIST]: array,
+            [PT_ARRAY]: array,
+            [PT_PLAIN]: rawObject,
+            [PT_INDEX_BUFFER]: indexBuffer,
+            [PT_ENUM]: enums
         };
     }
 

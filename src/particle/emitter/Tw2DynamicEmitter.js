@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-@meta.ctor("Tw2DynamicEmitter", "Tr2DynamicEmitter")
+@meta.type("Tw2DynamicEmitter", "Tr2DynamicEmitter")
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
 

@@ -3,7 +3,7 @@ import { vec4 } from "math";
 import { Tw2Error } from "core";
 
 
-@meta.ctor("EveSOFDataFactionColorSet")
+@meta.type("EveSOFDataFactionColorSet")
 export class EveSOFDataFactionColorSet
 {
 

@@ -6,7 +6,7 @@ import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
 import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
 
 
-@meta.ctor("Tw2PostEffect")
+@meta.type("Tw2PostEffect")
 export class Tw2PostEffect extends meta.Model
 {
 

@@ -1,5 +1,4 @@
 import { meta } from "utils";
-import { WrappedType } from "global";
 import { vec3, mat4 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
@@ -9,7 +8,7 @@ import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineS
 import { EveMeshOverlayEffect } from "eve/effect";
 
 
-@meta.ctor("EveShip2")
+@meta.type("EveShip2")
 export class EveShip2 extends EveObject
 {
 
@@ -736,14 +735,7 @@ export class EveShip2 extends EveObject
                 this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, worldSpriteScale);
             }
         }
-
     }
-
-    /**
-     * Identifies the object's wrapped type
-     * @type {number}
-     */
-    static wrappedType = WrappedType.SPACE_SHIP;
 
     /**
      * Per object data

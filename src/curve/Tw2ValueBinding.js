@@ -25,7 +25,7 @@ import { isArrayLike, isBoolean, isNumber } from "utils";
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
-@meta.ctor("Tw2ValueBinding", "TriValueBinding")
+@meta.type("Tw2ValueBinding", "TriValueBinding")
 export class Tw2ValueBinding extends meta.Model
 {
 

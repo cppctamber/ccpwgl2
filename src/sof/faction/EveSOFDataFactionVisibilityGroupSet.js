@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataFactionVisibilityGroupSet")
+@meta.type("EveSOFDataFactionVisibilityGroupSet")
 export class EveSOFDataFactionVisibilityGroupSet
 {
 

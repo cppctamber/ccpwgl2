@@ -3,7 +3,7 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildParticleSphere")
+@meta.type("EveChildParticleSphere")
 export class EveChildParticleSphere extends EveChild
 {
 

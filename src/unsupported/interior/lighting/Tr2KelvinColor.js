@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2KelvinColor")
+@meta.type("Tr2KelvinColor")
 export class Tr2KelvinColor extends meta.Model
 {
 

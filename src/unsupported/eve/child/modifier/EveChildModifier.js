@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveChildModifier")
+@meta.type("EveChildModifier")
 export class EveChildModifier extends meta.Model
 {
 

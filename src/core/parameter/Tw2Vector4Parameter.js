@@ -3,7 +3,7 @@ import { vec4, quat } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.ctor("Tw2Vector4Parameter", "TriVector4Parameter")
+@meta.type("Tw2Vector4Parameter", "TriVector4Parameter")
 export class Tw2Vector4Parameter extends Tw2VectorParameter
 {
 

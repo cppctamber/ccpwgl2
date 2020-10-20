@@ -1,6 +1,5 @@
 export * from "./batch";
 export * from "./data";
-export * from "./engine";
 export * from "./geometry";
 export * from "./mesh";
 export * from "./model";
@@ -18,6 +17,6 @@ export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";
 
 // Custom Class
-export * from "./Tw2Transform";
 export * from "./Tw2EventEmitter";
+export * from "./Tw2Transform";
 export * from "./Tw2Error";

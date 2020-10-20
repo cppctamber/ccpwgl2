@@ -3,7 +3,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildBulletStorm")
+@meta.type("EveChildBulletStorm")
 export class EveChildBulletStorm extends EveChild
 {
 

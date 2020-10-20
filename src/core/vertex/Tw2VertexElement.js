@@ -1,8 +1,8 @@
 import { meta, isString } from "utils";
-import * as consts from "global/engine/Tw2Constant";
+import * as consts from "constant";
 
 
-@meta.ctor("Tw2VertexElement")
+@meta.type("Tw2VertexElement")
 export class Tw2VertexElement
 {
 

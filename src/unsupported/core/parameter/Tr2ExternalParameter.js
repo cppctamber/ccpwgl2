@@ -3,7 +3,7 @@ import { Tw2Parameter } from "core/parameter/Tw2Parameter";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ExternalParameter")
+@meta.type("Tr2ExternalParameter")
 export class Tr2ExternalParameter extends Tw2Parameter
 {
 

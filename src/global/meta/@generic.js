@@ -1,38 +1,6 @@
-import { Tw2Error } from "core/Tw2Error";
-import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../reflect";
+import { ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
+import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
 
-/**
- * Throws when a class can only be instantiated once
- */
-export class ErrSingletonInstantiation extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Cannot re-instantiate singleton (%class%)");
-    }
-}
-
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-export class ErrAbstractClass extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Abstract class cannot be directly instantiated (%class%)");
-    }
-}
-
-/**
- * Throws when an abstract classes' method is not implemented directly on a child class
- */
-export class ErrAbstractMethod extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Abstract class method not implemented on class '%class%': (%method%)");
-    }
-}
 
 export const abstract = createDecorator({
     noArgs: true,
@@ -66,14 +34,6 @@ export const singleton = createDecorator({
                 super(...args);
             }
         };
-    }
-});
-
-export const ctor = createDecorator({
-    ctor({ target }, type, ccp=type)
-    {
-        defineMetadata("type", type, target);
-        defineMetadata("ccp", ccp, target);
     }
 });
 

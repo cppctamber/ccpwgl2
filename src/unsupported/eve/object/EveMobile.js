@@ -4,7 +4,7 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.ctor("EveMobile")
+@meta.type("EveMobile")
 export class EveMobile extends EveObject
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3, quat } from "math";
 
 
-@meta.ctor("EveLocatorSetItem")
+@meta.type("EveLocatorSetItem")
 @meta.stage(1)
 export class EveLocatorSetItem extends meta.Model
 {
@@ -31,7 +31,7 @@ export class EveLocatorSetItem extends meta.Model
 }
 
 
-@meta.ctor("EveLocatorSets", true)
+@meta.type("EveLocatorSets", true)
 export class EveLocatorSets extends meta.Model
 {
 

@@ -1,21 +1,6 @@
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { assignIfExists, isError, isString } from "utils";
 
-/**
- * eventLog
- * @typedef {{}} eventLog
- * @property {String} eventLog.type       - The log's type
- * @property {String} eventLog.name       - The log's name
- * @property {String} eventLog.message    - The log's message
- * @property {String} [eventLog.path]     - optional related resource path
- * @property {String} [eventLog.detail]   - optional extra detail
- * @property {String} [eventLog.time]     - optional time taken
- * @property {Boolean} [eventLog.hide]    - optional visibility
- * @property {Boolean} [eventLog._logged] - Identifies if the log has been logged
- * @property {Error} [eventLog.err]       - Optional error (output to the console)
- * @property {*} [eventLog.data]          - Optional data (output to the console)
- */
-
 
 export class Tw2Logger extends Tw2EventEmitter
 {

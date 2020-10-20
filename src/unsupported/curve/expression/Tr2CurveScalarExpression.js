@@ -3,7 +3,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2CurveScalarExpression")
+@meta.type("Tr2CurveScalarExpression")
 export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3, vec4, mat4 } from "math";
 
 
-@meta.ctor("Tw2Frustum")
+@meta.type("Tw2Frustum")
 export class Tw2Frustum
 {
 

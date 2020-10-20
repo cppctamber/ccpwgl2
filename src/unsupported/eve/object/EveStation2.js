@@ -6,7 +6,7 @@ import { EveShip2 } from "./EveShip2";
 
 
 @meta.notImplemented
-@meta.ctor("EveStation2")
+@meta.type("EveStation2")
 export class EveStation2 extends EveShip2
 {
 

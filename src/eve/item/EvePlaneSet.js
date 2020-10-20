@@ -23,7 +23,7 @@ class EvePlaneSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.ctor("EvePlaneSetItem", true)
+@meta.type("EvePlaneSetItem", true)
 export class EvePlaneSetItem extends EveObjectSetItem
 {
 
@@ -115,7 +115,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EvePlaneSet", true)
+@meta.type("EvePlaneSet", true)
 export class EvePlaneSet extends EveObjectSet
 {
 

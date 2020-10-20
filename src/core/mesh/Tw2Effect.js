@@ -60,7 +60,7 @@ class Tw2EffectOption
 }
 
 
-@meta.ctor("Tw2Effect")
+@meta.type("Tw2Effect")
 @meta.stage(1)
 export class Tw2Effect extends meta.Model
 {

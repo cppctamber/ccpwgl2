@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataFactionChild")
+@meta.type("EveSOFDataFactionChild")
 export class EveSOFDataFactionChild
 {
 

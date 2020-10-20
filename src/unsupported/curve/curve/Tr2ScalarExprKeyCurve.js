@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Curve, Tw2CurveKey } from "curve";
 
 
-@meta.ctor("Tr2ScalarExprKey")
+@meta.type("Tr2ScalarExprKey")
 export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
@@ -38,7 +38,7 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ScalarExprKeyCurve")
+@meta.type("Tr2ScalarExprKeyCurve")
 export class Tr2ScalarExprKeyCurve extends Tw2Curve
 {
 

@@ -7,7 +7,7 @@ import { meta } from "utils";
  * @property {EveCurveLineSet} lineSet -
  */
 @meta.notImplemented
-@meta.ctor("EveLineContainer", true)
+@meta.type("EveLineContainer", true)
 export class EveLineContainer extends meta.Model
 {
 

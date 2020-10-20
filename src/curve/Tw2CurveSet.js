@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2CurveSet", "TriCurveSet")
+@meta.type("Tw2CurveSet", "TriCurveSet")
 export class Tw2CurveSet extends meta.Model
 {
 

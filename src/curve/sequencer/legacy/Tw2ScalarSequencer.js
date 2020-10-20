@@ -8,7 +8,7 @@ const Operator = {
 };
 
 
-@meta.ctor("Tw2ScalarSequencer")
+@meta.type("Tw2ScalarSequencer")
 export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
 

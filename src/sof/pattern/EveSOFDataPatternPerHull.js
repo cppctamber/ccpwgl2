@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataPatternPerHull")
+@meta.type("EveSOFDataPatternPerHull")
 export class EveSOFDataPatternPerHull
 {
 

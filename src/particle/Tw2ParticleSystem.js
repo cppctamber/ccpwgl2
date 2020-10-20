@@ -39,7 +39,7 @@ import { Tw2ParticleElement } from "./element";
  * @property {WebGLBuffer} _vb                                  - Vertex buffer
  * @property {Array} _vertexStride                              - Vertex stride
  */
-@meta.ctor("Tw2ParticleSystem", "Tr2ParticleSystem")
+@meta.type("Tw2ParticleSystem", "Tr2ParticleSystem")
 export class Tw2ParticleSystem extends meta.Model
 {
 

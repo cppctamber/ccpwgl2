@@ -4,7 +4,7 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-@meta.ctor("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator")
+@meta.type("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator")
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 

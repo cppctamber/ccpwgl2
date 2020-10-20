@@ -9,7 +9,7 @@ import { meta } from "utils";
  * @property {Number} modelScale           -
  */
 @meta.notImplemented
-@meta.ctor("EveUiObject")
+@meta.type("EveUiObject")
 export class EveUiObject extends meta.Model
 {
 

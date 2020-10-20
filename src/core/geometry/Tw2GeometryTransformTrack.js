@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2GeometryTransformTrack")
+@meta.type("Tw2GeometryTransformTrack")
 export class Tw2GeometryTransformTrack
 {
 

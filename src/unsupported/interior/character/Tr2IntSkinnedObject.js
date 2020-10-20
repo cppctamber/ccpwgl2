@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2IntSkinnedObject")
+@meta.type("Tr2IntSkinnedObject")
 export class Tr2IntSkinnedObject extends meta.Model
 {
 

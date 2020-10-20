@@ -14,7 +14,7 @@ import { Tw2Notifications } from "./Tw2Notifications";
  * @property {Array<Error>} _errors
  * @property {Set} _watchers
  */
-@meta.ctor("Tw2Resource")
+@meta.type("Tw2Resource")
 export class Tw2Resource extends Tw2Notifications
 {
     path = "";

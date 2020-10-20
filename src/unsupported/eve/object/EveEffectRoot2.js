@@ -4,7 +4,7 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.ctor("EveEffectRoot2")
+@meta.type("EveEffectRoot2")
 export class EveEffectRoot2 extends EveObject
 {
 

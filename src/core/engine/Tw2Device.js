@@ -57,59 +57,9 @@ import {
     VendorWebglPrefixes,
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
-} from "global/engine/Tw2Constant";
-import { logger } from "global/tw2";
+} from "constant";
 
 
-/**
- * Tw2Device
- *
- * @property {WebGLRenderingContext} gl            - The device's gl context
- * @property {*} xr                                - An optional xr handler
- * @property {vec3} eyePosition                    - The device's current eye position
- * @property {vec4} targetResolution               - The device's current target resolution
- * @property {mat4} world                          - The device's current world matrix
- * @property {mat4} view                           - The device's current view matrix
- * @property {mat4} viewInverse                    - The device's current inverse view matrix
- * @property {mat4} viewTranspose                  - The device's current view matrix transposed
- * @property {mat4} projection                     - The device's current projection matrix
- * @property {mat4} projectionInverse              - The device's current inverse projection matrix
- * @property {mat4} projectionTranspose            - The device's current projection matrix transposed
- * @property {mat4} viewProjection                 - The device's current view projection matrix
- * @property {mat4} viewProjectionTranspose        - The device's current view projection matrix transposed
- * @property {?HTMLCanvasElement} canvas           - The html canvas the gl context was created from
- * @property {number} viewportWidth                - The canvas's current width
- * @property {number} viewportHeight               - The canvas's current height
- * @property {number} viewportAspect               - The canvas's current display aspect
- * @property {number} viewportPixelRatio           - The canvas's pixel ratio
- * @property {String} effectDir                    - The directory used to translate ccp effect file paths
- * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
- * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
- * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
- * @property {Boolean} enableAntialiasing          - Enables antialiasing
- * @property {Boolean} enableWebgl2                - Enables webgl2
- * @property {Boolean} enableWebxr                 - Enables webvr (Not yet supported)
- * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
- * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
- * @property {number} msaaSamples                  - The amount of samples used for antialiasing
- * @property {number[]} wrapModes                  - texture wrap modes
- * @property {*} shadowHandles                     - unused
- * @property {Tw2PerObjectData} perObjectData      - The current frame's per object data
- * @property {Function} onResize                   - An optional function which is called on resize
- * @property {{}} _extensions                      - Stores loaded extensions
- * @property {{}} _alphaBlendState                 - Alpha states for blending
- * @property {{}} _alphaTestState                  - Alpha test states
- * @property {{}} _depthOffsetState                - Depth states
- * @property {Float32Array} _shadowStateBuffer     - unused
- * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
- * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
- * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
- * @property {number} _currentRenderMode           - The device's current render mode
- * @property {WebGLTexture} _fallbackCube          - A fallback cube texture
- * @property {WebGLTexture} _fallbackTexture       - A fallback texture
- * @property {Tw2Effect} _blitEffect               - The blit effect used for rendering textures
- * @class
- */
 export class Tw2Device extends Tw2EventEmitter
 {
     name = "Device";
@@ -195,11 +145,13 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Constructor
      * @param {Tw2Store} store
+     * @param {Tw2Logger} logger
      */
-    constructor(store)
+    constructor(store, logger)
     {
         super();
         this.store = store;
+        this.logger = logger;
         this.startTime = this.now;
         this.currentTime = this.startTime;
     }
@@ -261,7 +213,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         const gl = this.gl = Tw2Device.CreateContext(params, canvas);
 
-        logger.Debug({
+        this.logger.Debug({
             name: "Device",
             message: `Webgl${this.glVersion} context created`
         });

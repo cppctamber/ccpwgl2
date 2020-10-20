@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tw2CurveSetRange")
+@meta.type("Tw2CurveSetRange")
 export class Tw2CurveSetRange extends meta.Model
 {
 

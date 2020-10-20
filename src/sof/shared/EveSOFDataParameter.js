@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec4 } from "math";
 
 
-@meta.ctor("EveSOFDataParameter")
+@meta.type("EveSOFDataParameter")
 export class EveSOFDataParameter
 {
 

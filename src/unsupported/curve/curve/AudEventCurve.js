@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2CurveKey, Tw2Curve } from "curve";
 
 
-@meta.ctor("AudEventKey")
+@meta.type("AudEventKey")
 export class AudEventKey extends Tw2CurveKey
 {
 
@@ -16,7 +16,7 @@ export class AudEventKey extends Tw2CurveKey
 
 
 @meta.notImplemented
-@meta.ctor("AudEventCurve")
+@meta.type("AudEventCurve")
 export class AudEventCurve extends Tw2Curve
 {
 

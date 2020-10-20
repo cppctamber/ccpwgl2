@@ -3,7 +3,7 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ActionSetValue")
+@meta.type("Tr2ActionSetValue")
 export class Tr2ActionSetValue extends Tw2Action
 {
 

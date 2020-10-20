@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("EveAnimation")
+@meta.type("EveAnimation")
 export class EveAnimation
 {
 

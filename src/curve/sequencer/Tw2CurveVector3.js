@@ -3,7 +3,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.ctor("Tw2CurveVector3", "Tr2CurveVector3")
+@meta.type("Tw2CurveVector3", "Tr2CurveVector3")
 @meta.stage(2)
 export class Tw2CurveVector3 extends Tw2CurveSequencer
 {

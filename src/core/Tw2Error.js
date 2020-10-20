@@ -95,3 +95,36 @@ export class ErrWrapped extends Tw2Error
         super(data, "Invalid wrapped object(s) (%reason%)");
     }
 }
+
+/**
+ * Throws when a class can only be instantiated once
+ */
+export class ErrSingletonInstantiation extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Cannot re-instantiate singleton (%class%)");
+    }
+}
+
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+export class ErrAbstractClass extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Abstract class cannot be directly instantiated (%class%)");
+    }
+}
+
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+export class ErrAbstractMethod extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Abstract class method not implemented on class '%class%': (%method%)");
+    }
+}

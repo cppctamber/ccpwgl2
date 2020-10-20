@@ -3,7 +3,7 @@ import { vec3, mat4 } from "math";
 import { Tw2Float } from "core";
 
 
-@meta.ctor("EveStretch", true)
+@meta.type("EveStretch")
 export class EveStretch extends meta.Model
 {
 

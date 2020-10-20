@@ -3,7 +3,7 @@ import { noise } from "math";
 import { Tw2Curve } from "./Tw2Curve";
 
 
-@meta.ctor("Tw2PerlinCurve", "TriPerlinCurve")
+@meta.type("Tw2PerlinCurve", "TriPerlinCurve")
 export class Tw2PerlinCurve extends Tw2Curve
 {
 

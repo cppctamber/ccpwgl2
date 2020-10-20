@@ -2,7 +2,7 @@ import { meta, assignIfExists } from "utils";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 
 
-@meta.ctor("Tw2PostEffectStep")
+@meta.type("Tw2PostEffectStep")
 export class Tw2PostEffectStep extends meta.Model
 {
 

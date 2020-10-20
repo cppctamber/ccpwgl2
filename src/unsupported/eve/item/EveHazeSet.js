@@ -23,7 +23,7 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 
 
 @meta.notImplemented
-@meta.ctor("EveHazeSetItem")
+@meta.type("EveHazeSetItem")
 export class EveHazeSetItem extends EveObjectSetItem
 {
 
@@ -70,7 +70,7 @@ export class EveHazeSetItem extends EveObjectSetItem
 
 
 @meta.notImplemented
-@meta.ctor("EveHazeSet")
+@meta.type("EveHazeSet")
 export class EveHazeSet extends EveObjectSet
 {
 

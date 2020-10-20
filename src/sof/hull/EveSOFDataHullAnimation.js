@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat } from "math";
 
 
-@meta.ctor("EveSOFDataHullAnimation")
+@meta.type("EveSOFDataHullAnimation")
 export class EveSOFDataHullAnimation
 {
 

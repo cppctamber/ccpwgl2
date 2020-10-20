@@ -4,7 +4,7 @@ import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2CurveVector3Expression")
+@meta.type("Tr2CurveVector3Expression")
 export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 

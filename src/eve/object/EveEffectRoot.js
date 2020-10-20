@@ -5,7 +5,7 @@ import { EveObject } from "./EveObject";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
-@meta.ctor("EveEffectRoot")
+@meta.type("EveEffectRoot")
 @meta.todo("Implement LOD")
 export class EveEffectRoot extends EveObject
 {

@@ -29,7 +29,7 @@ export class EveBoosterBatch extends Tw2RenderBatch
 }
 
 
-@meta.ctor("EveBoosterSetItem")
+@meta.type("EveBoosterSetItem")
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
@@ -103,7 +103,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveBoosterSet", true)
+@meta.type("EveBoosterSet", true)
 export class EveBoosterSet extends EveObjectSet
 {
 

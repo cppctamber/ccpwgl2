@@ -3,7 +3,7 @@ import { device } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
-@meta.ctor("Tw2RenderTarget")
+@meta.type("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
 

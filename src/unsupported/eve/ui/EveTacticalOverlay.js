@@ -14,7 +14,7 @@ import { meta } from "utils";
  * @property {Tw2Effect} velocityEffect    -
  */
 @meta.notImplemented
-@meta.ctor("EveTacticalOverlay")
+@meta.type("EveTacticalOverlay")
 export class EveTacticalOverlay extends meta.Model
 {
 

@@ -2,7 +2,7 @@ import { Tw2Curve } from "curve/curve";
 import { meta } from "utils";
 
 
-@meta.ctor("Tr2ScalarExprCurve")
+@meta.type("Tr2ScalarExprCurve")
 @meta.notImplemented
 export class Tr2ScalarExprCurve extends Tw2Curve
 {

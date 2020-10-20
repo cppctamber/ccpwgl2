@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataGenericDecalShader")
+@meta.type("EveSOFDataGenericDecalShader")
 export class EveSOFDataGenericDecalShader
 {
 

@@ -4,7 +4,7 @@ import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2RotationAdapter")
+@meta.type("Tr2RotationAdapter")
 export class Tr2RotationAdapter extends Tw2CurveAdapter
 {
 

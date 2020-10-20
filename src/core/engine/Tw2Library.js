@@ -1,31 +1,29 @@
-import { Model, singleton } from "utils/meta";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
-import { path } from "core/reader/Tw2BlackPropertyReaders";
-import * as consts from "global/engine/Tw2Constant";
+import { path } from "../reader/Tw2BlackPropertyReaders";
+import { ErrSingletonInstantiation } from "../Tw2Error";
+import * as consts from "constant";
 import * as math from "math";
 import * as util from "utils";
 
-import {
-    isFunction,
-    isPlain,
-    isString,
-    toArray,
-    isDNA,
-} from "utils";
 
-@singleton
+let count = 0;
+
 export class Tw2Library extends Tw2EventEmitter
 {
 
     math = math;
     util = util;
     logger = new Tw2Logger();
+    consts = consts;
     resMan = null;
     device = null;
     store = null;
+
+    _debugMode = false;
+
 
     /**
      * Alias for device.gl
@@ -104,11 +102,14 @@ export class Tw2Library extends Tw2EventEmitter
      */
     constructor(store)
     {
+        count++;
+        if (count > 1) throw new ErrSingletonInstantiation();
+
         super();
 
         this.const = consts;
-        this.resMan = new Tw2ResMan(store);
-        this.device = new Tw2Device(store);
+        this.resMan = new Tw2ResMan(store, this.logger);
+        this.device = new Tw2Device(store, this.logger);
         this.store = store;
 
         let eveSof;
@@ -124,16 +125,35 @@ export class Tw2Library extends Tw2EventEmitter
             }
         });
 
-        let debug = false;
-        Object.defineProperty(this, "debug", {
-            get: () => debug,
-            set: (bool) =>
-            {
-                debug = !!bool;
-                this.store.SetDebugMode(debug);
-                this.logger.SetDebugMode(debug);
-            }
-        });
+    }
+
+    /**
+     * Gets the eve sof
+     * @returns {EveSOF}
+     */
+    GetEveSOF()
+    {
+        return this.eveSof;
+    }
+
+    /**
+     * Sets debug mode
+     * @param {Boolean} bool
+     */
+    SetDebugMode(bool)
+    {
+        this._debugMode = bool;
+        this.store.SetDebugMode(bool);
+        this.logger.SetDebugMode(bool);
+    }
+
+    /**
+     * Gets the debug mode
+     * @return {boolean}
+     */
+    GetDebugMode()
+    {
+        return this._debugMode;
     }
 
     /**
@@ -240,7 +260,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     Register(options = {})
     {
-        if (options.debug !== undefined) this.debug = options.debug;
+        if (options.debug !== undefined) this.SetDebugMode(options.debug);
         if (options.logger) this.logger.Register(options.logger);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);
@@ -386,7 +406,7 @@ export class Tw2Library extends Tw2EventEmitter
     async FetchObject(resPath, expectedConstructor)
     {
         let result;
-        if (isDNA(resPath))
+        if (util.isDNA(resPath))
         {
             result = await this.eveSof.FetchObject(resPath);
         }
@@ -411,7 +431,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async FetchBuildClass(resPath)
     {
-        return isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
+        return util.isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
     }
 
     /**
@@ -427,7 +447,7 @@ export class Tw2Library extends Tw2EventEmitter
             return true;
         }
 
-        expectedConstructor = toArray(expectedConstructor);
+        expectedConstructor = util.toArray(expectedConstructor);
 
         let isGood;
         for (let i = 0; i < expectedConstructor.length; i++)
@@ -435,7 +455,7 @@ export class Tw2Library extends Tw2EventEmitter
             let Constructor = expectedConstructor[i],
                 exclude = false;
 
-            if (isString(Constructor))
+            if (util.isString(Constructor))
             {
                 if (Constructor.charAt(0) === "!")
                 {
@@ -466,17 +486,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     CreateVariable(name, value, Type)
     {
-        if (isPlain(value))
-        {
-            Type = value["Type"] || value["type"];
-            value = value["value"];
-        }
-
-        if (isFunction(Type)) return new Type(name, value);
-        if (isString(Type)) Type = this.GetType(Type);
-        if (!Type) Type = this.GetTypeByValue(value);
-        if (isFunction(Type)) return new Type(name, value);
-        throw new Error("Could not identify variable type");
+        return this.store.variables.Create(name, value, Type);
     }
 
     /**
@@ -697,5 +707,3 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
 }
-
-Tw2Library.prototype.Model = Model;

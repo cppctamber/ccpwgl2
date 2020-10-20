@@ -4,7 +4,7 @@ import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
 
-@meta.ctor("EveSpaceObject")
+@meta.type("EveSpaceObject")
 export class EveSpaceObject extends EveObject
 {
 

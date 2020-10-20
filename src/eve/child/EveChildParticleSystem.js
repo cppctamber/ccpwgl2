@@ -4,7 +4,7 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.ctor("EveChildParticleSystem", true)
+@meta.type("EveChildParticleSystem", true)
 @meta.stage(1)
 export class EveChildParticleSystem extends EveChild
 {

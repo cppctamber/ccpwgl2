@@ -1,5 +1,5 @@
 /*eslint no-unused-vars:0*/
-import { RM_ANY } from "global";
+import { RM_ANY } from "constant";
 
 /**
  * Tw2RenderBatch base class

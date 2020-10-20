@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataRaceDamage")
+@meta.type("EveSOFDataRaceDamage")
 export class EveSOFDataRaceDamage
 {
 

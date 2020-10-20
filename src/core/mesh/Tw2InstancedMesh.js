@@ -11,10 +11,10 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "global/engine";
+} from "constant";
 
 
-@meta.ctor("Tw2InstancedMesh", "Tr2InstancedMesh")
+@meta.type("Tw2InstancedMesh", "Tr2InstancedMesh")
 export class Tw2InstancedMesh extends meta.Model
 {
 

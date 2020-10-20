@@ -3,7 +3,7 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildModifierBillboard3D")
+@meta.type("EveChildModifierBillboard3D")
 export class EveChildModifierBillboard3D extends EveChildModifier
 {
 

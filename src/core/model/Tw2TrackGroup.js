@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2TrackGroup")
+@meta.type("Tw2TrackGroup")
 export class Tw2TrackGroup
 {
 

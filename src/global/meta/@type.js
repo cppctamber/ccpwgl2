@@ -1,14 +1,33 @@
-import { Type } from "./ModelConstants";
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
+import { isFunction, isPlain, isString } from "../utils/type";
+import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
+
 import {
-    isFunction,
-    isPlain,
-    isString,
-    createDecorator,
-    defineMetadata,
-    getMetadata,
-    hasMetadata
-} from "utils";
+    PT_ARRAY,
+    PT_BOOLEAN,
+    PT_BYTE,
+    PT_COLOR,
+    PT_ENUM,
+    PT_EXPRESSION,
+    PT_FLOAT,
+    PT_INDEX_BUFFER,
+    PT_MATRIX3,
+    PT_MATRIX4,
+    PT_PATH,
+    PT_PLAIN,
+    PT_QUATERNION,
+    PT_STRING,
+    PT_STRUCT,
+    PT_STRUCT_LIST,
+    PT_STRUCT_RAW,
+    PT_UINT,
+    PT_UNKNOWN,
+    PT_USHORT,
+    PT_VECTOR,
+    PT_VECTOR2,
+    PT_VECTOR3,
+    PT_VECTOR4
+} from "constant";
 
 
 /**
@@ -38,8 +57,8 @@ const typeHandler = function({ target, property }, type, ...typesOf)
     // Cache structs and structList properties
     switch (type)
     {
-        case Type.STRUCT_RAW:
-        case Type.STRUCT:
+        case PT_STRUCT_RAW:
+        case PT_STRUCT:
             let structs = getMetadata("structs", target.constructor);
             structs = structs ? Array.from(structs) : [];
             if (!structs.includes(property))
@@ -50,7 +69,7 @@ const typeHandler = function({ target, property }, type, ...typesOf)
             defineMetadata("structs", structs, target.constructor);
             break;
 
-        case Type.STRUCT_LIST:
+        case PT_STRUCT_LIST:
             let structLists = getMetadata("structLists", target.constructor);
             structLists = structLists ? Array.from(structLists) : [];
             if (!structLists.includes(property))
@@ -63,6 +82,18 @@ const typeHandler = function({ target, property }, type, ...typesOf)
     }
 
 };
+
+export const type = createDecorator({
+    ctor({ target }, type, ccp=type)
+    {
+        defineMetadata("type", type, target);
+        defineMetadata("ccp", ccp, target);
+    },
+    parameter(options, type, typesOf)
+    {
+        typeHandler(options, type, typesOf);
+    }
+});
 
 /**
  * Creates a property type decorator
@@ -85,115 +116,115 @@ function create(propertyType, hasTypesOf)
  * Unknown value type
  * @type {PropertyDecorator}
  */
-export const unknown = create(Type.UNKNOWN);
+export const unknown = create(PT_UNKNOWN);
 
 /**
  * Boolean property type
  * @type {PropertyDecorator}
  */
-export const boolean = create(Type.BOOLEAN);
+export const boolean = create(PT_BOOLEAN);
 
 /**
  * String property type
  * @type {PropertyDecorator}
  */
-export const string = create(Type.STRING);
+export const string = create(PT_STRING);
 
 /**
  * Path property type
  * @type {PropertyDecorator}
  */
-export const path = create(Type.PATH);
+export const path = create(PT_PATH);
 
 /**
  * Expression property type
  * @type {PropertyDecorator}
  */
-export const expression = create(Type.EXPRESSION);
+export const expression = create(PT_EXPRESSION);
 
 /**
  * Float property type
  * @type {PropertyDecorator}
  */
-export const float = create(Type.FLOAT);
+export const float = create(PT_FLOAT);
 
 /**
  * Uint property type
  * @type {PropertyDecorator}
  */
-export const uint = create(Type.UINT);
+export const uint = create(PT_UINT);
 
 /**
  * Ushort property type
  * @type {PropertyDecorator}
  */
-export const ushort = create(Type.USHORT);
+export const ushort = create(PT_USHORT);
 
 /**
  * Byte property type
  * @type {PropertyDecorator}
  */
-export const byte = create(Type.BYTE);
+export const byte = create(PT_BYTE);
 
 /**
  * Array property type
  * @type {PropertyDecorator}
  */
-export const array = create(Type.ARRAY);
+export const array = create(PT_ARRAY);
 
 /**
  * Vector 2 property type
  * @type {PropertyDecorator}
  */
-export const vector2 = create(Type.VECTOR2);
+export const vector2 = create(PT_VECTOR2);
 
 /**
  * Vector 3 property type
  * @type {PropertyDecorator}
  */
-export const vector3 = create(Type.VECTOR3);
+export const vector3 = create(PT_VECTOR3);
 
 /**
  * Vector 4 property type
  * @type {PropertyDecorator}
  */
-export const vector4 = create(Type.VECTOR4);
+export const vector4 = create(PT_VECTOR4);
 
 /**
  * Linear colour property type
  * @type {PropertyDecorator}
  */
-export const color = create(Type.COLOR);
+export const color = create(PT_COLOR);
 
 /**
  * Quaternion property type
  * @type {PropertyDecorator}
  */
-export const quaternion = create(Type.QUATERNION);
+export const quaternion = create(PT_QUATERNION);
 
 /**
  * Matrix 3 property type
  * @type {PropertyDecorator}
  */
-export const matrix3 = create(Type.MATRIX3);
+export const matrix3 = create(PT_MATRIX3);
 
 /**
  * Matrix 4 property type
  * @type {PropertyDecorator}
  */
-export const matrix4 = create(Type.MATRIX4);
+export const matrix4 = create(PT_MATRIX4);
 
 /**
  * Index buffer property type
  * @type {PropertyDecorator}
  */
-export const indexBuffer = create(Type.INDEX_BUFFER);
+export const indexBuffer = create(PT_INDEX_BUFFER);
 
 /**
  * Dynamic typed array
  * @type {PropertyDecorator}
  */
-export const vector = create(Type.VECTOR);
+export const vector = create(PT_VECTOR);
 
 /**
  * Enumerable property type
@@ -202,7 +233,7 @@ export const vector = create(Type.VECTOR);
 export const enums = createDecorator({
     property({ target, property }, values)
     {
-        typeHandler({ target, property }, Type.ENUM);
+        typeHandler({ target, property }, PT_ENUM);
         defineMetadata("isPrivate", true, target, property);
         defineMetadata("enumerable", values, target, property);
     }
@@ -212,7 +243,7 @@ export const enums = createDecorator({
  * Plain property type
  * @type {Function}
  */
-export const plain = create(Type.PLAIN);
+export const plain = create(PT_PLAIN);
 
 /**
  * Struct list property type
@@ -235,7 +266,7 @@ export const list = createDecorator({
             }
         }
 
-        typeHandler({ target, property }, Type.STRUCT_LIST, ...typesOf);
+        typeHandler({ target, property }, PT_STRUCT_LIST, ...typesOf);
     }
 });
 
@@ -265,7 +296,7 @@ export const fromList = createDecorator({
             typesOf.unshift(getMetadata("type", options.struct));
         }
 
-        typeHandler({ target, property }, Type.PLAIN, ...typesOf);
+        typeHandler({ target, property }, PT_PLAIN, ...typesOf);
     }
 
 });
@@ -299,11 +330,11 @@ function createObjectType(propertyType)
  * Structure property type
  * @type {Function}
  */
-export const struct = createObjectType(Type.STRUCT);
+export const struct = createObjectType(PT_STRUCT);
 
 /**
  * Raw structure property type
  * @type {Function}
  */
-export const raw = createObjectType(Type.STRUCT_RAW);
+export const raw = createObjectType(PT_STRUCT_RAW);
 

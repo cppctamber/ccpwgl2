@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataHullPlaneSet")
+@meta.type("EveSOFDataHullPlaneSet")
 export class EveSOFDataHullPlaneSet
 {
 

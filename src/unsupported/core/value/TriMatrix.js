@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("TriMatrix")
+@meta.type("TriMatrix")
 @meta.todo("Should this default to a identity matrix?")
 export class TriMatrix extends meta.Model
 {

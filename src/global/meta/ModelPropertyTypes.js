@@ -1,5 +1,5 @@
 import { num, vec2, vec3, vec4, mat3, mat4 } from "math";
-import { Type } from "./ModelConstants";
+import * as Type from "constant/type";
 import {
     isArray,
     isBoolean,
@@ -13,7 +13,7 @@ import {
     isVector2,
     isVector3, isVector4,
     isVectorEqual
-} from "../type";
+} from "../utils/type";
 
 
 export const propTypes = new Map();
@@ -30,12 +30,12 @@ const notImplemented = () => { throw new ReferenceError("Not implemented"); };
 
 // Boolean
 
-propTypes.set(Type.BOOLEAN, {
+propTypes.set(Type.PT_BOOLEAN, {
     is: isBoolean,
     equals: equalsPrimary,
     get: getPrimary,
     set: setPrimary,
-    type: Type.BOOLEAN
+    type: Type.PT_BOOLEAN
 });
 
 
@@ -52,10 +52,10 @@ function setNumber(type)
     });
 }
 
-setNumber(Type.BYTE);
-setNumber(Type.FLOAT);
-setNumber(Type.UINT);
-setNumber(Type.USHORT);
+setNumber(Type.PT_BYTE);
+setNumber(Type.PT_FLOAT);
+setNumber(Type.PT_UINT);
+setNumber(Type.PT_USHORT);
 
 //  Strings
 
@@ -70,9 +70,9 @@ function setString(type)
     });
 }
 
-setString(Type.STRING);
-setString(Type.EXPRESSION);
-setString(Type.PATH);
+setString(Type.PT_STRING);
+setString(Type.PT_EXPRESSION);
+setString(Type.PT_PATH);
 
 
 // Vectors
@@ -101,43 +101,43 @@ function setVector(type, Constructor)
                 a[key].set(value);
             }
         },
-        type: Type.INDEX_BUFFER
+        type: Type.PT_INDEX_BUFFER
     });
 }
 
-setVector(Type.INDEX_BUFFER, Uint16Array);
-setVector(Type.VECTOR, Float32Array);
+setVector(Type.PT_INDEX_BUFFER, Uint16Array);
+setVector(Type.PT_VECTOR, Float32Array);
 
-propTypes.set(Type.MATRIX3, {
+propTypes.set(Type.PT_MATRIX3, {
     is: isMatrix3,
     equals: mat3.equals,
     get: getArray,
     set: (a, key, value) => mat3.copy(a[key], value),
-    type: Type.MATRIX3
+    type: Type.PT_MATRIX3
 });
 
-propTypes.set(Type.MATRIX4, {
+propTypes.set(Type.PT_MATRIX4, {
     is: isMatrix4,
     equals: mat4.equals,
     get: getArray,
     set: (a, key, value) => mat4.copy(a[key], value),
-    type: Type.MATRIX4
+    type: Type.PT_MATRIX4
 });
 
-propTypes.set(Type.VECTOR2, {
+propTypes.set(Type.PT_VECTOR2, {
     is: isVector2,
     equals: vec2.equals,
     get: getArray,
     set: (a, key, value) => vec2.copy(a[key], value),
-    type: Type.VECTOR2
+    type: Type.PT_VECTOR2
 });
 
-propTypes.set(Type.VECTOR3, {
+propTypes.set(Type.PT_VECTOR3, {
     is: isVector3,
     equals: vec3.equals,
     get: getArray,
     set: (a, key, value) => vec3.copy(a[key], value),
-    type: Type.VECTOR3
+    type: Type.PT_VECTOR3
 });
 
 function setVector4(type)
@@ -151,19 +151,19 @@ function setVector4(type)
     });
 }
 
-setVector4(Type.VECTOR4);
-setVector4(Type.COLOR);
-setVector4(Type.QUATERNION);
+setVector4(Type.PT_VECTOR4);
+setVector4(Type.PT_COLOR);
+setVector4(Type.PT_QUATERNION);
 
 
 // Objects
 
-propTypes.set(Type.PLAIN, {
+propTypes.set(Type.PT_PLAIN, {
     is: isPlain,
     equals: isEqual,
     get: (a, key) => Object.assign({}, a[key]),
     set: (a, key, value) => Object.assign(a[key], value),
-    type: Type.PLAIN
+    type: Type.PT_PLAIN
 });
 
 function setStruct(type)
@@ -193,11 +193,11 @@ function setStruct(type)
     });
 }
 
-setStruct(Type.STRUCT);
-setStruct(Type.STRUCT_RAW);
+setStruct(Type.PT_STRUCT);
+setStruct(Type.PT_STRUCT_RAW);
 
 
-propTypes.set(Type.STRUCT_LIST, {
+propTypes.set(Type.PT_STRUCT_LIST, {
     is(value, dest)
     {
         if (!isArray(value)) return false;
@@ -225,7 +225,7 @@ propTypes.set(Type.STRUCT_LIST, {
         return out;
     },
     set: notImplemented,
-    type: Type.STRUCT_LIST
+    type: Type.PT_STRUCT_LIST
 });
 
 

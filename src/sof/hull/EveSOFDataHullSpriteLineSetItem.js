@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.ctor("EveSOFDataHullSpriteLineSetItem")
+@meta.type("EveSOFDataHullSpriteLineSetItem")
 export class EveSOFDataHullSpriteLineSetItem
 {
 

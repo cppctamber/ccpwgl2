@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("EveSOFDataPatternLayer")
+@meta.type("EveSOFDataPatternLayer")
 export class EveSOFDataPatternLayer
 {
 

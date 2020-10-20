@@ -13,7 +13,7 @@ import { Tw2Error } from "../Tw2Error";
  * @property {Object.<string, Array>} annotations
  * @class
  */
-@meta.ctor("Tw2Shader")
+@meta.type("Tw2Shader")
 export class Tw2Shader
 {
 

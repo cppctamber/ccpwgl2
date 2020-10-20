@@ -4,10 +4,9 @@ import * as eve from "./eve";
 import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
-import * as wrapped from "./wrapped";
 
 import { path } from "./core/reader/Tw2BlackPropertyReaders";
-import { vec4, mat4 } from "./math";
+import { vec4, mat4 } from "math";
 
 /**
  * Black property path  handler
@@ -117,8 +116,7 @@ export const config = {
             eve,
             particle,
             sof,
-            unsupported,
-            wrapped
+            unsupported
         ],
 
         variableTypes: {

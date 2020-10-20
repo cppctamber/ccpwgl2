@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("EveSOFDataHullBannerLight")
+@meta.type("EveSOFDataHullBannerLight")
 export class EveSOFDataHullBannerLight
 {
 

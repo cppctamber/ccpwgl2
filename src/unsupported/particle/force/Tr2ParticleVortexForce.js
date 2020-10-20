@@ -3,7 +3,7 @@ import { vec3 } from "math";
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
-@meta.ctor("Tr2ParticleVortexForce")
+@meta.type("Tr2ParticleVortexForce")
 @meta.notImplemented
 export class Tr2ParticleVortexForce extends Tw2ParticleForce
 {

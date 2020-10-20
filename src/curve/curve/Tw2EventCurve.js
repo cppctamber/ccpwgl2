@@ -8,7 +8,7 @@ const Extrapolation = {
 };
 
 
-@meta.ctor("Tw2EventKey", "TriEventKey")
+@meta.type("Tw2EventKey", "TriEventKey")
 export class Tw2EventKey extends Tw2CurveKey
 {
 
@@ -21,7 +21,7 @@ export class Tw2EventKey extends Tw2CurveKey
 }
 
 
-@meta.ctor("Tw2EventCurve", "TriEventCurve")
+@meta.type("Tw2EventCurve", "TriEventCurve")
 export class Tw2EventCurve extends Tw2Curve
 {
 

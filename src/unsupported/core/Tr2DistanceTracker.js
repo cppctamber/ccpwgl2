@@ -3,7 +3,7 @@ import { vec3 } from "math";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2DistanceTracker")
+@meta.type("Tr2DistanceTracker")
 export class Tr2DistanceTracker extends meta.Model
 {
 

@@ -4,7 +4,7 @@ import { vec4, mat4 } from "math";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
-@meta.ctor("EveOccluder")
+@meta.type("EveOccluder")
 export class EveOccluder extends meta.Model
 {
 

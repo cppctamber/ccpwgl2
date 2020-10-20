@@ -3,7 +3,7 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ActionPlayMeshAnimation")
+@meta.type("Tr2ActionPlayMeshAnimation")
 export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 

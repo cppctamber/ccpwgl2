@@ -23,7 +23,7 @@ import { quat, vec3 } from "math";
  * @property {Tr2CurveScalar} zoomCurve       -
  */
 @meta.notImplemented
-@meta.ctor("EveCamera", true)
+@meta.type("EveCamera")
 export class EveCamera extends meta.Model
 {
 

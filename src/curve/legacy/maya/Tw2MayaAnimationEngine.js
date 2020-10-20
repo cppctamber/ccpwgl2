@@ -3,7 +3,7 @@ import { curve, vec4 } from "math";
 import { ErrFeatureNotImplemented } from "core";
 
 
-@meta.ctor("Tw2MayaAnimationEngine")
+@meta.type("Tw2MayaAnimationEngine")
 export class Tw2MayaAnimationEngine
 {
 

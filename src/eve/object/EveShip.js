@@ -1,9 +1,8 @@
 import { meta, isNumber } from "utils";
-import { WrappedType } from "global";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
-@meta.ctor("EveShip")
+@meta.type("EveShip")
 export class EveShip extends EveSpaceObject
 {
 
@@ -203,11 +202,5 @@ export class EveShip extends EveSpaceObject
             }
         }
     }
-
-    /**
-     * Identifies the object's wrapped type
-     * @type {number}
-     */
-    static wrappedType = WrappedType.SPACE_SHIP;
 
 }

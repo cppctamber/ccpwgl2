@@ -23,7 +23,7 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.ctor("EveSpotlightSetItem", true)
+@meta.type("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
 
@@ -70,7 +70,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveSpotlightSet", true)
+@meta.type("EveSpotlightSet", true)
 export class EveSpotlightSet extends EveObjectSet
 {
 

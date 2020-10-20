@@ -1,5 +1,5 @@
-import { Tw2Library } from "core/engine";
-import { store } from "./engine";
+import { Tw2Library } from "core/engine/Tw2Library";
+import { store } from "./store";
 
 const
     tw2 = new Tw2Library(store),

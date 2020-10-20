@@ -9,7 +9,7 @@ const Interpolation = {
 };
 
 
-@meta.ctor("Tw2QuaternionKey2")
+@meta.type("Tw2QuaternionKey2")
 export class Tw2QuaternionKey2 extends Tw2CurveKey
 {
 
@@ -28,7 +28,7 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
 }
 
 
-@meta.ctor("Tw2QuaternionCurve")
+@meta.type("Tw2QuaternionCurve")
 export class Tw2QuaternionCurve extends Tw2Curve
 {
 

@@ -4,7 +4,7 @@ import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
-@meta.ctor("EveSpaceObjectDecal", true)
+@meta.type("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends meta.Model
 {
 

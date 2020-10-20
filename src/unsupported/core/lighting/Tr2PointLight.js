@@ -3,7 +3,7 @@ import { vec3, vec4 } from "math";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2PointLight")
+@meta.type("Tr2PointLight")
 export class Tr2PointLight extends meta.Model
 {
 

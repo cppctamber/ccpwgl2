@@ -46,7 +46,7 @@ import {
 import { EveSOFDataPatternLayer } from "sof/pattern";
 
 
-@meta.ctor("EveSOFData")
+@meta.type("EveSOFData")
 export class EveSOFData
 {
 

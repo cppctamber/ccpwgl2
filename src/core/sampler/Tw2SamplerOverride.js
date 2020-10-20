@@ -23,7 +23,7 @@ const MipFilterModesByName = {
 };
 
 
-@meta.ctor("Tw2SamplerOverride")
+@meta.type("Tw2SamplerOverride")
 export class Tw2SamplerOverride
 {
 

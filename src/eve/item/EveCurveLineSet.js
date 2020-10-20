@@ -13,7 +13,7 @@ const LineType = {
 };
 
 
-@meta.ctor("EveCurveLineSetItem")
+@meta.type("EveCurveLineSetItem")
 export class EveCurveLineSetItem extends EveObjectSetItem
 {
 
@@ -234,7 +234,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 }
 
 
-@meta.ctor("EveCurveLineSet")
+@meta.type("EveCurveLineSet")
 export class EveCurveLineSet extends EveObjectSet
 {
 

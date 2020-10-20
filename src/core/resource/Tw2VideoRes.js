@@ -3,24 +3,8 @@ import { device, resMan } from "global";
 import { Tw2Resource } from "./Tw2Resource";
 import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
 
-/**
- * Tw2VideoRes
- *
- * @property {?WebGLTexture} texture     - The video's webgl texture
- * @property {?HTMLVideoElement} video   - The video
- * @property {Number} width              - The texture's width
- * @property {Number} height             - The texture's height
- * @property {Boolean} cycle             - Enables video looping
- * @property {Boolean} playOnLoad        - Plays the video as soon as it is able to
- * @property {Number} _currentSampler    - The current sampler's hash
- * @property {Number} _currentTime       - The video's current time
- * @property {Boolean} _playable         - Identifies if the video is playable
- * @property {Boolean} _isPlaying        - Identifies if the video is playing
- * @property {?Function} _onPlaying      - An optional callback which is fired when the video is playing
- * @property {?Function} _onPause        - An optional callback which is fired when the video is paused
- * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
- */
-@meta.ctor("Tw2VideoRes")
+
+@meta.type("Tw2VideoRes")
 export class Tw2VideoRes extends Tw2Resource
 {
 

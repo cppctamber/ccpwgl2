@@ -3,7 +3,7 @@ import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 
 
-@meta.ctor("EveChildContainer", true)
+@meta.type("EveChildContainer", true)
 @meta.stage(2)
 export class EveChildContainer extends EveChild
 {

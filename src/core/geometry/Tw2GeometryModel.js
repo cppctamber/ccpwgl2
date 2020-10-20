@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2GeometryModel")
+@meta.type("Tw2GeometryModel")
 export class Tw2GeometryModel
 {
 

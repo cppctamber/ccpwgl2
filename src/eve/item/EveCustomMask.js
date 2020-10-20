@@ -3,7 +3,7 @@ import { meta } from "utils";
 import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform } from "core";
 
 
-@meta.ctor("EveCustomMask")
+@meta.type("EveCustomMask")
 @meta.stage(1)
 export class EveCustomMask extends Tw2Transform
 {

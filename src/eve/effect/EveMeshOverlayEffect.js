@@ -7,10 +7,10 @@ import {
     RM_ADDITIVE,
     RM_DECAL,
     RM_DISTORTION
-} from "global";
+} from "constant";
 
 
-@meta.ctor("EveMeshOverlayEffect")
+@meta.type("EveMeshOverlayEffect")
 export class EveMeshOverlayEffect extends meta.Model
 {
 

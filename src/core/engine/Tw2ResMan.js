@@ -1,29 +1,10 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
-import { Tw2LoadingObject } from "core/resource/Tw2LoadingObject";
+import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isDNA, isError, isFunction } from "utils";
-import { logger } from "global/tw2";
 
 
-/**
- * Resource Manager
- *
- * @property {Tw2MotherLode} motherLode
- * @property {Boolean} systemMirror - Toggles whether {@link Tw2GeometryRes} Index and Buffer data arrays are visible
- * @property {Number} maxPrepareTime
- * @property {Boolean} autoPurgeResources=true - Sets whether resources should be purged automatically
- * @property {Number} purgeTime=30 = Sets how long resources can remain inactive before they are purged
- * @property {Number} activeFrame
- * @property {Number} _prepareBudget
- * @property {Array} _prepareQueue
- * @property {Number} _purgeTime
- * @property {Number} _purgeFrame
- * @property {Number} _purgeFrameLimit
- * @property {Array<String>} _pendingLoads - an array of pending loads
- * @property {Number} _noLoadFrames
- * @property {EveSOF} _eveSof
- */
 export class Tw2ResMan extends Tw2EventEmitter
 {
 
@@ -56,11 +37,13 @@ export class Tw2ResMan extends Tw2EventEmitter
     /**
      * Constructor
      * @param {Tw2Store} store
+     * @param {Tw2Logger} logger
      */
-    constructor(store)
+    constructor(store, logger)
     {
         super();
         this.store = store;
+        this.logger = logger;
     }
 
     /**
@@ -113,7 +96,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         log.name = "Resource manager";
 
         this.EmitEvent(eventName, path, res, err);
-        logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+        this.logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
     }
 
     /**

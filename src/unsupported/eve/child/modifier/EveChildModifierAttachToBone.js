@@ -3,7 +3,7 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildModifierAttachToBone")
+@meta.type("EveChildModifierAttachToBone")
 export class EveChildModifierAttachToBone extends EveChildModifier
 {
 

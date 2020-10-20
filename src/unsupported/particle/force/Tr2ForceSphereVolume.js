@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
-@meta.ctor("Tr2ForceSphereVolume")
+@meta.type("Tr2ForceSphereVolume")
 @meta.notImplemented
 export class Tr2ForceSphereVolume extends Tw2ParticleForce
 {

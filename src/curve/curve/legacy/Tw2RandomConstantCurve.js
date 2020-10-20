@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Curve } from "../Tw2Curve";
 
 
-@meta.ctor("Tw2RandomConstantCurve")
+@meta.type("Tw2RandomConstantCurve")
 export class Tw2RandomConstantCurve extends Tw2Curve
 {
 

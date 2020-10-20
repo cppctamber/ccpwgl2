@@ -5,7 +5,7 @@ export * from "./uuid";
 export * from "./url";
 export * from "./reflect";
 
-import * as meta from "./meta";
+import * as meta from "../meta";
 
 export { meta };
 

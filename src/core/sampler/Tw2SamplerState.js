@@ -1,8 +1,8 @@
 import { meta } from "utils";
-import { FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "global";
+import { FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "constant";
 
 
-@meta.ctor("Tw2SamplerState")
+@meta.type("Tw2SamplerState")
 export class Tw2SamplerState
 {
 

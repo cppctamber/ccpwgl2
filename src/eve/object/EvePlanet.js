@@ -1,12 +1,12 @@
 import { meta, isObjectLike } from "utils";
-import { device, resMan, WrappedType } from "global";
+import { device, resMan } from "global";
 import { mat4 } from "math";
 import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 
 
-@meta.ctor("EvePlanet")
+@meta.type("EvePlanet")
 export class EvePlanet extends EveObject
 {
 
@@ -409,11 +409,5 @@ export class EvePlanet extends EveObject
             }
         }
     }
-
-    /**
-     * Identifies the object's WrappedType
-     * @type {number}
-     */
-    static wrappedType = WrappedType.PLANET;
 
 }

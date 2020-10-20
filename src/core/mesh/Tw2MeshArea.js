@@ -3,7 +3,7 @@ import { meta, assignIfExists } from "utils";
 import { Tw2Effect } from "./Tw2Effect";
 
 
-@meta.ctor("Tw2MeshArea", "Tr2MeshArea")
+@meta.type("Tw2MeshArea", "Tr2MeshArea")
 @meta.stage(1)
 export class Tw2MeshArea extends meta.Model
 {

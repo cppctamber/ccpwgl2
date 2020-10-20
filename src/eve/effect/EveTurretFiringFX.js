@@ -16,7 +16,7 @@ class EvePerMuzzleData
 }
 
 
-@meta.ctor("EveTurretFiringFX")
+@meta.type("EveTurretFiringFX")
 @meta.stage(2)
 export class EveTurretFiringFX extends meta.Model
 {

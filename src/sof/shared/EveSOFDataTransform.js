@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat, vec3, mat4 } from "math";
 
 
-@meta.ctor("EveSOFDataTransform")
+@meta.type("EveSOFDataTransform")
 export class EveSOFDataTransform
 {
 

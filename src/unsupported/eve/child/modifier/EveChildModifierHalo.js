@@ -3,7 +3,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("EveChildModifierHalo")
+@meta.type("EveChildModifierHalo")
 export class EveChildModifierHalo extends EveChildModifier
 {
 

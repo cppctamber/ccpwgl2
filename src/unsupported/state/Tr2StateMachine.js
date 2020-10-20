@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2StateMachine")
+@meta.type("Tr2StateMachine")
 export class Tr2StateMachine extends meta.Model
 {
 

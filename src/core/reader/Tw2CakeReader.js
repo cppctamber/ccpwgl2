@@ -1,5 +1,5 @@
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
-import { GL_FLOAT } from "global";
+import { GL_FLOAT } from "constant";
 import { isString, isVector, isVector3 } from "utils";
 
 

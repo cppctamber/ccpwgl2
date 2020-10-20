@@ -4,7 +4,7 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-@meta.ctor("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator")
+@meta.type("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator")
 export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 

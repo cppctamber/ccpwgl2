@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("WodPlaceableRes")
+@meta.type("WodPlaceableRes")
 export class WodPlaceableRes extends meta.Model
 {
 

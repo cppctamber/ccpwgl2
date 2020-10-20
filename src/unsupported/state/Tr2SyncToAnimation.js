@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2SyncToAnimation")
+@meta.type("Tr2SyncToAnimation")
 export class Tr2SyncToAnimation extends meta.Model
 {
 

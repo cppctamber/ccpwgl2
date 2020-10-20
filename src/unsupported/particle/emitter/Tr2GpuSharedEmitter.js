@@ -3,7 +3,7 @@ import { vec3, vec4 } from "math";
 import { Tw2ParticleEmitter } from "particle/emitter/Tw2ParticleEmitter";
 
 
-@meta.ctor("Tr2GpuSharedEmitter")
+@meta.type("Tr2GpuSharedEmitter")
 @meta.notImplemented
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
 {

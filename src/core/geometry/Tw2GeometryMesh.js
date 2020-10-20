@@ -4,7 +4,7 @@ import { Tw2VertexDeclaration } from "../vertex";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 
 
-@meta.ctor("Tw2GeometryMesh")
+@meta.type("Tw2GeometryMesh")
 export class Tw2GeometryMesh
 {
 

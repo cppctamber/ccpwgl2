@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { mat4 } from "math";
 
 
-@meta.ctor("Tw2Bone")
+@meta.type("Tw2Bone")
 export class Tw2Bone
 {
 

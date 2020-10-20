@@ -4,7 +4,7 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.ctor("EveRootTransform")
+@meta.type("EveRootTransform")
 export class EveRootTransform extends EveObject
 {
 

@@ -2,7 +2,7 @@ import { Tw2PostEffect } from "./Tw2PostEffect";
 import { meta } from "utils";
 
 
-@meta.ctor("Tw2PostEffectManager")
+@meta.type("Tw2PostEffectManager")
 export class Tw2PostEffectManager extends meta.Model
 {
 

@@ -6,6 +6,7 @@ import { Tw2VertexElement } from "../vertex";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
 import { ErrResourceFormatInvalid } from "../engine";
+import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
 import {
     Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -19,23 +20,9 @@ import {
     Tw2GeometryTrackGroup,
     Tw2GeometryTransformTrack
 } from "../geometry";
-import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
 
 
-/**
- * Tw2GeometryRes
- *
- * @property {Array} meshes
- * @property {vec3} minBounds
- * @property {vec3} maxBounds
- * @property {vec3} boundsSpherePosition
- * @property {Number} boundsSphereRadius
- * @property {Array} models
- * @property {Array} animations
- * @property {Boolean} systemMirror
- * @inherit Tw2Resource
- */
-@meta.ctor("Tw2GeometryRes", "TriGeometryRes")
+@meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
 

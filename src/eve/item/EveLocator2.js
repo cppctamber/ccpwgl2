@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3, mat4 } from "math";
 
 
-@meta.ctor("EveLocator2")
+@meta.type("EveLocator2")
 @meta.stage(1)
 export class EveLocator2 extends meta.Model
 {
@@ -134,7 +134,7 @@ export class EveLocator2 extends meta.Model
 
 }
 
-@meta.ctor("EveLocator")
+@meta.type("EveLocator")
 export class EveLocator extends EveLocator2
 {
 

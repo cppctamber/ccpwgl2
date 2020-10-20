@@ -9,7 +9,7 @@ const Operator = {
 };
 
 
-@meta.ctor("Tw2ColorSequencer")
+@meta.type("Tw2ColorSequencer")
 export class Tw2ColorSequencer extends Tw2CurveSequencer
 {
 

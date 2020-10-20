@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2ShLightingManager")
+@meta.type("Tr2ShLightingManager")
 export class Tr2ShLightingManager extends meta.Model
 {
 

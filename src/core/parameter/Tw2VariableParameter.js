@@ -3,7 +3,7 @@ import { store } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-@meta.ctor("Tw2VariableParameter", "TriVariableParameter")
+@meta.type("Tw2VariableParameter", "TriVariableParameter")
 export class Tw2VariableParameter extends Tw2Parameter
 {
 

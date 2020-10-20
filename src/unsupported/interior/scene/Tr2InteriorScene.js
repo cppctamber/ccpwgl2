@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ctor("Tr2InteriorScene")
+@meta.type("Tr2InteriorScene")
 export class Tr2InteriorScene extends meta.Model
 {
 

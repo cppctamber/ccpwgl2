@@ -4,7 +4,7 @@ import { Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.ctor("EveChildMesh", true)
+@meta.type("EveChildMesh", true)
 @meta.desc("Mesh attachment to space object")
 export class EveChildMesh extends EveChild
 {
