@@ -22077,25 +22077,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-/**
- * Resource Manager
- *
- * @property {Tw2MotherLode} motherLode
- * @property {Boolean} systemMirror - Toggles whether {@link Tw2GeometryRes} Index and Buffer data arrays are visible
- * @property {Number} maxPrepareTime
- * @property {Boolean} autoPurgeResources=true - Sets whether resources should be purged automatically
- * @property {Number} purgeTime=30 = Sets how long resources can remain inactive before they are purged
- * @property {Number} activeFrame
- * @property {Number} _prepareBudget
- * @property {Array} _prepareQueue
- * @property {Number} _purgeTime
- * @property {Number} _purgeFrame
- * @property {Number} _purgeFrameLimit
- * @property {Array<String>} _pendingLoads - an array of pending loads
- * @property {Number} _noLoadFrames
- * @property {EveSOF} _eveSof
- */
-
 class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   /**
    * Gets a count of pending loads
@@ -45069,7 +45050,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! math */ "./global/math/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _dec58, _dec59, _dec60, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -45081,7 +45062,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceScene"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ExternalParameter"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec26 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2ShLightingManager"), _dec30 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveStarField"), _dec38 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec39 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec41 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec42 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec44 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec50 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlanet"), _dec51 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec52 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PostProcess"), _dec54 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec56 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceScene"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ExternalParameter"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec26 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec28 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec29 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec30 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec31 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec32 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2ShLightingManager"), _dec33 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec38 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec39 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveStarField"), _dec41 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec42 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec44 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec45 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec46 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec47 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec48 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec49 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec50 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec51 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec52 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec53 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlanet"), _dec54 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec55 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec56 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PostProcess"), _dec57 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec58 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec59 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec60 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   // Should this come from the background effect?
 
   /**
@@ -45130,45 +45111,47 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
 
     _initializerDefineProperty(this, "postProcessPath", _descriptor20, this);
 
-    _initializerDefineProperty(this, "selfShadowOnly", _descriptor21, this);
+    _initializerDefineProperty(this, "postprocess", _descriptor21, this);
 
-    _initializerDefineProperty(this, "shLightingManager", _descriptor22, this);
+    _initializerDefineProperty(this, "selfShadowOnly", _descriptor22, this);
 
-    _initializerDefineProperty(this, "shadowFadeThreshold", _descriptor23, this);
+    _initializerDefineProperty(this, "shLightingManager", _descriptor23, this);
 
-    _initializerDefineProperty(this, "shadowThreshold", _descriptor24, this);
+    _initializerDefineProperty(this, "shadowFadeThreshold", _descriptor24, this);
 
-    _initializerDefineProperty(this, "starfield", _descriptor25, this);
+    _initializerDefineProperty(this, "shadowThreshold", _descriptor25, this);
 
-    _initializerDefineProperty(this, "sunDiffuseColor", _descriptor26, this);
+    _initializerDefineProperty(this, "starfield", _descriptor26, this);
 
-    _initializerDefineProperty(this, "sunDiffuseColorWithDynamicLights", _descriptor27, this);
+    _initializerDefineProperty(this, "sunDiffuseColor", _descriptor27, this);
 
-    _initializerDefineProperty(this, "sunDirection", _descriptor28, this);
+    _initializerDefineProperty(this, "sunDiffuseColorWithDynamicLights", _descriptor28, this);
 
-    _initializerDefineProperty(this, "useSunDiffuseColorWithDynamicLights", _descriptor29, this);
+    _initializerDefineProperty(this, "sunDirection", _descriptor29, this);
 
-    _initializerDefineProperty(this, "clearColor", _descriptor30, this);
+    _initializerDefineProperty(this, "useSunDiffuseColorWithDynamicLights", _descriptor30, this);
 
-    _initializerDefineProperty(this, "display", _descriptor31, this);
+    _initializerDefineProperty(this, "clearColor", _descriptor31, this);
 
-    _initializerDefineProperty(this, "envMapScaling", _descriptor32, this);
+    _initializerDefineProperty(this, "display", _descriptor32, this);
 
-    _initializerDefineProperty(this, "fogBlur", _descriptor33, this);
+    _initializerDefineProperty(this, "envMapScaling", _descriptor33, this);
 
-    _initializerDefineProperty(this, "fogType", _descriptor34, this);
+    _initializerDefineProperty(this, "fogBlur", _descriptor34, this);
 
-    _initializerDefineProperty(this, "lensflares", _descriptor35, this);
+    _initializerDefineProperty(this, "fogType", _descriptor35, this);
 
-    _initializerDefineProperty(this, "planets", _descriptor36, this);
+    _initializerDefineProperty(this, "lensflares", _descriptor36, this);
 
-    _initializerDefineProperty(this, "lineSets", _descriptor37, this);
+    _initializerDefineProperty(this, "planets", _descriptor37, this);
 
-    _initializerDefineProperty(this, "postProcess", _descriptor38, this);
+    _initializerDefineProperty(this, "lineSets", _descriptor38, this);
 
-    _initializerDefineProperty(this, "shadowEffect", _descriptor39, this);
+    _initializerDefineProperty(this, "postProcess", _descriptor39, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor40, this);
+    _initializerDefineProperty(this, "shadowEffect", _descriptor40, this);
+
+    _initializerDefineProperty(this, "visible", _descriptor41, this);
 
     this._localTransform = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create();
     this._debugHelper = null;
@@ -45827,147 +45810,154 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
   initializer: function () {
     return [];
   }
-}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "postProcessPath", [_dec25], {
+}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "postProcessPath", [_dec25, _dec26], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "selfShadowOnly", [_dec26, _dec27], {
+}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "postprocess", [_dec27, _dec28], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "selfShadowOnly", [_dec29, _dec30], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "shLightingManager", [_dec28, _dec29], {
+}), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "shLightingManager", [_dec31, _dec32], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "shadowFadeThreshold", [_dec30, _dec31, _dec32], {
+}), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "shadowFadeThreshold", [_dec33, _dec34, _dec35], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "shadowThreshold", [_dec33, _dec34, _dec35], {
+}), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "shadowThreshold", [_dec36, _dec37, _dec38], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "starfield", [_dec36, _dec37], {
+}), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "starfield", [_dec39, _dec40], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColor", [_dec38], {
+}), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColor", [_dec41], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].fromValues(1, 1, 1, 1);
   }
-}), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColorWithDynamicLights", [_dec39, _dec40], {
+}), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColorWithDynamicLights", [_dec42, _dec43], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].fromValues(1, 1, 1, 1);
   }
-}), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "sunDirection", [_dec41], {
+}), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "sunDirection", [_dec44], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].fromValues(1, -1, 1);
   }
-}), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "useSunDiffuseColorWithDynamicLights", [_dec42, _dec43], {
+}), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "useSunDiffuseColorWithDynamicLights", [_dec45, _dec46], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "clearColor", [_dec44], {
+}), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "clearColor", [_dec47], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].fromValues(0, 0, 0, 1);
   }
-}), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec45], {
+}), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec48], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "envMapScaling", [_dec46], {
+}), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "envMapScaling", [_dec49], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].fromValues(1, 1, 1);
   }
-}), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "fogBlur", [_dec47], {
+}), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "fogBlur", [_dec50], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "fogType", [_dec48], {
+}), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "fogType", [_dec51], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "lensflares", [_dec49], {
+}), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "lensflares", [_dec52], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "planets", [_dec50], {
+}), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "planets", [_dec53], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "lineSets", [_dec51], {
+}), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "lineSets", [_dec54], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "postProcess", [_dec52, _dec53], {
+}), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "postProcess", [_dec55, _dec56], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec54, _dec55, _dec56], {
+}), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec57, _dec58, _dec59], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec57], {
+}), _descriptor41 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec60], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -82383,7 +82373,7 @@ var TriObserverLocal = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
 /*!***********************************!*\
   !*** ./unsupported/core/index.js ***!
   \***********************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal */
+/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -82403,6 +82393,30 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./post */ "./unsupported/core/post/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PostProcess"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess2", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PostProcess2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPBloomEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPBloomEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDesaturateEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPDesaturateEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDynamicExposureEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPDynamicExposureEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFadeEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPFadeEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFidelityFXEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPFidelityFXEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFilmGrainEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPFilmGrainEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFogEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPFogEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPGodRaysEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPGodRaysEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPLutEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPLutEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPSignalLossEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPSignalLossEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPVignetteEffect", function() { return _post__WEBPACK_IMPORTED_MODULE_3__["Tr2PPVignetteEffect"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./resource */ "./unsupported/core/resource/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2LodResource", function() { return _resource__WEBPACK_IMPORTED_MODULE_4__["Tr2LodResource"]; });
@@ -83042,6 +83056,467 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./unsupported/core/post/Tr2PPBloomEffect.js":
+/*!***************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPBloomEffect.js ***!
+  \***************************************************/
+/*! exports provided: Tr2PPBloomEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPBloomEffect", function() { return Tr2PPBloomEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _class;
+
+
+var Tr2PPBloomEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPBloomEffect"), _dec(_class = _dec2(_class = class Tr2PPBloomEffect {}) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPDesaturateEffect.js":
+/*!********************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPDesaturateEffect.js ***!
+  \********************************************************/
+/*! exports provided: Tr2PPDesaturateEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDesaturateEffect", function() { return Tr2PPDesaturateEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PPDesaturateEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPDesaturateEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPDesaturateEffect {
+  constructor() {
+    _initializerDefineProperty(this, "intensity", _descriptor, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "intensity", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPDynamicExposureEffect.js":
+/*!*************************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPDynamicExposureEffect.js ***!
+  \*************************************************************/
+/*! exports provided: Tr2PPDynamicExposureEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDynamicExposureEffect", function() { return Tr2PPDynamicExposureEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PPDynamicExposureEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPDynamicExposureEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPDynamicExposureEffect {
+  constructor() {
+    _initializerDefineProperty(this, "adjustment", _descriptor, this);
+
+    _initializerDefineProperty(this, "influence", _descriptor2, this);
+
+    _initializerDefineProperty(this, "middleValue", _descriptor3, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "adjustment", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "influence", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "middleValue", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPFadeEffect.js":
+/*!**************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPFadeEffect.js ***!
+  \**************************************************/
+/*! exports provided: Tr2PPFadeEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFadeEffect", function() { return Tr2PPFadeEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _class;
+
+
+var Tr2PPFadeEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPFadeEffect"), _dec(_class = _dec2(_class = class Tr2PPFadeEffect {}) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPFidelityFXEffect.js":
+/*!********************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPFidelityFXEffect.js ***!
+  \********************************************************/
+/*! exports provided: Tr2PPFidelityFXEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFidelityFXEffect", function() { return Tr2PPFidelityFXEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _class;
+
+
+var Tr2PPFidelityFXEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPFidelityFXEffect"), _dec(_class = _dec2(_class = class Tr2PPFidelityFXEffect {}) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPFilmGrainEffect.js":
+/*!*******************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPFilmGrainEffect.js ***!
+  \*******************************************************/
+/*! exports provided: Tr2PPFilmGrainEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFilmGrainEffect", function() { return Tr2PPFilmGrainEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _class;
+
+
+var Tr2PPFilmGrainEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPFilmGrainEffect"), _dec(_class = _dec2(_class = class Tr2PPFilmGrainEffect {}) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPFogEffect.js":
+/*!*************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPFogEffect.js ***!
+  \*************************************************/
+/*! exports provided: Tr2PPFogEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFogEffect", function() { return Tr2PPFogEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+var Tr2PPFogEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPFogEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPFogEffect {
+  constructor() {
+    _initializerDefineProperty(this, "areaCenter", _descriptor, this);
+
+    _initializerDefineProperty(this, "blendAmount0", _descriptor2, this);
+
+    _initializerDefineProperty(this, "blendAmount1", _descriptor3, this);
+
+    _initializerDefineProperty(this, "blendAmount2", _descriptor4, this);
+
+    _initializerDefineProperty(this, "blendBias0", _descriptor5, this);
+
+    _initializerDefineProperty(this, "blendBias1", _descriptor6, this);
+
+    _initializerDefineProperty(this, "blendBias2", _descriptor7, this);
+
+    _initializerDefineProperty(this, "blendDistance0", _descriptor8, this);
+
+    _initializerDefineProperty(this, "blendDistance1", _descriptor9, this);
+
+    _initializerDefineProperty(this, "blendDistance2", _descriptor10, this);
+
+    _initializerDefineProperty(this, "blendPower0", _descriptor11, this);
+
+    _initializerDefineProperty(this, "blendPower1", _descriptor12, this);
+
+    _initializerDefineProperty(this, "blendPower2", _descriptor13, this);
+
+    _initializerDefineProperty(this, "color", _descriptor14, this);
+
+    _initializerDefineProperty(this, "colorInfluence", _descriptor15, this);
+
+    _initializerDefineProperty(this, "nebulaInfluence", _descriptor16, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "areaCenter", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "blendAmount0", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "blendAmount1", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "blendAmount2", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "blendBias0", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "blendBias1", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "blendBias2", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "blendDistance0", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "blendDistance1", [_dec11], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "blendDistance2", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "blendPower0", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "blendPower1", [_dec14], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "blendPower2", [_dec15], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec16], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_1__["vec4"].create();
+  }
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "colorInfluence", [_dec17], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "nebulaInfluence", [_dec18], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPGodRaysEffect.js":
+/*!*****************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPGodRaysEffect.js ***!
+  \*****************************************************/
+/*! exports provided: Tr2PPGodRaysEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPGodRaysEffect", function() { return Tr2PPGodRaysEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PPGodRaysEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPGodRaysEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPGodRaysEffect {
+  constructor() {
+    _initializerDefineProperty(this, "noiseTexturePath", _descriptor, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "noiseTexturePath", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPLutEffect.js":
+/*!*************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPLutEffect.js ***!
+  \*************************************************/
+/*! exports provided: Tr2PPLutEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPLutEffect", function() { return Tr2PPLutEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PPLutEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPLutEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPLutEffect {
+  constructor() {
+    _initializerDefineProperty(this, "path", _descriptor, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "path", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPSignalLossEffect.js":
+/*!********************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPSignalLossEffect.js ***!
+  \********************************************************/
+/*! exports provided: Tr2PPSignalLossEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPSignalLossEffect", function() { return Tr2PPSignalLossEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _class;
+
+
+var Tr2PPSignalLossEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPSignalLossEffect"), _dec(_class = _dec2(_class = class Tr2PPSignalLossEffect {}) || _class) || _class);
+
+/***/ }),
+
+/***/ "./unsupported/core/post/Tr2PPVignetteEffect.js":
+/*!******************************************************!*\
+  !*** ./unsupported/core/post/Tr2PPVignetteEffect.js ***!
+  \******************************************************/
+/*! exports provided: Tr2PPVignetteEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PPVignetteEffect", function() { return Tr2PPVignetteEffect; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PPVignetteEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PPVignetteEffect"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PPVignetteEffect {
+  constructor() {
+    _initializerDefineProperty(this, "sineFrequency", _descriptor, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "sineFrequency", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
 /***/ "./unsupported/core/post/Tr2PostProcess.js":
 /*!*************************************************!*\
   !*** ./unsupported/core/post/Tr2PostProcess.js ***!
@@ -83080,17 +83555,193 @@ var Tr2PostProcess = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImple
 
 /***/ }),
 
+/***/ "./unsupported/core/post/Tr2PostProcess2.js":
+/*!**************************************************!*\
+  !*** ./unsupported/core/post/Tr2PostProcess2.js ***!
+  \**************************************************/
+/*! exports provided: Tr2PostProcess2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess2", function() { return Tr2PostProcess2; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+var Tr2PostProcess2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PostProcess2"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPBloomEffect"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2DesaturateEffect"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPDynamicExposureEffect"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPFadeEffect"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPFidelityFXEffect"), _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPFilmGrainEffect"), _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPFogEffect"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPGodRaysEffect"), _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPLutEffect"), _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPSignalLossEffect"), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PPVignetteEffect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PostProcess2 extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "bloom", _descriptor, this);
+
+    _initializerDefineProperty(this, "desaturate", _descriptor2, this);
+
+    _initializerDefineProperty(this, "dynamicExposure", _descriptor3, this);
+
+    _initializerDefineProperty(this, "fade", _descriptor4, this);
+
+    _initializerDefineProperty(this, "fidelityFX", _descriptor5, this);
+
+    _initializerDefineProperty(this, "filmGrain", _descriptor6, this);
+
+    _initializerDefineProperty(this, "fog", _descriptor7, this);
+
+    _initializerDefineProperty(this, "godRays", _descriptor8, this);
+
+    _initializerDefineProperty(this, "lut", _descriptor9, this);
+
+    _initializerDefineProperty(this, "signalLoss", _descriptor10, this);
+
+    _initializerDefineProperty(this, "vignette", _descriptor11, this);
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "bloom", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "desaturate", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "dynamicExposure", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "fade", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "fidelityFX", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "filmGrain", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "fog", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "godRays", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "lut", [_dec11], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "signalLoss", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "vignette", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
 /***/ "./unsupported/core/post/index.js":
 /*!****************************************!*\
   !*** ./unsupported/core/post/index.js ***!
   \****************************************/
-/*! exports provided: Tr2PostProcess */
+/*! exports provided: Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2PostProcess__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2PostProcess */ "./unsupported/core/post/Tr2PostProcess.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess", function() { return _Tr2PostProcess__WEBPACK_IMPORTED_MODULE_0__["Tr2PostProcess"]; });
+
+/* harmony import */ var _Tr2PostProcess2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2PostProcess2 */ "./unsupported/core/post/Tr2PostProcess2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess2", function() { return _Tr2PostProcess2__WEBPACK_IMPORTED_MODULE_1__["Tr2PostProcess2"]; });
+
+/* harmony import */ var _Tr2PPBloomEffect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2PPBloomEffect */ "./unsupported/core/post/Tr2PPBloomEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPBloomEffect", function() { return _Tr2PPBloomEffect__WEBPACK_IMPORTED_MODULE_2__["Tr2PPBloomEffect"]; });
+
+/* harmony import */ var _Tr2PPDesaturateEffect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2PPDesaturateEffect */ "./unsupported/core/post/Tr2PPDesaturateEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDesaturateEffect", function() { return _Tr2PPDesaturateEffect__WEBPACK_IMPORTED_MODULE_3__["Tr2PPDesaturateEffect"]; });
+
+/* harmony import */ var _Tr2PPDynamicExposureEffect__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2PPDynamicExposureEffect */ "./unsupported/core/post/Tr2PPDynamicExposureEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDynamicExposureEffect", function() { return _Tr2PPDynamicExposureEffect__WEBPACK_IMPORTED_MODULE_4__["Tr2PPDynamicExposureEffect"]; });
+
+/* harmony import */ var _Tr2PPFadeEffect__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2PPFadeEffect */ "./unsupported/core/post/Tr2PPFadeEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFadeEffect", function() { return _Tr2PPFadeEffect__WEBPACK_IMPORTED_MODULE_5__["Tr2PPFadeEffect"]; });
+
+/* harmony import */ var _Tr2PPFidelityFXEffect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2PPFidelityFXEffect */ "./unsupported/core/post/Tr2PPFidelityFXEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFidelityFXEffect", function() { return _Tr2PPFidelityFXEffect__WEBPACK_IMPORTED_MODULE_6__["Tr2PPFidelityFXEffect"]; });
+
+/* harmony import */ var _Tr2PPFilmGrainEffect__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tr2PPFilmGrainEffect */ "./unsupported/core/post/Tr2PPFilmGrainEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFilmGrainEffect", function() { return _Tr2PPFilmGrainEffect__WEBPACK_IMPORTED_MODULE_7__["Tr2PPFilmGrainEffect"]; });
+
+/* harmony import */ var _Tr2PPFogEffect__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tr2PPFogEffect */ "./unsupported/core/post/Tr2PPFogEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFogEffect", function() { return _Tr2PPFogEffect__WEBPACK_IMPORTED_MODULE_8__["Tr2PPFogEffect"]; });
+
+/* harmony import */ var _Tr2PPGodRaysEffect__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tr2PPGodRaysEffect */ "./unsupported/core/post/Tr2PPGodRaysEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPGodRaysEffect", function() { return _Tr2PPGodRaysEffect__WEBPACK_IMPORTED_MODULE_9__["Tr2PPGodRaysEffect"]; });
+
+/* harmony import */ var _Tr2PPLutEffect__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Tr2PPLutEffect */ "./unsupported/core/post/Tr2PPLutEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPLutEffect", function() { return _Tr2PPLutEffect__WEBPACK_IMPORTED_MODULE_10__["Tr2PPLutEffect"]; });
+
+/* harmony import */ var _Tr2PPSignalLossEffect__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Tr2PPSignalLossEffect */ "./unsupported/core/post/Tr2PPSignalLossEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPSignalLossEffect", function() { return _Tr2PPSignalLossEffect__WEBPACK_IMPORTED_MODULE_11__["Tr2PPSignalLossEffect"]; });
+
+/* harmony import */ var _Tr2PPVignetteEffect__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Tr2PPVignetteEffect */ "./unsupported/core/post/Tr2PPVignetteEffect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPVignetteEffect", function() { return _Tr2PPVignetteEffect__WEBPACK_IMPORTED_MODULE_12__["Tr2PPVignetteEffect"]; });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89716,7 +90367,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./unsupported/index.js ***!
   \******************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
+/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -89733,6 +90384,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Texture2dLodParameter", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2Texture2dLodParameter"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PostProcess"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess2", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PostProcess2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPBloomEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPBloomEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDesaturateEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPDesaturateEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPDynamicExposureEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPDynamicExposureEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFadeEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPFadeEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFidelityFXEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPFidelityFXEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFilmGrainEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPFilmGrainEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPFogEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPFogEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPGodRaysEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPGodRaysEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPLutEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPLutEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPSignalLossEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPSignalLossEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PPVignetteEffect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PPVignetteEffect"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2LodResource", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2LodResource"]; });
 

@@ -69,8 +69,13 @@ export class EveSpaceScene extends meta.Model
     @meta.list("EveObject")
     objects = [];
 
+    @meta.notImplemented
     @meta.path
     postProcessPath = "";
+
+    @meta.notImplemented
+    @meta.struct()
+    postprocess = null;
 
     @meta.notImplemented
     @meta.boolean

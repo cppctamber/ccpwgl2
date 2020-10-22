@@ -27,15 +27,19 @@ module.exports = {
         alias: {
             "core": path.resolve(__dirname, "./src/core"),
             "curve": path.resolve(__dirname, "./src/curve"),
-            "global": path.resolve(__dirname, "./src/global"),
             "eve": path.resolve(__dirname, "./src/eve"),
             "interior": path.resolve(__dirname, "./src/interior"),
             "particle": path.resolve(__dirname, "./src/particle"),
             "sof": path.resolve(__dirname, "./src/sof"),
             "state": path.resolve(__dirname, "./src/state"),
             "wrapped": path.resolve(__dirname, "./src/wrapped"),
+            "unsupported": path.resolve(__dirname, "./src/unsupported"),
+
+            // We'll fix these later
+            "global" : path.resolve(__dirname, "./src/global"),
             "math": path.resolve(__dirname, "./src/global/math"),
             "utils": path.resolve(__dirname, "./src/global/utils"),
+            "engine": path.resolve(__dirname, "./src/global/engine"),
             "constant": path.resolve(__dirname, "./src/global/constant")
         }
     },
@@ -47,7 +51,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "./dist"),
         filename: "[name].js",
-        //library: "ccpwgl_int",
+        //library: "CCPWGL",
         libraryTarget: "umd"
     },
 
