@@ -130,7 +130,12 @@ export class Tw2Device extends Tw2EventEmitter
      */
     get glVersion()
     {
-        return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
+        if (!this.gl)
+        {
+            throw new ErrWebglContext({ message : "No webgl context" });
+        }
+
+        return this.gl instanceof WebGLRenderingContext ? 1 : 2;
     }
 
     /**

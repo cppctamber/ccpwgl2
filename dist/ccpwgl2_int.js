@@ -19837,7 +19837,13 @@ class Tw2Device extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2EventE
    * @returns {number}
    */
   get glVersion() {
-    return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
+    if (!this.gl) {
+      throw new ErrWebglContext({
+        message: "No webgl context"
+      });
+    }
+
+    return this.gl instanceof WebGLRenderingContext ? 1 : 2;
   }
   /**
    * Gets the current gl canvas
@@ -22049,7 +22055,7 @@ class Tw2MotherLode {
 /*!**********************************!*\
   !*** ./core/engine/Tw2ResMan.js ***!
   \**********************************/
-/*! exports provided: Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported */
+/*! exports provided: Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, ErrResourceFormatNotImplemented */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22063,6 +22069,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return ErrHTTPStatus; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatInvalid", function() { return ErrResourceFormatInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return ErrResourceFormatUnsupported; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatNotImplemented", function() { return ErrResourceFormatNotImplemented; });
 /* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MotherLode */ "./core/engine/Tw2MotherLode.js");
 /* harmony import */ var _resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
 /* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2EventEmitter */ "./core/Tw2EventEmitter.js");
@@ -22657,7 +22664,7 @@ class ErrHTTPStatus extends _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
 
 class ErrResourceFormatInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
   constructor(data) {
-    super(data, "Invalid resource format: %format% (%reason%)");
+    super(data, "Resource format invalid: %format% (%reason=unknown%)");
   }
 
 }
@@ -22667,7 +22674,17 @@ class ErrResourceFormatInvalid extends _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["T
 
 class ErrResourceFormatUnsupported extends _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
   constructor(data) {
-    super(data, "Unsupported resource format: %format%");
+    super(data, "Resource format not supported: %format% (%reason=unknown%)");
+  }
+
+}
+/**
+ * Throws in invalid resource formats
+ */
+
+class ErrResourceFormatNotImplemented extends _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Resource format not implemented: %format% (%reason=unknown%)");
   }
 
 }
@@ -22728,7 +22745,7 @@ class Tw2Store {
 /*!******************************!*\
   !*** ./core/engine/index.js ***!
   \******************************/
-/*! exports provided: Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, Tw2Library, Tw2Store */
+/*! exports provided: Tw2Device, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, Tw2Logger, Tw2MotherLode, Tw2ResMan, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrHTTPRequest, ErrHTTPStatus, ErrResourceFormatInvalid, ErrResourceFormatUnsupported, ErrResourceFormatNotImplemented, Tw2Library, Tw2Store */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22770,6 +22787,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatInvalid", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatUnsupported", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrResourceFormatNotImplemented", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatNotImplemented"]; });
 
 /* harmony import */ var _Tw2Library__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Library */ "./core/engine/Tw2Library.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Library", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_4__["Tw2Library"]; });
@@ -34850,10 +34869,11 @@ class ErrShaderLink extends _Tw2Error__WEBPACK_IMPORTED_MODULE_6__["Tw2Error"] {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return Tw2TextureRes; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
-/* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
+/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
+/* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
 var _dec, _class, _temp;
 
 
@@ -34861,7 +34881,8 @@ var _dec, _class, _temp;
 
 
 
-var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__["Tw2Resource"] {
+
+var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -34879,7 +34900,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
    * @param {*|Image|arrayBuffer} data
    */
   Prepare(data) {
-    var gl = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
     var format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
     switch (this._extension) {
@@ -34913,119 +34934,124 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
         this.height = data.height;
         break;
 
-      /*
-        DDS methods based off work by Brandon Jones and Babylon
+      /**
+      DDS methods based off work by Brandon Jones and Babylon
       -----------------------------------------------------------------------
       Copyright (c) 2012 Brandon Jones
-        This software is provided 'as-is', without any express or implied
-      warranty. In no event will the authors be held liable for any damages
-      arising from the use of this software.
-        Permission is granted to anyone to use this software for any purpose,
-      including commercial applications, and to alter it and redistribute it
-      freely, subject to the following restrictions:
-        1. The origin of this software must not be misrepresented; you must not
-      claim that you wrote the original software. If you use this software
-      in a product, an acknowledgment in the product documentation would be
-      appreciated but is not required.
-        2. Altered source versions must be plainly marked as such, and must not
-      be misrepresented as being the original software.
-        3. This notice may not be removed or altered from any source
-      distribution.
-        */
+      **/
 
       case "dds":
-        // Ensure we have data to work with
-        if (!data.byteLength) {
-          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+        var info = Tw2TextureRes.GetDDSInfo(data);
+        var {
+          name,
+          isRGB,
+          isCube,
+          blockBytes,
+          dataOffset,
+          faces,
+          isCompressed,
+          compressedFormat,
+          clientSupport,
+          width,
+          height,
+          mipmaps
+        } = info;
+
+        if (!clientSupport) {
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
+            title: "Tw2TextureRes",
+            message: "Texture format ".concat(name, " unsupported: ").concat(this.path),
+            data: info
+          });
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatUnsupported"]({
             format: "DDS",
-            reason: "file is empty"
+            reason: name,
+            info
           });
         }
 
-        var ext = global__WEBPACK_IMPORTED_MODULE_1__["device"].GetExtension("compressed_texture_s3tc"),
-            header = new Int32Array(data, 0, constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_LENGTH_INT"]),
-            isFourCC = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-            isMagic = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_MAGIC"]] === constant__WEBPACK_IMPORTED_MODULE_4__["DDS_MAGIC"],
-            isCube = (header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_4__["DDSCAPS2_CUBEMAP"]) === constant__WEBPACK_IMPORTED_MODULE_4__["DDSCAPS2_CUBEMAP"],
-            fourCC = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-            mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
-        //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
-        // Check compatibility
+        if (!isCompressed && !isRGB) {
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
+            title: "Tw2TextureRes",
+            message: "Texture format ".concat(name, " not implemented: ").concat(this.path),
+            data: info
+          });
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatNotImplemented"]({
+            format: "DDS",
+            reason: name,
+            info
+          });
+        } // Temporarily output uncompressed rgb/rgba dds info
 
-        if (!ext) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]({
-          format: "DDS",
-          reason: "device not supported"
-        });
-        if (!isMagic) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
-          format: "DDS",
-          reason: "missing magic number"
-        });
-        if (!isFourCC) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
-          format: "DDS",
-          reason: "missing FourCC code"
-        });
-        var width = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_WIDTH"]],
-            height = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_HEIGHT"]],
-            dataOffset = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_SIZE"]] + 4,
-            blockBytes,
-            internalFormat;
 
-        switch (fourCC) {
-          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT1"]:
-            blockBytes = 8;
-            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            break;
-
-          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT3"]:
-            blockBytes = 16;
-            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            break;
-
-          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT5"]:
-            blockBytes = 16;
-            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            break;
-
-          default:
-            var code = Tw2TextureRes.Int32ToFourCC(fourCC);
-            throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
-              format: "DDS",
-              reason: "Invalid type ".concat(code)
-            });
+        if (isRGB) {
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Warn({
+            title: "Tw2TextureRes",
+            message: "Texture format ".concat(name, " loading: ").concat(this.path),
+            data: info
+          });
         }
 
+        this._mipCount = mipmaps;
         this.hasMipMaps = mipmaps > 1;
         this.isCube = isCube;
         this.width = width;
         this.height = height;
+        this.texture = gl.createTexture();
+        var target = isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
+        gl.bindTexture(target, this.texture);
 
-        if (this.isCube) {
-          // TODO: Add dds cube map support
-          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]({
-            format: "DDS cube maps"
-          });
-        } else {
-          this.texture = gl.createTexture();
-          gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        for (var face = 0; face < faces; face++) {
+          var w = width,
+              h = height,
+              o = dataOffset,
+              t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : target,
+              dataLength = void 0,
+              byteArray = void 0;
 
-          for (var i = 0; i < mipmaps; ++i) {
-            var dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-            var byteArray = new Uint8Array(data, dataOffset, dataLength);
-            gl.compressedTexImage2D(gl.TEXTURE_2D, i, internalFormat, width, height, 0, byteArray);
-            dataOffset += dataLength;
-            width *= 0.5;
-            height *= 0.5;
+          for (var mip = 0; mip < mipmaps; mip++) {
+            if (isCompressed) {
+              dataLength = Math.max(4, w) / 4 * Math.max(4, h) / 4 * blockBytes;
+              byteArray = new Uint8Array(data, o, dataLength);
+              gl.compressedTexImage2D(t, mip, compressedFormat, w, h, 0, byteArray);
+            } else //if (isRGB)
+              {
+                var {
+                  rOffset,
+                  bOffset,
+                  gOffset,
+                  aOffset,
+                  format: _format,
+                  type,
+                  internalFormat
+                } = info;
+                gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+                if (_format === gl.RGB) {
+                  dataLength = w * h * 3;
+                  byteArray = Tw2TextureRes.GetRGBArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset);
+                } else {
+                  dataLength = w * h * 4;
+                  byteArray = Tw2TextureRes.GetRGBAArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset, aOffset);
+                }
+
+                gl.texImage2D(t, mip, internalFormat, w, h, 0, _format, type, byteArray);
+              }
+
+            o += info._bpp ? w * h * (info._bpp / 8) : dataLength;
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
           }
-
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-          gl.bindTexture(gl.TEXTURE_2D, null);
         }
 
+        gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, this.hasMipMaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+        gl.bindTexture(target, null);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
         break;
 
       default:
-        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatInvalid"]({
           format: this._extension,
           reason: "Unexpected extension"
         });
@@ -35057,22 +35083,22 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
       case "dds":
         this._extension = extension;
-        global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
+        global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
           this.OnLoaded();
-          global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Queue(this, response);
+          global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response);
         }).catch(err => {
           this.OnError(err);
         });
         return true;
 
       default:
-        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceExtensionUnregistered"]({
           path,
           extension
         });
     }
 
-    global__WEBPACK_IMPORTED_MODULE_1__["resMan"].AddPendingLoad(path);
+    global__WEBPACK_IMPORTED_MODULE_2__["resMan"].AddPendingLoad(path);
     var image = new Image();
     image.crossOrigin = "anonymous";
     /**
@@ -35080,8 +35106,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
      */
 
     image.onerror = () => {
-      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].RemovePendingLoad(path);
-      this.OnError(new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPRequest"]({
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
+      this.OnError(new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrHTTPRequest"]({
         path
       }));
     };
@@ -35091,8 +35117,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
 
     image.onload = () => {
-      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].RemovePendingLoad(path);
-      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Queue(this, image);
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
       this.OnLoaded();
     };
 
@@ -35108,7 +35134,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
   Unload(log) {
     if (this.texture) {
-      global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.deleteTexture(this.texture);
+      global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
     }
 
@@ -35156,7 +35182,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
 
   Bind(sampler, slices) {
-    var d = global__WEBPACK_IMPORTED_MODULE_1__["device"],
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
         gl = d.gl;
     this.KeepAlive();
     var targetType = sampler.samplerType;
@@ -35197,7 +35223,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
 
   static AddMipLevelSkipCount(path) {
-    var d = global__WEBPACK_IMPORTED_MODULE_1__["device"];
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"];
 
     if (d.mipLevelSkipCount > 0) {
       var index = path.lastIndexOf(".");
@@ -35230,8 +35256,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
    */
 
 
-  static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.RGBA) {
-    var gl = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl;
+  static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.RGBA) {
+    var gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
     var fb = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
@@ -35248,6 +35274,268 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     var img = new Image();
     img.src = canvas.toDataURL();
     return img;
+  }
+  /**
+   * Gets dds info for debugging
+   * @param {arrayBuffer} data
+   * @return {Object}
+   */
+
+
+  static GetDDSInfo(data) {
+    // Ensure we have data to work with
+    if (!data.byteLength) {
+      throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatInvalid"]({
+        format: "DDS",
+        reason: "file is empty"
+      });
+    }
+
+    var header = new Int32Array(data, 0, constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_LENGTH_INT"]);
+
+    if (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MAGIC"]] !== constant__WEBPACK_IMPORTED_MODULE_5__["DDS_MAGIC"]) {
+      throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatInvalid"]({
+        format: "DDS",
+        reason: "missing magic number"
+      });
+    }
+
+    var {
+      gl
+    } = global__WEBPACK_IMPORTED_MODULE_2__["device"];
+    var fourCC = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+        headerExt = new Int32Array(data.buffer, data.byteOffset, constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_LENGTH_INT"] + 4),
+        isFourCC = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"] && constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_FOURCC"]] === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_FOURCC"],
+        dxgi = isFourCC && fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT10"] ? headerExt[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_DXGI_FORMAT"]] : 0,
+        isCube = (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP"],
+        s3tc = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
+        rgtc1 = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("EXT_texture_compression_rgtc");
+    var info = {
+      fourCC,
+      isFourCC,
+      isLuminance: (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"],
+      isCube,
+      isRGB: (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_RGB"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_RGB"],
+      isVolume: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_VOLUME"] === constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_VOLUME"],
+      mipmaps: 1,
+      width: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_WIDTH"]],
+      height: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_HEIGHT"]],
+      dataOffset: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_SIZE"]] + 4,
+      //blockBytes: 1,
+      //format: gl.RGBA,
+      //type: gl.UNSIGNED_INT,
+      //target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+      faces: isCube ? 6 : 1,
+      isCompressed: false,
+      clientSupport: false,
+      name: Tw2TextureRes.Int32ToFourCC(fourCC)
+    };
+    var bpp = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_RGB_BPP"]];
+
+    if (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_MIPMAPCOUNT"]) {
+      info.mipmaps = Math.max(1, header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]]);
+    }
+
+    switch (info.fourCC) {
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT1"]:
+        // BC1
+        info.blockBytes = 8;
+        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
+        info.clientSupport = !!info.compressedFormat;
+        info.isCompressed = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT3"]:
+        // BC2
+        info.blockBytes = 16;
+        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
+        info.clientSupport = !!info.compressedFormat;
+        info.isCompressed = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT5"]:
+        // BC3
+        info.blockBytes = 16;
+        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
+        info.clientSupport = !!info.compressedFormat;
+        info.isCompressed = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI1"]:
+        // BC4
+        info.blockBytes = 8;
+        info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
+        info.clientSupport = !!info.compressedFormat;
+        info.isCompressed = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI2"]:
+        // BC5
+        info.blockBytes = 16;
+        info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
+        info.clientSupport = !!info.compressedFormat;
+        info.isCompressed = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_D3DFMT_R16G16B16A16F"]:
+        info.type = gl.HALF_FLOAT;
+        info.format = gl.RGBA;
+        info.clientSupport = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_D3DFMT_R32G32B32A32F"]:
+        info.type = gl.FLOAT;
+        info.format = gl.RGBA;
+        info.clientSupport = true;
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT10"]:
+        info.dataOffset += 5 * 4;
+        info.dxgiFormat = dxgi;
+        info.clientSupport = true;
+
+        switch (dxgi) {
+          case constant__WEBPACK_IMPORTED_MODULE_5__["DXGI_FORMAT_R16G16B16A16_FLOAT"]:
+            info.type = gl.HALF_FLOAT;
+            info.format = gl.RGBA;
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_5__["DXGI_FORMAT_R32G32B32A32_FLOAT"]:
+            info.type = gl.FLOAT;
+            info.format = gl.RGBA;
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_5__["DXGI_FORMAT_B8G8R8X8_UNORM"]:
+            info.isFourCC = false;
+            info.isRGB = true;
+            bpp = 32;
+            break;
+
+          default:
+            throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatUnsupported"]({
+              format: "DDS",
+              reason: "DX10 ".concat(dxgi),
+              info
+            });
+        }
+
+        break;
+
+      default:
+        if (info.isRGB || info.isLuminance) {
+          info.clientSupport = true;
+          break;
+        }
+
+        console.dir(info);
+        var code = Tw2TextureRes.Int32ToFourCC(info.fourCC);
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatUnsupported"]({
+          format: "DDS",
+          reason: "FOURCC ".concat(code),
+          info
+        });
+    } // TODO: Check if valid cube map??
+
+
+    if (info.isFourCC && !info.isCompressed) {
+      info._bpp = bpp; //128 or 64 withinfo half float
+      // info.type = gl.FLOAT;
+      // 64 with half float
+      // info.type = gl.HALF_FLOAT;
+    } else if (info.isRGB) {
+      info._bpp = bpp;
+      info.type = gl.UNSIGNED_BYTE;
+      info.rOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_R_MASK"]]);
+      info.gOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_G_MASK"]]);
+      info.bOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_B_MASK"]]);
+
+      if (bpp === 24) {
+        info.name = "RGB";
+        info.format = gl.RGB;
+        info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGB : gl.RGB8; // RGB565, SRGB8
+      } else {
+        info.name = "RGBA";
+        info.format = gl.RGBA;
+        info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
+
+        info.aOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_A_MASK"]]);
+      }
+    } else if (info.isLuminance) {
+      info.name = "Luminance"; //info.type = gl.UNSIGNED_INT;
+
+      info.format = gl.LUMINANCE;
+      info.format = gl.LUMINANCE;
+    } // Compressed
+    else {//info.type = gl.UNSIGNED_INT;
+      }
+
+    return info;
+  }
+  /**
+   * Gets a byte array from an rgb array buffer
+   * @author BabylonJS
+   * @param width
+   * @param height
+   * @param dataOffset
+   * @param dataLength
+   * @param arrayBuffer
+   * @param rOffset
+   * @param gOffset
+   * @param bOffset
+   * @return {Uint8Array}
+   */
+
+
+  static GetRGBArrayBuffer(width, height, dataOffset, dataLength, arrayBuffer, rOffset, gOffset, bOffset) {
+    var byteArray = new Uint8Array(dataLength),
+        srcData = new Uint8Array(arrayBuffer, dataOffset, dataLength);
+    var index = 0;
+
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        var srcPos = (x + y * width) * 3;
+        byteArray[index] = srcData[srcPos + rOffset];
+        byteArray[index + 1] = srcData[srcPos + gOffset];
+        byteArray[index + 2] = srcData[srcPos + bOffset];
+        index += 3;
+      }
+    }
+
+    return byteArray;
+  }
+  /**
+   * Gets a byte array from an rgb array buffer
+   * @author BabylonJS
+   * @param width
+   * @param height
+   * @param dataOffset
+   * @param dataLength
+   * @param arrayBuffer
+   * @param rOffset
+   * @param gOffset
+   * @param bOffset
+   * @param aOffset
+   * @return {Uint8Array}
+   */
+
+
+  static GetRGBAArrayBuffer(width, height, dataOffset, dataLength, arrayBuffer, rOffset, gOffset, bOffset, aOffset) {
+    var byteArray = new Uint8Array(dataLength),
+        srcData = new Uint8Array(arrayBuffer, dataOffset, dataLength);
+    var index = 0;
+
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        var srcPos = (x + y * width) * 4;
+        byteArray[index] = srcData[srcPos + rOffset];
+        byteArray[index + 1] = srcData[srcPos + gOffset];
+        byteArray[index + 2] = srcData[srcPos + bOffset];
+        byteArray[index + 3] = srcData[srcPos + aOffset];
+        index += 4;
+      }
+    }
+
+    return byteArray;
   }
 
 }, _temp)) || _class);
@@ -57849,7 +58137,7 @@ var MipFilterMode = {
 /*!********************************!*\
   !*** ./global/constant/dds.js ***!
   \********************************/
-/*! exports provided: DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM */
+/*! exports provided: DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_ATI1, FOURCC_ATI2, FOURCC_ETC1, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57899,6 +58187,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return DDS_HEADER_OFFSET_CAPS3; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return DDS_HEADER_OFFSET_CAPS4; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return DDS_HEADER_OFFSET_DXGI_FORMAT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ATI1", function() { return FOURCC_ATI1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ATI2", function() { return FOURCC_ATI2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ETC1", function() { return FOURCC_ETC1; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return FOURCC_DXT1; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return FOURCC_DXT5; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return FOURCC_DXT3; });
@@ -57906,6 +58197,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return FOURCC_D3DFMT_R16G16B16A16F; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return FOURCC_D3DFMT_R32G32B32A32F; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return DXGI_FORMAT_R16G16B16A16_FLOAT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R32G32B32A32_FLOAT", function() { return DXGI_FORMAT_R32G32B32A32_FLOAT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return DXGI_FORMAT_B8G8R8X8_UNORM; });
 /*
 
@@ -57958,6 +58250,9 @@ var DDS_HEADER_OFFSET_CAPS2 = 28;
 var DDS_HEADER_OFFSET_CAPS3 = 29;
 var DDS_HEADER_OFFSET_CAPS4 = 30;
 var DDS_HEADER_OFFSET_DXGI_FORMAT = 32;
+var FOURCC_ATI1 = 826889281;
+var FOURCC_ATI2 = 843666497;
+var FOURCC_ETC1 = 826496069;
 var FOURCC_DXT1 = 827611204;
 var FOURCC_DXT5 = 894720068;
 var FOURCC_DXT3 = 861165636;
@@ -57965,6 +58260,7 @@ var FOURCC_DXT10 = 827611204;
 var FOURCC_D3DFMT_R16G16B16A16F = 113;
 var FOURCC_D3DFMT_R32G32B32A32F = 116;
 var DXGI_FORMAT_R16G16B16A16_FLOAT = 10;
+var DXGI_FORMAT_R32G32B32A32_FLOAT = 2;
 var DXGI_FORMAT_B8G8R8X8_UNORM = 88;
 
 /***/ }),
@@ -58292,41 +58588,6 @@ var GL_CCW = 2305;
 var GL_CULL_FACE = 2884;
 var GL_DEPTH_TEST = 2929;
 var GL_BLEND = 3042;
-/*
-// Texture format aliases
-export const TF_ALPHA = 0;
-export const TF_LUMINANCE = 1;
-export const TF_LUMINANCE_ALPHA = 2;
-export const TF_RGB = 4;
-export const TF_RGBA = 5;
-export const TF_RED = 6;
-export const TF_R = 6;
-export const TF_RG = 7;
-export const TF_RED_INTEGER = 8;
-export const TF_R_INTEGER = 8;
-export const TF_RG_INTEGER = 9;
-export const TF_RGB_INTEGER = 10;
-export const TF_RGBA_INTEGER = 11;
-
-// Texture types aliases
-export const TT_UNSIGNED_BYTE = 0;
-export const TT_UNSIGNED_INT = 0;
-export const TT_FLOAT = 1;
-export const TT_HALF_FLOAT = 2;
-export const TT_BYTE = 3;
-export const TT_SHORT = 4;
-export const TT_UNSIGNED_SHORT = 5;
-export const TT_INT = 6;
-export const TT_UNSIGNED_INTEGER = 7;
-export const TT_UNSIGNED_SHORT_4_4_4_4 = 8;
-export const TT_UNSIGNED_SHORT_5_5_5_1 = 9;
-export const TT_UNSIGNED_SHORT_5_6_5 = 10;
-export const TT_UNSIGNED_INT_2_10_10_10_REV = 11;
-export const TT_UNSIGNED_INT_24_8 = 12;
-export const TT_UNSIGNED_INT_10F_11F_11F_REV = 13;
-export const TT_UNSIGNED_INT_5_9_9_9_REV = 14;
-export const TT_FLOAT_32_UNSIGNED_INT_24_8_REV = 15;
-*/
 
 /***/ }),
 
@@ -58334,7 +58595,7 @@ export const TT_FLOAT_32_UNSIGNED_INT_24_8_REV = 15;
 /*!**********************************!*\
   !*** ./global/constant/index.js ***!
   \**********************************/
-/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, PT_UNKNOWN, PT_BOOLEAN, PT_STRING, PT_PATH, PT_EXPRESSION, PT_BYTE, PT_UINT, PT_USHORT, PT_FLOAT, PT_STRUCT, PT_STRUCT_RAW, PT_STRUCT_LIST, PT_PLAIN, PT_ARRAY, PT_VECTOR, PT_VECTOR2, PT_VECTOR3, PT_VECTOR4, PT_COLOR, PT_QUATERNION, PT_MATRIX3, PT_MATRIX4, PT_INDEX_BUFFER, PT_ENUM */
+/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_ATI1, FOURCC_ATI2, FOURCC_ETC1, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, PT_UNKNOWN, PT_BOOLEAN, PT_STRING, PT_PATH, PT_EXPRESSION, PT_BYTE, PT_UINT, PT_USHORT, PT_FLOAT, PT_STRUCT, PT_STRUCT_RAW, PT_STRUCT_LIST, PT_PLAIN, PT_ARRAY, PT_VECTOR, PT_VECTOR2, PT_VECTOR3, PT_VECTOR4, PT_COLOR, PT_QUATERNION, PT_MATRIX3, PT_MATRIX4, PT_INDEX_BUFFER, PT_ENUM */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -58695,6 +58956,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ATI1", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_ATI1"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ATI2", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_ATI2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_ETC1", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_ETC1"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT1"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT5"]; });
@@ -58708,6 +58975,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["FOURCC_D3DFMT_R32G32B32A32F"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R32G32B32A32_FLOAT", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_R32G32B32A32_FLOAT"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _dds__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
 
@@ -73266,11 +73535,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
-/* harmony import */ var curve_Tw2ValueBinding__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! curve/Tw2ValueBinding */ "./curve/Tw2ValueBinding.js");
-/* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
-/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
-/* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
-/* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
+/* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
+/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
+/* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
+/* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -73282,7 +73550,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-
+ //import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
 
 
 
@@ -73335,12 +73603,12 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         shadow: "cdn:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx"
       },
       texturePath: {
-        noise: "res:/Texture/global/noise.dds.0.png",
-        noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-        whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-        hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
-        hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
-        hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+        //noise: "res:/Texture/global/noise.dds.0.png",
+        //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+        // whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+        //hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
+        //hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
+        //hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
         bannerImage: "",
         bannerBorder: ""
       },
@@ -73424,7 +73692,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetHull(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.hull, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFHullNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.hull, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFHullNotFound"]);
   }
   /**
    * Gets hull names
@@ -73506,7 +73774,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetFaction(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.faction, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFFactionNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.faction, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFFactionNotFound"]);
   }
   /**
    * Gets faction names
@@ -73536,7 +73804,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetRace(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.race, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFRaceNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.race, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFRaceNotFound"]);
   }
   /**
    * Gets race names
@@ -73566,7 +73834,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetMaterial(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.material, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFMaterialNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.material, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFMaterialNotFound"]);
   }
   /**
    * Gets material names
@@ -73596,7 +73864,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetPattern(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.pattern, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFPatternNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.pattern, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFPatternNotFound"]);
   }
   /**
    * Gets pattern names
@@ -73721,7 +73989,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
   Build(dna) {
     var sof = this.ParseDNA(dna),
-        object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveShip2"]();
+        object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveShip2"]();
     object.dna = dna;
     EveSOFData.Build(this, object, sof, this._options);
     if (object.Initialize) object.Initialize();
@@ -73909,10 +74177,9 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     }
 
     mask.parameters.PatternMaskMap.SetOverrides({
-      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataPatternLayer"].ToAddress(pU),
-      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataPatternLayer"].ToAddress(pV),
-      forceMipMaps: ext === "dds",
-      // Temporary
+      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pU),
+      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pV),
+      //forceMipMaps: ext === "dds", // Temporary
       useAllOverrides: true
     });
 
@@ -73937,12 +74204,12 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
   static SetupCustomMasks(data, obj, sof, options) {
     if (obj.customMasks) {
       if (!obj.customMasks[0]) {
-        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
+        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
         obj.customMasks[0].name = "Pattern1";
       }
 
       if (!obj.customMasks[1]) {
-        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
+        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
         obj.customMasks[1].name = "Pattern2";
       }
     }
@@ -74094,20 +74361,25 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
           math__WEBPACK_IMPORTED_MODULE_1__["vec4"].multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
           config.parameters.GeneralGlowColor = glowColor; //temp
-        } // Temporary overrides for dds files
-
-
-        for (var key in config.textures) {
-          if (config.textures.hasOwnProperty(key)) {
-            if (Object(utils__WEBPACK_IMPORTED_MODULE_2__["getPathExtension"])(config.textures[key]) === "dds") {
-              config.overrides[key] = {
-                useAllOverrides: true,
-                forceMipMaps: true,
-                mipFilterMode: 1
-              };
+        }
+        /*
+        // Temporary overrides for dds files
+        for (const key in config.textures)
+        {
+            if (config.textures.hasOwnProperty(key))
+            {
+                if (getPathExtension(config.textures[key]) === "dds")
+                {
+                    config.overrides[key] = {
+                        useAllOverrides: true,
+                        forceMipMaps: true,
+                        mipFilterMode: 1
+                    };
+                }
             }
-          }
-        } // Update effect
+        }
+         */
+        // Update effect
 
 
         effect.SetParameters(config.parameters);
@@ -74153,7 +74425,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         }
 
         for (var i = 0; i < obj.customMasks.length; i++) {
-          eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
+          eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
         }
 
         effect.Initialize();
@@ -74189,7 +74461,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       spriteSets = []
     } = sof.hull;
     spriteSets.forEach(srcSet => {
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSet"]();
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]();
       set.name = srcSet.name;
       set.display = srcSet.visibilityGroup ? sof.faction.HasVisibilityGroup(srcSet.visibilityGroup) : true;
       set.useQuads = true;
@@ -74208,7 +74480,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
           });
         }
 
-        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
+        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
           color
         })));
       });
@@ -74243,7 +74515,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
       }
 
-      var set = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpotlightSet"].from({
+      var set = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpotlightSet"].from({
         name: srcSet.name,
         items: srcSet.items,
         coneEffect: {
@@ -74293,7 +74565,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       planeSets
     } = sof.hull;
     planeSets.forEach(srcSet => {
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSet"]();
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSet"]();
       set.name = srcSet.name; // TODO: Usage
       // TODO: AtlasSize
 
@@ -74317,7 +74589,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         }
       });
       srcSet.items.forEach(srcItem => {
-        var item = eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
+        var item = eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
 
         var faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
 
@@ -74408,19 +74680,19 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
               message: "Using primary color for decal glow: ".concat(name, " (").concat(glowColorType, ")")
             });
           }
-        } // TODO: Fix mipmaps on dds
-
-
-        if (usage === 1) {
-          config.overrides.DecalAtMap = {
-            useAllOverrides: true,
-            forceMipMaps: true
-          };
-        } // Item's values override logo types
+        }
+        /*
+        // TODO: Fix mipmaps on dds
+        if (usage === 1)
+        {
+            config.overrides.DecalAtMap = { useAllOverrides: true, forceMipMaps: true };
+        }
+         */
+        // Item's values override logo types
 
 
         itemData.Assign(config);
-        obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
+        obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
           effect: config
         })));
       });
@@ -74447,7 +74719,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
     for (var i = 0; i < srcItems.length; ++i) {
       var scaled = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].scale(math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create(), srcItems[i].transform, options.multiplier.boosterScale);
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from({
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: scaled,
         atlasIndex0: srcItems[i].atlasIndex0,
@@ -74475,7 +74747,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     // TODO: Update to eve booster set 2
     // TODO: Boosters are slightly too big
 
-    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveBoosterSet"].from({
+    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveBoosterSet"].from({
       name: src.name,
       glowColor: src.glowColor,
       glowScale: src.glowScale * boosterGlowScale,
@@ -74560,7 +74832,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       locatorTurrets = []
     } = sof.hull;
     locatorTurrets.forEach(item => {
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from(item));
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from(item));
     });
     global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
       name: "Space object factory",

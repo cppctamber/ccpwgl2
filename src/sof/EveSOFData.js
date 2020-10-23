@@ -6,26 +6,26 @@ import {
     isArray,
     get,
     findElementByPropertyValue,
-    isString,
-    getPathExtension,
-    assignIfExists
+    getPathExtension
 } from "utils";
 
 import {
     ErrFeatureNotImplemented,
     Tw2Error,
     Tw2Effect,
-    Tw2Mesh, Tw2MeshArea, Tw2ResMan, Tw2AnimationController
+    Tw2Mesh,
+    Tw2MeshArea,
+    //Tw2AnimationController
 } from "core";
 
-import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
+//import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
 
 import {
     ErrSOFHullNotFound,
     ErrSOFMaterialNotFound,
     ErrSOFFactionNotFound,
     ErrSOFPatternNotFound,
-    ErrSOFRaceNotFound, EveSOF
+    ErrSOFRaceNotFound
 } from "sof/EveSOF";
 
 import {
@@ -39,10 +39,7 @@ import {
     EveSpriteSetItem
 } from "eve/item";
 
-import {
-    EveShip2,
-    EveStation2
-} from "../unsupported/eve/object";
+import { EveShip2, EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 
 
@@ -111,12 +108,12 @@ export class EveSOFData
         },
 
         texturePath: {
-            noise: "res:/Texture/global/noise.dds.0.png",
-            noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-            whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-            hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
-            hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
-            hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+            //noise: "res:/Texture/global/noise.dds.0.png",
+            //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+            // whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+            //hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
+            //hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
+            //hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
             bannerImage: "",
             bannerBorder: ""
         },
@@ -733,7 +730,7 @@ export class EveSOFData
         mask.parameters.PatternMaskMap.SetOverrides({
             addressUMode: EveSOFDataPatternLayer.ToAddress(pU),
             addressVMode: EveSOFDataPatternLayer.ToAddress(pV),
-            forceMipMaps: ext === "dds", // Temporary
+            //forceMipMaps: ext === "dds", // Temporary
             useAllOverrides: true
         });
 
@@ -943,6 +940,7 @@ export class EveSOFData
                     config.parameters.GeneralGlowColor = glowColor; //temp
                 }
 
+                /*
                 // Temporary overrides for dds files
                 for (const key in config.textures)
                 {
@@ -958,6 +956,7 @@ export class EveSOFData
                         }
                     }
                 }
+                 */
 
                 // Update effect
                 effect.SetParameters(config.parameters);
@@ -1286,11 +1285,13 @@ export class EveSOFData
                     }
                 }
 
+                /*
                 // TODO: Fix mipmaps on dds
                 if (usage === 1)
                 {
                     config.overrides.DecalAtMap = { useAllOverrides: true, forceMipMaps: true };
                 }
+                 */
 
                 // Item's values override logo types
                 itemData.Assign(config);

@@ -171,39 +171,3 @@ export const GL_CCW = 2305;
 export const GL_CULL_FACE = 2884;
 export const GL_DEPTH_TEST = 2929;
 export const GL_BLEND = 3042;
-
-/*
-// Texture format aliases
-export const TF_ALPHA = 0;
-export const TF_LUMINANCE = 1;
-export const TF_LUMINANCE_ALPHA = 2;
-export const TF_RGB = 4;
-export const TF_RGBA = 5;
-export const TF_RED = 6;
-export const TF_R = 6;
-export const TF_RG = 7;
-export const TF_RED_INTEGER = 8;
-export const TF_R_INTEGER = 8;
-export const TF_RG_INTEGER = 9;
-export const TF_RGB_INTEGER = 10;
-export const TF_RGBA_INTEGER = 11;
-
-// Texture types aliases
-export const TT_UNSIGNED_BYTE = 0;
-export const TT_UNSIGNED_INT = 0;
-export const TT_FLOAT = 1;
-export const TT_HALF_FLOAT = 2;
-export const TT_BYTE = 3;
-export const TT_SHORT = 4;
-export const TT_UNSIGNED_SHORT = 5;
-export const TT_INT = 6;
-export const TT_UNSIGNED_INTEGER = 7;
-export const TT_UNSIGNED_SHORT_4_4_4_4 = 8;
-export const TT_UNSIGNED_SHORT_5_5_5_1 = 9;
-export const TT_UNSIGNED_SHORT_5_6_5 = 10;
-export const TT_UNSIGNED_INT_2_10_10_10_REV = 11;
-export const TT_UNSIGNED_INT_24_8 = 12;
-export const TT_UNSIGNED_INT_10F_11F_11F_REV = 13;
-export const TT_UNSIGNED_INT_5_9_9_9_REV = 14;
-export const TT_FLOAT_32_UNSIGNED_INT_24_8_REV = 15;
-*/

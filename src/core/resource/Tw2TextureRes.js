@@ -1,30 +1,49 @@
 import { meta } from "utils";
-import { resMan, device } from "global";
+import { num } from "math";
+import { resMan, device, logger } from "global";
 import { Tw2Resource } from "./Tw2Resource";
 
 import {
     ErrHTTPRequest,
     ErrResourceFormatUnsupported,
     ErrResourceFormatInvalid,
-    ErrResourceExtensionUnregistered
+    ErrResourceExtensionUnregistered, ErrResourceFormatNotImplemented
 } from "../engine/Tw2ResMan";
 
 import {
+    DDPF_LUMINANCE,
+    DDPF_RGB,
     DDS_HEADER_LENGTH_INT,
+    DDS_HEADER_OFFSET_R_MASK,
+    DDS_HEADER_OFFSET_G_MASK,
+    DDS_HEADER_OFFSET_B_MASK,
+    DDS_HEADER_OFFSET_A_MASK,
     DDS_HEADER_OFFSET_CAPS2,
+    DDS_HEADER_OFFSET_DXGI_FORMAT,
     DDS_HEADER_OFFSET_FLAGS,
     DDS_HEADER_OFFSET_HEIGHT,
     DDS_HEADER_OFFSET_MAGIC,
     DDS_HEADER_OFFSET_MIPMAP_COUNT,
+    DDS_HEADER_OFFSET_PF_FLAGS,
     DDS_HEADER_OFFSET_PF_FOURCC,
+    DDS_HEADER_OFFSET_RGB_BPP,
     DDS_HEADER_OFFSET_SIZE,
     DDS_HEADER_OFFSET_WIDTH,
     DDS_MAGIC,
     DDSCAPS2_CUBEMAP,
+    DDSCAPS2_VOLUME,
     DDSD_MIPMAPCOUNT,
+    DXGI_FORMAT_B8G8R8X8_UNORM,
+    DXGI_FORMAT_R16G16B16A16_FLOAT,
+    DXGI_FORMAT_R32G32B32A32_FLOAT,
+    FOURCC_ATI1,
+    FOURCC_ATI2,
+    FOURCC_D3DFMT_R16G16B16A16F,
+    FOURCC_D3DFMT_R32G32B32A32F,
     FOURCC_DXT1,
+    FOURCC_DXT10,
     FOURCC_DXT3,
-    FOURCC_DXT5
+    FOURCC_DXT5, DDPF_FOURCC
 } from "constant";
 
 
@@ -82,111 +101,134 @@ export class Tw2TextureRes extends Tw2Resource
                 this.height = data.height;
                 break;
 
-            /*
+                /**
 
-            DDS methods based off work by Brandon Jones and Babylon
-            -----------------------------------------------------------------------
-            Copyright (c) 2012 Brandon Jones
+             DDS methods based off work by Brandon Jones and Babylon
+             -----------------------------------------------------------------------
+             Copyright (c) 2012 Brandon Jones
 
-            This software is provided 'as-is', without any express or implied
-            warranty. In no event will the authors be held liable for any damages
-            arising from the use of this software.
+             **/
 
-            Permission is granted to anyone to use this software for any purpose,
-            including commercial applications, and to alter it and redistribute it
-            freely, subject to the following restrictions:
-
-            1. The origin of this software must not be misrepresented; you must not
-            claim that you wrote the original software. If you use this software
-            in a product, an acknowledgment in the product documentation would be
-            appreciated but is not required.
-
-            2. Altered source versions must be plainly marked as such, and must not
-            be misrepresented as being the original software.
-
-            3. This notice may not be removed or altered from any source
-            distribution.
-
-            */
             case "dds":
 
-                // Ensure we have data to work with
-                if (!data.byteLength)
-                {
-                    throw new ErrResourceFormatInvalid({ format: "DDS", reason: "file is empty" });
-                }
+                const info = Tw2TextureRes.GetDDSInfo(data);
 
-                const
-                    ext = device.GetExtension("compressed_texture_s3tc"),
-                    header = new Int32Array(data, 0, DDS_HEADER_LENGTH_INT),
-                    isFourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
-                    isMagic = header[DDS_HEADER_OFFSET_MAGIC] === DDS_MAGIC,
-                    isCube = (header[DDS_HEADER_OFFSET_CAPS2] & DDSCAPS2_CUBEMAP) === DDSCAPS2_CUBEMAP,
-                    fourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
-                    mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
-                //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
-
-                // Check compatibility
-                if (!ext) throw new ErrResourceFormatUnsupported({ format: "DDS", reason: "device not supported" });
-                if (!isMagic) throw new ErrResourceFormatInvalid({ format: "DDS", reason: "missing magic number" });
-                if (!isFourCC) throw new ErrResourceFormatInvalid({ format: "DDS", reason: "missing FourCC code" });
-
-                let
-                    width = header[DDS_HEADER_OFFSET_WIDTH],
-                    height = header[DDS_HEADER_OFFSET_HEIGHT],
-                    dataOffset = header[DDS_HEADER_OFFSET_SIZE] + 4,
+                const {
+                    name,
+                    isRGB,
+                    isCube,
                     blockBytes,
-                    internalFormat;
+                    dataOffset,
+                    faces,
+                    isCompressed,
+                    compressedFormat,
+                    clientSupport,
+                    width,
+                    height,
+                    mipmaps
+                } = info;
 
-                switch (fourCC)
+                if (!clientSupport)
                 {
-                    case FOURCC_DXT1:
-                        blockBytes = 8;
-                        internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-                        break;
+                    logger.Debug({
+                        title: "Tw2TextureRes",
+                        message: `Texture format ${name} unsupported: ${this.path}`,
+                        data: info
+                    });
 
-                    case FOURCC_DXT3:
-                        blockBytes = 16;
-                        internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-                        break;
-
-                    case FOURCC_DXT5:
-                        blockBytes = 16;
-                        internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-                        break;
-
-                    default:
-                        const code = Tw2TextureRes.Int32ToFourCC(fourCC);
-                        throw new ErrResourceFormatInvalid({ format: "DDS", reason: `Invalid type ${code}` });
+                    throw new ErrResourceFormatUnsupported({
+                        format: "DDS",
+                        reason: name,
+                        info
+                    });
                 }
 
+                if (!isCompressed && !isRGB)
+                {
+                    logger.Debug({
+                        title: "Tw2TextureRes",
+                        message: `Texture format ${name} not implemented: ${this.path}`,
+                        data: info
+                    });
+
+                    throw new ErrResourceFormatNotImplemented({
+                        format: "DDS",
+                        reason: name,
+                        info
+                    });
+                }
+
+                // Temporarily output uncompressed rgb/rgba dds info
+                if (isRGB)
+                {
+                    logger.Warn({
+                        title: "Tw2TextureRes",
+                        message: `Texture format ${name} loading: ${this.path}`,
+                        data: info
+                    });
+                }
+
+                this._mipCount = mipmaps;
                 this.hasMipMaps = mipmaps > 1;
                 this.isCube = isCube;
                 this.width = width;
                 this.height = height;
+                this.texture = gl.createTexture();
 
-                if (this.isCube)
+                const target = isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
+                gl.bindTexture(target, this.texture);
+
+
+                for (let face = 0; face < faces; face++)
                 {
-                    // TODO: Add dds cube map support
-                    throw new ErrResourceFormatUnsupported({ format: "DDS cube maps" });
-                }
-                else
-                {
-                    this.texture = gl.createTexture();
-                    gl.bindTexture(gl.TEXTURE_2D, this.texture);
-                    for (let i = 0; i < mipmaps; ++i)
+                    let w = width,
+                        h = height,
+                        o = dataOffset,
+                        t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : target,
+                        dataLength,
+                        byteArray;
+
+                    for (let mip = 0; mip < mipmaps; mip++)
                     {
-                        const dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-                        const byteArray = new Uint8Array(data, dataOffset, dataLength);
-                        gl.compressedTexImage2D(gl.TEXTURE_2D, i, internalFormat, width, height, 0, byteArray);
-                        dataOffset += dataLength;
-                        width *= 0.5;
-                        height *= 0.5;
+                        if (isCompressed)
+                        {
+                            dataLength = Math.max(4, w) / 4 * Math.max(4, h) / 4 * blockBytes;
+                            byteArray = new Uint8Array(data, o, dataLength);
+                            gl.compressedTexImage2D(t, mip, compressedFormat, w, h, 0, byteArray);
+                        }
+                        else//if (isRGB)
+                        {
+                            const { rOffset, bOffset, gOffset, aOffset, format, type, internalFormat } = info;
+
+                            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+                            if (format === gl.RGB)
+                            {
+                                dataLength = w * h * 3;
+                                byteArray = Tw2TextureRes.GetRGBArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset);
+                            }
+                            else
+                            {
+                                dataLength = w * h * 4;
+                                byteArray = Tw2TextureRes.GetRGBAArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset, aOffset);
+                            }
+
+                            gl.texImage2D(t, mip, internalFormat, w, h, 0, format, type, byteArray);
+                        }
+
+                        o += info._bpp ? (w * h * (info._bpp / 8)) : dataLength;
+                        w = Math.max(w >> 1, 1);
+                        h = Math.max(h >> 1, 1);
                     }
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
                 }
+
+                gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, this.hasMipMaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+
+                gl.bindTexture(target, null);
+
+                gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+
                 break;
 
             default:
@@ -413,4 +455,287 @@ export class Tw2TextureRes extends Tw2Resource
         return img;
     }
 
+    /**
+     * Gets dds info for debugging
+     * @param {arrayBuffer} data
+     * @return {Object}
+     */
+    static GetDDSInfo(data)
+    {
+        // Ensure we have data to work with
+        if (!data.byteLength)
+        {
+            throw new ErrResourceFormatInvalid({
+                format: "DDS",
+                reason: "file is empty"
+            });
+        }
+
+        let header = new Int32Array(data, 0, DDS_HEADER_LENGTH_INT);
+
+        if (header[DDS_HEADER_OFFSET_MAGIC] !== DDS_MAGIC)
+        {
+            throw new ErrResourceFormatInvalid({
+                format: "DDS",
+                reason: "missing magic number"
+            });
+        }
+
+        let { gl } = device;
+
+        let fourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
+            headerExt = new Int32Array(data.buffer, data.byteOffset, DDS_HEADER_LENGTH_INT + 4),
+            isFourCC = header[DDS_HEADER_OFFSET_PF_FLAGS && DDPF_FOURCC] === DDPF_FOURCC,
+            dxgi = isFourCC && fourCC === FOURCC_DXT10 ? headerExt[DDS_HEADER_OFFSET_DXGI_FORMAT] : 0,
+            isCube = (header[DDS_HEADER_OFFSET_CAPS2] & DDSCAPS2_CUBEMAP) === DDSCAPS2_CUBEMAP,
+            s3tc = device.GetExtension("compressed_texture_s3tc"),
+            rgtc1 = device.GetExtension("EXT_texture_compression_rgtc");
+
+        const info = {
+            fourCC,
+            isFourCC,
+            isLuminance: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_LUMINANCE) === DDPF_LUMINANCE,
+            isCube,
+            isRGB: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_RGB) === DDPF_RGB,
+            isVolume: (header[DDS_HEADER_OFFSET_CAPS2]) & DDSCAPS2_VOLUME === DDSCAPS2_VOLUME,
+            mipmaps: 1,
+            width: header[DDS_HEADER_OFFSET_WIDTH],
+            height: header[DDS_HEADER_OFFSET_HEIGHT],
+            dataOffset: header[DDS_HEADER_OFFSET_SIZE] + 4,
+            //blockBytes: 1,
+            //format: gl.RGBA,
+            //type: gl.UNSIGNED_INT,
+            //target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+            faces: isCube ? 6 : 1,
+            isCompressed: false,
+            clientSupport: false,
+            name: Tw2TextureRes.Int32ToFourCC(fourCC)
+        };
+
+        let bpp = header[DDS_HEADER_OFFSET_RGB_BPP];
+
+        if (header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT)
+        {
+            info.mipmaps = Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]);
+        }
+
+        switch (info.fourCC)
+        {
+            case FOURCC_DXT1: // BC1
+                info.blockBytes = 8;
+                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
+                info.clientSupport = !!info.compressedFormat;
+                info.isCompressed = true;
+                break;
+
+            case FOURCC_DXT3: // BC2
+                info.blockBytes = 16;
+                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
+                info.clientSupport = !!info.compressedFormat;
+                info.isCompressed = true;
+                break;
+
+            case FOURCC_DXT5: // BC3
+                info.blockBytes = 16;
+                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
+                info.clientSupport = !!info.compressedFormat;
+                info.isCompressed = true;
+                break;
+
+            case FOURCC_ATI1: // BC4
+                info.blockBytes = 8;
+                info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
+                info.clientSupport = !!info.compressedFormat;
+                info.isCompressed = true;
+                break;
+
+            case FOURCC_ATI2: // BC5
+                info.blockBytes = 16;
+                info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
+                info.clientSupport = !!info.compressedFormat;
+                info.isCompressed = true;
+                break;
+
+            case FOURCC_D3DFMT_R16G16B16A16F:
+                info.type = gl.HALF_FLOAT;
+                info.format = gl.RGBA;
+                info.clientSupport = true;
+                break;
+
+            case FOURCC_D3DFMT_R32G32B32A32F:
+                info.type = gl.FLOAT;
+                info.format = gl.RGBA;
+                info.clientSupport = true;
+                break;
+
+            case FOURCC_DXT10:
+                info.dataOffset += 5 * 4;
+                info.dxgiFormat = dxgi;
+                info.clientSupport = true;
+
+                switch (dxgi)
+                {
+                    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+                        info.type = gl.HALF_FLOAT;
+                        info.format = gl.RGBA;
+                        break;
+
+                    case DXGI_FORMAT_R32G32B32A32_FLOAT:
+                        info.type = gl.FLOAT;
+                        info.format = gl.RGBA;
+                        break;
+
+                    case DXGI_FORMAT_B8G8R8X8_UNORM:
+                        info.isFourCC = false;
+                        info.isRGB = true;
+                        bpp = 32;
+                        break;
+
+                    default:
+                        throw new ErrResourceFormatUnsupported({
+                            format: "DDS",
+                            reason: `DX10 ${dxgi}`,
+                            info
+                        });
+                }
+                break;
+
+            default:
+
+                if (info.isRGB || info.isLuminance)
+                {
+                    info.clientSupport = true;
+                    break;
+                }
+
+                console.dir(info);
+                const code = Tw2TextureRes.Int32ToFourCC(info.fourCC);
+                throw new ErrResourceFormatUnsupported({
+                    format: "DDS",
+                    reason: `FOURCC ${code}`,
+                    info
+                });
+        }
+
+        // TODO: Check if valid cube map??
+
+        if (info.isFourCC && !info.isCompressed)
+        {
+            info._bpp = bpp;
+            //128 or 64 withinfo half float
+            // info.type = gl.FLOAT;
+
+            // 64 with half float
+            // info.type = gl.HALF_FLOAT;
+        }
+        else if (info.isRGB)
+        {
+            info._bpp = bpp;
+            info.type = gl.UNSIGNED_BYTE;
+
+            info.rOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_R_MASK]);
+            info.gOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_G_MASK]);
+            info.bOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_B_MASK]);
+
+            if (bpp === 24)
+            {
+                info.name = "RGB";
+                info.format = gl.RGB;
+                info.internalFormat = device.glVersion ===  1  ? gl.RGB : gl.RGB8; // RGB565, SRGB8
+            }
+            else
+            {
+                info.name = "RGBA";
+                info.format = gl.RGBA;
+                info.internalFormat = device.glVersion ===  1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
+                info.aOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_A_MASK]);
+            }
+        }
+        else if (info.isLuminance)
+        {
+            info.name = "Luminance";
+            //info.type = gl.UNSIGNED_INT;
+            info.format = gl.LUMINANCE;
+            info.format = gl.LUMINANCE;
+        }
+        // Compressed
+        else
+        {
+            //info.type = gl.UNSIGNED_INT;
+        }
+
+        return info;
+    }
+
+    /**
+     * Gets a byte array from an rgb array buffer
+     * @author BabylonJS
+     * @param width
+     * @param height
+     * @param dataOffset
+     * @param dataLength
+     * @param arrayBuffer
+     * @param rOffset
+     * @param gOffset
+     * @param bOffset
+     * @return {Uint8Array}
+     */
+    static GetRGBArrayBuffer(width, height, dataOffset, dataLength, arrayBuffer, rOffset, gOffset, bOffset)
+    {
+        const
+            byteArray = new Uint8Array(dataLength),
+            srcData = new Uint8Array(arrayBuffer, dataOffset, dataLength);
+
+        let index = 0;
+        for (let y = 0; y < height; y++)
+        {
+            for (let x = 0; x < width; x++)
+            {
+                const srcPos = (x + y * width) * 3;
+                byteArray[index] = srcData[srcPos + rOffset];
+                byteArray[index + 1] = srcData[srcPos + gOffset];
+                byteArray[index + 2] = srcData[srcPos + bOffset];
+                index += 3;
+            }
+        }
+
+        return byteArray;
+    }
+
+    /**
+     * Gets a byte array from an rgb array buffer
+     * @author BabylonJS
+     * @param width
+     * @param height
+     * @param dataOffset
+     * @param dataLength
+     * @param arrayBuffer
+     * @param rOffset
+     * @param gOffset
+     * @param bOffset
+     * @param aOffset
+     * @return {Uint8Array}
+     */
+    static GetRGBAArrayBuffer(width, height, dataOffset, dataLength, arrayBuffer, rOffset, gOffset, bOffset, aOffset)
+    {
+        const
+            byteArray = new Uint8Array(dataLength),
+            srcData = new Uint8Array(arrayBuffer, dataOffset, dataLength);
+
+        let index = 0;
+        for (let y = 0; y < height; y++)
+        {
+            for (let x = 0; x < width; x++)
+            {
+                const srcPos = (x + y * width) * 4;
+                byteArray[index] = srcData[srcPos + rOffset];
+                byteArray[index + 1] = srcData[srcPos + gOffset];
+                byteArray[index + 2] = srcData[srcPos + bOffset];
+                byteArray[index + 3] = srcData[srcPos + aOffset];
+                index += 4;
+            }
+        }
+
+        return byteArray;
+    }
 }

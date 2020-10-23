@@ -626,7 +626,7 @@ export class ErrResourceFormatInvalid extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Invalid resource format: %format% (%reason%)");
+        super(data, "Resource format invalid: %format% (%reason=unknown%)");
     }
 }
 
@@ -637,6 +637,17 @@ export class ErrResourceFormatUnsupported extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Unsupported resource format: %format%");
+        super(data, "Resource format not supported: %format% (%reason=unknown%)");
+    }
+}
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatNotImplemented extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Resource format not implemented: %format% (%reason=unknown%)");
     }
 }
