@@ -162,17 +162,6 @@ export const BLENDOP_REVSUBTRACT = 3;
 export const BLENDOP_MIN = 4;
 export const BLENDOP_MAX = 5;
 
-
-// Texture Wrap modes
-export const WrapModes = [
-    0,
-    GL_REPEAT,
-    GL_MIRRORED_REPEAT,
-    GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_EDGE,
-];
-
 // Blend Table
 export const BlendTable = [
     -1,                                                                 // --
@@ -193,18 +182,25 @@ export const BlendTable = [
     GL_ONE_MINUS_CONSTANT_COLOR                                         // D3DBLEND_INVBLENDFACTOR
 ];
 
-// Filter mode conversions
-export const FilterMode = {
-    [GL_NEAREST]: 1,
-    [GL_LINEAR]: 2
+
+export const WrapMode = {
+    //DEFAULT: -1,
+    REPEAT: 1,
+    MIRRORED_REPEAT: 2,
+    CLAMP_TO_EDGE: 3
 };
 
-// Mip filter mode conversions
+export const FilterMode = {
+    //DEFAULT: -1,
+    NEAREST: 1,
+    LINEAR: 2,
+    LINEAR_ANISOTROPY: 3 // Huh
+};
+
 export const MipFilterMode = {
-    [GL_NEAREST]: 0,
-    [GL_LINEAR]: 0,
-    [GL_NEAREST_MIPMAP_NEAREST]: 1,
-    [GL_LINEAR_MIPMAP_NEAREST]: 1,
-    [GL_NEAREST_MIPMAP_LINEAR]: 2,
-    [GL_LINEAR_MIPMAP_LINEAR]: 2
+    //DEFAULT: -1,
+    NONE: 0,
+    NEAREST: 1,
+    LINEAR: 2,
+    LINEAR_ANISOTROPY: 3 // Huh
 };

@@ -203,7 +203,7 @@ export class Tw2Shader
             return stringTable.substr(offset, end - offset);
         }
 
-        const { wrapModes, gl } = device;
+        const { gl } = device;
 
         let techniqueCount = 1;
         if (version > 6)
@@ -400,14 +400,19 @@ export class Tw2Shader
                         s.registerIndex = reader.ReadUInt8();
                         s.name = version >= 4 ? ReadString() : "";
                         s._comparison = reader.ReadUInt8();     // not used
-                        s.minFilter = reader.ReadUInt8();
-                        s.magFilter = reader.ReadUInt8();
-                        s.mipFilter = reader.ReadUInt8();
-                        s.addressU = reader.ReadUInt8();
-                        s.addressV = reader.ReadUInt8();
-                        s.addressW = reader.ReadUInt8();
-                        s.mipLODBias = reader.ReadFloat32();    // not used
-                        s._maxAnisotropy = reader.ReadUInt8();
+                        
+                        const 
+                            filterMode = reader.ReadUInt8(),
+                            magFilterMode = reader.ReadUInt8(),
+                            mipFilterMode = reader.ReadUInt8(),
+                            addressUMode = reader.ReadUInt8(),
+                            addressVMode = reader.ReadUInt8(),
+                            addressWMode = reader.ReadUInt8();
+                        
+                        s._mipLODBias = reader.ReadFloat32();    // not used
+
+                        const maxAnisotropy = reader.ReadUInt8();
+
                         s._comparisonFunc = reader.ReadUInt8(); // not used
                         s._borderColor = quat.fromValues(
                             reader.ReadFloat32(),
@@ -420,51 +425,16 @@ export class Tw2Shader
 
                         if (version < 4) reader.ReadUInt8();
 
-                        if (s.minFilter === 1)
-                        {
-                            switch (s.mipFilter)
-                            {
-                                case 0:
-                                    s.minFilter = gl.NEAREST;
-                                    break;
-
-                                case 1:
-                                    s.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-                                    break;
-
-                                default:
-                                    s.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-                            }
-                            s.minFilterNoMips = gl.NEAREST;
-                        }
-                        else
-                        {
-                            switch (s.mipFilter)
-                            {
-                                case 0:
-                                    s.minFilter = gl.LINEAR;
-                                    break;
-
-                                case 1:
-                                    s.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-                                    break;
-
-                                default:
-                                    s.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-                            }
-                            s.minFilterNoMips = gl.LINEAR;
-                        }
-
-                        s.magFilter = s.magFilter === 1 ? gl.NEAREST : gl.LINEAR;
-                        s.addressU = wrapModes[s.addressU];
-                        s.addressV = wrapModes[s.addressV];
-                        s.addressW = wrapModes[s.addressW];
-
-                        if (s.minFilter === 3 || s.magFilter === 3 || s.mipFilter === 3)
-                        {
-                            s.anisotropy = Math.max(s.maxAnisotropy, 1);
-                        }
-
+                        s.ResolveModes({
+                            mipFilterMode,
+                            filterMode,
+                            magFilterMode,
+                            addressUMode,
+                            addressVMode,
+                            addressWMode,
+                            maxAnisotropy
+                        });
+                        
                         for (let n = 0; n < stage.textures.length; ++n)
                         {
                             if (stage.textures[n].registerIndex === s.registerIndex)

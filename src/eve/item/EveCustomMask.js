@@ -108,13 +108,16 @@ export class EveCustomMask extends Tw2Transform
 
         if (PatternTexture)
         {
-            const overrides = PatternMaskMap.GetOverrides();
-            PatternTexture.SetOverrides(overrides);
+            PatternTexture.overrides = PatternMaskMap.overrides;
             PatternTexture.SetValue(PatternMaskMap.GetValue());
+
+            PatternMaskMap.OnEvent("overrides_modified", () =>
+            {
+                PatternTexture.overrides = PatternMaskMap.overrides;
+            });
 
             PatternMaskMap.OnEvent("modified", () =>
             {
-                PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
                 PatternTexture.SetValue(PatternMaskMap.resourcePath);
             });
 

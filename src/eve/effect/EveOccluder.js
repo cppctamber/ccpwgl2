@@ -92,7 +92,7 @@ export class EveOccluder extends meta.Model
 
         if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
 
-        effect.parameters.BackBuffer.SetTextureRes(tex);
+        effect.parameters.BackBuffer.AttachTextureRes(tex);
         effect.parameters.OccluderIndex.SetValue([ index, total, samples ]);
 
         d.SetStandardStates(d.RM_ADDITIVE);

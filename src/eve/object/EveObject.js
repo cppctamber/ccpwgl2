@@ -12,6 +12,24 @@ export class EveObject extends meta.Model
     @meta.boolean
     display = true;
 
+    /**
+     * Finds structs
+     * @param {Function} func
+     * @param {Array} [out=[]]
+     * @return {Array} out
+     */
+    FindStruct(func, out=[])
+    {
+        this.Traverse(({ struct }) =>
+        {
+            if (func(struct) && !out.includes(struct))
+            {
+                out.push(struct);
+            }
+        });
+
+        return out;
+    }
 
     /**
      * Gets object resources

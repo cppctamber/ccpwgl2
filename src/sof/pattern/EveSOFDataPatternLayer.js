@@ -37,7 +37,7 @@ export class EveSOFDataPatternLayer
      * @param {Number} projectionType
      * @returns {Number}
      */
-    static ToAddress(projectionType)
+    static ToAddressMode(projectionType)
     {
         switch (projectionType)
         {
@@ -57,7 +57,7 @@ export class EveSOFDataPatternLayer
      * @param {Number} addressMode
      * @returns {Number}
      */
-    static FromProjection(addressMode)
+    static FromAddressMode(addressMode)
     {
         switch (addressMode)
         {

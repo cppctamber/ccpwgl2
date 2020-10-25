@@ -7,7 +7,8 @@ import {
     ErrHTTPRequest,
     ErrResourceFormatUnsupported,
     ErrResourceFormatInvalid,
-    ErrResourceExtensionUnregistered, ErrResourceFormatNotImplemented
+    ErrResourceExtensionUnregistered,
+    ErrResourceFormatNotImplemented
 } from "../engine/Tw2ResMan";
 
 import {
@@ -47,19 +48,26 @@ import {
 } from "constant";
 
 
-@meta.type("Tw2TextureRes")
+@meta.type("Tw2TextureRes2")
 export class Tw2TextureRes extends Tw2Resource
 {
 
     texture = null;
-    isCube = false;
-    width = 0;
-    height = 0;
-    hasMipMaps = false;
 
     _currentSampler = 0;
     _isAttached = false;
     _extension = "";
+
+    _width = 0;
+    _height = 0;
+    _type = null;
+    _format = null;
+    _internalFormat = null;
+    _target = null;
+    _hasMipMaps = false;
+    _isCube = false;
+    _isPowerOfTwo = false;
+    _useNoMipFilter = false;
 
     /**
      * Prepares the resource
@@ -73,32 +81,45 @@ export class Tw2TextureRes extends Tw2Resource
         switch (this._extension)
         {
             case "cube":
+                this._target = gl.TEXTURE_CUBE_MAP;
+                this._format = format;
+                this._type = gl.UNSIGNED_BYTE;
+                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.height);
+                this._width = this._height = data.height;
                 this.texture = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
+
+                gl.bindTexture(this._target, this.texture);
+
                 const canvas = document.createElement("canvas");
                 canvas.width = canvas.height = data.height;
                 const ctx = canvas.getContext("2d");
                 for (let j = 0; j < 6; ++j)
                 {
                     ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, format, format, gl.UNSIGNED_BYTE, canvas);
+                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, this._format, this._format, this._type, canvas);
                 }
-                gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                this.width = canvas.width;
-                this.height = canvas.height;
-                this.hasMipMaps = true;
+                gl.generateMipmap(this._target);
+                gl.bindTexture(this._target, null);
+                this._hasMipMaps = true;
                 break;
 
             case "png":
+                this._target = gl.TEXTURE_2D;
+                this._format = format;
+                this._type = gl.UNSIGNED_BYTE;
+                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.width, data.height);
                 this.texture = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_2D, this.texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, format, format, gl.UNSIGNED_BYTE, data);
-                this.hasMipMaps = Tw2TextureRes.IsPowerOfTwo(data.width) && Tw2TextureRes.IsPowerOfTwo(data.height);
-                if (this.hasMipMaps) gl.generateMipmap(gl.TEXTURE_2D);
-                gl.bindTexture(gl.TEXTURE_2D, null);
-                this.width = data.width;
-                this.height = data.height;
+
+                gl.bindTexture(this._target, this.texture);
+                gl.texImage2D(this._target, 0, this._format, this._format, this._type, data);
+                if (this._isPowerOfTwo)
+                {
+                    gl.generateMipmap(this._target);
+                    this._hasMipMaps = true;
+                }
+                gl.bindTexture(this._target, null);
+                this._width = data.width;
+                this._height = data.height;
                 break;
 
                 /**
@@ -113,15 +134,15 @@ export class Tw2TextureRes extends Tw2Resource
 
                 const info = Tw2TextureRes.GetDDSInfo(data);
 
-                const {
+                let {
                     name,
+                    fourCC,
                     isRGB,
                     isCube,
                     blockBytes,
                     dataOffset,
                     faces,
                     isCompressed,
-                    compressedFormat,
                     clientSupport,
                     width,
                     height,
@@ -130,76 +151,85 @@ export class Tw2TextureRes extends Tw2Resource
 
                 if (!clientSupport)
                 {
-                    logger.Debug({
-                        title: "Tw2TextureRes",
-                        message: `Texture format ${name} unsupported: ${this.path}`,
-                        data: info
-                    });
-
                     throw new ErrResourceFormatUnsupported({
                         format: "DDS",
                         reason: name,
-                        info
+                        data: info
                     });
                 }
 
+                // Don't support anything else yet
                 if (!isCompressed && !isRGB)
                 {
-                    logger.Debug({
-                        title: "Tw2TextureRes",
-                        message: `Texture format ${name} not implemented: ${this.path}`,
-                        data: info
-                    });
-
                     throw new ErrResourceFormatNotImplemented({
                         format: "DDS",
                         reason: name,
-                        info
+                        data: info
                     });
                 }
 
                 // Temporarily output uncompressed rgb/rgba dds info
-                if (isRGB)
+                if (isRGB || fourCC === FOURCC_ATI1 || fourCC ===   FOURCC_ATI2)
                 {
                     logger.Warn({
-                        title: "Tw2TextureRes",
-                        message: `Texture format ${name} loading: ${this.path}`,
+                        title: "Tw2TextureRes2",
+                        message: `Partial support for ${name}: ${this.path}`,
                         data: info
                     });
                 }
 
+
+                if (device.glVersion === 1 && !info.isPowerOfTwo)
+                {
+                    mipmaps = 1;
+
+                    logger.Warn({
+                        title: "Tw2TextureRes2",
+                        message: `Texture not power of 2: ${this.path}`,
+                        data: info
+                    });
+                }
+
+
+                this._type = info.type;
+                this._format = info.format;
+                this._internalFormat = info.internalFormat;
+                this._target = info.target;
+
                 this._mipCount = mipmaps;
-                this.hasMipMaps = mipmaps > 1;
-                this.isCube = isCube;
-                this.width = width;
-                this.height = height;
+                this._hasMipMaps = this._mipCount > 1;
+                this._isCube = isCube;
+                this._isPowerOfTwo = info.isPowerOfTwo;
+                this._width = width;
+                this._height = height;
+                this._useNoMipFilter = true;
+
                 this.texture = gl.createTexture();
-
-                const target = isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
-                gl.bindTexture(target, this.texture);
-
+                gl.bindTexture(this._target, this.texture);
 
                 for (let face = 0; face < faces; face++)
                 {
                     let w = width,
                         h = height,
                         o = dataOffset,
-                        t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : target,
+                        t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : this._target,
                         dataLength,
                         byteArray;
 
-                    for (let mip = 0; mip < mipmaps; mip++)
+                    for (let mip = 0; mip < this._mipCount; mip++)
                     {
                         if (isCompressed)
                         {
                             dataLength = Math.max(4, w) / 4 * Math.max(4, h) / 4 * blockBytes;
                             byteArray = new Uint8Array(data, o, dataLength);
-                            gl.compressedTexImage2D(t, mip, compressedFormat, w, h, 0, byteArray);
+                            gl.compressedTexImage2D(t, mip, this._internalFormat, w, h, 0, byteArray);
+                            o += dataLength;
                         }
                         else//if (isRGB)
                         {
-                            const { rOffset, bOffset, gOffset, aOffset, format, type, internalFormat } = info;
+                            const { rOffset, bOffset, gOffset, aOffset, bpp } = info;
 
+                            //  Why?
                             gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 
                             if (format === gl.RGB)
@@ -213,22 +243,18 @@ export class Tw2TextureRes extends Tw2Resource
                                 byteArray = Tw2TextureRes.GetRGBAArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset, aOffset);
                             }
 
-                            gl.texImage2D(t, mip, internalFormat, w, h, 0, format, type, byteArray);
+                            gl.texImage2D(t, mip, this._internalFormat, w, h, 0, this._format, this._type, byteArray);
+                            o += (w * h * (bpp / 8));
                         }
 
-                        o += info._bpp ? (w * h * (info._bpp / 8)) : dataLength;
                         w = Math.max(w >> 1, 1);
                         h = Math.max(h >> 1, 1);
                     }
                 }
 
-                gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, this.hasMipMaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-
-                gl.bindTexture(target, null);
-
-                gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
-
+                //gl.texParameteri(this._target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                //gl.texParameteri(this._target, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+                gl.bindTexture(this._target, null);
                 break;
 
             default:
@@ -238,6 +264,71 @@ export class Tw2TextureRes extends Tw2Resource
         this._isAttached = false;
         this.OnPrepared();
     }
+
+    /**
+     *
+     * @param sampler
+     * @param slices
+     * @constructor
+     */
+    Bind(sampler, slices)
+    {
+        const
+            d = device,
+            gl = d.gl;
+
+        this.KeepAlive();
+
+        // Try to guess
+        if (this._target === null)
+        {
+            this._target = sampler.samplerType;
+            this._isCube = sampler.samplerType === gl.TEXTURE_CUBE_MAP;
+        }
+        else if (sampler.samplerType !== this._target)
+        {
+            this._sampler = null;
+            return;
+        }
+
+        this._sampler = sampler;
+
+        if (!this.texture)
+        {
+            const texture = this._target === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
+            gl.bindTexture(this._target, texture);
+            return;
+        }
+
+        if (sampler.isVolume)
+        {
+            gl.uniform1f(slices, this._height / this._width);
+        }
+
+        gl.bindTexture(this._target, this.texture);
+        if (sampler.hash === null || sampler.hash !== this._currentSampler)
+        {
+            sampler.Apply(d, this._hasMipMaps, this._useNoMipFilter);
+            this._currentSampler = sampler.hash;
+        }
+    }
+
+    /**
+     * Clears meta info
+     */
+    _ClearMeta()
+    {
+        this._extension = null;
+        this._isAttached = false;
+        this._isCube = null;
+        this._target = null;
+        this._type = null;
+        this._internalFormat = null;
+        this._mipCount = null;
+        this._hasMipMaps = null;
+        this._useNoMipFilter = null;
+    }
+
 
     /**
      * An optional method resources can have that allows them to take over loading their resources
@@ -251,13 +342,13 @@ export class Tw2TextureRes extends Tw2Resource
         {
             case "cube":
                 this._extension = extension;
-                this.isCube = true;
+                this._isCube = true;
                 path = path.substr(0, path.length - 5) + ".png";
                 break;
 
             case "png":
                 this._extension = extension;
-                this.isCube = false;
+                this._isCube = false;
                 break;
 
             case "dds":
@@ -317,8 +408,7 @@ export class Tw2TextureRes extends Tw2Resource
             device.gl.deleteTexture(this.texture);
             this.texture = null;
         }
-        this._extension = null;
-        this._isAttached = false;
+        this._ClearMeta();
         this.OnUnloaded(log);
         return true;
     }
@@ -331,7 +421,7 @@ export class Tw2TextureRes extends Tw2Resource
     {
         this.path = "";
         this.texture = texture;
-        this._extension = null;
+        this._ClearMeta();
         this._isAttached = true;
         this.OnLoaded({ hide: true, path: "attachment" });
         this.OnPrepared({ hide: true, path: "attachment" });
@@ -350,48 +440,20 @@ export class Tw2TextureRes extends Tw2Resource
     }
 
     /**
-     * Bind
-     * @param sampler
-     * @param slices
-     */
-    Bind(sampler, slices)
-    {
-        const
-            d = device,
-            gl = d.gl;
-
-        this.KeepAlive();
-        let targetType = sampler.samplerType;
-        if (targetType !== (this.isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D)) return;
-
-        if (!this.texture)
-        {
-            const texture = targetType === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
-            gl.bindTexture(targetType, texture);
-            return;
-        }
-
-        if (sampler.isVolume)
-        {
-            gl.uniform1f(slices, this.height / this.width);
-        }
-
-        gl.bindTexture(targetType, this.texture);
-        if (sampler.hash !== this._currentSampler)
-        {
-            sampler.Apply(d, this.hasMipMaps);
-            this._currentSampler = sampler.hash;
-        }
-    }
-
-    /**
      * Finds out if a number is to the power of 2
-     * @param {Number} a
+     * @param args
      * @returns {Boolean}
      */
-    static IsPowerOfTwo(a)
+    static IsPowerOfTwo(...args)
     {
-        return (a & (a - 1)) === 0;
+        for (let i = 0; i < args.length; i++)
+        {
+            if ((args[i] & (args[i] - 1)) !== 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -489,70 +551,68 @@ export class Tw2TextureRes extends Tw2Resource
             dxgi = isFourCC && fourCC === FOURCC_DXT10 ? headerExt[DDS_HEADER_OFFSET_DXGI_FORMAT] : 0,
             isCube = (header[DDS_HEADER_OFFSET_CAPS2] & DDSCAPS2_CUBEMAP) === DDSCAPS2_CUBEMAP,
             s3tc = device.GetExtension("compressed_texture_s3tc"),
-            rgtc1 = device.GetExtension("EXT_texture_compression_rgtc");
+            rgtc1 = device.GetExtension("EXT_texture_compression_rgtc"),
+            width = header[DDS_HEADER_OFFSET_WIDTH],
+            height = header[DDS_HEADER_OFFSET_HEIGHT],
+            bpp = header[DDS_HEADER_OFFSET_RGB_BPP],
+            hasMips = header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT;
 
         const info = {
             fourCC,
+            width,
+            height,
             isFourCC,
-            isLuminance: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_LUMINANCE) === DDPF_LUMINANCE,
             isCube,
+            name: Tw2TextureRes.Int32ToFourCC(fourCC),
+            isPowerOfTwo: Tw2TextureRes.IsPowerOfTwo(width, height),
+            isLuminance: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_LUMINANCE) === DDPF_LUMINANCE,
             isRGB: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_RGB) === DDPF_RGB,
             isVolume: (header[DDS_HEADER_OFFSET_CAPS2]) & DDSCAPS2_VOLUME === DDSCAPS2_VOLUME,
-            mipmaps: 1,
-            width: header[DDS_HEADER_OFFSET_WIDTH],
-            height: header[DDS_HEADER_OFFSET_HEIGHT],
             dataOffset: header[DDS_HEADER_OFFSET_SIZE] + 4,
-            //blockBytes: 1,
-            //format: gl.RGBA,
-            //type: gl.UNSIGNED_INT,
-            //target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+            mipmaps: hasMips ? Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1,
+            format: null,
+            type: null,
+            internalFormat: null,
+            target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,  // TODO: Check for 3d textures or 2d texture array
             faces: isCube ? 6 : 1,
             isCompressed: false,
             clientSupport: false,
-            name: Tw2TextureRes.Int32ToFourCC(fourCC)
         };
-
-        let bpp = header[DDS_HEADER_OFFSET_RGB_BPP];
-
-        if (header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT)
-        {
-            info.mipmaps = Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]);
-        }
 
         switch (info.fourCC)
         {
             case FOURCC_DXT1: // BC1
                 info.blockBytes = 8;
-                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
-                info.clientSupport = !!info.compressedFormat;
+                info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
+                info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
                 break;
 
             case FOURCC_DXT3: // BC2
                 info.blockBytes = 16;
-                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
-                info.clientSupport = !!info.compressedFormat;
+                info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
+                info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
                 break;
 
             case FOURCC_DXT5: // BC3
                 info.blockBytes = 16;
-                info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
-                info.clientSupport = !!info.compressedFormat;
+                info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
+                info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
                 break;
 
             case FOURCC_ATI1: // BC4
                 info.blockBytes = 8;
-                info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
-                info.clientSupport = !!info.compressedFormat;
+                info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
+                info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
                 break;
 
             case FOURCC_ATI2: // BC5
                 info.blockBytes = 16;
-                info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
-                info.clientSupport = !!info.compressedFormat;
+                info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
+                info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
                 break;
 
@@ -601,9 +661,37 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             default:
-
-                if (info.isRGB || info.isLuminance)
+                if (info.isRGB)
                 {
+                    info.bpp = bpp;
+                    info.type = gl.UNSIGNED_BYTE;
+                    info.clientSupport = true;
+
+                    info.rOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_R_MASK]);
+                    info.gOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_G_MASK]);
+                    info.bOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_B_MASK]);
+
+                    if (bpp === 24)
+                    {
+                        info.name = "RGB";
+                        info.format = gl.RGB;
+                        info.internalFormat = device.glVersion ===  1  ? gl.RGB : gl.RGB8; // RGB565, SRGB8
+                    }
+                    else
+                    {
+                        info.name = "RGBA";
+                        info.format = gl.RGBA;
+                        info.internalFormat = device.glVersion ===  1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
+                        info.aOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_A_MASK]);
+                    }
+                    break;
+                }
+
+                if (info.isLuminance)
+                {
+                    info.name = "Luminance";
+                    //info.type = gl.UNSIGNED_INT;
+                    //info.format = gl.LUMINANCE;
                     info.clientSupport = true;
                     break;
                 }
@@ -617,51 +705,13 @@ export class Tw2TextureRes extends Tw2Resource
                 });
         }
 
-        // TODO: Check if valid cube map??
-
+        // TODO: Handle fourCC which aren't compressed
         if (info.isFourCC && !info.isCompressed)
         {
-            info._bpp = bpp;
-            //128 or 64 withinfo half float
+            // 128 or 64 without half float
             // info.type = gl.FLOAT;
-
             // 64 with half float
             // info.type = gl.HALF_FLOAT;
-        }
-        else if (info.isRGB)
-        {
-            info._bpp = bpp;
-            info.type = gl.UNSIGNED_BYTE;
-
-            info.rOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_R_MASK]);
-            info.gOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_G_MASK]);
-            info.bOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_B_MASK]);
-
-            if (bpp === 24)
-            {
-                info.name = "RGB";
-                info.format = gl.RGB;
-                info.internalFormat = device.glVersion ===  1  ? gl.RGB : gl.RGB8; // RGB565, SRGB8
-            }
-            else
-            {
-                info.name = "RGBA";
-                info.format = gl.RGBA;
-                info.internalFormat = device.glVersion ===  1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
-                info.aOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_A_MASK]);
-            }
-        }
-        else if (info.isLuminance)
-        {
-            info.name = "Luminance";
-            //info.type = gl.UNSIGNED_INT;
-            info.format = gl.LUMINANCE;
-            info.format = gl.LUMINANCE;
-        }
-        // Compressed
-        else
-        {
-            //info.type = gl.UNSIGNED_INT;
         }
 
         return info;

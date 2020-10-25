@@ -2,69 +2,50 @@ import { meta } from "utils";
 import { Tw2SamplerState } from "./Tw2SamplerState";
 
 
-const WrapModesByName = {
-    NONE: 0,
-    REPEAT: 1,
-    MIRRORED_REPEAT: 2,
-    CLAMP_TO_EDGE: 3
-};
-
-
-const FilterModesByName = {
-    NEAREST: 0,
-    LINEAR: 1
-};
-
-
-const MipFilterModesByName = {
-    NONE: 0,
-    MIPMAP_NEAREST: 1,
-    MIPMAP_LINEAR: 2
-};
-
-
 @meta.type("Tw2SamplerOverride")
-export class Tw2SamplerOverride
+export class Tw2SamplerOverride extends meta.Model
 {
 
     @meta.string
     name = "";
 
-    @meta.enums(WrapModesByName, 3)
-    addressU = 0;
+    @meta.boolean
+    enabled = true;
 
-    @meta.enums(WrapModesByName, 3)
-    addressV = 0;
+    @meta.uint
+    addressUMode = -1;
 
-    @meta.enums(WrapModesByName, 3)
-    addressW = 0;
+    @meta.uint
+    addressVMode = -1;
 
-    @meta.enums(FilterModesByName, 2)
-    filter = 0;
+    @meta.uint
+    addressWMode = -1;
 
-    @meta.enums(MipFilterModesByName, 2)
-    mipFilter = 0;
+    @meta.uint
+    filterMode = -1;
+
+    @meta.uint
+    mipFilterMode = -1;
+
+    @meta.uint
+    magFilterMode = -1;
 
     @meta.notImplemented
     @meta.uint
-    lodBias = 0;
+    lodBias = -1;
+
+    @meta.notImplemented
+    @meta.uint
+    maxMipLevel = -1;
 
     @meta.uint
-    maxMipLevel = 0;
-
-    @meta.uint
-    maxAnisotropy = 0;
-
-    @meta.boolean
-    forceMipMaps = false;
-
+    maxAnisotropy = -1;
 
     _sampler = null;
     _isDirty = true;
 
     /**
      * Fires on value changes
-     * TODO: Development only
      */
     UpdateValues()
     {
@@ -73,80 +54,41 @@ export class Tw2SamplerOverride
 
     /**
      * Gets the sampler
-     * @param {Tw2Device} device
-     * @param {Tw2SamplerState} originalSampler
+     * @param {Tw2SamplerState} o
      * @returns {Tw2SamplerState}
      */
-    GetSampler(device, originalSampler)
+    GetSampler(o)
     {
-        if (this._isDirty)
+        if (!this.enabled)
         {
-            // Development only
-            this._isDirty = false;
+            return o;
         }
-        else if (this._sampler)
+
+        if (this._sampler && !this._isDirty)
         {
             return this._sampler;
         }
 
-        this._sampler = new Tw2SamplerState();
-        const sampler = this._sampler;
-        sampler.registerIndex = originalSampler.registerIndex;
-        sampler.name = originalSampler.name;
-        sampler.forceMipMaps = this.forceMipMaps;
+        const s = this._sampler = this._sampler || new Tw2SamplerState();
 
-        const { wrapModes, gl } = device;
+        s.name = o.name;
+        s.samplerType = o.samplerType;
+        s.isVolume = o.isVolume;
+        s.registerIndex  = o.registerIndex;
 
-        if (this.filter === 1)
-        {
-            switch (this.mipFilter)
-            {
-                case 0:
-                    sampler.minFilter = gl.NEAREST;
-                    break;
+        const overrides = {
+            filterMode: this.filterMode !== -1 ? this.filterMode : o.filterMode,
+            mipFilterMode: this.mipFilterMode !== -1 ? this.mipFilterMode : o.mipFilterMode,
+            magFilterMode: this.magFilterMode !== -1 ? this.magFilterMode : o.magFilterMode,
+            addressUMode: this.addressUMode  !== -1 ? this.addressUMode : o.addressUMode,
+            addressVMode: this.addressVMode !== -1 ? this.addressVMode : o.addressVMode,
+            addressWMode: this.addressWMode !== -1 ? this.addressWMode : o.addressWMode,
+            maxAnisotropy: this.maxAnisotropy !== -1 ? this.maxAnisotropy : o.maxAnisotropy
+        };
 
-                case 1:
-                    sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-                    break;
+        s.ResolveModes(overrides);
 
-                default:
-                    sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-            }
-
-            sampler.minFilterNoMips = gl.NEAREST;
-            sampler.magFilter = gl.NEAREST;
-        }
-        else
-        {
-            switch (this.mipFilter)
-            {
-                case 0:
-                    sampler.minFilter = gl.LINEAR;
-                    break;
-
-                case 1:
-                    sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-                    break;
-
-                default:
-                    sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-            }
-
-            sampler.minFilterNoMips = gl.LINEAR;
-            sampler.magFilter = gl.LINEAR;
-        }
-
-        if (this.filter === 3 || this.mipFilter === 3)
-        {
-            sampler.anisotropy = Math.max(this.maxAnisotropy, 1);
-        }
-
-        sampler.addressU = wrapModes[this.addressU];
-        sampler.addressV = wrapModes[this.addressV];
-        sampler.addressW = wrapModes[this.addressW];
-        sampler.samplerType = originalSampler.samplerType;
-        sampler.isVolume = originalSampler.isVolume;
-        sampler.ComputeHash();
-        return sampler;
+        this._isDirty =  false;
+        return s;
     }
 }

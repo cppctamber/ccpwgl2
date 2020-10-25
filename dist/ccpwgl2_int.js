@@ -17321,6 +17321,11 @@ class Tw2Error extends Error {
     this.name = this.constructor.name;
     this.data = data;
 
+    if (this.data.data) {
+      // Temp output
+      console.debug(JSON.stringify(this.data.data, null, 4));
+    }
+
     if (HAS_CAPTURE_STACK_TRACE) {
       Error["captureStackTrace"](this, Tw2Error);
     } else {
@@ -17866,7 +17871,15 @@ var Tw2RenderTarget = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
     } = global__WEBPACK_IMPORTED_MODULE_1__["device"];
     this.Destroy();
     this.texture = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureRes"]();
-    this.texture.Attach(gl.createTexture());
+    this.texture.Attach(gl.createTexture()); // Keep track of meta
+
+    this.texture._target = gl.TEXTURE_2D;
+    this.texture._format = gl.RGBA;
+    this.texture._type = gl.UNSIGNED_BYTE;
+    this.texture._hasMipMaps = false;
+    this.texture._forceMipMaps = false;
+    this.texture._width = this.width = width;
+    this.texture._height = this.height = height;
     this._frameBuffer = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
     gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
@@ -17890,8 +17903,6 @@ var Tw2RenderTarget = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
 
     gl.bindRenderbuffer(gl.RENDERBUFFER, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    this.texture.width = this.width = width;
-    this.texture.height = this.height = height;
     this.hasDepth = hasDepth;
   }
   /**
@@ -20052,7 +20063,6 @@ class Tw2Device extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2EventE
       usageIndex: 0,
       elements: 2
     }]);
-    this.wrapModes = Array.from(constant__WEBPACK_IMPORTED_MODULE_6__["WrapModes"]);
     this._alphaBlendState = {
       dirty: false,
       states: {
@@ -20400,7 +20410,7 @@ class Tw2Device extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2EventE
       });
     }
 
-    this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
+    this._blitEffect.parameters["BlitSource"].AttachTextureRes(texture);
 
     return this.RenderFullScreenQuad(this._blitEffect);
   }
@@ -23875,7 +23885,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, ErrRawDataElementNotFound, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget, Tw2EventEmitter, Tw2Transform, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod */
+/*! exports provided: Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, ErrRawDataElementNotFound, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, ErrBinaryFormat, ErrBinaryObjectTypeNotFound, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureResOld, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2GenericStore, Tw2ConstructorStore, Tw2VariableTypeStore, ErrStoreVariableTypeNotFoundByValue, Tw2VariableStore, Tw2ResourcePathStore, ErrStorePathUndefined, Tw2ResourceDynamicPathStore, Tw2ResourceExtensionStore, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement, Tw2RuntimeInstanceData, Tw2Frustum, Tw2RenderTarget, Tw2EventEmitter, Tw2Transform, Tw2Error, ErrFeatureNotImplemented, ErrIndexBounds, ErrWrapped, ErrSingletonInstantiation, ErrAbstractClass, ErrAbstractMethod */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24024,6 +24034,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderCompile", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["ErrShaderCompile"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["ErrShaderLink"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureResOld", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2TextureResOld"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2TextureRes"]; });
 
@@ -24690,7 +24702,7 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
 
     for (var key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        var param = this.parameters[key]; // Allow creating of parameter from overrides incase method is
+        var param = this.parameters[key]; // Allow creating of parameter from overrides in  case method is
         // called before SetTextures.
         // Todo: Remove this once proper sampler overrides are implemented
 
@@ -24700,22 +24712,7 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
         }
 
         if (param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]) {
-          var doUpdate = false;
-          var overrides = options[key];
-
-          for (var prop in overrides) {
-            if (overrides.hasOwnProperty(prop) && _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
-              if (overrides[prop] !== param[prop]) {
-                doUpdate = true;
-                break;
-              }
-            }
-          }
-
-          if (doUpdate) {
-            param.SetOverrides(options[key]);
-            updated = true;
-          }
+          param.SetOverrides(options[key]);
         }
       }
     }
@@ -24735,7 +24732,8 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
         var param = this.parameters[key];
 
         if (param && param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"] && param.useAllOverrides) {
-          out[key] = this.parameters[key].GetOverrides();
+          var result = this.parameters[key].GetOverrides();
+          if (result) out[key] = result;
         }
       }
     }
@@ -28171,10 +28169,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureParameter", function() { return Tw2TextureParameter; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
+/* harmony import */ var _sampler_Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler/Tw2SamplerOverride */ "./core/sampler/Tw2SamplerOverride.js");
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -28187,7 +28185,35 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerState"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+  /**
+   * Temporary
+   * @return {Boolean}
+   */
+  get useAllOverrides() {
+    return this.overrides ? this.overrides.enabled : false;
+  }
+  /**
+   * Temporary
+   * @param {Boolean} bool
+   */
+
+
+  set useAllOverrides(bool) {
+    if (bool) {
+      this.overrides = this.overrides || new _sampler_Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerOverride"]();
+      this.overrides.SetValues({
+        enabled: true
+      });
+    }
+
+    if (!bool && this.overrides) {
+      this.overrides.SetValues({
+        enabled: false
+      });
+    }
+  }
+
   /**
    * Constructor
    * @param {String} [name]        - Name of the texture parameter
@@ -28200,26 +28226,11 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     _initializerDefineProperty(this, "resourcePath", _descriptor2, this);
 
-    _initializerDefineProperty(this, "addressUMode", _descriptor3, this);
+    _initializerDefineProperty(this, "textureRes", _descriptor3, this);
 
-    _initializerDefineProperty(this, "addressVMode", _descriptor4, this);
+    _initializerDefineProperty(this, "overrides", _descriptor4, this);
 
-    _initializerDefineProperty(this, "addressWMode", _descriptor5, this);
-
-    _initializerDefineProperty(this, "filterMode", _descriptor6, this);
-
-    _initializerDefineProperty(this, "maxAnisotropy", _descriptor7, this);
-
-    _initializerDefineProperty(this, "mipFilterMode", _descriptor8, this);
-
-    _initializerDefineProperty(this, "useAllOverrides", _descriptor9, this);
-
-    _initializerDefineProperty(this, "forceMipMaps", _descriptor10, this);
-
-    _initializerDefineProperty(this, "textureRes", _descriptor11, this);
-
-    _initializerDefineProperty(this, "_sampler", _descriptor12, this);
-
+    this._isAttached = false;
     if (name) this.name = name;
 
     if (texturePath) {
@@ -28233,7 +28244,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   get isTextureAttached() {
-    return this.textureRes && this.textureRes._isAttached;
+    return this.textureRes && this._isAttached;
   }
   /**
    * Initializes the texture
@@ -28264,46 +28275,85 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     return this.isTextureAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
   }
   /**
+   * Attaches a texture res
+   * @param {Tw2TextureRes|Tw2VideoRes} res
+   * @return {boolean}
+   */
+
+
+  AttachTextureRes(res) {
+    return this._SetTextureRes(res, true);
+  }
+  /**
    * Sets the texture's resource manually
-   * @param {Tw2TextureRes} res
+   * @param {Tw2TextureRes|Tw2VideoRes} res
+   * @param {Boolean}  [isAttached]
    * @returns {Boolean}
    */
 
 
-  SetTextureRes(res) {
-    if (this.textureRes === res) return false;
-    this.resourcePath = "";
-    this.textureRes = res;
-    if (this.textureRes) this.textureRes._isAttached = true;
-    return true;
+  _SetTextureRes(res, isAttached) {
+    if (this.textureRes !== res) {
+      this._RemoveTextureRes();
+
+      this.textureRes = res;
+
+      if (res) {
+        res.RegisterNotification(this);
+
+        if (isAttached) {
+          this._isAttached = true;
+          this.resourcePath = "";
+        } else {
+          this._isAttached = false;
+        }
+      }
+
+      return true;
+    }
+
+    return false;
   }
   /**
-   * Fire on value changes
-   * @param {*} [controller]        - An optional parameter for tracking the object that called this function
-   * @param {String[]} [skipUpdate] -
+   * Removes the texture res
+   * @return {boolean}
    */
 
 
-  OnValueChanged(controller, skipUpdate) {
-    this.resourcePath = this.resourcePath.toLowerCase();
-
-    if (this.resourcePath !== "") {
-      if (this.resourcePath.indexOf("rgba:/") === 0) {
-        if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
-          var color = this.resourcePath.replace("rgba:/", "").split(","),
-              texture = global__WEBPACK_IMPORTED_MODULE_1__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
-          this.textureRes = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"]();
-          this.textureRes.path = this.resourcePath;
-          this.textureRes.Attach(texture);
-        }
-      } else {
-        this.textureRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath);
-      }
-    } else {
+  _RemoveTextureRes() {
+    if (this.textureRes) {
+      this.textureRes.UnregisterNotification(this);
       this.textureRes = null;
+      return true;
     }
 
-    this.UpdateOverrides();
+    return false;
+  }
+  /**
+   * Fire on value changes
+   * @param {Object} [opt]
+   */
+
+
+  OnValueChanged(opt) {
+    this.resourcePath = this.resourcePath ? this.resourcePath.toLowerCase() : "";
+
+    if (this.resourcePath.indexOf("rgba:/") === 0) {
+      if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
+        var color = this.resourcePath.replace("rgba:/", "").split(","),
+            texture = global__WEBPACK_IMPORTED_MODULE_1__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
+        var res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"]();
+        res.path = this.resourcePath;
+        res.texture = texture;
+        res.texture._isAttached = true;
+
+        this._SetTextureRes(res);
+      }
+    } else {
+      var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
+
+      this._SetTextureRes(_res);
+    }
   }
   /**
    * Apply
@@ -28315,11 +28365,8 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
   Apply(stage, sampler, slices) {
     if (this.textureRes) {
-      if (this.useAllOverrides && this._sampler) {
-        this._sampler.samplerType = sampler.samplerType;
-        this._sampler.isVolume = sampler.isVolume;
-        this._sampler.registerIndex = sampler.registerIndex;
-        sampler = this._sampler;
+      if (this.overrides) {
+        sampler = this.overrides.GetSampler(sampler);
       }
 
       global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.activeTexture(global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.TEXTURE0 + stage);
@@ -28328,87 +28375,46 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   }
   /**
    * Sets the textures overrides
-   * TODO: Remove once utility functions working
-   * @param {{}} [opt={}] - An object containing the override options to set
+   * TODO: Move to Tw2Effect
+   * @param {{}} [values={}] - values to update
+   * @param {Object} [opt]
    * @returns {Boolean} true if updated
    */
 
 
-  SetOverrides(opt = {}) {
-    if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(this, opt, Tw2TextureParameter.overrideProperties)) {
-      this.UpdateValues();
-      return true;
+  SetOverrides(values, opt) {
+    this.overrides = this.overrides || new _sampler_Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerOverride"]();
+
+    if (this.overrides.SetValues(values, opt)) {
+      if (!opt || !opt.skipEvents) {
+        this.EmitEvent("overrides_modified", this, opt);
+      }
     }
   }
   /**
+   * Removes overrides
+   * TODO: Move to Tw2Effect
+   * @return {boolean}
+   */
+
+
+  RemoveOverrides() {
+    if (this.overrides) {
+      this.overrides = null;
+      return true;
+    }
+
+    return false;
+  }
+  /**
    * Gets the texture's overrides
-   * TODO: Remove once utility functions working
+   * TODO: Move to Tw2Effect
    * @returns {{}}
    */
 
 
-  GetOverrides(out = {}) {
-    Object(utils__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(out, this, Tw2TextureParameter.overrideProperties);
-    return out;
-  }
-  /**
-   * Updates the parameter's overrides
-   * TODO: Move to OnValueChanged
-   */
-
-
-  UpdateOverrides() {
-    if (this.useAllOverrides) {
-      this._sampler = this._sampler || new _sampler__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerState"]();
-      this._sampler.forceMipMaps = this.forceMipMaps;
-      var {
-        wrapModes,
-        gl
-      } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
-          sampler = this._sampler;
-
-      if (this.filterMode === 1) {
-        switch (this.mipFilterMode) {
-          case 0:
-            sampler.minFilter = gl.NEAREST;
-            break;
-
-          case 1:
-            sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-            break;
-
-          default:
-            sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-        }
-
-        sampler.minFilterNoMips = gl.NEAREST;
-        sampler.magFilter = gl.NEAREST;
-      } else {
-        switch (this.mipFilterMode) {
-          case 0:
-            sampler.minFilter = gl.LINEAR;
-            break;
-
-          case 1:
-            sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-            break;
-
-          default:
-            sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-        }
-
-        sampler.minFilterNoMips = gl.LINEAR;
-        sampler.magFilter = gl.LINEAR;
-      }
-
-      sampler.addressU = wrapModes[this.addressUMode];
-      sampler.addressV = wrapModes[this.addressVMode];
-      sampler.addressW = wrapModes[this.addressWMode];
-      sampler.anisotropy = this.maxAnisotropy;
-      sampler.ComputeHash();
-    } else if (this._sampler) {
-      this._sampler = null;
-    }
+  GetOverrides() {
+    this.overrides && this.overrides.enabled ? this.overrides.GetValues() : null;
   }
   /**
    * Checks if a value is equal to the parameter's resource path
@@ -28444,13 +28450,8 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   static isValue(a) {
     return Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(a);
   }
-  /**
-   * The texture parameter's override properties
-   * @type {String[]}
-   */
 
-
-}, _class3.overrideProperties = ["useAllOverrides", "addressUMode", "addressVMode", "addressWMode", "filterMode", "mipFilterMode", "maxAnisotropy", "forceMipMaps"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -28464,70 +28465,14 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   initializer: function () {
     return "";
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "addressUMode", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "addressVMode", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "addressWMode", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "filterMode", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 2;
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "maxAnisotropy", [_dec8], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 4;
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "mipFilterMode", [_dec9], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 2;
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "useAllOverrides", [_dec10], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return false;
-  }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "forceMipMaps", [_dec11], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return false;
-  }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "textureRes", [_dec12, _dec13], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "textureRes", [_dec4, _dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "_sampler", [_dec14], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "overrides", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -29679,9 +29624,9 @@ var Tw2PostEffect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
                   target = inputs[texture];
 
               if (target) {
-                parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
+                parameter.AttachTextureRes(this.CreateTarget(target, width, height).texture);
               } else {
-                parameter.SetTextureRes(this._texture);
+                parameter.AttachTextureRes(this._texture);
               }
             }
           }
@@ -34207,7 +34152,6 @@ var Tw2Shader = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shad
     }
 
     var {
-      wrapModes,
       gl
     } = global__WEBPACK_IMPORTED_MODULE_1__["device"];
     var techniqueCount = 1;
@@ -34377,15 +34321,15 @@ var Tw2Shader = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shad
             s.name = version >= 4 ? ReadString() : "";
             s._comparison = reader.ReadUInt8(); // not used
 
-            s.minFilter = reader.ReadUInt8();
-            s.magFilter = reader.ReadUInt8();
-            s.mipFilter = reader.ReadUInt8();
-            s.addressU = reader.ReadUInt8();
-            s.addressV = reader.ReadUInt8();
-            s.addressW = reader.ReadUInt8();
-            s.mipLODBias = reader.ReadFloat32(); // not used
+            var filterMode = reader.ReadUInt8(),
+                magFilterMode = reader.ReadUInt8(),
+                mipFilterMode = reader.ReadUInt8(),
+                addressUMode = reader.ReadUInt8(),
+                addressVMode = reader.ReadUInt8(),
+                addressWMode = reader.ReadUInt8();
+            s._mipLODBias = reader.ReadFloat32(); // not used
 
-            s._maxAnisotropy = reader.ReadUInt8();
+            var maxAnisotropy = reader.ReadUInt8();
             s._comparisonFunc = reader.ReadUInt8(); // not used
 
             s._borderColor = math__WEBPACK_IMPORTED_MODULE_2__["quat"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
@@ -34394,47 +34338,15 @@ var Tw2Shader = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shad
             s._maxLOD = reader.ReadFloat32(); // not used
 
             if (version < 4) reader.ReadUInt8();
-
-            if (s.minFilter === 1) {
-              switch (s.mipFilter) {
-                case 0:
-                  s.minFilter = gl.NEAREST;
-                  break;
-
-                case 1:
-                  s.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-                  break;
-
-                default:
-                  s.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-              }
-
-              s.minFilterNoMips = gl.NEAREST;
-            } else {
-              switch (s.mipFilter) {
-                case 0:
-                  s.minFilter = gl.LINEAR;
-                  break;
-
-                case 1:
-                  s.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-                  break;
-
-                default:
-                  s.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-              }
-
-              s.minFilterNoMips = gl.LINEAR;
-            }
-
-            s.magFilter = s.magFilter === 1 ? gl.NEAREST : gl.LINEAR;
-            s.addressU = wrapModes[s.addressU];
-            s.addressV = wrapModes[s.addressV];
-            s.addressW = wrapModes[s.addressW];
-
-            if (s.minFilter === 3 || s.magFilter === 3 || s.mipFilter === 3) {
-              s.anisotropy = Math.max(s.maxAnisotropy, 1);
-            }
+            s.ResolveModes({
+              mipFilterMode,
+              filterMode,
+              magFilterMode,
+              addressUMode,
+              addressVMode,
+              addressWMode,
+              maxAnisotropy
+            });
 
             for (var n = 0; n < stage.textures.length; ++n) {
               if (stage.textures[n].registerIndex === s.registerIndex) {
@@ -34882,17 +34794,23 @@ var _dec, _class, _temp;
 
 
 
-var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
+var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes2"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
-    this.isCube = false;
-    this.width = 0;
-    this.height = 0;
-    this.hasMipMaps = false;
     this._currentSampler = 0;
     this._isAttached = false;
     this._extension = "";
+    this._width = 0;
+    this._height = 0;
+    this._type = null;
+    this._format = null;
+    this._internalFormat = null;
+    this._target = null;
+    this._hasMipMaps = false;
+    this._isCube = false;
+    this._isPowerOfTwo = false;
+    this._useNoMipFilter = false;
   }
 
   /**
@@ -34905,33 +34823,44 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
     switch (this._extension) {
       case "cube":
+        this._target = gl.TEXTURE_CUBE_MAP;
+        this._format = format;
+        this._type = gl.UNSIGNED_BYTE;
+        this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.height);
+        this._width = this._height = data.height;
         this.texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
+        gl.bindTexture(this._target, this.texture);
         var canvas = document.createElement("canvas");
         canvas.width = canvas.height = data.height;
         var ctx = canvas.getContext("2d");
 
         for (var j = 0; j < 6; ++j) {
           ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-          gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, format, format, gl.UNSIGNED_BYTE, canvas);
+          gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, this._format, this._format, this._type, canvas);
         }
 
-        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-        this.width = canvas.width;
-        this.height = canvas.height;
-        this.hasMipMaps = true;
+        gl.generateMipmap(this._target);
+        gl.bindTexture(this._target, null);
+        this._hasMipMaps = true;
         break;
 
       case "png":
+        this._target = gl.TEXTURE_2D;
+        this._format = format;
+        this._type = gl.UNSIGNED_BYTE;
+        this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.width, data.height);
         this.texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, format, format, gl.UNSIGNED_BYTE, data);
-        this.hasMipMaps = Tw2TextureRes.IsPowerOfTwo(data.width) && Tw2TextureRes.IsPowerOfTwo(data.height);
-        if (this.hasMipMaps) gl.generateMipmap(gl.TEXTURE_2D);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-        this.width = data.width;
-        this.height = data.height;
+        gl.bindTexture(this._target, this.texture);
+        gl.texImage2D(this._target, 0, this._format, this._format, this._type, data);
+
+        if (this._isPowerOfTwo) {
+          gl.generateMipmap(this._target);
+          this._hasMipMaps = true;
+        }
+
+        gl.bindTexture(this._target, null);
+        this._width = data.width;
+        this._height = data.height;
         break;
 
       /**
@@ -34944,13 +34873,13 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
         var info = Tw2TextureRes.GetDDSInfo(data);
         var {
           name,
+          fourCC,
           isRGB,
           isCube,
           blockBytes,
           dataOffset,
           faces,
           isCompressed,
-          compressedFormat,
           clientSupport,
           width,
           height,
@@ -34958,62 +34887,68 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
         } = info;
 
         if (!clientSupport) {
-          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
-            title: "Tw2TextureRes",
-            message: "Texture format ".concat(name, " unsupported: ").concat(this.path),
-            data: info
-          });
           throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatUnsupported"]({
             format: "DDS",
             reason: name,
-            info
-          });
-        }
-
-        if (!isCompressed && !isRGB) {
-          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
-            title: "Tw2TextureRes",
-            message: "Texture format ".concat(name, " not implemented: ").concat(this.path),
             data: info
           });
+        } // Don't support anything else yet
+
+
+        if (!isCompressed && !isRGB) {
           throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormatNotImplemented"]({
             format: "DDS",
             reason: name,
-            info
+            data: info
           });
         } // Temporarily output uncompressed rgb/rgba dds info
 
 
-        if (isRGB) {
+        if (isRGB || fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI1"] || fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI2"]) {
           global__WEBPACK_IMPORTED_MODULE_2__["logger"].Warn({
-            title: "Tw2TextureRes",
-            message: "Texture format ".concat(name, " loading: ").concat(this.path),
+            title: "Tw2TextureRes2",
+            message: "Partial support for ".concat(name, ": ").concat(this.path),
             data: info
           });
         }
 
+        if (global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 && !info.isPowerOfTwo) {
+          mipmaps = 1;
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Warn({
+            title: "Tw2TextureRes2",
+            message: "Texture not power of 2: ".concat(this.path),
+            data: info
+          });
+        }
+
+        this._type = info.type;
+        this._format = info.format;
+        this._internalFormat = info.internalFormat;
+        this._target = info.target;
         this._mipCount = mipmaps;
-        this.hasMipMaps = mipmaps > 1;
-        this.isCube = isCube;
-        this.width = width;
-        this.height = height;
+        this._hasMipMaps = this._mipCount > 1;
+        this._isCube = isCube;
+        this._isPowerOfTwo = info.isPowerOfTwo;
+        this._width = width;
+        this._height = height;
+        this._useNoMipFilter = true;
         this.texture = gl.createTexture();
-        var target = isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
-        gl.bindTexture(target, this.texture);
+        gl.bindTexture(this._target, this.texture);
 
         for (var face = 0; face < faces; face++) {
           var w = width,
               h = height,
               o = dataOffset,
-              t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : target,
+              t = isCube ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + face : this._target,
               dataLength = void 0,
               byteArray = void 0;
 
-          for (var mip = 0; mip < mipmaps; mip++) {
+          for (var mip = 0; mip < this._mipCount; mip++) {
             if (isCompressed) {
               dataLength = Math.max(4, w) / 4 * Math.max(4, h) / 4 * blockBytes;
               byteArray = new Uint8Array(data, o, dataLength);
-              gl.compressedTexImage2D(t, mip, compressedFormat, w, h, 0, byteArray);
+              gl.compressedTexImage2D(t, mip, this._internalFormat, w, h, 0, byteArray);
+              o += dataLength;
             } else //if (isRGB)
               {
                 var {
@@ -35021,13 +34956,12 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
                   bOffset,
                   gOffset,
                   aOffset,
-                  format: _format,
-                  type,
-                  internalFormat
-                } = info;
+                  bpp
+                } = info; //  Why?
+
                 gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 
-                if (_format === gl.RGB) {
+                if (format === gl.RGB) {
                   dataLength = w * h * 3;
                   byteArray = Tw2TextureRes.GetRGBArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset);
                 } else {
@@ -35035,19 +34969,18 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
                   byteArray = Tw2TextureRes.GetRGBAArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer, rOffset, gOffset, bOffset, aOffset);
                 }
 
-                gl.texImage2D(t, mip, internalFormat, w, h, 0, _format, type, byteArray);
+                gl.texImage2D(t, mip, this._internalFormat, w, h, 0, this._format, this._type, byteArray);
+                o += w * h * (bpp / 8);
               }
 
-            o += info._bpp ? w * h * (info._bpp / 8) : dataLength;
             w = Math.max(w >> 1, 1);
             h = Math.max(h >> 1, 1);
           }
-        }
+        } //gl.texParameteri(this._target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        //gl.texParameteri(this._target, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-        gl.texParameteri(target, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(target, gl.TEXTURE_MIN_FILTER, this.hasMipMaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-        gl.bindTexture(target, null);
-        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+
+        gl.bindTexture(this._target, null);
         break;
 
       default:
@@ -35061,6 +34994,62 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     this.OnPrepared();
   }
   /**
+   *
+   * @param sampler
+   * @param slices
+   * @constructor
+   */
+
+
+  Bind(sampler, slices) {
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
+        gl = d.gl;
+    this.KeepAlive(); // Try to guess
+
+    if (this._target === null) {
+      this._target = sampler.samplerType;
+      this._isCube = sampler.samplerType === gl.TEXTURE_CUBE_MAP;
+    } else if (sampler.samplerType !== this._target) {
+      this._sampler = null;
+      return;
+    }
+
+    this._sampler = sampler;
+
+    if (!this.texture) {
+      var texture = this._target === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
+      gl.bindTexture(this._target, texture);
+      return;
+    }
+
+    if (sampler.isVolume) {
+      gl.uniform1f(slices, this._height / this._width);
+    }
+
+    gl.bindTexture(this._target, this.texture);
+
+    if (sampler.hash === null || sampler.hash !== this._currentSampler) {
+      sampler.Apply(d, this._hasMipMaps, this._useNoMipFilter);
+      this._currentSampler = sampler.hash;
+    }
+  }
+  /**
+   * Clears meta info
+   */
+
+
+  _ClearMeta() {
+    this._extension = null;
+    this._isAttached = false;
+    this._isCube = null;
+    this._target = null;
+    this._type = null;
+    this._internalFormat = null;
+    this._mipCount = null;
+    this._hasMipMaps = null;
+    this._useNoMipFilter = null;
+  }
+  /**
    * An optional method resources can have that allows them to take over loading their resources
    * @param {String} path - texture resource path
    * @param {String} extension - the texture extension
@@ -35072,13 +35061,13 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     switch (extension) {
       case "cube":
         this._extension = extension;
-        this.isCube = true;
+        this._isCube = true;
         path = path.substr(0, path.length - 5) + ".png";
         break;
 
       case "png":
         this._extension = extension;
-        this.isCube = false;
+        this._isCube = false;
         break;
 
       case "dds":
@@ -35138,8 +35127,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
       this.texture = null;
     }
 
-    this._extension = null;
-    this._isAttached = false;
+    this._ClearMeta();
+
     this.OnUnloaded(log);
     return true;
   }
@@ -35152,7 +35141,9 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
   Attach(texture) {
     this.path = "";
     this.texture = texture;
-    this._extension = null;
+
+    this._ClearMeta();
+
     this._isAttached = true;
     this.OnLoaded({
       hide: true,
@@ -35175,45 +35166,20 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     }
   }
   /**
-   * Bind
-   * @param sampler
-   * @param slices
-   */
-
-
-  Bind(sampler, slices) {
-    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
-        gl = d.gl;
-    this.KeepAlive();
-    var targetType = sampler.samplerType;
-    if (targetType !== (this.isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D)) return;
-
-    if (!this.texture) {
-      var texture = targetType === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
-      gl.bindTexture(targetType, texture);
-      return;
-    }
-
-    if (sampler.isVolume) {
-      gl.uniform1f(slices, this.height / this.width);
-    }
-
-    gl.bindTexture(targetType, this.texture);
-
-    if (sampler.hash !== this._currentSampler) {
-      sampler.Apply(d, this.hasMipMaps);
-      this._currentSampler = sampler.hash;
-    }
-  }
-  /**
    * Finds out if a number is to the power of 2
-   * @param {Number} a
+   * @param args
    * @returns {Boolean}
    */
 
 
-  static IsPowerOfTwo(a) {
-    return (a & a - 1) === 0;
+  static IsPowerOfTwo(...args) {
+    for (var i = 0; i < args.length; i++) {
+      if ((args[i] & args[i] - 1) !== 0) {
+        return false;
+      }
+    }
+
+    return true;
   }
   /**
    * Adds mip levels to a path
@@ -35309,71 +35275,72 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
         dxgi = isFourCC && fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT10"] ? headerExt[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_DXGI_FORMAT"]] : 0,
         isCube = (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP"],
         s3tc = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
-        rgtc1 = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("EXT_texture_compression_rgtc");
+        rgtc1 = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("EXT_texture_compression_rgtc"),
+        width = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_WIDTH"]],
+        height = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_HEIGHT"]],
+        bpp = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_RGB_BPP"]],
+        hasMips = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_MIPMAPCOUNT"];
     var info = {
       fourCC,
+      width,
+      height,
       isFourCC,
-      isLuminance: (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"],
       isCube,
+      name: Tw2TextureRes.Int32ToFourCC(fourCC),
+      isPowerOfTwo: Tw2TextureRes.IsPowerOfTwo(width, height),
+      isLuminance: (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"],
       isRGB: (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_RGB"]) === constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_RGB"],
       isVolume: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_VOLUME"] === constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_VOLUME"],
-      mipmaps: 1,
-      width: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_WIDTH"]],
-      height: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_HEIGHT"]],
       dataOffset: header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_SIZE"]] + 4,
-      //blockBytes: 1,
-      //format: gl.RGBA,
-      //type: gl.UNSIGNED_INT,
-      //target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+      mipmaps: hasMips ? Math.max(1, header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]]) : 1,
+      format: null,
+      type: null,
+      internalFormat: null,
+      target: isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+      // TODO: Check for 3d textures or 2d texture array
       faces: isCube ? 6 : 1,
       isCompressed: false,
-      clientSupport: false,
-      name: Tw2TextureRes.Int32ToFourCC(fourCC)
+      clientSupport: false
     };
-    var bpp = header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_RGB_BPP"]];
-
-    if (header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_MIPMAPCOUNT"]) {
-      info.mipmaps = Math.max(1, header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]]);
-    }
 
     switch (info.fourCC) {
       case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT1"]:
         // BC1
         info.blockBytes = 8;
-        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
-        info.clientSupport = !!info.compressedFormat;
+        info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
+        info.clientSupport = !!info.internalFormat;
         info.isCompressed = true;
         break;
 
       case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT3"]:
         // BC2
         info.blockBytes = 16;
-        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
-        info.clientSupport = !!info.compressedFormat;
+        info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
+        info.clientSupport = !!info.internalFormat;
         info.isCompressed = true;
         break;
 
       case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT5"]:
         // BC3
         info.blockBytes = 16;
-        info.compressedFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
-        info.clientSupport = !!info.compressedFormat;
+        info.internalFormat = s3tc ? s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT : null;
+        info.clientSupport = !!info.internalFormat;
         info.isCompressed = true;
         break;
 
       case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI1"]:
         // BC4
         info.blockBytes = 8;
-        info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
-        info.clientSupport = !!info.compressedFormat;
+        info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
+        info.clientSupport = !!info.internalFormat;
         info.isCompressed = true;
         break;
 
       case constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI2"]:
         // BC5
         info.blockBytes = 16;
-        info.compressedFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
-        info.clientSupport = !!info.compressedFormat;
+        info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
+        info.clientSupport = !!info.internalFormat;
         info.isCompressed = true;
         break;
 
@@ -35422,7 +35389,33 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
         break;
 
       default:
-        if (info.isRGB || info.isLuminance) {
+        if (info.isRGB) {
+          info.bpp = bpp;
+          info.type = gl.UNSIGNED_BYTE;
+          info.clientSupport = true;
+          info.rOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_R_MASK"]]);
+          info.gOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_G_MASK"]]);
+          info.bOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_B_MASK"]]);
+
+          if (bpp === 24) {
+            info.name = "RGB";
+            info.format = gl.RGB;
+            info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGB : gl.RGB8; // RGB565, SRGB8
+          } else {
+            info.name = "RGBA";
+            info.format = gl.RGBA;
+            info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
+
+            info.aOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_A_MASK"]]);
+          }
+
+          break;
+        }
+
+        if (info.isLuminance) {
+          info.name = "Luminance"; //info.type = gl.UNSIGNED_INT;
+          //info.format = gl.LUMINANCE;
+
           info.clientSupport = true;
           break;
         }
@@ -35434,40 +35427,14 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
           reason: "FOURCC ".concat(code),
           info
         });
-    } // TODO: Check if valid cube map??
+    } // TODO: Handle fourCC which aren't compressed
 
 
-    if (info.isFourCC && !info.isCompressed) {
-      info._bpp = bpp; //128 or 64 withinfo half float
+    if (info.isFourCC && !info.isCompressed) {// 128 or 64 without half float
       // info.type = gl.FLOAT;
       // 64 with half float
       // info.type = gl.HALF_FLOAT;
-    } else if (info.isRGB) {
-      info._bpp = bpp;
-      info.type = gl.UNSIGNED_BYTE;
-      info.rOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_R_MASK"]]);
-      info.gOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_G_MASK"]]);
-      info.bOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_B_MASK"]]);
-
-      if (bpp === 24) {
-        info.name = "RGB";
-        info.format = gl.RGB;
-        info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGB : gl.RGB8; // RGB565, SRGB8
-      } else {
-        info.name = "RGBA";
-        info.format = gl.RGBA;
-        info.internalFormat = global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
-
-        info.aOffset = math__WEBPACK_IMPORTED_MODULE_1__["num"].getLongWordOrder(header[constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_A_MASK"]]);
-      }
-    } else if (info.isLuminance) {
-      info.name = "Luminance"; //info.type = gl.UNSIGNED_INT;
-
-      info.format = gl.LUMINANCE;
-      info.format = gl.LUMINANCE;
-    } // Compressed
-    else {//info.type = gl.UNSIGNED_INT;
-      }
+    }
 
     return info;
   }
@@ -35536,6 +35503,445 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     }
 
     return byteArray;
+  }
+
+}, _temp)) || _class);
+
+/***/ }),
+
+/***/ "./core/resource/Tw2TextureResOld.js":
+/*!*******************************************!*\
+  !*** ./core/resource/Tw2TextureResOld.js ***!
+  \*******************************************/
+/*! exports provided: Tw2TextureResOld */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureResOld", function() { return Tw2TextureResOld; });
+/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
+/* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
+var _dec, _class, _temp;
+
+
+
+
+
+
+var Tw2TextureResOld = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureResOld extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
+  constructor(...args) {
+    super(...args);
+    this.texture = null;
+    this.isCube = false;
+    this.width = 0;
+    this.height = 0;
+    this.hasMipMaps = false;
+    this._currentSampler = 0;
+    this._isAttached = false;
+    this._extension = "";
+    this._disableMipFilterMode = false;
+    this._forceMipMaps = false;
+  }
+
+  /**
+   * Prepares the resource
+   * @param {*|Image|arrayBuffer} data
+   */
+  Prepare(data) {
+    var gl = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl;
+    var format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
+
+    switch (this._extension) {
+      case "cube":
+        this.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
+        var canvas = document.createElement("canvas");
+        canvas.width = canvas.height = data.height;
+        var ctx = canvas.getContext("2d");
+
+        for (var j = 0; j < 6; ++j) {
+          ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+          gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, format, format, gl.UNSIGNED_BYTE, canvas);
+        }
+
+        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+        this.width = canvas.width;
+        this.height = canvas.height;
+        this.hasMipMaps = true;
+        break;
+
+      case "png":
+        this.texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, format, format, gl.UNSIGNED_BYTE, data);
+        this.hasMipMaps = Tw2TextureResOld.IsPowerOfTwo(data.width) && Tw2TextureResOld.IsPowerOfTwo(data.height);
+        if (this.hasMipMaps) gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        this.width = data.width;
+        this.height = data.height;
+        break;
+
+      /*
+        DDS methods based off work by Brandon Jones and Babylon
+      -----------------------------------------------------------------------
+      Copyright (c) 2012 Brandon Jones
+        This software is provided 'as-is', without any express or implied
+      warranty. In no event will the authors be held liable for any damages
+      arising from the use of this software.
+        Permission is granted to anyone to use this software for any purpose,
+      including commercial applications, and to alter it and redistribute it
+      freely, subject to the following restrictions:
+        1. The origin of this software must not be misrepresented; you must not
+      claim that you wrote the original software. If you use this software
+      in a product, an acknowledgment in the product documentation would be
+      appreciated but is not required.
+        2. Altered source versions must be plainly marked as such, and must not
+      be misrepresented as being the original software.
+        3. This notice may not be removed or altered from any source
+      distribution.
+        */
+
+      case "dds":
+        // Ensure we have data to work with
+        if (!data.byteLength) {
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+            format: "DDS",
+            reason: "file is empty"
+          });
+        }
+
+        var ext = global__WEBPACK_IMPORTED_MODULE_1__["device"].GetExtension("compressed_texture_s3tc"),
+            header = new Int32Array(data, 0, constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_LENGTH_INT"]),
+            isFourCC = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+            isMagic = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_MAGIC"]] === constant__WEBPACK_IMPORTED_MODULE_4__["DDS_MAGIC"],
+            isCube = (header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_CAPS2"]] & constant__WEBPACK_IMPORTED_MODULE_4__["DDSCAPS2_CUBEMAP"]) === constant__WEBPACK_IMPORTED_MODULE_4__["DDSCAPS2_CUBEMAP"],
+            fourCC = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+            mipmaps = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_FLAGS"]] & constant__WEBPACK_IMPORTED_MODULE_4__["DDSD_MIPMAPCOUNT"] ? Math.max(1, header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]]) : 1; // Check compatibility
+
+        if (!ext) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]({
+          format: "DDS",
+          reason: "device not supported"
+        });
+        if (!isMagic) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+          format: "DDS",
+          reason: "missing magic number"
+        });
+        if (!isFourCC) throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+          format: "DDS",
+          reason: "missing FourCC code"
+        });
+        var width = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_WIDTH"]],
+            height = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_HEIGHT"]],
+            dataOffset = header[constant__WEBPACK_IMPORTED_MODULE_4__["DDS_HEADER_OFFSET_SIZE"]] + 4,
+            blockBytes,
+            internalFormat;
+
+        switch (fourCC) {
+          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT1"]:
+            blockBytes = 8;
+            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT1_EXT;
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT3"]:
+            blockBytes = 16;
+            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT3_EXT;
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_4__["FOURCC_DXT5"]:
+            blockBytes = 16;
+            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+            break;
+
+          default:
+            var code = Tw2TextureResOld.Int32ToFourCC(fourCC);
+            throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+              format: "DDS",
+              reason: "Invalid type ".concat(code)
+            });
+        }
+
+        this._disableMipFilterMode = true;
+        this._mipMapCount = mipmaps;
+        this.hasMipMaps = mipmaps > 1;
+        this.isCube = isCube;
+        this.width = width;
+        this.height = height;
+
+        if (this.isCube) {
+          // TODO: Add dds cube map support
+          throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatUnsupported"]({
+            format: "DDS cube maps"
+          });
+        } else {
+          this.texture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+          for (var i = 0; i < mipmaps; ++i) {
+            var dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+            var byteArray = new Uint8Array(data, dataOffset, dataLength);
+            gl.compressedTexImage2D(gl.TEXTURE_2D, i, internalFormat, width, height, 0, byteArray);
+            dataOffset += dataLength;
+            width *= 0.5;
+            height *= 0.5;
+            width = Math.max(1, width);
+            height = Math.max(1, height);
+          }
+
+          gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+
+        break;
+
+      default:
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceFormatInvalid"]({
+          format: this._extension,
+          reason: "Unexpected extension"
+        });
+    }
+
+    this._isAttached = false;
+    this.OnPrepared();
+  }
+  /**
+   * Disables mip filter mode for testing
+   * @param {Boolean} bool
+   */
+
+
+  DisableMipFilterMode(bool) {
+    this._disableMipFilterMode = bool;
+    this._currentSampler = null;
+    this._sampler = null;
+  }
+
+  ForceMipMaps(bool) {
+    this._forceMipMaps = bool;
+    this._currentSampler = null;
+    this._sampler = null;
+  }
+  /**
+   * Bind
+   * @param sampler
+   * @param slices
+   */
+
+
+  Bind(sampler, slices) {
+    var d = global__WEBPACK_IMPORTED_MODULE_1__["device"],
+        gl = d.gl;
+    this.KeepAlive();
+    var targetType = sampler.samplerType;
+
+    if (targetType !== (this.isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D)) {
+      this._sampler = null;
+      return;
+    }
+
+    if (!this.texture) {
+      var texture = targetType === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
+      gl.bindTexture(targetType, texture);
+      return;
+    }
+
+    if (sampler.isVolume) {
+      gl.uniform1f(slices, this.height / this.width);
+    }
+
+    gl.bindTexture(targetType, this.texture);
+
+    if (sampler.hash !== this._currentSampler) {
+      this._sampler = sampler;
+      sampler.Apply(d, this.hasMipMaps || this.forceMipMaps, this._disableMipFilterMode);
+      this._currentSampler = sampler.hash;
+    }
+  }
+  /**
+   * An optional method resources can have that allows them to take over loading their resources
+   * @param {String} path - texture resource path
+   * @param {String} extension - the texture extension
+   * @returns {Boolean} returns true to tell the resMan not to handle http requests
+   */
+
+
+  DoCustomLoad(path, extension) {
+    switch (extension) {
+      case "cube":
+        this._extension = extension;
+        this.isCube = true;
+        path = path.substr(0, path.length - 5) + ".png";
+        break;
+
+      case "png":
+        this._extension = extension;
+        this.isCube = false;
+        break;
+
+      case "dds":
+        this._extension = extension;
+        global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Fetch(Tw2TextureResOld.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
+          this.OnLoaded();
+          global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Queue(this, response);
+        }).catch(err => {
+          this.OnError(err);
+        });
+        return true;
+
+      default:
+        throw new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
+          path,
+          extension
+        });
+    }
+
+    global__WEBPACK_IMPORTED_MODULE_1__["resMan"].AddPendingLoad(path);
+    var image = new Image();
+    image.crossOrigin = "anonymous";
+    /**
+     * Fires on errors
+     */
+
+    image.onerror = () => {
+      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].RemovePendingLoad(path);
+      this.OnError(new _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPRequest"]({
+        path
+      }));
+    };
+    /**
+     * Fires when loaded
+     */
+
+
+    image.onload = () => {
+      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_1__["resMan"].Queue(this, image);
+      this.OnLoaded();
+    };
+
+    image.src = Tw2TextureResOld.AddMipLevelSkipCount(path);
+    return true;
+  }
+  /**
+   * Unloads the texture from memory
+   * @param {*} [log]
+   * @returns {Boolean}
+   */
+
+
+  Unload(log) {
+    if (this.texture) {
+      global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.deleteTexture(this.texture);
+      this.texture = null;
+    }
+
+    this._extension = null;
+    this._isAttached = false;
+    this.OnUnloaded(log);
+    return true;
+  }
+  /**
+   * Attaches a texture
+   * @param {WebGLTexture} texture
+   */
+
+
+  Attach(texture) {
+    this.path = "";
+    this.texture = texture;
+    this._extension = null;
+    this._isAttached = true;
+    this.OnLoaded({
+      hide: true,
+      path: "attachment"
+    });
+    this.OnPrepared({
+      hide: true,
+      path: "attachment"
+    });
+  }
+  /**
+   * Reloads the texture
+   * @param {eventLog} [eventLog]
+   */
+
+
+  Reload(eventLog) {
+    if (!this._isAttached) {
+      return super.Reload(eventLog);
+    }
+  }
+  /**
+   * Finds out if a number is to the power of 2
+   * @param {Number} a
+   * @returns {Boolean}
+   */
+
+
+  static IsPowerOfTwo(a) {
+    return (a & a - 1) === 0;
+  }
+  /**
+   * Adds mip levels to a path
+   * @param {String} path
+   * @returns {String}}
+   */
+
+
+  static AddMipLevelSkipCount(path) {
+    var d = global__WEBPACK_IMPORTED_MODULE_1__["device"];
+
+    if (d.mipLevelSkipCount > 0) {
+      var index = path.lastIndexOf(".");
+
+      if (index >= 0) {
+        path = path.substr(0, index - 2) + "." + d.mipLevelSkipCount.toString() + path.substr(index);
+      }
+    }
+
+    return path;
+  }
+  /**
+   * Converts an int32 into FourCC format
+   * @param {Number} value
+   * @returns {String}
+   */
+
+
+  static Int32ToFourCC(value) {
+    return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
+  }
+  /**
+   * Creates an image from a 2d texture
+   * @param texture
+   * @param width
+   * @param height
+   * @param format
+   * @returns {HTMLImageElement}
+   * @constructor
+   */
+
+
+  static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl.RGBA) {
+    var gl = global__WEBPACK_IMPORTED_MODULE_1__["device"].gl;
+    var fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+    var data = new Uint8Array(width * height * 4);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.deleteFramebuffer(fb);
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    var context = canvas.getContext("2d");
+    var imageData = context.createImageData(width, height);
+    imageData.data.set(data);
+    context.putImageData(imageData, 0, 0);
+    var img = new Image();
+    img.src = canvas.toDataURL();
+    return img;
   }
 
 }, _temp)) || _class);
@@ -35798,7 +36204,7 @@ var Tw2VideoRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vi
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, Tw2GeometryRes, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, Tw2LoadingObject, Tw2Resource, Tw2Shader, ErrShaderCompile, ErrShaderLink, Tw2TextureResOld, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -35840,11 +36246,15 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrShaderLink", function() { return _Tw2Shader__WEBPACK_IMPORTED_MODULE_4__["ErrShaderLink"]; });
 
-/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureRes"]; });
+/* harmony import */ var _Tw2TextureResOld__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TextureResOld */ "./core/resource/Tw2TextureResOld.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureResOld", function() { return _Tw2TextureResOld__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureResOld"]; });
 
-/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__["Tw2VideoRes"]; });
+/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__["Tw2TextureRes"]; });
+
+/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__["Tw2VideoRes"]; });
+
 
 
 
@@ -35879,7 +36289,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return Tw2SamplerOverride; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2SamplerState */ "./core/sampler/Tw2SamplerState.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -35889,42 +36299,31 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var WrapModesByName = {
-  NONE: 0,
-  REPEAT: 1,
-  MIRRORED_REPEAT: 2,
-  CLAMP_TO_EDGE: 3
-};
-var FilterModesByName = {
-  NEAREST: 0,
-  LINEAR: 1
-};
-var MipFilterModesByName = {
-  NONE: 0,
-  MIPMAP_NEAREST: 1,
-  MIPMAP_LINEAR: 2
-};
-var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerOverride"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(FilterModesByName, 2), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(MipFilterModesByName, 2), _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerOverride {
-  constructor() {
+var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerOverride"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class Tw2SamplerOverride extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  constructor(...args) {
+    super(...args);
+
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "addressU", _descriptor2, this);
+    _initializerDefineProperty(this, "enabled", _descriptor2, this);
 
-    _initializerDefineProperty(this, "addressV", _descriptor3, this);
+    _initializerDefineProperty(this, "addressUMode", _descriptor3, this);
 
-    _initializerDefineProperty(this, "addressW", _descriptor4, this);
+    _initializerDefineProperty(this, "addressVMode", _descriptor4, this);
 
-    _initializerDefineProperty(this, "filter", _descriptor5, this);
+    _initializerDefineProperty(this, "addressWMode", _descriptor5, this);
 
-    _initializerDefineProperty(this, "mipFilter", _descriptor6, this);
+    _initializerDefineProperty(this, "filterMode", _descriptor6, this);
 
-    _initializerDefineProperty(this, "lodBias", _descriptor7, this);
+    _initializerDefineProperty(this, "mipFilterMode", _descriptor7, this);
 
-    _initializerDefineProperty(this, "maxMipLevel", _descriptor8, this);
+    _initializerDefineProperty(this, "magFilterMode", _descriptor8, this);
 
-    _initializerDefineProperty(this, "maxAnisotropy", _descriptor9, this);
+    _initializerDefineProperty(this, "lodBias", _descriptor9, this);
 
-    _initializerDefineProperty(this, "forceMipMaps", _descriptor10, this);
+    _initializerDefineProperty(this, "maxMipLevel", _descriptor10, this);
+
+    _initializerDefineProperty(this, "maxAnisotropy", _descriptor11, this);
 
     this._sampler = null;
     this._isDirty = true;
@@ -35932,82 +36331,43 @@ var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type
 
   /**
    * Fires on value changes
-   * TODO: Development only
    */
   UpdateValues() {
     this._isDirty = true;
   }
   /**
    * Gets the sampler
-   * @param {Tw2Device} device
-   * @param {Tw2SamplerState} originalSampler
+   * @param {Tw2SamplerState} o
    * @returns {Tw2SamplerState}
    */
 
 
-  GetSampler(device, originalSampler) {
-    if (this._isDirty) {
-      // Development only
-      this._isDirty = false;
-    } else if (this._sampler) {
+  GetSampler(o) {
+    if (!this.enabled) {
+      return o;
+    }
+
+    if (this._sampler && !this._isDirty) {
       return this._sampler;
     }
 
-    this._sampler = new _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerState"]();
-    var sampler = this._sampler;
-    sampler.registerIndex = originalSampler.registerIndex;
-    sampler.name = originalSampler.name;
-    sampler.forceMipMaps = this.forceMipMaps;
-    var {
-      wrapModes,
-      gl
-    } = device;
-
-    if (this.filter === 1) {
-      switch (this.mipFilter) {
-        case 0:
-          sampler.minFilter = gl.NEAREST;
-          break;
-
-        case 1:
-          sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-          break;
-
-        default:
-          sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-      }
-
-      sampler.minFilterNoMips = gl.NEAREST;
-      sampler.magFilter = gl.NEAREST;
-    } else {
-      switch (this.mipFilter) {
-        case 0:
-          sampler.minFilter = gl.LINEAR;
-          break;
-
-        case 1:
-          sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-          break;
-
-        default:
-          sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-      }
-
-      sampler.minFilterNoMips = gl.LINEAR;
-      sampler.magFilter = gl.LINEAR;
-    }
-
-    if (this.filter === 3 || this.mipFilter === 3) {
-      sampler.anisotropy = Math.max(this.maxAnisotropy, 1);
-    }
-
-    sampler.addressU = wrapModes[this.addressU];
-    sampler.addressV = wrapModes[this.addressV];
-    sampler.addressW = wrapModes[this.addressW];
-    sampler.samplerType = originalSampler.samplerType;
-    sampler.isVolume = originalSampler.isVolume;
-    sampler.ComputeHash();
-    return sampler;
+    var s = this._sampler = this._sampler || new _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerState"]();
+    s.name = o.name;
+    s.samplerType = o.samplerType;
+    s.isVolume = o.isVolume;
+    s.registerIndex = o.registerIndex;
+    var overrides = {
+      filterMode: this.filterMode !== -1 ? this.filterMode : o.filterMode,
+      mipFilterMode: this.mipFilterMode !== -1 ? this.mipFilterMode : o.mipFilterMode,
+      magFilterMode: this.magFilterMode !== -1 ? this.magFilterMode : o.magFilterMode,
+      addressUMode: this.addressUMode !== -1 ? this.addressUMode : o.addressUMode,
+      addressVMode: this.addressVMode !== -1 ? this.addressVMode : o.addressVMode,
+      addressWMode: this.addressWMode !== -1 ? this.addressWMode : o.addressWMode,
+      maxAnisotropy: this.maxAnisotropy !== -1 ? this.maxAnisotropy : o.maxAnisotropy
+    };
+    s.ResolveModes(overrides);
+    this._isDirty = false;
+    return s;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -36017,68 +36377,75 @@ var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "addressU", [_dec3], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "enabled", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return true;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "addressV", [_dec4], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "addressUMode", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "addressW", [_dec5], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "addressVMode", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "filter", [_dec6], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "addressWMode", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "mipFilter", [_dec7], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "filterMode", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "lodBias", [_dec8, _dec9], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "mipFilterMode", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "maxMipLevel", [_dec10], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "magFilterMode", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "maxAnisotropy", [_dec11], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "lodBias", [_dec10, _dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return -1;
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "forceMipMaps", [_dec12], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "maxMipLevel", [_dec12, _dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return false;
+    return -1;
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "maxAnisotropy", [_dec14], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
   }
 })), _class2)) || _class);
 
@@ -36096,7 +36463,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerState", function() { return Tw2SamplerState; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -36105,9 +36472,27 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
+ // Texture Wrap modes
 
-var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerState"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerState {
-  constructor() {
+var WrapModes = [0, constant__WEBPACK_IMPORTED_MODULE_1__["GL_REPEAT"], constant__WEBPACK_IMPORTED_MODULE_1__["GL_MIRRORED_REPEAT"], constant__WEBPACK_IMPORTED_MODULE_1__["GL_CLAMP_TO_EDGE"], constant__WEBPACK_IMPORTED_MODULE_1__["GL_CLAMP_TO_EDGE"], constant__WEBPACK_IMPORTED_MODULE_1__["GL_CLAMP_TO_EDGE"]]; // Mip filter mode conversions
+
+var MipFilterToModeTable = {
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"]]: 0,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"]]: 0,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_NEAREST"]]: 1,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_NEAREST"]]: 1,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_LINEAR"]]: 2,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_LINEAR"]]: 2
+}; // Filter mode conversions
+
+var FilterToModeTable = {
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"]]: 1,
+  [constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"]]: 2
+};
+var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerState"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = _class3 = class Tw2SamplerState extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  constructor(...args) {
+    super(...args);
+
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "registerIndex", _descriptor2, this);
@@ -36134,7 +36519,7 @@ var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
 
     _initializerDefineProperty(this, "hash", _descriptor13, this);
 
-    _initializerDefineProperty(this, "forceMipMaps", _descriptor14, this);
+    _initializerDefineProperty(this, "maxAnisotropy", _descriptor14, this);
 
     this._borderColor = null;
     this._comparison = null;
@@ -36145,20 +36530,169 @@ var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
   }
 
   /**
-   * Gets the current filter mode
-   * @returns {Number}
+   * TEMP: Gets the address U mode
+   * @return {number}
    */
-  get filterMode() {
-    return this.minFilterNoMips in constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"] ? constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"][this.minFilterNoMips] : 2;
+  get addressUMode() {
+    return WrapModes.indexOf(this.addressU);
   }
   /**
-   * Gets the current mip filter mode
+   * TEMP: Sets the address U by mode
+   * @param {Number} mode
+   */
+
+
+  set addressUMode(mode) {
+    if (this.addressUMode !== mode) {
+      this.addressU = WrapModes[mode];
+      this._dirty = null;
+    }
+  }
+  /**
+   * TEMP: Gets the address V mode
+   * @return {number}
+   */
+
+
+  get addressVMode() {
+    return WrapModes.indexOf(this.addressV);
+  }
+  /**
+   * TEMP: Sets the address V by mode
+   * @param {Number} mode
+   */
+
+
+  set addressVMode(mode) {
+    if (this.addressVMode !== mode) {
+      this.addressV = WrapModes[mode];
+      this._dirty = null;
+    }
+  }
+  /**
+   * TEMP: Gets the address W mode
+   * @return {number}
+   */
+
+
+  get addressWMode() {
+    return WrapModes.indexOf(this.addressW);
+  }
+  /**
+   * TEMP: Sets the address W by mode
+   * @param {Number} mode
+   */
+
+
+  set addressWMode(mode) {
+    if (this.addressUMode !== mode) {
+      this.addressW = WrapModes[mode];
+      this._dirty = null;
+    }
+  }
+  /**
+   * TEMP: Gets the current filter mode
+   * @returns {Number}
+   */
+
+
+  get filterMode() {
+    return this.minFilterNoMips in FilterToModeTable ? FilterToModeTable[this.minFilterNoMips] : 2;
+  }
+  /**
+   * TEMP: Sets the filter by mode
+   * @param filterMode
+   */
+
+
+  set filterMode(filterMode) {
+    this.UpdateFilterModes(filterMode, this.mipFilterMode, this.magFilterMode);
+  }
+  /**
+   * TEMP: Sets the mag filter by mode
+   * @return {number}
+   */
+
+
+  get magFilterMode() {
+    return this.magFilter in FilterToModeTable ? FilterToModeTable[this.magFilter] : 2;
+  }
+  /**
+   * TEMP: Gets the current mip filter mode
    * @returns {Number}
    */
 
 
   get mipFilterMode() {
-    return this.minFilter in constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"] ? constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"][this.minFilter] : 2;
+    return this.minFilter in MipFilterToModeTable ? MipFilterToModeTable[this.minFilter] : 2;
+  }
+  /**
+   * TEMP: Sets the mip filter by mode
+   * @param {Number} mipFilterMode
+   */
+
+
+  set mipFilterMode(mipFilterMode) {
+    this.UpdateFilterModes(this.filterMode, mipFilterMode, this.magFilterMode);
+  }
+  /**
+   * Updates filters by modes
+   * @param {Number} [filterMode]
+   * @param {Number} [mipFilterMode]
+   * @param {Number} [magFilterMode]
+   */
+
+
+  UpdateFilterModes(filterMode = this.filterMode, mipFilterMode = this.mipFilterMode, magFilterMode = this.magFilterMode) {
+    if (filterMode === this.filterMode && mipFilterMode === this.filterMode && magFilterMode === this.magFilterMode) {
+      return;
+    }
+
+    switch (filterMode) {
+      case constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"].NEAREST:
+        switch (mipFilterMode) {
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].NONE:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"];
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].NEAREST:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_NEAREST"];
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].LINEAR:
+          default:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_LINEAR"];
+        }
+
+        this.minFilterNoMips = constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"];
+        this.magFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"];
+        break;
+
+      case constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"].LINEAR:
+      default:
+        switch (mipFilterMode) {
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].NONE:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"];
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].NEAREST:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_NEAREST"];
+            break;
+
+          case constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"].LINEAR:
+          default:
+            this.minFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_LINEAR"];
+        }
+
+        this.minFilterNoMips = constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"];
+        this.magFilter = constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"];
+    }
+
+    if (mipFilterMode === 3 || magFilterMode === 3 || filterMode === 3) {
+      this.anisotropy = Math.max(this.maxAnisotropy, 1);
+    }
+
+    this.hash = null;
   }
   /**
    * Computes the sampler hash
@@ -36170,43 +36704,87 @@ var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
     this.hash *= 16777619;
     this.hash ^= this.minFilter;
     this.hash *= 16777619;
+    this.hash ^= this.minFilterNoMips;
+    this.hash *= 16777619;
     this.hash ^= this.maxFilter;
     this.hash *= 16777619;
     this.hash ^= this.addressU;
     this.hash *= 16777619;
     this.hash ^= this.addressV;
     this.hash *= 16777619;
+    this.hash ^= this.addressW;
+    this.hash *= 16777619;
     this.hash ^= this.anisotropy;
-    this.hash += this.forceMipMaps ? 1 : 0;
   }
   /**
    * Apply
    * @param {Tw2Device} device
    * @param {Boolean} hasMipMaps
+   * @param {Boolean} [useNoMipFilter] Testing DDS files...
    */
 
 
-  Apply(device, hasMipMaps) {
+  Apply(device, hasMipMaps, useNoMipFilter) {
     var targetType = this.samplerType,
         gl = device.gl,
         ext = device.GetExtension("EXT_texture_filter_anisotropic"),
-        useAddress = hasMipMaps || this.forceMipMaps;
-    gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
-    gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
+        minFilter = useNoMipFilter ? this.minFilterNoMips : this.minFilter;
+    gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
+    gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
 
     if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY) {
-      gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, useAddress ? this.addressW : gl.CLAMP_TO_EDGE);
+      gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, hasMipMaps ? this.addressW : gl.CLAMP_TO_EDGE);
     }
 
-    gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
+    gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? minFilter : this.minFilterNoMips);
     gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 
     if (ext && device.enableAnisotropicFiltering) {
       gl.texParameterf(targetType, ext.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, ext.maxAnisotropy));
     }
-  }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+    if (this.hash === null) {
+      this.ComputeHash();
+    }
+  }
+  /**
+   * Resolves modes
+   * @param {Object} modes
+   */
+
+
+  ResolveModes(modes = {}) {
+    var {
+      addressUMode,
+      addressVMode,
+      addressWMode,
+      maxAnisotropy,
+      filterMode,
+      mipFilterMode,
+      magFilterMode
+    } = modes;
+
+    if (maxAnisotropy !== undefined && maxAnisotropy !== this.maxAnisotropy) {
+      this.maxAnisotropy = maxAnisotropy;
+      this._isDirty = true;
+    }
+
+    this.addressUMode = addressUMode;
+    this.addressVMode = addressVMode;
+    this.addressWMode = addressWMode;
+    this.UpdateFilterModes(filterMode, mipFilterMode, magFilterMode);
+
+    if (this.hash === null) {
+      this.ComputeHash();
+    }
+  }
+  /**
+   * Wrap modes
+   * @type {number[]}
+   */
+
+
+}, _class3.WrapModes = WrapModes, _class3.FilterToModeTable = FilterToModeTable, _class3.MipFilterToModeTable = MipFilterToModeTable, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -36295,14 +36873,14 @@ var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return null;
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "forceMipMaps", [_dec16], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "maxAnisotropy", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
-    return false;
+    return 1;
   }
 })), _class2)) || _class);
 
@@ -45933,9 +46511,9 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
     var envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
         envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
         envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
-    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EnvMap1").SetTextureRes(envMap1);
-    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EnvMap2").SetTextureRes(envMap2);
+    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
+    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EnvMap1").AttachTextureRes(envMap1);
+    global__WEBPACK_IMPORTED_MODULE_1__["store"].variables.Get("EnvMap2").AttachTextureRes(envMap2);
   }
   /**
    * Initializes class global and scratch variables
@@ -48055,7 +48633,7 @@ var EveOccluder = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveOc
         vertexBuffer = g.vertexBuffer,
         decl = g.decl;
     if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
-    effect.parameters.BackBuffer.SetTextureRes(tex);
+    effect.parameters.BackBuffer.AttachTextureRes(tex);
     effect.parameters.OccluderIndex.SetValue([index, total, samples]);
     d.SetStandardStates(d.RM_ADDITIVE);
     d.gl.bindBuffer(d.gl.ARRAY_BUFFER, vertexBuffer);
@@ -51158,11 +51736,12 @@ var EveCustomMask = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Eve
     }
 
     if (PatternTexture) {
-      var overrides = PatternMaskMap.GetOverrides();
-      PatternTexture.SetOverrides(overrides);
+      PatternTexture.overrides = PatternMaskMap.overrides;
       PatternTexture.SetValue(PatternMaskMap.GetValue());
+      PatternMaskMap.OnEvent("overrides_modified", () => {
+        PatternTexture.overrides = PatternMaskMap.overrides;
+      });
       PatternMaskMap.OnEvent("modified", () => {
-        PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
         PatternTexture.SetValue(PatternMaskMap.resourcePath);
       });
     }
@@ -55741,10 +56320,28 @@ var EveObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2
   }
 
   /**
+   * Finds structs
+   * @param {Function} func
+   * @param {Array} [out=[]]
+   * @return {Array} out
+   */
+  FindStruct(func, out = []) {
+    this.Traverse(({
+      struct
+    }) => {
+      if (func(struct) && !out.includes(struct)) {
+        out.push(struct);
+      }
+    });
+    return out;
+  }
+  /**
    * Gets object resources
    * @param {Array} [out=[]]
    * @returns {Array<Tw2Resource>} out
    */
+
+
   GetResources(out = []) {}
   /**
    * Per frame update
@@ -57754,7 +58351,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!********************************!*\
   !*** ./global/constant/d3d.js ***!
   \********************************/
-/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, WrapModes, BlendTable, FilterMode, MipFilterMode */
+/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, BlendTable, WrapMode, FilterMode, MipFilterMode */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57887,8 +58484,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return BLENDOP_REVSUBTRACT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return BLENDOP_MIN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return BLENDOP_MAX; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return WrapModes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return BlendTable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrapMode", function() { return WrapMode; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return FilterMode; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return MipFilterMode; });
 /* harmony import */ var _gl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gl */ "./global/constant/gl.js");
@@ -58095,9 +58692,7 @@ var BLENDOP_ADD = 1;
 var BLENDOP_SUBTRACT = 2;
 var BLENDOP_REVSUBTRACT = 3;
 var BLENDOP_MIN = 4;
-var BLENDOP_MAX = 5; // Texture Wrap modes
-
-var WrapModes = [0, _gl__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"], _gl__WEBPACK_IMPORTED_MODULE_0__["GL_MIRRORED_REPEAT"], _gl__WEBPACK_IMPORTED_MODULE_0__["GL_CLAMP_TO_EDGE"], _gl__WEBPACK_IMPORTED_MODULE_0__["GL_CLAMP_TO_EDGE"], _gl__WEBPACK_IMPORTED_MODULE_0__["GL_CLAMP_TO_EDGE"]]; // Blend Table
+var BLENDOP_MAX = 5; // Blend Table
 
 var BlendTable = [-1, // --
 _gl__WEBPACK_IMPORTED_MODULE_0__["GL_ZERO"], // D3DBLEND_ZERO
@@ -58115,20 +58710,27 @@ _gl__WEBPACK_IMPORTED_MODULE_0__["GL_SRC_ALPHA_SATURATE"], // D3DBLEND_SRCALPHAS
 -1, // D3DBLEND_BOTHINVSRCALPHA
 _gl__WEBPACK_IMPORTED_MODULE_0__["GL_CONSTANT_COLOR"], // D3DBLEND_BLENDFACTOR
 _gl__WEBPACK_IMPORTED_MODULE_0__["GL_ONE_MINUS_CONSTANT_COLOR"] // D3DBLEND_INVBLENDFACTOR
-]; // Filter mode conversions
-
+];
+var WrapMode = {
+  //DEFAULT: -1,
+  REPEAT: 1,
+  MIRRORED_REPEAT: 2,
+  CLAMP_TO_EDGE: 3
+};
 var FilterMode = {
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_NEAREST"]]: 1,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"]]: 2
-}; // Mip filter mode conversions
+  //DEFAULT: -1,
+  NEAREST: 1,
+  LINEAR: 2,
+  LINEAR_ANISOTROPY: 3 // Huh
 
+};
 var MipFilterMode = {
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_NEAREST"]]: 0,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"]]: 0,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_NEAREST_MIPMAP_NEAREST"]]: 1,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR_MIPMAP_NEAREST"]]: 1,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_NEAREST_MIPMAP_LINEAR"]]: 2,
-  [_gl__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR_MIPMAP_LINEAR"]]: 2
+  //DEFAULT: -1,
+  NONE: 0,
+  NEAREST: 1,
+  LINEAR: 2,
+  LINEAR_ANISOTROPY: 3 // Huh
+
 };
 
 /***/ }),
@@ -58595,7 +59197,7 @@ var GL_BLEND = 3042;
 /*!**********************************!*\
   !*** ./global/constant/index.js ***!
   \**********************************/
-/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_ATI1, FOURCC_ATI2, FOURCC_ETC1, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, PT_UNKNOWN, PT_BOOLEAN, PT_STRING, PT_PATH, PT_EXPRESSION, PT_BYTE, PT_UINT, PT_USHORT, PT_FLOAT, PT_STRUCT, PT_STRUCT_RAW, PT_STRUCT_LIST, PT_PLAIN, PT_ARRAY, PT_VECTOR, PT_VECTOR2, PT_VECTOR3, PT_VECTOR4, PT_COLOR, PT_QUATERNION, PT_MATRIX3, PT_MATRIX4, PT_INDEX_BUFFER, PT_ENUM */
+/*! exports provided: RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, BlendTable, WrapMode, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_ATI1, FOURCC_ATI2, FOURCC_ETC1, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, PT_UNKNOWN, PT_BOOLEAN, PT_STRING, PT_PATH, PT_EXPRESSION, PT_BYTE, PT_UINT, PT_USHORT, PT_FLOAT, PT_STRUCT, PT_STRUCT_RAW, PT_STRUCT_LIST, PT_PLAIN, PT_ARRAY, PT_VECTOR, PT_VECTOR2, PT_VECTOR3, PT_VECTOR4, PT_COLOR, PT_QUATERNION, PT_MATRIX3, PT_MATRIX4, PT_INDEX_BUFFER, PT_ENUM */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -58857,9 +59459,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _d3d__WEBPACK_IMPORTED_MODULE_0__["BLENDOP_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _d3d__WEBPACK_IMPORTED_MODULE_0__["WrapModes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _d3d__WEBPACK_IMPORTED_MODULE_0__["BlendTable"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapMode", function() { return _d3d__WEBPACK_IMPORTED_MODULE_0__["WrapMode"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _d3d__WEBPACK_IMPORTED_MODULE_0__["FilterMode"]; });
 
@@ -73539,6 +74141,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
 /* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
 /* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
+/* harmony import */ var constant_d3d__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! constant/d3d */ "./global/constant/d3d.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -73551,6 +74154,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
  //import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
+
 
 
 
@@ -73603,12 +74207,12 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         shadow: "cdn:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx"
       },
       texturePath: {
-        //noise: "res:/Texture/global/noise.dds.0.png",
-        //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-        // whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-        //hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
-        //hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
-        //hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+        noise: "res:/Texture/global/noise.dds.0.png",
+        noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+        whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+        hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
+        hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
+        hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
         bannerImage: "",
         bannerBorder: ""
       },
@@ -74177,10 +74781,8 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     }
 
     mask.parameters.PatternMaskMap.SetOverrides({
-      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pU),
-      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddress(pV),
-      //forceMipMaps: ext === "dds", // Temporary
-      useAllOverrides: true
+      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddressMode(pU),
+      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddressMode(pV)
     });
 
     if (material) {
@@ -74361,25 +74963,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
           math__WEBPACK_IMPORTED_MODULE_1__["vec4"].multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
           config.parameters.GeneralGlowColor = glowColor; //temp
-        }
-        /*
-        // Temporary overrides for dds files
-        for (const key in config.textures)
-        {
-            if (config.textures.hasOwnProperty(key))
-            {
-                if (getPathExtension(config.textures[key]) === "dds")
-                {
-                    config.overrides[key] = {
-                        useAllOverrides: true,
-                        forceMipMaps: true,
-                        mipFilterMode: 1
-                    };
-                }
-            }
-        }
-         */
-        // Update effect
+        } // Update effect
 
 
         effect.SetParameters(config.parameters);
@@ -74680,15 +75264,17 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
               message: "Using primary color for decal glow: ".concat(name, " (").concat(glowColorType, ")")
             });
           }
-        }
-        /*
-        // TODO: Fix mipmaps on dds
-        if (usage === 1)
-        {
-            config.overrides.DecalAtMap = { useAllOverrides: true, forceMipMaps: true };
-        }
-         */
-        // Item's values override logo types
+        } // Killmarks
+
+
+        if (usage === 1) {
+          config.overrides.DecalAtMap = {
+            addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].REPEAT,
+            addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].REPEAT,
+            filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["FilterMode"].LINEAR,
+            mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["MipFilterMode"].NONE
+          };
+        } // Item's values override logo types
 
 
         itemData.Assign(config);
@@ -80675,7 +81261,7 @@ var EveSOFDataPatternLayer = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].
    * @param {Number} projectionType
    * @returns {Number}
    */
-  static ToAddress(projectionType) {
+  static ToAddressMode(projectionType) {
     switch (projectionType) {
       case 2:
         return 4;
@@ -80694,7 +81280,7 @@ var EveSOFDataPatternLayer = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].
    */
 
 
-  static FromProjection(addressMode) {
+  static FromAddressMode(addressMode) {
     switch (addressMode) {
       case 4:
         return 2;

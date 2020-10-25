@@ -284,11 +284,11 @@ export class Tw2PostEffect extends meta.Model
 
                             if (target)
                             {
-                                parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
+                                parameter.AttachTextureRes(this.CreateTarget(target, width, height).texture);
                             }
                             else
                             {
-                                parameter.SetTextureRes(this._texture);
+                                parameter.AttachTextureRes(this._texture);
                             }
                         }
                     }

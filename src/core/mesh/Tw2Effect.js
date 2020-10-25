@@ -632,7 +632,7 @@ export class Tw2Effect extends meta.Model
             {
                 let param = this.parameters[key];
 
-                // Allow creating of parameter from overrides incase method is
+                // Allow creating of parameter from overrides in  case method is
                 // called before SetTextures.
                 // Todo: Remove this once proper sampler overrides are implemented
                 if (!param)
@@ -643,26 +643,7 @@ export class Tw2Effect extends meta.Model
 
                 if (param instanceof Tw2TextureParameter)
                 {
-                    let doUpdate = false;
-
-                    const overrides = options[key];
-                    for (let prop in overrides)
-                    {
-                        if (overrides.hasOwnProperty(prop) && Tw2TextureParameter.overrideProperties.includes(prop))
-                        {
-                            if (overrides[prop] !== param[prop])
-                            {
-                                doUpdate = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (doUpdate)
-                    {
-                        param.SetOverrides(options[key]);
-                        updated = true;
-                    }
+                    param.SetOverrides(options[key]);
                 }
             }
         }
@@ -684,7 +665,8 @@ export class Tw2Effect extends meta.Model
                 const param = this.parameters[key];
                 if (param && param instanceof Tw2TextureParameter && param.useAllOverrides)
                 {
-                    out[key] = this.parameters[key].GetOverrides();
+                    const result = this.parameters[key].GetOverrides();
+                    if (result) out[key] = result;
                 }
             }
         }

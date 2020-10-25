@@ -41,6 +41,7 @@ import {
 
 import { EveShip2, EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
+import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
 
 @meta.type("EveSOFData")
@@ -108,12 +109,12 @@ export class EveSOFData
         },
 
         texturePath: {
-            //noise: "res:/Texture/global/noise.dds.0.png",
-            //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-            // whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-            //hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
-            //hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
-            //hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+            noise: "res:/Texture/global/noise.dds.0.png",
+            noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+            whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+            hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
+            hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
+            hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
             bannerImage: "",
             bannerBorder: ""
         },
@@ -728,10 +729,8 @@ export class EveSOFData
         }
 
         mask.parameters.PatternMaskMap.SetOverrides({
-            addressUMode: EveSOFDataPatternLayer.ToAddress(pU),
-            addressVMode: EveSOFDataPatternLayer.ToAddress(pV),
-            //forceMipMaps: ext === "dds", // Temporary
-            useAllOverrides: true
+            addressUMode: EveSOFDataPatternLayer.ToAddressMode(pU),
+            addressVMode: EveSOFDataPatternLayer.ToAddressMode(pV),
         });
 
         if (material)
@@ -939,24 +938,6 @@ export class EveSOFData
                     vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
                     config.parameters.GeneralGlowColor = glowColor; //temp
                 }
-
-                /*
-                // Temporary overrides for dds files
-                for (const key in config.textures)
-                {
-                    if (config.textures.hasOwnProperty(key))
-                    {
-                        if (getPathExtension(config.textures[key]) === "dds")
-                        {
-                            config.overrides[key] = {
-                                useAllOverrides: true,
-                                forceMipMaps: true,
-                                mipFilterMode: 1
-                            };
-                        }
-                    }
-                }
-                 */
 
                 // Update effect
                 effect.SetParameters(config.parameters);
@@ -1285,13 +1266,16 @@ export class EveSOFData
                     }
                 }
 
-                /*
-                // TODO: Fix mipmaps on dds
+                // Killmarks
                 if (usage === 1)
                 {
-                    config.overrides.DecalAtMap = { useAllOverrides: true, forceMipMaps: true };
+                    config.overrides.DecalAtMap = {
+                        addressUMode: WrapMode.REPEAT,
+                        addressVMode: WrapMode.REPEAT,
+                        filterMode: FilterMode.LINEAR,
+                        mipFilterMode: MipFilterMode.NONE
+                    };
                 }
-                 */
 
                 // Item's values override logo types
                 itemData.Assign(config);

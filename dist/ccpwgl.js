@@ -549,6 +549,32 @@ var ccpwgl = (function(tw2)
     const mat4_0 = mat4.create();
 
     /**
+     * Helper
+     * @param {Ship|SpaceObject} obj
+     * @param {String} meshArea
+     * @return {[]}
+     */
+    function getMeshAreaEffects(obj, meshArea)
+    {
+        const out = [];
+
+        if (!obj.isLoaded())
+        {
+            throw new ccpwgl.IsStillLoadingError();
+        }
+
+        for (let i = 0; i < obj.wrappedObjects.length; i++)
+        {
+            const areas = obj.wrappedObjects[i].mesh[meshArea];
+            for (let a = 0; a < areas.length; a++)
+            {
+                out.push(areas[a].effect);
+            }
+        }
+        return out;
+    }
+
+    /**
      * Wrapper for static objects (stations, gates, asteroids, clouds, etc.).
      * Created with Scene.loadObject function.
      *
@@ -609,6 +635,15 @@ var ccpwgl = (function(tw2)
                 onload.call(self);
             }
         }
+
+        /**
+         * Gets the object's opaque mesh area effects
+         * @return {*[]}
+         */
+        this.getOpaqueEffects = function()
+        {
+            return getMeshAreaEffects(this, "opaqueAreas");
+        };
 
         /**
          * Gets the object's length;
@@ -915,6 +950,15 @@ var ccpwgl = (function(tw2)
                 self.wrappedObjects[0].RebuildOverlays(o);
             }
         }
+
+        /**
+         * Gets the object's opaque mesh area effects
+         * @return {*[]}
+         */
+        this.getOpaqueEffects = function()
+        {
+            return getMeshAreaEffects(this, "opaqueAreas");
+        };
 
         /**
          * Gets the object's length;

@@ -752,9 +752,9 @@ export class EveSpaceScene extends meta.Model
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
-        store.variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-        store.variables.Get("EnvMap1").SetTextureRes(envMap1);
-        store.variables.Get("EnvMap2").SetTextureRes(envMap2);
+        store.variables.Get("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
+        store.variables.Get("EnvMap1").AttachTextureRes(envMap1);
+        store.variables.Get("EnvMap2").AttachTextureRes(envMap2);
     }
 
     /**

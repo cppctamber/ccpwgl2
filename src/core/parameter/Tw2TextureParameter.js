@@ -1,6 +1,6 @@
-import { meta, assignIfExists, isString } from "utils";
+import { meta, isString } from "utils";
 import { resMan, device } from "global";
-import { Tw2SamplerState } from "../sampler";
+import { Tw2SamplerOverride } from "../sampler/Tw2SamplerOverride";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
@@ -15,37 +15,41 @@ export class Tw2TextureParameter extends Tw2Parameter
     @meta.path
     resourcePath = "";
 
-    @meta.uint
-    addressUMode = 1;
-
-    @meta.uint
-    addressVMode = 1;
-
-    @meta.uint
-    addressWMode = 1;
-
-    @meta.uint
-    filterMode = 2;
-
-    @meta.uint
-    maxAnisotropy = 4;
-
-    @meta.uint
-    mipFilterMode = 2;
-
-    @meta.boolean
-    useAllOverrides = false;
-
-    @meta.boolean
-    forceMipMaps = false;
-
     @meta.struct("Tw2TextureRes")
     @meta.todo("Make private")
     textureRes = null;
 
-    @meta.struct("Tw2SamplerState")
-    _sampler = null;
+    @meta.struct("Tw2SamplerOverrides")
+    overrides = null;
 
+    /**
+     * Temporary
+     * @return {Boolean}
+     */
+    get useAllOverrides()
+    {
+        return this.overrides ? this.overrides.enabled : false;
+    }
+
+    /**
+     * Temporary
+     * @param {Boolean} bool
+     */
+    set useAllOverrides(bool)
+    {
+        if (bool)
+        {
+            this.overrides = this.overrides ||  new Tw2SamplerOverride();
+            this.overrides.SetValues({ enabled: true });
+        }
+
+        if (!bool && this.overrides)
+        {
+            this.overrides.SetValues({ enabled: false });
+        }
+    }
+
+    _isAttached = false;
 
     /**
      * Constructor
@@ -70,7 +74,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     get isTextureAttached()
     {
-        return (this.textureRes && this.textureRes._isAttached);
+        return (this.textureRes && this._isAttached);
     }
 
     /**
@@ -102,58 +106,94 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
-     * Sets the texture's resource manually
-     * @param {Tw2TextureRes} res
-     * @returns {Boolean}
+     * Attaches a texture res
+     * @param {Tw2TextureRes|Tw2VideoRes} res
+     * @return {boolean}
      */
-    SetTextureRes(res)
+    AttachTextureRes(res)
     {
-        if (this.textureRes === res) return false;
-        this.resourcePath = "";
-        this.textureRes = res;
-        if (this.textureRes) this.textureRes._isAttached = true;
-        return true;
+        return this._SetTextureRes(res, true);
     }
 
     /**
-     * Fire on value changes
-     * @param {*} [controller]        - An optional parameter for tracking the object that called this function
-     * @param {String[]} [skipUpdate] -
+     * Sets the texture's resource manually
+     * @param {Tw2TextureRes|Tw2VideoRes} res
+     * @param {Boolean}  [isAttached]
+     * @returns {Boolean}
      */
-    OnValueChanged(controller, skipUpdate)
+    _SetTextureRes(res, isAttached)
     {
-        this.resourcePath = this.resourcePath.toLowerCase();
-        if (this.resourcePath !== "")
+        if (this.textureRes !== res)
         {
-            if (this.resourcePath.indexOf("rgba:/") === 0)
-            {
-                if (!this.textureRes || this.textureRes.path !== this.resourcePath)
-                {
-                    const
-                        color = this.resourcePath.replace("rgba:/", "").split(","),
-                        texture = device.CreateSolidTexture([
-                            parseFloat(color[0]),
-                            parseFloat(color[1]),
-                            parseFloat(color[2]),
-                            color[3] !== undefined ? parseFloat(color[3]) : 255
-                        ]);
+            this._RemoveTextureRes();
+            this.textureRes = res;
 
-                    this.textureRes = new Tw2TextureRes();
-                    this.textureRes.path = this.resourcePath;
-                    this.textureRes.Attach(texture);
+            if (res)
+            {
+                res.RegisterNotification(this);
+                if  (isAttached)
+                {
+                    this._isAttached = true;
+                    this.resourcePath = "";
+                }
+                else
+                {
+                    this._isAttached = false;
                 }
             }
-            else
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes the texture res
+     * @return {boolean}
+     */
+    _RemoveTextureRes()
+    {
+        if (this.textureRes)
+        {
+            this.textureRes.UnregisterNotification(this);
+            this.textureRes = null;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Fire on value changes
+     * @param {Object} [opt]
+     */
+    OnValueChanged(opt)
+    {
+        this.resourcePath = this.resourcePath ? this.resourcePath.toLowerCase() : "";
+
+        if (this.resourcePath.indexOf("rgba:/") === 0)
+        {
+            if (!this.textureRes || this.textureRes.path !== this.resourcePath)
             {
-                this.textureRes = resMan.GetResource(this.resourcePath);
+                const
+                    color = this.resourcePath.replace("rgba:/", "").split(","),
+                    texture = device.CreateSolidTexture([
+                        parseFloat(color[0]),
+                        parseFloat(color[1]),
+                        parseFloat(color[2]),
+                        color[3] !== undefined ? parseFloat(color[3]) : 255
+                    ]);
+
+                const res = new Tw2TextureRes();
+                res.path = this.resourcePath;
+                res.texture = texture;
+                res.texture._isAttached = true;
+                this._SetTextureRes(res);
             }
         }
         else
         {
-            this.textureRes = null;
+            const res = this.resourcePath ? resMan.GetResource(this.resourcePath) : null;
+            this._SetTextureRes(res);
         }
-
-        this.UpdateOverrides();
     }
 
     /**
@@ -166,13 +206,11 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         if (this.textureRes)
         {
-            if (this.useAllOverrides && this._sampler)
+            if (this.overrides)
             {
-                this._sampler.samplerType = sampler.samplerType;
-                this._sampler.isVolume = sampler.isVolume;
-                this._sampler.registerIndex = sampler.registerIndex;
-                sampler = this._sampler;
+                sampler = this.overrides.GetSampler(sampler);
             }
+
             device.gl.activeTexture(device.gl.TEXTURE0 + stage);
             this.textureRes.Bind(sampler, slices);
         }
@@ -180,94 +218,49 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Sets the textures overrides
-     * TODO: Remove once utility functions working
-     * @param {{}} [opt={}] - An object containing the override options to set
+     * TODO: Move to Tw2Effect
+     * @param {{}} [values={}] - values to update
+     * @param {Object} [opt]
      * @returns {Boolean} true if updated
      */
-    SetOverrides(opt = {})
+    SetOverrides(values, opt)
     {
-        if (assignIfExists(this, opt, Tw2TextureParameter.overrideProperties))
+        this.overrides = this.overrides || new Tw2SamplerOverride();
+
+        if (this.overrides.SetValues(values, opt))
         {
-            this.UpdateValues();
+            if (!opt || !opt.skipEvents)
+            {
+                this.EmitEvent("overrides_modified", this, opt);
+            }
+        }
+    }
+
+    /**
+     * Removes overrides
+     * TODO: Move to Tw2Effect
+     * @return {boolean}
+     */
+    RemoveOverrides()
+    {
+        if (this.overrides)
+        {
+            this.overrides = null;
             return true;
         }
+        return false;
     }
 
     /**
      * Gets the texture's overrides
-     * TODO: Remove once utility functions working
+     * TODO: Move to Tw2Effect
      * @returns {{}}
      */
-    GetOverrides(out = {})
+    GetOverrides()
     {
-        assignIfExists(out, this, Tw2TextureParameter.overrideProperties);
-        return out;
+        this.overrides && this.overrides.enabled ? this.overrides.GetValues() : null;
     }
 
-    /**
-     * Updates the parameter's overrides
-     * TODO: Move to OnValueChanged
-     */
-    UpdateOverrides()
-    {
-        if (this.useAllOverrides)
-        {
-            this._sampler = this._sampler || new Tw2SamplerState();
-            this._sampler.forceMipMaps = this.forceMipMaps;
-
-            const
-                { wrapModes, gl } = device,
-                sampler = this._sampler;
-
-            if (this.filterMode === 1)
-            {
-                switch (this.mipFilterMode)
-                {
-                    case 0:
-                        sampler.minFilter = gl.NEAREST;
-                        break;
-
-                    case 1:
-                        sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
-                        break;
-
-                    default:
-                        sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
-                }
-
-                sampler.minFilterNoMips = gl.NEAREST;
-                sampler.magFilter = gl.NEAREST;
-            }
-            else
-            {
-                switch (this.mipFilterMode)
-                {
-                    case 0:
-                        sampler.minFilter = gl.LINEAR;
-                        break;
-
-                    case 1:
-                        sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
-                        break;
-
-                    default:
-                        sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
-                }
-                sampler.minFilterNoMips = gl.LINEAR;
-                sampler.magFilter = gl.LINEAR;
-            }
-
-            sampler.addressU = wrapModes[this.addressUMode];
-            sampler.addressV = wrapModes[this.addressVMode];
-            sampler.addressW = wrapModes[this.addressWMode];
-            sampler.anisotropy = this.maxAnisotropy;
-            sampler.ComputeHash();
-        }
-        else if (this._sampler)
-        {
-            this._sampler = null;
-        }
-    }
 
     /**
      * Checks if a value is equal to the parameter's resource path
@@ -302,20 +295,5 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         return isString(a);
     }
-
-    /**
-     * The texture parameter's override properties
-     * @type {String[]}
-     */
-    static overrideProperties = [
-        "useAllOverrides",
-        "addressUMode",
-        "addressVMode",
-        "addressWMode",
-        "filterMode",
-        "mipFilterMode",
-        "maxAnisotropy",
-        "forceMipMaps"
-    ];
 
 }

@@ -35,6 +35,12 @@ export class Tw2Error extends Error
         this.name = this.constructor.name;
         this.data = data;
 
+        if (this.data.data)
+        {
+            // Temp output
+            console.debug(JSON.stringify(this.data.data, null, 4));
+        }
+
         if (HAS_CAPTURE_STACK_TRACE)
         {
             Error["captureStackTrace"](this, Tw2Error);

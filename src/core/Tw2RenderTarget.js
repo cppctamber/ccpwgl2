@@ -26,7 +26,6 @@ export class Tw2RenderTarget
     @meta.isPrivate
     hasDepth = false;
 
-
     _id = generateID();
     _frameBuffer = null;
     _renderBuffer = null;
@@ -85,6 +84,16 @@ export class Tw2RenderTarget
         this.texture = new Tw2TextureRes();
         this.texture.Attach(gl.createTexture());
 
+        // Keep track of meta
+        this.texture._target = gl.TEXTURE_2D;
+        this.texture._format = gl.RGBA;
+        this.texture._type = gl.UNSIGNED_BYTE;
+        this.texture._hasMipMaps = false;
+        this.texture._forceMipMaps = false;
+        this.texture._width = this.width = width;
+        this.texture._height = this.height = height;
+
+
         this._frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
 
@@ -113,8 +122,8 @@ export class Tw2RenderTarget
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-        this.texture.width = this.width = width;
-        this.texture.height = this.height = height;
+
+
         this.hasDepth = hasDepth;
     }
 

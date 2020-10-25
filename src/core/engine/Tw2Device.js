@@ -53,7 +53,6 @@ import {
     BLENDOP_SUBTRACT,
     BLENDOP_REVSUBTRACT,
     BlendTable,
-    WrapModes,
     VendorWebglPrefixes,
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
@@ -309,8 +308,6 @@ export class Tw2Device extends Tw2EventEmitter
             { usage: "POSITION", usageIndex: 0, elements: 4 },
             { usage: "TEXCOORD", usageIndex: 0, elements: 2 }
         ]);
-
-        this.wrapModes = Array.from(WrapModes);
 
         this._alphaBlendState = {
             dirty: false,
@@ -692,7 +689,7 @@ export class Tw2Device extends Tw2EventEmitter
             });
         }
 
-        this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
+        this._blitEffect.parameters["BlitSource"].AttachTextureRes(texture);
         return this.RenderFullScreenQuad(this._blitEffect);
     }
 
