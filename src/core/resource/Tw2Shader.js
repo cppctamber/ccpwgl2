@@ -40,14 +40,16 @@ export class Tw2Shader
             vs: {
                 frame: {},
                 object: {},
-                parameter: {}
+                parameter: {},
+                inputDefinitions: {}
                 //texture: {},
                 //override: {}}
             },
             ps: {
                 frame: {},
                 object: {},
-                parameter: {}
+                parameter: {},
+                inputDefinitions: {}
                 //texture: {},
                 //override: {}
             },
@@ -60,6 +62,16 @@ export class Tw2Shader
             { perFramePSData, perFrameVSData } = device,
             [ stage0, stage1 ] = this.techniques[technique].passes[0].stages,
             code = stage0.shaderCode + stage1.shaderCode;
+
+        stage0.inputDefinition.elementsSorted.forEach(x =>
+        {
+            result.vs.inputDefinitions[x.attr] = x.string;
+        });
+
+        stage1.inputDefinition.elementsSorted.forEach(x =>
+        {
+            result.ps.inputDefinitions[x.attr] = x.string;
+        });
 
         if (!code)
         {

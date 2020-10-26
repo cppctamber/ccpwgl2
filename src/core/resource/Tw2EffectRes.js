@@ -192,7 +192,11 @@ export class Tw2EffectRes extends Tw2Resource
             return this.shaders[index];
         }
 
-        this.reader.cursor = this.offsets[index].offset;
+        if (this.version > 4)
+        {
+            this.reader.cursor = this.offsets[index].offset;
+        }
+
         let shader = null;
         try
         {
