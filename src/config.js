@@ -139,6 +139,7 @@ export const config = {
             "u_DecalMatrix": mat4.create(),
             "u_InvDecalMatrix": mat4.create(),
             "EveSpaceSceneEnvMap": "",
+            "EveSpaceSceneShadowMap": "",
             "EnvMap1": "",
             "EnvMap2": "",
             "EnvMap3": "",

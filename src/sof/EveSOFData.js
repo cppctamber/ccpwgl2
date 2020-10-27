@@ -91,7 +91,8 @@ export class EveSOFData
         effect: {
             sprite: null,
             banner: null,
-            shadow: null
+            shadow: null,
+            shadowSkinned: null
         },
 
         effectPath: {
@@ -206,6 +207,14 @@ export class EveSOFData
             effect.shadow = Tw2Effect.from({
                 name: "Shared shadow effect",
                 effectFilePath: effectPath.shadow
+            });
+        }
+
+        if (!effect.shadowSkinned)
+        {
+            effect.shadowSkinned = Tw2Effect.from({
+                name: "Shared shadow skinned effect",
+                effectFilePath: this.GetShaderPath(effectPath.shadow, true)
             });
         }
     }
@@ -497,12 +506,12 @@ export class EveSOFData
 
         if (!pattern && faction.defaultPattern)
         {
-            pattern = this.GetHullPattern(hull.name, faction.defaultPattern);
+            pattern = { layer1: faction.defaultPattern };
+        }
 
-            if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName)
-            {
-                area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
-            }
+        if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName)
+        {
+            area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
         }
 
         // TODO: Check if the faction.resPathInsert actually exists...
@@ -811,8 +820,6 @@ export class EveSOFData
      */
     static SetupMesh(data, obj, sof, options)
     {
-        obj.shadowEffect = obj.shadowEffect || options.effect.shadow;
-
         // Mesh
         const
             { hull } = sof,
@@ -822,11 +829,18 @@ export class EveSOFData
 
         /**** START TESTING ONLY *****/
 
+        function handleShadow(geometryResPath)
+        {
+            const noSkin = getPathExtension(geometryResPath) === "cake";
+            obj.shadowEffect = sof.hull.isSkinned && !noSkin ? options.effect.shadowSkinned : options.effect.shadow;
+        }
+
         let resPath = get(hull, "geometryResFilePath", "");
 
         if (resPath in EveSOFData.knownGeometryResPath)
         {
             mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
+            handleShadow(mesh.geometryResPath);
         }
         else
         {
@@ -836,13 +850,18 @@ export class EveSOFData
                 res =>
                 {
                     EveSOFData.knownGeometryResPath[resPath] = resPath;
-                    if (initialized) mesh.Initialize();
+                    handleShadow(resPath);
+                    if (initialized)
+                    {
+                        mesh.Initialize();
+                        obj.Initialize();
+                    }
                 },
                 err =>
                 {
                     // Fallback to wbg...
-                    mesh.geometryResPath = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
-                    EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath;
+                    mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
+                    handleShadow(mesh.geometryResPath);
 
                     if (initialized)
                     {
@@ -1272,6 +1291,15 @@ export class EveSOFData
                     config.overrides.DecalAtMap = {
                         addressUMode: WrapMode.REPEAT,
                         addressVMode: WrapMode.REPEAT,
+                        filterMode: FilterMode.LINEAR,
+                        mipFilterMode: MipFilterMode.NONE
+                    };
+                }
+                else if (usage === 5)
+                {
+                    config.overrides.DecalAtMap = {
+                        addressUMode: WrapMode.CLAMP_TO_EDGE,
+                        addressVMode: WrapMode.CLAMP_TO_EDGE,
                         filterMode: FilterMode.LINEAR,
                         mipFilterMode: MipFilterMode.NONE
                     };
