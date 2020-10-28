@@ -349,7 +349,7 @@ export class Tw2SamplerState extends meta.Model
         if (maxAnisotropy !== undefined && maxAnisotropy !== this.maxAnisotropy)
         {
             this.maxAnisotropy = maxAnisotropy;
-            this._isDirty = true;
+            this.hash = null;
         }
 
         this.addressUMode = addressUMode;
