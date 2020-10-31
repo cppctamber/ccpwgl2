@@ -28314,10 +28314,41 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
         res.Attach(texture, this.resourcePath);
       }
-    } else {
-      var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
+    } else if (this.resourcePath.indexOf("text:/") === 0) {
+      if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
+        var split = this.resourcePath.split("/"),
+            text = split[1],
+            options = split[2],
+            _opt = {};
 
-      this._SetTextureRes(_res);
+        if (options) {
+          var optSplit = options.split(";");
+
+          for (var i = 0; i < optSplit.length; i++) {
+            var [key, value] = optSplit[i].split("=");
+            _opt[key] = value;
+          }
+        }
+
+        var {
+          gl
+        } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
+            canvas = Object(utils__WEBPACK_IMPORTED_MODULE_0__["createTextCanvas"])(text, _opt),
+            _res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"](),
+            _texture = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, _texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        this._SetTextureRes(_res);
+
+        _res.Attach(_texture, this.resourcePath);
+      }
+    } else {
+      var _res2 = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
+
+      this._SetTextureRes(_res2);
     }
   }
   /**
@@ -35641,7 +35672,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     return byteArray;
   }
 
-}, _class2.knownBrokenDDSFiles = ["res:/texture/global/noise.dds", "res:/texture/global/spotramp.dds", "res:/texture/global/whitesharp.dds", "res:/texture/particle/whitesharp.dds", "res:/dx9/texture/decal/deck_01_cube.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_f.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_at.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_nr.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_f.dds", "res:/dx9/model/decal/caldari/code_cf04ewar_at.dds", "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds", "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds", "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds", "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds"], _temp)) || _class);
+}, _class2.knownBrokenDDSFiles = ["res:/texture/global/noise.dds", "res:/texture/global/spotramp.dds", "res:/texture/global/whitesharp.dds", "res:/texture/particle/whitesharp.dds", "res:/dx9/texture/decal/deck_01_cube.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_f.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_at.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_nr.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_f.dds", "res:/dx9/model/decal/caldari/code_cf04ewar_at.dds", "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds", "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds", "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds", "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds", "res:/texture/projection/pattern_geometric_03.dds"], _temp)) || _class);
 
 /***/ }),
 
@@ -37054,6 +37085,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ConstructorStore", function() { return Tw2ConstructorStore; });
 /* harmony import */ var _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2GenericStore */ "./core/store/Tw2GenericStore.js");
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
+
 
 
 class Tw2ConstructorStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__["Tw2GenericStore"] {
@@ -37079,8 +37112,11 @@ class Tw2ConstructorStore extends _Tw2GenericStore__WEBPACK_IMPORTED_MODULE_0__[
 
     for (var [key, value] of PRIVATE.map) {
       if ("DEBUG_ENABLED" in value) {
-        console.log("Debug mode enabled for " + key);
         value.DEBUG_ENABLED = bool;
+        if (bool) global_tw2__WEBPACK_IMPORTED_MODULE_2__["logger"].Log({
+          name: key,
+          message: "Debug mode enabled"
+        });
       }
     }
   }
@@ -54166,6 +54202,16 @@ var EveSpriteSet = (_dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 
 
   Initialize() {
+    // Randomize blinking a little
+    var blinkRateAdjustment = math__WEBPACK_IMPORTED_MODULE_2__["num"].randomFloat(0, 0.2);
+
+    for (var i = 0; i < this.items.length; i++) {
+      var {
+        blinkRate
+      } = this.items[i];
+      if (blinkRate) this.items[i].blinkRate += blinkRateAdjustment;
+    }
+
     this.UseQuads(!!this.useQuads);
     this.Rebuild();
   }
@@ -68964,16 +69010,60 @@ function toUniqueArray(a) {
 
 /***/ }),
 
-/***/ "./global/utils/index.js":
-/*!*******************************!*\
-  !*** ./global/utils/index.js ***!
-  \*******************************/
-/*! exports provided: addToArray, findElementByPropertyValue, findIndexByPropertyValue, perArrayChild, removeFromArray, toArray, toUniqueArray, assignIfExists, get, template, getKeyFromValue, isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, isPrimaryEqual, isVectorEqual, isEqual, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean, defineMetadata, hasMetadata, hasOwnMetadata, getMetadata, getOwnMetadata, deleteMetadata, getMetadataKeys, getOwnMetadataKeys, getMetadataValues, getOwnMetadataValues, handleDescriptor, createDecorator, meta, getPathExtension */
+/***/ "./global/utils/canvas.js":
+/*!********************************!*\
+  !*** ./global/utils/canvas.js ***!
+  \********************************/
+/*! exports provided: createTextCanvas */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathExtension", function() { return getPathExtension; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTextCanvas", function() { return createTextCanvas; });
+/**
+ *
+ * @author css=tricks.com
+ * @param text
+ * @param parameters
+ * @return {HTMLCanvasElement}
+ */
+function createTextCanvas(text, parameters = {}) {
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d"); // Prepare the font to be able to measure
+
+  var fontSize = parameters.fontSize || 56;
+  ctx.font = "".concat(fontSize, "px monospace");
+  var textMetrics = ctx.measureText(text);
+  var width = textMetrics.width;
+  var height = fontSize; // Resize canvas to match text size
+
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px"; // Re-apply font since canvas is resized.
+
+  ctx.font = "".concat(fontSize, "px monospace");
+  ctx.textAlign = parameters.align || "center";
+  ctx.textBaseline = parameters.baseline || "middle"; // Make the canvas transparent for simplicity
+
+  ctx.fillStyle = "transparent";
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.fillStyle = parameters.color || "white";
+  ctx.fillText(text, width / 2, height / 2);
+  return canvas;
+}
+
+/***/ }),
+
+/***/ "./global/utils/index.js":
+/*!*******************************!*\
+  !*** ./global/utils/index.js ***!
+  \*******************************/
+/*! exports provided: addToArray, findElementByPropertyValue, findIndexByPropertyValue, perArrayChild, removeFromArray, toArray, toUniqueArray, createTextCanvas, assignIfExists, get, template, getKeyFromValue, getPathExtension, isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, isPrimaryEqual, isVectorEqual, isEqual, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean, defineMetadata, hasMetadata, hasOwnMetadata, getMetadata, getOwnMetadata, deleteMetadata, getMetadataKeys, getOwnMetadataKeys, getMetadataValues, getOwnMetadataValues, handleDescriptor, createDecorator, meta */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _arr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arr */ "./global/utils/arr.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "addToArray", function() { return _arr__WEBPACK_IMPORTED_MODULE_0__["addToArray"]; });
 
@@ -68989,150 +69079,147 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "toUniqueArray", function() { return _arr__WEBPACK_IMPORTED_MODULE_0__["toUniqueArray"]; });
 
-/* harmony import */ var _obj__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./obj */ "./global/utils/obj.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "assignIfExists", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"]; });
+/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas */ "./global/utils/canvas.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createTextCanvas", function() { return _canvas__WEBPACK_IMPORTED_MODULE_1__["createTextCanvas"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["get"]; });
+/* harmony import */ var _obj__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./obj */ "./global/utils/obj.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "assignIfExists", function() { return _obj__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "template", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["template"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _obj__WEBPACK_IMPORTED_MODULE_2__["get"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getKeyFromValue", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["getKeyFromValue"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "template", function() { return _obj__WEBPACK_IMPORTED_MODULE_2__["template"]; });
 
-/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./type */ "./global/utils/type.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isArray"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getKeyFromValue", function() { return _obj__WEBPACK_IMPORTED_MODULE_2__["getKeyFromValue"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArrayLike", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"]; });
+/* harmony import */ var _str__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./str */ "./global/utils/str.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getPathExtension", function() { return _str__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isAsyncFunction", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isAsyncFunction"]; });
+/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./type */ "./global/utils/type.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isArray"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isBoolean"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArrayLike", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isArrayLike"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isCanvas", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isCanvas"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isAsyncFunction", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isAsyncFunction"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isDescriptor", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isDescriptor"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isBoolean"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isDNA", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isDNA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isCanvas", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isCanvas"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isError", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isError"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isDescriptor", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isDescriptor"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNumber", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isNumber"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isDNA", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isDNA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isFunction", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isFunction"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isError", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isError"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNoU", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isNoU"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNumber", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isNumber"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNull", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isNull"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isFunction", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isFunction"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObject", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isObject"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNoU", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isNoU"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObjectLike", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isObjectLike"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNull", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isNull"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObjectObject", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isObjectObject"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObject", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isObject"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPlain", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isPlain"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObjectLike", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isObjectLike"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrimary", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isPrimary"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isObjectObject", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isObjectObject"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPromise", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isPromise"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPlain", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isPlain"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isString", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isString"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrimary", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isPrimary"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isSymbol", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isSymbol"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPromise", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isPromise"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isSubclassOf", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isSubclassOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isString", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isString"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTag", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTag"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isSymbol", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isSymbol"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTr2OrTri", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTr2OrTri"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isSubclassOf", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isSubclassOf"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "toTw2", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["toTw2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTag", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isTag"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getTypeUpper", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["getTypeUpper"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTr2OrTri", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isTr2OrTri"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTyped", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTyped"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "toTw2", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["toTw2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isUndefined", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isUndefined"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getTypeUpper", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["getTypeUpper"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isVector"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTyped", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isTyped"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector2", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isVector2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isUndefined", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isUndefined"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector3", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isVector3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isVector"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector4", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isVector4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector2", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isVector2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isMatrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isMatrix3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector3", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isVector3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isMatrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isMatrix4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVector4", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isVector4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrimaryEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isPrimaryEqual"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isMatrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isMatrix3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVectorEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isVectorEqual"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isMatrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isMatrix4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isEqual"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrimaryEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isPrimaryEqual"]; });
 
-/* harmony import */ var _uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uuid */ "./global/utils/uuid.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "enableUUID", function() { return _uuid__WEBPACK_IMPORTED_MODULE_3__["enableUUID"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVectorEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isVectorEqual"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generateID", function() { return _uuid__WEBPACK_IMPORTED_MODULE_3__["generateID"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isEqual", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["isEqual"]; });
 
-/* harmony import */ var _url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./url */ "./global/utils/url.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURL", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURL"]; });
+/* harmony import */ var _uuid__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./uuid */ "./global/utils/uuid.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "enableUUID", function() { return _uuid__WEBPACK_IMPORTED_MODULE_5__["enableUUID"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLString", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLString"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generateID", function() { return _uuid__WEBPACK_IMPORTED_MODULE_5__["generateID"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLInteger", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLInteger"]; });
+/* harmony import */ var _url__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./url */ "./global/utils/url.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURL", function() { return _url__WEBPACK_IMPORTED_MODULE_6__["getURL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLFloat", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLFloat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLString", function() { return _url__WEBPACK_IMPORTED_MODULE_6__["getURLString"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLBoolean"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLInteger", function() { return _url__WEBPACK_IMPORTED_MODULE_6__["getURLInteger"]; });
 
-/* harmony import */ var _reflect__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reflect */ "./global/utils/reflect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "defineMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["defineMetadata"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLFloat", function() { return _url__WEBPACK_IMPORTED_MODULE_6__["getURLFloat"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["hasMetadata"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return _url__WEBPACK_IMPORTED_MODULE_6__["getURLBoolean"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwnMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["hasOwnMetadata"]; });
+/* harmony import */ var _reflect__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./reflect */ "./global/utils/reflect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "defineMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["defineMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getMetadata"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["hasMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadata"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwnMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["hasOwnMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deleteMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["deleteMetadata"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataKeys", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getMetadataKeys"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getOwnMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataKeys", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadataKeys"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deleteMetadata", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["deleteMetadata"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataValues", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getMetadataValues"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataKeys", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getMetadataKeys"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataValues", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadataValues"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataKeys", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getOwnMetadataKeys"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "handleDescriptor", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["handleDescriptor"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataValues", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getMetadataValues"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createDecorator", function() { return _reflect__WEBPACK_IMPORTED_MODULE_5__["createDecorator"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataValues", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["getOwnMetadataValues"]; });
 
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../meta */ "./global/meta/index.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "meta", function() { return _meta__WEBPACK_IMPORTED_MODULE_6__; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "handleDescriptor", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["handleDescriptor"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createDecorator", function() { return _reflect__WEBPACK_IMPORTED_MODULE_7__["createDecorator"]; });
 
+/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../meta */ "./global/meta/index.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "meta", function() { return _meta__WEBPACK_IMPORTED_MODULE_8__; });
 
 
 
 
 
 
-/**
- * Gets a path's extension
- * @param path
- * @returns {string|null}
- */
 
-function getPathExtension(path) {
-  var dot = path.lastIndexOf(".");
-  if (dot === -1) return null;
-  return path.substr(dot + 1);
-}
+
+
+
 
 /***/ }),
 
@@ -69576,6 +69663,29 @@ function createDecorator(o) {
   return function (...args) {
     return getDecorator(handlers, options, ...args);
   };
+}
+
+/***/ }),
+
+/***/ "./global/utils/str.js":
+/*!*****************************!*\
+  !*** ./global/utils/str.js ***!
+  \*****************************/
+/*! exports provided: getPathExtension */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathExtension", function() { return getPathExtension; });
+/**
+ * Gets a path's extension
+ * @param path
+ * @returns {string|null}
+ */
+function getPathExtension(path) {
+  var dot = path.lastIndexOf(".");
+  if (dot === -1) return null;
+  return path.substr(dot + 1);
 }
 
 /***/ }),
@@ -74413,22 +74523,24 @@ class ErrSOFPatternNotFound extends core__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"
 /*!***************************!*\
   !*** ./sof/EveSOFData.js ***!
   \***************************/
-/*! exports provided: EveSOFData, ErrSOFDNAFormatInvalid */
+/*! exports provided: EveSOFData, ErrSOFDNAFormatInvalid, ErrSOFResPathInsertInvalid */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDNAFormatInvalid", function() { return ErrSOFDNAFormatInvalid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFResPathInsertInvalid", function() { return ErrSOFResPathInsertInvalid; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
-/* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
-/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
-/* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
-/* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
-/* harmony import */ var constant_d3d__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! constant/d3d */ "./global/constant/d3d.js");
+/* harmony import */ var constant_d3d__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! constant/d3d */ "./global/constant/d3d.js");
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
+/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
+/* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
+/* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
+/* harmony import */ var sof_faction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! sof/faction */ "./sof/faction/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -74440,6 +74552,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
+
  //import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
 
 
@@ -74447,7 +74560,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOFData"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].list("EveSOFDataFaction"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].struct("EveSOFDataGeneric"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].list("EveSOFDataHull"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].list("EveSOFDataMaterial"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].list("EveSOFDataPattern"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].list("EveSOFDataRace"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFData {
+var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOFData"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataFaction"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].struct("EveSOFDataGeneric"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataHull"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataMaterial"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataPattern"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataRace"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFData {
   constructor() {
     _initializerDefineProperty(this, "faction", _descriptor, this);
 
@@ -74528,7 +74641,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     } = this._options;
 
     if (!effect.sprite) {
-      effect.sprite = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+      effect.sprite = core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from({
         name: "Shared sprite set effect",
         effectFilePath: effectPath.spriteSet,
         parameters: {
@@ -74539,7 +74652,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     }
 
     if (!effect.banner) {
-      effect.banner = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+      effect.banner = core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from({
         name: "Shared banner effect",
         effectFilePath: effectPath.banner,
         autoParameter: true,
@@ -74571,14 +74684,14 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
     if (!effect.shadow) {
       // TODO: Implement shadows
-      effect.shadow = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+      effect.shadow = core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from({
         name: "Shared shadow effect",
         effectFilePath: effectPath.shadow
       });
     }
 
     if (!effect.shadowSkinned) {
-      effect.shadowSkinned = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+      effect.shadowSkinned = core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from({
         name: "Shared shadow skinned effect",
         effectFilePath: this.GetShaderPath(effectPath.shadow, true)
       });
@@ -74592,7 +74705,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetHull(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.hull, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFHullNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.hull, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFHullNotFound"]);
   }
   /**
    * Gets hull names
@@ -74612,7 +74725,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   HasHull(name) {
-    return !!Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.hull, "name", name);
+    return !!Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.hull, "name", name);
   }
   /**
    * Gets a hull's build class
@@ -74674,7 +74787,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetFaction(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.faction, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFFactionNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.faction, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFFactionNotFound"]);
   }
   /**
    * Gets faction names
@@ -74694,7 +74807,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   HasFaction(name) {
-    return !!Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.faction, "name", name);
+    return !!Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.faction, "name", name);
   }
   /**
    * Gets a race
@@ -74704,7 +74817,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetRace(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.race, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFRaceNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.race, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFRaceNotFound"]);
   }
   /**
    * Gets race names
@@ -74724,7 +74837,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   HasRace(name) {
-    return !!Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.race, "name", name);
+    return !!Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.race, "name", name);
   }
   /**
    * Gets a material
@@ -74734,7 +74847,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetMaterial(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.material, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFMaterialNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.material, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFMaterialNotFound"]);
   }
   /**
    * Gets material names
@@ -74754,7 +74867,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   HasMaterial(name) {
-    return !!Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.material, "name", name);
+    return !!Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.material, "name", name);
   }
   /**
    * Gets a pattern
@@ -74764,7 +74877,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   GetPattern(name) {
-    return Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.pattern, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_4__["ErrSOFPatternNotFound"]);
+    return Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.pattern, "name", name, sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__["ErrSOFPatternNotFound"]);
   }
   /**
    * Gets pattern names
@@ -74784,7 +74897,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   HasPattern(name) {
-    return !!Object(utils__WEBPACK_IMPORTED_MODULE_2__["findElementByPropertyValue"])(this.pattern, "name", name);
+    return !!Object(utils__WEBPACK_IMPORTED_MODULE_3__["findElementByPropertyValue"])(this.pattern, "name", name);
   }
   /**
    * Gets a shader's path
@@ -74807,7 +74920,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   ParseDNA(dna) {
-    if (!Object(utils__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(dna)) {
+    if (!Object(utils__WEBPACK_IMPORTED_MODULE_3__["isDNA"])(dna)) {
       throw new ErrSOFDNAFormatInvalid({
         dna
       });
@@ -74834,7 +74947,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         area = {},
         resPathInsert = null,
         pattern = null;
-    var m = commands["MESH"];
+    var m = commands["MESH"] || commands["MATERIAL"];
 
     if (m) {
       for (var _i = 0; _i < m.length; _i++) {
@@ -74868,10 +74981,14 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
     if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName) {
       area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
-    } // TODO: Check if the faction.resPathInsert actually exists...
-
+    }
 
     resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
+
+    if (!sof_faction__WEBPACK_IMPORTED_MODULE_9__["EveSOFDataFaction"].IsValidResPathInsert(hull.name, resPathInsert)) {
+      resPathInsert = "none"; //throw new ErrSOFResPathInsertInvalid({ hull: hull.name, resPathInsert });
+    }
+
     return {
       hull,
       faction,
@@ -74891,7 +75008,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
   Build(dna) {
     var sof = this.ParseDNA(dna),
-        object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_6__["EveShip2"]();
+        object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveShip2"]();
     object.dna = dna;
     EveSOFData.Build(this, object, sof, this._options);
     if (object.Initialize) object.Initialize();
@@ -74906,7 +75023,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   Rebuild(object, opt) {
-    throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrFeatureNotImplemented"]({
+    throw new core__WEBPACK_IMPORTED_MODULE_4__["ErrFeatureNotImplemented"]({
       feature: "Rebuilding existing sof object"
     });
     /*
@@ -74950,7 +75067,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   static GetNames(arr, out = {}) {
-    var isArr = Object(utils__WEBPACK_IMPORTED_MODULE_2__["isArray"])(out);
+    var isArr = Object(utils__WEBPACK_IMPORTED_MODULE_3__["isArray"])(out);
 
     for (var i = 0; i < arr.length; i++) {
       if (isArr) {
@@ -75064,7 +75181,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     var ext;
 
     if (layer) {
-      ext = Object(utils__WEBPACK_IMPORTED_MODULE_2__["getPathExtension"])(layer.textureResFilePath);
+      ext = Object(utils__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"])(layer.textureResFilePath);
       mask.display = true;
       mask.materialIndex = layer.materialSource;
       mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
@@ -75079,8 +75196,8 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     }
 
     mask.parameters.PatternMaskMap.SetOverrides({
-      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddressMode(pU),
-      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"].ToAddressMode(pV)
+      addressUMode: sof_pattern__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataPatternLayer"].ToAddressMode(pU),
+      addressVMode: sof_pattern__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataPatternLayer"].ToAddressMode(pV)
     });
 
     if (material) {
@@ -75104,12 +75221,12 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
   static SetupCustomMasks(data, obj, sof, options) {
     if (obj.customMasks) {
       if (!obj.customMasks[0]) {
-        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
+        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
         obj.customMasks[0].name = "Pattern1";
       }
 
       if (!obj.customMasks[1]) {
-        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"]();
+        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
         obj.customMasks[1].name = "Pattern2";
       }
     }
@@ -75130,11 +75247,11 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
 
   static SetupBounds(data, obj, sof, options) {
-    var bounds = Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(sof.hull, "boundingSphere", [0, 0, 0, 0]);
+    var bounds = Object(utils__WEBPACK_IMPORTED_MODULE_3__["get"])(sof.hull, "boundingSphere", [0, 0, 0, 0]);
     obj.boundingSphereRadius = bounds[3];
     math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(obj.boundingSphereCenter, bounds);
-    math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(obj.shapeEllipsoidCenter, Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(sof.hull, "boundingEllipsoidCenter", [0, 0, 0]));
-    math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(obj.shapeEllipsoidRadius, Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(sof.hull, "boundingEllipsoidRadius", [0, 0, 0]));
+    math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(obj.shapeEllipsoidCenter, Object(utils__WEBPACK_IMPORTED_MODULE_3__["get"])(sof.hull, "boundingEllipsoidCenter", [0, 0, 0]));
+    math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(obj.shapeEllipsoidRadius, Object(utils__WEBPACK_IMPORTED_MODULE_3__["get"])(sof.hull, "boundingEllipsoidRadius", [0, 0, 0]));
   }
   /**
    * Temporary
@@ -75154,16 +75271,16 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     var {
       hull
     } = sof,
-        mesh = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
+        mesh = new core__WEBPACK_IMPORTED_MODULE_4__["Tw2Mesh"]();
     var initialized = false;
     /**** START TESTING ONLY *****/
 
     function handleShadow(geometryResPath) {
-      var noSkin = Object(utils__WEBPACK_IMPORTED_MODULE_2__["getPathExtension"])(geometryResPath) === "cake";
+      var noSkin = Object(utils__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"])(geometryResPath) === "cake";
       obj.shadowEffect = sof.hull.isSkinned && !noSkin ? options.effect.shadowSkinned : options.effect.shadow;
     }
 
-    var resPath = Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(hull, "geometryResFilePath", "");
+    var resPath = Object(utils__WEBPACK_IMPORTED_MODULE_3__["get"])(hull, "geometryResFilePath", "");
 
     if (resPath in EveSOFData.knownGeometryResPath) {
       mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
@@ -75196,7 +75313,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       var {
         generic
       } = this;
-      Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(hull, areasName, []).forEach(hullArea => {
+      Object(utils__WEBPACK_IMPORTED_MODULE_3__["get"])(hull, areasName, []).forEach(hullArea => {
         var {
           name = "",
           index = 0,
@@ -75204,14 +75321,14 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
           shader = "",
           areaType
         } = hullArea;
-        var area = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
+        var area = new core__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshArea"]();
         area.name = name;
         area.index = index;
         area.count = count;
         mesh[areasName].push(area);
         var config = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
         hullArea.Assign(config);
-        var effect = area.effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"]();
+        var effect = area.effect = new core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"]();
         effect.name = area.name + "_effect";
         effect.effectFilePath = config.effectFilePath;
         effect.autoParameter = true; // Fix missing quadheatdetail shader
@@ -75271,53 +75388,19 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
           math__WEBPACK_IMPORTED_MODULE_1__["vec4"].multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
           config.parameters.GeneralGlowColor = glowColor; //temp
+        }
+
+        if (config.textures.PmdgMap) {
+          config.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, config.textures.PmdgMap, sof.resPathInsert);
         } // Update effect
 
 
         effect.SetParameters(config.parameters);
         effect.SetTextures(config.textures);
-        effect.SetOverrides(config.overrides); // TODO: There is no way to identify what resPathInserts are available
-        //       unless we generate a file from the resFileIndex.
-        //       Until then, we'll just try to download what they asked for...
-        //       then fall back to the default
-
-        var pmdgResPathInsert = config.textures.PmdgMap ? sof.resPathInsert || sof.faction.resPathInsert : null;
-
-        if (pmdgResPathInsert) {
-          var resPathInsert = sof.faction.GetResPathInsert(config.textures.PmdgMap, pmdgResPathInsert);
-          var {
-            knownResPathInserts
-          } = EveSOFData;
-
-          if (resPathInsert in knownResPathInserts) {
-            if (knownResPathInserts[resPathInsert]) {
-              effect.SetTextures({
-                "PmdgMap": resPathInsert
-              });
-            } else {
-              global__WEBPACK_IMPORTED_MODULE_0__["logger"].Error({
-                name: "Space object factory",
-                message: "Invalid resPathInsert: " + resPathInsert
-              });
-            }
-          } else {
-            global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchResource(resPathInsert).then(() => {
-              knownResPathInserts[resPathInsert] = true;
-              effect.SetTextures({
-                "PmdgMap": resPathInsert
-              });
-            }).catch(err => {
-              knownResPathInserts[resPathInsert] = false;
-              global__WEBPACK_IMPORTED_MODULE_0__["logger"].Error({
-                name: "Space object factory",
-                message: "Invalid resPathInsert: " + resPathInsert
-              });
-            });
-          }
-        }
+        effect.SetOverrides(config.overrides);
 
         for (var i = 0; i < obj.customMasks.length; i++) {
-          eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
+          eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
         }
 
         effect.Initialize();
@@ -75358,7 +75441,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         return;
       }
 
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]();
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSet"]();
       set.name = srcSet.name;
       set.display = true;
       set.useQuads = true;
@@ -75377,7 +75460,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
           });
         }
 
-        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
+        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
           color
         })));
       });
@@ -75412,7 +75495,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
       }
 
-      var set = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpotlightSet"].from({
+      var set = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpotlightSet"].from({
         name: srcSet.name,
         items: srcSet.items,
         coneEffect: {
@@ -75462,11 +75545,11 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       planeSets
     } = sof.hull;
     planeSets.forEach(srcSet => {
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSet"]();
+      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSet"]();
       set.name = srcSet.name; // TODO: Usage
       // TODO: AtlasSize
 
-      set.effect = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+      set.effect = core__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from({
         effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
         autoParameter: true,
         parameters: {
@@ -75486,7 +75569,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         }
       });
       srcSet.items.forEach(srcItem => {
-        var item = eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
+        var item = eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
 
         var faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
 
@@ -75593,24 +75676,24 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
         if (usage === 1) {
           config.overrides.DecalAtMap = {
-            addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].REPEAT,
-            addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].REPEAT,
-            filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["FilterMode"].LINEAR,
-            mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["MipFilterMode"].NONE
+            addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["WrapMode"].REPEAT,
+            addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["WrapMode"].REPEAT,
+            filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["FilterMode"].LINEAR,
+            mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["MipFilterMode"].NONE
           };
         } // Glows
         else if (usage === 5) {
             config.overrides.DecalAtMap = {
-              addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].CLAMP_TO_EDGE,
-              addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].CLAMP_TO_EDGE,
-              filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["FilterMode"].LINEAR,
-              mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["MipFilterMode"].NONE
+              addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["WrapMode"].CLAMP_TO_EDGE,
+              addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["WrapMode"].CLAMP_TO_EDGE,
+              filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["FilterMode"].LINEAR,
+              mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_2__["MipFilterMode"].NONE
             };
           } // Item's values override logo types
 
 
         itemData.Assign(config);
-        obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
+        obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
           effect: config
         })));
       });
@@ -75637,7 +75720,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
     for (var i = 0; i < srcItems.length; ++i) {
       var scaled = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].scale(math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create(), srcItems[i].transform, options.multiplier.boosterScale);
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from({
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: scaled,
         atlasIndex0: srcItems[i].atlasIndex0,
@@ -75665,7 +75748,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     // TODO: Update to eve booster set 2
     // TODO: Boosters are slightly too big
 
-    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_5__["EveBoosterSet"].from({
+    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveBoosterSet"].from({
       name: src.name,
       glowColor: src.glowColor,
       glowScale: src.glowScale * boosterGlowScale,
@@ -75750,7 +75833,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       locatorTurrets = []
     } = sof.hull;
     locatorTurrets.forEach(item => {
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_5__["EveLocator2"].from(item));
+      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from(item));
     });
     global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
       name: "Space object factory",
@@ -75997,9 +76080,15 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
  * Fires when a sof pattern is not found
  */
 
-class ErrSOFDNAFormatInvalid extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"] {
+class ErrSOFDNAFormatInvalid extends core__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
   constructor(data) {
     super(data, "DNA format invalid (%dnaString%)");
+  }
+
+}
+class ErrSOFResPathInsertInvalid extends core__WEBPACK_IMPORTED_MODULE_4__["Tw2Error"] {
+  constructor(data) {
+    super(data, "Resource path insert is invalid for hull (%hull%:%resPathInsert%)");
   }
 
 }
@@ -76018,7 +76107,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFaction", function() { return EveSOFDataFaction; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var sof_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sof/shared */ "./sof/shared/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
+/* harmony import */ var _resPathInsert_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./resPathInsert.json */ "./sof/faction/resPathInsert.json");
+var _resPathInsert_json__WEBPACK_IMPORTED_MODULE_2___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./resPathInsert.json */ "./sof/faction/resPathInsert.json", 1);
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -76028,7 +76120,9 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataFaction = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFaction"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataArea"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionChild"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionColorSet"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogoSet"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionPlaneSet"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionSpotlightSet"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionVisibilityGroupSet"), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Check if the 'this.resPathInsert' value is always valid"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
+
+
+var EveSOFDataFaction = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFaction"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataArea"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionChild"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionColorSet"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogoSet"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionPlaneSet"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionSpotlightSet"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionVisibilityGroupSet"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -76157,19 +76251,28 @@ var EveSOFDataFaction = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
   }
   /**
    * Gets a resPathInsert
+   * @param {String} hull
    * @param {String} path
    * @param {String} [resPathInsert]
    * @returns {string}
    */
 
 
-  GetResPathInsert(path, resPathInsert) {
+  GetResPathInsert(hull, path, resPathInsert) {
     if (!resPathInsert || resPathInsert.toUpperCase() === "NONE") {
       if (!this.resPathInsert) {
         return path;
       }
 
       resPathInsert = this.resPathInsert;
+    }
+
+    if (!EveSOFDataFaction.IsValidResPathInsert(hull, resPathInsert)) {
+      global_tw2__WEBPACK_IMPORTED_MODULE_3__["logger"].Debug({
+        name: "Space object factory",
+        message: "ResPathInsert not found for hull ".concat(hull, ": ").concat(resPathInsert)
+      });
+      return path;
     }
 
     var index = path.lastIndexOf("/");
@@ -76213,6 +76316,18 @@ var EveSOFDataFaction = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
         return this.spotlightSets[i];
       }
     }
+  }
+  /**
+   * Checks if a res path insert is valid
+   * @param {String} hull
+   * @param {String} resPathInsert
+   * @return {Boolean}
+   */
+
+
+  static IsValidResPathInsert(hull, resPathInsert) {
+    var insert = _resPathInsert_json__WEBPACK_IMPORTED_MODULE_2__[resPathInsert];
+    return insert ? insert.includes(hull) : false;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -76327,7 +76442,7 @@ var EveSOFDataFaction = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
   initializer: function () {
     return null;
   }
-}), _applyDecoratedDescriptor(_class2.prototype, "GetResPathInsert", [_dec18], Object.getOwnPropertyDescriptor(_class2.prototype, "GetResPathInsert"), _class2.prototype)), _class2)) || _class);
+})), _class2)) || _class);
 
 /***/ }),
 
@@ -76897,6 +77012,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+/***/ }),
+
+/***/ "./sof/faction/resPathInsert.json":
+/*!****************************************!*\
+  !*** ./sof/faction/resPathInsert.json ***!
+  \****************************************/
+/*! exports provided: bloodraider, igc, serenity, wreck, tournament-xiv, fallen, guardian, serpentis, guristas, ishukone, kaalakiota, navy, sukuuvestaa, noh, cbd, hyasyoda, tournament-xii, tournament-x, police, aliastra, quafeultra, creodron, tournament-viii, interbus, odyssey, palatine, upwell, brutor, nefantar, thukker, tournament-vii, tournament-xiii, base, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"bloodraider\":[\"abc1_t1\",\"abc2_t1\",\"abc2_t2\",\"abc3_t1\",\"ab1_t1\",\"ab1_t2\",\"ab2_t1\",\"ab2_t2\",\"ab3_t1\",\"ac1_t1\",\"ac2_t1\",\"ac3_t1\",\"ac4_t1\",\"ac6_t1\",\"ade1_t1\",\"ade2_t1\",\"adn1_t1\",\"adn1_t1\",\"afaux1_t1\",\"af1_t1\",\"af2_t1\",\"af3_t1\",\"af4_t1\",\"af4_t2a\",\"af4_t2b\",\"af5_t1\",\"af5_t2\",\"af6_t1\",\"af7_t1\",\"af8_t1\",\"af9_t1\",\"ai1_t1\",\"ai2_t1\",\"as1_t1\",\"at1_t1\"],\"igc\":[\"ab1_t1\",\"mb1_t1\"],\"serenity\":[\"ab1_t1\",\"ab2_t1\",\"ab2_t2\",\"ab3_t1\",\"ac3_t1\",\"af7_t1\",\"angbc1_t1\",\"angb1_t1\",\"cbc2_t1\",\"cbc3_t1\",\"cb1_t1\",\"cb2_t1\",\"cb2_t2\",\"cc2_t1\",\"cc2_t2b\",\"cc3_t1\",\"gbc3_t1\",\"gb1_t1\",\"gb1_t1\",\"gb2_t1\",\"gb3_t1\",\"gc2_t1\",\"gc4_t1\",\"gc4_t2\",\"mb1_t1\",\"mb1_t2b\",\"mf4_t1\",\"morb1_t1\",\"sb1_t1\",\"soec1_t1\"],\"wreck\":[\"ab1_t1\",\"ab2_t1\",\"aca1_t1\",\"aca2_t1\",\"adn1_t1\",\"afaux1_t1\",\"afr1_t1\",\"angt1_t1\",\"angt1_t1\",\"cb1_t1\",\"cb2_t1\",\"cca1_t1\",\"cca2_t1\",\"cca2_t1\",\"cfaux1_t1\",\"cfr1_t1\",\"ct1_t1\",\"ct1_t1\",\"conb1_t1\",\"gb1_t1\",\"gb2_t1\",\"gca1_t1\",\"gca2_t1\",\"gdn1_t1\",\"gdn1_t1\",\"gfaux1_t1\",\"gfr1_t1\",\"gt1_t1\",\"gt1_t1\",\"jb1_t1\",\"cap1_t1\",\"mb1_t1\",\"mb2_t1\",\"mca1_t1\",\"mca2_t1\",\"mfaux1_t1\",\"mfr1_t1\",\"orecs1_t1\",\"orecs2_t1\",\"soeb1_t1\",\"tgb01_t1\",\"tgdn01_t1\"],\"tournament-xiv\":[\"ac6_t1\",\"af8_t1\"],\"fallen\":[\"angbc1_t1\",\"angb1_t1\",\"angf1_t1\",\"angf2_t1\",\"gb2_t1\",\"gc4_t1\"],\"guardian\":[\"angbc1_t1\",\"angb1_t1\",\"angc1_t1\",\"angf1_t1\",\"angf2_t1\",\"angf3_t1\",\"angf4_t1\",\"angf5_t1\",\"angf6_t1\",\"angf7_t1\"],\"serpentis\":[\"angf2_t1\",\"gb2_t1\"],\"guristas\":[\"cbc1_t1\",\"cbc2_t1\",\"cbc2_t2\",\"cbc3_t1\",\"cb1_t1\",\"cb1_t2\",\"cb2_t1\",\"cb2_t2\",\"cb3_t1\",\"cca1_t1\",\"cca2_t1\",\"cca2_t1\",\"cc1_t1\",\"cc2_t1\",\"cc3_t1\",\"cc4_t1\",\"cc4_t2a\",\"cc4_t2b\",\"cde1_t1\",\"cde1_t2\",\"cde2_t1\",\"cdn1_t1\",\"cdn1_t1\",\"cfi1_t1\",\"cfaux1_t1\",\"cf1_t1\",\"cf2_t1\",\"cf3_t1\",\"cf3_t2\",\"cf4_t1\",\"cf4_t2\",\"cf5_t1\",\"cf6_t1\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\",\"ci1_t1\",\"ci1_t2\",\"ci2_t1\",\"ci2_t2\",\"ci3_t1\",\"ci3_t2\",\"cs1_t1\",\"ct1_t1\",\"ct1_t1\"],\"ishukone\":[\"cbc1_t1\",\"cbc2_t1\",\"cbc2_t2\",\"cb1_t1\",\"cb2_t1\",\"cb3_t1\",\"cca1_t1\",\"cc2_t2b\",\"cc4_t1\",\"cc4_t2a\",\"cc4_t2b\",\"cde1_t1\",\"cde1_t2\",\"cf1_t1\",\"cf1_t2\",\"cf3_t1\",\"cf3_t2\",\"cf4_t1\",\"cf4_t2\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\",\"ci1_t1\",\"ci1_t2\",\"ci2_t1\",\"ci2_t2\",\"ci3_t1\",\"ci3_t2\"],\"kaalakiota\":[\"cbc1_t1\",\"cbc2_t1\",\"cbc2_t2\",\"cb1_t1\",\"cb1_t2\",\"cb2_t1\",\"cb2_t2\",\"cb3_t1\",\"cca1_t1\",\"cc2_t2a\",\"cc4_t1\",\"cc4_t2a\",\"cc4_t2b\",\"cde1_t2\",\"cde2_t1\",\"cf2_t2a\",\"cf3_t1\",\"cf3_t2\",\"cf4_t1\",\"cf4_t2\",\"cf5_t1\",\"cf6_t1\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\",\"ci1_t1\",\"ci1_t2\",\"ci2_t1\",\"ci2_t2\",\"ci3_t1\",\"ci3_t2\"],\"navy\":[\"cbc1_t1\",\"cbc2_t1\",\"cbc2_t2\",\"cbc3_t1\",\"cb1_t1\",\"cb2_t1\",\"cb2_t2\",\"cb3_t1\",\"cca1_t1\",\"cc1_fn\",\"cc2_t1\",\"cc3_t1\",\"cc4_t1\",\"cc4_t2a\",\"cc4_t2b\",\"cde1_t1\",\"cde1_t2\",\"cfaux1_t1\",\"cf1_t1\",\"cf2_t1\",\"cf3_t1\",\"cf3_t2\",\"cf4_t1\",\"cf5_t1\",\"cf6_t1\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\",\"cf8_t1\",\"ci1_t2\",\"ci2_t1\",\"ci2_t2\",\"ci3_t1\",\"ci3_t2\",\"gbc1_t1\",\"gbc3_t1\",\"gb1_t1\",\"gb1_t1\",\"gb2_t1\",\"gb2_t2\",\"gb3_t1\",\"gc1_t1\",\"gc2_t1\",\"gc3_t1\",\"gc4_t1\",\"gde1_t1\",\"gde2_t1\",\"gfb1_t1\",\"gfi1_t1\",\"gfaux1_t1\",\"gfr1_t1\",\"gf3_t1\",\"gf4_t1\",\"gf6_t1\",\"gf7_t1\",\"gf7_t2\",\"gf8_t1\",\"mbc1_t1\",\"mbc2_t1\",\"mbc2_t2\",\"mbc3_t1\",\"mb1_t1\",\"mb1_t2b\",\"mb2_t1\",\"mb2_t2a\",\"mc1_t1\",\"mc1_t2a\",\"mc1_t2b\",\"mc2_t1\",\"mc2_t2a\",\"mc2_t2c\",\"mc3_t1\",\"mc4_t1\",\"mde1_t1\",\"mde2_t1\",\"mfaux1_t1\",\"mf1_t1\",\"mf2_t1\",\"mf3_t1\",\"mf4_t1\",\"mf5_t1\",\"mf6_t1\",\"mf7_t1\",\"mf8_t1\",\"mi1_t1\",\"mi2_t1\",\"mi3_t1\",\"ms1_t1\"],\"sukuuvestaa\":[\"cbc2_t1\",\"cbc2_t2\",\"cb2_t1\",\"cb2_t2\",\"cb3_t1\",\"cf3_t1\"],\"noh\":[\"cb1_t1\",\"cb1_t2\",\"cb2_t1\",\"cb2_t2\",\"cb3_t1\",\"cca1_t1\",\"cc3_t1\",\"cde2_t1\",\"cfaux1_t1\",\"cf1_t1\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\",\"ci1_t1\",\"ci1_t2\",\"ci2_t1\",\"ci2_t2\",\"ci3_t1\",\"ci3_t2\"],\"cbd\":[\"cb2_t1\",\"cb2_t2\"],\"hyasyoda\":[\"cb2_t1\",\"cb2_t2\",\"cf3_t1\",\"cf3_t2\"],\"tournament-xii\":[\"cb2_t1\",\"cc2_t1\",\"cf2_t2a\"],\"tournament-x\":[\"cc1_t1\",\"cf7_t1\",\"cf7_t2a\",\"cf7_t2b\"],\"police\":[\"gbc1_t1\",\"gbc2_t1\",\"gb1_t1\",\"gb1_t1\",\"gb2_t1\",\"gb2_t2\",\"gc2_t1\",\"gc3_t1\",\"gdn1_t1\",\"gfaux1_t1\",\"gf4_t1\",\"gf4_t2a\",\"gf4_t2b\",\"gf6_t1\",\"gf7_t1\",\"gf7_t2\",\"gf8_t1\"],\"aliastra\":[\"gb1_t1\",\"gb1_t1\",\"gb2_t1\",\"gb2_t2\",\"gb3_t1\",\"gc2_t1\",\"gc3_t1\",\"gc4_t1\",\"gde1_t1\",\"gf4_t1\",\"gf4_t2a\",\"gf4_t2b\",\"gf7_t1\",\"gf7_t2\"],\"quafeultra\":[\"gb2_t1\",\"gi4_t1\"],\"creodron\":[\"gc3_t1\",\"gc4_t1\"],\"tournament-viii\":[\"gc4_t1\",\"gf4_t1\"],\"interbus\":[\"gs1_t1\"],\"odyssey\":[\"cap1_t1\"],\"palatine\":[\"cap1_t1\"],\"upwell\":[\"cap1_t1\"],\"brutor\":[\"mbc1_t1\",\"mbc2_t1\",\"mbc2_t2\",\"mbc3_t1\",\"mb1_t1\",\"mb1_t2b\",\"mb2_t1\",\"mb2_t2a\",\"mb3_t1\",\"mc1_t1\",\"mc1_t2a\",\"mc1_t2b\",\"mc2_t1\",\"mc2_t2a\",\"mc2_t2c\",\"mc3_t1\",\"mc4_t1\",\"mde1_t1\",\"mde2_t1\",\"mfaux1_t1\",\"mf1_t1\",\"mf1_t2a\",\"mf1_t2c\",\"mf2_t1\",\"mf2_t2b\",\"mf3_t1\",\"mf4_t1\",\"mf5_t1\",\"mf5_t2a\",\"mf6_t1\",\"mf7_t1\",\"mf8_t1\",\"mi1_t1\",\"mi2_t1\",\"mi3_t1\",\"ms1_t1\"],\"nefantar\":[\"mbc1_t1\",\"mbc2_t1\",\"mbc2_t2\",\"mbc3_t1\",\"mb1_t1\",\"mb1_t2b\",\"mb2_t1\",\"mb2_t2a\",\"mb3_t1\",\"mca1_t1\",\"mca1_t1\",\"mca2_t1\",\"mc1_t1\",\"mc1_t2a\",\"mc1_t2b\",\"mc2_t1\",\"mc2_t2a\",\"mc2_t2c\",\"mc3_t1\",\"mc4_t1\",\"mde1_t1\",\"mde2_t1\",\"mdn1_t1\",\"mdn1_t1\",\"mfaux1_t1\",\"mfr1_t1\",\"mf1_t1\",\"mf1_t2a\",\"mf1_t2c\",\"mf2_t1\",\"mf2_t2b\",\"mf3_t1\",\"mf4_t1\",\"mf5_t1\",\"mf5_t2a\",\"mf6_t1\",\"mf7_t1\",\"mf8_t1\",\"mi1_t1\",\"mi2_t1\",\"mi3_t1\",\"ms1_t1\",\"mt1_t1\",\"mt1_t1\"],\"thukker\":[\"mbc1_t1\",\"mbc2_t1\",\"mbc2_t2\",\"mbc3_t1\",\"mb1_t1\",\"mb1_t2b\",\"mb2_t1\",\"mb2_t2a\",\"mb3_t1\",\"mc1_t1\",\"mc1_t2a\",\"mc1_t2b\",\"mc2_t1\",\"mc2_t2a\",\"mc2_t2c\",\"mc3_t1\",\"mc4_t1\",\"mde1_t1\",\"mde2_t1\",\"mfaux1_t1\",\"mfr1_t1\",\"mf1_t1\",\"mf1_t2a\",\"mf1_t2c\",\"mf2_t1\",\"mf2_t2b\",\"mf3_t1\",\"mf4_t1\",\"mf5_t1\",\"mf5_t2a\",\"mf6_t1\",\"mf7_t1\",\"mf8_t1\",\"mi1_t1\",\"mi2_t1\",\"mi3_t1\",\"ms1_t1\"],\"tournament-vii\":[\"mc2_t1\",\"mf4_t1\",\"mf4_wing\"],\"tournament-xiii\":[\"sc1_t1\",\"sc1_xiii\",\"sf2_t1\",\"sf2_xiii\"],\"base\":[\"tgf01_t2\"]}");
 
 /***/ }),
 
@@ -81250,7 +81376,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetTypeUnknown, ErrSOFFactionColorSetTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFAreaTypeUnknown, ErrSOFAreaTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetTypeUnknown, ErrSOFLogoSetTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, ErrSOFDNAFormatInvalid, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
+/*! exports provided: EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, ErrSOFFactionColorSetTypeUnknown, ErrSOFFactionColorSetTypeNotFound, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, ErrSOFAreaTypeUnknown, ErrSOFAreaTypeNotFound, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, ErrSOFLogoSetTypeUnknown, ErrSOFLogoSetTypeNotFound, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, EveSOFData, ErrSOFDNAFormatInvalid, ErrSOFResPathInsertInvalid, EveSOF, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -81405,6 +81531,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["EveSOFData"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDNAFormatInvalid", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFDNAFormatInvalid"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFResPathInsertInvalid", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFResPathInsertInvalid"]; });
 
 /* harmony import */ var _EveSOF__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOF */ "./sof/EveSOF.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["EveSOF"]; });
@@ -94884,6 +95012,7 @@ var WrappedCamera = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Wra
       this.distance = obj.GetLongAxis() * multiplier || 1000;
     }
 
+    obj.GetWorldTranslation(this.poi);
     return this;
   }
   /**
@@ -95157,9 +95286,9 @@ var WrappedCamera = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Wra
      * That might be ugly, but we handle scrolls somehow
      * anyway, so don't bother here..
      */
+    //if (event.preventDefault) event.preventDefault();
 
 
-    if (event.preventDefault) event.preventDefault();
     event.returnValue = false;
     return false;
   }

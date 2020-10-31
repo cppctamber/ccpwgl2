@@ -1,4 +1,4 @@
-import { meta, isString } from "utils";
+import { meta, isString, createTextCanvas, createTextTextureFromCanvas } from "utils";
 import { resMan, device } from "global";
 import { Tw2SamplerOverride } from "../sampler/Tw2SamplerOverride";
 import { Tw2Parameter } from "./Tw2Parameter";
@@ -187,6 +187,40 @@ export class Tw2TextureParameter extends Tw2Parameter
                     ]);
 
                 const res = new Tw2TextureRes();
+                this._SetTextureRes(res);
+                res.Attach(texture, this.resourcePath);
+            }
+        }
+        //  Temporary text texture
+        else if (this.resourcePath.indexOf("text:/") === 0)
+        {
+            if (!this.textureRes || this.textureRes.path !== this.resourcePath)
+            {
+                const
+                    split = this.resourcePath.split("/"),
+                    text = split[1],
+                    options = split[2],
+                    opt = {};
+
+                if (options)
+                {
+                    const optSplit = options.split(";");
+                    for (let i = 0; i < optSplit.length; i++)
+                    {
+                        const [ key, value ] = optSplit[i].split("=");
+                        opt[key] = value;
+                    }
+                }
+
+                const
+                    { gl } = device,
+                    canvas = createTextCanvas(text, opt),
+                    res = new Tw2TextureRes(),
+                    texture = gl.createTexture();
+
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+                gl.bindTexture(gl.TEXTURE_2D, null);
                 this._SetTextureRes(res);
                 res.Attach(texture, this.resourcePath);
             }

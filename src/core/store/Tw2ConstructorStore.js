@@ -1,5 +1,6 @@
 import { STORE, Tw2GenericStore } from "./Tw2GenericStore";
 import { isFunction } from "utils";
+import { logger } from "global/tw2";
 
 
 export class Tw2ConstructorStore extends Tw2GenericStore
@@ -30,8 +31,8 @@ export class Tw2ConstructorStore extends Tw2GenericStore
         {
             if ("DEBUG_ENABLED" in value)
             {
-                console.log("Debug mode enabled for " + key);
                 value.DEBUG_ENABLED = bool;
+                if (bool) logger.Log({ name: key, message: "Debug mode enabled" });
             }
         }
     }

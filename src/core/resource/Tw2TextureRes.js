@@ -542,7 +542,8 @@ export class Tw2TextureRes extends Tw2Resource
         "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds",
         "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds",
         "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds",
-        "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds"
+        "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds",
+        "res:/texture/projection/pattern_geometric_03.dds"
     ];
 
     /**

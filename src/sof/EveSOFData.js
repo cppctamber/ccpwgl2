@@ -481,7 +481,7 @@ export class EveSOFData
             resPathInsert = null,
             pattern = null;
 
-        const m = commands["MESH"];
+        const m = commands["MESH"] || commands["MATERIAL"];
         if (m)
         {
             for (let i = 0; i < m.length; i++)
@@ -941,7 +941,6 @@ export class EveSOFData
 
                 // Get custom materials
                 Object.assign(areaData, sof.area);
-
                 data.AssignMaterialParameters(areaData, config.parameters);
 
                 // Area lights colour
