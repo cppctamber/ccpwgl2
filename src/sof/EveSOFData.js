@@ -1,5 +1,7 @@
 import { resMan, logger } from "global";
 import { vec3, vec4, mat4 } from "math";
+import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
+
 import {
     meta,
     isDNA,
@@ -33,7 +35,8 @@ import {
     EveCustomMask,
     EveLocator2,
     EvePlaneSet,
-    EvePlaneSetItem, EveSpaceObjectDecal,
+    EvePlaneSetItem,
+    EveSpaceObjectDecal,
     EveSpotlightSet,
     EveSpriteSet,
     EveSpriteSetItem
@@ -41,7 +44,7 @@ import {
 
 import { EveShip2, EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
-import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
+import { EveSOFDataFaction } from "sof/faction";
 
 
 @meta.type("EveSOFData")
@@ -516,8 +519,12 @@ export class EveSOFData
             area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
         }
 
-        // TODO: Check if the faction.resPathInsert actually exists...
         resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
+        if (!EveSOFDataFaction.IsValidResPathInsert(hull.name, resPathInsert))
+        {
+            resPathInsert = "none";
+            //throw new ErrSOFResPathInsertInvalid({ hull: hull.name, resPathInsert });
+        }
 
         return { hull, faction, race, area, resPathInsert, pattern, dna };
     }
@@ -960,54 +967,15 @@ export class EveSOFData
                     config.parameters.GeneralGlowColor = glowColor; //temp
                 }
 
+                if (config.textures.PmdgMap)
+                {
+                    config.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, config.textures.PmdgMap, sof.resPathInsert);
+                }
+
                 // Update effect
                 effect.SetParameters(config.parameters);
                 effect.SetTextures(config.textures);
                 effect.SetOverrides(config.overrides);
-
-                // TODO: There is no way to identify what resPathInserts are available
-                //       unless we generate a file from the resFileIndex.
-                //       Until then, we'll just try to download what they asked for...
-                //       then fall back to the default
-
-                let pmdgResPathInsert = config.textures.PmdgMap ? sof.resPathInsert || sof.faction.resPathInsert : null;
-                if (pmdgResPathInsert)
-                {
-                    const resPathInsert = sof.faction.GetResPathInsert(config.textures.PmdgMap, pmdgResPathInsert);
-                    const { knownResPathInserts } = EveSOFData;
-
-                    if (resPathInsert in knownResPathInserts)
-                    {
-                        if (knownResPathInserts[resPathInsert])
-                        {
-                            effect.SetTextures({ "PmdgMap": resPathInsert });
-                        }
-                        else
-                        {
-                            logger.Error({
-                                name: "Space object factory",
-                                message: "Invalid resPathInsert: " + resPathInsert
-                            });
-                        }
-                    }
-                    else
-                    {
-                        resMan.FetchResource(resPathInsert)
-                            .then(() =>
-                            {
-                                knownResPathInserts[resPathInsert] = true;
-                                effect.SetTextures({ "PmdgMap": resPathInsert });
-                            })
-                            .catch(err =>
-                            {
-                                knownResPathInserts[resPathInsert] = false;
-                                logger.Error({
-                                    name: "Space object factory",
-                                    message: "Invalid resPathInsert: " + resPathInsert
-                                });
-                            });
-                    }
-                }
 
                 for (let i = 0; i < obj.customMasks.length; i++)
                 {
@@ -1686,5 +1654,13 @@ export class ErrSOFDNAFormatInvalid extends Tw2Error
     constructor(data)
     {
         super(data, "DNA format invalid (%dnaString%)");
+    }
+}
+
+export class ErrSOFResPathInsertInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Resource path insert is invalid for hull (%hull%:%resPathInsert%)");
     }
 }

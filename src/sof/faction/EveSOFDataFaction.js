@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
+import * as resPathInserts from "./resPathInsert.json";
 
 
 @meta.type("EveSOFDataFaction")
@@ -148,13 +149,24 @@ export class EveSOFDataFaction
     }
 
     /**
+     * Checks if a res path insert is valid
+     * @param {String} hull
+     * @param {String} resPathInsert
+     * @return {Boolean}
+     */
+    static IsValidResPathInsert(hull, resPathInsert)
+    {
+        return !!(resPathInserts[resPathInsert] && resPathInserts[resPathInsert].includes(hull));
+    }
+
+    /**
      * Gets a resPathInsert
+     * @param {String} hull
      * @param {String} path
      * @param {String} [resPathInsert]
      * @returns {string}
      */
-    @meta.todo("Check if the 'this.resPathInsert' value is always valid")
-    GetResPathInsert(path, resPathInsert)
+    GetResPathInsert(hull, path, resPathInsert)
     {
         if (!resPathInsert || resPathInsert.toUpperCase() === "NONE")
         {
@@ -164,6 +176,12 @@ export class EveSOFDataFaction
             }
 
             resPathInsert = this.resPathInsert;
+        }
+
+        if (!EveSOFDataFaction.IsValidResPathInsert(hull, resPathInsert))
+        {
+            console.log("ResPathInsert not found: " + resPathInsert);
+            return path;
         }
 
         let index = path.lastIndexOf("/");
