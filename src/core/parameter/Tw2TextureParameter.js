@@ -158,7 +158,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (this.textureRes)
         {
             this.textureRes.UnregisterNotification(this);
-            this.EmitEvent(Tw2TextureRes.Event.RES_REMOVED, this, this.textureRes);
+            this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
             this.textureRes = null;
             return true;
         }

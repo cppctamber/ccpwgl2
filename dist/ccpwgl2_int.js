@@ -28288,7 +28288,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   _RemoveTextureRes() {
     if (this.textureRes) {
       this.textureRes.UnregisterNotification(this);
-      this.EmitEvent(_resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"].Event.RES_REMOVED, this, this.textureRes);
+      this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
       this.textureRes = null;
       return true;
     }
@@ -94738,6 +94738,7 @@ function getGraphicID(_x7, _x8) {
 /**
  * Gets a resPath from a graphic id
  * @param {Number} graphicID
+ * @param {Object} [params]
  * @returns {Promise<String>}
  */
 
@@ -94748,7 +94749,7 @@ function _getGraphicID() {
   return _getGraphicID.apply(this, arguments);
 }
 
-function getResPathFromGraphicID(_x9) {
+function getResPathFromGraphicID(_x9, _x10) {
   return _getResPathFromGraphicID.apply(this, arguments);
 }
 /**
@@ -94759,18 +94760,18 @@ function getResPathFromGraphicID(_x9) {
  */
 
 function _getResPathFromGraphicID() {
-  _getResPathFromGraphicID = _asyncToGenerator(function* (graphicID) {
+  _getResPathFromGraphicID = _asyncToGenerator(function* (graphicID, params) {
     if (!graphicID) throw new Error("Graphic ID not found");
     var {
       sof_dna,
       graphic_file
-    } = yield getIDFromESIRoute(EsiEndpoint.GRAPHICS, graphicID);
+    } = yield getIDFromESIRoute(EsiEndpoint.GRAPHICS, graphicID, params);
     return sof_dna || graphic_file || "";
   });
   return _getResPathFromGraphicID.apply(this, arguments);
 }
 
-function getResPathFromTypeID(_x10, _x11) {
+function getResPathFromTypeID(_x11, _x12) {
   return _getResPathFromTypeID.apply(this, arguments);
 }
 
@@ -94778,7 +94779,7 @@ function _getResPathFromTypeID() {
   _getResPathFromTypeID = _asyncToGenerator(function* (typeID, params) {
     var {
       graphic_id
-    } = yield getIDFromESIRoute(EsiEndpoint.TYPES, typeID);
+    } = yield getIDFromESIRoute(EsiEndpoint.TYPES, typeID, params);
     return yield getResPathFromGraphicID(graphic_id);
   });
   return _getResPathFromTypeID.apply(this, arguments);
@@ -95470,6 +95471,32 @@ class WrappedClient extends core_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["T
   FetchGraphicID(graphicID, params) {
     return _asyncToGenerator(function* () {
       return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID, params);
+    })();
+  }
+  /**
+   *
+   * @param typeID
+   * @param params
+   * @return {Promise<String>}
+   */
+
+
+  FetchResPathFromTypeID(typeID, params) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeID"])(typeID, params);
+    })();
+  }
+  /**
+   *
+   * @param graphicID
+   * @param params
+   * @return {Promise<String>}
+   */
+
+
+  FetchResPathFromGraphicID(graphicID, params) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromGraphicID"])(graphicID, params);
     })();
   }
   /**
