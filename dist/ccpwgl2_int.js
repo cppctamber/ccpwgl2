@@ -21106,7 +21106,7 @@ class Tw2Library extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2Event
    */
 
 
-  SetBlackPathHandler(ext, handler) {
+  SetBlackPathExtensionHandler(ext, handler) {
     _reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__["path"].setExtensionHandler(ext, handler);
   }
   /**
@@ -21762,7 +21762,7 @@ class Tw2Logger extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventE
     } // Set visibility
 
 
-    if (!this._debugMode || !this.display || !this.visible[log.type]) {
+    if (!this._debugMode && (!this.display || !this.visible[log.type])) {
       log.hide = true;
     } // Throttle excessive output
 
@@ -28288,7 +28288,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   _RemoveTextureRes() {
     if (this.textureRes) {
       this.textureRes.UnregisterNotification(this);
-      this.OnEvent("resource_removed", this.textureRes);
+      this.EmitEvent(_resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"].Event.RES_REMOVED, this, this.textureRes);
       this.textureRes = null;
       return true;
     }
@@ -28518,6 +28518,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   RES_ERROR: "res_error",
   RES_REQUESTED: "res_requested",
   RES_PREPARED: "res_prepared",
+  RES_REMOVED: "res_removed",
   OVERRIDES_MODIFIED: "overrides_modified"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,

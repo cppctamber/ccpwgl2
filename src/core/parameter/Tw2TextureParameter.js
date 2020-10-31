@@ -158,7 +158,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (this.textureRes)
         {
             this.textureRes.UnregisterNotification(this);
-            this.OnEvent("resource_removed", this.textureRes);
+            this.EmitEvent(Tw2TextureRes.Event.RES_REMOVED, this, this.textureRes);
             this.textureRes = null;
             return true;
         }
@@ -399,6 +399,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         RES_ERROR: "res_error",
         RES_REQUESTED: "res_requested",
         RES_PREPARED: "res_prepared",
+        RES_REMOVED: "res_removed",
         OVERRIDES_MODIFIED: "overrides_modified"
     };
 

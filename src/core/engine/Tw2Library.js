@@ -202,7 +202,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param { String } ext
      * @param { Function } handler
      */
-    SetBlackPathHandler(ext, handler)
+    SetBlackPathExtensionHandler(ext, handler)
     {
         path.setExtensionHandler(ext, handler);
     }

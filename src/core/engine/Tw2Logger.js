@@ -127,7 +127,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Set visibility
-        if (!this._debugMode || !this.display || !this.visible[log.type])
+        if (!this._debugMode && (!this.display || !this.visible[log.type]))
         {
             log.hide = true;
         }
