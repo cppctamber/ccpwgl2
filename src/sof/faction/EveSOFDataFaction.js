@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
-import * as resPathInserts from "./resPathInsert.json";
+import resPathInserts from "./resPathInsert.json";
 
 
 @meta.type("EveSOFDataFaction")
@@ -149,17 +149,6 @@ export class EveSOFDataFaction
     }
 
     /**
-     * Checks if a res path insert is valid
-     * @param {String} hull
-     * @param {String} resPathInsert
-     * @return {Boolean}
-     */
-    static IsValidResPathInsert(hull, resPathInsert)
-    {
-        return !!(resPathInserts[resPathInsert] && resPathInserts[resPathInsert].includes(hull));
-    }
-
-    /**
      * Gets a resPathInsert
      * @param {String} hull
      * @param {String} path
@@ -180,7 +169,7 @@ export class EveSOFDataFaction
 
         if (!EveSOFDataFaction.IsValidResPathInsert(hull, resPathInsert))
         {
-            console.log("ResPathInsert not found: " + resPathInsert);
+            console.log(`ResPathInsert not found for hull ${hull}: ${resPathInsert}`);
             return path;
         }
 
@@ -229,6 +218,18 @@ export class EveSOFDataFaction
                 return this.spotlightSets[i];
             }
         }
+    }
+
+    /**
+     * Checks if a res path insert is valid
+     * @param {String} hull
+     * @param {String} resPathInsert
+     * @return {Boolean}
+     */
+    static IsValidResPathInsert(hull, resPathInsert)
+    {
+        const insert = resPathInserts[resPathInsert];
+        return insert ? insert.includes(hull) : false;
     }
 
 }
