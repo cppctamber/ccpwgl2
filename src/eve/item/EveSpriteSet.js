@@ -1,6 +1,6 @@
-import { meta, isObjectLike } from "utils";
+import { meta } from "utils";
 import { device } from "global";
-import { vec3, vec4 } from "math";
+import { num, vec3, vec4 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "utils";
@@ -137,6 +137,15 @@ export class EveSpriteSet extends EveObjectSet
      */
     Initialize()
     {
+        // Randomize blinking a little
+        const blinkRateAdjustment = num.randomFloat(0, 0.2);
+
+        for (let i = 0; i < this.items.length; i++)
+        {
+            const { blinkRate } = this.items[i];
+            if (blinkRate) this.items[i].blinkRate += blinkRateAdjustment;
+        }
+
         this.UseQuads(!!this.useQuads);
         this.Rebuild();
     }
