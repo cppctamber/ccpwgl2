@@ -30,6 +30,26 @@ export class EvePlaneSetItem extends EveObjectSetItem
     @meta.string
     name = "";
 
+    @meta.notImplemented
+    @meta.float
+    blinkRate = 0;
+
+    @meta.notImplemented
+    @meta.float
+    blinkPhase = 0;
+
+    @meta.notImplemented
+    @meta.uint
+    blinkMode = 0;
+
+    @meta.notImplemented
+    @meta.float
+    dutyCycle = 0;
+
+    @meta.notImplemented
+    @meta.float
+    rate = 0;
+
     @meta.color
     color = vec4.create();
 
@@ -59,7 +79,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
 
     @meta.uint
     @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
-    boneIndex = 0; // Should this be -1 by default?
+    boneIndex = -1;
 
     @meta.uint
     @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
@@ -72,6 +92,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
      * Alias for maskAtlasID
      * @returns {number}
      */
+    @meta.alias("maskAtlasID")
     get maskMapAtlasIndex()
     {
         return this.maskAtlasID;

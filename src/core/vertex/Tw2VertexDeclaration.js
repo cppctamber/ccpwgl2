@@ -57,6 +57,7 @@ export class Tw2VertexDeclaration
         {
             this.elementsSorted.push(this.elements[i]);
         }
+
         this.elementsSorted.sort(Tw2VertexDeclaration.CompareDeclarationElements);
     }
 

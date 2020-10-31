@@ -49,6 +49,13 @@ export const data = createDecorator({
     }
 });
 
+export const alias = createDecorator({
+    property({ target, property }, alias)
+    {
+        defineMetadata("alias", alias, target, property);
+    }
+});
+
 export const readOnly = createDecorator({
     noArgs: true,
     property({ descriptor })

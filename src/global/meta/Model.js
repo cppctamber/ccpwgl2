@@ -3,6 +3,7 @@ import { getMetadata, hasMetadata } from "../utils/reflect";
 import { isArray, isFunction, isObjectObject } from "../utils/type";
 import { propTypes } from "./ModelPropertyTypes";
 import { readOnly } from "./@generic";
+import { logger } from "global/tw2";
 
 
 const PRIVATE = new WeakMap();
@@ -630,7 +631,12 @@ export class Model
 
         for (const key in item)
         {
-            if (item.hasOwnProperty(key) && hasMetadata("type", item, key) && !getMetadata("isPrivate", item, key))
+            if (
+                item.hasOwnProperty(key) &&
+                hasMetadata("type", item, key) &&
+                !getMetadata("isPrivate", item, key) &&
+                !getMetadata("alias", item, key)
+            )
             {
                 const
                     type = getMetadata("type", item, key),
@@ -720,16 +726,51 @@ export class Model
             //item.Clear({ skipUpdate: true, skipEvents: true });
         }
 
+        let skipped;
+
         let updated = false;
         if (values)
         {
-            for (const key in values)
+            for (let key in values)
             {
-                if (values.hasOwnProperty(key) && hasMetadata("type", item, key) && !getMetadata("isPrivate", item, key))
+                if (values.hasOwnProperty(key))
                 {
+                    const value = values[key];
+
+                    /** DEBUGGING START **/
+                    if (values[key] === undefined)
+                    {
+                        skipped = skipped || {};
+                        skipped.undefined = skipped.undefined | [];
+                        skipped.undefined.push(key);
+                        continue;
+                    }
+
+                    if (getMetadata("isPrivate", item, key))
+                    {
+                        skipped = skipped || {};
+                        skipped.private = skipped.private || [];
+                        skipped.private.push(key);
+                        continue;
+                    }
+
+                    // Allow aliasing
+                    if (hasMetadata("alias", item, key))
+                    {
+                        key = getMetadata("alias", item, key);
+                    }
+
+                    if (!hasMetadata("type", item, key))
+                    {
+                        skipped = skipped || {};
+                        skipped.noType = skipped.noType || [];
+                        skipped.noType.push(key);
+                        continue;
+                    }
+                    /** DEBUGGING END **/
+
                     const
                         type = getMetadata("type", item, key),
-                        value = values[key],
                         handler = propTypes.get(type);
 
                     if (!handler)
@@ -758,7 +799,7 @@ export class Model
                         continue;
                     }
 
-                    if (handler.set(item, key, value, options))
+                    if (handler.set(item, key, value, options) !== false)
                     {
                         updated = true;
                     }
@@ -772,6 +813,15 @@ export class Model
         }
 
         _ids.set(item, updated);
+
+        if (skipped)
+        {
+            logger.Debug({
+                name: `${getMetadata("type", item.constructor)}.set`,
+                message: "Properties values skipped",
+                data: skipped
+            });
+        }
 
         return updated;
     }

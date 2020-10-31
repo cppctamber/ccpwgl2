@@ -1,4 +1,4 @@
-import { meta, isVector3, isVector4, isMatrix4, isNumber } from "utils";
+import { meta } from "utils";
 import { vec3, quat, mat4 } from "math";
 
 
@@ -10,6 +10,9 @@ const
 
 export class Tw2Transform extends meta.Model
 {
+
+    @meta.string
+    name = "";
 
     @meta.quaternion
     rotation = quat.create();
@@ -38,7 +41,7 @@ export class Tw2Transform extends meta.Model
      */
     OnWorldModified(onWorldTransformModified)
     {
-        this.onWorldTransformModified = onWorldTransformModified;
+        this._onWorldTransformModified = onWorldTransformModified;
         return this;
     }
 
@@ -119,9 +122,14 @@ export class Tw2Transform extends meta.Model
             }
         }
 
-        if (this["onWorldTransformModified"])
+        if (this["_onWorldTransformModified"])
         {
-            this["onWorldTransformModified"](this._worldTransform);
+            this["_onWorldTransformModified"](this._worldTransform);
+        }
+
+        if (this["OnWorldTransformModified"])
+        {
+            this["OnWorldTransformModified"](this._worldTransform);
         }
 
         if (!skipUpdate)
@@ -130,6 +138,8 @@ export class Tw2Transform extends meta.Model
         }
 
         this._rebuildWorld = false;
+
+        return true;
     }
 
     /**
@@ -870,101 +880,39 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
-     * TEMPORARY SET.
-     * @param a
-     * @param values
-     * @param opt
+     * Sets an object from values
+     * @param {Tw2Transform} a
+     * @param {Object} [values]
+     * @param {Object} [opt]
      * @returns {boolean}
      */
     static set(a, values, opt)
     {
         if (!values) return false;
 
-        let {
-            transform,
-            rotation,
-            euler,
-            scale,
-            scaling,
-            radius,
-            translation,
-            position
-        } = values;
+        let { rotation, euler, scale, radius, position, ...temp } = values;
 
-        // Handle alternates
-        if (scale === undefined) scale = scaling;
-        if (scale === undefined && radius) scale = radius * 2;
-        if (!rotation) rotation = euler;
-        if (!translation) translation = position;
-
-        if (!transform && !rotation && !scale && !translation)
+        if (radius !== undefined)
         {
-            return false;
-        }
-
-        let updated;
-
-        if (transform)
-        {
-            updated = true;
-            if (isMatrix4)
-            {
-                a.SetTransform(transform);
-            }
-            else
-            {
-                throw new TypeError("Invalid transform matrix");
-            }
-        }
-
-        if (rotation)
-        {
-            updated = true;
-
-            if (isVector3(rotation))
-            {
-                a.SetRotationFromEuler(rotation);
-            }
-            else if (isVector4(rotation))
-            {
-                a.SetRotation(rotation);
-            }
-            else
-            {
-                throw new TypeError("Invalid rotation value");
-            }
+            scale = radius * 2;
         }
 
         if (scale !== undefined)
         {
-            updated = true;
-
-            if (isNumber(scale))
-            {
-                a.SetScaleUniform(scale);
-            }
-            else if (isVector3)
-            {
-                a.SetScale(scale);
-            }
-            else
-            {
-                throw new TypeError("Invalid scale");
-            }
+            temp.scaling = [ scale, scale, scale ];
         }
 
-        if (translation)
+        if (rotation && rotation.length === 3)
         {
-            updated = true;
-            a.SetTranslation(translation);
+            temp.rotation = quat.fromEuler([], rotation);
         }
 
-        if (updated && !opt || !opt.skipUpdate)
+        if (position)
         {
-            a.UpdateValues(opt);
+            temp.translation = position;
         }
 
-        return updated;
+        return super.set(a, temp, opt);
     }
 
     /**

@@ -33,6 +33,9 @@ export class EveBoosterBatch extends Tw2RenderBatch
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
+    @meta.string
+    name = "";
+
     @meta.uint
     atlas0 = 0;
 

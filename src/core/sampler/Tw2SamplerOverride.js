@@ -10,7 +10,7 @@ export class Tw2SamplerOverride extends meta.Model
     name = "";
 
     @meta.boolean
-    enabled = true;
+    enable = true;
 
     @meta.uint
     addressUMode = -1;
@@ -59,7 +59,7 @@ export class Tw2SamplerOverride extends meta.Model
      */
     GetSampler(o)
     {
-        if (!this.enabled)
+        if (!this.enable)
         {
             return o;
         }

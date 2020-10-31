@@ -132,6 +132,12 @@ export class Tw2TextureRes extends Tw2Resource
 
             case "dds":
 
+                // Temporarily keep track of known empty dds
+                if (!data.length)
+                {
+                    Tw2TextureRes.knownBrokenDDSFiles.push(this.path);
+                }
+
                 const info = Tw2TextureRes.GetDDSInfo(data);
 
                 let {
@@ -169,10 +175,10 @@ export class Tw2TextureRes extends Tw2Resource
                 }
 
                 // Temporarily output uncompressed rgb/rgba dds info
-                if (isRGB || fourCC === FOURCC_ATI1 || fourCC ===   FOURCC_ATI2)
+                if (isRGB || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
                 {
-                    logger.Warn({
-                        title: "Tw2TextureRes2",
+                    logger.Debug({
+                        name: "Tw2TextureRes",
                         message: `Partial support for ${name}: ${this.path}`,
                         data: info
                     });
@@ -183,8 +189,8 @@ export class Tw2TextureRes extends Tw2Resource
                 {
                     mipmaps = 1;
 
-                    logger.Warn({
-                        title: "Tw2TextureRes2",
+                    logger.Debug({
+                        name: "Tw2TextureRes",
                         message: `Texture not power of 2: ${this.path}`,
                         data: info
                     });
@@ -416,10 +422,11 @@ export class Tw2TextureRes extends Tw2Resource
     /**
      * Attaches a texture
      * @param {WebGLTexture} texture
+     * @param {String} [path=""]
      */
-    Attach(texture)
+    Attach(texture, path = "")
     {
-        this.path = "";
+        this.path = path;
         this.texture = texture;
         this._ClearMeta();
         this._isAttached = true;
@@ -516,6 +523,27 @@ export class Tw2TextureRes extends Tw2Resource
         img.src = canvas.toDataURL();
         return img;
     }
+
+    /**
+     * Keep track of dds we know are empty
+     * @type {*[]}
+     */
+    static knownBrokenDDSFiles = [
+        "res:/texture/global/noise.dds",
+        "res:/texture/global/spotramp.dds",
+        "res:/texture/global/whitesharp.dds",
+        "res:/texture/particle/whitesharp.dds",
+        "res:/dx9/texture/decal/deck_01_cube.dds",
+        "res:/dx9/model/decal/stripe_cautiontype08_01_f.dds",
+        "res:/dx9/model/decal/stripe_cautiontype08_01_at.dds",
+        "res:/dx9/model/decal/caldari/marking_chevroncircle_01_nr.dds",
+        "res:/dx9/model/decal/caldari/marking_chevroncircle_01_f.dds",
+        "res:/dx9/model/decal/caldari/code_cf04ewar_at.dds",
+        "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds",
+        "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds",
+        "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds",
+        "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds"
+    ];
 
     /**
      * Gets dds info for debugging
@@ -675,13 +703,13 @@ export class Tw2TextureRes extends Tw2Resource
                     {
                         info.name = "RGB";
                         info.format = gl.RGB;
-                        info.internalFormat = device.glVersion ===  1  ? gl.RGB : gl.RGB8; // RGB565, SRGB8
+                        info.internalFormat = device.glVersion === 1 ? gl.RGB : gl.RGB8; // RGB565, SRGB8
                     }
                     else
                     {
                         info.name = "RGBA";
                         info.format = gl.RGBA;
-                        info.internalFormat = device.glVersion ===  1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
+                        info.internalFormat = device.glVersion === 1 ? gl.RGBA : gl.RGBA8; // RGB5_A1, RGBA4, SRGB8_ALPHA8
                         info.aOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_A_MASK]);
                     }
                     break;

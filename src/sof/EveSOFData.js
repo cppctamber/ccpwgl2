@@ -77,6 +77,8 @@ export class EveSOFData
         // new ones have weird artifacts with standard textures
         useSpotlightPool: false,
 
+        devColor: [ 0, 0, 0, 0 ],
+
         multiplier: {
             // Boost lights
             generalGlowColor: [ 10, 10, 10, 1 ],
@@ -515,7 +517,7 @@ export class EveSOFData
         }
 
         // TODO: Check if the faction.resPathInsert actually exists...
-        resPathInsert = commands["RESPATHINSERT"] || faction.resPathInsert || null;
+        resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
 
         return { hull, faction, race, area, resPathInsert, pattern, dna };
     }
@@ -1048,9 +1050,15 @@ export class EveSOFData
 
         spriteSets.forEach(srcSet =>
         {
+            //  If they aren't visible, don't bother to create them
+            if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup))
+            {
+                return;
+            }
+
             const set = new EveSpriteSet();
             set.name = srcSet.name;
-            set.display = srcSet.visibilityGroup ? sof.faction.HasVisibilityGroup(srcSet.visibilityGroup) : true;
+            set.display = true;
             set.useQuads = true;
             set.skinned = srcSet.skinned && isSkinned;
             set.effect = options.effect.sprite;
@@ -1066,10 +1074,12 @@ export class EveSOFData
                 else
                 {
                     sof.faction.GetColorType(0, color);
+
                     logger.Debug({
-                        ame: "Space object factory",
+                        name: "Space object factory",
                         message: "Using primary color for spriteSet: " + srcItem.colorType
                     });
+
                 }
 
                 set.items.push(EveSpriteSetItem.from(Object.assign({}, srcItem, { color })));
@@ -1197,20 +1207,32 @@ export class EveSOFData
                     vec4.copy(item.color, faction.color);
                 }
 
-                // TEMPORARY
-                if (item.color[0] === 0 && item.color[1] === 0 && item.color[2] === 0 && item.color[3] === 0)
+                if (EveSOFData.isZeroColor(item.color))
                 {
-                    vec4.set(item.color, 1, 1, 1, 1);
+                    vec4.copy(item.color, options.devColor);
+                }
+
+                // If a plane set is zero coloured don't bother to create them
+                if (EveSOFData.isZeroColor(item.color))
+                {
+                    return;
                 }
 
                 set.items.push(item);
             });
 
-            set.Initialize();
-            const arr = obj.attachments || obj.planeSets;
-            arr.push(set);
-
+            if (set.items.length)
+            {
+                set.Initialize();
+                const arr = obj.attachments || obj.planeSets;
+                arr.push(set);
+            }
         });
+    }
+
+    static isZeroColor(color)
+    {
+        return color[0] === 0 && color[1] === 0 && color[2] === 0 && color[3] === 0;
     }
 
     /**
@@ -1295,6 +1317,7 @@ export class EveSOFData
                         mipFilterMode: MipFilterMode.NONE
                     };
                 }
+                // Glows
                 else if (usage === 5)
                 {
                     config.overrides.DecalAtMap = {

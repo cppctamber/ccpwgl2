@@ -55,6 +55,38 @@ export class EvePlanet extends EveObject
     }
 
     /**
+     * Fetches planet async
+     * @param {Object} options
+     * @return {Promise<EvePlanet>}
+     */
+    async Fetch(options={})
+    {
+        const { name="", itemID=0, resPath="", atmospherePath="", heightMap1="", heightMap2="" } = options;
+
+        this.name = name;
+        this.itemID = itemID;
+        this.heightMapResPath1 = heightMap1;
+        this.heightMapResPath2 = heightMap2;
+        this.highDetail.children.splice(0);
+
+        const [ zOnly, planet, atmosphere ] = await Promise.all([
+            resMan.FetchObject(EvePlanet.ZOnlyModelPath),
+            resPath ? resMan.FetchObject(resPath) : null,
+            atmospherePath ? resMan.FetchObject(atmospherePath) : null
+        ]);
+
+        this._planet = planet;
+        this._atmosphere = atmosphere;
+        this.zOnlyModel = zOnly;
+
+        EvePlanet.MeshLoaded(this, this._planet);
+        return this;
+    }
+
+
+    static ZOnlyModelPath = "res:/dx9/model/worldobject/planet/planetzonly.red";
+
+    /**
      * Creates the planet from an options object
      * @param {{}} options={}                   - an object containing the planet's options
      * @param {String} options.name             - the planet's name
@@ -73,7 +105,10 @@ export class EvePlanet extends EveObject
         this.itemID = itemID;
         this.heightMapResPath1 = heightMap1;
         this.heightMapResPath2 = heightMap2;
-        this.highDetail.children = [];
+        this.highDetail.children.splice(0);
+        this._heightDirty = true;
+        this._planet = null;
+        this._atmosphere = null;
         this._heightDirty = true;
 
         let loadingParts = 1;
@@ -114,7 +149,7 @@ export class EvePlanet extends EveObject
             });
         }
 
-        resMan.GetObject("res:/dx9/model/worldobject/planet/planetzonly.red", obj =>
+        resMan.GetObject(EvePlanet.ZOnlyModelPath, obj =>
         {
             this.zOnlyModel = obj;
             onPartLoaded();

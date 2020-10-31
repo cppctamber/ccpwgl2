@@ -5,50 +5,28 @@ import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
 
-import { path } from "./core/reader/Tw2BlackPropertyReaders";
 import { vec4, mat4 } from "math";
 
-/**
- * Black property path  handler
- * @param {String} filepath
- * @returns {String}
- */
-path.handler = function(filepath)
+
+
+function handleAllBlackPaths(path)
 {
-    filepath = filepath.toLowerCase();
-
-    // Because there are two sources for "res:" now we need to replace
-    // any references from the eve cdn with a new res path mapping
-
-    let ext = "";
-    const dot = filepath.lastIndexOf(".");
-    if (dot !== -1) ext = filepath.substr(dot + 1).toLowerCase();
-
-    if (filepath in remapTextures)
+    if (path.includes(".dds") && core.Tw2TextureRes.knownBrokenDDSFiles.indexOf(path) !== -1)
     {
-        filepath = remapTextures[filepath];
+        path = path.replace(".dds", ".dds.0.png");
     }
     else
     {
-        filepath = filepath.replace("res:", "cdn:");
-
-        if (filepath.includes(".gr2"))
-        {
-            filepath = filepath.replace("gr2", "cake");
-        }
+        path = path.replace("res:/", "cdn:/").toLowerCase();
     }
 
-    return filepath;
-};
+    return path;
+}
 
-
-const remapTextures = {
-    "res:/texture/global/noise.dds": "res:/texture/global/noise.dds.0.png",
-    "res:/texture/global/spotramp.dds": "res:/texture/global/spotramp.dds.0.png",
-    "res:/texture/global/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
-    "res:/texture/particle/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
-    "res:/dx9/texture/decal/deck_01_cube.dds": "cdn:/dx9/texture/decal/deck_01_cube.dds.0.png"
-};
+function handleBlackGR2(path)
+{
+    return path.replace(".gr2", ".cake");
+}
 
 /**
  * Register global configurations
@@ -56,6 +34,11 @@ const remapTextures = {
 export const config = {
 
     debug: false,
+
+    black: {
+        "*": handleAllBlackPaths,
+        "gr2": handleBlackGR2
+    },
 
     device: {
         "textureQuality": 0,

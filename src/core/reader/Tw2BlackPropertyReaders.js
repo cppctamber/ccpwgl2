@@ -2,7 +2,7 @@ import { store } from "global";
 import { vec2, vec3, vec4, mat4 } from "math";
 import { ErrFeatureNotImplemented } from "../Tw2Error";
 import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
-import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "utils";
+import { getMetadata, getPathExtension, hasMetadata, isFunction, isPlain, isString } from "utils";
 
 import {
     PT_ARRAY,
@@ -217,6 +217,8 @@ export function string(reader)
 }
 
 
+const pathExtensionHandlers = new Map();
+
 /**
  * Reads a path
  * @param {Tw2BlackBinaryReader} reader
@@ -224,15 +226,64 @@ export function string(reader)
  */
 export function path(reader)
 {
-    const result = reader.ReadStringU16();
-    return path.handler ? path.handler(result) : result;
+    let result = reader.ReadStringU16();
+
+    const anyHandler = pathExtensionHandlers.get("*");
+    if (anyHandler)
+    {
+        let handled = anyHandler(result);
+        if (handled) result = handled;
+    }
+
+    const
+        ext = getPathExtension(result),
+        handler = pathExtensionHandlers.get(ext);
+
+    if (handler)
+    {
+        let handled = handler(result);
+        if (handled) return handled;
+    }
+
+    return result;
 }
 
 /**
- * Path handler
- * @type {null|Function}
+ * Registers extension handlers
+ * @param {Object} [options]
  */
-path.handler = null;
+path.registerExtensionHandlers = function(options)
+{
+    if (!options) return;
+    for (const key in options)
+    {
+        if (options.hasOwnProperty(key))
+        {
+            path.setExtensionHandler(key, options[key]);
+        }
+    }
+};
+
+/**
+ * Path extension handlers
+ * @param {String} ext
+ * @param {Function|null} func
+ */
+path.setExtensionHandler = function(ext, func)
+{
+    if (func === null)
+    {
+        pathExtensionHandlers.delete(ext);
+    }
+    else if (isFunction(func))
+    {
+        pathExtensionHandlers.set(ext, func);
+    }
+    else
+    {
+        throw new ReferenceError("Invalid handler, must be a function or null");
+    }
+};
 
 /**
  * Creates an enum object from a string

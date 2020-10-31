@@ -30,4 +30,7 @@ export class EveSOFDataHullChild
     @meta.vector3
     translation = vec3.create();
 
+    @meta.string
+    visibilityGroup = "";
+
 }

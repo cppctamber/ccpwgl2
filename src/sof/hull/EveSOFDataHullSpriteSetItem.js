@@ -25,7 +25,7 @@ export class EveSOFDataHullSpriteSetItem
     groupIndex = -1;
 
     @meta.float
-    intensity = 0;
+    intensity = 1;
 
     @meta.float
     maxScale = 0;

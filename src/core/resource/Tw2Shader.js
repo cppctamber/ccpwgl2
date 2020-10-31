@@ -41,7 +41,7 @@ export class Tw2Shader
                 frame: {},
                 object: {},
                 parameter: {},
-                inputDefinitions: {}
+                inputDefinitions: []
                 //texture: {},
                 //override: {}}
             },
@@ -49,28 +49,35 @@ export class Tw2Shader
                 frame: {},
                 object: {},
                 parameter: {},
-                inputDefinitions: {}
+                inputDefinitions: []
                 //texture: {},
                 //override: {}
             },
             ffe: {
                 object: {}
-            }
+            },
+            inputDefinitions: {}
         };
 
         const
             { perFramePSData, perFrameVSData } = device,
-            [ stage0, stage1 ] = this.techniques[technique].passes[0].stages,
+            pass0 = this.techniques[technique].passes[0],
+            [ stage0, stage1 ] = pass0.stages,
             code = stage0.shaderCode + stage1.shaderCode;
+
+        pass0.shaderProgram.input.elementsSorted.forEach(x =>
+        {
+            result.inputDefinitions[x._attr] = x.string;
+        });
 
         stage0.inputDefinition.elementsSorted.forEach(x =>
         {
-            result.vs.inputDefinitions[x.attr] = x.string;
+            result.vs.inputDefinitions.push(x.string);
         });
 
         stage1.inputDefinition.elementsSorted.forEach(x =>
         {
-            result.ps.inputDefinitions[x.attr] = x.string;
+            result.ps.inputDefinitions.push(x.string);
         });
 
         if (!code)
@@ -300,8 +307,6 @@ export class Tw2Shader
                         if (Tw2Shader.DEBUG_ENABLED)
                         {
                             stage.shaderCode = shaderCode;
-
-
                             stage.shadowShaderCode = shadowShaderCode;
                         }
                     }

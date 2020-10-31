@@ -59,6 +59,9 @@ export class EveSpriteSetItem extends EveObjectSetItem
     falloff = 0;
 
     @meta.float
+    intensity = 1;
+
+    @meta.float
     maxScale = 0;
 
     @meta.float
@@ -93,9 +96,6 @@ export class EveSpriteSet extends EveObjectSet
 
     @meta.struct("Tw2Effect")
     effect = null;
-
-    @meta.float
-    intensity = 0;
 
     @meta.boolean
     skinned = false;
@@ -265,9 +265,9 @@ export class EveSpriteSet extends EveObjectSet
                 array[vtxOffset + 2] = item.position[0];
                 array[vtxOffset + 3] = item.position[1];
                 array[vtxOffset + 4] = item.position[2];
-                array[vtxOffset + 5] = item.color[0];
-                array[vtxOffset + 6] = item.color[1];
-                array[vtxOffset + 7] = item.color[2];
+                array[vtxOffset + 5] = item.color[0] * item.intensity;
+                array[vtxOffset + 6] = item.color[1] * item.intensity;
+                array[vtxOffset + 7] = item.color[2] * item.intensity;
                 array[vtxOffset + 8] = item.blinkPhase;
                 array[vtxOffset + 9] = item.blinkRate;
                 array[vtxOffset + 10] = item.minScale * this._worldSpriteScale;

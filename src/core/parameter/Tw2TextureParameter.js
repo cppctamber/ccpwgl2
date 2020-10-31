@@ -3,6 +3,7 @@ import { resMan, device } from "global";
 import { Tw2SamplerOverride } from "../sampler/Tw2SamplerOverride";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
+import { Tw2Resource } from "core/resource";
 
 
 @meta.type("Tw2TextureParameter", "TriTextureParameter")
@@ -39,7 +40,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         if (bool)
         {
-            this.overrides = this.overrides ||  new Tw2SamplerOverride();
+            this.overrides = this.overrides || new Tw2SamplerOverride();
             this.overrides.SetValues({ enabled: true });
         }
 
@@ -130,8 +131,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
             if (res)
             {
-                res.RegisterNotification(this);
-                if  (isAttached)
+                if (isAttached)
                 {
                     this._isAttached = true;
                     this.resourcePath = "";
@@ -140,6 +140,8 @@ export class Tw2TextureParameter extends Tw2Parameter
                 {
                     this._isAttached = false;
                 }
+
+                res.RegisterNotification(this);
             }
 
             return true;
@@ -156,11 +158,13 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (this.textureRes)
         {
             this.textureRes.UnregisterNotification(this);
+            this.OnEvent("resource_removed", this.textureRes);
             this.textureRes = null;
             return true;
         }
         return false;
     }
+
     /**
      * Fire on value changes
      * @param {Object} [opt]
@@ -183,10 +187,8 @@ export class Tw2TextureParameter extends Tw2Parameter
                     ]);
 
                 const res = new Tw2TextureRes();
-                res.path = this.resourcePath;
-                res.texture = texture;
-                res.texture._isAttached = true;
                 this._SetTextureRes(res);
+                res.Attach(texture, this.resourcePath);
             }
         }
         else
@@ -231,7 +233,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         {
             if (!opt || !opt.skipEvents)
             {
-                this.EmitEvent("overrides_modified", this, opt);
+                this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
             }
         }
     }
@@ -287,6 +289,97 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
+     * Fires on resource events
+     * @param {Tw2TextureRes} res
+     * @param {Error} err
+     */
+    OnResEvent(res, err)
+    {
+        if (this.textureRes !== res) return;
+
+        const { Event } = Tw2TextureParameter;
+        switch (res._state)
+        {
+            case Tw2Resource.State.ERROR:
+                this.EmitEvent(Event.RES_ERROR, this, res, err);
+                res.UnregisterNotification(this);
+                break;
+
+            case Tw2Resource.State.PURGED:
+                this.EmitEvent(Event.RES_PURGED, this, res);
+                break;
+
+            case Tw2Resource.State.UNLOADED:
+                this.EmitEvent(Event.RES_UNLOADED, this, res);
+                break;
+
+            case Tw2Resource.State.REQUESTED:
+                this.EmitEvent(Event.RES_REQUESTED, this, res);
+                break;
+
+            case Tw2Resource.State.PREPARED:
+                this.EmitEvent(Event.RES_PREPARED, this, res);
+                res.UnregisterNotification(this);
+                break;
+        }
+    }
+
+    /**
+     * Handles listeners added after an event has already been fired
+     * @param {Tw2TextureParameter} textureParameter
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} [context]
+     * @return {boolean} true if the listener was fired
+     */
+    static onListener(textureParameter, eventName, listener, context)
+    {
+        /**
+         * The texture resource
+         * @type {Tw2TextureRes}
+         */
+        const res = textureParameter.textureRes;
+        if (!res) return false;
+
+        const { Event } = this;
+
+        let doCall;
+        switch (eventName)
+        {
+            case Event.RES_ERROR:
+                if (res.HasErrors())
+                {
+                    listener.call(context, this, res, res.GetLastError());
+                    return true;
+                }
+                return false;
+
+            case Event.RES_UNLOADED:
+                if (res.IsUnloaded()) doCall = true;
+                break;
+
+            case Event.RES_PURGED:
+                if (res.IsPurged()) doCall = true;
+                break;
+
+            case Event.RES_REQUESTED:
+                if (res.HasRequested()) doCall = true;
+                break;
+
+            case Event.RES_PREPARED:
+                if (res.IsPrepared()) doCall = true;
+        }
+
+        if (doCall)
+        {
+            listener.call(context, this, res);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if a value is a valid parameter value
      * @param {*} a
      * @returns {Boolean}
@@ -295,5 +388,18 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         return isString(a);
     }
+
+    /**
+     * Event names
+     * @type {*}
+     */
+    static Event = {
+        RES_UNLOADED: "res_unloaded",
+        RES_PURGED: "res_purged",
+        RES_ERROR: "res_error",
+        RES_REQUESTED: "res_requested",
+        RES_PREPARED: "res_prepared",
+        OVERRIDES_MODIFIED: "overrides_modified"
+    };
 
 }

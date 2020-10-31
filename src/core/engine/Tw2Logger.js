@@ -12,10 +12,10 @@ export class Tw2Logger extends Tw2EventEmitter
     throttle = 20;
 
     visible = {
-        log: true,
-        info: true,
-        debug: true,
-        warn: true,
+        log: false,
+        info: false,
+        debug: false,
+        warn: false,
         error: true
     };
 
@@ -29,7 +29,7 @@ export class Tw2Logger extends Tw2EventEmitter
      */
     SetDebugMode(bool)
     {
-        this._debugMode = true;
+        this._debugMode = bool;
     }
 
     /**
@@ -127,7 +127,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Set visibility
-        if (!this.display || !this.visible[log.type])
+        if (!this._debugMode || !this.display || !this.visible[log.type])
         {
             log.hide = true;
         }

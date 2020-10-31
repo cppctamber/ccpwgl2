@@ -3,17 +3,7 @@ import { meta, isFunction } from "utils";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2Notifications } from "./Tw2Notifications";
 
-/**
- * Tw2Resource base class
- *
- * @property {Number} activeFrame
- * @property {String} path
- * @property {Number} doNotPurge
- * @property {Set} _notifications
- * @property {Number} _state
- * @property {Array<Error>} _errors
- * @property {Set} _watchers
- */
+
 @meta.type("Tw2Resource")
 export class Tw2Resource extends Tw2Notifications
 {
@@ -52,6 +42,15 @@ export class Tw2Resource extends Tw2Notifications
     IsRequested()
     {
         return this._state === Tw2Resource.State.REQUESTED;
+    }
+
+    /**
+     * Checks if the resource has been requested
+     * @return {boolean}
+     */
+    HasRequested()
+    {
+        return this._requested !== 0;
     }
 
     /**
@@ -377,7 +376,10 @@ export class Tw2Resource extends Tw2Notifications
         {
             return !!notification[funcName](resource, err);
         }
-
+        else if ("OnResEvent" in notification)
+        {
+            return !!notification.OnResEvent(resource, err);
+        }
         return false;
     }
 

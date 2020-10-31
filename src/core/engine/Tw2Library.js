@@ -189,12 +189,22 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Sets black reader path handlers from an object
+     * @param { Object<String,Function>} options
+     */
+    RegisterBlackPathHandlers(options)
+    {
+        path.registerExtensionHandlers(options);
+    }
+
+    /**
      * Sets the black reader's path handler
+     * @param { String } ext
      * @param { Function } handler
      */
-    SetBlackPathHandler(handler)
+    SetBlackPathHandler(ext, handler)
     {
-        path.handler = handler;
+        path.setExtensionHandler(ext, handler);
     }
 
     /**
@@ -239,28 +249,29 @@ export class Tw2Library extends Tw2EventEmitter
      * Outputs a log to console
      * @param {String} logType
      * @param {String|{}} log
-     * @param {String} [fallbackTitle]
      * @returns {*}
      */
-    Log(logType, log, fallbackTitle = "Library")
+    Log(logType, log)
     {
-        return this.logger.Add(logType, log, fallbackTitle);
+        return this.logger.Add(logType, log);
     }
 
     /**
      * Registers library options
      * @param {*} options
-     * @param {Boolean} options.uuid
      * @param {Boolean} options.debug
      * @param {*} options.logger
      * @param {*} options.client
      * @param {*} options.resMan
      * @param {*} options.device
      * @param {*} options.store
+     * @param {*} options.black
      */
-    Register(options = {})
+    Register(options)
     {
+        if (!options) return;
         if (options.debug !== undefined) this.SetDebugMode(options.debug);
+        if (options.black) this.RegisterBlackPathHandlers(options.black);
         if (options.logger) this.logger.Register(options.logger);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);

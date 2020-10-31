@@ -17142,8 +17142,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./particle */ "./particle/index.js");
 /* harmony import */ var _sof__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sof */ "./sof/index.js");
 /* harmony import */ var _unsupported__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unsupported */ "./unsupported/index.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! math */ "./global/math/index.js");
 
 
 
@@ -17152,46 +17151,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/**
- * Black property path  handler
- * @param {String} filepath
- * @returns {String}
- */
-
-_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__["path"].handler = function (filepath) {
-  filepath = filepath.toLowerCase(); // Because there are two sources for "res:" now we need to replace
-  // any references from the eve cdn with a new res path mapping
-
-  var ext = "";
-  var dot = filepath.lastIndexOf(".");
-  if (dot !== -1) ext = filepath.substr(dot + 1).toLowerCase();
-
-  if (filepath in remapTextures) {
-    filepath = remapTextures[filepath];
+function handleAllBlackPaths(path) {
+  if (path.includes(".dds") && _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureRes"].knownBrokenDDSFiles.indexOf(path) !== -1) {
+    path = path.replace(".dds", ".dds.0.png");
   } else {
-    filepath = filepath.replace("res:", "cdn:");
-
-    if (filepath.includes(".gr2")) {
-      filepath = filepath.replace("gr2", "cake");
-    }
+    path = path.replace("res:/", "cdn:/").toLowerCase();
   }
 
-  return filepath;
-};
+  return path;
+}
 
-var remapTextures = {
-  "res:/texture/global/noise.dds": "res:/texture/global/noise.dds.0.png",
-  "res:/texture/global/spotramp.dds": "res:/texture/global/spotramp.dds.0.png",
-  "res:/texture/global/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
-  "res:/texture/particle/whitesharp.dds": "res:/texture/particle/whitesharp.dds.0.png",
-  "res:/dx9/texture/decal/deck_01_cube.dds": "cdn:/dx9/texture/decal/deck_01_cube.dds.0.png"
-};
+function handleBlackGR2(path) {
+  return path.replace(".gr2", ".cake");
+}
 /**
  * Register global configurations
  */
 
+
 var config = {
   debug: false,
+  black: {
+    "*": handleAllBlackPaths,
+    "gr2": handleBlackGR2
+  },
   device: {
     "textureQuality": 0,
     "shaderQuality": "hi",
@@ -17250,22 +17233,23 @@ var config = {
       "matrix4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Matrix4Parameter"]
     },
     variables: {
-      "WorldMat": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewMat": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ProjectionMat": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewProjectionMat": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewportSize": math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "Time": math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "u_DecalMatrix": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "u_InvDecalMatrix": math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "WorldMat": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
+      "ViewMat": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
+      "ProjectionMat": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
+      "ViewProjectionMat": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
+      "ViewportSize": math__WEBPACK_IMPORTED_MODULE_6__["vec4"].create(),
+      "Time": math__WEBPACK_IMPORTED_MODULE_6__["vec4"].create(),
+      "u_DecalMatrix": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
+      "u_InvDecalMatrix": math__WEBPACK_IMPORTED_MODULE_6__["mat4"].create(),
       "EveSpaceSceneEnvMap": "",
+      "EveSpaceSceneShadowMap": "",
       "EnvMap1": "",
       "EnvMap2": "",
       "EnvMap3": "",
       "ShadowLightness": 0,
-      "OccluderValue": math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxOccScale": math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxDirectionScale": math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create()
+      "OccluderValue": math__WEBPACK_IMPORTED_MODULE_6__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxOccScale": math__WEBPACK_IMPORTED_MODULE_6__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxDirectionScale": math__WEBPACK_IMPORTED_MODULE_6__["vec4"].create()
     }
   }
 };
@@ -18198,7 +18182,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Transform", function() { return Tw2Transform; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-var _dec, _dec2, _dec3, _class, _descriptor, _descriptor2, _descriptor3, _temp;
+var _dec, _dec2, _dec3, _dec4, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -18211,15 +18199,17 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 var vec3_0 = math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
     quat_0 = math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
     mat4_0 = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, (_class = (_temp = class Tw2Transform extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, (_class = (_temp = class Tw2Transform extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "rotation", _descriptor, this);
+    _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "translation", _descriptor2, this);
+    _initializerDefineProperty(this, "rotation", _descriptor2, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor3, this);
+    _initializerDefineProperty(this, "translation", _descriptor3, this);
+
+    _initializerDefineProperty(this, "scaling", _descriptor4, this);
 
     this._localTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
     this._worldTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
@@ -18238,7 +18228,7 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion
    * @param {Function} [onWorldTransformModified]
    */
   OnWorldModified(onWorldTransformModified) {
-    this.onWorldTransformModified = onWorldTransformModified;
+    this._onWorldTransformModified = onWorldTransformModified;
     return this;
   }
   /**
@@ -18318,8 +18308,12 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion
       }
     }
 
-    if (this["onWorldTransformModified"]) {
-      this["onWorldTransformModified"](this._worldTransform);
+    if (this["_onWorldTransformModified"]) {
+      this["_onWorldTransformModified"](this._worldTransform);
+    }
+
+    if (this["OnWorldTransformModified"]) {
+      this["OnWorldTransformModified"](this._worldTransform);
     }
 
     if (!skipUpdate) {
@@ -18329,6 +18323,7 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion
     }
 
     this._rebuildWorld = false;
+    return true;
   }
   /**
    * Sets the parent transform
@@ -19056,82 +19051,43 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion
     return this.ScaleValues(1, 1, s);
   }
   /**
-   * TEMPORARY SET.
-   * @param a
-   * @param values
-   * @param opt
+   * Sets an object from values
+   * @param {Tw2Transform} a
+   * @param {Object} [values]
+   * @param {Object} [opt]
    * @returns {boolean}
    */
 
 
   static set(a, values, opt) {
     if (!values) return false;
+
     var {
-      transform,
       rotation,
       euler,
       scale,
-      scaling,
       radius,
-      translation,
       position
-    } = values; // Handle alternates
+    } = values,
+        temp = _objectWithoutProperties(values, ["rotation", "euler", "scale", "radius", "position"]);
 
-    if (scale === undefined) scale = scaling;
-    if (scale === undefined && radius) scale = radius * 2;
-    if (!rotation) rotation = euler;
-    if (!translation) translation = position;
-
-    if (!transform && !rotation && !scale && !translation) {
-      return false;
-    }
-
-    var updated;
-
-    if (transform) {
-      updated = true;
-
-      if (utils__WEBPACK_IMPORTED_MODULE_0__["isMatrix4"]) {
-        a.SetTransform(transform);
-      } else {
-        throw new TypeError("Invalid transform matrix");
-      }
-    }
-
-    if (rotation) {
-      updated = true;
-
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isVector3"])(rotation)) {
-        a.SetRotationFromEuler(rotation);
-      } else if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isVector4"])(rotation)) {
-        a.SetRotation(rotation);
-      } else {
-        throw new TypeError("Invalid rotation value");
-      }
+    if (radius !== undefined) {
+      scale = radius * 2;
     }
 
     if (scale !== undefined) {
-      updated = true;
-
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(scale)) {
-        a.SetScaleUniform(scale);
-      } else if (utils__WEBPACK_IMPORTED_MODULE_0__["isVector3"]) {
-        a.SetScale(scale);
-      } else {
-        throw new TypeError("Invalid scale");
-      }
+      temp.scaling = [scale, scale, scale];
     }
 
-    if (translation) {
-      updated = true;
-      a.SetTranslation(translation);
+    if (rotation && rotation.length === 3) {
+      temp.rotation = math__WEBPACK_IMPORTED_MODULE_1__["quat"].fromEuler([], rotation);
     }
 
-    if (updated && !opt || !opt.skipUpdate) {
-      a.UpdateValues(opt);
+    if (position) {
+      temp.translation = position;
     }
 
-    return updated;
+    return super.set(a, temp, opt);
   }
   /**
    * Gets the classes values
@@ -19179,21 +19135,28 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion
     }
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "rotation", [_dec], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "rotation", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "translation", [_dec2], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "translation", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "scaling", [_dec3], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "scaling", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -21128,13 +21091,23 @@ class Tw2Library extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2Event
     }
   }
   /**
+   * Sets black reader path handlers from an object
+   * @param { Object<String,Function>} options
+   */
+
+
+  RegisterBlackPathHandlers(options) {
+    _reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__["path"].registerExtensionHandlers(options);
+  }
+  /**
    * Sets the black reader's path handler
+   * @param { String } ext
    * @param { Function } handler
    */
 
 
-  SetBlackPathHandler(handler) {
-    _reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__["path"].handler = handler;
+  SetBlackPathHandler(ext, handler) {
+    _reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__["path"].setExtensionHandler(ext, handler);
   }
   /**
    * Start frame
@@ -21178,29 +21151,30 @@ class Tw2Library extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2Event
    * Outputs a log to console
    * @param {String} logType
    * @param {String|{}} log
-   * @param {String} [fallbackTitle]
    * @returns {*}
    */
 
 
-  Log(logType, log, fallbackTitle = "Library") {
-    return this.logger.Add(logType, log, fallbackTitle);
+  Log(logType, log) {
+    return this.logger.Add(logType, log);
   }
   /**
    * Registers library options
    * @param {*} options
-   * @param {Boolean} options.uuid
    * @param {Boolean} options.debug
    * @param {*} options.logger
    * @param {*} options.client
    * @param {*} options.resMan
    * @param {*} options.device
    * @param {*} options.store
+   * @param {*} options.black
    */
 
 
-  Register(options = {}) {
+  Register(options) {
+    if (!options) return;
     if (options.debug !== undefined) this.SetDebugMode(options.debug);
+    if (options.black) this.RegisterBlackPathHandlers(options.black);
     if (options.logger) this.logger.Register(options.logger);
     if (options.resMan) this.resMan.Register(options.resMan);
     if (options.device) this.device.Register(options.device);
@@ -21674,10 +21648,10 @@ class Tw2Logger extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventE
     this.history = 100;
     this.throttle = 20;
     this.visible = {
-      log: true,
-      info: true,
-      debug: true,
-      warn: true,
+      log: false,
+      info: false,
+      debug: false,
+      warn: false,
       error: true
     };
     this._logs = [];
@@ -21690,7 +21664,7 @@ class Tw2Logger extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventE
    * @param {Boolean} bool
    */
   SetDebugMode(bool) {
-    this._debugMode = true;
+    this._debugMode = bool;
   }
   /**
    * Sets the logger's properties
@@ -21788,7 +21762,7 @@ class Tw2Logger extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2EventE
     } // Set visibility
 
 
-    if (!this.display || !this.visible[log.type]) {
+    if (!this._debugMode || !this.display || !this.visible[log.type]) {
       log.hide = true;
     } // Throttle excessive output
 
@@ -22124,7 +22098,6 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
     this._purgeFrameLimit = 1000;
     this._pendingLoads = [];
     this._noLoadFrames = 0;
-    this._eveSof = null;
     this.store = store;
     this.logger = logger;
   }
@@ -22332,11 +22305,6 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
 
 
   GetObject(path, onResolved, onRejected) {
-    if (Object(utils__WEBPACK_IMPORTED_MODULE_4__["isDNA"])(path)) {
-      if (!this._eveSof) throw new ReferenceError("Eve sof not provided");
-      return this._eveSof.FetchObject(path).then(onResolved).catch(onRejected);
-    }
-
     path = Tw2ResMan.NormalizePath(path); // Check if already loaded
 
     var res = this.motherLode.Find(path);
@@ -22362,11 +22330,6 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_4__["isDNA"])(path)) {
-        if (!_this2._eveSof) throw new ReferenceError("Eve sof not provided");
-        return _this2._eveSof.FetchObject(path);
-      }
-
       return new Promise((resolve, reject) => {
         _this2.GetObject(path, resolve, reject);
       });
@@ -28172,7 +28135,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sampler_Tw2SamplerOverride__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler/Tw2SamplerOverride */ "./core/sampler/Tw2SamplerOverride.js");
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
+/* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -28185,7 +28149,8 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+
+var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
   /**
    * Temporary
    * @return {Boolean}
@@ -28299,14 +28264,14 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
       this.textureRes = res;
 
       if (res) {
-        res.RegisterNotification(this);
-
         if (isAttached) {
           this._isAttached = true;
           this.resourcePath = "";
         } else {
           this._isAttached = false;
         }
+
+        res.RegisterNotification(this);
       }
 
       return true;
@@ -28323,6 +28288,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   _RemoveTextureRes() {
     if (this.textureRes) {
       this.textureRes.UnregisterNotification(this);
+      this.OnEvent("resource_removed", this.textureRes);
       this.textureRes = null;
       return true;
     }
@@ -28343,11 +28309,10 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
         var color = this.resourcePath.replace("rgba:/", "").split(","),
             texture = global__WEBPACK_IMPORTED_MODULE_1__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
         var res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"]();
-        res.path = this.resourcePath;
-        res.texture = texture;
-        res.texture._isAttached = true;
 
         this._SetTextureRes(res);
+
+        res.Attach(texture, this.resourcePath);
       }
     } else {
       var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
@@ -28387,7 +28352,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     if (this.overrides.SetValues(values, opt)) {
       if (!opt || !opt.skipEvents) {
-        this.EmitEvent("overrides_modified", this, opt);
+        this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
       }
     }
   }
@@ -28441,6 +28406,97 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     return out;
   }
   /**
+   * Fires on resource events
+   * @param {Tw2TextureRes} res
+   * @param {Error} err
+   */
+
+
+  OnResEvent(res, err) {
+    if (this.textureRes !== res) return;
+    var {
+      Event
+    } = Tw2TextureParameter;
+
+    switch (res._state) {
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.ERROR:
+        this.EmitEvent(Event.RES_ERROR, this, res, err);
+        res.UnregisterNotification(this);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PURGED:
+        this.EmitEvent(Event.RES_PURGED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.UNLOADED:
+        this.EmitEvent(Event.RES_UNLOADED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.REQUESTED:
+        this.EmitEvent(Event.RES_REQUESTED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PREPARED:
+        this.EmitEvent(Event.RES_PREPARED, this, res);
+        res.UnregisterNotification(this);
+        break;
+    }
+  }
+  /**
+   * Handles listeners added after an event has already been fired
+   * @param {Tw2TextureParameter} textureParameter
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} [context]
+   * @return {boolean} true if the listener was fired
+   */
+
+
+  static onListener(textureParameter, eventName, listener, context) {
+    /**
+     * The texture resource
+     * @type {Tw2TextureRes}
+     */
+    var res = textureParameter.textureRes;
+    if (!res) return false;
+    var {
+      Event
+    } = this;
+    var doCall;
+
+    switch (eventName) {
+      case Event.RES_ERROR:
+        if (res.HasErrors()) {
+          listener.call(context, this, res, res.GetLastError());
+          return true;
+        }
+
+        return false;
+
+      case Event.RES_UNLOADED:
+        if (res.IsUnloaded()) doCall = true;
+        break;
+
+      case Event.RES_PURGED:
+        if (res.IsPurged()) doCall = true;
+        break;
+
+      case Event.RES_REQUESTED:
+        if (res.HasRequested()) doCall = true;
+        break;
+
+      case Event.RES_PREPARED:
+        if (res.IsPrepared()) doCall = true;
+    }
+
+    if (doCall) {
+      listener.call(context, this, res);
+      return true;
+    }
+
+    return false;
+  }
+  /**
    * Checks if a value is a valid parameter value
    * @param {*} a
    * @returns {Boolean}
@@ -28450,7 +28506,19 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   static isValue(a) {
     return Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(a);
   }
+  /**
+   * Event names
+   * @type {*}
+   */
 
+
+}, _class3.Event = {
+  RES_UNLOADED: "res_unloaded",
+  RES_PURGED: "res_purged",
+  RES_ERROR: "res_error",
+  RES_REQUESTED: "res_requested",
+  RES_PREPARED: "res_prepared",
+  OVERRIDES_MODIFIED: "overrides_modified"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -30830,6 +30898,7 @@ function boolean(reader) {
 function string(reader) {
   return reader.ReadStringU16();
 }
+var pathExtensionHandlers = new Map();
 /**
  * Reads a path
  * @param {Tw2BlackBinaryReader} reader
@@ -30838,19 +30907,60 @@ function string(reader) {
 
 function path(reader) {
   var result = reader.ReadStringU16();
-  return path.handler ? path.handler(result) : result;
+  var anyHandler = pathExtensionHandlers.get("*");
+
+  if (anyHandler) {
+    var handled = anyHandler(result);
+    if (handled) result = handled;
+  }
+
+  var ext = Object(utils__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(result),
+      handler = pathExtensionHandlers.get(ext);
+
+  if (handler) {
+    var _handled = handler(result);
+
+    if (_handled) return _handled;
+  }
+
+  return result;
 }
 /**
- * Path handler
- * @type {null|Function}
+ * Registers extension handlers
+ * @param {Object} [options]
  */
 
-path.handler = null;
+path.registerExtensionHandlers = function (options) {
+  if (!options) return;
+
+  for (var key in options) {
+    if (options.hasOwnProperty(key)) {
+      path.setExtensionHandler(key, options[key]);
+    }
+  }
+};
+/**
+ * Path extension handlers
+ * @param {String} ext
+ * @param {Function|null} func
+ */
+
+
+path.setExtensionHandler = function (ext, func) {
+  if (func === null) {
+    pathExtensionHandlers.delete(ext);
+  } else if (Object(utils__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(func)) {
+    pathExtensionHandlers.set(ext, func);
+  } else {
+    throw new ReferenceError("Invalid handler, must be a function or null");
+  }
+};
 /**
  * Creates an enum object from a string
  * @param {Tw2BlackReader} reader
  * @returns {Object}
  */
+
 
 function enums(reader) {
   var value = reader.ReadStringU16(),
@@ -32107,7 +32217,10 @@ var Tw2EffectRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2E
       return this.shaders[index];
     }
 
-    this.reader.cursor = this.offsets[index].offset;
+    if (this.version > 4) {
+      this.reader.cursor = this.offsets[index].offset;
+    }
+
     var shader = null;
 
     try {
@@ -33498,18 +33611,6 @@ var _dec, _class, _class2, _temp;
 
 
 
-/**
- * Tw2Resource base class
- *
- * @property {Number} activeFrame
- * @property {String} path
- * @property {Number} doNotPurge
- * @property {Set} _notifications
- * @property {Number} _state
- * @property {Array<Error>} _errors
- * @property {Set} _watchers
- */
-
 var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends _Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
@@ -33547,6 +33648,15 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
   IsRequested() {
     return this._state === Tw2Resource.State.REQUESTED;
+  }
+  /**
+   * Checks if the resource has been requested
+   * @return {boolean}
+   */
+
+
+  HasRequested() {
+    return this._requested !== 0;
   }
   /**
    * Checks if the resource has been loaded
@@ -33868,6 +33978,8 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
       return !!notification(resource, err, funcName);
     } else if (funcName && funcName in notification) {
       return !!notification[funcName](resource, err);
+    } else if ("OnResEvent" in notification) {
+      return !!notification.OnResEvent(resource, err);
     }
 
     return false;
@@ -33963,27 +34075,40 @@ var Tw2Shader = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shad
       vs: {
         frame: {},
         object: {},
-        parameter: {} //texture: {},
+        parameter: {},
+        inputDefinitions: [] //texture: {},
         //override: {}}
 
       },
       ps: {
         frame: {},
         object: {},
-        parameter: {} //texture: {},
+        parameter: {},
+        inputDefinitions: [] //texture: {},
         //override: {}
 
       },
       ffe: {
         object: {}
-      }
+      },
+      inputDefinitions: {}
     };
     var {
       perFramePSData,
       perFrameVSData
     } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
-        [stage0, stage1] = this.techniques[technique].passes[0].stages,
+        pass0 = this.techniques[technique].passes[0],
+        [stage0, stage1] = pass0.stages,
         code = stage0.shaderCode + stage1.shaderCode;
+    pass0.shaderProgram.input.elementsSorted.forEach(x => {
+      result.inputDefinitions[x._attr] = x.string;
+    });
+    stage0.inputDefinition.elementsSorted.forEach(x => {
+      result.vs.inputDefinitions.push(x.string);
+    });
+    stage1.inputDefinition.elementsSorted.forEach(x => {
+      result.ps.inputDefinitions.push(x.string);
+    });
 
     if (!code) {
       throw new Error("Debug mode must be enabled when the shader was created");
@@ -34786,7 +34911,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _engine_Tw2ResMan__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../engine/Tw2ResMan */ "./core/engine/Tw2ResMan.js");
 /* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
-var _dec, _class, _temp;
+var _dec, _class, _class2, _temp;
 
 
 
@@ -34794,7 +34919,7 @@ var _dec, _class, _temp;
 
 
 
-var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes2"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
+var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureRes2"), _dec(_class = (_temp = _class2 = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -34870,6 +34995,11 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
       **/
 
       case "dds":
+        // Temporarily keep track of known empty dds
+        if (!data.length) {
+          Tw2TextureRes.knownBrokenDDSFiles.push(this.path);
+        }
+
         var info = Tw2TextureRes.GetDDSInfo(data);
         var {
           name,
@@ -34905,8 +35035,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
 
         if (isRGB || fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI1"] || fourCC === constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_ATI2"]) {
-          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Warn({
-            title: "Tw2TextureRes2",
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
+            name: "Tw2TextureRes",
             message: "Partial support for ".concat(name, ": ").concat(this.path),
             data: info
           });
@@ -34914,8 +35044,8 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
         if (global__WEBPACK_IMPORTED_MODULE_2__["device"].glVersion === 1 && !info.isPowerOfTwo) {
           mipmaps = 1;
-          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Warn({
-            title: "Tw2TextureRes2",
+          global__WEBPACK_IMPORTED_MODULE_2__["logger"].Debug({
+            name: "Tw2TextureRes",
             message: "Texture not power of 2: ".concat(this.path),
             data: info
           });
@@ -35135,11 +35265,12 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
   /**
    * Attaches a texture
    * @param {WebGLTexture} texture
+   * @param {String} [path=""]
    */
 
 
-  Attach(texture) {
-    this.path = "";
+  Attach(texture, path = "") {
+    this.path = path;
     this.texture = texture;
 
     this._ClearMeta();
@@ -35242,12 +35373,16 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     return img;
   }
   /**
+   * Keep track of dds we know are empty
+   * @type {*[]}
+   */
+
+
+  /**
    * Gets dds info for debugging
    * @param {arrayBuffer} data
    * @return {Object}
    */
-
-
   static GetDDSInfo(data) {
     // Ensure we have data to work with
     if (!data.byteLength) {
@@ -35505,7 +35640,7 @@ var Tw2TextureRes = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     return byteArray;
   }
 
-}, _temp)) || _class);
+}, _class2.knownBrokenDDSFiles = ["res:/texture/global/noise.dds", "res:/texture/global/spotramp.dds", "res:/texture/global/whitesharp.dds", "res:/texture/particle/whitesharp.dds", "res:/dx9/texture/decal/deck_01_cube.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_f.dds", "res:/dx9/model/decal/stripe_cautiontype08_01_at.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_nr.dds", "res:/dx9/model/decal/caldari/marking_chevroncircle_01_f.dds", "res:/dx9/model/decal/caldari/code_cf04ewar_at.dds", "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds", "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds", "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds", "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds"], _temp)) || _class);
 
 /***/ }),
 
@@ -36270,10 +36405,10 @@ __webpack_require__.r(__webpack_exports__);
 /*!********************************************!*\
   !*** ./core/resource/shaderOverrides.json ***!
   \********************************************/
-/*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, flarequad, default */
+/*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, flarequad, flarequadsoft, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"blinkinglightspool\":{\"r0.xy=r0.xx*c[0+a0.x].xy;\":\"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}\",\"texcoord=r3.zzww*c[0+a0.x].zwzz;\":\"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}\"},\"boostervolumetric\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<12;++i){\"},\"fxarmorimpactv5\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<255;++i){\"},\"flarequad\":{\"r1.xyz=r0.zzw*c[0+a0.x].xyx;\":\"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}\",\"texcoord.xyw=r0.zzw*c[0+a0.x].zwz;\":\"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}\",\"r0.x=saturate(sqrt(abs(r0.x)));\":\"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\"}}");
+module.exports = JSON.parse("{\"blinkinglightspool\":{\"r0.xy=r0.xx*c[0+a0.x].xy;\":\"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}\",\"texcoord=r3.zzww*c[0+a0.x].zwzz;\":\"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}\"},\"boostervolumetric\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<12;++i){\"},\"fxarmorimpactv5\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<255;++i){\"},\"flarequad\":{\"r1.xyz=r0.zzw*c[0+a0.x].xyx;\":\"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}\",\"texcoord.xyw=r0.zzw*c[0+a0.x].zwz;\":\"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}\",\"r0.x=saturate(sqrt(abs(r0.x)));\":\"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\"},\"flarequadsoft\":{\"r1.xyz=r0.zzw*c[0+a0.x].xyx;\":\"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}\",\"texcoord.xyw=r0.zzw*c[0+a0.x].zwz;\":\"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}\",\"r0.x=saturate(sqrt(abs(r0.x)));\":\"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\"}}");
 
 /***/ }),
 
@@ -36305,7 +36440,7 @@ var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type
 
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "enabled", _descriptor2, this);
+    _initializerDefineProperty(this, "enable", _descriptor2, this);
 
     _initializerDefineProperty(this, "addressUMode", _descriptor3, this);
 
@@ -36343,7 +36478,7 @@ var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type
 
 
   GetSampler(o) {
-    if (!this.enabled) {
+    if (!this.enable) {
       return o;
     }
 
@@ -36377,7 +36512,7 @@ var Tw2SamplerOverride = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "enabled", [_dec3], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "enable", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -36766,7 +36901,7 @@ var Tw2SamplerState = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
 
     if (maxAnisotropy !== undefined && maxAnisotropy !== this.maxAnisotropy) {
       this.maxAnisotropy = maxAnisotropy;
-      this._isDirty = true;
+      this.hash = null;
     }
 
     this.addressUMode = addressUMode;
@@ -49831,7 +49966,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 /* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 /* harmony import */ var _EveSpriteSet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSpriteSet */ "./eve/item/EveSpriteSet.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _class4, _class5, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _class6, _temp2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _class4, _class5, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _class6, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -49867,27 +50002,29 @@ class EveBoosterBatch extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2RenderBatch"
   }
 
 }
-var EveBoosterSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSetItem"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
+var EveBoosterSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSetItem"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "atlas0", _descriptor, this);
+    _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "atlas1", _descriptor2, this);
+    _initializerDefineProperty(this, "atlas0", _descriptor2, this);
 
-    _initializerDefineProperty(this, "customValues", _descriptor3, this);
+    _initializerDefineProperty(this, "atlas1", _descriptor3, this);
 
-    _initializerDefineProperty(this, "locatorName", _descriptor4, this);
+    _initializerDefineProperty(this, "customValues", _descriptor4, this);
 
-    _initializerDefineProperty(this, "seed", _descriptor5, this);
+    _initializerDefineProperty(this, "locatorName", _descriptor5, this);
 
-    _initializerDefineProperty(this, "transform", _descriptor6, this);
+    _initializerDefineProperty(this, "seed", _descriptor6, this);
 
-    _initializerDefineProperty(this, "updateFromLocator", _descriptor7, this);
+    _initializerDefineProperty(this, "transform", _descriptor7, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor8, this);
+    _initializerDefineProperty(this, "updateFromLocator", _descriptor8, this);
 
-    _initializerDefineProperty(this, "wavePhase", _descriptor9, this);
+    _initializerDefineProperty(this, "visible", _descriptor9, this);
+
+    _initializerDefineProperty(this, "wavePhase", _descriptor10, this);
   }
 
   /**
@@ -49923,56 +50060,63 @@ var EveBoosterSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return Math.max(math__WEBPACK_IMPORTED_MODULE_2__["vec3"].length([tr[0], tr[1], tr[2]]), math__WEBPACK_IMPORTED_MODULE_2__["vec3"].length([tr[4], tr[5], tr[6]]));
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "atlas0", [_dec2], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "atlas0", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "atlas1", [_dec3], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "atlas1", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "customValues", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "customValues", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "locatorName", [_dec5], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "locatorName", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "seed", [_dec6], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "seed", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return Math.random() * 7;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "transform", [_dec7], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "transform", [_dec8], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create();
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "updateFromLocator", [_dec8], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "updateFromLocator", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec9], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -49985,7 +50129,7 @@ var EveBoosterSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
       customValues: true
     };
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "wavePhase", [_dec10], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "wavePhase", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -49993,45 +50137,45 @@ var EveBoosterSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return Math.random();
   }
 })), _class2)) || _class);
-var EveBoosterSet = (_dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet", true), _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSpriteSet"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec26 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec28 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec29 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
+var EveBoosterSet = (_dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet", true), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSpriteSet"), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec26 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec28 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec29 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec12(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "alwaysOn", _descriptor10, this);
+    _initializerDefineProperty(this, "alwaysOn", _descriptor11, this);
 
-    _initializerDefineProperty(this, "effect", _descriptor11, this);
+    _initializerDefineProperty(this, "effect", _descriptor12, this);
 
-    _initializerDefineProperty(this, "glowColor", _descriptor12, this);
+    _initializerDefineProperty(this, "glowColor", _descriptor13, this);
 
-    _initializerDefineProperty(this, "glows", _descriptor13, this);
+    _initializerDefineProperty(this, "glows", _descriptor14, this);
 
-    _initializerDefineProperty(this, "glowScale", _descriptor14, this);
+    _initializerDefineProperty(this, "glowScale", _descriptor15, this);
 
-    _initializerDefineProperty(this, "haloColor", _descriptor15, this);
+    _initializerDefineProperty(this, "haloColor", _descriptor16, this);
 
-    _initializerDefineProperty(this, "haloScaleX", _descriptor16, this);
+    _initializerDefineProperty(this, "haloScaleX", _descriptor17, this);
 
-    _initializerDefineProperty(this, "haloScaleY", _descriptor17, this);
+    _initializerDefineProperty(this, "haloScaleY", _descriptor18, this);
 
-    _initializerDefineProperty(this, "maxVel", _descriptor18, this);
+    _initializerDefineProperty(this, "maxVel", _descriptor19, this);
 
-    _initializerDefineProperty(this, "symHaloScale", _descriptor19, this);
+    _initializerDefineProperty(this, "symHaloScale", _descriptor20, this);
 
-    _initializerDefineProperty(this, "trailColor", _descriptor20, this);
+    _initializerDefineProperty(this, "trailColor", _descriptor21, this);
 
-    _initializerDefineProperty(this, "trailSize", _descriptor21, this);
+    _initializerDefineProperty(this, "trailSize", _descriptor22, this);
 
-    _initializerDefineProperty(this, "warpGlowColor", _descriptor22, this);
+    _initializerDefineProperty(this, "warpGlowColor", _descriptor23, this);
 
-    _initializerDefineProperty(this, "warpHaloColor", _descriptor23, this);
+    _initializerDefineProperty(this, "warpHaloColor", _descriptor24, this);
 
-    _initializerDefineProperty(this, "glowDistance", _descriptor24, this);
+    _initializerDefineProperty(this, "glowDistance", _descriptor25, this);
 
-    _initializerDefineProperty(this, "haloDistance", _descriptor25, this);
+    _initializerDefineProperty(this, "haloDistance", _descriptor26, this);
 
-    _initializerDefineProperty(this, "symHaloDistance", _descriptor26, this);
+    _initializerDefineProperty(this, "symHaloDistance", _descriptor27, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor27, this);
+    _initializerDefineProperty(this, "visible", _descriptor28, this);
 
     this._parentTransform = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create();
     this._positions = null;
@@ -50429,126 +50573,126 @@ var EveBoosterSet = (_dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   usage: "TEXCOORD",
   usageIndex: 7,
   elements: 2
-}], _class6._box = [[[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]], [[-1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [1.0, 1.0, -1.0], [1.0, -1.0, -1.0]], [[-1.0, -1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, -1.0]], [[1.0, -1.0, 0.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [1.0, 1.0, 0.0]], [[-1.0, -1.0, 0.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, -1.0, 0.0]], [[-1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]]], _temp2), (_descriptor10 = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec12, _dec13], {
+}], _class6._box = [[[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]], [[-1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [1.0, 1.0, -1.0], [1.0, -1.0, -1.0]], [[-1.0, -1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, -1.0]], [[1.0, -1.0, 0.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [1.0, 1.0, 0.0]], [[-1.0, -1.0, 0.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, -1.0, 0.0]], [[-1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]]], _temp2), (_descriptor11 = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec13, _dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec14], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class5.prototype, "glowColor", [_dec15], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "glowColor", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "glows", [_dec16], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "glows", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "glowScale", [_dec17], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "glowScale", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 1.0;
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "haloColor", [_dec18], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "haloColor", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "haloScaleX", [_dec19], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "haloScaleX", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 1.0;
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "haloScaleY", [_dec20], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "haloScaleY", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 1.0;
   }
-}), _descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "maxVel", [_dec21, _dec22], {
+}), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "maxVel", [_dec22, _dec23], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 250;
   }
-}), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "symHaloScale", [_dec23], {
+}), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "symHaloScale", [_dec24], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 1.0;
   }
-}), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "trailColor", [_dec24], {
+}), _descriptor21 = _applyDecoratedDescriptor(_class5.prototype, "trailColor", [_dec25], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor21 = _applyDecoratedDescriptor(_class5.prototype, "trailSize", [_dec25], {
+}), _descriptor22 = _applyDecoratedDescriptor(_class5.prototype, "trailSize", [_dec26], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor22 = _applyDecoratedDescriptor(_class5.prototype, "warpGlowColor", [_dec26], {
+}), _descriptor23 = _applyDecoratedDescriptor(_class5.prototype, "warpGlowColor", [_dec27], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor23 = _applyDecoratedDescriptor(_class5.prototype, "warpHaloColor", [_dec27], {
+}), _descriptor24 = _applyDecoratedDescriptor(_class5.prototype, "warpHaloColor", [_dec28], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor24 = _applyDecoratedDescriptor(_class5.prototype, "glowDistance", [_dec28], {
+}), _descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "glowDistance", [_dec29], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 2.5;
   }
-}), _descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "haloDistance", [_dec29], {
+}), _descriptor26 = _applyDecoratedDescriptor(_class5.prototype, "haloDistance", [_dec30], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 3.01;
   }
-}), _descriptor26 = _applyDecoratedDescriptor(_class5.prototype, "symHaloDistance", [_dec30], {
+}), _descriptor27 = _applyDecoratedDescriptor(_class5.prototype, "symHaloDistance", [_dec31], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 3;
   }
-}), _descriptor27 = _applyDecoratedDescriptor(_class5.prototype, "visible", [_dec31], {
+}), _descriptor28 = _applyDecoratedDescriptor(_class5.prototype, "visible", [_dec32], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -52340,7 +52484,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! math */ "./global/math/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _temp, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class4, _class5, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _class6, _temp2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _temp, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _class4, _class5, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _class6, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -52370,33 +52514,43 @@ class EvePlaneSetBatch extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2RenderBatch
 
 }
 
-var EvePlaneSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSetItem", true), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec(_class = (_class2 = (_temp = class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
+var EvePlaneSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSetItem", true), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec26 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].alias("maskAtlasID"), _dec(_class = (_class2 = (_temp = class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
     _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "color", _descriptor2, this);
+    _initializerDefineProperty(this, "blinkRate", _descriptor2, this);
 
-    _initializerDefineProperty(this, "layer1Scroll", _descriptor3, this);
+    _initializerDefineProperty(this, "blinkPhase", _descriptor3, this);
 
-    _initializerDefineProperty(this, "layer1Transform", _descriptor4, this);
+    _initializerDefineProperty(this, "blinkMode", _descriptor4, this);
 
-    _initializerDefineProperty(this, "layer2Scroll", _descriptor5, this);
+    _initializerDefineProperty(this, "dutyCycle", _descriptor5, this);
 
-    _initializerDefineProperty(this, "layer2Transform", _descriptor6, this);
+    _initializerDefineProperty(this, "rate", _descriptor6, this);
 
-    _initializerDefineProperty(this, "maskAtlasID", _descriptor7, this);
+    _initializerDefineProperty(this, "color", _descriptor7, this);
 
-    _initializerDefineProperty(this, "position", _descriptor8, this);
+    _initializerDefineProperty(this, "layer1Scroll", _descriptor8, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor9, this);
+    _initializerDefineProperty(this, "layer1Transform", _descriptor9, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor10, this);
+    _initializerDefineProperty(this, "layer2Scroll", _descriptor10, this);
 
-    _initializerDefineProperty(this, "boneIndex", _descriptor11, this);
+    _initializerDefineProperty(this, "layer2Transform", _descriptor11, this);
 
-    _initializerDefineProperty(this, "groupIndex", _descriptor12, this);
+    _initializerDefineProperty(this, "maskAtlasID", _descriptor12, this);
+
+    _initializerDefineProperty(this, "position", _descriptor13, this);
+
+    _initializerDefineProperty(this, "rotation", _descriptor14, this);
+
+    _initializerDefineProperty(this, "scaling", _descriptor15, this);
+
+    _initializerDefineProperty(this, "boneIndex", _descriptor16, this);
+
+    _initializerDefineProperty(this, "groupIndex", _descriptor17, this);
 
     this._localTransform = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create();
   }
@@ -52450,95 +52604,130 @@ var EvePlaneSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "maskAtlasID", [_dec8], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "blinkRate", [_dec3, _dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec9], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "blinkPhase", [_dec5, _dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "blinkMode", [_dec7, _dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "dutyCycle", [_dec9, _dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "rate", [_dec11, _dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec14], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec15], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec16], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec17], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
+  }
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "maskAtlasID", [_dec18], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].create();
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec10], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["quat"].create();
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec11], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].fromValues(1, 1, 1);
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec12, _dec13], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec14, _dec15], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec22, _dec23], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return -1;
   }
-})), _class2)) || _class);
-var EvePlaneSet = (_dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSet", true), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlaneSetItem"), _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec24, _dec25], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _applyDecoratedDescriptor(_class2.prototype, "maskMapAtlasIndex", [_dec26], Object.getOwnPropertyDescriptor(_class2.prototype, "maskMapAtlasIndex"), _class2.prototype)), _class2)) || _class);
+var EvePlaneSet = (_dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSet", true), _dec28 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec29 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec30 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec32 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec34 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlaneSetItem"), _dec27(_class4 = (_class5 = (_temp2 = _class6 = class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "name", _descriptor13, this);
+    _initializerDefineProperty(this, "name", _descriptor18, this);
 
-    _initializerDefineProperty(this, "effect", _descriptor14, this);
+    _initializerDefineProperty(this, "effect", _descriptor19, this);
 
-    _initializerDefineProperty(this, "hideOnLowQuality", _descriptor15, this);
+    _initializerDefineProperty(this, "hideOnLowQuality", _descriptor20, this);
 
-    _initializerDefineProperty(this, "pickBufferID", _descriptor16, this);
+    _initializerDefineProperty(this, "pickBufferID", _descriptor21, this);
 
     this._vertexBuffer = null;
     this._indexBuffer = null;
@@ -52796,35 +52985,35 @@ var EvePlaneSet = (_dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
   usage: "TEXCOORD",
   usageIndex: 7,
   elements: 3
-}], _temp2), (_descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec17], {
+}], _temp2), (_descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec28], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec18], {
+}), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec29], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "hideOnLowQuality", [_dec19, _dec20], {
+}), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "hideOnLowQuality", [_dec30, _dec31], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "pickBufferID", [_dec21, _dec22], {
+}), _descriptor21 = _applyDecoratedDescriptor(_class5.prototype, "pickBufferID", [_dec32, _dec33], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _applyDecoratedDescriptor(_class5.prototype, "planes", [_dec23], Object.getOwnPropertyDescriptor(_class5.prototype, "planes"), _class5.prototype)), _class5)) || _class4);
+}), _applyDecoratedDescriptor(_class5.prototype, "planes", [_dec34], Object.getOwnPropertyDescriptor(_class5.prototype, "planes"), _class5.prototype)), _class5)) || _class4);
 
 /***/ }),
 
@@ -53757,7 +53946,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 /* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _temp, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class4, _class5, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _class6, _temp2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _temp, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class4, _class5, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _class6, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -53797,7 +53986,7 @@ class EveSpriteSetBatch extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2RenderBatc
 
 }
 
-var EveSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSetItem", true), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this after testing"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
+var EveSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSetItem", true), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this after testing"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -53813,19 +54002,21 @@ var EveSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
 
     _initializerDefineProperty(this, "falloff", _descriptor6, this);
 
-    _initializerDefineProperty(this, "maxScale", _descriptor7, this);
+    _initializerDefineProperty(this, "intensity", _descriptor7, this);
 
-    _initializerDefineProperty(this, "minScale", _descriptor8, this);
+    _initializerDefineProperty(this, "maxScale", _descriptor8, this);
 
-    _initializerDefineProperty(this, "position", _descriptor9, this);
+    _initializerDefineProperty(this, "minScale", _descriptor9, this);
 
-    _initializerDefineProperty(this, "warpColor", _descriptor10, this);
+    _initializerDefineProperty(this, "position", _descriptor10, this);
 
-    _initializerDefineProperty(this, "groupIndex", _descriptor11, this);
+    _initializerDefineProperty(this, "warpColor", _descriptor11, this);
 
-    _initializerDefineProperty(this, "groupName", _descriptor12, this);
+    _initializerDefineProperty(this, "groupIndex", _descriptor12, this);
 
-    _initializerDefineProperty(this, "colorType", _descriptor13, this);
+    _initializerDefineProperty(this, "groupName", _descriptor13, this);
+
+    _initializerDefineProperty(this, "colorType", _descriptor14, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -53870,49 +54061,56 @@ var EveSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
   initializer: function () {
     return 0;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "maxScale", [_dec8], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "intensity", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "maxScale", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "minScale", [_dec9], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "minScale", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec10], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].create();
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "warpColor", [_dec11], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "warpColor", [_dec12], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_2__["vec4"].create();
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec12], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return -1;
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "groupName", [_dec13, _dec14], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "groupName", [_dec14, _dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "colorType", [_dec15, _dec16], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "colorType", [_dec16, _dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -53920,15 +54118,13 @@ var EveSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
     return -1;
   }
 })), _class2)) || _class);
-var EveSpriteSet = (_dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSet", true), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpriteSetItem"), _dec17(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
+var EveSpriteSet = (_dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSet", true), _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpriteSetItem"), _dec18(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_4__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "name", _descriptor14, this);
+    _initializerDefineProperty(this, "name", _descriptor15, this);
 
-    _initializerDefineProperty(this, "effect", _descriptor15, this);
-
-    _initializerDefineProperty(this, "intensity", _descriptor16, this);
+    _initializerDefineProperty(this, "effect", _descriptor16, this);
 
     _initializerDefineProperty(this, "skinned", _descriptor17, this);
 
@@ -54087,9 +54283,9 @@ var EveSpriteSet = (_dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
         array[vtxOffset + 2] = item.position[0];
         array[vtxOffset + 3] = item.position[1];
         array[vtxOffset + 4] = item.position[2];
-        array[vtxOffset + 5] = item.color[0];
-        array[vtxOffset + 6] = item.color[1];
-        array[vtxOffset + 7] = item.color[2];
+        array[vtxOffset + 5] = item.color[0] * item.intensity;
+        array[vtxOffset + 6] = item.color[1] * item.intensity;
+        array[vtxOffset + 7] = item.color[2] * item.intensity;
         array[vtxOffset + 8] = item.blinkPhase;
         array[vtxOffset + 9] = item.blinkRate;
         array[vtxOffset + 10] = item.minScale * this._worldSpriteScale;
@@ -54423,26 +54619,19 @@ var EveSpriteSet = (_dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
   usage: "COLOR",
   usageIndex: 1,
   elements: 4
-}], _temp2), (_descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec18], {
+}], _temp2), (_descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec19], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
-  }
-}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "intensity", [_dec20], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
   }
 }), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "skinned", [_dec21], {
   configurable: true,
@@ -56411,7 +56600,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveObject */ "./eve/object/EveObject.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _class3, _temp;
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -56425,7 +56618,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlanet"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2RenderTarget"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_5__["EveObject"] {
+var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlanet"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2RenderTarget"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_5__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -56462,6 +56655,41 @@ var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlan
     }
   }
   /**
+   * Fetches planet async
+   * @param {Object} options
+   * @return {Promise<EvePlanet>}
+   */
+
+
+  Fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var {
+        name = "",
+        itemID = 0,
+        resPath = "",
+        atmospherePath = "",
+        heightMap1 = "",
+        heightMap2 = ""
+      } = options;
+      _this.name = name;
+      _this.itemID = itemID;
+      _this.heightMapResPath1 = heightMap1;
+      _this.heightMapResPath2 = heightMap2;
+
+      _this.highDetail.children.splice(0);
+
+      var [zOnly, planet, atmosphere] = yield Promise.all([global__WEBPACK_IMPORTED_MODULE_1__["resMan"].FetchObject(EvePlanet.ZOnlyModelPath), resPath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].FetchObject(resPath) : null, atmospherePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].FetchObject(atmospherePath) : null]);
+      _this._planet = planet;
+      _this._atmosphere = atmosphere;
+      _this.zOnlyModel = zOnly;
+      EvePlanet.MeshLoaded(_this, _this._planet);
+      return _this;
+    })();
+  }
+
+  /**
    * Creates the planet from an options object
    * @param {{}} options={}                   - an object containing the planet's options
    * @param {String} options.name             - the planet's name
@@ -56472,8 +56700,6 @@ var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlan
    * @param {String} options.heightMap2       - the planet's second height map
    * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
    */
-
-
   Create(options = {}, onLoaded) {
     var {
       name = "",
@@ -56487,7 +56713,10 @@ var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlan
     this.itemID = itemID;
     this.heightMapResPath1 = heightMap1;
     this.heightMapResPath2 = heightMap2;
-    this.highDetail.children = [];
+    this.highDetail.children.splice(0);
+    this._heightDirty = true;
+    this._planet = null;
+    this._atmosphere = null;
     this._heightDirty = true;
     var loadingParts = 1;
     if (resPath) loadingParts++;
@@ -56522,7 +56751,7 @@ var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlan
       });
     }
 
-    global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetObject("res:/dx9/model/worldobject/planet/planetzonly.red", obj => {
+    global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetObject(EvePlanet.ZOnlyModelPath, obj => {
       this.zOnlyModel = obj;
       onPartLoaded();
     });
@@ -56796,7 +57025,7 @@ var EvePlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlan
     }
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "highDetail", [_dec2], {
+}, _class3.ZOnlyModelPath = "res:/dx9/model/worldobject/planet/planetzonly.red", _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "highDetail", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -66877,7 +67106,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromHex = function (out, hex, def
 /*!*********************************!*\
   !*** ./global/meta/@generic.js ***!
   \*********************************/
-/*! exports provided: abstract, singleton, data, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
+/*! exports provided: abstract, singleton, data, alias, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66885,6 +67114,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return abstract; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "data", function() { return data; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "alias", function() { return alias; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readOnly", function() { return readOnly; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return isPrivate; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return desc; });
@@ -66954,6 +67184,15 @@ var data = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["createDecorator"]
     }
 
     Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["defineMetadata"])("data", value, target, property);
+  }
+
+});
+var alias = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["createDecorator"])({
+  property({
+    target,
+    property
+  }, alias) {
+    Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["defineMetadata"])("alias", alias, target, property);
   }
 
 });
@@ -67421,6 +67660,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/type */ "./global/utils/type.js");
 /* harmony import */ var _ModelPropertyTypes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ModelPropertyTypes */ "./global/meta/ModelPropertyTypes.js");
 /* harmony import */ var _generic__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./@generic */ "./global/meta/@generic.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
 var _class, _descriptor, _temp;
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -67438,6 +67678,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 
@@ -68035,7 +68276,7 @@ var Model = (_class = (_temp = class Model {
     opt._ids.set(item, [out]);
 
     for (var key in item) {
-      if (item.hasOwnProperty(key) && Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", item, key) && !Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("isPrivate", item, key)) {
+      if (item.hasOwnProperty(key) && Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", item, key) && !Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("isPrivate", item, key) && !Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("alias", item, key)) {
         var type = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", item, key),
             handler = _ModelPropertyTypes__WEBPACK_IMPORTED_MODULE_3__["propTypes"].get(type);
 
@@ -68115,13 +68356,44 @@ var Model = (_class = (_temp = class Model {
       //item.Clear({ skipUpdate: true, skipEvents: true });
     }
 
+    var skipped;
     var updated = false;
 
     if (values) {
       for (var key in values) {
-        if (values.hasOwnProperty(key) && Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", item, key) && !Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("isPrivate", item, key)) {
+        if (values.hasOwnProperty(key)) {
+          var value = values[key];
+          /** DEBUGGING START **/
+
+          if (values[key] === undefined) {
+            skipped = skipped || {};
+            skipped.undefined = skipped.undefined | [];
+            skipped.undefined.push(key);
+            continue;
+          }
+
+          if (Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("isPrivate", item, key)) {
+            skipped = skipped || {};
+            skipped.private = skipped.private || [];
+            skipped.private.push(key);
+            continue;
+          } // Allow aliasing
+
+
+          if (Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("alias", item, key)) {
+            key = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("alias", item, key);
+          }
+
+          if (!Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("type", item, key)) {
+            skipped = skipped || {};
+            skipped.noType = skipped.noType || [];
+            skipped.noType.push(key);
+            continue;
+          }
+          /** DEBUGGING END **/
+
+
           var type = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", item, key),
-              value = values[key],
               handler = _ModelPropertyTypes__WEBPACK_IMPORTED_MODULE_3__["propTypes"].get(type);
 
           if (!handler) {
@@ -68145,7 +68417,7 @@ var Model = (_class = (_temp = class Model {
             continue;
           }
 
-          if (handler.set(item, key, value, options)) {
+          if (handler.set(item, key, value, options) !== false) {
             updated = true;
           }
         }
@@ -68157,6 +68429,14 @@ var Model = (_class = (_temp = class Model {
     }
 
     _ids.set(item, updated);
+
+    if (skipped) {
+      global_tw2__WEBPACK_IMPORTED_MODULE_5__["logger"].Debug({
+        name: "".concat(Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("type", item.constructor), ".set"),
+        message: "Properties values skipped",
+        data: skipped
+      });
+    }
 
     return updated;
   }
@@ -68416,7 +68696,7 @@ propTypes.set(constant_type__WEBPACK_IMPORTED_MODULE_1__["PT_STRUCT_LIST"], {
 /*!******************************!*\
   !*** ./global/meta/index.js ***!
   \******************************/
-/*! exports provided: type, unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, abstract, singleton, data, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage, Model */
+/*! exports provided: type, unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, abstract, singleton, data, alias, readOnly, isPrivate, desc, todo, partialImplementation, notImplemented, stage, Model */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68480,6 +68760,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["singleton"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "data", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["data"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "alias", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["alias"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "readOnly", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["readOnly"]; });
 
@@ -69987,11 +70269,12 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: tw2, CCPWGL */
+/*! exports provided: tw2, CCPWGL, tiny */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tiny", function() { return tiny; });
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description */ "../node_modules/core-js/modules/es.symbol.description.js");
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
@@ -70096,6 +70379,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CCPWGL", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
 
+/* harmony import */ var _wrapped__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./wrapped */ "./wrapped/index.js");
 
 
 
@@ -70148,6 +70432,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _global__WEBPACK_IMPORTED_MODULE_50__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_49__["config"]);
+
+var tiny = new _wrapped__WEBPACK_IMPORTED_MODULE_51__["WrappedClient"]();
 
 
 /***/ }),
@@ -74178,6 +74464,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       // Allow reverting to old spotlight sets
       // new ones have weird artifacts with standard textures
       useSpotlightPool: false,
+      devColor: [0, 0, 0, 0],
       multiplier: {
         // Boost lights
         generalGlowColor: [10, 10, 10, 1],
@@ -74191,7 +74478,8 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       effect: {
         sprite: null,
         banner: null,
-        shadow: null
+        shadow: null,
+        shadowSkinned: null
       },
       effectPath: {
         plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
@@ -74285,6 +74573,13 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       effect.shadow = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
         name: "Shared shadow effect",
         effectFilePath: effectPath.shadow
+      });
+    }
+
+    if (!effect.shadowSkinned) {
+      effect.shadowSkinned = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+        name: "Shared shadow skinned effect",
+        effectFilePath: this.GetShaderPath(effectPath.shadow, true)
       });
     }
   }
@@ -74565,15 +74860,17 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     }
 
     if (!pattern && faction.defaultPattern) {
-      pattern = this.GetHullPattern(hull.name, faction.defaultPattern);
+      pattern = {
+        layer1: faction.defaultPattern
+      };
+    }
 
-      if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName) {
-        area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
-      }
+    if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName) {
+      area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
     } // TODO: Check if the faction.resPathInsert actually exists...
 
 
-    resPathInsert = commands["RESPATHINSERT"] || faction.resPathInsert || null;
+    resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
     return {
       hull,
       faction,
@@ -74852,8 +75149,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
    * @param {Object} [options={}]
    */
   static SetupMesh(data, obj, sof, options) {
-    obj.shadowEffect = obj.shadowEffect || options.effect.shadow; // Mesh
-
+    // Mesh
     var {
       hull
     } = sof,
@@ -74861,19 +75157,30 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
     var initialized = false;
     /**** START TESTING ONLY *****/
 
+    function handleShadow(geometryResPath) {
+      var noSkin = Object(utils__WEBPACK_IMPORTED_MODULE_2__["getPathExtension"])(geometryResPath) === "cake";
+      obj.shadowEffect = sof.hull.isSkinned && !noSkin ? options.effect.shadowSkinned : options.effect.shadow;
+    }
+
     var resPath = Object(utils__WEBPACK_IMPORTED_MODULE_2__["get"])(hull, "geometryResFilePath", "");
 
     if (resPath in EveSOFData.knownGeometryResPath) {
       mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
+      handleShadow(mesh.geometryResPath);
     } else {
       mesh.geometryResPath = resPath;
       global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(resPath, res => {
         EveSOFData.knownGeometryResPath[resPath] = resPath;
-        if (initialized) mesh.Initialize();
+        handleShadow(resPath);
+
+        if (initialized) {
+          mesh.Initialize();
+          obj.Initialize();
+        }
       }, err => {
         // Fallback to wbg...
-        mesh.geometryResPath = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
-        EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath;
+        mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
+        handleShadow(mesh.geometryResPath);
 
         if (initialized) {
           mesh.Initialize();
@@ -75045,9 +75352,14 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
       spriteSets = []
     } = sof.hull;
     spriteSets.forEach(srcSet => {
+      //  If they aren't visible, don't bother to create them
+      if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup)) {
+        return;
+      }
+
       var set = new eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]();
       set.name = srcSet.name;
-      set.display = srcSet.visibilityGroup ? sof.faction.HasVisibilityGroup(srcSet.visibilityGroup) : true;
+      set.display = true;
       set.useQuads = true;
       set.skinned = srcSet.skinned && isSkinned;
       set.effect = options.effect.sprite;
@@ -75059,7 +75371,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
         } else {
           sof.faction.GetColorType(0, color);
           global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
-            ame: "Space object factory",
+            name: "Space object factory",
             message: "Using primary color for spriteSet: " + srcItem.colorType
           });
         }
@@ -75179,19 +75491,30 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
 
         if (faction) {
           math__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy(item.color, faction.color);
-        } // TEMPORARY
+        }
+
+        if (EveSOFData.isZeroColor(item.color)) {
+          math__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy(item.color, options.devColor);
+        } // If a plane set is zero coloured don't bother to create them
 
 
-        if (item.color[0] === 0 && item.color[1] === 0 && item.color[2] === 0 && item.color[3] === 0) {
-          math__WEBPACK_IMPORTED_MODULE_1__["vec4"].set(item.color, 1, 1, 1, 1);
+        if (EveSOFData.isZeroColor(item.color)) {
+          return;
         }
 
         set.items.push(item);
       });
-      set.Initialize();
-      var arr = obj.attachments || obj.planeSets;
-      arr.push(set);
+
+      if (set.items.length) {
+        set.Initialize();
+        var arr = obj.attachments || obj.planeSets;
+        arr.push(set);
+      }
     });
+  }
+
+  static isZeroColor(color) {
+    return color[0] === 0 && color[1] === 0 && color[2] === 0 && color[3] === 0;
   }
   /**
    *
@@ -75274,7 +75597,15 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveSOF
             filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["FilterMode"].LINEAR,
             mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["MipFilterMode"].NONE
           };
-        } // Item's values override logo types
+        } // Glows
+        else if (usage === 5) {
+            config.overrides.DecalAtMap = {
+              addressUMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].CLAMP_TO_EDGE,
+              addressVMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["WrapMode"].CLAMP_TO_EDGE,
+              filterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["FilterMode"].LINEAR,
+              mipFilterMode: constant_d3d__WEBPACK_IMPORTED_MODULE_8__["MipFilterMode"].NONE
+            };
+          } // Item's values override logo types
 
 
         itemData.Assign(config);
@@ -78824,7 +79155,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return EveSOFDataHullChild; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -78834,7 +79165,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataHullChild = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullChild"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullChild {
+var EveSOFDataHullChild = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullChild"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullChild {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -78851,6 +79182,8 @@ var EveSOFDataHullChild = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     _initializerDefineProperty(this, "scaling", _descriptor7, this);
 
     _initializerDefineProperty(this, "translation", _descriptor8, this);
+
+    _initializerDefineProperty(this, "visibilityGroup", _descriptor9, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -78908,6 +79241,13 @@ var EveSOFDataHullChild = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroup", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
   }
 })), _class2)) || _class);
 
@@ -80754,7 +81094,7 @@ var EveSOFDataHullSpriteSetItem = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["me
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return 1;
   }
 }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "maxScale", [_dec9], {
   configurable: true,
@@ -83231,12 +83571,14 @@ var TriObserverLocal = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
 /*!***********************************!*\
   !*** ./unsupported/core/index.js ***!
   \***********************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal */
+/*! exports provided: EvePointLightBatch, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lighting__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lighting */ "./unsupported/core/lighting/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePointLightBatch", function() { return _lighting__WEBPACK_IMPORTED_MODULE_0__["EvePointLightBatch"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PointLight", function() { return _lighting__WEBPACK_IMPORTED_MODULE_0__["Tr2PointLight"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ShLightingManager", function() { return _lighting__WEBPACK_IMPORTED_MODULE_0__["Tr2ShLightingManager"]; });
@@ -83303,15 +83645,18 @@ __webpack_require__.r(__webpack_exports__);
 /*!****************************************************!*\
   !*** ./unsupported/core/lighting/Tr2PointLight.js ***!
   \****************************************************/
-/*! exports provided: Tr2PointLight */
+/*! exports provided: EvePointLightBatch, Tr2PointLight */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePointLightBatch", function() { return EvePointLightBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PointLight", function() { return Tr2PointLight; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core_batch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/batch */ "./core/batch/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -83321,7 +83666,24 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2PointLight = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PointLight"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PointLight extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+
+
+class EvePointLightBatch extends core_batch__WEBPACK_IMPORTED_MODULE_3__["Tw2RenderBatch"] {
+  constructor(...args) {
+    super(...args);
+    this.light = null;
+  }
+
+  /**
+   * Commits the light for rendering
+   * @param {String} technique - technique name
+   */
+  Commit(technique) {
+    this.light.Render(technique);
+  }
+
+}
+var Tr2PointLight = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PointLight"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2PointLight extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -83342,9 +83704,96 @@ var Tr2PointLight = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplem
     _initializerDefineProperty(this, "position", _descriptor8, this);
 
     _initializerDefineProperty(this, "radius", _descriptor9, this);
+
+    this._effect = null;
+    this._worldPosition = math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    this._indexBuffer = null;
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+  /**
+   * Unloads the light's buffers
+   * @param {Boolean} skipEvent
+   */
+  Unload(skipEvent) {
+    if (this._indexBuffer) {
+      global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteBuffer(this._indexBuffer);
+      this._indexBuffer = null;
+    }
+
+    super.Unload(skipEvent);
+  }
+
+  Rebuild() {}
+
+  Update(dt, parentMatrix) {
+    math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(this._worldPosition, this.position, parentMatrix);
+    if (this._dirty) this.Rebuild();
+  }
+
+  GetBatches(mode, accumulator, perObjectData) {
+    if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_2__["device"].RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count) {
+      var batch = new EvePointLightBatch();
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_2__["device"].RM_ADDITIVE;
+      batch.light = this;
+      batch.perObjectData = perObjectData;
+      accumulator.Commit(batch);
+    }
+  }
+
+  Render(technique) {
+    if (!this._effect || !this._effect.IsGood() || !this.buffer) return false;
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
+        gl = d.gl,
+        stride = 0 * 4;
+    d.SetStandardStates(d.RM_ADDITIVE);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+
+    for (var pass = 0; pass < this._effect.GetPassCount(technique); ++pass) {
+      this.effect.ApplyPass(technique, pass);
+      d.ApplyShadowState();
+      d.gl.drawElements(gl.TRIANGLES, this.buffer["count"], gl.UNSIGNED_SHORT, 0);
+    }
+
+    return false;
+  }
+
+}, _class3.vertexDeclarations = [{
+  usage: "POSITION",
+  usageIndex: 0,
+  elements: 3
+}, {
+  usage: "POSITION",
+  usageIndex: 1,
+  elements: 3
+}, {
+  usage: "POSITION",
+  usageIndex: 2,
+  elements: 3
+}, {
+  usage: "POSITION",
+  usageIndex: 3,
+  elements: 3
+}, {
+  usage: "POSITION",
+  usageIndex: 4,
+  elements: 3
+}, {
+  usage: "POSITION",
+  usageIndex: 5,
+  elements: 3
+}, {
+  usage: "TEXCOORD",
+  usageIndex: 6,
+  elements: 1
+}, {
+  usage: "TEXCOORD",
+  usageIndex: 7,
+  elements: 1
+}, {
+  usage: "TEXCOORD",
+  usageIndex: 8,
+  elements: 1
+}], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -83462,12 +83911,14 @@ var Tr2ShLightingManager = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].no
 /*!********************************************!*\
   !*** ./unsupported/core/lighting/index.js ***!
   \********************************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager */
+/*! exports provided: EvePointLightBatch, Tr2PointLight, Tr2ShLightingManager */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2PointLight__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2PointLight */ "./unsupported/core/lighting/Tr2PointLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePointLightBatch", function() { return _Tr2PointLight__WEBPACK_IMPORTED_MODULE_0__["EvePointLightBatch"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PointLight", function() { return _Tr2PointLight__WEBPACK_IMPORTED_MODULE_0__["Tr2PointLight"]; });
 
 /* harmony import */ var _Tr2ShLightingManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2ShLightingManager */ "./unsupported/core/lighting/Tr2ShLightingManager.js");
@@ -89480,6 +89931,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/model */ "./core/model/index.js");
 /* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
 /* harmony import */ var eve_effect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/effect */ "./eve/effect/index.js");
+/* harmony import */ var constant_d3d__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! constant/d3d */ "./global/constant/d3d.js");
+/* harmony import */ var core_batch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core/batch */ "./core/batch/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -89487,6 +89940,8 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
 
 
 
@@ -90279,7 +90734,8 @@ var EveShip2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip2
       killmarks: true,
       customMasks: true,
       turretSets: true,
-      boosters: true
+      boosters: true,
+      shadows: true
     };
   }
 })), _class2)) || _class);
@@ -91225,12 +91681,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./unsupported/index.js ***!
   \******************************/
-/*! exports provided: Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
+/*! exports provided: EvePointLightBatch, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./unsupported/core/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePointLightBatch", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["EvePointLightBatch"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PointLight", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2PointLight"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ShLightingManager", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2ShLightingManager"]; });
@@ -94152,6 +94610,1780 @@ var Tr2ControllerFloatVariable = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["met
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2ControllerFloatVariable */ "./unsupported/state/variable/Tr2ControllerFloatVariable.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__["Tr2ControllerFloatVariable"]; });
+
+
+
+/***/ }),
+
+/***/ "./wrapped/ESIManager.js":
+/*!*******************************!*\
+  !*** ./wrapped/ESIManager.js ***!
+  \*******************************/
+/*! exports provided: getTypeID, getGraphicID, getResPathFromGraphicID, getResPathFromTypeID */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeID", function() { return getTypeID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGraphicID", function() { return getGraphicID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromGraphicID", function() { return getResPathFromGraphicID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeID", function() { return getResPathFromTypeID; });
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var ESI_ROOT = "https://esi.evetech.net",
+    ESI_VERSION = "latest",
+    ESI_DATA_SOURCE = "tranquility",
+    ESI_LANGUAGE = "en-us";
+var EsiEndpoint = {
+  ASTEROID_BELTS: "universe/asteroid_belts",
+  CATEGORIES: "universe/categories",
+  CONSTELLATIONS: "universe/constellations",
+  FACTIONS: "universe/factions",
+  GRAPHICS: "universe/graphics",
+  GROUPS: "universe/groups",
+  MOONS: "universe/moons",
+  PLANETS: "universe/planets",
+  RACES: "universe/races",
+  REGIONS: "universe/regions",
+  STARGATES: "universe/stargates",
+  STARS: "universe/stars",
+  STATIONS: "universe/stations",
+  STRUCTURES: "universe/structures",
+  SYSTEM_KILLS: "universe/system_kills",
+  SYSTEMS: "universe/systems",
+  TYPES: "universe/types"
+};
+/**
+ * Builds an esi url
+ * @param {String} endpoint
+ * @param {*} [params]
+ * @returns {String}
+ */
+
+function buildESIUrlString(endpoint, params) {
+  params = Object.assign({
+    language: ESI_LANGUAGE,
+    datasource: ESI_DATA_SOURCE
+  }, params);
+  var keys = Object.keys(params).sort(),
+      url_string = "".concat(ESI_ROOT, "/").concat(ESI_VERSION, "/").concat(endpoint, "/");
+
+  for (var i = 0; i < keys.length; i++) {
+    url_string += "".concat(i === 0 ? "?" : "&").concat(keys[i], "=").concat(params[keys[i]]);
+  }
+
+  return url_string.toLowerCase();
+}
+/**
+ * ESI response cache
+ * @type {Map<String, Promise>}
+ */
+
+
+var esiCache = new Map();
+/**
+ * Gets an id'd data from an api route
+ * @param {String} route
+ * @param {Number} id
+ * @param {*} [params]
+ * @param {function} [extender]
+ * @returns {Promise<Object>}
+ */
+
+function getIDFromESIRoute(_x, _x2, _x3, _x4) {
+  return _getIDFromESIRoute.apply(this, arguments);
+}
+/**
+ * Gets type from it's id
+ * @param {Number} typeID
+ * @param {Object} [params]
+ * @returns {Promise<Object>}
+ */
+
+
+function _getIDFromESIRoute() {
+  _getIDFromESIRoute = _asyncToGenerator(function* (route, id, params, extender) {
+    var url = buildESIUrlString("".concat(route, "/").concat(id), params);
+    if (!esiCache.has(url)) esiCache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
+    return yield esiCache.get(url);
+  });
+  return _getIDFromESIRoute.apply(this, arguments);
+}
+
+function getTypeID(_x5, _x6) {
+  return _getTypeID.apply(this, arguments);
+}
+/**
+ * Gets graphic by it's id
+ * @param {Number} graphicID
+ * @param {Object} [params]
+ * @returns {Promise<Object>}
+ */
+
+function _getTypeID() {
+  _getTypeID = _asyncToGenerator(function* (typeID, params) {
+    return yield getIDFromESIRoute(EsiEndpoint.TYPES, typeID, params);
+  });
+  return _getTypeID.apply(this, arguments);
+}
+
+function getGraphicID(_x7, _x8) {
+  return _getGraphicID.apply(this, arguments);
+}
+/**
+ * Gets a resPath from a graphic id
+ * @param {Number} graphicID
+ * @returns {Promise<String>}
+ */
+
+function _getGraphicID() {
+  _getGraphicID = _asyncToGenerator(function* (graphicID, params) {
+    return yield getIDFromESIRoute(EsiEndpoint.GRAPHICS, graphicID, params);
+  });
+  return _getGraphicID.apply(this, arguments);
+}
+
+function getResPathFromGraphicID(_x9) {
+  return _getResPathFromGraphicID.apply(this, arguments);
+}
+/**
+ * Gets a resPath from a type id
+ * @param {Number} typeID
+ * @param {Object} [params]
+ * @returns {Promise<String>}
+ */
+
+function _getResPathFromGraphicID() {
+  _getResPathFromGraphicID = _asyncToGenerator(function* (graphicID) {
+    if (!graphicID) throw new Error("Graphic ID not found");
+    var {
+      sof_dna,
+      graphic_file
+    } = yield getIDFromESIRoute(EsiEndpoint.GRAPHICS, graphicID);
+    return sof_dna || graphic_file || "";
+  });
+  return _getResPathFromGraphicID.apply(this, arguments);
+}
+
+function getResPathFromTypeID(_x10, _x11) {
+  return _getResPathFromTypeID.apply(this, arguments);
+}
+
+function _getResPathFromTypeID() {
+  _getResPathFromTypeID = _asyncToGenerator(function* (typeID, params) {
+    var {
+      graphic_id
+    } = yield getIDFromESIRoute(EsiEndpoint.TYPES, typeID);
+    return yield getResPathFromGraphicID(graphic_id);
+  });
+  return _getResPathFromTypeID.apply(this, arguments);
+}
+
+/***/ }),
+
+/***/ "./wrapped/WrappedCamera.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedCamera.js ***!
+  \**********************************/
+/*! exports provided: WrappedCamera */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedCamera", function() { return WrappedCamera; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! math */ "./global/math/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+var WrappedCamera = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedCamera"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class WrappedCamera extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  /**
+   * Constructor
+   * @param {HTMLCanvasElement}  element
+   * @param {Object} [values]
+   */
+  constructor(element, values) {
+    if (!(element instanceof HTMLCanvasElement)) {
+      throw new ReferenceError("Invalid element");
+    }
+
+    super();
+
+    _initializerDefineProperty(this, "distance", _descriptor, this);
+
+    _initializerDefineProperty(this, "minDistance", _descriptor2, this);
+
+    _initializerDefineProperty(this, "maxDistance", _descriptor3, this);
+
+    _initializerDefineProperty(this, "fov", _descriptor4, this);
+
+    _initializerDefineProperty(this, "rotationX", _descriptor5, this);
+
+    _initializerDefineProperty(this, "rotationY", _descriptor6, this);
+
+    _initializerDefineProperty(this, "poi", _descriptor7, this);
+
+    _initializerDefineProperty(this, "nearPlane", _descriptor8, this);
+
+    _initializerDefineProperty(this, "farPlane", _descriptor9, this);
+
+    this._onShift = null;
+    this._shift = 0;
+    this._shiftStage = 0;
+    this._shiftX = null;
+    this._dragX = 0;
+    this._dragY = 0;
+    this._lastRotationX = 0;
+    this._lastRotationY = 0;
+    this._rotationSpeedX = 0;
+    this._rotationSpeedY = 0;
+    this._additionalRotationX = 0;
+    this._additionalRotationY = 0;
+    this._measureRotation = null;
+    this._moveEvent = null;
+    this._upEvent = null;
+    this._prevScale = null;
+    element.addEventListener("mousedown", event => this._DragStart(event), false);
+    element.addEventListener("touchstart", event => this._DragStart(event), true);
+    window.addEventListener("DOMMouseScroll", e => this._WheelHandler(e, element), false);
+    window.addEventListener("mousewheel", e => this._WheelHandler(e, element), false);
+    if (values) this.SetValues(values);
+  }
+  /**
+   *
+   * @param obj
+   * @param,multiplier
+   */
+
+
+  Focus(obj, multiplier = 3) {
+    if (obj.GetLongAxis) {
+      this.distance = obj.GetLongAxis() * multiplier || 1000;
+    }
+
+    return this;
+  }
+  /**
+   * Adds a on shift handler
+   * @param {Function} func
+   */
+
+
+  OnShift(func) {
+    this._onShift = func;
+  }
+  /**
+   * Gets the camera's view matrix
+   * @param {mat4} [out=mat4.create()]
+   * @return {mat4} out
+   */
+
+
+  GetView(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create()) {
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].identity(out);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, -this._shift);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [0, 0.0, -this.distance]);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateX(out, out, this.rotationY + this._additionalRotationY);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, this.rotationX + this._additionalRotationX);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [-this.poi[0], -this.poi[1], -this.poi[2]]);
+    return out;
+  }
+  /**
+   * Gets the cameras projection matrix
+   * @param  {mat4} [out=mat4.create()]
+   * @param {number} aspect - The canvas's aspect ratio
+   * @returns {mat4}
+   */
+
+
+  GetProjection(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create(), aspect) {
+    var fH = Math.tan(this.fov / 360 * Math.PI) * this.nearPlane,
+        fW = fH * aspect;
+    return math__WEBPACK_IMPORTED_MODULE_2__["mat4"].frustum(out, -fW, fW, -fH, fH, this.nearPlane, this.farPlane > 0 ? this.farPlane : this.distance * 2);
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.rotationX += this._rotationSpeedX * dt;
+    this._rotationSpeedX *= 0.9;
+    this.rotationY += this._rotationSpeedY * dt;
+    this._rotationSpeedY *= 0.9;
+    if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
+    if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
+
+    if (this._shiftStage === 2) {
+      this._shift += this._shift * dt * 5;
+
+      if (Math.abs(this._shift) > 2) {
+        this._onShift(1, this._shift > 0); //this.shift = -this.shift;
+        //this._shiftOut = false;
+
+      }
+    } else if (this._shiftStage === 1) {
+      this._shift -= this._shift * Math.min(dt, 0.5) * 2;
+    }
+
+    this.EmitEvent("update", dt);
+    if (this.post) this.post.Update(dt);
+  }
+  /**
+   * Renders the camera's post effects
+   * @param {Number} dt
+   * @return {Boolean}
+   */
+
+
+  Render(dt) {
+    return this.post ? this.post.Render(dt) : false;
+  }
+  /**
+   * Drag start handler
+   * @param event
+   * @private
+   */
+
+
+  _DragStart(event) {
+    if (!event.touches && !this._onShift && event.button !== 0) {
+      return;
+    }
+
+    if (this._moveEvent || this._upEvent) {
+      return;
+    }
+
+    if (this._moveEvent === null) {
+      document.addEventListener("mousemove", this._moveEvent = event => this._DragMove(event), true);
+      document.addEventListener("touchmove", this._moveEvent, true);
+    }
+
+    if (this._upEvent === null) {
+      document.addEventListener("mouseup", this._upEvent = event => this._DragStop(event), true);
+      document.addEventListener("touchend", this._upEvent, true);
+    }
+
+    event.preventDefault();
+
+    if (event.touches) {
+      event.screenX = event.touches[0].screenX;
+      event.screenY = event.touches[0].screenY;
+    }
+
+    this._dragX = event.screenX;
+    this._dragY = event.screenY;
+    this._shiftX = null;
+    this._rotationSpeedX = 0;
+    this._lastRotationX = this.rotationX;
+    this._rotationSpeedY = 0;
+    this._lastRotationY = this.rotationY;
+    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
+  }
+  /**
+   * Measures rotation
+   * @private
+   */
+
+
+  _MeasureRotation() {
+    this._lastRotationX = this.rotationX;
+    this._lastRotationY = this.rotationY;
+    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
+  }
+  /**
+   * Drag move handler
+   * @param event
+   * @private
+   */
+
+
+  _DragMove(event) {
+    if (this._onShift && (event.touches && event.touches.length > 2 || !event.touches && event.button !== 0)) {
+      this._shiftStage = 0;
+      event.preventDefault();
+
+      if (event.touches) {
+        event.screenX = event.screenY = 0;
+
+        for (var i = 0; i < event.touches.length; ++i) {
+          event.screenX += event.touches[i].screenX;
+          event.screenY += event.touches[i].screenY;
+        }
+
+        event.screenX /= event.touches.length;
+        event.screenY /= event.touches.length;
+      }
+
+      if (this._shiftX !== null) {
+        this._shift += (event.screenX - this._shiftX) / global_tw2__WEBPACK_IMPORTED_MODULE_1__["device"].viewportWidth * 2;
+      }
+
+      this._shiftX = event.screenX;
+      return;
+    }
+
+    this._shiftX = null;
+
+    if (event.touches) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+        var dx = event.touches[0].screenX - event.touches[1].screenX,
+            dy = event.touches[0].screenY - event.touches[1].screenY,
+            scale = Math.sqrt(dx * dx + dy * dy);
+
+        if (this._prevScale != null) {
+          var delta = (this._prevScale - scale) * 0.03;
+          this.distance = this.distance + delta * this.distance * 0.1;
+          if (this.distance < this.minDistance) this.distance = this.minDistance;
+          if (this.distance > this.maxDistance) this.distance = this.maxDistance;
+        }
+
+        this._prevScale = scale;
+        return;
+      }
+
+      event.screenX = event.touches[0].screenX;
+      event.screenY = event.touches[0].screenY;
+    }
+
+    if (typeof event.screenX !== "undefined") {
+      var dRotation = -(this._dragX - event.screenX) * 0.01;
+      this.rotationX += dRotation;
+      this._dragX = event.screenX;
+      dRotation = -(this._dragY - event.screenY) * 0.01;
+      this.rotationY += dRotation;
+      this._dragY = event.screenY;
+      if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
+      if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
+    }
+  }
+  /**
+   * Drag stop handler
+   * @param event
+   * @private
+   */
+
+
+  _DragStop(event) {
+    clearTimeout(this._measureRotation);
+    document.removeEventListener("mousemove", this._moveEvent, true);
+    document.removeEventListener("mouseup", this._upEvent, true);
+    document.removeEventListener("touchmove", this._moveEvent, true);
+    document.removeEventListener("touchend", this._upEvent, true);
+    this._moveEvent = null;
+    this._upEvent = null;
+    var dRotation = this.rotationX - this._lastRotationX;
+    this._rotationSpeedX = dRotation * 0.5;
+    dRotation = this.rotationY - this._lastRotationY;
+    this._rotationSpeedY = dRotation * 0.5;
+    this._prevScale = null;
+
+    if (this._onShift) {
+      if (Math.abs(this._shift) > 0.5) {
+        this._shiftStage = 2;
+        this.onShift(0, this._shift > 0);
+      } else {
+        this._shiftStage = 1;
+      }
+    }
+  }
+  /**
+   * Mouse wheel handler
+   * @param event
+   * @param element
+   * @returns {boolean}
+   * @private
+   */
+
+
+  _WheelHandler(event, element) {
+    /* For IE. */
+    if (!event) event = window.event;
+    var source = event.srcElement ? event.srcElement : event.target;
+    if (source !== element) return false;
+    var delta = 0;
+    /* IE/Opera. */
+
+    if (event.wheelDelta) {
+      delta = event.wheelDelta / 120;
+      /** In Opera 9, delta differs in sign as compared to IE.*/
+
+      if (window.opera) delta = -delta;
+    }
+    /* Mozilla case. In Mozilla, sign of delta is different than in IE. Also, delta is multiple of 3. */
+    else if (event.detail) {
+        delta = -event.detail / 3;
+      }
+    /** If delta is nonzero, handle it.
+     * Basically, delta is now positive if wheel was scrolled up,
+     * and negative, if wheel was scrolled down.
+     */
+
+
+    if (delta) {
+      this.distance = this.distance + delta * this.distance * 0.1;
+
+      if (this.distance < this.minDistance) {
+        this.distance = this.minDistance;
+      }
+    }
+    /** Prevent default actions caused by mouse wheel.
+     * That might be ugly, but we handle scrolls somehow
+     * anyway, so don't bother here..
+     */
+
+
+    if (event.preventDefault) event.preventDefault();
+    event.returnValue = false;
+    return false;
+  }
+  /**
+   * Fetches a camera async
+   * TODO: Load geometry to represent the camera
+   * @param {Object} options
+   * @return {Promise<WrappedCamera>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (!Object(utils__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(options)) {
+        options = {
+          canvas: options
+        };
+      }
+
+      var {
+        canvas
+      } = options,
+          values = _objectWithoutProperties(options, ["canvas"]);
+
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(canvas)) canvas = document.getElementById(canvas);
+      return new _this(canvas, values);
+    })();
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "distance", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "minDistance", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "maxDistance", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1000000;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "fov", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 60;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "rotationX", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "rotationY", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "poi", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].create();
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "nearPlane", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "farPlane", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedClient.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedClient.js ***!
+  \**********************************/
+/*! exports provided: WrappedClient */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedClient", function() { return WrappedClient; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2EventEmitter */ "./core/Tw2EventEmitter.js");
+/* harmony import */ var _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedCamera */ "./wrapped/WrappedCamera.js");
+/* harmony import */ var _WrappedScene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedScene */ "./wrapped/WrappedScene.js");
+/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+
+
+var eveSof;
+class WrappedClient extends core_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"] {
+  constructor(...args) {
+    super(...args);
+    this.scene = null;
+    this.camera = null;
+    this.post = null;
+    this.num = math__WEBPACK_IMPORTED_MODULE_1__["num"];
+    this.vec2 = math__WEBPACK_IMPORTED_MODULE_1__["vec2"];
+    this.vec3 = math__WEBPACK_IMPORTED_MODULE_1__["vec3"];
+    this.quat = math__WEBPACK_IMPORTED_MODULE_1__["quat"];
+    this.mat3 = math__WEBPACK_IMPORTED_MODULE_1__["mat3"];
+    this.mat4 = math__WEBPACK_IMPORTED_MODULE_1__["mat4"];
+    this.util = utils__WEBPACK_IMPORTED_MODULE_0__;
+    this.options = {
+      update: true,
+      render: true,
+      postEffects: true,
+      clearColor: math__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 1)
+    };
+  }
+
+  /**
+   * Gets the current delta time
+   * @return {*}
+   */
+  get dt() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].dt;
+  }
+  /**
+   * Gets the current frame
+   * @return {*}
+   */
+
+
+  get frame() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].frameCounter;
+  }
+  /**
+   * Gets the 3d canvas
+   * @return {*}
+   */
+
+
+  get canvas3d() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas;
+  }
+  /**
+   * Gets the 2d canvas
+   * @return {*}
+   */
+
+
+  get canvas2d() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas2d ? global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas2d.context : null;
+  }
+  /**
+   * Initializes the client
+   * @param {Object} options
+   * @returns {Scene|undefined}
+   */
+
+
+  Initialize(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var {
+        client,
+        render,
+        scene,
+        camera,
+        blackPathHandler
+      } = options,
+          opt = _objectWithoutProperties(options, ["client", "render", "scene", "camera", "blackPathHandler"]);
+
+      if (blackPathHandler) core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__["path"].handler = blackPathHandler;
+      if (client) Object(utils__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(_this.options, client, Object.keys(_this.options));
+      if (!render) render = dt => _this.Render(dt);
+      global__WEBPACK_IMPORTED_MODULE_2__["tw2"].Initialize(_objectSpread({
+        render
+      }, opt)); // Force load the eve sof
+
+      yield WrappedClient.fetchEveSOF();
+      if (camera) yield _this.FetchCamera(camera, true);
+      if (scene) yield _this.FetchScene(scene, true);
+      return _this;
+    })();
+  }
+  /**
+   * Per frame render
+   * @param {Number} dt
+   * @returns {Boolean} true
+   */
+
+
+  Render(dt) {
+    var {
+      render,
+      update,
+      postEffects
+    } = this.options;
+    var {
+      camera,
+      scene,
+      post
+    } = this;
+
+    if (update && scene) {
+      this.EmitEvent("update", dt);
+      if (camera) camera.Update(dt);
+      if (scene) scene.Update(dt);
+
+      if (render) {
+        var {
+          gl,
+          viewportAspect,
+          viewportWidth,
+          viewportHeight,
+          RM_OPAQUE
+        } = global__WEBPACK_IMPORTED_MODULE_2__["device"];
+        var {
+          clearColor
+        } = scene.wrapped;
+        this.EmitEvent("pre_render", dt);
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetStandardStates(RM_OPAQUE);
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetProjection(camera.GetProjection([], viewportAspect));
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetView(camera.GetView([]));
+        gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        gl.clearDepth(1.0);
+        gl.viewport(0, 0, viewportWidth, viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        this.EmitEvent("pre_scene_render", dt);
+        scene.Render(dt);
+        this.EmitEvent("post_scene_render", dt);
+
+        if (!post || postEffects && !post.Render(dt)) {
+          gl.colorMask(false, false, false, false);
+          gl.clearColor(0, 0, 0, 1);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.colorMask(true, true, true, true);
+        }
+      }
+    }
+
+    this.EmitEvent("post_render", dt);
+    return true;
+  }
+  /**
+   *
+   * @param typeID
+   * @param params
+   * @return {Promise<Object>}
+   */
+
+
+  FetchTypeID(typeID, params) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeID"])(typeID, params);
+    })();
+  }
+  /**
+   *
+   * @param graphicID
+   * @param params
+   * @return {Promise<Object>}
+   */
+
+
+  FetchGraphicID(graphicID, params) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID, params);
+    })();
+  }
+  /**
+   * Fetches sof hull names
+   * @return {Promise<Object|Array>}
+   */
+
+
+  FetchSOFHulls() {
+    return _asyncToGenerator(function* () {
+      var eveSof = yield WrappedClient.fetchEveSOF();
+      return eveSof.GetHullNames([]);
+    })();
+  }
+  /**
+   * Fetches sof faction names
+   * @return {Promise<Object|Array>}
+   */
+
+
+  FetchSOFFactions() {
+    return _asyncToGenerator(function* () {
+      var eveSof = yield WrappedClient.fetchEveSOF();
+      return eveSof.GetFactionNames([]);
+    })();
+  }
+  /**
+   * Fetches sof race names
+   * @return {Promise<Object|Array>}
+   */
+
+
+  FetchSOFRaces() {
+    return _asyncToGenerator(function* () {
+      var eveSof = yield WrappedClient.fetchEveSOF();
+      return eveSof.GetRaceNames([]);
+    })();
+  }
+  /**
+   * Fetches a scene async
+   * @param {Object} options
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedScene>}
+   */
+
+
+  FetchScene(options, add) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      var scene = yield _WrappedScene__WEBPACK_IMPORTED_MODULE_5__["WrappedScene"].fetch(options);
+      if (add) _this2.SetScene(scene);
+      return scene;
+    })();
+  }
+  /**
+   * Fetches a camera async
+   * @param {Object} [options={}]
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedCamera>}
+   */
+
+
+  FetchCamera(options = {}, add) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
+        options = {
+          canvas: options
+        };
+      }
+
+      if (!options.canvas) {
+        options.canvas = _this3.canvas2d ? _this3.canvas2d : _this3.canvas3d;
+      }
+
+      var camera = yield _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__["WrappedCamera"].fetch(options);
+      if (add) _this3.SetCamera(camera);
+      return camera;
+    })();
+  }
+  /**
+   * Sets the current scene
+   * @param {WrappedScene} scene
+   * @return {WrappedClient}
+   */
+
+
+  SetScene(scene) {
+    if (this.scene !== scene) {
+      if (this.scene) this.EmitEvent("scene_removed", this.scene);
+      this.scene = scene;
+      this.EmitEvent("scene_added", scene);
+    }
+
+    return this;
+  }
+  /**
+   * Sets the current camera
+   * @param {WrappedCamera} camera
+   * @return {WrappedClient}
+   */
+
+
+  SetCamera(camera) {
+    if (this.camera !== camera) {
+      if (this.camera) this.EmitEvent("camera_removed", this.camera);
+      this.camera = camera;
+      this.EmitEvent("camera_added", camera);
+    }
+
+    return this;
+  }
+  /**
+   * Sets black path handler
+   * @param {Function} func
+   */
+
+
+  SetPathHandler(func) {
+    core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__["path"].handler = func;
+  }
+  /**
+   * Fetches the latest eve sof
+   * @return {Promise<EveSOFData>}
+   */
+
+
+  static fetchEveSOF() {
+    return _asyncToGenerator(function* () {
+      if (!eveSof) eveSof = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(WrappedClient.SpaceObjectFactoryPath);
+      return eveSof;
+    })();
+  }
+  /**
+   * Path to the latest space object factory
+   * @type {string}
+   */
+
+
+}
+WrappedClient.SpaceObjectFactoryPath = "cdn:/dx9/model/spaceobjectfactory/data.black";
+
+/***/ }),
+
+/***/ "./wrapped/WrappedGenericObject.js":
+/*!*****************************************!*\
+  !*** ./wrapped/WrappedGenericObject.js ***!
+  \*****************************************/
+/*! exports provided: WrappedGenericObject */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedGenericObject", function() { return WrappedGenericObject; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Transform */ "./core/Tw2Transform.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "wrapped", _descriptor, this);
+
+    _initializerDefineProperty(this, "custom", _descriptor2, this);
+  }
+
+  get display() {
+    return this.wrapped.display;
+  }
+
+  set display(bool) {
+    this.wrapped.display = bool;
+  }
+  /**
+   * Gets the object's long axis
+   * @return {number}
+   */
+
+
+  GetLongAxis() {
+    if ("boundingSphereRadius" in this.wrapped) {
+      var mat4_0 = this.GetWorldTransform([]),
+          sph3_0 = math__WEBPACK_IMPORTED_MODULE_1__["sph3"].fromPositionRadius([], this.wrapped.boundingSphereCenter, this.wrapped.boundingSphereRadius);
+      math__WEBPACK_IMPORTED_MODULE_1__["sph3"].transformMat4(sph3_0, sph3_0, mat4_0);
+      return Math.round(sph3_0[3] * 2);
+    }
+
+    return 0;
+  }
+  /**
+   * Fires on world transform modified
+   * @param {mat4} world
+   */
+
+
+  OnWorldTransformModified(world) {
+    this.wrapped.SetTransform(world);
+    this.EmitEvent("transform_modified");
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.EmitEvent("update", dt);
+  }
+  /**
+   * Gets the object's resources
+   * @param {Array} [out=[]]
+   * @return {Array} out
+   */
+
+
+  GetResources(out = []) {
+    return this.wrapped.GetResources(out);
+  }
+  /**
+   * Fires on transform updates
+   * @param {mat4} world
+   */
+
+
+  _OnTransformUpdated(world) {
+    this.wrapped.SetTransform(world);
+  }
+  /**
+   * Fetches object sync
+   * @param {Object} values
+   * @param {Object} opt
+   */
+
+
+  static from(values, opt) {
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
+  }
+  /**
+   * Fetches object async
+   * @param {Object} values
+   * @param {EveSOFData} eveSof
+   * @return {Promise<*>}
+   */
+
+
+  static fetch(values, eveSof) {
+    return _asyncToGenerator(function* () {
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
+    })();
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "wrapped", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "custom", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedLensflare.js":
+/*!*************************************!*\
+  !*** ./wrapped/WrappedLensflare.js ***!
+  \*************************************/
+/*! exports provided: WrappedLensflare */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedLensflare", function() { return WrappedLensflare; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/effect/EveLensflare */ "./eve/effect/EveLensflare.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedLensflare = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedLensflare"), _dec(_class = class WrappedLensflare extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  /**
+   * Constructor
+   * @param {WrappedLensflare} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__["EveLensflare"])) {
+      throw new ReferenceError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Fetches a planet async
+   * @param {Object} options
+   * @return {Promise<WrappedLensflare>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) options = {
+        resPath: options
+      };
+
+      var {
+        resPath
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath"]);
+
+      if (resPath) {
+        var wrapped = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(resPath);
+        return new _this(wrapped, values);
+      }
+
+      throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedPlanet.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedPlanet.js ***!
+  \**********************************/
+/*! exports provided: WrappedPlanet */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedPlanet", function() { return WrappedPlanet; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedPlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedPlanet"), _dec(_class = class WrappedPlanet extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {EvePlanet} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"])) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Gets the object's long axis
+   * @return {number}
+   */
+
+
+  GetLongAxis() {
+    var worldScale = this.GetWorldScale([]);
+    return Math.max(worldScale[0], worldScale[1], worldScale[2]);
+  }
+  /**
+   * Fetches a planet async
+   * @param {Object} options
+   * @return {Promise<WrappedPlanet>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var {
+        itemID,
+        resPath,
+        heightMap1,
+        heightMap2,
+        atmospherePath
+      } = options,
+          values = _objectWithoutProperties(options, ["itemID", "resPath", "heightMap1", "heightMap2", "atmospherePath"]);
+
+      if (resPath) {
+        var wrapped = new eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"]();
+        yield wrapped.Fetch({
+          itemID,
+          resPath,
+          heightMap1,
+          heightMap2,
+          atmospherePath
+        });
+        wrapped._resPath = resPath;
+        wrapped._atmospherePath = atmospherePath;
+        return new _this(wrapped, values);
+      }
+
+      throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedScene.js":
+/*!*********************************!*\
+  !*** ./wrapped/WrappedScene.js ***!
+  \*********************************/
+/*! exports provided: WrappedScene */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedScene", function() { return WrappedScene; });
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/EveSpaceScene */ "./eve/EveSpaceScene.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
+/* harmony import */ var _WrappedShip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedShip */ "./wrapped/WrappedShip.js");
+/* harmony import */ var _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WrappedLensflare */ "./wrapped/WrappedLensflare.js");
+/* harmony import */ var _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WrappedPlanet */ "./wrapped/WrappedPlanet.js");
+/* harmony import */ var _WrappedClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./WrappedClient */ "./wrapped/WrappedClient.js");
+var _dec, _dec2, _class, _class2, _descriptor, _class3, _temp;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+
+
+
+
+
+var WrappedScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("WrappedScene"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].list(), _dec(_class = (_class2 = (_temp = _class3 = class WrappedScene extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {EveSpaceScene} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    super();
+
+    _initializerDefineProperty(this, "objects", _descriptor, this);
+
+    if (!(wrapped instanceof eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"])) {
+      throw new ReferenceError("Invalid space object");
+    }
+
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Fires on transform updates
+   * @param {mat4} world
+   */
+
+
+  _OnTransformUpdated(world) {
+    this.wrapped.SetEnvironmentTransform(world);
+  }
+  /**
+   * Serializes a scene
+   * @param a
+   * @param out
+   * @param opt
+   * @return {Object}
+   */
+
+
+  static get(a, out, opt) {
+    var result = super.get(a, out, opt); // Todo: Handle in EveSpaceScene with an optional parameter
+    // Remove unwrapped objects
+
+    Reflect.deleteProperty(result, "objects");
+    Reflect.deleteProperty(result, "planets");
+    Reflect.deleteProperty(result, "lensflares");
+    return Object.assign(out, result);
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.EmitEvent("update", dt);
+
+    for (var i = 0; i < this.objects.length; i++) {
+      this.objects[i].Update(dt);
+    }
+
+    this.wrapped.Update(dt);
+  }
+  /**
+   *
+   * @param dt
+   */
+
+
+  Render(dt) {
+    this.EmitEvent("render", dt);
+    this.wrapped.Render(dt);
+  }
+  /**
+   * Rebuilds the scene
+   */
+
+
+  Rebuild() {
+    var {
+      planets,
+      objects,
+      lensflares
+    } = this.wrapped;
+    planets.splice(0);
+    objects.splice(0);
+    lensflares.splice(0);
+
+    for (var i = 0; i < this.objects.length; i++) {
+      if (this.objects[i] instanceof _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"]) // && !this.options.treatPlanetsAsObjects)
+        {
+          planets.push(this.objects[i].wrapped);
+        } else if (this.objects[i] instanceof _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"]) {
+        lensflares[0] = this.objects[i].wrapped;
+      } else {
+        objects.push(this.objects[i].wrapped);
+      }
+    }
+
+    this.EmitEvent("rebuilt");
+  }
+  /**
+   * Adds an object
+   * @param {*} object
+   * @return {boolean}
+   */
+
+
+  AddObject(object) {
+    if (!this.objects.includes(object)) {
+      this.objects.push(object);
+      this.EmitEvent("object_added", object);
+      this.Rebuild();
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Removes an object
+   * @param {*} object
+   * @return {boolean}
+   */
+
+
+  RemoveObject(object) {
+    var index = this.objects.indexOf(object);
+
+    if (index !== -1) {
+      this.objects.splice(index, 1);
+      this.EmitEvent("object_removed", object);
+      this.Rebuild();
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Fetches a lensflare
+   * @param {Object} options
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedLensflare>}
+   */
+
+
+  FetchLensflare(options, add) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var lensflare = _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"].fetch(options);
+      if (add) _this.AddObject(lensflare);
+      return lensflare;
+    })();
+  }
+  /**
+   *
+   * @param {Object} options
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedShip>}
+   */
+
+
+  FetchShip(options = {}, add) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
+      var ship = yield _WrappedShip__WEBPACK_IMPORTED_MODULE_5__["WrappedShip"].fetch(options, eveSof);
+      if (add) _this2.AddObject(ship);
+      return ship;
+    })();
+  }
+  /**
+   * Fetches a space object
+   * @param {Object} options
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedSpaceObject>}
+   */
+
+
+  FetchObject(options = {}, add) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
+      var spaceObject = yield _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__["WrappedSpaceObject"].fetch(options, eveSof);
+      if (add) _this3.AddObject(spaceObject);
+      return spaceObject;
+    })();
+  }
+  /**
+   * Fetches a planet
+   * @param {Object} options
+   * @param {Boolean} [add]
+   * @return {Promise<WrappedPlanet>}
+   */
+
+
+  FetchPlanet(options = {}, add) {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      var planet = yield _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"].fetch(options);
+      if (add) _this4.AddObject(planet);
+      return planet;
+    })();
+  }
+  /**
+   * Fetches a scene async
+   * @param {Object} options
+   * @return {Promise<WrappedScene>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(options)) {
+        options = {
+          resPath: options
+        };
+      } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(options)) {
+        options = {
+          background: options
+        };
+      }
+
+      var {
+        resPath,
+        background
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath", "background"]);
+
+      var wrapped;
+
+      if (resPath) {
+        wrapped = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(resPath);
+        wrapped._resPath = resPath;
+      } else {
+        wrapped = new eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"]();
+      }
+
+      if (background) {
+        if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(background)) {
+          var effect = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(WrappedScene.StarFieldResPath);
+          effect.SetTextures({
+            NebulaMap: background
+          });
+          wrapped.backgroundEffect = wrapped;
+        } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(background)) {
+          wrapped.clearColor[0] = background[0];
+          wrapped.clearColor[1] = background[1];
+          wrapped.clearColor[2] = background[2];
+          wrapped.clearColor[3] = 3 in background ? background[3] : 1;
+        } else {
+          throw new TypeError("Invalid background value");
+        }
+      }
+
+      return new _this5(wrapped, values);
+    })();
+  }
+  /**
+   *  Star field effect
+   * @type {string}
+   */
+
+
+}, _class3.StarFieldResPath = "res:/dx9/scene/starfield/starfieldNebula.red", _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "objects", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedShip.js":
+/*!********************************!*\
+  !*** ./wrapped/WrappedShip.js ***!
+  \********************************/
+/*! exports provided: WrappedShip */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedShip", function() { return WrappedShip; });
+/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
+/* harmony import */ var unsupported_eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! unsupported/eve */ "./unsupported/eve/index.js");
+/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
+/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
+var _dec, _class;
+
+
+
+
+
+var WrappedShip = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ship"), _dec(_class = class WrappedShip extends _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__["WrappedSpaceObject"] {
+  /**
+   * Constructor
+   * @param wrapped
+   * @param values
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof unsupported_eve__WEBPACK_IMPORTED_MODULE_1__["EveShip2"] || wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_2__["EveShip"])) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super(wrapped, values);
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedSpaceObject.js":
+/*!***************************************!*\
+  !*** ./wrapped/WrappedSpaceObject.js ***!
+  \***************************************/
+/*! exports provided: WrappedSpaceObject */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedSpaceObject", function() { return WrappedSpaceObject; });
+/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
+/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedSpaceObject = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedSpaceObject"), _dec(_class = class WrappedSpaceObject extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {*} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!wrapped) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Fetches space object async
+   * @param {Object} options
+   * @param {EveSOFData} eveSof
+   * @return {Promise<WrappedSpaceObject>}
+   */
+
+
+  static fetch(options = {}, eveSof) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
+        options = {
+          resPath: options
+        };
+      } else if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(options)) {
+        options = {
+          typeID: options
+        };
+      }
+
+      var {
+        resPath,
+        typeID,
+        dna
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath", "typeID", "dna"]);
+
+      if (typeID) {
+        var type = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getTypeID"])(typeID);
+        if (!values.name) values.name = type.name;
+        resPath = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeID"])(typeID);
+      } else if (dna) resPath = dna;
+
+      if (resPath) {
+        var wrapped = yield eveSof.Build(resPath);
+        wrapped._resPath = resPath;
+        return new _this(wrapped, values);
+      }
+
+      if (!resPath) throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/index.js":
+/*!**************************!*\
+  !*** ./wrapped/index.js ***!
+  \**************************/
+/*! exports provided: WrappedClient */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _WrappedClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WrappedClient */ "./wrapped/WrappedClient.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrappedClient", function() { return _WrappedClient__WEBPACK_IMPORTED_MODULE_0__["WrappedClient"]; });
 
 
 
