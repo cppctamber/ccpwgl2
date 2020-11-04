@@ -244,3 +244,92 @@ mat4.setTranslationFromValues = function(out, x, y, z)
     out[14] = z;
     return out;
 };
+
+
+/**
+ * @author three.js authors
+ * @param out
+ * @param left
+ * @param right
+ * @param top
+ * @param bottom
+ * @param near
+ * @param far
+ * @returns {*}
+ */
+mat4.makePerspective = function(out, left, right, top, bottom, near, far)
+{
+    let x = 2 * near / (right - left),
+        y = 2 * near / (top - bottom);
+
+    let a = (right + left) / (right - left),
+        b = (top + bottom) / (top - bottom),
+        c = -(far + near) / (far - near),
+        d = -2 * far * near / (far - near);
+
+    out[0] = x;
+    out[4] = 0;
+    out[8] = a;
+    out[12] = 0;
+
+    out[1] = 0;
+    out[5] = y;
+    out[9] = b;
+    out[13] = 0;
+
+    out[2] = 0;
+    out[6] = 0;
+    out[10] = c;
+    out[14] = d;
+
+    out[3] = 0;
+    out[7] = 0;
+    out[11] = -1;
+    out[15] = 0;
+
+    return out;
+};
+
+/**
+ * @author three.js authors
+ * @param out
+ * @param left
+ * @param right
+ * @param top
+ * @param bottom
+ * @param near
+ * @param far
+ * @returns {mat4}
+ */
+mat4.makeOrthographic = function(out, left, right, top, bottom, near, far)
+{
+    let w = 1.0 / (right - left),
+        h = 1.0 / (top - bottom),
+        p = 1.0 / (far - near);
+
+    let x = (right + left) * w,
+        y = (top + bottom) * h,
+        z = (far + near) * p;
+
+    out[0] = 2 * w;
+    out[4] = 0;
+    out[8] = 0;
+    out[12] = -x;
+
+    out[1] = 0;
+    out[5] = 2 * h;
+    out[9] = 0;
+    out[13] = -y;
+
+    out[2] = 0;
+    out[6] = 0;
+    out[10] = -2 * p;
+    out[14] = -z;
+
+    out[3] = 0;
+    out[7] = 0;
+    out[11] = 0;
+    out[15] = 1;
+
+    return out;
+};
