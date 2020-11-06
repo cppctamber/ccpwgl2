@@ -460,10 +460,10 @@ export class Model
     /**
      * Fires a function per child struct
      * @param {Function}  func
-     * @param {Boolean} [ignoreEmpty]
+     * @param {Boolean} [includeEmpty]
      * @returns {*}
      */
-    PerChild(func, ignoreEmpty)
+    PerChild(func, includeEmpty)
     {
         if (hasMetadata("structs", this.constructor))
         {
@@ -479,7 +479,7 @@ export class Model
                     continue;
                 }
 
-                if (struct || !ignoreEmpty)
+                if (struct || includeEmpty)
                 {
                     const path = `/${key}`;
                     const rv = func({ parent: this, key, struct, path });
@@ -505,9 +505,12 @@ export class Model
                 for (let index = 0; index < array.length; index++)
                 {
                     const struct = array[index];
-                    const path = `/${key}/${index}`;
-                    const rv = func({ parent: this, key, struct, array, index, path });
-                    if (rv !== undefined) return rv;
+                    if (struct || includeEmpty)
+                    {
+                        const path = `/${key}/${index}`;
+                        const rv = func({ parent: this, key, struct, array, index, path });
+                        if (rv !== undefined) return rv;
+                    }
                 }
             }
         }

@@ -686,12 +686,12 @@ export class Tw2Effect extends meta.Model
     /**
      * Fires a function per child
      * @param {Function} func
-     * @param {Boolean} [ignoreEmpty]
+     * @param {Boolean} [includeEmpty]
      * @returns {*}
      */
-    PerChild(func, ignoreEmpty)
+    PerChild(func, includeEmpty)
     {
-        const rv = super.PerChild(func, ignoreEmpty);
+        const rv = super.PerChild(func, includeEmpty);
         if (rv !== undefined) return rv;
 
         const parent = this.parameters;
