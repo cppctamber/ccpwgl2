@@ -842,7 +842,7 @@ export class EveSOFData
             // If a cake file, try to fall back to wbg file
             if (getPathExtension(resPath) === "cake")
             {
-                resPath = resPath.replace(".cake", ".wbg").replace(".gr2", "wbg");
+                resPath = "res:/" + resPath.substring(resPath.indexOf(":") + 2).replace(".cake", ".wbg");
                 // Update the sof so it doesn't bother doing this again
                 sof.hull.geometryResFilePath = resPath;
                 sof.hull.skinned = !!sof.hull._wasSkinned;
