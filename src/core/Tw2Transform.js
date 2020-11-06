@@ -902,9 +902,16 @@ export class Tw2Transform extends meta.Model
             temp.scaling = [ scale, scale, scale ];
         }
 
-        if (rotation && rotation.length === 3)
+        if (rotation)
         {
-            temp.rotation = quat.fromEuler([], rotation);
+            if (rotation.length === 3)
+            {
+                temp.rotation = quat.fromEuler([], rotation[0], rotation[1], rotation[2]);
+            }
+            else
+            {
+                temp.rotation = rotation;
+            }
         }
 
         if (position)
