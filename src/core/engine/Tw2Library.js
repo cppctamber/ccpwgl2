@@ -16,13 +16,45 @@ export class Tw2Library extends Tw2EventEmitter
 
     math = math;
     util = util;
-    logger = new Tw2Logger();
     consts = consts;
+
+    /**
+     * Logger
+     * @type {Tw2Logger}
+     */
+    logger = new Tw2Logger();
+
+    /**
+     * Resource manager
+     * @type {Tw2ResMan}
+     */
     resMan = null;
+
+    /**
+     * Device
+     * @type {Tw2Device}
+     */
     device = null;
+
+    /**
+     * Store
+     * @type {Tw2Store}
+     */
     store = null;
 
+    /**
+     * Debug mode
+     * @type {boolean}
+     * @private
+     */
     _debugMode = false;
+
+    /**
+     * Custom resource handler
+     * @type {Function}
+     * @private
+     */
+    _customResourceHandler = null;
 
 
     /**
@@ -59,6 +91,15 @@ export class Tw2Library extends Tw2EventEmitter
     get canvas()
     {
         return this.device.canvas;
+    }
+
+    /**
+     * Alias for device.canvas2d
+     * @return {null}
+     */
+    get canvas2d()
+    {
+        return this.device.canvas2d;
     }
 
     /**
@@ -99,6 +140,7 @@ export class Tw2Library extends Tw2EventEmitter
 
     /**
      * Constructor
+     * @param {Tw2Store} store
      */
     constructor(store)
     {
@@ -112,6 +154,8 @@ export class Tw2Library extends Tw2EventEmitter
         this.device = new Tw2Device(store, this.logger);
         this.store = store;
 
+        this.device.OnEvent("resized", evt => this.EmitEvent("resized", evt));
+
         let eveSof;
         Object.defineProperty(this, "eveSof", {
             get: () =>
@@ -124,36 +168,6 @@ export class Tw2Library extends Tw2EventEmitter
                 return eveSof;
             }
         });
-
-    }
-
-    /**
-     * Gets the eve sof
-     * @returns {EveSOF}
-     */
-    GetEveSOF()
-    {
-        return this.eveSof;
-    }
-
-    /**
-     * Sets debug mode
-     * @param {Boolean} bool
-     */
-    SetDebugMode(bool)
-    {
-        this._debugMode = bool;
-        this.store.SetDebugMode(bool);
-        this.logger.SetDebugMode(bool);
-    }
-
-    /**
-     * Gets the debug mode
-     * @return {boolean}
-     */
-    GetDebugMode()
-    {
-        return this._debugMode;
     }
 
     /**
@@ -189,30 +203,11 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Sets black reader path handlers from an object
-     * @param { Object<String,Function>} options
-     */
-    RegisterBlackPathHandlers(options)
-    {
-        path.registerExtensionHandlers(options);
-    }
-
-    /**
-     * Sets the black reader's path handler
-     * @param { String } ext
-     * @param { Function } handler
-     */
-    SetBlackPathExtensionHandler(ext, handler)
-    {
-        path.setExtensionHandler(ext, handler);
-    }
-
-    /**
      * Start frame
      */
     StartFrame()
     {
-        this.device.StartFrame();
+        this.device.Tick();
         this.resMan.Tick(this.device);
     }
 
@@ -222,7 +217,6 @@ export class Tw2Library extends Tw2EventEmitter
     EndFrame()
     {
         this.EmitEvent("tick", this.device.dt);
-        this.device.EndFrame();
     }
 
     /**
@@ -260,6 +254,7 @@ export class Tw2Library extends Tw2EventEmitter
      * Registers library options
      * @param {*} options
      * @param {Boolean} options.debug
+     * @param {Function} options.resourceHandler
      * @param {*} options.logger
      * @param {*} options.client
      * @param {*} options.resMan
@@ -271,6 +266,7 @@ export class Tw2Library extends Tw2EventEmitter
     {
         if (!options) return;
         if (options.debug !== undefined) this.SetDebugMode(options.debug);
+        if (options.resourceHandler) this.SetCustomResourceHandler(options.resourceHandler);
         if (options.black) this.RegisterBlackPathHandlers(options.black);
         if (options.logger) this.logger.Register(options.logger);
         if (options.resMan) this.resMan.Register(options.resMan);
@@ -283,9 +279,61 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {String} resPath
      * @returns {String}
      */
-    GetFullURL(resPath)
+    GetResolvedURL(resPath)
     {
-        return this.resMan.BuildUrl(resPath);
+        return this.store.paths.Resolve(resPath);
+    }
+
+    /**
+     * Sets black reader path handlers from an object
+     * @param { Object<String,Function>} options
+     */
+    RegisterBlackPathHandlers(options)
+    {
+        path.registerExtensionHandlers(options);
+    }
+
+    /**
+     * Sets the black reader's path handler
+     * @param { String } ext
+     * @param { Function } handler
+     */
+    SetBlackPathExtensionHandler(ext, handler)
+    {
+        path.setExtensionHandler(ext, handler);
+        return this;
+    }
+
+    /**
+     * Gets the debug mode
+     * @return {boolean}
+     */
+    GetDebugMode()
+    {
+        return this._debugMode;
+    }
+
+    /**
+     * Sets debug mode
+     * @param {Boolean} bool
+     * @returns {Tw2Library}
+     */
+    SetDebugMode(bool)
+    {
+        this._debugMode = bool;
+        this.store.SetDebugMode(bool);
+        this.logger.SetDebugMode(bool);
+        return this;
+    }
+
+    /**
+     * Sets a custom resource handler
+     * @param {Function} func
+     */
+    SetCustomResourceHandler(func)
+    {
+        this._customResourceHandler = func;
+        return this;
     }
 
     /**
@@ -303,7 +351,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param colorMask
      * @returns {Tw2Library}
      */
-    GLColorMask(colorMask)
+    SetColorMask(colorMask)
     {
         this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
         return this;
@@ -314,7 +362,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param clearColor
      * @returns {Tw2Library}
      */
-    GLClearColor(clearColor)
+    SetClearColor(clearColor)
     {
         this.device.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         return this;
@@ -325,7 +373,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param value
      * @returns {Tw2Library}
      */
-    GLClearDepth(value)
+    SetClearDepth(value)
     {
         this.device.gl.clearDepth(value);
         return this;
@@ -336,7 +384,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param viewport
      * @returns {Tw2Library}
      */
-    GLViewport(viewport)
+    SetViewport(viewport)
     {
         this.device.gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
         return this;
@@ -347,7 +395,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param value
      * @returns {Tw2Library}
      */
-    GLClear(value)
+    SetClear(value)
     {
         this.device.gl.clear(value);
         return this;
@@ -398,94 +446,43 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Gets a resource asynchronously
-     * @param {String} resPath
-
-     * @returns {Promise<Tw2Resource>}
+     * Fetches a resource
+     * @param {*} value
+     * @return {Promise<Object|Array>}
      */
-    async FetchResource(resPath)
-    {
-        return this.resMan.FetchResource(resPath);
-    }
-
-    /**
-     * Gets an object asynchronously
-     * @param {String} resPath
-     * @param {String|Class|Function|Array<String|Class|Function>} [expectedConstructor]
-     * @returns {Promise<*>}
-     */
-    async FetchObject(resPath, expectedConstructor)
+    async Fetch(value)
     {
         let result;
-        if (util.isDNA(resPath))
+
+        if (this._customResourceHandler)
         {
-            result = await this.eveSof.FetchObject(resPath);
-        }
-        else
-        {
-            result = await this.resMan.FetchObject(resPath);
+            result = this._customResourceHandler(value);
+            if (result) return result;
         }
 
-        if (!this.IsClass(result, expectedConstructor))
+        if (util.isDNA(value))
         {
-            throw new Error("Unexpected constructor: " + result.constructor.name);
+            result = await this.eveSof.FetchObject(value);
+        }
+        else if (util.isString(value))
+        {
+            const ext = util.getPathExtension(value);
+            if (this.store.extensions.IsLoadingObject(ext))
+            {
+                result = await this.resMan.FetchObject(value);
+            }
+            else
+            {
+                result = await this.resMan.FetchResource(value);
+            }
+        }
+
+        if (!result)
+        {
+            throw new ReferenceError("Invalid argument");
         }
 
         return result;
-    }
-
-    /**
-     * Fetches a resPath's build constructor
-     * TODO: Add planets, moons and scenes?
-     * @param {String} resPath
-     * @returns {Promise<number>}
-     */
-    async FetchBuildClass(resPath)
-    {
-        return util.isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
-    }
-
-    /**
-     * Checks if an object is a valid class
-     * @param {*} object
-     * @param {String|Class|Function|Array<String|Class|Function>}expectedConstructor
-     * @returns {boolean}
-     */
-    IsClass(object, expectedConstructor)
-    {
-        if (!expectedConstructor)
-        {
-            return true;
-        }
-
-        expectedConstructor = util.toArray(expectedConstructor);
-
-        let isGood;
-        for (let i = 0; i < expectedConstructor.length; i++)
-        {
-            let Constructor = expectedConstructor[i],
-                exclude = false;
-
-            if (util.isString(Constructor))
-            {
-                if (Constructor.charAt(0) === "!")
-                {
-                    exclude = true;
-                    Constructor = Constructor.substring(1);
-                }
-                if (Constructor === "Array") Constructor = Array;
-                else if (Constructor === "Object") Constructor = Object;
-                else Constructor = this.GetClass(Constructor);
-            }
-
-            if (object instanceof Constructor)
-            {
-                isGood = !exclude;
-                break;
-            }
-        }
-
-        return isGood;
     }
 
     /**

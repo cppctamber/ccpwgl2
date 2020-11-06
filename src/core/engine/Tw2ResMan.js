@@ -213,6 +213,12 @@ export class Tw2ResMan extends Tw2EventEmitter
         let res;
         path = Tw2ResMan.NormalizePath(path);
 
+        // TODO: Dynamic resources
+        if (path.indexOf("dynamic:/") === 0)
+        {
+            throw new ErrFeatureNotImplemented({ feature: "Dynamic resources" });
+        }
+
         // Check if already loaded
         res = this.motherLode.Find(path);
         if (res)
@@ -223,7 +229,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         try
         {
-            const Constructor = this.GetResourceConstructor(path);
+            const Constructor = this.store.extensions.FromPath(path);
             res = new Constructor();
         }
         catch (err)
@@ -306,7 +312,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         try
         {
-            const url = this.BuildUrl(res.path);
+            const url = this.store.paths.Resolve(res.path);
 
             res.OnRequested(eventLog);
 
@@ -439,66 +445,14 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Gets a resource constructor
-     * @param {String} path
-     * @returns {Tw2Resource}
-     * @throws {ErrFeatureNotImplemented} When passed an unsupported resource prefix
-     * @throws {ErrResourceExtensionUndefined} When passed a resource without an extension
-     * @throws {ErrResourceExtensionUnregistered} When passed a resource extension that isn't registered/ supported
-     */
-    GetResourceConstructor(path)
-    {
-        path = Tw2ResMan.NormalizePath(path);
-
-        if (path.indexOf("dynamic:/") === 0)
-        {
-            throw new ErrFeatureNotImplemented({ feature: "Dynamic resources" });
-        }
-
-        const extension = getPathExtension(path);
-        if (extension === null)
-        {
-            throw new ErrResourceExtensionUndefined({ path });
-        }
-
-        const Constructor = this.store.extensions.Get(extension);
-        if (!Constructor)
-        {
-            throw new ErrResourceExtensionUnregistered({ path, extension });
-        }
-
-        return Constructor;
-    }
-
-
-    /**
      * Builds a url from a resource path
      * @param {String} path
      * @returns {String}
-     * @throws {ErrResourcePrefixUndefined} When passed a url without a resource prefix
-     * @throws {ErrResourcePrefixUnregistered} When passed a url with an unregistered resource prefix
+     * @throws {ErrStoreKeyUnregistered} When passed a url with an unregistered resource prefix
      */
     BuildUrl(path)
     {
-        const prefixIndex = path.indexOf(":/");
-        if (prefixIndex === -1)
-        {
-            throw new ErrResourcePrefixUndefined({ path });
-        }
-
-        const prefix = path.substr(0, prefixIndex);
-        if (prefix === "http" || prefix === "https")
-        {
-            return path;
-        }
-
-        const fullPrefix = this.store.paths.Get(prefix);
-        if (!fullPrefix)
-        {
-            throw new ErrResourcePrefixUnregistered({ path, prefix });
-        }
-
-        return fullPrefix + path.substr(prefixIndex + 2);
+        return this.store.paths.Resolve(path);
     }
 
     /**
@@ -531,55 +485,6 @@ export class Tw2ResMan extends Tw2EventEmitter
 
 }
 
-
-/**
- * Throws when a resource path has an unregistered prefix
- */
-export class ErrResourcePrefixUnregistered extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Unregistered resource prefix (%prefix%)");
-    }
-}
-
-
-/**
- * Throws when a resource path has no prefix
- */
-export class ErrResourcePrefixUndefined extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Undefined resource prefix");
-    }
-}
-
-
-/**
- * Throws when a resource path has an unregistered file extension
- */
-export class ErrResourceExtensionUnregistered extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Unregistered resource extension (%extension%)");
-    }
-}
-
-
-/**
- * Throws when a resource path has no file extension
- */
-export class ErrResourceExtensionUndefined extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Undefined resource extension");
-    }
-}
-
-
 /**
  * Throws on http request errors
  */
@@ -599,38 +504,5 @@ export class ErrHTTPStatus extends Tw2Error
     constructor(data)
     {
         super(data, "%statusText=Communication status error while loading resource% (%status%)");
-    }
-}
-
-/**
- * Throws in invalid resource formats
- */
-export class ErrResourceFormatInvalid extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Resource format invalid: %format% (%reason=unknown%)");
-    }
-}
-
-/**
- * Throws in invalid resource formats
- */
-export class ErrResourceFormatUnsupported extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Resource format not supported: %format% (%reason=unknown%)");
-    }
-}
-
-/**
- * Throws in invalid resource formats
- */
-export class ErrResourceFormatNotImplemented extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Resource format not implemented: %format% (%reason=unknown%)");
     }
 }

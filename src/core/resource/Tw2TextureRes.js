@@ -1,15 +1,13 @@
 import { meta } from "utils";
 import { num } from "math";
 import { resMan, device, logger } from "global";
-import { Tw2Resource } from "./Tw2Resource";
-
+import { ErrHTTPRequest } from "../engine/Tw2ResMan";
 import {
-    ErrHTTPRequest,
+    Tw2Resource,
     ErrResourceFormatUnsupported,
     ErrResourceFormatInvalid,
-    ErrResourceExtensionUnregistered,
     ErrResourceFormatNotImplemented
-} from "../engine/Tw2ResMan";
+} from "./Tw2Resource";
 
 import {
     DDPF_LUMINANCE,
@@ -131,13 +129,6 @@ export class Tw2TextureRes extends Tw2Resource
              **/
 
             case "dds":
-
-                // Temporarily keep track of known empty dds
-                if (!data.length)
-                {
-                    Tw2TextureRes.knownBrokenDDSFiles.push(this.path);
-                }
-
                 const info = Tw2TextureRes.GetDDSInfo(data);
 
                 let {
@@ -264,7 +255,7 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
         }
 
         this._isAttached = false;
@@ -372,7 +363,7 @@ export class Tw2TextureRes extends Tw2Resource
                 return true;
 
             default:
-                throw new ErrResourceExtensionUnregistered({ path, extension });
+                throw new ErrResourceFormatUnsupported({ format: extension });
         }
 
         resMan.AddPendingLoad(path);
@@ -523,28 +514,6 @@ export class Tw2TextureRes extends Tw2Resource
         img.src = canvas.toDataURL();
         return img;
     }
-
-    /**
-     * Keep track of dds we know are empty
-     * @type {*[]}
-     */
-    static knownBrokenDDSFiles = [
-        "res:/texture/global/noise.dds",
-        "res:/texture/global/spotramp.dds",
-        "res:/texture/global/whitesharp.dds",
-        "res:/texture/particle/whitesharp.dds",
-        "res:/dx9/texture/decal/deck_01_cube.dds",
-        "res:/dx9/model/decal/stripe_cautiontype08_01_f.dds",
-        "res:/dx9/model/decal/stripe_cautiontype08_01_at.dds",
-        "res:/dx9/model/decal/caldari/marking_chevroncircle_01_nr.dds",
-        "res:/dx9/model/decal/caldari/marking_chevroncircle_01_f.dds",
-        "res:/dx9/model/decal/caldari/code_cf04ewar_at.dds",
-        "res:/dx9/model/decal/caldari/code_j4-cdw_01_nr.dds",
-        "res:/dx9/model/decal/angel/glow_killmarks_01_t.dds",
-        "res:/dx9/model/decal/gallente/marking_arrowtype06_01_at.dds",
-        "res:/dx9/model/decal/caldari/marking_arrowtype13_01_at.dds",
-        "res:/texture/projection/pattern_geometric_03.dds"
-    ];
 
     /**
      * Gets dds info for debugging

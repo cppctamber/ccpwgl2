@@ -128,6 +128,7 @@ export class EveSOFDataHull
         // Temporary until animations are handled in .cake files
         if (this.geometryResFilePath.includes(".cake"))
         {
+            this._wasSkinned = this.isSkinned;
             this.isSkinned = false;
         }
     }

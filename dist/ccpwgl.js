@@ -201,10 +201,10 @@ var ccpwgl = (function(tw2)
                     .SetStandardStates(tw2.const.RM_OPAQUE)
                     .SetProjectionMatrix(camera.getProjection(tw2.aspect))
                     .SetViewMatrix(camera.getView())
-                    .GLClearColor(clear)
-                    .GLClearDepth(1.0)
-                    .GLViewport([ 0, 0, tw2.width, tw2.height ])
-                    .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT);
+                    .SetClearColor(clear)
+                    .SetClearDepth(1.0)
+                    .SetViewport([ 0, 0, tw2.width, tw2.height ])
+                    .SetClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT);
 
                 ccpwgl.EmitEvent("pre_render", dt);
                 scene.wrappedScene.Render(dt);
@@ -214,10 +214,10 @@ var ccpwgl = (function(tw2)
                 {
                     // We have crap in back buffer alpha channel, so clear it
                     tw2
-                        .GLColorMask([ false, false, false, false ])
-                        .GLClearColor([ 0, 0, 0, 1 ])
-                        .GLClear(tw2.gl.COLOR_BUFFER_BIT)
-                        .GLColorMask([ true, true, true, true ]);
+                        .SetColorMask([ false, false, false, false ])
+                        .SetClearColor([ 0, 0, 0, 1 ])
+                        .SetClear(tw2.gl.COLOR_BUFFER_BIT)
+                        .SetColorMask([ true, true, true, true ]);
                 }
             }
         }
@@ -526,11 +526,10 @@ var ccpwgl = (function(tw2)
      * @param {String} resPath
      * @param {Function} [onResolved]
      * @param {Function} [onRejected]
-     * @param {String|Function|Class|Array<String|Function|Class>} expectedConstructor
      */
-    ccpwgl.GetObject = function(resPath, onResolved, onRejected, expectedConstructor)
+    ccpwgl.GetObject = function(resPath, onResolved, onRejected)
     {
-        tw2.FetchObject(resPath)
+        tw2.Fetch(resPath)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -2759,6 +2758,167 @@ var ccpwgl = (function(tw2)
     ccpwgl.loadWrappedScene = async function(options)
     {
         return await tw2.Scene.create(options, ccpwgl);
+    };
+
+
+    ccpwgl.esi = {
+        /**
+         * API route path
+         * @type {string}
+         */
+        _root: "https://esi.evetech.net",
+
+        /**
+         * API version
+         * @type {string}
+         */
+        _version: "latest",
+
+        /**
+         * API source
+         * @type {string}
+         */
+        _dataSource: "tranquility",
+
+        /**
+         * API Language
+         * @type {string}
+         */
+        _language: "en-us"
+    };
+
+
+    const esi = ccpwgl.esi;
+
+    /**
+     * API routes
+     * @type {{TYPES: string, GROUPS: string, GRAPHICS: string, CATEGORIES: string}}
+     */
+    const Universe = {
+        ASTEROID_BELTS: "universe/asteroid_belts",
+        CATEGORIES: "universe/categories",
+        CONSTELLATIONS: "universe/constellations",
+        FACTIONS: "universe/factions",
+        GRAPHICS: "universe/graphics",
+        GROUPS: "universe/groups",
+        MOONS: "universe/moons",
+        PLANETS: "universe/planets",
+        RACES: "universe/races",
+        REGIONS: "universe/regions",
+        STARGATES: "universe/stargates",
+        STARS: "universe/stars",
+        STATIONS: "universe/stations",
+        STRUCTURES: "universe/structures",
+        SYSTEM_KILLS: "universe/system_kills",
+        SYSTEMS: "universe/systems",
+        TYPES: "universe/types"
+    };
+
+    /**
+     * Paths to extended data
+     * @type {{MOONS: string, PLANETS: string, REGIONS: string}}
+     */
+    const Static = {
+        MOONS: "cdn:/static/moons",
+        PLANETS: "cdn:/static/planets",
+        REGIONS: "cdn:/static/regions",
+        SUN_TYPES: "cdn:/static/sunTypes",
+        STATION_TYPES: "cdn:/static/stationTypes"
+    };
+
+    // Cache esi data for the current session
+    const cache = new Map();
+
+    /**
+     * Builds an esi url
+     * @param {String} endpoint
+     * @param {*} [params]
+     * @returns {String}
+     */
+    function buildUrl(endpoint, params)
+    {
+        params = Object.assign({ language: esi._language, datasource: esi._dataSource }, params);
+
+        let keys = Object.keys(params).sort(),
+            url_string = `${esi._root}/${esi._version}/${endpoint}/`;
+
+        for (let i = 0; i < keys.length; i++)
+        {
+            url_string += `${i === 0 ? "?" : "&"}${keys[i]}=${params[keys[i]]}`;
+        }
+
+        return url_string.toLowerCase();
+    }
+
+    /**
+     * Gets an id'd data from an api route
+     * @param {String} route
+     * @param {Number} id
+     * @param {*} [params]
+     * @param {function} [extender]
+     * @returns {Promise<Object>}
+     */
+    async function getIDFromESIRoute(route, id, params, extender)
+    {
+        const url = buildUrl(`${route}/${id}`, params);
+        if (!cache.has(url)) cache.set(url, tw2.resMan.Fetch(url, "json"));
+        return await cache.get(url);
+    }
+
+    /**
+     * Gets type from it's id
+     * @param {Number} typeID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getType = async function(typeID, params)
+    {
+        return await getIDFromESIRoute(Universe.TYPES, typeID, params);
+    };
+
+    /**
+     * Gets graphic by it's id
+     * @param {Number} graphicID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getGraphic = async function(graphicID, params)
+    {
+        return await getIDFromESIRoute(Universe.GRAPHICS, graphicID, params);
+    };
+
+    /**
+     * Gets a resPath from a type id
+     * @param {Number} typeID
+     * @returns {Promise<String>}
+     */
+    esi.getResPathFromTypeID = async function(typeID)
+    {
+        const { graphic_id } = await getIDFromESIRoute(Universe.TYPES, typeID);
+        return await esi.getResPathFromGraphicID(graphic_id);
+    };
+
+    /**
+     * Intercept res paths
+     * @param {String} path
+     * @returns {String}
+     */
+    function fromPath(path)
+    {
+        // Use this to override res prefixes
+        return path.toLowerCase();
+    }
+
+    /**
+     * Gets a resPath from a graphic id
+     * @param {Number} graphicID
+     * @returns {Promise<String>}
+     */
+    esi.getResPathFromGraphicID = async function(graphicID)
+    {
+        if (!graphicID) throw new Error("Graphic ID not found");
+        const { sof_dna, graphic_file } = await getIDFromESIRoute(Universe.GRAPHICS, graphicID);
+        return fromPath(sof_dna || graphic_file || "");
     };
 
     return ccpwgl;

@@ -47,6 +47,9 @@ import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
 
 
+let skinsByTypeID = null;
+
+
 @meta.type("EveSOFData")
 export class EveSOFData
 {
@@ -115,12 +118,12 @@ export class EveSOFData
         },
 
         texturePath: {
-            noise: "res:/Texture/global/noise.dds.0.png",
-            noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-            whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-            hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.png",
-            hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.png",
-            hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.png",
+            noise: "res:/Texture/global/noise.dds.0.png", // "af/afeff2ecb453fd8b_30be7983db3da97153d185227ad4e7ff.png"
+            noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png", // 54/54a6d27177108534_0f74da9d040eddbe9d2e650503513ac5.png
+            whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png", // f4/f4be1b6b0b747eab_3a0546e9d35c658c3f126bac79f68c43.png
+            hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.dds",
+            hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.dds",
+            hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.dds",
             bannerImage: "",
             bannerBorder: ""
         },
@@ -534,14 +537,14 @@ export class EveSOFData
      * @param {String} dna
      * @returns {EveStation2|EveShip2}
      */
-    Build(dna)
+    async Build(dna)
     {
         const
             sof = this.ParseDNA(dna),
             object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
 
         object.dna = dna;
-        EveSOFData.Build(this, object, sof, this._options);
+        await EveSOFData.Build(this, object, sof, this._options);
         if (object.Initialize) object.Initialize();
         return object;
     }
@@ -552,16 +555,9 @@ export class EveSOFData
      * @param {Object} [opt]
      * @returns {EveStation2|EveShip2}
      */
-    Rebuild(object, opt)
+    async Rebuild(object, opt)
     {
         throw new ErrFeatureNotImplemented({ feature: "Rebuilding existing sof object" });
-
-        /*
-        const sof = this.ParseDNA(object.dna);
-        EveSOFData.Build(this, object, sof, this._options);
-        object.UpdateValues(opt);
-        return object;
-         */
     }
 
     /**
@@ -627,11 +623,13 @@ export class EveSOFData
      * @param {object} [options={}]
      * @returns {EveStation2|EveShip2}
      */
-    static Build(data, obj, sof, options)
+    static async Build(data, obj, sof, options)
     {
         this.SetupBounds(data, obj, sof, options);
         this.SetupCustomMasks(data, obj, sof, options);
-        this.SetupMesh(data, obj, sof, options);
+
+        // Temporary
+        await this.SetupMesh(data, obj, sof, options);
 
         this.SetupSpotlightSets(data, obj, sof, options);
         this.SetupPlaneSets(data, obj, sof, options);
@@ -827,61 +825,44 @@ export class EveSOFData
      * @param {Object} sof
      * @param {Object} [options={}]
      */
-    static SetupMesh(data, obj, sof, options)
+    static async SetupMesh(data, obj, sof, options)
     {
-        // Mesh
-        const
-            { hull } = sof,
-            mesh = new Tw2Mesh();
+        const { hull } = sof;
 
-        let initialized = false;
-
-        /**** START TESTING ONLY *****/
-
-        function handleShadow(geometryResPath)
-        {
-            const noSkin = getPathExtension(geometryResPath) === "cake";
-            obj.shadowEffect = sof.hull.isSkinned && !noSkin ? options.effect.shadowSkinned : options.effect.shadow;
-        }
-
+        // Get the mesh'es resource path
         let resPath = get(hull, "geometryResFilePath", "");
+        if (!resPath) throw new TypeError("Hull has no geometry");
 
-        if (resPath in EveSOFData.knownGeometryResPath)
+        try
         {
-            mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath];
-            handleShadow(mesh.geometryResPath);
+            await resMan.FetchResource(resPath);
         }
-        else
+        catch(err)
         {
-            mesh.geometryResPath = resPath;
-
-            resMan.GetResource(resPath,
-                res =>
-                {
-                    EveSOFData.knownGeometryResPath[resPath] = resPath;
-                    handleShadow(resPath);
-                    if (initialized)
-                    {
-                        mesh.Initialize();
-                        obj.Initialize();
-                    }
-                },
-                err =>
-                {
-                    // Fallback to wbg...
-                    mesh.geometryResPath = EveSOFData.knownGeometryResPath[resPath] = mesh.geometryResPath.replace("cdn:", "res:").replace(".cake", ".wbg");
-                    handleShadow(mesh.geometryResPath);
-
-                    if (initialized)
-                    {
-                        mesh.Initialize();
-                        obj.Initialize();
-                    }
-                });
+            // If a cake file, try to fall back to wbg file
+            if (getPathExtension(resPath) === "cake")
+            {
+                resPath = resPath.replace(".cake", ".wbg").replace(".gr2", "wbg");
+                // Update the sof so it doesn't bother doing this again
+                sof.hull.geometryResFilePath = resPath;
+                sof.hull.skinned = !!sof.hull._wasSkinned;
+            }
         }
 
-        /**** END TESTING ONLY *****/
+        // Setup mesh
+        const mesh = obj.mesh || new Tw2Mesh();
+        mesh.geometryResPath = resPath;
 
+        // Setup shadows
+        if (!obj.shadowEffect)
+        {
+            obj.shadowEffect = sof.hull.isSkinned ? options.effect.shadowSkinned : options.effect.shadow;
+        }
+
+        /**
+         * Setup a mesh area
+         * @param {String} areasName
+         */
         const setupMeshArea = (areasName) =>
         {
             const { generic } = this;
@@ -993,8 +974,6 @@ export class EveSOFData
         setupMeshArea("transparentAreas");
 
         mesh.Initialize();
-        initialized = true;
-
         obj.mesh = mesh;
     }
 
@@ -1157,9 +1136,9 @@ export class EveSOFData
                     ]
                 },
                 textures: {
-                    Layer1Map: srcSet.layer1MapResPath.replace(".dds", ".png"), // Temporary
-                    Layer2Map: srcSet.layer2MapResPath.replace(".dds", ".png"), // Temporary
-                    MaskMap: srcSet.maskMapResPath.replace(".dds", ".png")      // Temporary
+                    Layer1Map: srcSet.layer1MapResPath,
+                    Layer2Map: srcSet.layer2MapResPath,
+                    MaskMap: srcSet.maskMapResPath
                 }
             });
 

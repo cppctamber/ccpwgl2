@@ -11,7 +11,7 @@ export class Tw2ResourcePathStore extends Tw2GenericStore
      * @param {String} path
      * @returns {String}
      */
-    GetURL(path)
+    Resolve(path)
     {
         path = Tw2ResourcePathStore.normalizePath(path);
 
@@ -27,7 +27,7 @@ export class Tw2ResourcePathStore extends Tw2GenericStore
             return path;
         }
 
-        return this.GetPath(prefix) + path.substr(prefixIndex + 2);
+        return this.Get(prefix) + path.substr(prefixIndex + 2);
     }
 
     /**

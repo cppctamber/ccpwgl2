@@ -1,6 +1,7 @@
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { GL_FLOAT } from "constant";
 import { isString, isVector, isVector3 } from "utils";
+import { Tw2Error } from "core/Tw2Error";
 
 
 export class Tw2CakeReader
@@ -49,8 +50,17 @@ export class Tw2CakeReader
                 split = line.split(":"),
                 name = split[0].toUpperCase();
 
-            // Convert string vector to vector
+
             let value = split[1];
+            if (!value)
+            {
+                throw new Tw2Error({
+                    message: "Unexpected value",
+                    data: split[0]
+                });
+            }
+
+            // Convert string vector to vector
             if (value.includes(",") || value.includes("["))
             {
                 value = value.replace("[", "").replace("]", "");

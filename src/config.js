@@ -8,25 +8,18 @@ import * as unsupported from "./unsupported";
 import { vec4, mat4 } from "math";
 
 
+/****************** TEMPORARY *************************/
 
-function handleAllBlackPaths(path)
-{
-    if (path.includes(".dds") && core.Tw2TextureRes.knownBrokenDDSFiles.indexOf(path) !== -1)
-    {
-        path = path.replace(".dds", ".dds.0.png");
-    }
-    else
-    {
-        path = path.replace("res:/", "cdn:/").toLowerCase();
-    }
+// TODO: Fix .dds files we know cause issues
+const Rerouted = [
+    "res:/texture/global/noise.dds",
+    "res:/texture/global/spotramp.dds",
+    "res:/texture/global/whitesharp.dds",
+    "res:/texture/particle/whitesharp.dds",
+];
 
-    return path;
-}
+/****************** TEMPORARY *************************/
 
-function handleBlackGR2(path)
-{
-    return path.replace(".gr2", ".cake");
-}
 
 /**
  * Register global configurations
@@ -35,9 +28,11 @@ export const config = {
 
     debug: false,
 
+    // The paths in the black files must be changed
     black: {
-        "*": handleAllBlackPaths,
-        "gr2": handleBlackGR2
+        "*":  path => path.replace("res:/", "cdn:/").toLowerCase(),
+        "dds": path => path in Rerouted ? path.replace("cdn:/", "res:/") + ".0.png" : path,
+        "gr2": path => path.replace(".gr2", ".cake")
     },
 
     device: {
@@ -75,7 +70,7 @@ export const config = {
 
         paths: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-            "cdn": "http://localhost:3000"
+            "cdn": null
         },
 
         extensions: {

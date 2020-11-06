@@ -107,8 +107,6 @@ export class Tw2Device extends Tw2EventEmitter
     shadowHandles = null;
     perObjectData = null;
 
-    onResize = null;
-
     _extensions = {};
     _alphaBlendState = null;
     _alphaTestState = null;
@@ -131,7 +129,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         if (!this.gl)
         {
-            throw new ErrWebglContext({ message : "No webgl context" });
+            throw new ErrWebglContext({ message: "No webgl context" });
         }
 
         return this.gl instanceof WebGLRenderingContext ? 1 : 2;
@@ -223,28 +221,16 @@ export class Tw2Device extends Tw2EventEmitter
         });
 
         // Allow for a 2d canvas
-        try
+        if (canvas2d)
         {
-            if (canvas2d)
+            try
             {
-                if (isString(canvas2d))
-                {
-                    canvas2d = document.getElementById(canvas2d);
-                }
-
-                this.canvas2d = {
-                    canvas: canvas2d,
-                    context: canvas2d.getContext("2d"),
-                    enabled: true,
-                    autoResize: true,
-                    OnResize: null,
-                    OnDraw: null
-                };
+                this.canvas2d = isString(canvas2d) ? document.getElementById(canvas2d) : canvas2d;
             }
-        }
-        catch (err)
-        {
-            throw new Error("Invalid 2d canvas");
+            catch (err)
+            {
+                throw new Error("Invalid 2d canvas");
+            }
         }
 
         const
@@ -359,48 +345,34 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Handles resize events
+     * @returns  {Boolean} true if updated
      */
     Resize()
     {
-        if (this.onResize)
-        {
-            this.onResize(this.canvas);
-        }
-        /*
-        else if (this.enableWebxr && this.xr && this.xr.isGood)
+        if (this.enableWebxr && this.xr && this.xr.isGood)
         {
             this.xr.OnResize(this.canvas);
         }
-        */
         else
         {
             this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
             this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
         }
 
+        if (this.viewportHeight === this.canvas.height && this.viewportWidth === this.canvas.width)
+        {
+            return false;
+        }
+
         this.viewportWidth = this.canvas.width;
         this.viewportHeight = this.canvas.height;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
-        const event = {
-            width: this.viewportWidth,
-            height: this.viewportHeight,
-            aspect: this.viewportAspect,
-        };
-
         // Handle 2d canvas
-        if (this.canvas2d && this.canvas2d.enabled)
+        if (this.canvas2d)
         {
-            if (this.canvas2d.autoResize)
-            {
-                this.canvas2d.canvas.width = this.viewportWidth;
-                this.canvas2d.canvas.height = this.viewportHeight;
-            }
-
-            if (this.canvas2d.OnResize)
-            {
-                this.canvas2d.OnResize(event);
-            }
+            this.canvas2d.width = this.viewportWidth;
+            this.canvas2d.height = this.viewportHeight;
         }
 
         this.store.variables.SetValue("ViewportSize", [
@@ -410,7 +382,16 @@ export class Tw2Device extends Tw2EventEmitter
             this.viewportHeight
         ]);
 
-        this.EmitEvent("resized", event);
+        this.EmitEvent("resized", {
+            width: this.viewportWidth,
+            height: this.viewportHeight,
+            aspect: this.viewportAspect,
+            canvas2d: this.canvas2d,
+            canvas3d: this.canvas,
+            xr: this.xr
+        });
+
+        return true;
     }
 
     /**
@@ -425,11 +406,12 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Fires on the start of a frame
      */
-    StartFrame()
+    Tick()
     {
+        let resized = false;
         if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight)
         {
-            this.Resize();
+            resized = this.Resize();
         }
 
         const
@@ -448,19 +430,9 @@ export class Tw2Device extends Tw2EventEmitter
         ]);
 
         this.frameCounter++;
+        return resized;
     }
-
-    /**
-     * Fires on the end of a frame
-     */
-    EndFrame()
-    {
-        if (this.canvas2d && this.canvas2d.enabled && this.canvas2d.OnDraw)
-        {
-            this.canvas2d.OnDraw();
-        }
-    }
-
+    
     /**
      * Sets World transform matrix
      * @param {mat4} matrix

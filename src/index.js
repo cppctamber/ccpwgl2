@@ -7,7 +7,4 @@ import { tw2 } from "./global";
 
 tw2.Register(config);
 
-import { WrappedClient } from "./wrapped";
-const tiny = new WrappedClient();
-
-export { tw2, tw2 as CCPWGL, tiny };
+export { tw2 };

@@ -3,9 +3,8 @@ import { resMan, device } from "global";
 import { box3, sph3, vec3, quat, mat3, mat4 } from "math";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
-import { Tw2Resource } from "./Tw2Resource";
+import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-import { ErrResourceFormatInvalid } from "../engine";
 import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
 import {
     Tw2BlendShapeData,
@@ -150,7 +149,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
+                throw new ErrResourceFormatUnsupported({ format: extension });
         }
     }
 
@@ -180,7 +179,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormatInvalid({ format: this._extension, reason: "Unexpected extension" });
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
         }
     }
 

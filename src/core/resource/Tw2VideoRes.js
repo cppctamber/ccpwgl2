@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, resMan } from "global";
-import { Tw2Resource } from "./Tw2Resource";
+import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
 
 
@@ -102,7 +102,7 @@ export class Tw2VideoRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceExtensionUnregistered({ path: this.path, extension: this._extension });
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
         }
 
         this.OnPrepared();
@@ -126,7 +126,7 @@ export class Tw2VideoRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceExtensionUnregistered({ path, extension });
+                throw new ErrResourceFormatUnsupported({ format: extension });
         }
 
         resMan.AddPendingLoad(path);

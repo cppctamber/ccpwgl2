@@ -384,13 +384,6 @@ export class Tw2Resource extends Tw2Notifications
     }
 
     /**
-     * Identifies that this object is a resource
-     * @type {boolean}
-     * @private
-     */
-    static __isResource = true;
-
-    /**
      * Resource states
      * @type {*}
      */
@@ -428,5 +421,39 @@ export class Tw2Resource extends Tw2Notifications
  * @returns {Boolean}
  */
 Tw2Resource.prototype.DoCustomLoad = null;
+
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Resource format invalid: %format% (%reason=unknown%)");
+    }
+}
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatUnsupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Resource format not supported: %format% (%reason=unknown%)");
+    }
+}
+
+/**
+ * Throws in invalid resource formats
+ */
+export class ErrResourceFormatNotImplemented extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Resource format not implemented: %format% (%reason=unknown%)");
+    }
+}
 
 

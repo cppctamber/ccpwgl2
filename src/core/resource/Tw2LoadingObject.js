@@ -1,19 +1,9 @@
 import { resMan } from "global";
-import { Tw2Resource } from "./Tw2Resource";
+import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
 import { Tw2BlackReader } from "../reader/Tw2BlackReader";
-import { ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
 
-/**
- * Tw2LoadingObject
- *
- * @property {?String} _view                - object's .red file xml contents
- * @property {Number} _inPrepare            - the amount of child objects to prepare
- * @property {Array.<Object>} _objects      - the child objects to prepare
- * @property {Tw2ObjectReader} _constructor - A function for constructing child objects
- * @inheritDoc {Tw2Resource}
- * @class
- */
+
 export class Tw2LoadingObject extends Tw2Resource
 {
 
@@ -87,7 +77,7 @@ export class Tw2LoadingObject extends Tw2Resource
                     break;
 
                 default:
-                    throw new ErrResourceExtensionUnregistered({ extension: ext });
+                    throw new ErrResourceFormatUnsupported({ format: ext });
             }
 
             this._inPrepare = 0;
@@ -158,5 +148,11 @@ export class Tw2LoadingObject extends Tw2Resource
         this._objects.splice(0);
         super.OnPrepared(eventLog);
     }
+
+    /**
+     * Identifies a loading object
+     * @type {Boolean}
+     */
+    static isLoadingObject = true;
 
 }
