@@ -95607,7 +95607,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
 /* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Transform */ "./core/Tw2Transform.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _temp;
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -95623,7 +95623,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
+var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
   constructor(...args) {
     super(...args);
 
@@ -95740,7 +95740,7 @@ var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
   initializer: function () {
     return {};
   }
-}), _applyDecoratedDescriptor(_class2.prototype, "display", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "display"), _class2.prototype)), _class2)) || _class);
+})), _class2)) || _class);
 
 /***/ }),
 

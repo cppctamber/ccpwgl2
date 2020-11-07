@@ -18,7 +18,6 @@ export class WrappedGenericObject extends Tw2Transform
      * Gets the object's visibility
      * @return {Boolean}
      */
-    @meta.boolean
     get display()
     {
         return this.wrapped.display;
