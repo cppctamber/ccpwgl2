@@ -484,6 +484,26 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Renders the background effect
+     * @param {Boolean} [force=this.visible.environment]
+     */
+    RenderBackgroundEffect(force=this.visible.environment)
+    {
+        if (this.backgroundEffect)
+        {
+            if (force)
+            {
+                device.SetStandardStates(device.RM_FULLSCREEN);
+                device.RenderCameraSpaceQuad(this.backgroundEffect);
+            }
+            else
+            {
+                this.backgroundEffect.KeepAlive();
+            }
+        }
+    }
+
+    /**
      * Updates children's view dependent data and renders them
      * @param {Number} dt - deltaTime
      */
@@ -498,11 +518,7 @@ export class EveSpaceScene extends meta.Model
             show = this.visible,
             worldSpriteScale = mat4.maxScaleOnAxis(this._localTransform);
 
-        if (show["environment"] && this.backgroundEffect)
-        {
-            d.SetStandardStates(d.RM_FULLSCREEN);
-            d.RenderCameraSpaceQuad(this.backgroundEffect);
-        }
+        this.RenderBackgroundEffect();
 
         if (show.planets && this.planets.length)
         {
@@ -751,13 +767,6 @@ export class EveSpaceScene extends meta.Model
             envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
-
-        /// Keep environment maps alive when the environment is disabled
-        if (!show.environment)
-        {
-            const res = this.GetResources();
-            res.forEach(res => res.KeepAlive());
-        }
 
         store.variables.Get("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
         store.variables.Get("EnvMap1").AttachTextureRes(envMap1);
