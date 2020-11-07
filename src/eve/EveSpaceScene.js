@@ -373,8 +373,8 @@ export class EveSpaceScene extends meta.Model
         if (this.starfield) this.starfield.GetResources(out);
 
         if (this._envMapRes && !out.includes(this._envMapRes)) out.push(this._envMapRes);
-        if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMapRes);
-        if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMapRes);
+        if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMap1Res);
+        if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMap2Res);
 
         return out;
     }
@@ -751,6 +751,13 @@ export class EveSpaceScene extends meta.Model
             envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
+
+        /// Keep environment maps alive when the environment is disabled
+        if (!show.environment)
+        {
+            const res = this.GetResources();
+            res.forEach(res => res.KeepAlive());
+        }
 
         store.variables.Get("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
         store.variables.Get("EnvMap1").AttachTextureRes(envMap1);
