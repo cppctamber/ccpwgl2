@@ -130,14 +130,14 @@ export async function getResPathFromTypeID(typeID, params)
 
 export async function getResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID, name)
 {
-    const 
+    const
         dna = await getResPathFromTypeID(typeID),
         { materialSetID } = await getSkinMaterialID(skinMaterialID),
         set = await getSkinMaterialSetID(materialSetID);
 
     // Can't get a name...
     name = name || set.description.split("(")[0];
-    
+
     const
         parts = dna.split(":"),
         commands = {};

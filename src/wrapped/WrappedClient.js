@@ -3,7 +3,7 @@ import * as math from "math";
 import * as util from "utils";
 import { device, resMan, tw2 } from "global";
 import { Tw2EventEmitter, Tw2PostEffectManager } from "core";
-import { WrappedCamera } from  "./WrappedCamera";
+import { WrappedCamera } from "./WrappedCamera";
 import { WrappedScene } from "./WrappedScene";
 import {
     getGraphicID,
@@ -15,8 +15,7 @@ import {
     getSkinMaterialTypeIDs,
     getResPathFromTypeIDAndSkinMaterialID,
     getSkinID
-} from "./ESIManager";
-
+} from "./APIManager";
 
 
 let eveSof;
@@ -35,7 +34,7 @@ export class WrappedClient extends Tw2EventEmitter
         render: true,
         postEffects: true,
         clearColor: math.vec4.fromValues(0, 0, 0, 1),
-        colorMask: math.vec4.fromValues(0,0,0,0)
+        colorMask: math.vec4.fromValues(0, 0, 0, 0)
     };
 
     /**
@@ -181,9 +180,9 @@ export class WrappedClient extends Tw2EventEmitter
      * @param skinID
      * @return {Promise<*>}
      */
-    async  FetchSkinID(skinID)
+    async FetchSkinID(skinID)
     {
-        return  getSkinID(skinID);
+        return getSkinID(skinID);
     }
 
     /**
@@ -339,7 +338,7 @@ export class WrappedClient extends Tw2EventEmitter
             options.canvas = this.canvas2d ? this.canvas2d : this.canvas3d;
         }
 
-        const camera =  await WrappedCamera.fetch(options);
+        const camera = await WrappedCamera.fetch(options);
         if (!doNotAdd) this.SetCamera(camera);
         return camera;
     }

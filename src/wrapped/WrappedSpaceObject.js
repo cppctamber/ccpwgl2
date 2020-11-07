@@ -4,8 +4,8 @@ import {
     getResPathFromTypeIDAndSkinID,
     getResPathFromTypeIDAndSkinMaterialID,
     getTypeID
-} from "./ESIManager";
-import { WrappedGenericObject }  from "./WrappedGenericObject";
+} from "./APIManager";
+import { WrappedGenericObject } from "./WrappedGenericObject";
 
 
 @meta.type("WrappedSpaceObject")

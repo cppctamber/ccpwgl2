@@ -94289,9 +94289,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./wrapped/ESIManager.js":
+/***/ "./wrapped/APIManager.js":
 /*!*******************************!*\
-  !*** ./wrapped/ESIManager.js ***!
+  !*** ./wrapped/APIManager.js ***!
   \*******************************/
 /*! exports provided: clearCache, getTypeID, getGraphicID, getResPathFromGraphicID, getResPathFromTypeID, getResPathFromTypeIDAndSkinMaterialID, getResPathFromTypeIDAndSkinID, getSkinMaterialID, getSkinMaterialTypeIDs, getTypeIDSkinIDs, getSkinMaterialSetID, getSkinID, getSkinMaterialSetFromSkinID */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -95123,7 +95123,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedCamera */ "./wrapped/WrappedCamera.js");
 /* harmony import */ var _WrappedScene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedScene */ "./wrapped/WrappedScene.js");
-/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+/* harmony import */ var _APIManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./APIManager */ "./wrapped/APIManager.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -95308,7 +95308,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchSkinMaterialTypeIDs(skinMaterialID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinMaterialTypeIDs"])(skinMaterialID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinMaterialTypeIDs"])(skinMaterialID);
     })();
   }
   /**
@@ -95320,7 +95320,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchTypeIDSkinIDs(typeID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeIDSkinIDs"])(typeID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeIDSkinIDs"])(typeID);
     })();
   }
   /**
@@ -95332,7 +95332,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchSkinID(skinID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinID"])(skinID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinID"])(skinID);
     })();
   }
   /**
@@ -95344,7 +95344,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchTypeID(typeID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeID"])(typeID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeID"])(typeID);
     })();
   }
   /**
@@ -95356,7 +95356,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchGraphicID(graphicID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID);
     })();
   }
   /**
@@ -95369,7 +95369,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
     })();
   }
   /**
@@ -95382,7 +95382,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchResPathFromTypeIDAndSkinID(typeID, skinID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
     })();
   }
   /**
@@ -95394,7 +95394,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchResPathFromTypeID(typeID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeID"])(typeID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeID"])(typeID);
     })();
   }
   /**
@@ -95406,7 +95406,7 @@ class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"]
 
   FetchResPathFromGraphicID(graphicID) {
     return _asyncToGenerator(function* () {
-      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromGraphicID"])(graphicID);
+      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromGraphicID"])(graphicID);
     })();
   }
   /**
@@ -95607,7 +95607,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
 /* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Transform */ "./core/Tw2Transform.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _temp;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -95623,7 +95623,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
+var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
   constructor(...args) {
     super(...args);
 
@@ -95632,9 +95632,18 @@ var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
     _initializerDefineProperty(this, "custom", _descriptor2, this);
   }
 
+  /**
+   * Gets the object's visibility
+   * @return {Boolean}
+   */
   get display() {
     return this.wrapped.display;
   }
+  /**
+   * Sets the object's visibility
+   * @param {Boolean} bool
+   */
+
 
   set display(bool) {
     this.wrapped.display = bool;
@@ -95731,7 +95740,7 @@ var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
   initializer: function () {
     return {};
   }
-})), _class2)) || _class);
+}), _applyDecoratedDescriptor(_class2.prototype, "display", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "display"), _class2.prototype)), _class2)) || _class);
 
 /***/ }),
 
@@ -96394,7 +96403,7 @@ var WrappedShip = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedSpaceObject", function() { return WrappedSpaceObject; });
 /* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
-/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+/* harmony import */ var _APIManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./APIManager */ "./wrapped/APIManager.js");
 /* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
 var _dec, _class;
 
@@ -96457,15 +96466,15 @@ var WrappedSpaceObject = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"
 
       if (typeID) {
         if (!skinID || !skinMaterialID) {
-          var type = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getTypeID"])(typeID);
+          var type = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getTypeID"])(typeID);
           if (!values.name) values.name = type.name;
-          resPath = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeID"])(typeID);
+          resPath = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeID"])(typeID);
         } else if (skinID) {
-          var skin = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
+          var skin = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
           if (!values.name) values.name = skin.name;
           resPath = skin.dna;
         } else if (skinMaterialID) {
-          var material = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
+          var material = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
           if (!values.name) values.name = material.name; // DUMB....
 
           resPath = material.name;

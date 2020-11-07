@@ -82,7 +82,7 @@ export class WrappedCamera extends meta.Model
     {
         if (obj.GetLongAxis)
         {
-            this.distance =  obj.GetLongAxis() * multiplier || 1000;
+            this.distance = obj.GetLongAxis() * multiplier || 1000;
         }
 
         obj.GetWorldTranslation(this.poi);

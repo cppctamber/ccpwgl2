@@ -9,7 +9,6 @@ import { WrappedPlanet } from "./WrappedPlanet";
 import { WrappedClient } from "./WrappedClient";
 
 
-
 @meta.type("WrappedScene")
 export class WrappedScene extends WrappedGenericObject
 {
@@ -43,7 +42,7 @@ export class WrappedScene extends WrappedGenericObject
      */
     _GetWatchedIndex(obj)
     {
-        for (let i  = 0; i < this._watched.length; i++)
+        for (let i = 0; i < this._watched.length; i++)
         {
             if (this._watched[i][0] === obj)
             {
@@ -66,7 +65,7 @@ export class WrappedScene extends WrappedGenericObject
         let completed = 0;
         res.forEach(resource =>
         {
-            if (resource.HasCompleted()) completed ++;
+            if (resource.HasCompleted()) completed++;
         });
         return completed === res.length;
     }
@@ -136,7 +135,7 @@ export class WrappedScene extends WrappedGenericObject
      */
     UnWatch(obj)
     {
-        const index =  this._GetWatchedIndex(obj);
+        const index = this._GetWatchedIndex(obj);
         if (index !== -1)
         {
             this._watched.splice(index, 1);
@@ -144,7 +143,6 @@ export class WrappedScene extends WrappedGenericObject
         }
         return false;
     }
-
 
 
     /**

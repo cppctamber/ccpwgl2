@@ -14,12 +14,20 @@ export class WrappedGenericObject extends Tw2Transform
     @meta.plain
     custom = {};
 
-
+    /**
+     * Gets the object's visibility
+     * @return {Boolean}
+     */
+    @meta.boolean
     get display()
     {
         return this.wrapped.display;
     }
 
+    /**
+     * Sets the object's visibility
+     * @param {Boolean} bool
+     */
     set display(bool)
     {
         this.wrapped.display = bool;
