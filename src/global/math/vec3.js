@@ -88,8 +88,8 @@ vec3.direction = function(out, a, b)
 
 /**
  * Gets the direction from a quat
+ * @param {vec3} out
  * @param {vec3} axis
- * @param {vec3} up
  * @param {quat} q
  * @returns {vec3} out
  */
@@ -357,6 +357,55 @@ vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
     return out;
 };
 
+let vec3_0;
+
+/**
+ * Gets a euler from quat in degrees
+ * // Because you asked nicely
+ * @param {vec3} out
+ * @param {quat} v
+ * @param {String} [order]
+ * @return {vec3} out
+ */
+vec3.euler.fromQuatInDegrees = function(out, v, order)
+{
+    if (!vec3_0) vec3_0 = vec3.create();
+    vec3.euler.fromQuat(out, v, order);
+    return vec3.degrees(out, out);
+};
+
+/**
+ * Gets a quat from a euler that uses degrees
+ * // Because you asked nicely
+ * @param {quat} out
+ * @param {vec3} v
+ * @param {String} [order]
+ * @return {quat} out
+ */
+vec3.euler.getQuatFromDegrees = function(out, v, order)
+{
+    if (!vec3_0) vec3_0 = vec3.create();
+    vec3.radians(vec3_0, v);
+    return vec3.euler.getQuat(out, v, order);
+};
+
+/**
+ * Gets a quat from degree values
+ * // Because you asked nicely
+ * @param {quat} out
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @param {String} [order]
+ * @return {quat} out
+ */
+vec3.euler.getQuatFromDegreeValues = function(out, x, y, z, order)
+{
+    if (!vec3_0) vec3_0 = vec3.create();
+    vec3.set(vec3_0, x, y, z);
+    vec3.radians(vec3_0, vec3_0);
+    return vec3.euler.getQuat(out, vec3_0, order);
+};
 
 /**
  * Exponential decay
