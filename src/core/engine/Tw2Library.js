@@ -182,9 +182,10 @@ export class Tw2Library extends Tw2EventEmitter
      */
     Initialize(options = {})
     {
-        this.Register(options);
+        const { render, glParams, canvas, canvas2d, ...opt } = options;
 
-        const { render, glParams, canvas, canvas2d } = options;
+        this.Register(opt);
+
         this.device.CreateDevice({ canvas, canvas2d, glParams });
 
         if (render)

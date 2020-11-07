@@ -17153,7 +17153,7 @@ __webpack_require__.r(__webpack_exports__);
 /****************** TEMPORARY *************************/
 // TODO: Fix .dds files we know cause issues
 
-var Rerouted = ["res:/texture/global/noise.dds", "res:/texture/global/spotramp.dds", "res:/texture/global/whitesharp.dds", "res:/texture/particle/whitesharp.dds"];
+var Rerouted = ["cdn:/texture/global/noise.dds", "cdn:/texture/global/spotramp.dds", "cdn:/texture/global/whitesharp.dds", "cdn:/texture/particle/whitesharp.dds"];
 /****************** TEMPORARY *************************/
 
 /**
@@ -17165,7 +17165,7 @@ var config = {
   // The paths in the black files must be changed
   black: {
     "*": path => path.replace("res:/", "cdn:/").toLowerCase(),
-    "dds": path => path in Rerouted ? path.replace("cdn:/", "res:/") + ".0.png" : path,
+    "dds": path => Rerouted.includes(path) ? path.replace("cdn:/", "res:/") + ".0.png" : path,
     "gr2": path => path.replace(".gr2", ".cake")
   },
   device: {
@@ -17199,7 +17199,8 @@ var config = {
   store: {
     paths: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-      "cdn": null
+      "cdn": "http://localhost:3000/" //"cdn": "https://cdn.eve-nt.uk/eve-cache/res/"
+
     },
     extensions: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
@@ -19072,8 +19073,12 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _d
       temp.scaling = [scale, scale, scale];
     }
 
-    if (rotation && rotation.length === 3) {
-      temp.rotation = math__WEBPACK_IMPORTED_MODULE_1__["quat"].fromEuler([], rotation);
+    if (rotation) {
+      if (rotation.length === 3) {
+        temp.rotation = math__WEBPACK_IMPORTED_MODULE_1__["quat"].fromEuler([], rotation[0], rotation[1], rotation[2]);
+      } else {
+        temp.rotation = rotation;
+      }
     }
 
     if (position) {
@@ -20878,6 +20883,10 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 
 
 
@@ -21049,13 +21058,15 @@ class Tw2Library extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2Event
 
 
   Initialize(options = {}) {
-    this.Register(options);
     var {
       render,
       glParams,
       canvas,
       canvas2d
-    } = options;
+    } = options,
+        opt = _objectWithoutProperties(options, ["render", "glParams", "canvas", "canvas2d"]);
+
+    this.Register(opt);
     this.device.CreateDevice({
       canvas,
       canvas2d,
@@ -24486,13 +24497,13 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
   /**
    * Fires a function per child
    * @param {Function} func
-   * @param {Boolean} [ignoreEmpty]
+   * @param {Boolean} [includeEmpty]
    * @returns {*}
    */
 
 
-  PerChild(func, ignoreEmpty) {
-    var rv = super.PerChild(func, ignoreEmpty);
+  PerChild(func, includeEmpty) {
+    var rv = super.PerChild(func, includeEmpty);
     if (rv !== undefined) return rv;
     var parent = this.parameters;
 
@@ -45747,8 +45758,8 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
     if (this.postProcess) this.postProcess.GetResources(out);
     if (this.starfield) this.starfield.GetResources(out);
     if (this._envMapRes && !out.includes(this._envMapRes)) out.push(this._envMapRes);
-    if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMapRes);
-    if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMapRes);
+    if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMap1Res);
+    if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMap2Res);
     return out;
   }
   /**
@@ -45842,6 +45853,22 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
     }
   }
   /**
+   * Renders the background effect
+   * @param {Boolean} [force=this.visible.environment]
+   */
+
+
+  RenderBackgroundEffect(force = this.visible.environment) {
+    if (this.backgroundEffect) {
+      if (force) {
+        global__WEBPACK_IMPORTED_MODULE_1__["device"].SetStandardStates(global__WEBPACK_IMPORTED_MODULE_1__["device"].RM_FULLSCREEN);
+        global__WEBPACK_IMPORTED_MODULE_1__["device"].RenderCameraSpaceQuad(this.backgroundEffect);
+      } else {
+        this.backgroundEffect.KeepAlive();
+      }
+    }
+  }
+  /**
    * Updates children's view dependent data and renders them
    * @param {Number} dt - deltaTime
    */
@@ -45854,11 +45881,7 @@ var EveSpaceScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
         tr = this._localTransform,
         show = this.visible,
         worldSpriteScale = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].maxScaleOnAxis(this._localTransform);
-
-    if (show["environment"] && this.backgroundEffect) {
-      d.SetStandardStates(d.RM_FULLSCREEN);
-      d.RenderCameraSpaceQuad(this.backgroundEffect);
-    }
+    this.RenderBackgroundEffect();
 
     if (show.planets && this.planets.length) {
       var tempProj = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].copy(g.mat4_0, d.projection),
@@ -65801,8 +65824,8 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].direction = function (out, a, b) 
 };
 /**
  * Gets the direction from a quat
+ * @param {vec3} out
  * @param {vec3} axis
- * @param {vec3} up
  * @param {quat} q
  * @returns {vec3} out
  */
@@ -66028,6 +66051,55 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuat = function (out, eu
   }
 
   return out;
+};
+
+var vec3_0;
+/**
+ * Gets a euler from quat in degrees
+ * // Because you asked nicely
+ * @param {vec3} out
+ * @param {quat} v
+ * @param {String} [order]
+ * @return {vec3} out
+ */
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuatInDegrees = function (out, v, order) {
+  if (!vec3_0) vec3_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuat(out, v, order);
+  return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].degrees(out, out);
+};
+/**
+ * Gets a quat from a euler that uses degrees
+ * // Because you asked nicely
+ * @param {quat} out
+ * @param {vec3} v
+ * @param {String} [order]
+ * @return {quat} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuatFromDegrees = function (out, v, order) {
+  if (!vec3_0) vec3_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].radians(vec3_0, v);
+  return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuat(out, v, order);
+};
+/**
+ * Gets a quat from degree values
+ * // Because you asked nicely
+ * @param {quat} out
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @param {String} [order]
+ * @return {quat} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuatFromDegreeValues = function (out, x, y, z, order) {
+  if (!vec3_0) vec3_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, x, y, z);
+  gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].radians(vec3_0, vec3_0);
+  return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuat(out, vec3_0, order);
 };
 /**
  * Exponential decay
@@ -67602,12 +67674,12 @@ var Model = (_class = (_temp = class Model {
   /**
    * Fires a function per child struct
    * @param {Function}  func
-   * @param {Boolean} [ignoreEmpty]
+   * @param {Boolean} [includeEmpty]
    * @returns {*}
    */
 
 
-  PerChild(func, ignoreEmpty) {
+  PerChild(func, includeEmpty) {
     if (Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["hasMetadata"])("structs", this.constructor)) {
       var structs = Object(_utils_reflect__WEBPACK_IMPORTED_MODULE_1__["getMetadata"])("structs", this.constructor);
 
@@ -67619,7 +67691,7 @@ var Model = (_class = (_temp = class Model {
           continue;
         }
 
-        if (struct || !ignoreEmpty) {
+        if (struct || includeEmpty) {
           var path = "/".concat(key);
           var rv = func({
             parent: this,
@@ -67646,18 +67718,20 @@ var Model = (_class = (_temp = class Model {
         for (var index = 0; index < array.length; index++) {
           var _struct = array[index];
 
-          var _path = "/".concat(_key, "/").concat(index);
+          if (_struct || includeEmpty) {
+            var _path = "/".concat(_key, "/").concat(index);
 
-          var _rv = func({
-            parent: this,
-            key: _key,
-            struct: _struct,
-            array,
-            index,
-            path: _path
-          });
+            var _rv = func({
+              parent: this,
+              key: _key,
+              struct: _struct,
+              array,
+              index,
+              path: _path
+            });
 
-          if (_rv !== undefined) return _rv;
+            if (_rv !== undefined) return _rv;
+          }
         }
       }
     }
@@ -69832,11 +69906,12 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: tw2 */
+/*! exports provided: tw2, tiny */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tiny", function() { return tiny; });
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description */ "../node_modules/core-js/modules/es.symbol.description.js");
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
@@ -69939,6 +70014,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./global */ "./global/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
 
+/* harmony import */ var wrapped_WrappedClient__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! wrapped/WrappedClient */ "./wrapped/WrappedClient.js");
 
 
 
@@ -69991,6 +70067,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _global__WEBPACK_IMPORTED_MODULE_50__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_49__["config"]);
+
+var tiny = new wrapped_WrappedClient__WEBPACK_IMPORTED_MODULE_51__["WrappedClient"]();
 
 
 /***/ }),
@@ -74758,7 +74836,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
       } catch (err) {
         // If a cake file, try to fall back to wbg file
         if (Object(utils__WEBPACK_IMPORTED_MODULE_3__["getPathExtension"])(resPath) === "cake") {
-          resPath = resPath.replace(".cake", ".wbg").replace(".gr2", "wbg"); // Update the sof so it doesn't bother doing this again
+          resPath = "res:/" + resPath.substring(resPath.indexOf(":") + 2).replace(".cake", ".wbg"); // Update the sof so it doesn't bother doing this again
 
           sof.hull.geometryResFilePath = resPath;
           sof.hull.skinned = !!sof.hull._wasSkinned;
@@ -94208,6 +94286,2205 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__["Tr2ControllerFloatVariable"]; });
 
 
+
+/***/ }),
+
+/***/ "./wrapped/ESIManager.js":
+/*!*******************************!*\
+  !*** ./wrapped/ESIManager.js ***!
+  \*******************************/
+/*! exports provided: clearCache, getTypeID, getGraphicID, getResPathFromGraphicID, getResPathFromTypeID, getResPathFromTypeIDAndSkinMaterialID, getResPathFromTypeIDAndSkinID, getSkinMaterialID, getSkinMaterialTypeIDs, getTypeIDSkinIDs, getSkinMaterialSetID, getSkinID, getSkinMaterialSetFromSkinID */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearCache", function() { return clearCache; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeID", function() { return getTypeID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGraphicID", function() { return getGraphicID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromGraphicID", function() { return getResPathFromGraphicID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeID", function() { return getResPathFromTypeID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeIDAndSkinMaterialID", function() { return getResPathFromTypeIDAndSkinMaterialID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeIDAndSkinID", function() { return getResPathFromTypeIDAndSkinID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialID", function() { return getSkinMaterialID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialTypeIDs", function() { return getSkinMaterialTypeIDs; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeIDSkinIDs", function() { return getTypeIDSkinIDs; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialSetID", function() { return getSkinMaterialSetID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinID", function() { return getSkinID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialSetFromSkinID", function() { return getSkinMaterialSetFromSkinID; });
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var sof_EveSOFData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sof/EveSOFData */ "./sof/EveSOFData.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+var ESI_ROOT = "https://esi.evetech.net",
+    ESI_VERSION = "latest",
+    ESI_DATA_SOURCE = "tranquility",
+    ESI_LANGUAGE = "en-us";
+var EsiUniverse = {
+  ASTEROID_BELTS: "universe/asteroid_belts",
+  CATEGORIES: "universe/categories",
+  CONSTELLATIONS: "universe/constellations",
+  FACTIONS: "universe/factions",
+  GRAPHICS: "universe/graphics",
+  GROUPS: "universe/groups",
+  MOONS: "universe/moons",
+  PLANETS: "universe/planets",
+  RACES: "universe/races",
+  REGIONS: "universe/regions",
+  STARGATES: "universe/stargates",
+  STARS: "universe/stars",
+  STATIONS: "universe/stations",
+  STRUCTURES: "universe/structures",
+  SYSTEM_KILLS: "universe/system_kills",
+  SYSTEMS: "universe/systems",
+  TYPES: "universe/types",
+  NAMES: "universe/names"
+};
+/**
+ * Builds an esi url
+ * @param {String} endpoint
+ * @param {*} [params]
+ * @returns {String}
+ */
+
+function buildESIUrlString(endpoint, params) {
+  params = Object.assign({
+    language: ESI_LANGUAGE,
+    datasource: ESI_DATA_SOURCE
+  }, params);
+  var keys = Object.keys(params).sort(),
+      url_string = "".concat(ESI_ROOT, "/").concat(ESI_VERSION, "/").concat(endpoint, "/");
+
+  for (var i = 0; i < keys.length; i++) {
+    url_string += "".concat(i === 0 ? "?" : "&").concat(keys[i], "=").concat(params[keys[i]]);
+  }
+
+  return url_string.toLowerCase();
+}
+/**
+ * Cache all responses for now
+ * @type {Map<String, Promise>}
+ */
+
+
+var cache = new Map();
+/**
+ * Clears cache
+ */
+
+function clearCache() {
+  cache.clear();
+}
+/**
+ * Gets an id'd data from an api route
+ * @param {String} route
+ * @param {Number} id
+ * @param {*} [params]
+ * @param {function} [extender]
+ * @returns {Promise<Object>}
+ */
+
+function getIDFromESIRoute(_x, _x2, _x3, _x4) {
+  return _getIDFromESIRoute.apply(this, arguments);
+}
+/**
+ * Gets type from it's id
+ * @param {Number} typeID
+ * @param {Object} [params]
+ * @returns {Promise<Object>}
+ */
+
+
+function _getIDFromESIRoute() {
+  _getIDFromESIRoute = _asyncToGenerator(function* (route, id, params, extender) {
+    var url = buildESIUrlString("".concat(route, "/").concat(id), params);
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
+    return yield cache.get(url);
+  });
+  return _getIDFromESIRoute.apply(this, arguments);
+}
+
+function getTypeID(_x5, _x6) {
+  return _getTypeID.apply(this, arguments);
+}
+/**
+ * Gets graphic by it's id
+ * @param {Number} graphicID
+ * @param {Object} [params]
+ * @returns {Promise<Object>}
+ */
+
+function _getTypeID() {
+  _getTypeID = _asyncToGenerator(function* (typeID, params) {
+    return yield getIDFromESIRoute(EsiUniverse.TYPES, typeID, params);
+  });
+  return _getTypeID.apply(this, arguments);
+}
+
+function getGraphicID(_x7, _x8) {
+  return _getGraphicID.apply(this, arguments);
+}
+/**
+ * Gets a resPath from a graphic id
+ * @param {Number} graphicID
+ * @param {Object} [params]
+ * @returns {Promise<String>}
+ */
+
+function _getGraphicID() {
+  _getGraphicID = _asyncToGenerator(function* (graphicID, params) {
+    return yield getIDFromESIRoute(EsiUniverse.GRAPHICS, graphicID, params);
+  });
+  return _getGraphicID.apply(this, arguments);
+}
+
+function getResPathFromGraphicID(_x9, _x10) {
+  return _getResPathFromGraphicID.apply(this, arguments);
+}
+/**
+ * Gets a resPath from a type id
+ * @param {Number} typeID
+ * @param {Object} [params]
+ * @returns {Promise<String>}
+ */
+
+function _getResPathFromGraphicID() {
+  _getResPathFromGraphicID = _asyncToGenerator(function* (graphicID, params) {
+    if (!graphicID) throw new Error("Graphic ID not found");
+    var {
+      sof_dna,
+      graphic_file
+    } = yield getIDFromESIRoute(EsiUniverse.GRAPHICS, graphicID, params);
+    return sof_dna || graphic_file || "";
+  });
+  return _getResPathFromGraphicID.apply(this, arguments);
+}
+
+function getResPathFromTypeID(_x11, _x12) {
+  return _getResPathFromTypeID.apply(this, arguments);
+} //------------------------------[ The below function require a custom api to work]----------------------------------//
+
+function _getResPathFromTypeID() {
+  _getResPathFromTypeID = _asyncToGenerator(function* (typeID, params) {
+    var {
+      graphic_id
+    } = yield getIDFromESIRoute(EsiUniverse.TYPES, typeID, params);
+    return yield getResPathFromGraphicID(graphic_id);
+  });
+  return _getResPathFromTypeID.apply(this, arguments);
+}
+
+function getResPathFromTypeIDAndSkinMaterialID(_x13, _x14, _x15) {
+  return _getResPathFromTypeIDAndSkinMaterialID.apply(this, arguments);
+}
+
+function _getResPathFromTypeIDAndSkinMaterialID() {
+  _getResPathFromTypeIDAndSkinMaterialID = _asyncToGenerator(function* (typeID, skinMaterialID, name) {
+    var dna = yield getResPathFromTypeID(typeID),
+        {
+      materialSetID
+    } = yield getSkinMaterialID(skinMaterialID),
+        set = yield getSkinMaterialSetID(materialSetID); // Can't get a name...
+
+    name = name || set.description.split("(")[0];
+    var parts = dna.split(":"),
+        commands = {};
+
+    for (var i = 3; i < parts.length; ++i) {
+      try {
+        var subParts = parts[i].split("?");
+        commands[subParts[0].toUpperCase()] = subParts[1].split(";");
+      } catch (err) {
+        throw new sof_EveSOFData__WEBPACK_IMPORTED_MODULE_1__["ErrSOFDNAFormatInvalid"]({
+          dna
+        });
+      }
+    }
+
+    var hull = parts[0],
+        faction = set.sofFactionName || parts[1],
+        race = parts[2],
+        mesh = commands["MESH"] || commands["MATERIAL"],
+        pattern = commands["PATTERN"],
+        resPathInsert = set.resPathInsert ? set.resPathInsert : commands["RESPATHINSERT"];
+
+    if (set.sofPatternName || set.patternMaterial1 || set.patternMaterial2) {
+      pattern = [set.sofPatternName || "none", set.patternMaterial1 || "none", set.patternMaterial1 || "none"];
+    }
+
+    if (set.material1 || set.material2 || set.material3 || set.material4) {
+      mesh = [set.material1 || "none", set.material2 || "none", set.material3 || "none", set.material4 || "none"];
+    } // Build string
+
+
+    var sof = "".concat(hull, ":").concat(faction, ":").concat(race);
+    if (mesh) sof += ":material?".concat(mesh.join(";"));
+    if (pattern) sof += ":pattern?".concat(pattern.join(";"));
+
+    if (resPathInsert && resPathInsert.toLowerCase() !== "none") {
+      sof += ":respathinsert?".concat(resPathInsert);
+    }
+
+    return {
+      name,
+      dna: sof.toLowerCase()
+    };
+  });
+  return _getResPathFromTypeIDAndSkinMaterialID.apply(this, arguments);
+}
+
+function getResPathFromTypeIDAndSkinID(_x16, _x17) {
+  return _getResPathFromTypeIDAndSkinID.apply(this, arguments);
+}
+
+function _getResPathFromTypeIDAndSkinID() {
+  _getResPathFromTypeIDAndSkinID = _asyncToGenerator(function* (typeID, skinID) {
+    var {
+      skinMaterialID,
+      internalName
+    } = yield getSkinID(skinID);
+    return getResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID, internalName);
+  });
+  return _getResPathFromTypeIDAndSkinID.apply(this, arguments);
+}
+
+function getSkinMaterialID(_x18) {
+  return _getSkinMaterialID.apply(this, arguments);
+}
+
+function _getSkinMaterialID() {
+  _getSkinMaterialID = _asyncToGenerator(function* (materialTypeID) {
+    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinMaterials/".concat(materialTypeID));
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
+    return yield cache.get(url);
+  });
+  return _getSkinMaterialID.apply(this, arguments);
+}
+
+function getSkinMaterialTypeIDs(_x19) {
+  return _getSkinMaterialTypeIDs.apply(this, arguments);
+}
+
+function _getSkinMaterialTypeIDs() {
+  _getSkinMaterialTypeIDs = _asyncToGenerator(function* (skinMaterialID) {
+    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/typesBySkinMaterial/".concat(skinMaterialID));
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json").catch(err => []));
+    return yield cache.get(url);
+  });
+  return _getSkinMaterialTypeIDs.apply(this, arguments);
+}
+
+function getTypeIDSkinIDs(_x20) {
+  return _getTypeIDSkinIDs.apply(this, arguments);
+}
+
+function _getTypeIDSkinIDs() {
+  _getTypeIDSkinIDs = _asyncToGenerator(function* (typeID) {
+    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinsByType/".concat(typeID));
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json").catch(err => []));
+    return yield cache.get(url);
+  });
+  return _getTypeIDSkinIDs.apply(this, arguments);
+}
+
+function getSkinMaterialSetID(_x21) {
+  return _getSkinMaterialSetID.apply(this, arguments);
+}
+
+function _getSkinMaterialSetID() {
+  _getSkinMaterialSetID = _asyncToGenerator(function* (skinMaterialID) {
+    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinMaterialSets/".concat(skinMaterialID));
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
+    return yield cache.get(url);
+  });
+  return _getSkinMaterialSetID.apply(this, arguments);
+}
+
+function getSkinID(_x22) {
+  return _getSkinID.apply(this, arguments);
+}
+
+function _getSkinID() {
+  _getSkinID = _asyncToGenerator(function* (skinID) {
+    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skins/".concat(skinID));
+    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
+    return yield cache.get(url);
+  });
+  return _getSkinID.apply(this, arguments);
+}
+
+function getSkinMaterialSetFromSkinID(_x23) {
+  return _getSkinMaterialSetFromSkinID.apply(this, arguments);
+}
+
+function _getSkinMaterialSetFromSkinID() {
+  _getSkinMaterialSetFromSkinID = _asyncToGenerator(function* (skinID) {
+    var {
+      skinMaterialID
+    } = yield getSkinID(skinID);
+    var {
+      materialSetID
+    } = yield getSkinMaterialID(materialSetID);
+    return yield getSkinMaterialSetID(skinMaterialID);
+  });
+  return _getSkinMaterialSetFromSkinID.apply(this, arguments);
+}
+
+/***/ }),
+
+/***/ "./wrapped/WrappedCamera.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedCamera.js ***!
+  \**********************************/
+/*! exports provided: WrappedCamera */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedCamera", function() { return WrappedCamera; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! math */ "./global/math/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+var WrappedCamera = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedCamera"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class WrappedCamera extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  /**
+   * Constructor
+   * @param {HTMLCanvasElement}  element
+   * @param {Object} [values]
+   */
+  constructor(element, values) {
+    if (!(element instanceof HTMLCanvasElement)) {
+      throw new ReferenceError("Invalid element");
+    }
+
+    super();
+
+    _initializerDefineProperty(this, "distance", _descriptor, this);
+
+    _initializerDefineProperty(this, "minDistance", _descriptor2, this);
+
+    _initializerDefineProperty(this, "maxDistance", _descriptor3, this);
+
+    _initializerDefineProperty(this, "fov", _descriptor4, this);
+
+    _initializerDefineProperty(this, "rotationX", _descriptor5, this);
+
+    _initializerDefineProperty(this, "rotationY", _descriptor6, this);
+
+    _initializerDefineProperty(this, "poi", _descriptor7, this);
+
+    _initializerDefineProperty(this, "nearPlane", _descriptor8, this);
+
+    _initializerDefineProperty(this, "farPlane", _descriptor9, this);
+
+    this._onShift = null;
+    this._shift = 0;
+    this._shiftStage = 0;
+    this._shiftX = null;
+    this._dragX = 0;
+    this._dragY = 0;
+    this._lastRotationX = 0;
+    this._lastRotationY = 0;
+    this._rotationSpeedX = 0;
+    this._rotationSpeedY = 0;
+    this._additionalRotationX = 0;
+    this._additionalRotationY = 0;
+    this._measureRotation = null;
+    this._moveEvent = null;
+    this._upEvent = null;
+    this._prevScale = null;
+    element.addEventListener("mousedown", event => this._DragStart(event), false);
+    element.addEventListener("touchstart", event => this._DragStart(event), true);
+    window.addEventListener("DOMMouseScroll", e => this._WheelHandler(e, element), false);
+    window.addEventListener("mousewheel", e => this._WheelHandler(e, element), false);
+    if (values) this.SetValues(values);
+  }
+  /**
+   *
+   * @param obj
+   * @param,multiplier
+   */
+
+
+  Focus(obj, multiplier = 3) {
+    if (obj.GetLongAxis) {
+      this.distance = obj.GetLongAxis() * multiplier || 1000;
+    }
+
+    obj.GetWorldTranslation(this.poi);
+    return this;
+  }
+  /**
+   * Adds a on shift handler
+   * @param {Function} func
+   */
+
+
+  OnShift(func) {
+    this._onShift = func;
+  }
+  /**
+   * Gets the camera's view matrix
+   * @param {mat4} [out=mat4.create()]
+   * @return {mat4} out
+   */
+
+
+  GetView(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create()) {
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].identity(out);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, -this._shift);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [0, 0.0, -this.distance]);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateX(out, out, this.rotationY + this._additionalRotationY);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, this.rotationX + this._additionalRotationX);
+    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [-this.poi[0], -this.poi[1], -this.poi[2]]);
+    return out;
+  }
+  /**
+   * Gets the cameras projection matrix
+   * @param  {mat4} [out=mat4.create()]
+   * @param {number} aspect - The canvas's aspect ratio
+   * @returns {mat4}
+   */
+
+
+  GetProjection(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create(), aspect) {
+    var fH = Math.tan(this.fov / 360 * Math.PI) * this.nearPlane,
+        fW = fH * aspect;
+    return math__WEBPACK_IMPORTED_MODULE_2__["mat4"].frustum(out, -fW, fW, -fH, fH, this.nearPlane, this.farPlane > 0 ? this.farPlane : this.distance * 2);
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.rotationX += this._rotationSpeedX * dt;
+    this._rotationSpeedX *= 0.9;
+    this.rotationY += this._rotationSpeedY * dt;
+    this._rotationSpeedY *= 0.9;
+    if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
+    if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
+
+    if (this._shiftStage === 2) {
+      this._shift += this._shift * dt * 5;
+
+      if (Math.abs(this._shift) > 2) {
+        this._onShift(1, this._shift > 0); //this.shift = -this.shift;
+        //this._shiftOut = false;
+
+      }
+    } else if (this._shiftStage === 1) {
+      this._shift -= this._shift * Math.min(dt, 0.5) * 2;
+    }
+
+    this.EmitEvent("update", dt);
+    if (this.post) this.post.Update(dt);
+  }
+  /**
+   * Renders the camera's post effects
+   * @param {Number} dt
+   * @return {Boolean}
+   */
+
+
+  Render(dt) {
+    return this.post ? this.post.Render(dt) : false;
+  }
+  /**
+   * Drag start handler
+   * @param event
+   * @private
+   */
+
+
+  _DragStart(event) {
+    if (!event.touches && !this._onShift && event.button !== 0) {
+      return;
+    }
+
+    if (this._moveEvent || this._upEvent) {
+      return;
+    }
+
+    if (this._moveEvent === null) {
+      document.addEventListener("mousemove", this._moveEvent = event => this._DragMove(event), true);
+      document.addEventListener("touchmove", this._moveEvent, true);
+    }
+
+    if (this._upEvent === null) {
+      document.addEventListener("mouseup", this._upEvent = event => this._DragStop(event), true);
+      document.addEventListener("touchend", this._upEvent, true);
+    }
+
+    event.preventDefault();
+
+    if (event.touches) {
+      event.screenX = event.touches[0].screenX;
+      event.screenY = event.touches[0].screenY;
+    }
+
+    this._dragX = event.screenX;
+    this._dragY = event.screenY;
+    this._shiftX = null;
+    this._rotationSpeedX = 0;
+    this._lastRotationX = this.rotationX;
+    this._rotationSpeedY = 0;
+    this._lastRotationY = this.rotationY;
+    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
+  }
+  /**
+   * Measures rotation
+   * @private
+   */
+
+
+  _MeasureRotation() {
+    this._lastRotationX = this.rotationX;
+    this._lastRotationY = this.rotationY;
+    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
+  }
+  /**
+   * Drag move handler
+   * @param event
+   * @private
+   */
+
+
+  _DragMove(event) {
+    if (this._onShift && (event.touches && event.touches.length > 2 || !event.touches && event.button !== 0)) {
+      this._shiftStage = 0;
+      event.preventDefault();
+
+      if (event.touches) {
+        event.screenX = event.screenY = 0;
+
+        for (var i = 0; i < event.touches.length; ++i) {
+          event.screenX += event.touches[i].screenX;
+          event.screenY += event.touches[i].screenY;
+        }
+
+        event.screenX /= event.touches.length;
+        event.screenY /= event.touches.length;
+      }
+
+      if (this._shiftX !== null) {
+        this._shift += (event.screenX - this._shiftX) / global_tw2__WEBPACK_IMPORTED_MODULE_1__["device"].viewportWidth * 2;
+      }
+
+      this._shiftX = event.screenX;
+      return;
+    }
+
+    this._shiftX = null;
+
+    if (event.touches) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+        var dx = event.touches[0].screenX - event.touches[1].screenX,
+            dy = event.touches[0].screenY - event.touches[1].screenY,
+            scale = Math.sqrt(dx * dx + dy * dy);
+
+        if (this._prevScale != null) {
+          var delta = (this._prevScale - scale) * 0.03;
+          this.distance = this.distance + delta * this.distance * 0.1;
+          if (this.distance < this.minDistance) this.distance = this.minDistance;
+          if (this.distance > this.maxDistance) this.distance = this.maxDistance;
+        }
+
+        this._prevScale = scale;
+        return;
+      }
+
+      event.screenX = event.touches[0].screenX;
+      event.screenY = event.touches[0].screenY;
+    }
+
+    if (typeof event.screenX !== "undefined") {
+      var dRotation = -(this._dragX - event.screenX) * 0.01;
+      this.rotationX += dRotation;
+      this._dragX = event.screenX;
+      dRotation = -(this._dragY - event.screenY) * 0.01;
+      this.rotationY += dRotation;
+      this._dragY = event.screenY;
+      if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
+      if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
+    }
+  }
+  /**
+   * Drag stop handler
+   * @param event
+   * @private
+   */
+
+
+  _DragStop(event) {
+    clearTimeout(this._measureRotation);
+    document.removeEventListener("mousemove", this._moveEvent, true);
+    document.removeEventListener("mouseup", this._upEvent, true);
+    document.removeEventListener("touchmove", this._moveEvent, true);
+    document.removeEventListener("touchend", this._upEvent, true);
+    this._moveEvent = null;
+    this._upEvent = null;
+    var dRotation = this.rotationX - this._lastRotationX;
+    this._rotationSpeedX = dRotation * 0.5;
+    dRotation = this.rotationY - this._lastRotationY;
+    this._rotationSpeedY = dRotation * 0.5;
+    this._prevScale = null;
+
+    if (this._onShift) {
+      if (Math.abs(this._shift) > 0.5) {
+        this._shiftStage = 2;
+        this.onShift(0, this._shift > 0);
+      } else {
+        this._shiftStage = 1;
+      }
+    }
+  }
+  /**
+   * Mouse wheel handler
+   * @param event
+   * @param element
+   * @returns {boolean}
+   * @private
+   */
+
+
+  _WheelHandler(event, element) {
+    /* For IE. */
+    if (!event) event = window.event;
+    var source = event.srcElement ? event.srcElement : event.target;
+    if (source !== element) return false;
+    var delta = 0;
+    /* IE/Opera. */
+
+    if (event.wheelDelta) {
+      delta = event.wheelDelta / 120;
+      /** In Opera 9, delta differs in sign as compared to IE.*/
+
+      if (window.opera) delta = -delta;
+    }
+    /* Mozilla case. In Mozilla, sign of delta is different than in IE. Also, delta is multiple of 3. */
+    else if (event.detail) {
+        delta = -event.detail / 3;
+      }
+    /** If delta is nonzero, handle it.
+     * Basically, delta is now positive if wheel was scrolled up,
+     * and negative, if wheel was scrolled down.
+     */
+
+
+    if (delta) {
+      this.distance = this.distance + delta * this.distance * 0.1;
+
+      if (this.distance < this.minDistance) {
+        this.distance = this.minDistance;
+      }
+    }
+    /** Prevent default actions caused by mouse wheel.
+     * That might be ugly, but we handle scrolls somehow
+     * anyway, so don't bother here..
+     */
+    //if (event.preventDefault) event.preventDefault();
+
+
+    event.returnValue = false;
+    return false;
+  }
+  /**
+   * Fetches a camera async
+   * TODO: Load geometry to represent the camera
+   * @param {Object} options
+   * @return {Promise<WrappedCamera>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (!Object(utils__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(options)) {
+        options = {
+          canvas: options
+        };
+      }
+
+      var {
+        canvas
+      } = options,
+          values = _objectWithoutProperties(options, ["canvas"]);
+
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(canvas)) canvas = document.getElementById(canvas);
+      return new _this(canvas, values);
+    })();
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "distance", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "minDistance", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "maxDistance", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1000000;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "fov", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 60;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "rotationX", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "rotationY", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "poi", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].create();
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "nearPlane", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "farPlane", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedClient.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedClient.js ***!
+  \**********************************/
+/*! exports provided: WrappedClient */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedClient", function() { return WrappedClient; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedCamera */ "./wrapped/WrappedCamera.js");
+/* harmony import */ var _WrappedScene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedScene */ "./wrapped/WrappedScene.js");
+/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+
+var eveSof;
+class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"] {
+  constructor(...args) {
+    super(...args);
+    this.scene = null;
+    this.camera = null;
+    this.post = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2PostEffectManager"]();
+    this.math = math__WEBPACK_IMPORTED_MODULE_1__;
+    this.util = utils__WEBPACK_IMPORTED_MODULE_0__;
+    this.options = {
+      update: true,
+      render: true,
+      postEffects: true,
+      clearColor: math__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 1),
+      colorMask: math__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 0)
+    };
+  }
+
+  /**
+   * Reference to the tw2 library
+   * @return {Tw2Library}
+   */
+  get tw2() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["tw2"];
+  }
+  /**
+   * Gets the current delta time
+   * @return {*}
+   */
+
+
+  get dt() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].dt;
+  }
+  /**
+   * Gets the current frame
+   * @return {*}
+   */
+
+
+  get frame() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].frameCounter;
+  }
+  /**
+   * Gets the 3d canvas
+   * @return {*}
+   */
+
+
+  get canvas3d() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas;
+  }
+  /**
+   * Gets the 2d canvas
+   * @return {*}
+   */
+
+
+  get canvas2d() {
+    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas2d;
+  }
+  /**
+   * Initializes the client
+   * @param {Object} options
+   * @returns {Scene|undefined}
+   */
+
+
+  Initialize(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var {
+        client,
+        render,
+        scene,
+        camera
+      } = options,
+          opt = _objectWithoutProperties(options, ["client", "render", "scene", "camera"]);
+
+      if (client) Object(utils__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(_this.options, client, Object.keys(_this.options));
+      if (!render) render = dt => _this.Render(dt);
+      global__WEBPACK_IMPORTED_MODULE_2__["tw2"].Initialize(_objectSpread({
+        render
+      }, opt)); // Force load the sof
+
+      yield WrappedClient.fetchEveSOF(); // Quick setup
+
+      if (camera) yield _this.FetchCamera(camera);
+      if (scene) yield _this.FetchScene(scene);
+      return _this;
+    })();
+  }
+  /**
+   * Per frame render
+   * @param {Number} dt
+   * @returns {Boolean} true
+   */
+
+
+  Render(dt) {
+    var {
+      render,
+      update,
+      postEffects,
+      colorMask
+    } = this.options;
+    var {
+      camera,
+      scene,
+      post
+    } = this;
+
+    if (update && scene) {
+      this.EmitEvent("update", dt);
+      if (camera) camera.Update(dt);
+      if (scene) scene.Update(dt);
+
+      if (render) {
+        var {
+          gl,
+          viewportAspect,
+          viewportWidth,
+          viewportHeight,
+          RM_OPAQUE
+        } = global__WEBPACK_IMPORTED_MODULE_2__["device"];
+        var {
+          clearColor
+        } = scene.wrapped;
+        this.EmitEvent("pre_render", dt);
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetStandardStates(RM_OPAQUE);
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetProjection(camera.GetProjection([], viewportAspect));
+        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetView(camera.GetView([]));
+        gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        gl.clearDepth(1.0);
+        gl.viewport(0, 0, viewportWidth, viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        this.EmitEvent("pre_scene_render", dt);
+        scene.Render(dt);
+        this.EmitEvent("post_scene_render", dt);
+
+        if (!post || postEffects && !post.Render()) {
+          gl.colorMask(!!colorMask[0], !!colorMask[1], !!colorMask[2], !!colorMask[3]);
+          gl.clearColor(0, 0, 0, 1);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.colorMask(true, true, true, true);
+        }
+      }
+    }
+
+    this.EmitEvent("post_render", dt);
+    return true;
+  }
+  /**
+   * Fetches all type ids for a skin material ID
+   * @param {String} skinMaterialID
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSkinMaterialTypeIDs(skinMaterialID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinMaterialTypeIDs"])(skinMaterialID);
+    })();
+  }
+  /**
+   * Fetches all skin ids for a type
+   * @param {Number} typeID
+   * @return {Promise<Array>}
+   */
+
+
+  FetchTypeIDSkinIDs(typeID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeIDSkinIDs"])(typeID);
+    })();
+  }
+  /**
+   *
+   * @param skinID
+   * @return {Promise<*>}
+   */
+
+
+  FetchSkinID(skinID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinID"])(skinID);
+    })();
+  }
+  /**
+   *
+   * @param typeID
+   * @return {Promise<Object>}
+   */
+
+
+  FetchTypeID(typeID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeID"])(typeID);
+    })();
+  }
+  /**
+   *
+   * @param graphicID
+   * @return {Promise<Object>}
+   */
+
+
+  FetchGraphicID(graphicID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID);
+    })();
+  }
+  /**
+   *
+   * @param typeID
+   * @param skinMaterialID
+   * @return {Promise<{dna: string, name: *}>}
+   */
+
+
+  FetchResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
+    })();
+  }
+  /**
+   *
+   * @param typeID
+   * @param skinID
+   * @return {Promise<{dna: string, name: *}>}
+   */
+
+
+  FetchResPathFromTypeIDAndSkinID(typeID, skinID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
+    })();
+  }
+  /**
+   *
+   * @param typeID
+   * @return {Promise<String>}
+   */
+
+
+  FetchResPathFromTypeID(typeID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeID"])(typeID);
+    })();
+  }
+  /**
+   *
+   * @param graphicID
+   * @return {Promise<String>}
+   */
+
+
+  FetchResPathFromGraphicID(graphicID) {
+    return _asyncToGenerator(function* () {
+      return Object(_ESIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromGraphicID"])(graphicID);
+    })();
+  }
+  /**
+   * Fetches the  space  object factory
+   * @return {Promise<EveSOFData>}
+   */
+
+
+  FetchSOF() {
+    return _asyncToGenerator(function* () {
+      return WrappedClient.fetchEveSOF();
+    })();
+  }
+  /**
+   * Fetches sof pattern names for a given hull;
+   * @param {String} hull
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSOFHullPatterns(hull) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _this2.FetchSOF();
+      return eveSof.GetHullPatternNames(hull);
+    })();
+  }
+  /**
+   * Fetches sof hull names
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSOFHulls() {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _this3.FetchSOF();
+      return eveSof.GetHullNames([]);
+    })();
+  }
+  /**
+   * Fetches sof faction names
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSOFFactions() {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _this4.FetchSOF();
+      return eveSof.GetFactionNames([]);
+    })();
+  }
+  /**
+   * Fetches sof race names
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSOFRaces() {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _this5.FetchSOF();
+      return eveSof.GetRaceNames([]);
+    })();
+  }
+  /**
+   * Fetches sof material names
+   * @return {Promise<Array>}
+   */
+
+
+  FetchSOFMaterials() {
+    var _this6 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _this6.FetchSOF();
+      return eveSof.GetMaterialNames([]);
+    })();
+  }
+  /**
+   * Fetches a scene async
+   * @param {Object} options
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedScene>}
+   */
+
+
+  FetchScene(options, doNotAdd) {
+    var _this7 = this;
+
+    return _asyncToGenerator(function* () {
+      var scene = yield _WrappedScene__WEBPACK_IMPORTED_MODULE_5__["WrappedScene"].fetch(options);
+      if (!doNotAdd) _this7.SetScene(scene);
+      return scene;
+    })();
+  }
+  /**
+   * Fetches a camera async
+   * @param {Object} [options={}]
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedCamera>}
+   */
+
+
+  FetchCamera(options = {}, doNotAdd) {
+    var _this8 = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
+        options = {
+          canvas: options
+        };
+      }
+
+      if (!options.canvas) {
+        options.canvas = _this8.canvas2d ? _this8.canvas2d : _this8.canvas3d;
+      }
+
+      var camera = yield _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__["WrappedCamera"].fetch(options);
+      if (!doNotAdd) _this8.SetCamera(camera);
+      return camera;
+    })();
+  }
+  /**
+   * Sets the current scene
+   * @param {WrappedScene} scene
+   * @return {WrappedClient}
+   */
+
+
+  SetScene(scene) {
+    if (this.scene !== scene) {
+      if (this.scene) this.EmitEvent("scene_removed", this.scene);
+      this.scene = scene;
+      this.EmitEvent("scene_added", scene);
+    }
+
+    return this;
+  }
+  /**
+   * Sets the current camera
+   * @param {WrappedCamera} camera
+   * @return {WrappedClient}
+   */
+
+
+  SetCamera(camera) {
+    if (this.camera !== camera) {
+      if (this.camera) this.EmitEvent("camera_removed", this.camera);
+      this.camera = camera;
+      this.EmitEvent("camera_added", camera);
+    }
+
+    return this;
+  }
+  /**
+   * Fetches the latest eve sof
+   * @return {Promise<EveSOFData>}
+   */
+
+
+  static fetchEveSOF() {
+    return _asyncToGenerator(function* () {
+      if (!eveSof) {
+        eveSof = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(WrappedClient.SpaceObjectFactoryPath);
+      }
+
+      return eveSof;
+    })();
+  }
+  /**
+   * Path to the latest space object factory
+   * @type {string}
+   */
+
+
+}
+WrappedClient.SpaceObjectFactoryPath = "cdn:/dx9/model/spaceobjectfactory/data.black";
+
+/***/ }),
+
+/***/ "./wrapped/WrappedGenericObject.js":
+/*!*****************************************!*\
+  !*** ./wrapped/WrappedGenericObject.js ***!
+  \*****************************************/
+/*! exports provided: WrappedGenericObject */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedGenericObject", function() { return WrappedGenericObject; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Transform */ "./core/Tw2Transform.js");
+var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "wrapped", _descriptor, this);
+
+    _initializerDefineProperty(this, "custom", _descriptor2, this);
+  }
+
+  get display() {
+    return this.wrapped.display;
+  }
+
+  set display(bool) {
+    this.wrapped.display = bool;
+  }
+  /**
+   * Gets the object's long axis
+   * @return {number}
+   */
+
+
+  GetLongAxis() {
+    if ("boundingSphereRadius" in this.wrapped) {
+      var mat4_0 = this.GetWorldTransform([]),
+          sph3_0 = math__WEBPACK_IMPORTED_MODULE_1__["sph3"].fromPositionRadius([], this.wrapped.boundingSphereCenter, this.wrapped.boundingSphereRadius);
+      math__WEBPACK_IMPORTED_MODULE_1__["sph3"].transformMat4(sph3_0, sph3_0, mat4_0);
+      return Math.round(sph3_0[3] * 2);
+    }
+
+    return 0;
+  }
+  /**
+   * Fires on world transform modified
+   * @param {mat4} world
+   */
+
+
+  OnWorldTransformModified(world) {
+    this.wrapped.SetTransform(world);
+    this.EmitEvent("transform_modified");
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.EmitEvent("update", dt);
+  }
+  /**
+   * Gets the object's resources
+   * @param {Array} [out=[]]
+   * @return {Array} out
+   */
+
+
+  GetResources(out = []) {
+    return this.wrapped.GetResources(out);
+  }
+  /**
+   * Fires on transform updates
+   * @param {mat4} world
+   */
+
+
+  _OnTransformUpdated(world) {
+    this.wrapped.SetTransform(world);
+  }
+  /**
+   * Fetches object sync
+   * @param {Object} values
+   * @param {Object} opt
+   */
+
+
+  static from(values, opt) {
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
+  }
+  /**
+   * Fetches object async
+   * @param {Object} values
+   * @param {EveSOFData} eveSof
+   * @return {Promise<*>}
+   */
+
+
+  static fetch(values, eveSof) {
+    return _asyncToGenerator(function* () {
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
+    })();
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "wrapped", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "custom", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedLensflare.js":
+/*!*************************************!*\
+  !*** ./wrapped/WrappedLensflare.js ***!
+  \*************************************/
+/*! exports provided: WrappedLensflare */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedLensflare", function() { return WrappedLensflare; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/effect/EveLensflare */ "./eve/effect/EveLensflare.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedLensflare = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedLensflare"), _dec(_class = class WrappedLensflare extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+  /**
+   * Constructor
+   * @param {WrappedLensflare} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__["EveLensflare"])) {
+      throw new ReferenceError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Fetches a planet async
+   * @param {Object} options
+   * @return {Promise<WrappedLensflare>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) options = {
+        resPath: options
+      };
+
+      var {
+        resPath
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath"]);
+
+      if (resPath) {
+        var wrapped = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(resPath);
+        return new _this(wrapped, values);
+      }
+
+      throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedPlanet.js":
+/*!**********************************!*\
+  !*** ./wrapped/WrappedPlanet.js ***!
+  \**********************************/
+/*! exports provided: WrappedPlanet */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedPlanet", function() { return WrappedPlanet; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedPlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedPlanet"), _dec(_class = class WrappedPlanet extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {EvePlanet} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"])) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Gets the object's long axis
+   * @return {number}
+   */
+
+
+  GetLongAxis() {
+    var worldScale = this.GetWorldScale([]);
+    return Math.max(worldScale[0], worldScale[1], worldScale[2]);
+  }
+  /**
+   * Fetches a planet async
+   * @param {Object} options
+   * @return {Promise<WrappedPlanet>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var {
+        itemID,
+        resPath,
+        heightMap1,
+        heightMap2,
+        atmospherePath
+      } = options,
+          values = _objectWithoutProperties(options, ["itemID", "resPath", "heightMap1", "heightMap2", "atmospherePath"]);
+
+      if (resPath) {
+        var wrapped = new eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"]();
+        yield wrapped.Fetch({
+          itemID,
+          resPath,
+          heightMap1,
+          heightMap2,
+          atmospherePath
+        });
+        wrapped._resPath = resPath;
+        wrapped._atmospherePath = atmospherePath;
+        return new _this(wrapped, values);
+      }
+
+      throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedScene.js":
+/*!*********************************!*\
+  !*** ./wrapped/WrappedScene.js ***!
+  \*********************************/
+/*! exports provided: WrappedScene */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedScene", function() { return WrappedScene; });
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/EveSpaceScene */ "./eve/EveSpaceScene.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
+/* harmony import */ var _WrappedShip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedShip */ "./wrapped/WrappedShip.js");
+/* harmony import */ var _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WrappedLensflare */ "./wrapped/WrappedLensflare.js");
+/* harmony import */ var _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WrappedPlanet */ "./wrapped/WrappedPlanet.js");
+/* harmony import */ var _WrappedClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./WrappedClient */ "./wrapped/WrappedClient.js");
+var _dec, _dec2, _class, _class2, _descriptor, _class3, _temp;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+
+
+
+
+
+var WrappedScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("WrappedScene"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].list(), _dec(_class = (_class2 = (_temp = _class3 = class WrappedScene extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {EveSpaceScene} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    super();
+
+    _initializerDefineProperty(this, "objects", _descriptor, this);
+
+    this._watched = [];
+    this._maxWatchedFrames = 2000;
+
+    if (!(wrapped instanceof eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"])) {
+      throw new ReferenceError("Invalid space object");
+    }
+
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Gets the index of a watched object
+   * @param {WrappedGenericObject} obj
+   * @return {number}
+   */
+
+
+  _GetWatchedIndex(obj) {
+    for (var i = 0; i < this._watched.length; i++) {
+      if (this._watched[i][0] === obj) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+  /**
+   * Checks if an objects resources are is completely loaded
+   * @param {WrappedGenericObject} obj
+   * @return {boolean}
+   */
+
+
+  _IsWatchedComplete(obj) {
+    // Maybe not, but can't tell
+    if (!obj.GetResources) return true;
+    var res = obj.GetResources();
+    var completed = 0;
+    res.forEach(resource => {
+      if (resource.HasCompleted()) completed++;
+    });
+    return completed === res.length;
+  }
+  /**
+   * Checks watched objects
+   */
+
+
+  _CheckWatched() {
+    if (!this._watched.length) return;
+    var currentFrame = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].frame;
+
+    for (var i = 0; i < this._watched.length; i++) {
+      var [obj, onUnWatched, startWatchFrame] = this._watched[i];
+      var remove = false; // Check for time outs
+
+      if (currentFrame - startWatchFrame >= this._maxWatchedFrames) {
+        onUnWatched(obj, false);
+        remove = true;
+      } else if (this._IsWatchedComplete(obj)) {
+        onUnWatched(obj, true);
+        remove = true;
+      }
+
+      if (remove) {
+        this._watched.splice(i, 1);
+
+        i--;
+      }
+    }
+  }
+  /**
+   * Watches an object's resources and fires a function when done or timed out
+   * @param {WrappedGenericObject} obj
+   * @param {Function} onUnWatched
+   * @return {boolean}
+   */
+
+
+  Watch(obj, onUnWatched) {
+    var index = this._GetWatchedIndex(obj);
+
+    if (index === -1) {
+      if (this._IsWatchedComplete(obj)) {
+        onUnWatched(obj, true);
+      } else {
+        this._watched.push([obj, onUnWatched, global__WEBPACK_IMPORTED_MODULE_0__["tw2"].frame]);
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Unwatches an object's resources
+   * @param {WrappedGenericObject} obj
+   * @return {boolean}
+   */
+
+
+  UnWatch(obj) {
+    var index = this._GetWatchedIndex(obj);
+
+    if (index !== -1) {
+      this._watched.splice(index, 1);
+
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Fires on transform updates
+   * @param {mat4} world
+   */
+
+
+  _OnTransformUpdated(world) {
+    this.wrapped.SetEnvironmentTransform(world);
+  }
+  /**
+   * Serializes a scene
+   * @param a
+   * @param out
+   * @param opt
+   * @return {Object}
+   */
+
+
+  static get(a, out, opt) {
+    var result = super.get(a, out, opt); // Todo: Handle in EveSpaceScene with an optional parameter
+    // Remove unwrapped objects
+
+    Reflect.deleteProperty(result, "objects");
+    Reflect.deleteProperty(result, "planets");
+    Reflect.deleteProperty(result, "lensflares");
+    return Object.assign(out, result);
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    this.EmitEvent("update", dt);
+
+    for (var i = 0; i < this.objects.length; i++) {
+      this.objects[i].Update(dt);
+    }
+
+    this.wrapped.Update(dt);
+
+    this._CheckWatched();
+  }
+  /**
+   *
+   * @param dt
+   */
+
+
+  Render(dt) {
+    this.EmitEvent("render", dt);
+    this.wrapped.Render(dt);
+  }
+  /**
+   * Rebuilds the scene
+   */
+
+
+  Rebuild() {
+    var {
+      planets,
+      objects,
+      lensflares
+    } = this.wrapped;
+    planets.splice(0);
+    objects.splice(0);
+    lensflares.splice(0);
+
+    for (var i = 0; i < this.objects.length; i++) {
+      if (this.objects[i] instanceof _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"]) // && !this.options.treatPlanetsAsObjects)
+        {
+          planets.push(this.objects[i].wrapped);
+        } else if (this.objects[i] instanceof _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"]) {
+        lensflares[0] = this.objects[i].wrapped;
+      } else {
+        objects.push(this.objects[i].wrapped);
+      }
+    }
+
+    this.EmitEvent("rebuilt");
+  }
+  /**
+   * Adds an object
+   * @param {*} object
+   * @return {boolean}
+   */
+
+
+  AddObject(object) {
+    if (!this.objects.includes(object)) {
+      this.objects.push(object);
+      this.EmitEvent("object_added", object);
+      this.Rebuild();
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Removes an object
+   * @param {*} object
+   * @return {boolean}
+   */
+
+
+  RemoveObject(object) {
+    var index = this.objects.indexOf(object);
+
+    if (index !== -1) {
+      this.objects.splice(index, 1);
+      this.EmitEvent("object_removed", object);
+      this.Rebuild();
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Fetches a lensflare
+   * @param {Object} options
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedLensflare>}
+   */
+
+
+  FetchLensflare(options, doNotAdd) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      var lensflare = _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"].fetch(options);
+      if (!doNotAdd) _this.AddObject(lensflare);
+      return lensflare;
+    })();
+  }
+  /**
+   * Creates a watch promise
+   * @param {WrappedGenericObject} obj
+   * @return {Promise<unknown>}
+   */
+
+
+  _CreateWatchPromise(obj) {
+    return new Promise((res, rej) => {
+      this.Watch(obj, res);
+    });
+  }
+  /**
+   *
+   * @param {Object} options
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedShip>}
+   */
+
+
+  FetchShip(options = {}, doNotAdd) {
+    var _this2 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
+      var ship = yield _WrappedShip__WEBPACK_IMPORTED_MODULE_5__["WrappedShip"].fetch(options, eveSof);
+      yield _this2._CreateWatchPromise(ship);
+      if (!doNotAdd) _this2.AddObject(ship);
+      return ship;
+    })();
+  }
+  /**
+   * Fetches a space object
+   * @param {Object} options
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedSpaceObject>}
+   */
+
+
+  FetchObject(options = {}, doNotAdd) {
+    var _this3 = this;
+
+    return _asyncToGenerator(function* () {
+      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
+      var spaceObject = yield _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__["WrappedSpaceObject"].fetch(options, eveSof);
+      yield _this3._CreateWatchPromise(spaceObject);
+      if (!doNotAdd) _this3.AddObject(spaceObject);
+      return spaceObject;
+    })();
+  }
+  /**
+   * Fetches a planet
+   * @param {Object} options
+   * @param {Boolean} [doNotAdd]
+   * @return {Promise<WrappedPlanet>}
+   */
+
+
+  FetchPlanet(options = {}, doNotAdd) {
+    var _this4 = this;
+
+    return _asyncToGenerator(function* () {
+      var planet = yield _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"].fetch(options);
+      yield _this4._CreateWatchPromise(planet);
+      if (!doNotAdd) _this4.AddObject(planet);
+      return planet;
+    })();
+  }
+  /**
+   * Fetches a scene async
+   * @param {Object} options
+   * @return {Promise<WrappedScene>}
+   */
+
+
+  static fetch(options = {}) {
+    var _this5 = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(options)) {
+        options = {
+          resPath: options
+        };
+      } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(options)) {
+        options = {
+          background: options
+        };
+      }
+
+      var {
+        resPath,
+        background
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath", "background"]);
+
+      var wrapped;
+
+      if (resPath) {
+        wrapped = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(resPath);
+        wrapped._resPath = resPath;
+      } else {
+        wrapped = new eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"]();
+      }
+
+      if (background) {
+        if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(background)) {
+          var effect = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(WrappedScene.StarFieldResPath);
+          effect.SetTextures({
+            NebulaMap: background
+          });
+          wrapped.backgroundEffect = wrapped;
+        } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(background)) {
+          wrapped.clearColor[0] = background[0];
+          wrapped.clearColor[1] = background[1];
+          wrapped.clearColor[2] = background[2];
+          wrapped.clearColor[3] = 3 in background ? background[3] : 1;
+        } else {
+          throw new TypeError("Invalid background value");
+        }
+      }
+
+      return new _this5(wrapped, values);
+    })();
+  }
+  /**
+   *  Star field effect
+   * @type {string}
+   */
+
+
+}, _class3.StarFieldResPath = "res:/dx9/scene/starfield/starfieldNebula.red", _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "objects", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+})), _class2)) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedShip.js":
+/*!********************************!*\
+  !*** ./wrapped/WrappedShip.js ***!
+  \********************************/
+/*! exports provided: WrappedShip */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedShip", function() { return WrappedShip; });
+/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
+/* harmony import */ var unsupported_eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! unsupported/eve */ "./unsupported/eve/index.js");
+/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
+/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
+var _dec, _class;
+
+
+
+
+
+var WrappedShip = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ship"), _dec(_class = class WrappedShip extends _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__["WrappedSpaceObject"] {
+  /**
+   * Constructor
+   * @param wrapped
+   * @param values
+   */
+  constructor(wrapped, values) {
+    if (!(wrapped instanceof unsupported_eve__WEBPACK_IMPORTED_MODULE_1__["EveShip2"] || wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_2__["EveShip"])) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super(wrapped, values);
+  }
+
+}) || _class);
+
+/***/ }),
+
+/***/ "./wrapped/WrappedSpaceObject.js":
+/*!***************************************!*\
+  !*** ./wrapped/WrappedSpaceObject.js ***!
+  \***************************************/
+/*! exports provided: WrappedSpaceObject */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedSpaceObject", function() { return WrappedSpaceObject; });
+/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
+/* harmony import */ var _ESIManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ESIManager */ "./wrapped/ESIManager.js");
+/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
+var _dec, _class;
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var WrappedSpaceObject = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedSpaceObject"), _dec(_class = class WrappedSpaceObject extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
+  /**
+   * Constructor
+   * @param {*} wrapped
+   * @param {Object} [values]
+   */
+  constructor(wrapped, values) {
+    if (!wrapped) {
+      throw new TypeError("Invalid wrapped object");
+    }
+
+    super();
+    this.wrapped = wrapped;
+    if (values) this.SetValues(values);
+  }
+  /**
+   * Fetches space object async
+   * @param {Object} options
+   * @param {EveSOFData} eveSof
+   * @return {Promise<WrappedSpaceObject>}
+   */
+
+
+  static fetch(options = {}, eveSof) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
+        options = {
+          resPath: options
+        };
+      } else if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(options)) {
+        options = {
+          typeID: options
+        };
+      }
+
+      var {
+        resPath,
+        typeID,
+        skinID,
+        skinMaterialID,
+        dna
+      } = options,
+          values = _objectWithoutProperties(options, ["resPath", "typeID", "skinID", "skinMaterialID", "dna"]);
+
+      if (typeID) {
+        if (!skinID || !skinMaterialID) {
+          var type = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getTypeID"])(typeID);
+          if (!values.name) values.name = type.name;
+          resPath = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeID"])(typeID);
+        } else if (skinID) {
+          var skin = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
+          if (!values.name) values.name = skin.name;
+          resPath = skin.dna;
+        } else if (skinMaterialID) {
+          var material = yield Object(_ESIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
+          if (!values.name) values.name = material.name; // DUMB....
+
+          resPath = material.name;
+        }
+      } else if (dna) {
+        resPath = dna;
+      }
+
+      if (resPath) {
+        var wrapped = yield eveSof.Build(resPath);
+        wrapped._resPath = resPath;
+        return new _this(wrapped, values);
+      }
+
+      if (!resPath) throw new ReferenceError("Could not identify resource path");
+    })();
+  }
+
+}) || _class);
 
 /***/ })
 

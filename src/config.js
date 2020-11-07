@@ -12,10 +12,10 @@ import { vec4, mat4 } from "math";
 
 // TODO: Fix .dds files we know cause issues
 const Rerouted = [
-    "res:/texture/global/noise.dds",
-    "res:/texture/global/spotramp.dds",
-    "res:/texture/global/whitesharp.dds",
-    "res:/texture/particle/whitesharp.dds",
+    "cdn:/texture/global/noise.dds",
+    "cdn:/texture/global/spotramp.dds",
+    "cdn:/texture/global/whitesharp.dds",
+    "cdn:/texture/particle/whitesharp.dds",
 ];
 
 /****************** TEMPORARY *************************/
@@ -31,7 +31,7 @@ export const config = {
     // The paths in the black files must be changed
     black: {
         "*":  path => path.replace("res:/", "cdn:/").toLowerCase(),
-        "dds": path => path in Rerouted ? path.replace("cdn:/", "res:/") + ".0.png" : path,
+        "dds": path => Rerouted.includes(path) ? path.replace("cdn:/", "res:/") + ".0.png" : path,
         "gr2": path => path.replace(".gr2", ".cake")
     },
 
@@ -70,7 +70,8 @@ export const config = {
 
         paths: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-            "cdn": null
+            "cdn": "http://localhost:3000/"
+            //"cdn": "https://cdn.eve-nt.uk/eve-cache/res/"
         },
 
         extensions: {
