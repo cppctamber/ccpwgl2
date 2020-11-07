@@ -69733,7 +69733,7 @@ for (var i = 0; i < split.length; i++) {
 
     }
 
-    url[key] = v;
+    url[key.toLowerCase()] = v;
   }
 }
 /**
