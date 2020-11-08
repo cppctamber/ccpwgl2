@@ -4,6 +4,8 @@ An implementation of ccp's ccpwgl project
 
 ```
 {\__/}
-(x - x)
-🍪⊂  \ 
+(x n x)
+ .⊂  \ 
 ```
+
+
