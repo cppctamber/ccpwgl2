@@ -120,6 +120,7 @@ export class WrappedClient extends Tw2EventEmitter
 
             if (camera) camera.Update(dt);
             if (scene) scene.Update(dt);
+            if (post) post.Update(dt);
 
             if (render)
             {

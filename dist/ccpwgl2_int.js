@@ -17199,8 +17199,7 @@ var config = {
   store: {
     paths: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-      "cdn": "http://localhost:3000/" //"cdn": "https://cdn.eve-nt.uk/eve-cache/res/"
-
+      "cdn": "http://localhost:3000/"
     },
     extensions: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
@@ -21874,7 +21873,7 @@ class Tw2MotherLode {
    */
 
 
-  HasErrors(path) {
+  HasErrored(path) {
     return path && path in this._errors;
   }
   /**
@@ -21979,13 +21978,13 @@ class Tw2MotherLode {
 
         var detail = void 0; // Has errors
 
-        if (res.HasErrors()) {
+        if (res.HasErrored()) {
           detail = "errored";
         } // Waiting for purge
         else if (res.IsUnloaded()) {
             detail = "unloaded";
           } // good but inactive
-          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
+          else if (res.HasLoaded() && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
               if (res.Unload({
                 hide: true,
                 detail: "inactivity"
@@ -22319,7 +22318,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
   LoadResource(res, eventLog) {
     this.motherLode.Add(res.path, res); // Don't load if already errored
 
-    if (res.HasErrors()) {
+    if (res.HasErrored()) {
       return res;
     }
 
@@ -22331,7 +22330,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
         return res;
       }
 
-      if (!res.HasErrors()) {
+      if (!res.HasErrored()) {
         this.Fetch(url, res.requestResponseType).then(response => {
           res.OnLoaded();
           this.Queue(res, response);
@@ -23885,6 +23884,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
 /* harmony import */ var _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parameter/Tw2Vector4Parameter */ "./core/parameter/Tw2Vector4Parameter.js");
 /* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -23892,6 +23892,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 
@@ -23979,10 +23980,49 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
    */
   Initialize() {
     if (this.effectFilePath !== "") {
-      this.effectFilePath = this.effectFilePath.toLowerCase();
-      var path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-      this.effectRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path, res => this.OnResPrepared(res));
+      var effectFilePath = this.effectFilePath;
+      this.effectFilePath = "";
+      this.SetValue(effectFilePath);
     }
+  }
+  /**
+   * Sets the effect
+   * @param {String} effectFilePath
+   * @return {boolean}
+   */
+
+
+  SetValue(effectFilePath) {
+    if (effectFilePath === "") {
+      if (this.effectFilePath === "") return false;
+      this.effectFilePath = "";
+
+      if (this.effectRes) {
+        this.effectRes.UnregisterNotification(this);
+      }
+
+      this.UpdateValues();
+      return true;
+    }
+
+    effectFilePath = effectFilePath.toLowerCase();
+    var path = Tw2Effect.ToEffectResPath(effectFilePath);
+    var res = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(Tw2Effect.ToEffectResPath(effectFilePath));
+    if (res === this.effectRes) return false;
+
+    if (this.effectRes !== res) {}
+
+    this.effectRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path);
+    this.effectRes.RegisterNotification(this);
+  }
+  /**
+   * Gets the effect's file path
+   * @return {string}
+   */
+
+
+  GetValue() {
+    return this.effectFilePath;
   }
   /**
    * Finds an effect parameter by it's name
@@ -24055,13 +24095,18 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
 
   OnResPrepared(res) {
     this.effectRes = res;
-    this.shader = res.GetShader(this.options);
-    this.BindParameters();
-    this.EmitEvent("loaded", {
-      effect: this,
-      shader: this.shader,
-      resource: res
-    });
+    this.shader = null;
+
+    try {
+      this.shader = res.GetShader(this.options);
+      this.BindParameters();
+      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_PREPARED, this, res);
+      res.UnregisterNotification(this);
+    } catch (err) {
+      this._error = err;
+      res.OnError(err);
+    }
+
     return true;
   }
   /**
@@ -24521,26 +24566,27 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
     }
   }
   /**
-   * on Event Listener
-   * @param {Tw2Effect} source
-   * @param {String} eventName
-   * @param {Function} listener
-   * @param {*} [context]
-   * @returns {boolean}
+   * Fires on resource events
+   * @param {Tw2TextureRes} res
+   * @param {Error} err
    */
 
 
-  static onListener(source, eventName, listener, context) {
-    if (eventName === "loaded" && source.shader) {
-      listener.call(context, {
-        effect: source,
-        shader: source.shader,
-        resource: source.effectRes
-      });
-      return true;
-    }
+  OnResEvent(res, err) {
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "effectRes", res, err);
+  }
+  /**
+   * Handles listeners added after an event has already been fired
+   * @param {Tw2Effect} effect
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} [context]
+   * @return {boolean} true if the listener was fired
+   */
 
-    return false;
+
+  static onListener(effect, eventName, listener, context) {
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(this, "effectRes", eventName, listener, context);
   }
   /**
    * Converts an effect file path into one suitable for an effect resource
@@ -27917,7 +27963,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 /* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -27931,7 +27977,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
   /**
    * Temporary
    * @return {Boolean}
@@ -28069,7 +28115,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   _RemoveTextureRes() {
     if (this.textureRes) {
       this.textureRes.UnregisterNotification(this);
-      this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
+      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_REMOVED, this, this.textureRes);
       this.textureRes = null;
       return true;
     }
@@ -28095,43 +28141,11 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
         res.Attach(texture, this.resourcePath);
       }
-    } //  Temporary text texture
-    else if (this.resourcePath.indexOf("text:/") === 0) {
-        if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
-          var split = this.resourcePath.split("/"),
-              text = split[1],
-              options = split[2],
-              _opt = {};
+    } else {
+      var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
 
-          if (options) {
-            var optSplit = options.split(";");
-
-            for (var i = 0; i < optSplit.length; i++) {
-              var [key, value] = optSplit[i].split("=");
-              _opt[key] = value;
-            }
-          }
-
-          var {
-            gl
-          } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
-              canvas = Object(utils__WEBPACK_IMPORTED_MODULE_0__["createTextCanvas"])(text, _opt),
-              _res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"](),
-              _texture = gl.createTexture();
-
-          gl.bindTexture(gl.TEXTURE_2D, _texture);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-          gl.bindTexture(gl.TEXTURE_2D, null);
-
-          this._SetTextureRes(_res);
-
-          _res.Attach(_texture, this.resourcePath);
-        }
-      } else {
-        var _res2 = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
-
-        this._SetTextureRes(_res2);
-      }
+      this._SetTextureRes(_res);
+    }
   }
   /**
    * Apply
@@ -28165,7 +28179,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     if (this.overrides.SetValues(values, opt)) {
       if (!opt || !opt.skipEvents) {
-        this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
+        this.EmitEvent("overrides_modified", this, opt);
       }
     }
   }
@@ -28226,34 +28240,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   OnResEvent(res, err) {
-    if (this.textureRes !== res) return;
-    var {
-      Event
-    } = Tw2TextureParameter;
-
-    switch (res._state) {
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.ERROR:
-        this.EmitEvent(Event.RES_ERROR, this, res, err);
-        res.UnregisterNotification(this);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PURGED:
-        this.EmitEvent(Event.RES_PURGED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.UNLOADED:
-        this.EmitEvent(Event.RES_UNLOADED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.REQUESTED:
-        this.EmitEvent(Event.RES_REQUESTED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PREPARED:
-        this.EmitEvent(Event.RES_PREPARED, this, res);
-        res.UnregisterNotification(this);
-        break;
-    }
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "textureRes", res, err);
   }
   /**
    * Handles listeners added after an event has already been fired
@@ -28266,48 +28253,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   static onListener(textureParameter, eventName, listener, context) {
-    /**
-     * The texture resource
-     * @type {Tw2TextureRes}
-     */
-    var res = textureParameter.textureRes;
-    if (!res) return false;
-    var {
-      Event
-    } = this;
-    var doCall;
-
-    switch (eventName) {
-      case Event.RES_ERROR:
-        if (res.HasErrors()) {
-          listener.call(context, this, res, res.GetLastError());
-          return true;
-        }
-
-        return false;
-
-      case Event.RES_UNLOADED:
-        if (res.IsUnloaded()) doCall = true;
-        break;
-
-      case Event.RES_PURGED:
-        if (res.IsPurged()) doCall = true;
-        break;
-
-      case Event.RES_REQUESTED:
-        if (res.HasRequested()) doCall = true;
-        break;
-
-      case Event.RES_PREPARED:
-        if (res.IsPrepared()) doCall = true;
-    }
-
-    if (doCall) {
-      listener.call(context, this, res);
-      return true;
-    }
-
-    return false;
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(this, "textureRes", eventName, listener, context);
   }
   /**
    * Checks if a value is a valid parameter value
@@ -28319,20 +28265,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   static isValue(a) {
     return Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(a);
   }
-  /**
-   * Event names
-   * @type {*}
-   */
 
-
-}, _class3.Event = {
-  RES_UNLOADED: "res_unloaded",
-  RES_PURGED: "res_purged",
-  RES_ERROR: "res_error",
-  RES_REQUESTED: "res_requested",
-  RES_PREPARED: "res_prepared",
-  RES_REMOVED: "res_removed",
-  OVERRIDES_MODIFIED: "overrides_modified"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -33446,23 +33379,22 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._requestResponseType;
   }
   /**
-   * Checks if the resource is good and keeps it alive
-   * @returns {boolean}
-   */
-
-
-  IsGood() {
-    this.KeepAlive();
-    return this.IsPrepared() || this.IsLoaded();
-  }
-  /**
-   * Checks to see if the resource is loading
+   * Checks if the resource has errors
    * @returns {Boolean}
    */
 
 
-  IsRequested() {
-    return this._state === Tw2Resource.State.REQUESTED;
+  HasErrored() {
+    return this._state === Tw2Resource.State.ERROR;
+  }
+  /**
+   * Checks if the resource has completed all processing
+   * @returns {Boolean}
+   */
+
+
+  HasCompleted() {
+    return this.HasErrored() || this.IsPurged() || this.HasPrepared();
   }
   /**
    * Checks if the resource has been requested
@@ -33471,16 +33403,16 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   HasRequested() {
-    return this._requested !== 0;
+    return this._state === Tw2Resource.State.REQUESTED || this.HasLoaded();
   }
   /**
-   * Checks if the resource has been loaded
-   * @returns {boolean}
+   * Checks if the resource has loaded
+   * @return {boolean}
    */
 
 
-  IsLoaded() {
-    return this._state === Tw2Resource.State.LOADED;
+  HasLoaded() {
+    return this._state === Tw2Resource.State.LOADED || this._state === Tw2Resource.State.PREPARED;
   }
   /**
    * Checks if the resource has been prepared
@@ -33488,8 +33420,18 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
    */
 
 
-  IsPrepared() {
+  HasPrepared() {
     return this._state === Tw2Resource.State.PREPARED;
+  }
+  /**
+   * Checks if the resource is good and keeps it alive
+   * @returns {boolean}
+   */
+
+
+  IsGood() {
+    this.KeepAlive();
+    return this.HasLoaded();
   }
   /**
    * Checks if the resource has been unloaded
@@ -33510,24 +33452,6 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._state === Tw2Resource.State.PURGED;
   }
   /**
-   * Checks if the resource has errors
-   * @returns {Boolean}
-   */
-
-
-  HasErrors() {
-    return this._state === Tw2Resource.State.ERROR;
-  }
-  /**
-   * Checks if the resource has completed all processing
-   * @returns {Boolean}
-   */
-
-
-  HasCompleted() {
-    return this.HasErrors() || this.IsPurged() || this.IsPrepared();
-  }
-  /**
    * Unloads the resource
    * @param {*} [log]
    * @returns {Boolean}
@@ -33544,7 +33468,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   Reload(log) {
-    if (this.IsLoaded() || this.IsPrepared()) {
+    if (this.HasLoaded()) {
       this.Unload({
         hide: true,
         detail: "reloading"
@@ -33616,7 +33540,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   OnError(err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]()) {
-    var wasGood = this.IsLoaded() || this.IsPrepared();
+    var wasGood = this.HasLoaded();
 
     if (!this._errors.includes(err)) {
       this._errors.unshift(err);
@@ -33799,6 +33723,101 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
     return false;
   }
+
+  static parentOnResEvent(parent, target, res, err) {
+    if (!parent[target] !== res) return;
+    var {
+      Event,
+      State
+    } = this;
+
+    switch (res._state) {
+      case State.ERROR:
+        this.EmitEvent(Event.RES_ERROR, parent, res, err);
+        res.UnregisterNotification(parent);
+        break;
+
+      case State.PURGED:
+        this.EmitEvent(Event.RES_PURGED, parent, res);
+        break;
+
+      case State.UNLOADED:
+        this.EmitEvent(Event.RES_UNLOADED, parent, res);
+        break;
+
+      case State.REQUESTED:
+        this.EmitEvent(Event.RES_REQUESTED, parent, res);
+        break;
+
+      case State.LOADED:
+        parent.EmitEvent(Event.RES_LOADED, parent, res);
+        break;
+
+      case Tw2Resource.State.PREPARED:
+        this.EmitEvent(Event.RES_PREPARED, parent, res);
+        res.UnregisterNotification(parent);
+        break;
+    }
+  }
+  /**
+   *
+   * @param parent
+   * @param target
+   * @param eventName
+   * @param listener
+   * @param context
+   * @return {boolean}
+   */
+
+
+  static parentOnListener(parent, target, eventName, listener, context) {
+    /**
+     * The texture resource
+     * @type {Tw2TextureRes}
+     */
+    var res = parent[target];
+    if (!res) return false;
+    var {
+      Event
+    } = Tw2Resource;
+    var doCall;
+
+    switch (eventName) {
+      case Event.RES_ERROR:
+        if (res.HasErrored()) {
+          listener.call(context, this, res, res.GetLastError());
+          return true;
+        }
+
+        return false;
+
+      case Event.RES_UNLOADED:
+        if (res.IsUnloaded()) doCall = true;
+        break;
+
+      case Event.RES_PURGED:
+        if (res.IsPurged()) doCall = true;
+        break;
+
+      case Tw2Resource.RES_REQUESTED:
+        if (res.HasRequested()) doCall = true;
+        break;
+
+      case Event.RES_LOADED:
+        if (res.HasLoaded()) doCall = true;
+        break;
+
+      case Event.RES_PREPARED:
+        if (res.HasPrepared()) doCall = true;
+    }
+
+    if (doCall) {
+      listener.call(context, this, res);
+      return true;
+    }
+
+    return false;
+  }
   /**
    * Resource states
    * @type {*}
@@ -33822,6 +33841,14 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
   PREPARED: "OnResPrepared",
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
+}, _class2.Event = {
+  RES_UNLOADED: "unloaded",
+  RES_PURGED: "purged",
+  RES_ERROR: "error",
+  RES_REQUESTED: "requested",
+  RES_LOADED: "loaded",
+  RES_PREPARED: "prepared",
+  RES_REMOVED: "removed"
 }, _temp)) || _class);
 /**
  * An optional function for when the resource handles it's own loading
@@ -52261,7 +52288,8 @@ var EvePlaneSet = (_dec27 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
         array[vtxOffset + 12] = item.color[0];
         array[vtxOffset + 13] = item.color[1];
         array[vtxOffset + 14] = item.color[2];
-        array[vtxOffset + 15] = item.color[3];
+        array[vtxOffset + 15] = 0; // item.color[3]; Not needed?
+
         array[vtxOffset + 16] = item.layer1Transform[0];
         array[vtxOffset + 17] = item.layer1Transform[1];
         array[vtxOffset + 18] = item.layer1Transform[2];
@@ -53136,7 +53164,8 @@ var EveSpotlightSet = (_dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
             spriteArray[_offset] = _item.spriteColor[0] * _item.spriteIntensity * this.intensity;
             spriteArray[_offset + 1] = _item.spriteColor[1] * _item.spriteIntensity * this.intensity;
             spriteArray[_offset + 2] = _item.spriteColor[2] * _item.spriteIntensity * this.intensity;
-            spriteArray[_offset + 3] = _item.spriteColor[3];
+            spriteArray[_offset + 3] = 0; //item.spriteColor[3]; // Not needed?
+
             spriteArray[_offset + 16] = _item.spriteScale[0] * this._worldSpriteScale;
             spriteArray[_offset + 17] = 1;
             spriteArray[_offset + 18] = 1;
@@ -53144,7 +53173,8 @@ var EveSpotlightSet = (_dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
             spriteArray[_offset] = _item.flareColor[0] * _item.flareIntensity * this.intensity;
             spriteArray[_offset + 1] = _item.flareColor[1] * _item.flareIntensity * this.intensity;
             spriteArray[_offset + 2] = _item.flareColor[2] * _item.flareIntensity * this.intensity;
-            spriteArray[_offset + 3] = _item.flareColor[3];
+            spriteArray[_offset + 3] = 0; //item.flareColor[3]; // Not needed?
+
             spriteArray[_offset + 16] = 1;
             spriteArray[_offset + 17] = _item.spriteScale[1] * this._worldSpriteScale;
             spriteArray[_offset + 18] = _item.spriteScale[2] * this._worldSpriteScale;
@@ -69906,12 +69936,11 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: tw2, tiny */
+/*! exports provided: tw2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tiny", function() { return tiny; });
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description */ "../node_modules/core-js/modules/es.symbol.description.js");
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
@@ -70014,7 +70043,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./global */ "./global/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
 
-/* harmony import */ var wrapped_WrappedClient__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! wrapped/WrappedClient */ "./wrapped/WrappedClient.js");
 
 
 
@@ -70067,8 +70095,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _global__WEBPACK_IMPORTED_MODULE_50__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_49__["config"]);
-
-var tiny = new wrapped_WrappedClient__WEBPACK_IMPORTED_MODULE_51__["WrappedClient"]();
 
 
 /***/ }),
@@ -94286,2214 +94312,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__["Tr2ControllerFloatVariable"]; });
 
 
-
-/***/ }),
-
-/***/ "./wrapped/APIManager.js":
-/*!*******************************!*\
-  !*** ./wrapped/APIManager.js ***!
-  \*******************************/
-/*! exports provided: clearCache, getTypeID, getGraphicID, getResPathFromGraphicID, getResPathFromTypeID, getResPathFromTypeIDAndSkinMaterialID, getResPathFromTypeIDAndSkinID, getSkinMaterialID, getSkinMaterialTypeIDs, getTypeIDSkinIDs, getSkinMaterialSetID, getSkinID, getSkinMaterialSetFromSkinID */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearCache", function() { return clearCache; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeID", function() { return getTypeID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGraphicID", function() { return getGraphicID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromGraphicID", function() { return getResPathFromGraphicID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeID", function() { return getResPathFromTypeID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeIDAndSkinMaterialID", function() { return getResPathFromTypeIDAndSkinMaterialID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getResPathFromTypeIDAndSkinID", function() { return getResPathFromTypeIDAndSkinID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialID", function() { return getSkinMaterialID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialTypeIDs", function() { return getSkinMaterialTypeIDs; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeIDSkinIDs", function() { return getTypeIDSkinIDs; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialSetID", function() { return getSkinMaterialSetID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinID", function() { return getSkinID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSkinMaterialSetFromSkinID", function() { return getSkinMaterialSetFromSkinID; });
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var sof_EveSOFData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sof/EveSOFData */ "./sof/EveSOFData.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-var ESI_ROOT = "https://esi.evetech.net",
-    ESI_VERSION = "latest",
-    ESI_DATA_SOURCE = "tranquility",
-    ESI_LANGUAGE = "en-us";
-var EsiUniverse = {
-  ASTEROID_BELTS: "universe/asteroid_belts",
-  CATEGORIES: "universe/categories",
-  CONSTELLATIONS: "universe/constellations",
-  FACTIONS: "universe/factions",
-  GRAPHICS: "universe/graphics",
-  GROUPS: "universe/groups",
-  MOONS: "universe/moons",
-  PLANETS: "universe/planets",
-  RACES: "universe/races",
-  REGIONS: "universe/regions",
-  STARGATES: "universe/stargates",
-  STARS: "universe/stars",
-  STATIONS: "universe/stations",
-  STRUCTURES: "universe/structures",
-  SYSTEM_KILLS: "universe/system_kills",
-  SYSTEMS: "universe/systems",
-  TYPES: "universe/types",
-  NAMES: "universe/names"
-};
-/**
- * Builds an esi url
- * @param {String} endpoint
- * @param {*} [params]
- * @returns {String}
- */
-
-function buildESIUrlString(endpoint, params) {
-  params = Object.assign({
-    language: ESI_LANGUAGE,
-    datasource: ESI_DATA_SOURCE
-  }, params);
-  var keys = Object.keys(params).sort(),
-      url_string = "".concat(ESI_ROOT, "/").concat(ESI_VERSION, "/").concat(endpoint, "/");
-
-  for (var i = 0; i < keys.length; i++) {
-    url_string += "".concat(i === 0 ? "?" : "&").concat(keys[i], "=").concat(params[keys[i]]);
-  }
-
-  return url_string.toLowerCase();
-}
-/**
- * Cache all responses for now
- * @type {Map<String, Promise>}
- */
-
-
-var cache = new Map();
-/**
- * Clears cache
- */
-
-function clearCache() {
-  cache.clear();
-}
-/**
- * Gets an id'd data from an api route
- * @param {String} route
- * @param {Number} id
- * @param {*} [params]
- * @param {function} [extender]
- * @returns {Promise<Object>}
- */
-
-function getIDFromESIRoute(_x, _x2, _x3, _x4) {
-  return _getIDFromESIRoute.apply(this, arguments);
-}
-/**
- * Gets type from it's id
- * @param {Number} typeID
- * @param {Object} [params]
- * @returns {Promise<Object>}
- */
-
-
-function _getIDFromESIRoute() {
-  _getIDFromESIRoute = _asyncToGenerator(function* (route, id, params, extender) {
-    var url = buildESIUrlString("".concat(route, "/").concat(id), params);
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
-    return yield cache.get(url);
-  });
-  return _getIDFromESIRoute.apply(this, arguments);
-}
-
-function getTypeID(_x5, _x6) {
-  return _getTypeID.apply(this, arguments);
-}
-/**
- * Gets graphic by it's id
- * @param {Number} graphicID
- * @param {Object} [params]
- * @returns {Promise<Object>}
- */
-
-function _getTypeID() {
-  _getTypeID = _asyncToGenerator(function* (typeID, params) {
-    return yield getIDFromESIRoute(EsiUniverse.TYPES, typeID, params);
-  });
-  return _getTypeID.apply(this, arguments);
-}
-
-function getGraphicID(_x7, _x8) {
-  return _getGraphicID.apply(this, arguments);
-}
-/**
- * Gets a resPath from a graphic id
- * @param {Number} graphicID
- * @param {Object} [params]
- * @returns {Promise<String>}
- */
-
-function _getGraphicID() {
-  _getGraphicID = _asyncToGenerator(function* (graphicID, params) {
-    return yield getIDFromESIRoute(EsiUniverse.GRAPHICS, graphicID, params);
-  });
-  return _getGraphicID.apply(this, arguments);
-}
-
-function getResPathFromGraphicID(_x9, _x10) {
-  return _getResPathFromGraphicID.apply(this, arguments);
-}
-/**
- * Gets a resPath from a type id
- * @param {Number} typeID
- * @param {Object} [params]
- * @returns {Promise<String>}
- */
-
-function _getResPathFromGraphicID() {
-  _getResPathFromGraphicID = _asyncToGenerator(function* (graphicID, params) {
-    if (!graphicID) throw new Error("Graphic ID not found");
-    var {
-      sof_dna,
-      graphic_file
-    } = yield getIDFromESIRoute(EsiUniverse.GRAPHICS, graphicID, params);
-    return sof_dna || graphic_file || "";
-  });
-  return _getResPathFromGraphicID.apply(this, arguments);
-}
-
-function getResPathFromTypeID(_x11, _x12) {
-  return _getResPathFromTypeID.apply(this, arguments);
-} //------------------------------[ The below function require a custom api to work]----------------------------------//
-
-function _getResPathFromTypeID() {
-  _getResPathFromTypeID = _asyncToGenerator(function* (typeID, params) {
-    var {
-      graphic_id
-    } = yield getIDFromESIRoute(EsiUniverse.TYPES, typeID, params);
-    return yield getResPathFromGraphicID(graphic_id);
-  });
-  return _getResPathFromTypeID.apply(this, arguments);
-}
-
-function getResPathFromTypeIDAndSkinMaterialID(_x13, _x14, _x15) {
-  return _getResPathFromTypeIDAndSkinMaterialID.apply(this, arguments);
-}
-
-function _getResPathFromTypeIDAndSkinMaterialID() {
-  _getResPathFromTypeIDAndSkinMaterialID = _asyncToGenerator(function* (typeID, skinMaterialID, name) {
-    var dna = yield getResPathFromTypeID(typeID),
-        {
-      materialSetID
-    } = yield getSkinMaterialID(skinMaterialID),
-        set = yield getSkinMaterialSetID(materialSetID); // Can't get a name...
-
-    name = name || set.description.split("(")[0];
-    var parts = dna.split(":"),
-        commands = {};
-
-    for (var i = 3; i < parts.length; ++i) {
-      try {
-        var subParts = parts[i].split("?");
-        commands[subParts[0].toUpperCase()] = subParts[1].split(";");
-      } catch (err) {
-        throw new sof_EveSOFData__WEBPACK_IMPORTED_MODULE_1__["ErrSOFDNAFormatInvalid"]({
-          dna
-        });
-      }
-    }
-
-    var hull = parts[0],
-        faction = set.sofFactionName || parts[1],
-        race = parts[2],
-        mesh = commands["MESH"] || commands["MATERIAL"],
-        pattern = commands["PATTERN"],
-        resPathInsert = set.resPathInsert ? set.resPathInsert : commands["RESPATHINSERT"];
-
-    if (set.sofPatternName || set.patternMaterial1 || set.patternMaterial2) {
-      pattern = [set.sofPatternName || "none", set.patternMaterial1 || "none", set.patternMaterial1 || "none"];
-    }
-
-    if (set.material1 || set.material2 || set.material3 || set.material4) {
-      mesh = [set.material1 || "none", set.material2 || "none", set.material3 || "none", set.material4 || "none"];
-    } // Build string
-
-
-    var sof = "".concat(hull, ":").concat(faction, ":").concat(race);
-    if (mesh) sof += ":material?".concat(mesh.join(";"));
-    if (pattern) sof += ":pattern?".concat(pattern.join(";"));
-
-    if (resPathInsert && resPathInsert.toLowerCase() !== "none") {
-      sof += ":respathinsert?".concat(resPathInsert);
-    }
-
-    return {
-      name,
-      dna: sof.toLowerCase()
-    };
-  });
-  return _getResPathFromTypeIDAndSkinMaterialID.apply(this, arguments);
-}
-
-function getResPathFromTypeIDAndSkinID(_x16, _x17) {
-  return _getResPathFromTypeIDAndSkinID.apply(this, arguments);
-}
-
-function _getResPathFromTypeIDAndSkinID() {
-  _getResPathFromTypeIDAndSkinID = _asyncToGenerator(function* (typeID, skinID) {
-    var {
-      skinMaterialID,
-      internalName
-    } = yield getSkinID(skinID);
-    return getResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID, internalName);
-  });
-  return _getResPathFromTypeIDAndSkinID.apply(this, arguments);
-}
-
-function getSkinMaterialID(_x18) {
-  return _getSkinMaterialID.apply(this, arguments);
-}
-
-function _getSkinMaterialID() {
-  _getSkinMaterialID = _asyncToGenerator(function* (materialTypeID) {
-    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinMaterials/".concat(materialTypeID));
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
-    return yield cache.get(url);
-  });
-  return _getSkinMaterialID.apply(this, arguments);
-}
-
-function getSkinMaterialTypeIDs(_x19) {
-  return _getSkinMaterialTypeIDs.apply(this, arguments);
-}
-
-function _getSkinMaterialTypeIDs() {
-  _getSkinMaterialTypeIDs = _asyncToGenerator(function* (skinMaterialID) {
-    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/typesBySkinMaterial/".concat(skinMaterialID));
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json").catch(err => []));
-    return yield cache.get(url);
-  });
-  return _getSkinMaterialTypeIDs.apply(this, arguments);
-}
-
-function getTypeIDSkinIDs(_x20) {
-  return _getTypeIDSkinIDs.apply(this, arguments);
-}
-
-function _getTypeIDSkinIDs() {
-  _getTypeIDSkinIDs = _asyncToGenerator(function* (typeID) {
-    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinsByType/".concat(typeID));
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json").catch(err => []));
-    return yield cache.get(url);
-  });
-  return _getTypeIDSkinIDs.apply(this, arguments);
-}
-
-function getSkinMaterialSetID(_x21) {
-  return _getSkinMaterialSetID.apply(this, arguments);
-}
-
-function _getSkinMaterialSetID() {
-  _getSkinMaterialSetID = _asyncToGenerator(function* (skinMaterialID) {
-    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skinMaterialSets/".concat(skinMaterialID));
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
-    return yield cache.get(url);
-  });
-  return _getSkinMaterialSetID.apply(this, arguments);
-}
-
-function getSkinID(_x22) {
-  return _getSkinID.apply(this, arguments);
-}
-
-function _getSkinID() {
-  _getSkinID = _asyncToGenerator(function* (skinID) {
-    var url = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].BuildUrl("cdn:/static/skins/".concat(skinID));
-    if (!cache.has(url)) cache.set(url, global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Fetch(url, "json"));
-    return yield cache.get(url);
-  });
-  return _getSkinID.apply(this, arguments);
-}
-
-function getSkinMaterialSetFromSkinID(_x23) {
-  return _getSkinMaterialSetFromSkinID.apply(this, arguments);
-}
-
-function _getSkinMaterialSetFromSkinID() {
-  _getSkinMaterialSetFromSkinID = _asyncToGenerator(function* (skinID) {
-    var {
-      skinMaterialID
-    } = yield getSkinID(skinID);
-    var {
-      materialSetID
-    } = yield getSkinMaterialID(materialSetID);
-    return yield getSkinMaterialSetID(skinMaterialID);
-  });
-  return _getSkinMaterialSetFromSkinID.apply(this, arguments);
-}
-
-/***/ }),
-
-/***/ "./wrapped/WrappedCamera.js":
-/*!**********************************!*\
-  !*** ./wrapped/WrappedCamera.js ***!
-  \**********************************/
-/*! exports provided: WrappedCamera */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedCamera", function() { return WrappedCamera; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! math */ "./global/math/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-
-
-
-var WrappedCamera = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedCamera"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class WrappedCamera extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
-  /**
-   * Constructor
-   * @param {HTMLCanvasElement}  element
-   * @param {Object} [values]
-   */
-  constructor(element, values) {
-    if (!(element instanceof HTMLCanvasElement)) {
-      throw new ReferenceError("Invalid element");
-    }
-
-    super();
-
-    _initializerDefineProperty(this, "distance", _descriptor, this);
-
-    _initializerDefineProperty(this, "minDistance", _descriptor2, this);
-
-    _initializerDefineProperty(this, "maxDistance", _descriptor3, this);
-
-    _initializerDefineProperty(this, "fov", _descriptor4, this);
-
-    _initializerDefineProperty(this, "rotationX", _descriptor5, this);
-
-    _initializerDefineProperty(this, "rotationY", _descriptor6, this);
-
-    _initializerDefineProperty(this, "poi", _descriptor7, this);
-
-    _initializerDefineProperty(this, "nearPlane", _descriptor8, this);
-
-    _initializerDefineProperty(this, "farPlane", _descriptor9, this);
-
-    this._onShift = null;
-    this._shift = 0;
-    this._shiftStage = 0;
-    this._shiftX = null;
-    this._dragX = 0;
-    this._dragY = 0;
-    this._lastRotationX = 0;
-    this._lastRotationY = 0;
-    this._rotationSpeedX = 0;
-    this._rotationSpeedY = 0;
-    this._additionalRotationX = 0;
-    this._additionalRotationY = 0;
-    this._measureRotation = null;
-    this._moveEvent = null;
-    this._upEvent = null;
-    this._prevScale = null;
-    element.addEventListener("mousedown", event => this._DragStart(event), false);
-    element.addEventListener("touchstart", event => this._DragStart(event), true);
-    window.addEventListener("DOMMouseScroll", e => this._WheelHandler(e, element), false);
-    window.addEventListener("mousewheel", e => this._WheelHandler(e, element), false);
-    if (values) this.SetValues(values);
-  }
-  /**
-   *
-   * @param obj
-   * @param,multiplier
-   */
-
-
-  Focus(obj, multiplier = 3) {
-    if (obj.GetLongAxis) {
-      this.distance = obj.GetLongAxis() * multiplier || 1000;
-    }
-
-    obj.GetWorldTranslation(this.poi);
-    return this;
-  }
-  /**
-   * Adds a on shift handler
-   * @param {Function} func
-   */
-
-
-  OnShift(func) {
-    this._onShift = func;
-  }
-  /**
-   * Gets the camera's view matrix
-   * @param {mat4} [out=mat4.create()]
-   * @return {mat4} out
-   */
-
-
-  GetView(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create()) {
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].identity(out);
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, -this._shift);
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [0, 0.0, -this.distance]);
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateX(out, out, this.rotationY + this._additionalRotationY);
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].rotateY(out, out, this.rotationX + this._additionalRotationX);
-    math__WEBPACK_IMPORTED_MODULE_2__["mat4"].translate(out, out, [-this.poi[0], -this.poi[1], -this.poi[2]]);
-    return out;
-  }
-  /**
-   * Gets the cameras projection matrix
-   * @param  {mat4} [out=mat4.create()]
-   * @param {number} aspect - The canvas's aspect ratio
-   * @returns {mat4}
-   */
-
-
-  GetProjection(out = math__WEBPACK_IMPORTED_MODULE_2__["mat4"].create(), aspect) {
-    var fH = Math.tan(this.fov / 360 * Math.PI) * this.nearPlane,
-        fW = fH * aspect;
-    return math__WEBPACK_IMPORTED_MODULE_2__["mat4"].frustum(out, -fW, fW, -fH, fH, this.nearPlane, this.farPlane > 0 ? this.farPlane : this.distance * 2);
-  }
-  /**
-   * Per frame update
-   * @param {Number} dt
-   */
-
-
-  Update(dt) {
-    this.rotationX += this._rotationSpeedX * dt;
-    this._rotationSpeedX *= 0.9;
-    this.rotationY += this._rotationSpeedY * dt;
-    this._rotationSpeedY *= 0.9;
-    if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
-    if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
-
-    if (this._shiftStage === 2) {
-      this._shift += this._shift * dt * 5;
-
-      if (Math.abs(this._shift) > 2) {
-        this._onShift(1, this._shift > 0); //this.shift = -this.shift;
-        //this._shiftOut = false;
-
-      }
-    } else if (this._shiftStage === 1) {
-      this._shift -= this._shift * Math.min(dt, 0.5) * 2;
-    }
-
-    this.EmitEvent("update", dt);
-    if (this.post) this.post.Update(dt);
-  }
-  /**
-   * Renders the camera's post effects
-   * @param {Number} dt
-   * @return {Boolean}
-   */
-
-
-  Render(dt) {
-    return this.post ? this.post.Render(dt) : false;
-  }
-  /**
-   * Drag start handler
-   * @param event
-   * @private
-   */
-
-
-  _DragStart(event) {
-    if (!event.touches && !this._onShift && event.button !== 0) {
-      return;
-    }
-
-    if (this._moveEvent || this._upEvent) {
-      return;
-    }
-
-    if (this._moveEvent === null) {
-      document.addEventListener("mousemove", this._moveEvent = event => this._DragMove(event), true);
-      document.addEventListener("touchmove", this._moveEvent, true);
-    }
-
-    if (this._upEvent === null) {
-      document.addEventListener("mouseup", this._upEvent = event => this._DragStop(event), true);
-      document.addEventListener("touchend", this._upEvent, true);
-    }
-
-    event.preventDefault();
-
-    if (event.touches) {
-      event.screenX = event.touches[0].screenX;
-      event.screenY = event.touches[0].screenY;
-    }
-
-    this._dragX = event.screenX;
-    this._dragY = event.screenY;
-    this._shiftX = null;
-    this._rotationSpeedX = 0;
-    this._lastRotationX = this.rotationX;
-    this._rotationSpeedY = 0;
-    this._lastRotationY = this.rotationY;
-    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
-  }
-  /**
-   * Measures rotation
-   * @private
-   */
-
-
-  _MeasureRotation() {
-    this._lastRotationX = this.rotationX;
-    this._lastRotationY = this.rotationY;
-    this._measureRotation = setTimeout(() => this._MeasureRotation(), 500);
-  }
-  /**
-   * Drag move handler
-   * @param event
-   * @private
-   */
-
-
-  _DragMove(event) {
-    if (this._onShift && (event.touches && event.touches.length > 2 || !event.touches && event.button !== 0)) {
-      this._shiftStage = 0;
-      event.preventDefault();
-
-      if (event.touches) {
-        event.screenX = event.screenY = 0;
-
-        for (var i = 0; i < event.touches.length; ++i) {
-          event.screenX += event.touches[i].screenX;
-          event.screenY += event.touches[i].screenY;
-        }
-
-        event.screenX /= event.touches.length;
-        event.screenY /= event.touches.length;
-      }
-
-      if (this._shiftX !== null) {
-        this._shift += (event.screenX - this._shiftX) / global_tw2__WEBPACK_IMPORTED_MODULE_1__["device"].viewportWidth * 2;
-      }
-
-      this._shiftX = event.screenX;
-      return;
-    }
-
-    this._shiftX = null;
-
-    if (event.touches) {
-      if (event.touches.length > 1) {
-        event.preventDefault();
-        var dx = event.touches[0].screenX - event.touches[1].screenX,
-            dy = event.touches[0].screenY - event.touches[1].screenY,
-            scale = Math.sqrt(dx * dx + dy * dy);
-
-        if (this._prevScale != null) {
-          var delta = (this._prevScale - scale) * 0.03;
-          this.distance = this.distance + delta * this.distance * 0.1;
-          if (this.distance < this.minDistance) this.distance = this.minDistance;
-          if (this.distance > this.maxDistance) this.distance = this.maxDistance;
-        }
-
-        this._prevScale = scale;
-        return;
-      }
-
-      event.screenX = event.touches[0].screenX;
-      event.screenY = event.touches[0].screenY;
-    }
-
-    if (typeof event.screenX !== "undefined") {
-      var dRotation = -(this._dragX - event.screenX) * 0.01;
-      this.rotationX += dRotation;
-      this._dragX = event.screenX;
-      dRotation = -(this._dragY - event.screenY) * 0.01;
-      this.rotationY += dRotation;
-      this._dragY = event.screenY;
-      if (this.rotationY < -Math.PI / 2) this.rotationY = -Math.PI / 2;
-      if (this.rotationY > Math.PI / 2) this.rotationY = Math.PI / 2;
-    }
-  }
-  /**
-   * Drag stop handler
-   * @param event
-   * @private
-   */
-
-
-  _DragStop(event) {
-    clearTimeout(this._measureRotation);
-    document.removeEventListener("mousemove", this._moveEvent, true);
-    document.removeEventListener("mouseup", this._upEvent, true);
-    document.removeEventListener("touchmove", this._moveEvent, true);
-    document.removeEventListener("touchend", this._upEvent, true);
-    this._moveEvent = null;
-    this._upEvent = null;
-    var dRotation = this.rotationX - this._lastRotationX;
-    this._rotationSpeedX = dRotation * 0.5;
-    dRotation = this.rotationY - this._lastRotationY;
-    this._rotationSpeedY = dRotation * 0.5;
-    this._prevScale = null;
-
-    if (this._onShift) {
-      if (Math.abs(this._shift) > 0.5) {
-        this._shiftStage = 2;
-        this.onShift(0, this._shift > 0);
-      } else {
-        this._shiftStage = 1;
-      }
-    }
-  }
-  /**
-   * Mouse wheel handler
-   * @param event
-   * @param element
-   * @returns {boolean}
-   * @private
-   */
-
-
-  _WheelHandler(event, element) {
-    /* For IE. */
-    if (!event) event = window.event;
-    var source = event.srcElement ? event.srcElement : event.target;
-    if (source !== element) return false;
-    var delta = 0;
-    /* IE/Opera. */
-
-    if (event.wheelDelta) {
-      delta = event.wheelDelta / 120;
-      /** In Opera 9, delta differs in sign as compared to IE.*/
-
-      if (window.opera) delta = -delta;
-    }
-    /* Mozilla case. In Mozilla, sign of delta is different than in IE. Also, delta is multiple of 3. */
-    else if (event.detail) {
-        delta = -event.detail / 3;
-      }
-    /** If delta is nonzero, handle it.
-     * Basically, delta is now positive if wheel was scrolled up,
-     * and negative, if wheel was scrolled down.
-     */
-
-
-    if (delta) {
-      this.distance = this.distance + delta * this.distance * 0.1;
-
-      if (this.distance < this.minDistance) {
-        this.distance = this.minDistance;
-      }
-    }
-    /** Prevent default actions caused by mouse wheel.
-     * That might be ugly, but we handle scrolls somehow
-     * anyway, so don't bother here..
-     */
-    //if (event.preventDefault) event.preventDefault();
-
-
-    event.returnValue = false;
-    return false;
-  }
-  /**
-   * Fetches a camera async
-   * TODO: Load geometry to represent the camera
-   * @param {Object} options
-   * @return {Promise<WrappedCamera>}
-   */
-
-
-  static fetch(options = {}) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      if (!Object(utils__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(options)) {
-        options = {
-          canvas: options
-        };
-      }
-
-      var {
-        canvas
-      } = options,
-          values = _objectWithoutProperties(options, ["canvas"]);
-
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(canvas)) canvas = document.getElementById(canvas);
-      return new _this(canvas, values);
-    })();
-  }
-
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "distance", [_dec2], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "minDistance", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return -1;
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "maxDistance", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1000000;
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "fov", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 60;
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "rotationX", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "rotationY", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "poi", [_dec8], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_2__["vec3"].create();
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "nearPlane", [_dec9], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "farPlane", [_dec10], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-})), _class2)) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedClient.js":
-/*!**********************************!*\
-  !*** ./wrapped/WrappedClient.js ***!
-  \**********************************/
-/*! exports provided: WrappedClient */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedClient", function() { return WrappedClient; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
-/* harmony import */ var _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedCamera */ "./wrapped/WrappedCamera.js");
-/* harmony import */ var _WrappedScene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedScene */ "./wrapped/WrappedScene.js");
-/* harmony import */ var _APIManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./APIManager */ "./wrapped/APIManager.js");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-
-
-
-
-
-var eveSof;
-class WrappedClient extends core__WEBPACK_IMPORTED_MODULE_3__["Tw2EventEmitter"] {
-  constructor(...args) {
-    super(...args);
-    this.scene = null;
-    this.camera = null;
-    this.post = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2PostEffectManager"]();
-    this.math = math__WEBPACK_IMPORTED_MODULE_1__;
-    this.util = utils__WEBPACK_IMPORTED_MODULE_0__;
-    this.options = {
-      update: true,
-      render: true,
-      postEffects: true,
-      clearColor: math__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 1),
-      colorMask: math__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 0)
-    };
-  }
-
-  /**
-   * Reference to the tw2 library
-   * @return {Tw2Library}
-   */
-  get tw2() {
-    return global__WEBPACK_IMPORTED_MODULE_2__["tw2"];
-  }
-  /**
-   * Gets the current delta time
-   * @return {*}
-   */
-
-
-  get dt() {
-    return global__WEBPACK_IMPORTED_MODULE_2__["device"].dt;
-  }
-  /**
-   * Gets the current frame
-   * @return {*}
-   */
-
-
-  get frame() {
-    return global__WEBPACK_IMPORTED_MODULE_2__["device"].frameCounter;
-  }
-  /**
-   * Gets the 3d canvas
-   * @return {*}
-   */
-
-
-  get canvas3d() {
-    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas;
-  }
-  /**
-   * Gets the 2d canvas
-   * @return {*}
-   */
-
-
-  get canvas2d() {
-    return global__WEBPACK_IMPORTED_MODULE_2__["device"].canvas2d;
-  }
-  /**
-   * Initializes the client
-   * @param {Object} options
-   * @returns {Scene|undefined}
-   */
-
-
-  Initialize(options = {}) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      var {
-        client,
-        render,
-        scene,
-        camera
-      } = options,
-          opt = _objectWithoutProperties(options, ["client", "render", "scene", "camera"]);
-
-      if (client) Object(utils__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(_this.options, client, Object.keys(_this.options));
-      if (!render) render = dt => _this.Render(dt);
-      global__WEBPACK_IMPORTED_MODULE_2__["tw2"].Initialize(_objectSpread({
-        render
-      }, opt)); // Force load the sof
-
-      yield WrappedClient.fetchEveSOF(); // Quick setup
-
-      if (camera) yield _this.FetchCamera(camera);
-      if (scene) yield _this.FetchScene(scene);
-      return _this;
-    })();
-  }
-  /**
-   * Per frame render
-   * @param {Number} dt
-   * @returns {Boolean} true
-   */
-
-
-  Render(dt) {
-    var {
-      render,
-      update,
-      postEffects,
-      colorMask
-    } = this.options;
-    var {
-      camera,
-      scene,
-      post
-    } = this;
-
-    if (update && scene) {
-      this.EmitEvent("update", dt);
-      if (camera) camera.Update(dt);
-      if (scene) scene.Update(dt);
-
-      if (render) {
-        var {
-          gl,
-          viewportAspect,
-          viewportWidth,
-          viewportHeight,
-          RM_OPAQUE
-        } = global__WEBPACK_IMPORTED_MODULE_2__["device"];
-        var {
-          clearColor
-        } = scene.wrapped;
-        this.EmitEvent("pre_render", dt);
-        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetStandardStates(RM_OPAQUE);
-        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetProjection(camera.GetProjection([], viewportAspect));
-        global__WEBPACK_IMPORTED_MODULE_2__["device"].SetView(camera.GetView([]));
-        gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        gl.clearDepth(1.0);
-        gl.viewport(0, 0, viewportWidth, viewportHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        this.EmitEvent("pre_scene_render", dt);
-        scene.Render(dt);
-        this.EmitEvent("post_scene_render", dt);
-
-        if (!post || postEffects && !post.Render()) {
-          gl.colorMask(!!colorMask[0], !!colorMask[1], !!colorMask[2], !!colorMask[3]);
-          gl.clearColor(0, 0, 0, 1);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.colorMask(true, true, true, true);
-        }
-      }
-    }
-
-    this.EmitEvent("post_render", dt);
-    return true;
-  }
-  /**
-   * Fetches all type ids for a skin material ID
-   * @param {String} skinMaterialID
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSkinMaterialTypeIDs(skinMaterialID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinMaterialTypeIDs"])(skinMaterialID);
-    })();
-  }
-  /**
-   * Fetches all skin ids for a type
-   * @param {Number} typeID
-   * @return {Promise<Array>}
-   */
-
-
-  FetchTypeIDSkinIDs(typeID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeIDSkinIDs"])(typeID);
-    })();
-  }
-  /**
-   *
-   * @param skinID
-   * @return {Promise<*>}
-   */
-
-
-  FetchSkinID(skinID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getSkinID"])(skinID);
-    })();
-  }
-  /**
-   *
-   * @param typeID
-   * @return {Promise<Object>}
-   */
-
-
-  FetchTypeID(typeID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getTypeID"])(typeID);
-    })();
-  }
-  /**
-   *
-   * @param graphicID
-   * @return {Promise<Object>}
-   */
-
-
-  FetchGraphicID(graphicID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getGraphicID"])(graphicID);
-    })();
-  }
-  /**
-   *
-   * @param typeID
-   * @param skinMaterialID
-   * @return {Promise<{dna: string, name: *}>}
-   */
-
-
-  FetchResPathFromTypeIDAndSkinMaterialID(typeID, skinMaterialID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
-    })();
-  }
-  /**
-   *
-   * @param typeID
-   * @param skinID
-   * @return {Promise<{dna: string, name: *}>}
-   */
-
-
-  FetchResPathFromTypeIDAndSkinID(typeID, skinID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
-    })();
-  }
-  /**
-   *
-   * @param typeID
-   * @return {Promise<String>}
-   */
-
-
-  FetchResPathFromTypeID(typeID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromTypeID"])(typeID);
-    })();
-  }
-  /**
-   *
-   * @param graphicID
-   * @return {Promise<String>}
-   */
-
-
-  FetchResPathFromGraphicID(graphicID) {
-    return _asyncToGenerator(function* () {
-      return Object(_APIManager__WEBPACK_IMPORTED_MODULE_6__["getResPathFromGraphicID"])(graphicID);
-    })();
-  }
-  /**
-   * Fetches the  space  object factory
-   * @return {Promise<EveSOFData>}
-   */
-
-
-  FetchSOF() {
-    return _asyncToGenerator(function* () {
-      return WrappedClient.fetchEveSOF();
-    })();
-  }
-  /**
-   * Fetches sof pattern names for a given hull;
-   * @param {String} hull
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSOFHullPatterns(hull) {
-    var _this2 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _this2.FetchSOF();
-      return eveSof.GetHullPatternNames(hull);
-    })();
-  }
-  /**
-   * Fetches sof hull names
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSOFHulls() {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _this3.FetchSOF();
-      return eveSof.GetHullNames([]);
-    })();
-  }
-  /**
-   * Fetches sof faction names
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSOFFactions() {
-    var _this4 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _this4.FetchSOF();
-      return eveSof.GetFactionNames([]);
-    })();
-  }
-  /**
-   * Fetches sof race names
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSOFRaces() {
-    var _this5 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _this5.FetchSOF();
-      return eveSof.GetRaceNames([]);
-    })();
-  }
-  /**
-   * Fetches sof material names
-   * @return {Promise<Array>}
-   */
-
-
-  FetchSOFMaterials() {
-    var _this6 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _this6.FetchSOF();
-      return eveSof.GetMaterialNames([]);
-    })();
-  }
-  /**
-   * Fetches a scene async
-   * @param {Object} options
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedScene>}
-   */
-
-
-  FetchScene(options, doNotAdd) {
-    var _this7 = this;
-
-    return _asyncToGenerator(function* () {
-      var scene = yield _WrappedScene__WEBPACK_IMPORTED_MODULE_5__["WrappedScene"].fetch(options);
-      if (!doNotAdd) _this7.SetScene(scene);
-      return scene;
-    })();
-  }
-  /**
-   * Fetches a camera async
-   * @param {Object} [options={}]
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedCamera>}
-   */
-
-
-  FetchCamera(options = {}, doNotAdd) {
-    var _this8 = this;
-
-    return _asyncToGenerator(function* () {
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
-        options = {
-          canvas: options
-        };
-      }
-
-      if (!options.canvas) {
-        options.canvas = _this8.canvas2d ? _this8.canvas2d : _this8.canvas3d;
-      }
-
-      var camera = yield _WrappedCamera__WEBPACK_IMPORTED_MODULE_4__["WrappedCamera"].fetch(options);
-      if (!doNotAdd) _this8.SetCamera(camera);
-      return camera;
-    })();
-  }
-  /**
-   * Sets the current scene
-   * @param {WrappedScene} scene
-   * @return {WrappedClient}
-   */
-
-
-  SetScene(scene) {
-    if (this.scene !== scene) {
-      if (this.scene) this.EmitEvent("scene_removed", this.scene);
-      this.scene = scene;
-      this.EmitEvent("scene_added", scene);
-    }
-
-    return this;
-  }
-  /**
-   * Sets the current camera
-   * @param {WrappedCamera} camera
-   * @return {WrappedClient}
-   */
-
-
-  SetCamera(camera) {
-    if (this.camera !== camera) {
-      if (this.camera) this.EmitEvent("camera_removed", this.camera);
-      this.camera = camera;
-      this.EmitEvent("camera_added", camera);
-    }
-
-    return this;
-  }
-  /**
-   * Fetches the latest eve sof
-   * @return {Promise<EveSOFData>}
-   */
-
-
-  static fetchEveSOF() {
-    return _asyncToGenerator(function* () {
-      if (!eveSof) {
-        eveSof = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(WrappedClient.SpaceObjectFactoryPath);
-      }
-
-      return eveSof;
-    })();
-  }
-  /**
-   * Path to the latest space object factory
-   * @type {string}
-   */
-
-
-}
-WrappedClient.SpaceObjectFactoryPath = "cdn:/dx9/model/spaceobjectfactory/data.black";
-
-/***/ }),
-
-/***/ "./wrapped/WrappedGenericObject.js":
-/*!*****************************************!*\
-  !*** ./wrapped/WrappedGenericObject.js ***!
-  \*****************************************/
-/*! exports provided: WrappedGenericObject */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedGenericObject", function() { return WrappedGenericObject; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Transform */ "./core/Tw2Transform.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-
-
-
-
-var WrappedGenericObject = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedGenericObject"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class WrappedGenericObject extends core_Tw2Transform__WEBPACK_IMPORTED_MODULE_3__["Tw2Transform"] {
-  constructor(...args) {
-    super(...args);
-
-    _initializerDefineProperty(this, "wrapped", _descriptor, this);
-
-    _initializerDefineProperty(this, "custom", _descriptor2, this);
-  }
-
-  /**
-   * Gets the object's visibility
-   * @return {Boolean}
-   */
-  get display() {
-    return this.wrapped.display;
-  }
-  /**
-   * Sets the object's visibility
-   * @param {Boolean} bool
-   */
-
-
-  set display(bool) {
-    this.wrapped.display = bool;
-  }
-  /**
-   * Gets the object's long axis
-   * @return {number}
-   */
-
-
-  GetLongAxis() {
-    if ("boundingSphereRadius" in this.wrapped) {
-      var mat4_0 = this.GetWorldTransform([]),
-          sph3_0 = math__WEBPACK_IMPORTED_MODULE_1__["sph3"].fromPositionRadius([], this.wrapped.boundingSphereCenter, this.wrapped.boundingSphereRadius);
-      math__WEBPACK_IMPORTED_MODULE_1__["sph3"].transformMat4(sph3_0, sph3_0, mat4_0);
-      return Math.round(sph3_0[3] * 2);
-    }
-
-    return 0;
-  }
-  /**
-   * Fires on world transform modified
-   * @param {mat4} world
-   */
-
-
-  OnWorldTransformModified(world) {
-    this.wrapped.SetTransform(world);
-    this.EmitEvent("transform_modified");
-  }
-  /**
-   * Per frame update
-   * @param {Number} dt
-   */
-
-
-  Update(dt) {
-    this.EmitEvent("update", dt);
-  }
-  /**
-   * Gets the object's resources
-   * @param {Array} [out=[]]
-   * @return {Array} out
-   */
-
-
-  GetResources(out = []) {
-    return this.wrapped.GetResources(out);
-  }
-  /**
-   * Fires on transform updates
-   * @param {mat4} world
-   */
-
-
-  _OnTransformUpdated(world) {
-    this.wrapped.SetTransform(world);
-  }
-  /**
-   * Fetches object sync
-   * @param {Object} values
-   * @param {Object} opt
-   */
-
-
-  static from(values, opt) {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
-  }
-  /**
-   * Fetches object async
-   * @param {Object} values
-   * @param {EveSOFData} eveSof
-   * @return {Promise<*>}
-   */
-
-
-  static fetch(values, eveSof) {
-    return _asyncToGenerator(function* () {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]();
-    })();
-  }
-
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "wrapped", [_dec2], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "custom", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return {};
-  }
-})), _class2)) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedLensflare.js":
-/*!*************************************!*\
-  !*** ./wrapped/WrappedLensflare.js ***!
-  \*************************************/
-/*! exports provided: WrappedLensflare */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedLensflare", function() { return WrappedLensflare; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/effect/EveLensflare */ "./eve/effect/EveLensflare.js");
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _class;
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var WrappedLensflare = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedLensflare"), _dec(_class = class WrappedLensflare extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
-  /**
-   * Constructor
-   * @param {WrappedLensflare} wrapped
-   * @param {Object} [values]
-   */
-  constructor(wrapped, values) {
-    if (!(wrapped instanceof eve_effect_EveLensflare__WEBPACK_IMPORTED_MODULE_1__["EveLensflare"])) {
-      throw new ReferenceError("Invalid wrapped object");
-    }
-
-    super();
-    this.wrapped = wrapped;
-    if (values) this.SetValues(values);
-  }
-  /**
-   * Fetches a planet async
-   * @param {Object} options
-   * @return {Promise<WrappedLensflare>}
-   */
-
-
-  static fetch(options = {}) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) options = {
-        resPath: options
-      };
-
-      var {
-        resPath
-      } = options,
-          values = _objectWithoutProperties(options, ["resPath"]);
-
-      if (resPath) {
-        var wrapped = yield global__WEBPACK_IMPORTED_MODULE_2__["resMan"].FetchObject(resPath);
-        return new _this(wrapped, values);
-      }
-
-      throw new ReferenceError("Could not identify resource path");
-    })();
-  }
-
-}) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedPlanet.js":
-/*!**********************************!*\
-  !*** ./wrapped/WrappedPlanet.js ***!
-  \**********************************/
-/*! exports provided: WrappedPlanet */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedPlanet", function() { return WrappedPlanet; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
-/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
-var _dec, _class;
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var WrappedPlanet = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedPlanet"), _dec(_class = class WrappedPlanet extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
-  /**
-   * Constructor
-   * @param {EvePlanet} wrapped
-   * @param {Object} [values]
-   */
-  constructor(wrapped, values) {
-    if (!(wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"])) {
-      throw new TypeError("Invalid wrapped object");
-    }
-
-    super();
-    this.wrapped = wrapped;
-    if (values) this.SetValues(values);
-  }
-  /**
-   * Gets the object's long axis
-   * @return {number}
-   */
-
-
-  GetLongAxis() {
-    var worldScale = this.GetWorldScale([]);
-    return Math.max(worldScale[0], worldScale[1], worldScale[2]);
-  }
-  /**
-   * Fetches a planet async
-   * @param {Object} options
-   * @return {Promise<WrappedPlanet>}
-   */
-
-
-  static fetch(options = {}) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      var {
-        itemID,
-        resPath,
-        heightMap1,
-        heightMap2,
-        atmospherePath
-      } = options,
-          values = _objectWithoutProperties(options, ["itemID", "resPath", "heightMap1", "heightMap2", "atmospherePath"]);
-
-      if (resPath) {
-        var wrapped = new eve_object__WEBPACK_IMPORTED_MODULE_1__["EvePlanet"]();
-        yield wrapped.Fetch({
-          itemID,
-          resPath,
-          heightMap1,
-          heightMap2,
-          atmospherePath
-        });
-        wrapped._resPath = resPath;
-        wrapped._atmospherePath = atmospherePath;
-        return new _this(wrapped, values);
-      }
-
-      throw new ReferenceError("Could not identify resource path");
-    })();
-  }
-
-}) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedScene.js":
-/*!*********************************!*\
-  !*** ./wrapped/WrappedScene.js ***!
-  \*********************************/
-/*! exports provided: WrappedScene */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedScene", function() { return WrappedScene; });
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/EveSpaceScene */ "./eve/EveSpaceScene.js");
-/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
-/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
-/* harmony import */ var _WrappedShip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WrappedShip */ "./wrapped/WrappedShip.js");
-/* harmony import */ var _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WrappedLensflare */ "./wrapped/WrappedLensflare.js");
-/* harmony import */ var _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WrappedPlanet */ "./wrapped/WrappedPlanet.js");
-/* harmony import */ var _WrappedClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./WrappedClient */ "./wrapped/WrappedClient.js");
-var _dec, _dec2, _class, _class2, _descriptor, _class3, _temp;
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-
-
-
-
-
-
-
-
-
-var WrappedScene = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("WrappedScene"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].list(), _dec(_class = (_class2 = (_temp = _class3 = class WrappedScene extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_3__["WrappedGenericObject"] {
-  /**
-   * Constructor
-   * @param {EveSpaceScene} wrapped
-   * @param {Object} [values]
-   */
-  constructor(wrapped, values) {
-    super();
-
-    _initializerDefineProperty(this, "objects", _descriptor, this);
-
-    this._watched = [];
-    this._maxWatchedFrames = 2000;
-
-    if (!(wrapped instanceof eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"])) {
-      throw new ReferenceError("Invalid space object");
-    }
-
-    this.wrapped = wrapped;
-    if (values) this.SetValues(values);
-  }
-  /**
-   * Gets the index of a watched object
-   * @param {WrappedGenericObject} obj
-   * @return {number}
-   */
-
-
-  _GetWatchedIndex(obj) {
-    for (var i = 0; i < this._watched.length; i++) {
-      if (this._watched[i][0] === obj) {
-        return i;
-      }
-    }
-
-    return -1;
-  }
-  /**
-   * Checks if an objects resources are is completely loaded
-   * @param {WrappedGenericObject} obj
-   * @return {boolean}
-   */
-
-
-  _IsWatchedComplete(obj) {
-    // Maybe not, but can't tell
-    if (!obj.GetResources) return true;
-    var res = obj.GetResources();
-    var completed = 0;
-    res.forEach(resource => {
-      if (resource.HasCompleted()) completed++;
-    });
-    return completed === res.length;
-  }
-  /**
-   * Checks watched objects
-   */
-
-
-  _CheckWatched() {
-    if (!this._watched.length) return;
-    var currentFrame = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].frame;
-
-    for (var i = 0; i < this._watched.length; i++) {
-      var [obj, onUnWatched, startWatchFrame] = this._watched[i];
-      var remove = false; // Check for time outs
-
-      if (currentFrame - startWatchFrame >= this._maxWatchedFrames) {
-        onUnWatched(obj, false);
-        remove = true;
-      } else if (this._IsWatchedComplete(obj)) {
-        onUnWatched(obj, true);
-        remove = true;
-      }
-
-      if (remove) {
-        this._watched.splice(i, 1);
-
-        i--;
-      }
-    }
-  }
-  /**
-   * Watches an object's resources and fires a function when done or timed out
-   * @param {WrappedGenericObject} obj
-   * @param {Function} onUnWatched
-   * @return {boolean}
-   */
-
-
-  Watch(obj, onUnWatched) {
-    var index = this._GetWatchedIndex(obj);
-
-    if (index === -1) {
-      if (this._IsWatchedComplete(obj)) {
-        onUnWatched(obj, true);
-      } else {
-        this._watched.push([obj, onUnWatched, global__WEBPACK_IMPORTED_MODULE_0__["tw2"].frame]);
-      }
-
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Unwatches an object's resources
-   * @param {WrappedGenericObject} obj
-   * @return {boolean}
-   */
-
-
-  UnWatch(obj) {
-    var index = this._GetWatchedIndex(obj);
-
-    if (index !== -1) {
-      this._watched.splice(index, 1);
-
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Fires on transform updates
-   * @param {mat4} world
-   */
-
-
-  _OnTransformUpdated(world) {
-    this.wrapped.SetEnvironmentTransform(world);
-  }
-  /**
-   * Serializes a scene
-   * @param a
-   * @param out
-   * @param opt
-   * @return {Object}
-   */
-
-
-  static get(a, out, opt) {
-    var result = super.get(a, out, opt); // Todo: Handle in EveSpaceScene with an optional parameter
-    // Remove unwrapped objects
-
-    Reflect.deleteProperty(result, "objects");
-    Reflect.deleteProperty(result, "planets");
-    Reflect.deleteProperty(result, "lensflares");
-    return Object.assign(out, result);
-  }
-  /**
-   * Per frame update
-   * @param {Number} dt
-   */
-
-
-  Update(dt) {
-    this.EmitEvent("update", dt);
-
-    for (var i = 0; i < this.objects.length; i++) {
-      this.objects[i].Update(dt);
-    }
-
-    this.wrapped.Update(dt);
-
-    this._CheckWatched();
-  }
-  /**
-   *
-   * @param dt
-   */
-
-
-  Render(dt) {
-    this.EmitEvent("render", dt);
-    this.wrapped.Render(dt);
-  }
-  /**
-   * Rebuilds the scene
-   */
-
-
-  Rebuild() {
-    var {
-      planets,
-      objects,
-      lensflares
-    } = this.wrapped;
-    planets.splice(0);
-    objects.splice(0);
-    lensflares.splice(0);
-
-    for (var i = 0; i < this.objects.length; i++) {
-      if (this.objects[i] instanceof _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"]) // && !this.options.treatPlanetsAsObjects)
-        {
-          planets.push(this.objects[i].wrapped);
-        } else if (this.objects[i] instanceof _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"]) {
-        lensflares[0] = this.objects[i].wrapped;
-      } else {
-        objects.push(this.objects[i].wrapped);
-      }
-    }
-
-    this.EmitEvent("rebuilt");
-  }
-  /**
-   * Adds an object
-   * @param {*} object
-   * @return {boolean}
-   */
-
-
-  AddObject(object) {
-    if (!this.objects.includes(object)) {
-      this.objects.push(object);
-      this.EmitEvent("object_added", object);
-      this.Rebuild();
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Removes an object
-   * @param {*} object
-   * @return {boolean}
-   */
-
-
-  RemoveObject(object) {
-    var index = this.objects.indexOf(object);
-
-    if (index !== -1) {
-      this.objects.splice(index, 1);
-      this.EmitEvent("object_removed", object);
-      this.Rebuild();
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Fetches a lensflare
-   * @param {Object} options
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedLensflare>}
-   */
-
-
-  FetchLensflare(options, doNotAdd) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      var lensflare = _WrappedLensflare__WEBPACK_IMPORTED_MODULE_6__["WrappedLensflare"].fetch(options);
-      if (!doNotAdd) _this.AddObject(lensflare);
-      return lensflare;
-    })();
-  }
-  /**
-   * Creates a watch promise
-   * @param {WrappedGenericObject} obj
-   * @return {Promise<unknown>}
-   */
-
-
-  _CreateWatchPromise(obj) {
-    return new Promise((res, rej) => {
-      this.Watch(obj, res);
-    });
-  }
-  /**
-   *
-   * @param {Object} options
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedShip>}
-   */
-
-
-  FetchShip(options = {}, doNotAdd) {
-    var _this2 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
-      var ship = yield _WrappedShip__WEBPACK_IMPORTED_MODULE_5__["WrappedShip"].fetch(options, eveSof);
-      yield _this2._CreateWatchPromise(ship);
-      if (!doNotAdd) _this2.AddObject(ship);
-      return ship;
-    })();
-  }
-  /**
-   * Fetches a space object
-   * @param {Object} options
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedSpaceObject>}
-   */
-
-
-  FetchObject(options = {}, doNotAdd) {
-    var _this3 = this;
-
-    return _asyncToGenerator(function* () {
-      var eveSof = yield _WrappedClient__WEBPACK_IMPORTED_MODULE_8__["WrappedClient"].fetchEveSOF();
-      var spaceObject = yield _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_4__["WrappedSpaceObject"].fetch(options, eveSof);
-      yield _this3._CreateWatchPromise(spaceObject);
-      if (!doNotAdd) _this3.AddObject(spaceObject);
-      return spaceObject;
-    })();
-  }
-  /**
-   * Fetches a planet
-   * @param {Object} options
-   * @param {Boolean} [doNotAdd]
-   * @return {Promise<WrappedPlanet>}
-   */
-
-
-  FetchPlanet(options = {}, doNotAdd) {
-    var _this4 = this;
-
-    return _asyncToGenerator(function* () {
-      var planet = yield _WrappedPlanet__WEBPACK_IMPORTED_MODULE_7__["WrappedPlanet"].fetch(options);
-      yield _this4._CreateWatchPromise(planet);
-      if (!doNotAdd) _this4.AddObject(planet);
-      return planet;
-    })();
-  }
-  /**
-   * Fetches a scene async
-   * @param {Object} options
-   * @return {Promise<WrappedScene>}
-   */
-
-
-  static fetch(options = {}) {
-    var _this5 = this;
-
-    return _asyncToGenerator(function* () {
-      if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(options)) {
-        options = {
-          resPath: options
-        };
-      } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(options)) {
-        options = {
-          background: options
-        };
-      }
-
-      var {
-        resPath,
-        background
-      } = options,
-          values = _objectWithoutProperties(options, ["resPath", "background"]);
-
-      var wrapped;
-
-      if (resPath) {
-        wrapped = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(resPath);
-        wrapped._resPath = resPath;
-      } else {
-        wrapped = new eve_EveSpaceScene__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"]();
-      }
-
-      if (background) {
-        if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isString"])(background)) {
-          var effect = yield global__WEBPACK_IMPORTED_MODULE_0__["resMan"].FetchObject(WrappedScene.StarFieldResPath);
-          effect.SetTextures({
-            NebulaMap: background
-          });
-          wrapped.backgroundEffect = wrapped;
-        } else if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isVector"])(background)) {
-          wrapped.clearColor[0] = background[0];
-          wrapped.clearColor[1] = background[1];
-          wrapped.clearColor[2] = background[2];
-          wrapped.clearColor[3] = 3 in background ? background[3] : 1;
-        } else {
-          throw new TypeError("Invalid background value");
-        }
-      }
-
-      return new _this5(wrapped, values);
-    })();
-  }
-  /**
-   *  Star field effect
-   * @type {string}
-   */
-
-
-}, _class3.StarFieldResPath = "res:/dx9/scene/starfield/starfieldNebula.red", _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "objects", [_dec2], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-})), _class2)) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedShip.js":
-/*!********************************!*\
-  !*** ./wrapped/WrappedShip.js ***!
-  \********************************/
-/*! exports provided: WrappedShip */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedShip", function() { return WrappedShip; });
-/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
-/* harmony import */ var unsupported_eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! unsupported/eve */ "./unsupported/eve/index.js");
-/* harmony import */ var eve_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object */ "./eve/object/index.js");
-/* harmony import */ var _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WrappedSpaceObject */ "./wrapped/WrappedSpaceObject.js");
-var _dec, _class;
-
-
-
-
-
-var WrappedShip = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ship"), _dec(_class = class WrappedShip extends _WrappedSpaceObject__WEBPACK_IMPORTED_MODULE_3__["WrappedSpaceObject"] {
-  /**
-   * Constructor
-   * @param wrapped
-   * @param values
-   */
-  constructor(wrapped, values) {
-    if (!(wrapped instanceof unsupported_eve__WEBPACK_IMPORTED_MODULE_1__["EveShip2"] || wrapped instanceof eve_object__WEBPACK_IMPORTED_MODULE_2__["EveShip"])) {
-      throw new TypeError("Invalid wrapped object");
-    }
-
-    super(wrapped, values);
-  }
-
-}) || _class);
-
-/***/ }),
-
-/***/ "./wrapped/WrappedSpaceObject.js":
-/*!***************************************!*\
-  !*** ./wrapped/WrappedSpaceObject.js ***!
-  \***************************************/
-/*! exports provided: WrappedSpaceObject */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedSpaceObject", function() { return WrappedSpaceObject; });
-/* harmony import */ var utils_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils/index */ "./global/utils/index.js");
-/* harmony import */ var _APIManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./APIManager */ "./wrapped/APIManager.js");
-/* harmony import */ var _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WrappedGenericObject */ "./wrapped/WrappedGenericObject.js");
-var _dec, _class;
-
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var WrappedSpaceObject = (_dec = utils_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WrappedSpaceObject"), _dec(_class = class WrappedSpaceObject extends _WrappedGenericObject__WEBPACK_IMPORTED_MODULE_2__["WrappedGenericObject"] {
-  /**
-   * Constructor
-   * @param {*} wrapped
-   * @param {Object} [values]
-   */
-  constructor(wrapped, values) {
-    if (!wrapped) {
-      throw new TypeError("Invalid wrapped object");
-    }
-
-    super();
-    this.wrapped = wrapped;
-    if (values) this.SetValues(values);
-  }
-  /**
-   * Fetches space object async
-   * @param {Object} options
-   * @param {EveSOFData} eveSof
-   * @return {Promise<WrappedSpaceObject>}
-   */
-
-
-  static fetch(options = {}, eveSof) {
-    var _this = this;
-
-    return _asyncToGenerator(function* () {
-      if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isString"])(options)) {
-        options = {
-          resPath: options
-        };
-      } else if (Object(utils_index__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(options)) {
-        options = {
-          typeID: options
-        };
-      }
-
-      var {
-        resPath,
-        typeID,
-        skinID,
-        skinMaterialID,
-        dna
-      } = options,
-          values = _objectWithoutProperties(options, ["resPath", "typeID", "skinID", "skinMaterialID", "dna"]);
-
-      if (typeID) {
-        if (!skinID || !skinMaterialID) {
-          var type = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getTypeID"])(typeID);
-          if (!values.name) values.name = type.name;
-          resPath = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeID"])(typeID);
-        } else if (skinID) {
-          var skin = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinID"])(typeID, skinID);
-          if (!values.name) values.name = skin.name;
-          resPath = skin.dna;
-        } else if (skinMaterialID) {
-          var material = yield Object(_APIManager__WEBPACK_IMPORTED_MODULE_1__["getResPathFromTypeIDAndSkinMaterialID"])(typeID, skinMaterialID);
-          if (!values.name) values.name = material.name; // DUMB....
-
-          resPath = material.name;
-        }
-      } else if (dna) {
-        resPath = dna;
-      }
-
-      if (resPath) {
-        var wrapped = yield eveSof.Build(resPath);
-        wrapped._resPath = resPath;
-        return new _this(wrapped, values);
-      }
-
-      if (!resPath) throw new ReferenceError("Could not identify resource path");
-    })();
-  }
-
-}) || _class);
 
 /***/ })
 
