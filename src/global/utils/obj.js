@@ -1,5 +1,5 @@
-import { isTyped, isArrayLike, isArray, isObjectObject, isNumber, isVector } from "./type";
-import { num } from "math";
+import { isTyped, isArrayLike, isArray } from "./type";
+import { toArray } from "utils/arr";
 
 /**
  * Assigns property values if they exist in a source object
@@ -15,11 +15,7 @@ export function assignIfExists(dest, src, attrs, skipIfDestUndefined)
 {
     if (!src) return false;
 
-    if (!isArray(attrs))
-    {
-        attrs = [ attrs ];
-        console.warn("Attributes must now always be an array");
-    }
+    attrs = toArray(attrs);
 
     let assigned = false;
     for (let i = 0; i < attrs.length; i++)

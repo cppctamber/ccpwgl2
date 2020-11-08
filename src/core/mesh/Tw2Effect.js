@@ -3,6 +3,7 @@ import { device, resMan, store } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
+import { Tw2Resource } from "core/resource";
 
 
 class Tw2ConstantParameter
@@ -71,6 +72,10 @@ export class Tw2Effect extends meta.Model
     @meta.path
     effectFilePath = "";
 
+    /**
+     * The effect's resource
+     * @type {Tw2EffectRes}
+     */
     @meta.struct("Tw2EffectRes")
     @meta.isPrivate
     effectRes = null;
@@ -103,12 +108,78 @@ export class Tw2Effect extends meta.Model
      */
     Initialize()
     {
-        if (this.effectFilePath !== "")
+        this.UpdateValues();
+    }
+
+    /**
+     * Sets the effect's file path
+     * @param {String} effectFilePath
+     * @param {Object} [opt]
+     * @return {boolean}
+     */
+    SetValue(effectFilePath, opt)
+    {
+        this.effectFilePath = effectFilePath.toLowerCase();
+        this.UpdateValues(opt);
+    }
+
+    /**
+     * Gets the effect's file path
+     * @return {string}
+     */
+    GetValue()
+    {
+        return this.effectFilePath;
+    }
+
+    /**
+     * Sets an effect res
+     * @param {Tw2EffectRes} res
+     * @return {boolean} True if updated
+     * @private
+     */
+    _SetEffectRes(res)
+    {
+        if (this.effectRes !== res)
         {
-            this.effectFilePath = this.effectFilePath.toLowerCase();
-            const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-            this.effectRes = resMan.GetResource(path, res => this.OnResPrepared(res));
+            this._RemoveEffectRes();
+            this.effectRes = res;
+            // TODO: Need to delay one frame
+            res.RegisterNotification(this);
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Removes an effect res
+     * @return {boolean} true if updated
+     * @private
+     */
+    _RemoveEffectRes()
+    {
+        const res = this.effectRes;
+        if (res)
+        {
+            this.effectRes =  null;
+            this.shader = null;
+            this.UnBindParameters();
+            res.UnregisterNotification(this);
+            this.EmitEvent(Tw2Resource.Event.RES_REMOVED, this, res);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Fires on value changes
+     * @param {Object} opt
+     */
+    OnValueChanged(opt)
+    {
+        this.effectFilePath = this.effectFilePath ?  this.effectFilePath.toLowerCase() :"";
+        const res =  this.effectFilePath ? resMan.GetResource(device.ToEffectPath(this.effectFilePath)) : null;
+        if (!this._SetEffectRes(res)) this.BindParameters();
     }
 
     /**
@@ -119,15 +190,6 @@ export class Tw2Effect extends meta.Model
     FindParameter(name)
     {
         return this.parameters[name] || null;
-    }
-
-    /**
-     * Fires on value changes
-     * @param {*} opt
-     */
-    OnValueChanged(opt)
-    {
-        this.BindParameters();
     }
 
     /**
@@ -161,16 +223,13 @@ export class Tw2Effect extends meta.Model
             out.push(this.effectRes);
         }
 
-        for (let param in this.parameters)
+        this.PerChild(x =>
         {
-            if (this.parameters.hasOwnProperty(param))
+            if (x.struct.GetResources)
             {
-                if ("GetResources" in this.parameters[param])
-                {
-                    this.parameters[param].GetResources(out);
-                }
+                x.struct.GetResources(out);
             }
-        }
+        });
 
         return out;
     }
@@ -181,11 +240,38 @@ export class Tw2Effect extends meta.Model
      */
     OnResPrepared(res)
     {
+        // If it isn't the current res we don't care
+        if (this.effectRes !== res)
+        {
+            return false;
+        }
+
         this.effectRes = res;
-        this.shader = res.GetShader(this.options);
-        this.BindParameters();
-        this.EmitEvent("loaded", { effect: this, shader: this.shader, resource: res });
+        this.shader = null;
+
+        try
+        {
+            this.shader = res.GetShader(this.options);
+            this.BindParameters();
+            this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
+            res.UnregisterNotification(this);
+        }
+        catch (err)
+        {
+            res.OnError(err);
+        }
+
         return true;
+    }
+
+    /**
+     * Fires on any uncaught resource events
+     * @param {Tw2EffectRes} res
+     * @param {Error} err
+     */
+    OnResEvent(res, err)
+    {
+        return Tw2Resource.parentOnResEvent(this, "effectRes", res, err);
     }
 
     /**
@@ -706,44 +792,16 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
-     * on Event Listener
-     * @param {Tw2Effect} source
+     * Handles listeners added after an event has already been fired
+     * @param {Tw2Effect} effect
      * @param {String} eventName
      * @param {Function} listener
      * @param {*} [context]
-     * @returns {boolean}
+     * @return {boolean} true if the listener was fired
      */
-    static onListener(source, eventName, listener, context)
+    static onListener(effect, eventName, listener, context)
     {
-        if (eventName === "loaded" && source.shader)
-        {
-            listener.call(context, { effect: source, shader: source.shader, resource: source.effectRes });
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Converts an effect file path into one suitable for an effect resource
-     * @param {String} path
-     * @returns {String}
-     */
-    static ToEffectResPath(path)
-    {
-        path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", device.effectDir) + ".sm_" + device.shaderModel : "";
-        return path.toLowerCase();
-    }
-
-    /**
-     * Converts an effect resource path back into a normal effect file path
-     * @param {String} path
-     * @param {String} [ext='fx']
-     * @returns {String}
-     */
-    static FromEffectResPath(path, ext = "fx")
-    {
-        path = path.substr(0, path.lastIndexOf(".")).replace(device.effectDir, "/effect/") + "." + ext;
-        return path.toLowerCase();
+        return Tw2Resource.parentOnListener(effect, "effectRes", eventName, listener, context);
     }
 
     /**
@@ -782,26 +840,6 @@ export class Tw2Effect extends meta.Model
         if (effectFilePath && a.effectFilePath !== effectFilePath)
         {
             a.effectFilePath = effectFilePath.toLowerCase();
-
-            // Clear current effect
-            a.UnBindParameters();
-            a.shader = null;
-
-            if (a.effectRes)
-            {
-                a.effectRes.UnregisterNotification(this);
-                a.effectRes = null;
-            }
-
-            // New effect
-            if (a.effectFilePath !== "")
-            {
-                a.UpdateValues(opt);
-                const path = Tw2Effect.ToEffectResPath(a.effectFilePath);
-                resMan.GetResource(path, res => a.OnResPrepared(res));
-                return true;
-            }
-
             updated = true;
         }
 

@@ -17181,7 +17181,10 @@ var config = {
     "systemMirror": false,
     "autoPurgeResources": true,
     "purgeTime": 60,
-    "maxPrepareTime": 0.05
+    "maxPrepareTime": 0.05,
+    "maxWatchedFramed": 500,
+    "maxWatchedCount": 10,
+    "maxWatchTime": 0.05
   },
   logger: {
     "name": "CCPWGL2",
@@ -19791,9 +19794,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
 /* harmony import */ var _vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
 /* harmony import */ var constant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! constant */ "./global/constant/index.js");
+/* harmony import */ var global_tw2__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! global/tw2 */ "./global/tw2.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -20053,6 +20058,29 @@ class Tw2Device extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2EventE
       this.viewportPixelRatio = value;
       this.Resize();
     }
+  }
+  /**
+   * Converts an effect resource path back into a normal effect file path
+   * @param {String} path
+   * @param {String} [ext='fx']
+   * @returns {String}
+   */
+
+
+  FromEffectPath(path, ext = "fx") {
+    path = path.substr(0, path.lastIndexOf(".")).replace(this.effectDir, "/effect/") + "." + ext;
+    return path.toLowerCase();
+  }
+  /**
+   * Translates a path to an
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  ToEffectPath(path) {
+    path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", this.effectDir) + ".sm_" + this.shaderModel : "";
+    return path.toLowerCase();
   }
   /**
    * Handles resize events
@@ -21818,10 +21846,176 @@ Tw2Logger.LogType = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MotherLode", function() { return Tw2MotherLode; });
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 class Tw2MotherLode {
   constructor() {
     this._loadedObjects = {};
     this._errors = {};
+    this._watching = [];
+  }
+  /**
+   * Updated watches objects
+   * @param {Number} maxFrames
+   * @param {Number} maxWatched
+   * @param {Number} maxTime;
+   */
+
+
+  UpdateWatched(maxFrames, maxWatched, maxTime) {
+    var now = Date.now(),
+        len = Math.min(this._watching.length, maxWatched);
+
+    for (var i = 0; i < this._watching.length; i++) {
+      // Limit time  watching
+      if (maxTime && Date.now() - now >= maxTime) {
+        return;
+      }
+
+      var w = this._watching[i],
+          res = this.GetWatchedResourceDetail(w.object);
+      w.frames++; // Update progress if there was a change (include 0)
+
+      if (w.total !== res.total || w.pending !== res.pending) {
+        w.total = res.total;
+        w.pending = res.pending;
+        if (w.onProgress) w.onProgress(res, w.object);
+      } // Finished
+
+
+      if (!res.pending) {
+        this._watching.splice(i, 1);
+
+        i--;
+        w.onCompleted(true);
+        break;
+      } // Took too long
+
+
+      if (w.frames >= maxFrames) {
+        this._watching.splice(i, 1);
+
+        i--;
+        w.onError(new Error("Maximum watch duration reached"));
+        break;
+      }
+    }
+  }
+  /**
+   * Watches an object and resolved a promise when all resources have completed processing
+   * @param {*} object
+   * @param {Function} [onProgress]
+   * @return {Promise<*>}
+   */
+
+
+  Watch(object, onProgress) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      // Check if already watching
+      var index = _this.GetWatchedIndex(object);
+
+      if (index !== -1) return _this._watching[index]._promise; // Get resource counts
+
+      var res = _this.GetWatchedResourceDetail(object); // Update progress (include 0)
+
+
+      if (onProgress) onProgress(res, object); // Already complete
+
+      if (!res.pending) return object; // Watcher
+
+      var watched = {
+        object,
+        onProgress,
+        frames: 0,
+        total: res.total,
+        pending: res.pending
+      };
+
+      _this._watching.push(watched); // Create deferred promise
+
+
+      watched._promise = new Promise((resolve, reject) => {
+        watched.onCompleted = didComplete => resolve(watched.object, didComplete);
+
+        watched.onError = err => reject(err);
+      });
+      return watched._promise;
+    })();
+  }
+  /**
+   * Unwatches an object
+   * @param {*} obj
+   * @return {boolean}
+   */
+
+
+  UnWatch(obj) {
+    var index = this.GetWatchedIndex(obj);
+
+    if (index !== -1) {
+      var watched = this._watching[index];
+
+      this._watching.splice(index, 1);
+
+      watched.onCompleted(false);
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Gets the watched index of an object
+   * @param {Object} obj
+   * @return {number}
+   */
+
+
+  GetWatchedIndex(obj) {
+    for (var i = 0; i < this._watching.length; i++) {
+      if (this._watching[i].object === obj) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+  /**
+   * Checks if an object's resources have completed
+   * @param {*} object
+   * @return {Object}
+   */
+
+
+  GetWatchedResourceDetail(object) {
+    var out = {
+      total: 0,
+      pending: 0,
+      percent: 100
+    }; // We have no idea
+
+    if (!object.GetResources && !object.getResources) {
+      return out;
+    }
+
+    var res = object.GetResources ? object.GetResources() : object.getResources();
+    out.total = res.length; // Cycle through all available res to keep them alive
+    // And to catch any that have been added since first watched
+
+    if (out.total) {
+      for (var i = 0; i < res.length; i++) {
+        if (!res[i].HasCompleted()) {
+          out.pending++;
+        }
+      }
+
+      out.percent = parseFloat(((out.total - out.pending) / out.total * 100).toFixed(2));
+    }
+
+    return out;
   }
   /**
    * Adds an error log for a given path
@@ -21873,7 +22067,7 @@ class Tw2MotherLode {
    */
 
 
-  HasErrors(path) {
+  HasErrored(path) {
     return path && path in this._errors;
   }
   /**
@@ -21978,13 +22172,13 @@ class Tw2MotherLode {
 
         var detail = void 0; // Has errors
 
-        if (res.HasErrors()) {
+        if (res.HasErrored()) {
           detail = "errored";
         } // Waiting for purge
         else if (res.IsUnloaded()) {
             detail = "unloaded";
           } // good but inactive
-          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
+          else if (res.HasLoaded() && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
               if (res.Unload({
                 hide: true,
                 detail: "inactivity"
@@ -22056,6 +22250,9 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
     this.autoPurgeResources = true;
     this.activeFrame = 0;
     this.purgeTime = 30;
+    this.maxWatchedFrames = 500;
+    this.maxWatchedCount = 10;
+    this.maxWatchTime = 0.05;
     this._prepareBudget = 0;
     this._prepareQueue = [];
     this._purgeTime = 0;
@@ -22074,7 +22271,22 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
 
   Register(opt) {
     if (!opt) return;
-    Object(utils__WEBPACK_IMPORTED_MODULE_4__["assignIfExists"])(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
+    Object(utils__WEBPACK_IMPORTED_MODULE_4__["assignIfExists"])(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime", "maxWatchTime", "maxWatchCount", "maxWatchFrames"]);
+  }
+  /**
+   * Watches an object and resolves when all of it's resources have completed processing
+   * @param {*} object
+   * @param {Function} [onProgress]
+   * @return {Promise<*>}
+   */
+
+
+  Watch(object, onProgress) {
+    var _this = this;
+
+    return _asyncToGenerator(function* () {
+      return _this.motherLode.Watch(object, onProgress);
+    })();
   }
   /**
    * Fires on resource errors
@@ -22185,6 +22397,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
       }
     }
 
+    this.motherLode.UpdateWatched(this._maxWatchedFrames, this._maxWatchedCount);
     this._purgeTime += device.dt;
 
     if (this._purgeTime > 1) {
@@ -22260,11 +22473,11 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
 
 
   FetchResource(path) {
-    var _this = this;
+    var _this2 = this;
 
     return _asyncToGenerator(function* () {
       return new Promise((resolve, reject) => {
-        _this.GetResource(path, resolve, reject);
+        _this2.GetResource(path, resolve, reject);
       });
     })();
   }
@@ -22299,11 +22512,11 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
 
 
   FetchObject(path) {
-    var _this2 = this;
+    var _this3 = this;
 
     return _asyncToGenerator(function* () {
       return new Promise((resolve, reject) => {
-        _this2.GetObject(path, resolve, reject);
+        _this3.GetObject(path, resolve, reject);
       });
     })();
   }
@@ -22318,7 +22531,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
   LoadResource(res, eventLog) {
     this.motherLode.Add(res.path, res); // Don't load if already errored
 
-    if (res.HasErrors()) {
+    if (res.HasErrored()) {
       return res;
     }
 
@@ -22330,14 +22543,16 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
         return res;
       }
 
-      if (!res.HasErrors()) {
-        this.Fetch(url, res.requestResponseType).then(response => {
-          res.OnLoaded();
-          this.Queue(res, response);
-        }).catch(err => {
-          res.OnError(err);
-        });
+      if (res.HasErrored()) {
+        return res;
       }
+
+      this.Fetch(url, res.requestResponseType).then(response => {
+        res.OnLoaded();
+        this.Queue(res, response);
+      }).catch(err => {
+        res.OnError(err);
+      });
     } catch (err) {
       res.OnError(err);
     }
@@ -22375,10 +22590,10 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
 
 
   Fetch(url, responseType) {
-    var _this3 = this;
+    var _this4 = this;
 
     return _asyncToGenerator(function* () {
-      _this3.AddPendingLoad(url);
+      _this4.AddPendingLoad(url);
 
       return fetch(url).then(response => {
         if (!response.ok) {
@@ -22406,11 +22621,11 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
             throw new Error("Invalid fetch type: " + responseType);
         }
       }).then(result => {
-        _this3.RemovePendingLoad(url);
+        _this4.RemovePendingLoad(url);
 
         return result;
       }).catch(err => {
-        _this3.RemovePendingLoad(url);
+        _this4.RemovePendingLoad(url);
 
         if (err.text) {
           return err.text().then(text => {
@@ -23884,6 +24099,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
 /* harmony import */ var _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parameter/Tw2Vector4Parameter */ "./core/parameter/Tw2Vector4Parameter.js");
 /* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -23891,6 +24107,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 
@@ -23977,11 +24194,80 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
    * Initializes the Tw2Effect
    */
   Initialize() {
-    if (this.effectFilePath !== "") {
-      this.effectFilePath = this.effectFilePath.toLowerCase();
-      var path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-      this.effectRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path, res => this.OnResPrepared(res));
+    this.UpdateValues();
+  }
+  /**
+   * Sets the effect's file path
+   * @param {String} effectFilePath
+   * @param {Object} [opt]
+   * @return {boolean}
+   */
+
+
+  SetValue(effectFilePath, opt) {
+    this.effectFilePath = effectFilePath.toLowerCase();
+    this.UpdateValues(opt);
+  }
+  /**
+   * Gets the effect's file path
+   * @return {string}
+   */
+
+
+  GetValue() {
+    return this.effectFilePath;
+  }
+  /**
+   * Sets an effect res
+   * @param {Tw2EffectRes} res
+   * @return {boolean} True if updated
+   * @private
+   */
+
+
+  _SetEffectRes(res) {
+    if (this.effectRes !== res) {
+      this._RemoveEffectRes();
+
+      this.effectRes = res; // TODO: Need to delay one frame
+
+      res.RegisterNotification(this);
+      return true;
     }
+
+    return false;
+  }
+  /**
+   * Removes an effect res
+   * @return {boolean} true if updated
+   * @private
+   */
+
+
+  _RemoveEffectRes() {
+    var res = this.effectRes;
+
+    if (res) {
+      this.effectRes = null;
+      this.shader = null;
+      this.UnBindParameters();
+      res.UnregisterNotification(this);
+      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_REMOVED, this, res);
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Fires on value changes
+   * @param {Object} opt
+   */
+
+
+  OnValueChanged(opt) {
+    this.effectFilePath = this.effectFilePath ? this.effectFilePath.toLowerCase() : "";
+    var res = this.effectFilePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(global__WEBPACK_IMPORTED_MODULE_1__["device"].ToEffectPath(this.effectFilePath)) : null;
+    if (!this._SetEffectRes(res)) this.BindParameters();
   }
   /**
    * Finds an effect parameter by it's name
@@ -23992,15 +24278,6 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
 
   FindParameter(name) {
     return this.parameters[name] || null;
-  }
-  /**
-   * Fires on value changes
-   * @param {*} opt
-   */
-
-
-  OnValueChanged(opt) {
-    this.BindParameters();
   }
   /**
    * Checks if the effect's resource is good
@@ -24036,14 +24313,11 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
       out.push(this.effectRes);
     }
 
-    for (var param in this.parameters) {
-      if (this.parameters.hasOwnProperty(param)) {
-        if ("GetResources" in this.parameters[param]) {
-          this.parameters[param].GetResources(out);
-        }
+    this.PerChild(x => {
+      if (x.struct.GetResources) {
+        x.struct.GetResources(out);
       }
-    }
-
+    });
     return out;
   }
   /**
@@ -24053,15 +24327,34 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
 
 
   OnResPrepared(res) {
+    // If it isn't the current res we don't care
+    if (this.effectRes !== res) {
+      return false;
+    }
+
     this.effectRes = res;
-    this.shader = res.GetShader(this.options);
-    this.BindParameters();
-    this.EmitEvent("loaded", {
-      effect: this,
-      shader: this.shader,
-      resource: res
-    });
+    this.shader = null;
+
+    try {
+      this.shader = res.GetShader(this.options);
+      this.BindParameters();
+      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_PREPARED, this, res);
+      res.UnregisterNotification(this);
+    } catch (err) {
+      res.OnError(err);
+    }
+
     return true;
+  }
+  /**
+   * Fires on any uncaught resource events
+   * @param {Tw2EffectRes} res
+   * @param {Error} err
+   */
+
+
+  OnResEvent(res, err) {
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "effectRes", res, err);
   }
   /**
    * Unbinds parameters
@@ -24520,49 +24813,17 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
     }
   }
   /**
-   * on Event Listener
-   * @param {Tw2Effect} source
+   * Handles listeners added after an event has already been fired
+   * @param {Tw2Effect} effect
    * @param {String} eventName
    * @param {Function} listener
    * @param {*} [context]
-   * @returns {boolean}
+   * @return {boolean} true if the listener was fired
    */
 
 
-  static onListener(source, eventName, listener, context) {
-    if (eventName === "loaded" && source.shader) {
-      listener.call(context, {
-        effect: source,
-        shader: source.shader,
-        resource: source.effectRes
-      });
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Converts an effect file path into one suitable for an effect resource
-   * @param {String} path
-   * @returns {String}
-   */
-
-
-  static ToEffectResPath(path) {
-    path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", global__WEBPACK_IMPORTED_MODULE_1__["device"].effectDir) + ".sm_" + global__WEBPACK_IMPORTED_MODULE_1__["device"].shaderModel : "";
-    return path.toLowerCase();
-  }
-  /**
-   * Converts an effect resource path back into a normal effect file path
-   * @param {String} path
-   * @param {String} [ext='fx']
-   * @returns {String}
-   */
-
-
-  static FromEffectResPath(path, ext = "fx") {
-    path = path.substr(0, path.lastIndexOf(".")).replace(global__WEBPACK_IMPORTED_MODULE_1__["device"].effectDir, "/effect/") + "." + ext;
-    return path.toLowerCase();
+  static onListener(effect, eventName, listener, context) {
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(effect, "effectRes", eventName, listener, context);
   }
   /**
    * Sets an effect from a plain object
@@ -24600,24 +24861,7 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
     }
 
     if (effectFilePath && a.effectFilePath !== effectFilePath) {
-      a.effectFilePath = effectFilePath.toLowerCase(); // Clear current effect
-
-      a.UnBindParameters();
-      a.shader = null;
-
-      if (a.effectRes) {
-        a.effectRes.UnregisterNotification(this);
-        a.effectRes = null;
-      } // New effect
-
-
-      if (a.effectFilePath !== "") {
-        a.UpdateValues(opt);
-        var path = Tw2Effect.ToEffectResPath(a.effectFilePath);
-        global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path, res => a.OnResPrepared(res));
-        return true;
-      }
-
+      a.effectFilePath = effectFilePath.toLowerCase();
       updated = true;
     }
 
@@ -27916,7 +28160,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 /* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -27930,7 +28174,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
   /**
    * Temporary
    * @return {Boolean}
@@ -27958,12 +28202,13 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
       });
     }
   }
-
   /**
    * Constructor
    * @param {String} [name]        - Name of the texture parameter
    * @param {String} [texturePath] - The texture's resource path
    */
+
+
   constructor(name, texturePath) {
     super();
 
@@ -27977,10 +28222,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     this._isAttached = false;
     if (name) this.name = name;
-
-    if (texturePath) {
-      this.SetValue(texturePath);
-    }
+    if (texturePath) this.SetValue(texturePath);
   }
   /**
    * Checks if the parameter has a texture that was attached
@@ -28020,6 +28262,29 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     return this.isTextureAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
   }
   /**
+   * Checks if the texture is good
+   * @return {Boolean}
+   */
+
+
+  IsGood() {
+    return this.textureRes ? this.textureRes.IsGood() : false;
+  }
+  /**
+   * Gets the texture's resources
+   * @param {Array} [out=[]]
+   * @returns {Array.<Tw2Resource>}
+   */
+
+
+  GetResources(out = []) {
+    if (this.textureRes && !out.includes(this.textureRes)) {
+      out.push(this.textureRes);
+    }
+
+    return out;
+  }
+  /**
    * Attaches a texture res
    * @param {Tw2TextureRes|Tw2VideoRes} res
    * @return {boolean}
@@ -28038,26 +28303,27 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   _SetTextureRes(res, isAttached) {
-    if (this.textureRes !== res) {
-      this._RemoveTextureRes();
-
-      this.textureRes = res;
-
-      if (res) {
-        if (isAttached) {
-          this._isAttached = true;
-          this.resourcePath = "";
-        } else {
-          this._isAttached = false;
-        }
-
-        res.RegisterNotification(this);
-      }
-
-      return true;
+    if (this.textureRes === res) {
+      return false;
     }
 
-    return false;
+    this._RemoveTextureRes();
+
+    this.textureRes = res;
+
+    if (res) {
+      if (isAttached) {
+        this._isAttached = true;
+        this.resourcePath = "";
+      } else {
+        this._isAttached = false;
+      } // TODO: Need to delay one frame
+
+
+      res.RegisterNotification(this);
+    }
+
+    return true;
   }
   /**
    * Removes the texture res
@@ -28066,10 +28332,12 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   _RemoveTextureRes() {
-    if (this.textureRes) {
-      this.textureRes.UnregisterNotification(this);
-      this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
+    var res = this.textureRes;
+
+    if (res) {
       this.textureRes = null;
+      res.UnregisterNotification(this);
+      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_REMOVED, this, res);
       return true;
     }
 
@@ -28094,43 +28362,11 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
         res.Attach(texture, this.resourcePath);
       }
-    } //  Temporary text texture
-    else if (this.resourcePath.indexOf("text:/") === 0) {
-        if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
-          var split = this.resourcePath.split("/"),
-              text = split[1],
-              options = split[2],
-              _opt = {};
+    } else {
+      var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
 
-          if (options) {
-            var optSplit = options.split(";");
-
-            for (var i = 0; i < optSplit.length; i++) {
-              var [key, value] = optSplit[i].split("=");
-              _opt[key] = value;
-            }
-          }
-
-          var {
-            gl
-          } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
-              canvas = Object(utils__WEBPACK_IMPORTED_MODULE_0__["createTextCanvas"])(text, _opt),
-              _res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"](),
-              _texture = gl.createTexture();
-
-          gl.bindTexture(gl.TEXTURE_2D, _texture);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-          gl.bindTexture(gl.TEXTURE_2D, null);
-
-          this._SetTextureRes(_res);
-
-          _res.Attach(_texture, this.resourcePath);
-        }
-      } else {
-        var _res2 = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
-
-        this._SetTextureRes(_res2);
-      }
+      this._SetTextureRes(_res);
+    }
   }
   /**
    * Apply
@@ -28164,7 +28400,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     if (this.overrides.SetValues(values, opt)) {
       if (!opt || !opt.skipEvents) {
-        this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
+        this.EmitEvent("overrides_modified", this, opt);
       }
     }
   }
@@ -28204,20 +28440,6 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     return value.toLowerCase() === this.GetValue();
   }
   /**
-   * Gets the texture's resources
-   * @param {Array} [out=[]]
-   * @returns {Array.<Tw2Resource>}
-   */
-
-
-  GetResources(out = []) {
-    if (this.textureRes && !out.includes(this.textureRes)) {
-      out.push(this.textureRes);
-    }
-
-    return out;
-  }
-  /**
    * Fires on resource events
    * @param {Tw2TextureRes} res
    * @param {Error} err
@@ -28225,34 +28447,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   OnResEvent(res, err) {
-    if (this.textureRes !== res) return;
-    var {
-      Event
-    } = Tw2TextureParameter;
-
-    switch (res._state) {
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.ERROR:
-        this.EmitEvent(Event.RES_ERROR, this, res, err);
-        res.UnregisterNotification(this);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PURGED:
-        this.EmitEvent(Event.RES_PURGED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.UNLOADED:
-        this.EmitEvent(Event.RES_UNLOADED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.REQUESTED:
-        this.EmitEvent(Event.RES_REQUESTED, this, res);
-        break;
-
-      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PREPARED:
-        this.EmitEvent(Event.RES_PREPARED, this, res);
-        res.UnregisterNotification(this);
-        break;
-    }
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "textureRes", res, err);
   }
   /**
    * Handles listeners added after an event has already been fired
@@ -28265,48 +28460,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   static onListener(textureParameter, eventName, listener, context) {
-    /**
-     * The texture resource
-     * @type {Tw2TextureRes}
-     */
-    var res = textureParameter.textureRes;
-    if (!res) return false;
-    var {
-      Event
-    } = this;
-    var doCall;
-
-    switch (eventName) {
-      case Event.RES_ERROR:
-        if (res.HasErrors()) {
-          listener.call(context, this, res, res.GetLastError());
-          return true;
-        }
-
-        return false;
-
-      case Event.RES_UNLOADED:
-        if (res.IsUnloaded()) doCall = true;
-        break;
-
-      case Event.RES_PURGED:
-        if (res.IsPurged()) doCall = true;
-        break;
-
-      case Event.RES_REQUESTED:
-        if (res.HasRequested()) doCall = true;
-        break;
-
-      case Event.RES_PREPARED:
-        if (res.IsPrepared()) doCall = true;
-    }
-
-    if (doCall) {
-      listener.call(context, this, res);
-      return true;
-    }
-
-    return false;
+    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(textureParameter, "textureRes", eventName, listener, context);
   }
   /**
    * Checks if a value is a valid parameter value
@@ -28318,20 +28472,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   static isValue(a) {
     return Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(a);
   }
-  /**
-   * Event names
-   * @type {*}
-   */
 
-
-}, _class3.Event = {
-  RES_UNLOADED: "res_unloaded",
-  RES_PURGED: "res_purged",
-  RES_ERROR: "res_error",
-  RES_REQUESTED: "res_requested",
-  RES_PREPARED: "res_prepared",
-  RES_REMOVED: "res_removed",
-  OVERRIDES_MODIFIED: "overrides_modified"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -33445,23 +33586,22 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._requestResponseType;
   }
   /**
-   * Checks if the resource is good and keeps it alive
-   * @returns {boolean}
-   */
-
-
-  IsGood() {
-    this.KeepAlive();
-    return this.IsPrepared() || this.IsLoaded();
-  }
-  /**
-   * Checks to see if the resource is loading
+   * Checks if the resource has errors
    * @returns {Boolean}
    */
 
 
-  IsRequested() {
-    return this._state === Tw2Resource.State.REQUESTED;
+  HasErrored() {
+    return this._state === Tw2Resource.State.ERROR;
+  }
+  /**
+   * Checks if the resource has completed all processing
+   * @returns {Boolean}
+   */
+
+
+  HasCompleted() {
+    return this.HasErrored() || this.IsPurged() || this.HasPrepared();
   }
   /**
    * Checks if the resource has been requested
@@ -33470,16 +33610,16 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   HasRequested() {
-    return this._requested !== 0;
+    return this._state === Tw2Resource.State.REQUESTED || this.HasLoaded();
   }
   /**
-   * Checks if the resource has been loaded
-   * @returns {boolean}
+   * Checks if the resource has loaded
+   * @return {boolean}
    */
 
 
-  IsLoaded() {
-    return this._state === Tw2Resource.State.LOADED;
+  HasLoaded() {
+    return this._state === Tw2Resource.State.LOADED || this._state === Tw2Resource.State.PREPARED;
   }
   /**
    * Checks if the resource has been prepared
@@ -33487,8 +33627,18 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
    */
 
 
-  IsPrepared() {
+  HasPrepared() {
     return this._state === Tw2Resource.State.PREPARED;
+  }
+  /**
+   * Checks if the resource is good and keeps it alive
+   * @returns {boolean}
+   */
+
+
+  IsGood() {
+    this.KeepAlive();
+    return this.HasLoaded();
   }
   /**
    * Checks if the resource has been unloaded
@@ -33509,24 +33659,6 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._state === Tw2Resource.State.PURGED;
   }
   /**
-   * Checks if the resource has errors
-   * @returns {Boolean}
-   */
-
-
-  HasErrors() {
-    return this._state === Tw2Resource.State.ERROR;
-  }
-  /**
-   * Checks if the resource has completed all processing
-   * @returns {Boolean}
-   */
-
-
-  HasCompleted() {
-    return this.HasErrors() || this.IsPurged() || this.IsPrepared();
-  }
-  /**
    * Unloads the resource
    * @param {*} [log]
    * @returns {Boolean}
@@ -33543,7 +33675,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   Reload(log) {
-    if (this.IsLoaded() || this.IsPrepared()) {
+    if (this.HasLoaded()) {
       this.Unload({
         hide: true,
         detail: "reloading"
@@ -33615,7 +33747,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   OnError(err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]()) {
-    var wasGood = this.IsLoaded() || this.IsPrepared();
+    var wasGood = this.HasLoaded();
 
     if (!this._errors.includes(err)) {
       this._errors.unshift(err);
@@ -33790,10 +33922,131 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
     if (Object(utils__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(notification)) {
       return !!notification(resource, err, funcName);
-    } else if (funcName && funcName in notification) {
-      return !!notification[funcName](resource, err);
-    } else if ("OnResEvent" in notification) {
-      return !!notification.OnResEvent(resource, err);
+    } // Specific function on notification
+    else if (funcName && funcName in notification) {
+        return !!notification[funcName](resource, err);
+      } // Catch all function on notification
+      else if ("OnResEvent" in notification) {
+          return !!notification.OnResEvent(resource, err);
+        }
+
+    return false;
+  }
+  /**
+   * Handles the parent's resource events
+   * // Temporary
+   * @param {*} parent
+   * @param {String} target
+   * @param {Tw2Resource} res
+   * @param {Error} [err]
+   */
+
+
+  static parentOnResEvent(parent, target, res, err) {
+    // Ignore old res that are still firing
+    if (parent[target] !== res) {
+      res.UnregisterNotification(parent);
+      return;
+    }
+
+    var {
+      Event,
+      State
+    } = this;
+    var completed = false;
+
+    switch (res._state) {
+      case State.ERROR:
+        parent.EmitEvent(Event.RES_ERROR, parent, res, err);
+        completed = true;
+        break;
+
+      case State.PURGED:
+        parent.EmitEvent(Event.RES_PURGED, parent, res);
+        break;
+
+      case State.UNLOADED:
+        parent.EmitEvent(Event.RES_UNLOADED, parent, res);
+        break;
+
+      case State.REQUESTED:
+        parent.EmitEvent(Event.RES_REQUESTED, parent, res);
+        break;
+
+      case State.LOADED:
+        parent.EmitEvent(Event.RES_LOADED, parent, res);
+        break;
+
+      case State.PREPARED:
+        parent.EmitEvent(Event.RES_PREPARED, parent, res);
+        completed = true;
+        break;
+    }
+
+    if (completed) {
+      parent.EmitEvent(Event.RES_COMPLETED, parent, res, err);
+      res.UnregisterNotification(parent);
+    }
+  }
+  /**
+   * Handles events added to a parent after an internal event has already happened
+   * // Temporary
+   * @param {*} parent
+   * @param {String} target
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} context
+   * @return {boolean}
+   */
+
+
+  static parentOnListener(parent, target, eventName, listener, context) {
+    var res = parent[target];
+    if (!res) return false;
+    var {
+      Event
+    } = Tw2Resource;
+    var doCall;
+
+    switch (eventName) {
+      case Event.RES_COMPLETED:
+        if (res.HasCompleted()) {
+          listener.call(context, parent, res, res.GetLastError());
+        }
+
+        return false;
+
+      case Event.RES_ERROR:
+        if (res.HasErrored()) {
+          listener.call(context, parent, res, res.GetLastError());
+          return true;
+        }
+
+        return false;
+
+      case Event.RES_UNLOADED:
+        if (res.IsUnloaded()) doCall = true;
+        break;
+
+      case Event.RES_PURGED:
+        if (res.IsPurged()) doCall = true;
+        break;
+
+      case Event.RES_REQUESTED:
+        if (res.HasRequested()) doCall = true;
+        break;
+
+      case Event.RES_LOADED:
+        if (res.HasLoaded()) doCall = true;
+        break;
+
+      case Event.RES_PREPARED:
+        if (res.HasPrepared()) doCall = true;
+    }
+
+    if (doCall) {
+      listener.call(context, parent, res);
+      return true;
     }
 
     return false;
@@ -33821,6 +34074,15 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
   PREPARED: "OnResPrepared",
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
+}, _class2.Event = {
+  RES_UNLOADED: "unloaded",
+  RES_PURGED: "purged",
+  RES_ERROR: "error",
+  RES_REQUESTED: "requested",
+  RES_LOADED: "loaded",
+  RES_PREPARED: "prepared",
+  RES_REMOVED: "removed",
+  RES_COMPLETED: "completed"
 }, _temp)) || _class);
 /**
  * An optional function for when the resource handles it's own loading
@@ -69570,7 +69832,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "template", function() { return template; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getKeyFromValue", function() { return getKeyFromValue; });
 /* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./type */ "./global/utils/type.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var utils_arr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils/arr */ "./global/utils/arr.js");
 
 
 /**
@@ -69586,12 +69848,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function assignIfExists(dest, src, attrs, skipIfDestUndefined) {
   if (!src) return false;
-
-  if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArray"])(attrs)) {
-    attrs = [attrs];
-    console.warn("Attributes must now always be an array");
-  }
-
+  attrs = Object(utils_arr__WEBPACK_IMPORTED_MODULE_1__["toArray"])(attrs);
   var assigned = false;
 
   for (var i = 0; i < attrs.length; i++) {

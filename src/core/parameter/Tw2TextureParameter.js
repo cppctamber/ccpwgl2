@@ -23,6 +23,8 @@ export class Tw2TextureParameter extends Tw2Parameter
     @meta.struct("Tw2SamplerOverrides")
     overrides = null;
 
+    _isAttached = false;
+
     /**
      * Temporary
      * @return {Boolean}
@@ -50,8 +52,6 @@ export class Tw2TextureParameter extends Tw2Parameter
         }
     }
 
-    _isAttached = false;
-
     /**
      * Constructor
      * @param {String} [name]        - Name of the texture parameter
@@ -60,13 +60,8 @@ export class Tw2TextureParameter extends Tw2Parameter
     constructor(name, texturePath)
     {
         super();
-
         if (name) this.name = name;
-
-        if (texturePath)
-        {
-            this.SetValue(texturePath);
-        }
+        if (texturePath) this.SetValue(texturePath);
     }
 
     /**
@@ -107,6 +102,29 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
+     * Checks if the texture is good
+     * @return {Boolean}
+     */
+    IsGood()
+    {
+        return this.textureRes ? this.textureRes.IsGood() : false;
+    }
+
+    /**
+     * Gets the texture's resources
+     * @param {Array} [out=[]]
+     * @returns {Array.<Tw2Resource>}
+     */
+    GetResources(out = [])
+    {
+        if (this.textureRes && !out.includes(this.textureRes))
+        {
+            out.push(this.textureRes);
+        }
+        return out;
+    }
+
+    /**
      * Attaches a texture res
      * @param {Tw2TextureRes|Tw2VideoRes} res
      * @return {boolean}
@@ -124,29 +142,31 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     _SetTextureRes(res, isAttached)
     {
-        if (this.textureRes !== res)
+        if (this.textureRes === res)
         {
-            this._RemoveTextureRes();
-            this.textureRes = res;
+            return false;
+        }
 
-            if (res)
+        this._RemoveTextureRes();
+        this.textureRes = res;
+
+        if (res)
+        {
+            if (isAttached)
             {
-                if (isAttached)
-                {
-                    this._isAttached = true;
-                    this.resourcePath = "";
-                }
-                else
-                {
-                    this._isAttached = false;
-                }
-
-                res.RegisterNotification(this);
+                this._isAttached = true;
+                this.resourcePath = "";
+            }
+            else
+            {
+                this._isAttached = false;
             }
 
-            return true;
+            // TODO: Need to delay one frame
+            res.RegisterNotification(this);
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -155,11 +175,12 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     _RemoveTextureRes()
     {
-        if (this.textureRes)
+        const res = this.textureRes;
+        if (res)
         {
-            this.textureRes.UnregisterNotification(this);
-            this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
             this.textureRes = null;
+            res.UnregisterNotification(this);
+            this.EmitEvent(Tw2Resource.Event.RES_REMOVED, this, res);
             return true;
         }
         return false;
@@ -187,40 +208,6 @@ export class Tw2TextureParameter extends Tw2Parameter
                     ]);
 
                 const res = new Tw2TextureRes();
-                this._SetTextureRes(res);
-                res.Attach(texture, this.resourcePath);
-            }
-        }
-        //  Temporary text texture
-        else if (this.resourcePath.indexOf("text:/") === 0)
-        {
-            if (!this.textureRes || this.textureRes.path !== this.resourcePath)
-            {
-                const
-                    split = this.resourcePath.split("/"),
-                    text = split[1],
-                    options = split[2],
-                    opt = {};
-
-                if (options)
-                {
-                    const optSplit = options.split(";");
-                    for (let i = 0; i < optSplit.length; i++)
-                    {
-                        const [ key, value ] = optSplit[i].split("=");
-                        opt[key] = value;
-                    }
-                }
-
-                const
-                    { gl } = device,
-                    canvas = createTextCanvas(text, opt),
-                    res = new Tw2TextureRes(),
-                    texture = gl.createTexture();
-
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-                gl.bindTexture(gl.TEXTURE_2D, null);
                 this._SetTextureRes(res);
                 res.Attach(texture, this.resourcePath);
             }
@@ -267,7 +254,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         {
             if (!opt || !opt.skipEvents)
             {
-                this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
+                this.EmitEvent("overrides_modified", this, opt);
             }
         }
     }
@@ -297,6 +284,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         this.overrides && this.overrides.enabled ? this.overrides.GetValues() : null;
     }
 
+
     /**
      * Checks if a value is equal to the parameter's resource path
      * @param {*} value
@@ -308,53 +296,13 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
-     * Gets the texture's resources
-     * @param {Array} [out=[]]
-     * @returns {Array.<Tw2Resource>}
-     */
-    GetResources(out = [])
-    {
-        if (this.textureRes && !out.includes(this.textureRes))
-        {
-            out.push(this.textureRes);
-        }
-        return out;
-    }
-
-    /**
      * Fires on resource events
      * @param {Tw2TextureRes} res
      * @param {Error} err
      */
     OnResEvent(res, err)
     {
-        if (this.textureRes !== res) return;
-
-        const { Event } = Tw2TextureParameter;
-        switch (res._state)
-        {
-            case Tw2Resource.State.ERROR:
-                this.EmitEvent(Event.RES_ERROR, this, res, err);
-                res.UnregisterNotification(this);
-                break;
-
-            case Tw2Resource.State.PURGED:
-                this.EmitEvent(Event.RES_PURGED, this, res);
-                break;
-
-            case Tw2Resource.State.UNLOADED:
-                this.EmitEvent(Event.RES_UNLOADED, this, res);
-                break;
-
-            case Tw2Resource.State.REQUESTED:
-                this.EmitEvent(Event.RES_REQUESTED, this, res);
-                break;
-
-            case Tw2Resource.State.PREPARED:
-                this.EmitEvent(Event.RES_PREPARED, this, res);
-                res.UnregisterNotification(this);
-                break;
-        }
+        return Tw2Resource.parentOnResEvent(this, "textureRes", res, err);
     }
 
     /**
@@ -367,49 +315,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     static onListener(textureParameter, eventName, listener, context)
     {
-        /**
-         * The texture resource
-         * @type {Tw2TextureRes}
-         */
-        const res = textureParameter.textureRes;
-        if (!res) return false;
-
-        const { Event } = this;
-
-        let doCall;
-        switch (eventName)
-        {
-            case Event.RES_ERROR:
-                if (res.HasErrors())
-                {
-                    listener.call(context, this, res, res.GetLastError());
-                    return true;
-                }
-                return false;
-
-            case Event.RES_UNLOADED:
-                if (res.IsUnloaded()) doCall = true;
-                break;
-
-            case Event.RES_PURGED:
-                if (res.IsPurged()) doCall = true;
-                break;
-
-            case Event.RES_REQUESTED:
-                if (res.HasRequested()) doCall = true;
-                break;
-
-            case Event.RES_PREPARED:
-                if (res.IsPrepared()) doCall = true;
-        }
-
-        if (doCall)
-        {
-            listener.call(context, this, res);
-            return true;
-        }
-
-        return false;
+        return Tw2Resource.parentOnListener(textureParameter, "textureRes", eventName, listener, context);
     }
 
     /**
@@ -421,19 +327,5 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         return isString(a);
     }
-
-    /**
-     * Event names
-     * @type {*}
-     */
-    static Event = {
-        RES_UNLOADED: "res_unloaded",
-        RES_PURGED: "res_purged",
-        RES_ERROR: "res_error",
-        RES_REQUESTED: "res_requested",
-        RES_PREPARED: "res_prepared",
-        RES_REMOVED: "res_removed",
-        OVERRIDES_MODIFIED: "overrides_modified"
-    };
 
 }

@@ -4,6 +4,174 @@ export class Tw2MotherLode
     {
         this._loadedObjects = {};
         this._errors = {};
+        this._watching = [];
+    }
+
+    /**
+     * Updated watches objects
+     * @param {Number} maxFrames
+     * @param {Number} maxWatched
+     * @param {Number} maxTime;
+     */
+    UpdateWatched(maxFrames, maxWatched, maxTime)
+    {
+        const
+            now = Date.now(),
+            len = Math.min(this._watching.length, maxWatched);
+
+        for (let i = 0; i < this._watching.length; i++)
+        {
+            // Limit time  watching
+            if (maxTime && Date.now() - now >= maxTime)
+            {
+                return;
+            }
+
+            const
+                w = this._watching[i],
+                res = this.GetWatchedResourceDetail(w.object);
+
+            w.frames++;
+
+            // Update progress if there was a change (include 0)
+            if (w.total !== res.total || w.pending !== res.pending)
+            {
+                w.total = res.total;
+                w.pending = res.pending;
+                if (w.onProgress) w.onProgress(res, w.object);
+            }
+
+            // Finished
+            if (!res.pending)
+            {
+                this._watching.splice(i, 1);
+                i--;
+                w.onCompleted(true);
+                break;
+            }
+
+            // Took too long
+            if (w.frames >= maxFrames)
+            {
+                this._watching.splice(i, 1);
+                i--;
+                w.onError(new Error("Maximum watch duration reached"));
+                break;
+            }
+        }
+    }
+
+    /**
+     * Watches an object and resolved a promise when all resources have completed processing
+     * @param {*} object
+     * @param {Function} [onProgress]
+     * @return {Promise<*>}
+     */
+    async Watch(object, onProgress)
+    {
+        // Check if already watching
+        const index = this.GetWatchedIndex(object);
+        if (index !== -1) return this._watching[index]._promise;
+
+        // Get resource counts
+        const res = this.GetWatchedResourceDetail(object);
+
+        // Update progress (include 0)
+        if (onProgress) onProgress(res, object);
+
+        // Already complete
+        if (!res.pending) return object;
+
+        // Watcher
+        const watched = {
+            object,
+            onProgress,
+            frames: 0,
+            total: res.total,
+            pending: res.pending
+        };
+
+        this._watching.push(watched);
+
+        // Create deferred promise
+        watched._promise = new Promise((resolve, reject) =>
+        {
+            watched.onCompleted = didComplete => resolve(watched.object, didComplete);
+            watched.onError = err => reject(err);
+        });
+
+        return watched._promise;
+    }
+
+    /**
+     * Unwatches an object
+     * @param {*} obj
+     * @return {boolean}
+     */
+    UnWatch(obj)
+    {
+        const index = this.GetWatchedIndex(obj);
+        if (index !== -1)
+        {
+            const watched = this._watching[index];
+            this._watching.splice(index, 1);
+            watched.onCompleted(false);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the watched index of an object
+     * @param {Object} obj
+     * @return {number}
+     */
+    GetWatchedIndex(obj)
+    {
+        for (let i = 0; i < this._watching.length; i++)
+        {
+            if (this._watching[i].object === obj)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Checks if an object's resources have completed
+     * @param {*} object
+     * @return {Object}
+     */
+    GetWatchedResourceDetail(object)
+    {
+        const out = { total: 0, pending: 0, percent: 100 };
+
+        // We have no idea
+        if (!object.GetResources && !object.getResources)
+        {
+            return out;
+        }
+
+        const res = object.GetResources ? object.GetResources() : object.getResources();
+        out.total = res.length;
+
+        // Cycle through all available res to keep them alive
+        // And to catch any that have been added since first watched
+        if (out.total)
+        {
+            for (let i = 0; i < res.length; i++)
+            {
+                if (!res[i].HasCompleted())
+                {
+                    out.pending++;
+                }
+            }
+
+            out.percent = parseFloat(((out.total - out.pending) / out.total * 100).toFixed(2));
+        }
+
+        return out;
     }
 
     /**
@@ -56,7 +224,7 @@ export class Tw2MotherLode
      * @param {String} path
      * @returns {*|Boolean}
      */
-    HasErrors(path)
+    HasErrored(path)
     {
         return (path && path in this._errors);
     }
@@ -172,7 +340,7 @@ export class Tw2MotherLode
                 let detail;
 
                 // Has errors
-                if (res.HasErrors())
+                if (res.HasErrored())
                 {
                     detail = "errored";
                 }
@@ -182,7 +350,7 @@ export class Tw2MotherLode
                     detail = "unloaded";
                 }
                 // good but inactive
-                else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance)
+                else if (res.HasLoaded() && (curFrame - res.activeFrame) % frameLimit >= frameDistance)
                 {
                     if (res.Unload({ hide: true, detail: "inactivity" }))
                     {

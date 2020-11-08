@@ -49,7 +49,10 @@ export const config = {
         "systemMirror": false,
         "autoPurgeResources": true,
         "purgeTime": 60,
-        "maxPrepareTime": 0.05
+        "maxPrepareTime": 0.05,
+        "maxWatchedFramed" : 500,
+        "maxWatchedCount" : 10,
+        "maxWatchTime" : 0.05
     },
 
     logger: {

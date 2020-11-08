@@ -1663,8 +1663,8 @@ var ccpwgl = (function(tw2)
 
         /**
          * Gets the object's resources
-         * @param {Array<Tw2Resource>} [out=[]]
-         * @returns {Array<Tw2Resouce>} out
+         * @param {Array} [out=[]]
+         * @returns {Array} out
          */
         this.getResources = function(out)
         {
@@ -1735,6 +1735,23 @@ var ccpwgl = (function(tw2)
         var lodSetting = ccpwgl.LodSettings.LOD_DISABLED;
         /** Scene clear color **/
         var sceneClearColor;
+        /** Enable rendering  the environment **/
+        var enableEnvironment = true;
+
+        /**
+         * Gets the scene's resources
+         * @param {Array} [out=[]}
+         * @return {Array} out
+         */
+        this.getResources = function(out)
+        {
+            if (!out) out = [];
+            if (this.wrappedScene)
+            {
+                return this.wrappedScene.GetResources(out);
+            }
+            return out;
+        };
 
         /**
          * Sets the background's clear color
@@ -1792,7 +1809,7 @@ var ccpwgl = (function(tw2)
             if (treatPlanetsAsObjects !== bool)
             {
                 treatPlanetsAsObjects = bool;
-                rebuildSceneObjects(self);
+                this.rebuild();
             }
         };
 
@@ -1814,8 +1831,10 @@ var ccpwgl = (function(tw2)
             {
                 return;
             }
+
             self.wrappedScene.planets.splice(0);
             self.wrappedScene.objects.splice(0);
+
             for (var i = 0; i < self.objects.length; ++i)
             {
                 for (var j = 0; j < self.objects[i].wrappedObjects.length; ++j)
@@ -1842,6 +1861,7 @@ var ccpwgl = (function(tw2)
         function onSceneLoaded(self, obj)
         {
             self.wrappedScene = obj;
+
             if (self.sun)
             {
                 obj.lensflares[0] = self.sun;
@@ -1870,6 +1890,7 @@ var ccpwgl = (function(tw2)
                 obj.fogMax = self.fog[2];
                 obj.fogColor.set(self.fog[3]);
             }
+
             rebuildSceneObjects(self);
         }
 
@@ -1922,7 +1943,7 @@ var ccpwgl = (function(tw2)
          * @param {string} resPath Res path to ship .red file
          * @param {!function(): void} [onload] Optional callback function that is called
          *   when ship .red file is loaded. this will point to Ship instance.
-         * @returns {ccpwgl.Ship} A newly created ship instance.
+         * @returns {Ship} A newly created ship instance.
          */
         this.loadShip = function(resPath, onload)
         {
@@ -1942,7 +1963,7 @@ var ccpwgl = (function(tw2)
 
             if (ship.wrappedObjects[0])
             {
-                rebuildSceneObjects(this);
+                this.rebuild();
             }
 
             return ship;
@@ -1954,7 +1975,7 @@ var ccpwgl = (function(tw2)
          * @param {string} resPath Res path to object .red file
          * @param {!function(): void} onload Optional callback function that is called
          *   when object .red file is loaded. this will point to SpaceObject instance.
-         * @returns {ccpwgl.SpaceObject} A newly created object instance.
+         * @returns {SpaceObject} A newly created object instance.
          */
         this.loadObject = function(resPath, onload)
         {
@@ -1972,23 +1993,7 @@ var ccpwgl = (function(tw2)
             this.objects.push(object);
             if (object.wrappedObjects[0])
             {
-                rebuildSceneObjects(this);
-            }
-            return object;
-        };
-
-        /**
-         * Adds previously loaded, but removed object back to the scene.
-         *
-         * @param {ccpwgl.SpaceObject} object Object to add.
-         * @returns {ccpwgl.SpaceObject} Object added.
-         */
-        this.addObject = function(object)
-        {
-            this.objects.push(object);
-            if (object.wrappedObjects[0])
-            {
-                rebuildSceneObjects(this);
+                this.rebuild();
             }
             return object;
         };
@@ -1996,26 +2001,38 @@ var ccpwgl = (function(tw2)
         /**
          * Creates a planet.
          *
-         * @param {number} itemID           - the item id is used for randomization
-         * @param {string} planetPath       - .red file for a planet, or planet template
-         * @param {string} [atmospherePath] - optional .red file for a planet's atmosphere
-         * @param {string} heightMap1       - planet's first height map
-         * @param {string} heightMap2       - planet's second height map
-         * @param {function} [onLoad]       - an optioanl callback which is fired when the planet has loaded
-         * @returns {ccpwgl.Planet} A newly created planet instance.
+         * @param {Object} options
+         * @param {number} options.itemID           - the item id is used for randomization
+         * @param {string} options.planetPath       - .red file for a planet, or planet template
+         * @param {string} [options.atmospherePath] - optional .red file for a planet's atmosphere
+         * @param {string} options.heightMap1       - planet's first height map
+         * @param {string} options.heightMap2       - planet's second height map
+         * @param {function} [onLoad]               - an optional callback which is fired when the planet has loaded
+         * @returns {Planet} A newly created planet instance.
          */
         this.loadPlanet = function(options, onLoad)
         {
             var object = new Planet(options, onLoad);
+            return this.addObject(object);
+        };
+
+        /**
+         * Adds previously loaded, but removed object back to the scene.
+         *
+         * @param {SpaceObject|Ship|Planet} object Object to add.
+         * @returns {SpaceObject|Ship|Planet} Object added.
+         */
+        this.addObject = function(object)
+        {
             this.objects.push(object);
-            rebuildSceneObjects(this);
+            this.rebuild();
             return object;
         };
 
         /**
          * Returns object (ship or planet) at a specified index in scene's objects list.
          *
-         * @thorws If index is out of bounds.
+         * @throws If index is out of bounds.
          * @param {number} index Object index.
          * @returns Object at specified index.
          */

@@ -15,6 +15,10 @@ export class Tw2ResMan extends Tw2EventEmitter
     activeFrame = 0;
     purgeTime = 30;
 
+    maxWatchedFrames = 500;
+    maxWatchedCount = 10;
+    maxWatchTime = 0.05;
+
     _prepareBudget = 0;
     _prepareQueue = [];
     _purgeTime = 0;
@@ -51,7 +55,26 @@ export class Tw2ResMan extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
-        assignIfExists(this, opt, [ "systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime" ]);
+        assignIfExists(this, opt, [
+            "systemMirror",
+            "maxPrepareTime",
+            "autoPurgeResources",
+            "purgeTime",
+            "maxWatchTime",
+            "maxWatchCount",
+            "maxWatchFrames"
+        ]);
+    }
+
+    /**
+     * Watches an object and resolves when all of it's resources have completed processing
+     * @param {*} object
+     * @param {Function} [onProgress]
+     * @return {Promise<*>}
+     */
+    async Watch(object, onProgress)
+    {
+        return this.motherLode.Watch(object, onProgress);
     }
 
     /**
@@ -169,6 +192,8 @@ export class Tw2ResMan extends Tw2EventEmitter
                 res.OnError(err);
             }
         }
+
+        this.motherLode.UpdateWatched(this._maxWatchedFrames, this._maxWatchedCount);
 
         this._purgeTime += device.dt;
 
@@ -305,7 +330,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         this.motherLode.Add(res.path, res);
 
         // Don't load if already errored
-        if (res.HasErrors())
+        if (res.HasErrored())
         {
             return res;
         }
@@ -321,19 +346,21 @@ export class Tw2ResMan extends Tw2EventEmitter
                 return res;
             }
 
-            if (!res.HasErrors())
+            if (res.HasErrored())
             {
-                this.Fetch(url, res.requestResponseType)
-                    .then(response =>
-                    {
-                        res.OnLoaded();
-                        this.Queue(res, response);
-                    })
-                    .catch(err =>
-                    {
-                        res.OnError(err);
-                    });
+                return res;
             }
+
+            this.Fetch(url, res.requestResponseType)
+                .then(response =>
+                {
+                    res.OnLoaded();
+                    this.Queue(res, response);
+                })
+                .catch(err =>
+                {
+                    res.OnError(err);
+                });
         }
         catch (err)
         {

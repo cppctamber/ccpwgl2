@@ -26,22 +26,21 @@ export class Tw2Resource extends Tw2Notifications
     }
 
     /**
-     * Checks if the resource is good and keeps it alive
-     * @returns {boolean}
+     * Checks if the resource has errors
+     * @returns {Boolean}
      */
-    IsGood()
+    HasErrored()
     {
-        this.KeepAlive();
-        return this.IsPrepared() || this.IsLoaded();
+        return this._state === Tw2Resource.State.ERROR;
     }
 
     /**
-     * Checks to see if the resource is loading
+     * Checks if the resource has completed all processing
      * @returns {Boolean}
      */
-    IsRequested()
+    HasCompleted()
     {
-        return this._state === Tw2Resource.State.REQUESTED;
+        return this.HasErrored() || this.IsPurged() || this.HasPrepared();
     }
 
     /**
@@ -50,25 +49,35 @@ export class Tw2Resource extends Tw2Notifications
      */
     HasRequested()
     {
-        return this._requested !== 0;
+        return this._state === Tw2Resource.State.REQUESTED ||  this.HasLoaded();
     }
 
     /**
-     * Checks if the resource has been loaded
-     * @returns {boolean}
+     * Checks if the resource has loaded
+     * @return {boolean}
      */
-    IsLoaded()
+    HasLoaded()
     {
-        return this._state === Tw2Resource.State.LOADED;
+        return this._state === Tw2Resource.State.LOADED || this._state === Tw2Resource.State.PREPARED;
     }
 
     /**
      * Checks if the resource has been prepared
      * @returns {boolean}
      */
-    IsPrepared()
+    HasPrepared()
     {
         return this._state === Tw2Resource.State.PREPARED;
+    }
+
+    /**
+     * Checks if the resource is good and keeps it alive
+     * @returns {boolean}
+     */
+    IsGood()
+    {
+        this.KeepAlive();
+        return this.HasLoaded();
     }
 
     /**
@@ -90,24 +99,6 @@ export class Tw2Resource extends Tw2Notifications
     }
 
     /**
-     * Checks if the resource has errors
-     * @returns {Boolean}
-     */
-    HasErrors()
-    {
-        return this._state === Tw2Resource.State.ERROR;
-    }
-
-    /**
-     * Checks if the resource has completed all processing
-     * @returns {Boolean}
-     */
-    HasCompleted()
-    {
-        return this.HasErrors() || this.IsPurged() || this.IsPrepared();
-    }
-
-    /**
      * Unloads the resource
      * @param {*} [log]
      * @returns {Boolean}
@@ -123,7 +114,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     Reload(log)
     {
-        if (this.IsLoaded() || this.IsPrepared())
+        if (this.HasLoaded())
         {
             this.Unload({ hide: true, detail: "reloading" });
         }
@@ -191,7 +182,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnError(err = new Tw2Error())
     {
-        let wasGood = this.IsLoaded() || this.IsPrepared();
+        let wasGood = this.HasLoaded();
 
         if (!this._errors.includes(err))
         {
@@ -372,14 +363,136 @@ export class Tw2Resource extends Tw2Notifications
         {
             return !!notification(resource, err, funcName);
         }
+        // Specific function on notification
         else if (funcName && funcName in notification)
         {
             return !!notification[funcName](resource, err);
         }
+        // Catch all function on notification
         else if ("OnResEvent" in notification)
         {
             return !!notification.OnResEvent(resource, err);
         }
+        return false;
+    }
+
+    /**
+     * Handles the parent's resource events
+     * // Temporary
+     * @param {*} parent
+     * @param {String} target
+     * @param {Tw2Resource} res
+     * @param {Error} [err]
+     */
+    static parentOnResEvent(parent, target, res, err)
+    {
+        // Ignore old res that are still firing
+        if (parent[target] !== res)
+        {
+            res.UnregisterNotification(parent);
+            return;
+        }
+
+        const { Event, State } = this;
+        let completed = false;
+
+        switch (res._state)
+        {
+            case State.ERROR:
+                parent.EmitEvent(Event.RES_ERROR, parent, res, err);
+                completed = true;
+                break;
+
+            case State.PURGED:
+                parent.EmitEvent(Event.RES_PURGED, parent, res);
+                break;
+
+            case State.UNLOADED:
+                parent.EmitEvent(Event.RES_UNLOADED, parent, res);
+                break;
+
+            case State.REQUESTED:
+                parent.EmitEvent(Event.RES_REQUESTED, parent, res);
+                break;
+
+            case State.LOADED:
+                parent.EmitEvent(Event.RES_LOADED, parent, res);
+                break;
+
+            case State.PREPARED:
+                parent.EmitEvent(Event.RES_PREPARED, parent, res);
+                completed = true;
+                break;
+        }
+
+        if (completed)
+        {
+            parent.EmitEvent(Event.RES_COMPLETED, parent, res, err);
+            res.UnregisterNotification(parent);
+        }
+    }
+
+    /**
+     * Handles events added to a parent after an internal event has already happened
+     * // Temporary
+     * @param {*} parent
+     * @param {String} target
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} context
+     * @return {boolean}
+     */
+    static parentOnListener(parent, target, eventName,  listener,  context)
+    {
+        const res = parent[target];
+        if (!res) return false;
+
+        const { Event } = Tw2Resource;
+
+        let doCall;
+        switch (eventName)
+        {
+            case Event.RES_COMPLETED:
+                if (res.HasCompleted())
+                {
+                    listener.call(context, parent, res, res.GetLastError());
+                }
+                return false;
+
+            case Event.RES_ERROR:
+                if (res.HasErrored())
+                {
+                    listener.call(context, parent, res, res.GetLastError());
+                    return true;
+                }
+                return false;
+
+            case Event.RES_UNLOADED:
+                if (res.IsUnloaded()) doCall = true;
+                break;
+
+            case Event.RES_PURGED:
+                if (res.IsPurged()) doCall = true;
+                break;
+
+            case Event.RES_REQUESTED:
+                if (res.HasRequested()) doCall = true;
+                break;
+
+            case Event.RES_LOADED:
+                if (res.HasLoaded()) doCall = true;
+                break;
+
+            case Event.RES_PREPARED:
+                if (res.HasPrepared()) doCall = true;
+        }
+
+        if (doCall)
+        {
+            listener.call(context, parent, res);
+            return true;
+        }
+
         return false;
     }
 
@@ -399,6 +512,7 @@ export class Tw2Resource extends Tw2Notifications
 
     /**
      * Notification callback names
+     * Todo: Remove notifications and replace with events
      * @type {*}
      */
     static Callback = {
@@ -410,6 +524,21 @@ export class Tw2Resource extends Tw2Notifications
         PREPARED: "OnResPrepared",
         WARNING: "OnResWarning",
         DEBUG: "OnResDebug"
+    };
+
+    /**
+     * Event names
+     * @type {*}
+     */
+    static Event = {
+        RES_UNLOADED: "unloaded",
+        RES_PURGED: "purged",
+        RES_ERROR: "error",
+        RES_REQUESTED: "requested",
+        RES_LOADED: "loaded",
+        RES_PREPARED: "prepared",
+        RES_REMOVED: "removed",
+        RES_COMPLETED: "completed"
     };
 
 }

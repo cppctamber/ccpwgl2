@@ -57,6 +57,7 @@ import {
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
 } from "constant";
+import { device } from "global/tw2";
 
 
 export class Tw2Device extends Tw2EventEmitter
@@ -341,6 +342,29 @@ export class Tw2Device extends Tw2EventEmitter
             this.viewportPixelRatio = value;
             this.Resize();
         }
+    }
+
+    /**
+     * Converts an effect resource path back into a normal effect file path
+     * @param {String} path
+     * @param {String} [ext='fx']
+     * @returns {String}
+     */
+    FromEffectPath(path, ext = "fx")
+    {
+        path = path.substr(0, path.lastIndexOf(".")).replace(this.effectDir, "/effect/") + "." + ext;
+        return path.toLowerCase();
+    }
+
+    /**
+     * Translates a path to an
+     * @param {String} path
+     * @returns {String}
+     */
+    ToEffectPath(path)
+    {
+        path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", this.effectDir) + ".sm_" + this.shaderModel : "";
+        return path.toLowerCase();
     }
 
     /**
