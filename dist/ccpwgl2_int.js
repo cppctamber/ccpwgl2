@@ -18175,7 +18175,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Transform", function() { return Tw2Transform; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-var _dec, _dec2, _dec3, _dec4, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -18192,7 +18192,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 var vec3_0 = math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
     quat_0 = math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
     mat4_0 = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, (_class = (_temp = class Tw2Transform extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
+var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Transform"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class Tw2Transform extends utils__WEBPACK_IMPORTED_MODULE_0__["meta"].Model {
   constructor(...args) {
     super(...args);
 
@@ -19132,35 +19132,35 @@ var Tw2Transform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _d
     }
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "rotation", [_dec2], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "translation", [_dec3], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "translation", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "scaling", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
   }
-})), _class));
+})), _class2)) || _class);
 
 /***/ }),
 
@@ -21873,7 +21873,7 @@ class Tw2MotherLode {
    */
 
 
-  HasErrored(path) {
+  HasErrors(path) {
     return path && path in this._errors;
   }
   /**
@@ -21978,13 +21978,13 @@ class Tw2MotherLode {
 
         var detail = void 0; // Has errors
 
-        if (res.HasErrored()) {
+        if (res.HasErrors()) {
           detail = "errored";
         } // Waiting for purge
         else if (res.IsUnloaded()) {
             detail = "unloaded";
           } // good but inactive
-          else if (res.HasLoaded() && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
+          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
               if (res.Unload({
                 hide: true,
                 detail: "inactivity"
@@ -22318,7 +22318,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
   LoadResource(res, eventLog) {
     this.motherLode.Add(res.path, res); // Don't load if already errored
 
-    if (res.HasErrored()) {
+    if (res.HasErrors()) {
       return res;
     }
 
@@ -22330,7 +22330,7 @@ class Tw2ResMan extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventE
         return res;
       }
 
-      if (!res.HasErrored()) {
+      if (!res.HasErrors()) {
         this.Fetch(url, res.requestResponseType).then(response => {
           res.OnLoaded();
           this.Queue(res, response);
@@ -23884,7 +23884,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
 /* harmony import */ var _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parameter/Tw2Vector4Parameter */ "./core/parameter/Tw2Vector4Parameter.js");
 /* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -23892,7 +23891,6 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
 
 
 
@@ -23980,49 +23978,10 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
    */
   Initialize() {
     if (this.effectFilePath !== "") {
-      var effectFilePath = this.effectFilePath;
-      this.effectFilePath = "";
-      this.SetValue(effectFilePath);
+      this.effectFilePath = this.effectFilePath.toLowerCase();
+      var path = Tw2Effect.ToEffectResPath(this.effectFilePath);
+      this.effectRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path, res => this.OnResPrepared(res));
     }
-  }
-  /**
-   * Sets the effect
-   * @param {String} effectFilePath
-   * @return {boolean}
-   */
-
-
-  SetValue(effectFilePath) {
-    if (effectFilePath === "") {
-      if (this.effectFilePath === "") return false;
-      this.effectFilePath = "";
-
-      if (this.effectRes) {
-        this.effectRes.UnregisterNotification(this);
-      }
-
-      this.UpdateValues();
-      return true;
-    }
-
-    effectFilePath = effectFilePath.toLowerCase();
-    var path = Tw2Effect.ToEffectResPath(effectFilePath);
-    var res = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(Tw2Effect.ToEffectResPath(effectFilePath));
-    if (res === this.effectRes) return false;
-
-    if (this.effectRes !== res) {}
-
-    this.effectRes = global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(path);
-    this.effectRes.RegisterNotification(this);
-  }
-  /**
-   * Gets the effect's file path
-   * @return {string}
-   */
-
-
-  GetValue() {
-    return this.effectFilePath;
   }
   /**
    * Finds an effect parameter by it's name
@@ -24095,18 +24054,13 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
 
   OnResPrepared(res) {
     this.effectRes = res;
-    this.shader = null;
-
-    try {
-      this.shader = res.GetShader(this.options);
-      this.BindParameters();
-      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_PREPARED, this, res);
-      res.UnregisterNotification(this);
-    } catch (err) {
-      this._error = err;
-      res.OnError(err);
-    }
-
+    this.shader = res.GetShader(this.options);
+    this.BindParameters();
+    this.EmitEvent("loaded", {
+      effect: this,
+      shader: this.shader,
+      resource: res
+    });
     return true;
   }
   /**
@@ -24566,27 +24520,26 @@ var Tw2Effect = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Effe
     }
   }
   /**
-   * Fires on resource events
-   * @param {Tw2TextureRes} res
-   * @param {Error} err
-   */
-
-
-  OnResEvent(res, err) {
-    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "effectRes", res, err);
-  }
-  /**
-   * Handles listeners added after an event has already been fired
-   * @param {Tw2Effect} effect
+   * on Event Listener
+   * @param {Tw2Effect} source
    * @param {String} eventName
    * @param {Function} listener
    * @param {*} [context]
-   * @return {boolean} true if the listener was fired
+   * @returns {boolean}
    */
 
 
-  static onListener(effect, eventName, listener, context) {
-    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(this, "effectRes", eventName, listener, context);
+  static onListener(source, eventName, listener, context) {
+    if (eventName === "loaded" && source.shader) {
+      listener.call(context, {
+        effect: source,
+        shader: source.shader,
+        resource: source.effectRes
+      });
+      return true;
+    }
+
+    return false;
   }
   /**
    * Converts an effect file path into one suitable for an effect resource
@@ -27963,7 +27916,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 /* harmony import */ var core_resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core/resource */ "./core/resource/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -27977,7 +27930,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
+var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerOverrides"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Parameter"] {
   /**
    * Temporary
    * @return {Boolean}
@@ -28115,7 +28068,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   _RemoveTextureRes() {
     if (this.textureRes) {
       this.textureRes.UnregisterNotification(this);
-      this.EmitEvent(core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].Event.RES_REMOVED, this, this.textureRes);
+      this.EmitEvent(Tw2TextureParameter.Event.RES_REMOVED, this, this.textureRes);
       this.textureRes = null;
       return true;
     }
@@ -28141,11 +28094,43 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
         res.Attach(texture, this.resourcePath);
       }
-    } else {
-      var _res = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
+    } //  Temporary text texture
+    else if (this.resourcePath.indexOf("text:/") === 0) {
+        if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
+          var split = this.resourcePath.split("/"),
+              text = split[1],
+              options = split[2],
+              _opt = {};
 
-      this._SetTextureRes(_res);
-    }
+          if (options) {
+            var optSplit = options.split(";");
+
+            for (var i = 0; i < optSplit.length; i++) {
+              var [key, value] = optSplit[i].split("=");
+              _opt[key] = value;
+            }
+          }
+
+          var {
+            gl
+          } = global__WEBPACK_IMPORTED_MODULE_1__["device"],
+              canvas = Object(utils__WEBPACK_IMPORTED_MODULE_0__["createTextCanvas"])(text, _opt),
+              _res = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_4__["Tw2TextureRes"](),
+              _texture = gl.createTexture();
+
+          gl.bindTexture(gl.TEXTURE_2D, _texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+          gl.bindTexture(gl.TEXTURE_2D, null);
+
+          this._SetTextureRes(_res);
+
+          _res.Attach(_texture, this.resourcePath);
+        }
+      } else {
+        var _res2 = this.resourcePath ? global__WEBPACK_IMPORTED_MODULE_1__["resMan"].GetResource(this.resourcePath) : null;
+
+        this._SetTextureRes(_res2);
+      }
   }
   /**
    * Apply
@@ -28179,7 +28164,7 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
     if (this.overrides.SetValues(values, opt)) {
       if (!opt || !opt.skipEvents) {
-        this.EmitEvent("overrides_modified", this, opt);
+        this.EmitEvent(Tw2TextureParameter.Event.OVERRIDES_MODIFIED, this, opt);
       }
     }
   }
@@ -28240,7 +28225,34 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   OnResEvent(res, err) {
-    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnResEvent(this, "textureRes", res, err);
+    if (this.textureRes !== res) return;
+    var {
+      Event
+    } = Tw2TextureParameter;
+
+    switch (res._state) {
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.ERROR:
+        this.EmitEvent(Event.RES_ERROR, this, res, err);
+        res.UnregisterNotification(this);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PURGED:
+        this.EmitEvent(Event.RES_PURGED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.UNLOADED:
+        this.EmitEvent(Event.RES_UNLOADED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.REQUESTED:
+        this.EmitEvent(Event.RES_REQUESTED, this, res);
+        break;
+
+      case core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].State.PREPARED:
+        this.EmitEvent(Event.RES_PREPARED, this, res);
+        res.UnregisterNotification(this);
+        break;
+    }
   }
   /**
    * Handles listeners added after an event has already been fired
@@ -28253,7 +28265,48 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
 
 
   static onListener(textureParameter, eventName, listener, context) {
-    return core_resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"].parentOnListener(this, "textureRes", eventName, listener, context);
+    /**
+     * The texture resource
+     * @type {Tw2TextureRes}
+     */
+    var res = textureParameter.textureRes;
+    if (!res) return false;
+    var {
+      Event
+    } = this;
+    var doCall;
+
+    switch (eventName) {
+      case Event.RES_ERROR:
+        if (res.HasErrors()) {
+          listener.call(context, this, res, res.GetLastError());
+          return true;
+        }
+
+        return false;
+
+      case Event.RES_UNLOADED:
+        if (res.IsUnloaded()) doCall = true;
+        break;
+
+      case Event.RES_PURGED:
+        if (res.IsPurged()) doCall = true;
+        break;
+
+      case Event.RES_REQUESTED:
+        if (res.HasRequested()) doCall = true;
+        break;
+
+      case Event.RES_PREPARED:
+        if (res.IsPrepared()) doCall = true;
+    }
+
+    if (doCall) {
+      listener.call(context, this, res);
+      return true;
+    }
+
+    return false;
   }
   /**
    * Checks if a value is a valid parameter value
@@ -28265,7 +28318,20 @@ var Tw2TextureParameter = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   static isValue(a) {
     return Object(utils__WEBPACK_IMPORTED_MODULE_0__["isString"])(a);
   }
+  /**
+   * Event names
+   * @type {*}
+   */
 
+
+}, _class3.Event = {
+  RES_UNLOADED: "res_unloaded",
+  RES_PURGED: "res_purged",
+  RES_ERROR: "res_error",
+  RES_REQUESTED: "res_requested",
+  RES_PREPARED: "res_prepared",
+  RES_REMOVED: "res_removed",
+  OVERRIDES_MODIFIED: "overrides_modified"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -33379,22 +33445,23 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._requestResponseType;
   }
   /**
-   * Checks if the resource has errors
-   * @returns {Boolean}
+   * Checks if the resource is good and keeps it alive
+   * @returns {boolean}
    */
 
 
-  HasErrored() {
-    return this._state === Tw2Resource.State.ERROR;
+  IsGood() {
+    this.KeepAlive();
+    return this.IsPrepared() || this.IsLoaded();
   }
   /**
-   * Checks if the resource has completed all processing
+   * Checks to see if the resource is loading
    * @returns {Boolean}
    */
 
 
-  HasCompleted() {
-    return this.HasErrored() || this.IsPurged() || this.HasPrepared();
+  IsRequested() {
+    return this._state === Tw2Resource.State.REQUESTED;
   }
   /**
    * Checks if the resource has been requested
@@ -33403,16 +33470,16 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   HasRequested() {
-    return this._state === Tw2Resource.State.REQUESTED || this.HasLoaded();
+    return this._requested !== 0;
   }
   /**
-   * Checks if the resource has loaded
-   * @return {boolean}
+   * Checks if the resource has been loaded
+   * @returns {boolean}
    */
 
 
-  HasLoaded() {
-    return this._state === Tw2Resource.State.LOADED || this._state === Tw2Resource.State.PREPARED;
+  IsLoaded() {
+    return this._state === Tw2Resource.State.LOADED;
   }
   /**
    * Checks if the resource has been prepared
@@ -33420,18 +33487,8 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
    */
 
 
-  HasPrepared() {
+  IsPrepared() {
     return this._state === Tw2Resource.State.PREPARED;
-  }
-  /**
-   * Checks if the resource is good and keeps it alive
-   * @returns {boolean}
-   */
-
-
-  IsGood() {
-    this.KeepAlive();
-    return this.HasLoaded();
   }
   /**
    * Checks if the resource has been unloaded
@@ -33452,6 +33509,24 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
     return this._state === Tw2Resource.State.PURGED;
   }
   /**
+   * Checks if the resource has errors
+   * @returns {Boolean}
+   */
+
+
+  HasErrors() {
+    return this._state === Tw2Resource.State.ERROR;
+  }
+  /**
+   * Checks if the resource has completed all processing
+   * @returns {Boolean}
+   */
+
+
+  HasCompleted() {
+    return this.HasErrors() || this.IsPurged() || this.IsPrepared();
+  }
+  /**
    * Unloads the resource
    * @param {*} [log]
    * @returns {Boolean}
@@ -33468,7 +33543,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   Reload(log) {
-    if (this.HasLoaded()) {
+    if (this.IsLoaded() || this.IsPrepared()) {
       this.Unload({
         hide: true,
         detail: "reloading"
@@ -33540,7 +33615,7 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
 
   OnError(err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["Tw2Error"]()) {
-    var wasGood = this.HasLoaded();
+    var wasGood = this.IsLoaded() || this.IsPrepared();
 
     if (!this._errors.includes(err)) {
       this._errors.unshift(err);
@@ -33723,101 +33798,6 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
 
     return false;
   }
-
-  static parentOnResEvent(parent, target, res, err) {
-    if (!parent[target] !== res) return;
-    var {
-      Event,
-      State
-    } = this;
-
-    switch (res._state) {
-      case State.ERROR:
-        this.EmitEvent(Event.RES_ERROR, parent, res, err);
-        res.UnregisterNotification(parent);
-        break;
-
-      case State.PURGED:
-        this.EmitEvent(Event.RES_PURGED, parent, res);
-        break;
-
-      case State.UNLOADED:
-        this.EmitEvent(Event.RES_UNLOADED, parent, res);
-        break;
-
-      case State.REQUESTED:
-        this.EmitEvent(Event.RES_REQUESTED, parent, res);
-        break;
-
-      case State.LOADED:
-        parent.EmitEvent(Event.RES_LOADED, parent, res);
-        break;
-
-      case Tw2Resource.State.PREPARED:
-        this.EmitEvent(Event.RES_PREPARED, parent, res);
-        res.UnregisterNotification(parent);
-        break;
-    }
-  }
-  /**
-   *
-   * @param parent
-   * @param target
-   * @param eventName
-   * @param listener
-   * @param context
-   * @return {boolean}
-   */
-
-
-  static parentOnListener(parent, target, eventName, listener, context) {
-    /**
-     * The texture resource
-     * @type {Tw2TextureRes}
-     */
-    var res = parent[target];
-    if (!res) return false;
-    var {
-      Event
-    } = Tw2Resource;
-    var doCall;
-
-    switch (eventName) {
-      case Event.RES_ERROR:
-        if (res.HasErrored()) {
-          listener.call(context, this, res, res.GetLastError());
-          return true;
-        }
-
-        return false;
-
-      case Event.RES_UNLOADED:
-        if (res.IsUnloaded()) doCall = true;
-        break;
-
-      case Event.RES_PURGED:
-        if (res.IsPurged()) doCall = true;
-        break;
-
-      case Tw2Resource.RES_REQUESTED:
-        if (res.HasRequested()) doCall = true;
-        break;
-
-      case Event.RES_LOADED:
-        if (res.HasLoaded()) doCall = true;
-        break;
-
-      case Event.RES_PREPARED:
-        if (res.HasPrepared()) doCall = true;
-    }
-
-    if (doCall) {
-      listener.call(context, this, res);
-      return true;
-    }
-
-    return false;
-  }
   /**
    * Resource states
    * @type {*}
@@ -33841,14 +33821,6 @@ var Tw2Resource = (_dec = utils__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2Re
   PREPARED: "OnResPrepared",
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
-}, _class2.Event = {
-  RES_UNLOADED: "unloaded",
-  RES_PURGED: "purged",
-  RES_ERROR: "error",
-  RES_REQUESTED: "requested",
-  RES_LOADED: "loaded",
-  RES_PREPARED: "prepared",
-  RES_REMOVED: "removed"
 }, _temp)) || _class);
 /**
  * An optional function for when the resource handles it's own loading
@@ -49316,7 +49288,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStretch, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetItem, EveSpotlightSet, EveSpriteSetItem, EveSpriteSet, EveTurretSetItem, EveTurretSet, EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveSpaceScene */
+/*! exports provided: EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStretch, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetItem, EveSpotlightSet, EveSpriteSetItem, EveSpriteSet, EveTurretSetItem, EveTurretSet, EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveShip2, EveSpaceObject, EveStation, EveSpaceScene */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49394,6 +49366,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_3__["EvePlanet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_3__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _object__WEBPACK_IMPORTED_MODULE_3__["EveShip2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObject"]; });
 
@@ -56772,6 +56746,830 @@ var EveShip = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip")
 
 /***/ }),
 
+/***/ "./eve/object/EveShip2.js":
+/*!********************************!*\
+  !*** ./eve/object/EveShip2.js ***!
+  \********************************/
+/*! exports provided: EveShip2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return EveShip2; });
+/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
+/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
+/* harmony import */ var eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object/EveObject */ "./eve/object/EveObject.js");
+/* harmony import */ var core_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/data */ "./core/data/index.js");
+/* harmony import */ var core_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/model */ "./core/model/index.js");
+/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
+/* harmony import */ var eve_effect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/effect */ "./eve/effect/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _class3, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
+
+
+
+
+
+
+var EveShip2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip2"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Animation"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveBoosterSet2"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCustomMask"), _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("How to handle serializing these? They are loaded from the sof"), _dec25 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveShip2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+  constructor(...args) {
+    super(...args);
+
+    _initializerDefineProperty(this, "animation", _descriptor, this);
+
+    _initializerDefineProperty(this, "attachments", _descriptor2, this);
+
+    _initializerDefineProperty(this, "boosters", _descriptor3, this);
+
+    _initializerDefineProperty(this, "boundingSphereCenter", _descriptor4, this);
+
+    _initializerDefineProperty(this, "boundingSphereRadius", _descriptor5, this);
+
+    _initializerDefineProperty(this, "children", _descriptor6, this);
+
+    _initializerDefineProperty(this, "customMasks", _descriptor7, this);
+
+    _initializerDefineProperty(this, "decals", _descriptor8, this);
+
+    _initializerDefineProperty(this, "dna", _descriptor9, this);
+
+    _initializerDefineProperty(this, "locatorSets", _descriptor10, this);
+
+    _initializerDefineProperty(this, "locators", _descriptor11, this);
+
+    _initializerDefineProperty(this, "mesh", _descriptor12, this);
+
+    _initializerDefineProperty(this, "rotationCurve", _descriptor13, this);
+
+    _initializerDefineProperty(this, "shadowEffect", _descriptor14, this);
+
+    _initializerDefineProperty(this, "shapeEllipsoidCenter", _descriptor15, this);
+
+    _initializerDefineProperty(this, "shapeEllipsoidRadius", _descriptor16, this);
+
+    _initializerDefineProperty(this, "translationCurve", _descriptor17, this);
+
+    _initializerDefineProperty(this, "killCount", _descriptor18, this);
+
+    _initializerDefineProperty(this, "boosterGain", _descriptor19, this);
+
+    _initializerDefineProperty(this, "effectChildren", _descriptor20, this);
+
+    _initializerDefineProperty(this, "visible", _descriptor21, this);
+
+    this._enableCurves = false;
+    this._pixelSizeAcross = 0;
+    this._lod = 3;
+    this._worldSpriteScale = 1;
+    this._localTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this._worldTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this._perObjectData = core_data__WEBPACK_IMPORTED_MODULE_3__["Tw2PerObjectData"].from(EveShip2.perObjectData);
+  }
+
+  /**
+   * Initializes the ship
+   */
+  Initialize() {
+    this.RebuildBoosterSet();
+  }
+  /**
+   * Finds a turret set by it's locator
+   * @param {String} locator
+   * @returns {EveTurretSet}
+   */
+
+
+  FindTurretSetByLocatorName(locator) {
+    for (var i = 0; i < this.attachments.length; i++) {
+      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i].locatorName === locator) {
+        return this.attachments[i];
+      }
+    }
+  }
+  /**
+   * Finds all turret prefixes
+   * @param {Array<String>} [out=[]] - Receiving array
+   * @returns {Array<String>} out    - Receiving array
+   */
+
+
+  FindTurretPrefixes(out = []) {
+    function add(match) {
+      if (!match) return false;
+      var name = match[0].substring(0, match[0].length - 1);
+      if (!out.includes(name)) out.push(name);
+      return true;
+    }
+
+    for (var i = 0; i < this.locators.length; i++) {
+      var name = this.locators[i].name;
+
+      if (!add(/^locator_turret_([0-9]+)[a-z]$/i.exec(name))) {
+        add(/^locator_xl_([0-9]+)[a-z]$/i.exec(name));
+      }
+    }
+
+    out.sort();
+    return out;
+  }
+  /**
+   * Gets locator count for a specific locator group
+   * @param {String} prefix
+   * @returns {number}
+   */
+
+
+  GetLocatorCount(prefix) {
+    var locators = this.FindLocatorsByPrefix(prefix);
+    return locators.length;
+  }
+  /**
+   * Finds a locator's joint by name
+   * @param {String} name
+   * @returns {?mat4}
+   */
+
+
+  FindLocatorJointByName(name) {
+    var locator = this.FindLocatorBoneByName(name);
+    return locator ? locator.worldTransform : null;
+  }
+  /**
+   * Finds a locator's transform by it's name
+   * @param {String} name
+   * @returns {?mat4}
+   */
+
+
+  FindLocatorTransformByName(name) {
+    var locator = this.FindLocatorByName(name);
+    return locator ? locator.transform : null;
+  }
+  /**
+   * Checks if a locator prefix exists
+   * @param {String} prefix
+   * @returns {Boolean}
+   */
+
+
+  HasLocatorPrefix(prefix) {
+    for (var i = 0; i < this.locators.length; i++) {
+      if (this.locators[i].name.indexOf(prefix) === 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  /**
+   * Finds a locator's bone by it's name
+   * @param {String} name
+   * @returns {?Tw2Bone} null if not found
+   */
+
+
+  FindLocatorBoneByName(name) {
+    return this.animation ? this.animation.FindBoneForMesh(name, 0) : null;
+  }
+  /**
+   * Finds a locator by name
+   * @param {String} name
+   * @returns {?EveLocator2}
+   */
+
+
+  FindLocatorByName(name) {
+    for (var i = 0; i < this.locators.length; i++) {
+      if (this.locators[i].name === name) {
+        return this.locators[i];
+      }
+    }
+
+    return null;
+  }
+  /**
+   * Finds locators with a given prefix
+   * @param {String} prefix
+   * @param {Array} [out=[]}
+   * @returns {Array<EveLocator2>}
+   */
+
+
+  FindLocatorsByPrefix(prefix, out = []) {
+    for (var i = 0; i < this.locators.length; i++) {
+      if (this.locators[i].name.indexOf(prefix) === 0) {
+        out.push(this.locators[i]);
+      }
+    }
+
+    return out;
+  }
+  /**
+   * Resets LOD
+   */
+
+
+  ResetLod() {
+    this._lod = 3;
+  }
+  /**
+   * Updates lod
+   * @param {Tw2Frustum} frustum
+   */
+
+
+  UpdateLod(frustum) {
+    var center = math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+
+    if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
+      this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+      if (this._pixelSizeAcross < 100) {
+        this._lod = 1;
+      } else {
+        this._lod = 2;
+      }
+    } else {
+      this._pixelSizeAcross = 0;
+      this._lod = 0;
+    }
+  }
+  /**
+   * Sets the local transform
+   * @param {mat4} local
+   */
+
+
+  SetTransform(local) {
+    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._localTransform, local);
+  }
+  /**
+   * Gets the local transform
+   * @param {mat4} out
+   * @returns {mat4}
+   */
+
+
+  GetTransform(out) {
+    return math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
+  }
+  /**
+   * Gets resources
+   * @param {Array} [out=[]]
+   * @returns {Array}
+   */
+
+
+  GetResources(out = []) {
+    this.PerChild(x => {
+      if ("GetResources" in x.struct) {
+        x.struct.GetResources(out);
+      }
+    });
+    return out;
+  }
+  /**
+   * Rebuilds boosters
+   * @return {boolean}
+   */
+
+
+  RebuildBoosterSet() {
+    if (this.boosters) {
+      this.boosters.UpdateItemsFromLocators(this.FindLocatorsByPrefix("locator_booster"));
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Gets a turret set by it's locator name
+   * @param {String} locatorName
+   * @return {null|EveTurretSet}
+   */
+
+
+  GetTurretSetByLocatorName(locatorName) {
+    for (var i = 0; i < this.attachments.length; i++) {
+      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i].locatorName === locatorName) {
+        return this.attachments[i];
+      }
+    }
+
+    return null;
+  }
+  /**
+   * Removes a turret set
+   * @param {EveTurretSet} turretSet
+   * @returns {Boolean} true if updated
+   */
+
+
+  RemoveTurretSet(turretSet) {
+    var index = this.attachments.indexOf(turretSet);
+    if (index === -1) return false;
+    this.attachments.splice(index, 1);
+    return true;
+  }
+  /**
+   * Adds a turret set
+   * @param {EveTurretSet} turretSet
+   * @returns {Boolean} true if updated
+   */
+
+
+  AddTurretSet(turretSet) {
+    if (!turretSet.locatorName) {
+      throw new ReferenceError("Turret set must have a locator name");
+    }
+
+    var existingTurretSet = this.GetTurretSetByLocatorName(turretSet.locatorName);
+    if (existingTurretSet === turretSet) return false;
+    this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
+    this.attachments.push(turretSet);
+    this.RebuildTurretSet(turretSet);
+    return true;
+  }
+  /**
+   * Rebuilds a turret set
+   * @param {EveTurretSet} turretSet
+   * @return {boolean}
+   */
+
+
+  RebuildTurretSet(turretSet) {
+    var prefix = turretSet.locatorName,
+        count = this.GetLocatorCount(prefix),
+        locators = [];
+
+    for (var j = 0; j < count; ++j) {
+      var name = prefix + String.fromCharCode("a".charCodeAt(0) + j),
+          locator = this.FindLocatorByName(name);
+
+      if (locator) {
+        locator.FindBone(this.animation);
+        locators.push(locator);
+      }
+    }
+
+    turretSet.UpdateItemsFromLocators(locators);
+    return true;
+  }
+  /**
+   * Rebuilds overlays from a supplied array
+   * @param {Array<EveMeshOverlayEffect>} overlays
+   * @return {boolean}
+   */
+
+
+  RebuildOverlays(overlays = []) {
+    var updated = false;
+
+    for (var i = 0; i < this.attachments.length; i++) {
+      if (this.attachments[i] instanceof eve_effect__WEBPACK_IMPORTED_MODULE_6__["EveMeshOverlayEffect"]) {
+        updated = true;
+        this.attachments.splice(i, 1);
+        i--;
+      }
+    }
+
+    for (var _i = 0; _i < overlays.length; _i++) {
+      this.attachments.push(overlays[_i]);
+      updated = true;
+    }
+
+    return updated;
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   */
+
+
+  Update(dt) {
+    if (this._lod < 1 || !this.display) {
+      return;
+    }
+
+    if (this.boosters) {
+      if (this.boosters._locatorDirty) {
+        this.RebuildBoosterSet();
+      }
+
+      this.boosters.Update(dt, this._worldTransform);
+    }
+
+    for (var i = 0; i < this.attachments.length; i++) {
+      // TODO: Normalize
+      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i]._locatorDirty) {
+        this.RebuildTurretSet(this.attachments[i]);
+      }
+
+      this.attachments[i].Update(dt, this);
+    }
+
+    for (var _i2 = 0; _i2 < this.children.length; _i2++) {
+      this.children[_i2].Update(dt, this._worldTransform);
+    }
+
+    for (var _i3 = 0; _i3 < this.effectChildren.length; _i3++) {
+      this.effectChildren[_i3].Update(dt, this._worldTransform, this._lod);
+    }
+
+    if (this.animation) {
+      this.animation.Update(dt);
+    }
+  }
+  /**
+   * Gets render batches
+   * @param {number} mode
+   * @param {Tw2BatchAccumulator} accumulator
+   */
+
+
+  GetBatches(mode, accumulator) {
+    if (!this.display || this._lod < 1) return;
+    var show = this.visible,
+        res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+
+    if (show.mesh && res) {
+      this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+    }
+
+    var doFiringEffects = show.firingEffect;
+
+    if (this._lod > 1) {
+      if (show.boosters && this.boosters) {
+        this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
+        this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
+        this.boosters.GetBatches(mode, accumulator, this._perObjectData);
+      } // TODO: normalize GetBatches for all attachments
+
+
+      for (var i = 0; i < this.attachments.length; i++) {
+        var item = this.attachments[i];
+
+        switch (item.constructor) {
+          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"]:
+            if (show.turretSets) {
+              doFiringEffects = false;
+              item.GetBatches(mode, accumulator, this._perObjectData, show.firingEffect);
+            }
+
+            break;
+
+          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpotlightSet"]:
+            if (show.spotlightSets) {
+              item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+            }
+
+            break;
+
+          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSet"]:
+            if (show.planeSets) {
+              item.GetBatches(mode, accumulator, this._perObjectData);
+            }
+
+            break;
+
+          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]:
+            if (show.spriteSets) {
+              item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+            }
+
+            break;
+
+          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCurveLineSet"]:
+            if (show.lineSets) {
+              item.GetBatches(mode, accumulator);
+            }
+
+            break;
+
+          case eve_effect__WEBPACK_IMPORTED_MODULE_6__["EveMeshOverlayEffect"]:
+            if (show.overlayEffects) {
+              item.GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+            }
+
+            break;
+
+          default:
+            console.log("Attachment not supported");
+            break;
+        }
+      }
+
+      if (res) {
+        if (show.decals) {
+          var killMarks = show.killmarks && this._lod > 2 ? this.killCount : 0;
+
+          for (var _i4 = 0; _i4 < this.decals.length; _i4++) {
+            this.decals[_i4].GetBatches(mode, accumulator, this._perObjectData, res, killMarks);
+          }
+        }
+      }
+    }
+
+    if (doFiringEffects) {
+      for (var _i5 = 0; _i5 < this.attachments.length; _i5++) {
+        if (this.attachments[_i5] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"]) {
+          this.attachments[_i5].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
+        }
+      }
+    }
+
+    if (show.children) {
+      for (var _i6 = 0; _i6 < this.children.length; _i6++) {
+        this.children[_i6].GetBatches(mode, accumulator, this._perObjectData);
+      }
+    }
+
+    if (show.effectChildren) {
+      for (var _i7 = 0; _i7 < this.effectChildren.length; _i7++) {
+        this.effectChildren[_i7].GetBatches(mode, accumulator, this._perObjectData);
+      }
+    }
+  }
+  /**
+   * Per frame update
+   * @param {mat4} parentTransform
+   * @param {Number} dt
+   * @param {Number} worldSpriteScale
+   */
+
+
+  UpdateViewDependentData(parentTransform, dt, worldSpriteScale) {
+    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
+
+    if (this._enableCurves && this.rotationCurve || this.translationCurve) {
+      var rotation = eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.quat_0,
+          translation = eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0,
+          scaling = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._localTransform);
+
+      if (this.rotationCurve) {
+        this.rotationCurve.GetValueAt(dt, rotation);
+      }
+
+      if (this.translationCurve) {
+        this.translationCurve.GetValueAt(dt, translation);
+      }
+
+      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this._localTransform, rotation, translation, scaling);
+    }
+
+    if (parentTransform) {
+      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, parentTransform, this._localTransform);
+    } else {
+      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransform, this._localTransform);
+    }
+
+    var res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
+
+    if (res && this.animation) {
+      if (!this.animation.HasGeometryResource(res)) {
+        this.animation.SetGeometryResource(res);
+      }
+
+      if (this.animation.animations.length) {
+        this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
+      }
+    } // TODO: Replace in Update or ViewDependantUpdate
+
+
+    if (worldSpriteScale !== this._worldSpriteScale) {
+      this._worldSpriteScale = worldSpriteScale;
+
+      if (this.boosters) {
+        this.boosters.SetWorldSpriteScale(worldSpriteScale);
+      }
+
+      for (var i = 0; i < this.attachments.length; i++) {
+        if ("SetWorldSpriteScale" in this.attachments[i]) {
+          this.attachments[i].SetWorldSpriteScale(worldSpriteScale);
+        }
+      }
+    }
+
+    for (var _i8 = 0; _i8 < this.children.length; ++_i8) {
+      this.children[_i8].UpdateViewDependentData(this._worldTransform);
+    }
+
+    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+
+    var center = this._perObjectData.vs.Get("EllipsoidCenter"),
+        radii = this._perObjectData.vs.Get("EllipsoidRadii");
+
+    if (this.shapeEllipsoidRadius[0] > 0) {
+      center[0] = this.shapeEllipsoidCenter[0];
+      center[1] = this.shapeEllipsoidCenter[1];
+      center[2] = this.shapeEllipsoidCenter[2];
+      radii[0] = this.shapeEllipsoidRadius[0];
+      radii[1] = this.shapeEllipsoidRadius[1];
+      radii[2] = this.shapeEllipsoidRadius[2];
+    } else if (res) {
+      var {
+        maxBounds,
+        minBounds
+      } = res;
+      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].subtract(center, maxBounds, minBounds);
+      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scale(center, center, 0.5 * 1.732050807);
+      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].add(radii, maxBounds, minBounds);
+      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scale(radii, radii, 0.5);
+    }
+
+    for (var _i9 = 0; _i9 < this.customMasks.length; ++_i9) {
+      this.customMasks[_i9].UpdatePerObjectData(this._worldTransform, this._perObjectData, _i9, this.visible.customMasks);
+    }
+
+    for (var _i10 = 0; _i10 < this.attachments.length; _i10++) {
+      if ("UpdateViewDependentData" in this.attachments[_i10]) {
+        this.attachments[_i10].UpdateViewDependentData(this._worldTransform, dt, worldSpriteScale);
+      }
+    }
+  }
+  /**
+   * Per object data
+   * @type {{ps: ((string|number[])[]|(string|number)[])[], vs: ((string|number)[]|(string|number[])[])[]}}
+   */
+
+
+}, _class3.perObjectData = {
+  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["Unknown0", [0, 1, 0, 0]], //  1: Used to be shipdata 1 ??
+  ["Unknown1", 4], ["Unknown2", 4], ["Unknown3", 4], ["CustomMaskMatrix0", math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()], ["CustomMaskMatrix1", math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
+  ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "animation", [_dec3, _dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return new core_model__WEBPACK_IMPORTED_MODULE_4__["Tw2AnimationController"]();
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "attachments", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "boosters", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "boundingSphereCenter", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "boundingSphereRadius", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "children", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "customMasks", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "decals", [_dec11], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "dna", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "locatorSets", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "locators", [_dec14], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec15], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "rotationCurve", [_dec16], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec17], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidCenter", [_dec18], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidRadius", [_dec19], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  }
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "translationCurve", [_dec20], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "killCount", [_dec21], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "boosterGain", [_dec22], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "effectChildren", [_dec23, _dec24], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec25], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {
+      mesh: true,
+      children: true,
+      effectChildren: true,
+      planeSets: true,
+      spotlightSets: true,
+      decals: true,
+      spriteSets: true,
+      overlayEffects: true,
+      lineSets: true,
+      killmarks: true,
+      customMasks: true,
+      turretSets: true,
+      boosters: true,
+      shadows: true
+    };
+  }
+})), _class2)) || _class) || _class);
+
+/***/ }),
+
 /***/ "./eve/object/EveSpaceObject.js":
 /*!**************************************!*\
   !*** ./eve/object/EveSpaceObject.js ***!
@@ -58016,7 +58814,7 @@ var EveTransform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveT
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveShip2, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -58038,10 +58836,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveShip__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveShip */ "./eve/object/EveShip.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _EveShip__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
 
-/* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/EveSpaceObject.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _EveSpaceObject__WEBPACK_IMPORTED_MODULE_5__["EveSpaceObject"]; });
+/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveShip2 */ "./eve/object/EveShip2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _EveShip2__WEBPACK_IMPORTED_MODULE_5__["EveShip2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _EveSpaceObject__WEBPACK_IMPORTED_MODULE_5__["EveStation"]; });
+/* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/EveSpaceObject.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _EveSpaceObject__WEBPACK_IMPORTED_MODULE_6__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _EveSpaceObject__WEBPACK_IMPORTED_MODULE_6__["EveStation"]; });
+
 
 
 
@@ -59740,30 +60542,23 @@ var VendorWebglPrefixes = ["", "MOZ_", "WEBKIT_", "WEBGL_"];
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: tw2, resMan, device, store, logger */
+/*! exports provided: store, tw2, resMan, device, logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _tw2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tw2 */ "./global/tw2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["store"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["tw2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["resMan"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["device"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["store"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return _tw2__WEBPACK_IMPORTED_MODULE_0__["logger"]; });
 
 
-/*
-export * from "./math";
-export * from "./constant";
-import * as util from "./utils";
-import * as meta from "./meta";
-export { util, meta };
-*/
 
 /***/ }),
 
@@ -68389,44 +69184,26 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./global/store.js":
-/*!*************************!*\
-  !*** ./global/store.js ***!
-  \*************************/
-/*! exports provided: store */
+/***/ "./global/tw2.js":
+/*!***********************!*\
+  !*** ./global/tw2.js ***!
+  \***********************/
+/*! exports provided: store, tw2, resMan, device, logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
-/* harmony import */ var core_engine_Tw2Store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/engine/Tw2Store */ "./core/engine/Tw2Store.js");
-/* harmony import */ var core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/engine/Tw2Library */ "./core/engine/Tw2Library.js");
-
-
-var store = new core_engine_Tw2Store__WEBPACK_IMPORTED_MODULE_0__["Tw2Store"](core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_1__["Tw2Library"]);
-
-/***/ }),
-
-/***/ "./global/tw2.js":
-/*!***********************!*\
-  !*** ./global/tw2.js ***!
-  \***********************/
-/*! exports provided: tw2, resMan, device, store, logger */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return tw2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return logger; });
 /* harmony import */ var core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/engine/Tw2Library */ "./core/engine/Tw2Library.js");
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store */ "./global/store.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _store__WEBPACK_IMPORTED_MODULE_1__["store"]; });
+/* harmony import */ var core_engine_Tw2Store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/engine/Tw2Store */ "./core/engine/Tw2Store.js");
 
 
-
-var tw2 = new core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"](_store__WEBPACK_IMPORTED_MODULE_1__["store"]),
+var store = new core_engine_Tw2Store__WEBPACK_IMPORTED_MODULE_1__["Tw2Store"](core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"]);
+var tw2 = new core_engine_Tw2Library__WEBPACK_IMPORTED_MODULE_0__["Tw2Library"](store),
     resMan = tw2.resMan,
     device = tw2.device,
     logger = tw2.logger;
@@ -69936,7 +70713,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: tw2 */
+/*! exports provided: tw2, CCPWGL */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -70042,6 +70819,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./config */ "./config.js");
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./global */ "./global/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CCPWGL", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
 
 
 
@@ -74087,7 +74866,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var sof_EveSOF__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! sof/EveSOF */ "./sof/EveSOF.js");
-/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
+/* harmony import */ var eve__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve */ "./eve/index.js");
 /* harmony import */ var _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../unsupported/eve/object */ "./unsupported/eve/object/index.js");
 /* harmony import */ var sof_pattern__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! sof/pattern */ "./sof/pattern/index.js");
 /* harmony import */ var sof_faction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! sof/faction */ "./sof/faction/index.js");
@@ -74114,7 +74893,6 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var skinsByTypeID = null;
 var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOFData"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataFaction"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].struct("EveSOFDataGeneric"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataHull"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataMaterial"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataPattern"), _dec7 = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].list("EveSOFDataRace"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFData {
   constructor() {
     _initializerDefineProperty(this, "faction", _descriptor, this);
@@ -74569,7 +75347,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
 
     return _asyncToGenerator(function* () {
       var sof = _this.ParseDNA(dna),
-          object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveStation2"]() : new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveShip2"]();
+          object = sof.hull.buildClass === 2 ? new _unsupported_eve_object__WEBPACK_IMPORTED_MODULE_7__["EveStation2"]() : new eve__WEBPACK_IMPORTED_MODULE_6__["EveShip2"]();
 
       object.dna = dna;
       yield EveSOFData.Build(_this, object, sof, _this._options);
@@ -74801,12 +75579,12 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
   static SetupCustomMasks(data, obj, sof, options) {
     if (obj.customMasks) {
       if (!obj.customMasks[0]) {
-        obj.customMasks[0] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
+        obj.customMasks[0] = new eve__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
         obj.customMasks[0].name = "Pattern1";
       }
 
       if (!obj.customMasks[1]) {
-        obj.customMasks[1] = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
+        obj.customMasks[1] = new eve__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"]();
         obj.customMasks[1].name = "Pattern2";
       }
     }
@@ -74973,7 +75751,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
           effect.SetOverrides(config.overrides);
 
           for (var i = 0; i < obj.customMasks.length; i++) {
-            eve_item__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
+            eve__WEBPACK_IMPORTED_MODULE_6__["EveCustomMask"].ApplyMaterials(effect, obj.customMasks[i], i);
           }
 
           effect.Initialize();
@@ -75014,7 +75792,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
         return;
       }
 
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSet"]();
+      var set = new eve__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSet"]();
       set.name = srcSet.name;
       set.display = true;
       set.useQuads = true;
@@ -75033,7 +75811,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
           });
         }
 
-        set.items.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
+        set.items.push(eve__WEBPACK_IMPORTED_MODULE_6__["EveSpriteSetItem"].from(Object.assign({}, srcItem, {
           color
         })));
       });
@@ -75068,7 +75846,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
         glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
       }
 
-      var set = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpotlightSet"].from({
+      var set = eve__WEBPACK_IMPORTED_MODULE_6__["EveSpotlightSet"].from({
         name: srcSet.name,
         items: srcSet.items,
         coneEffect: {
@@ -75118,7 +75896,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
       planeSets
     } = sof.hull;
     planeSets.forEach(srcSet => {
-      var set = new eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSet"]();
+      var set = new eve__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSet"]();
       set.name = srcSet.name; // TODO: Usage
       // TODO: AtlasSize
 
@@ -75139,7 +75917,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
         }
       });
       srcSet.items.forEach(srcItem => {
-        var item = eve_item__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
+        var item = eve__WEBPACK_IMPORTED_MODULE_6__["EvePlaneSetItem"].from(srcItem); // TODO: Lots of new properties to add...
 
         var faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
 
@@ -75263,7 +76041,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
 
 
         itemData.Assign(config);
-        obj.decals.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
+        obj.decals.push(eve__WEBPACK_IMPORTED_MODULE_6__["EveSpaceObjectDecal"].from(Object.assign({}, itemData, {
           effect: config
         })));
       });
@@ -75290,7 +76068,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
 
     for (var i = 0; i < srcItems.length; ++i) {
       var scaled = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].scale(math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create(), srcItems[i].transform, options.multiplier.boosterScale);
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from({
+      obj.locators.push(eve__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: scaled,
         atlasIndex0: srcItems[i].atlasIndex0,
@@ -75318,7 +76096,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
     // TODO: Update to eve booster set 2
     // TODO: Boosters are slightly too big
 
-    obj.boosters = eve_item__WEBPACK_IMPORTED_MODULE_6__["EveBoosterSet"].from({
+    obj.boosters = eve__WEBPACK_IMPORTED_MODULE_6__["EveBoosterSet"].from({
       name: src.name,
       glowColor: src.glowColor,
       glowScale: src.glowScale * boosterGlowScale,
@@ -75403,7 +76181,7 @@ var EveSOFData = (_dec = utils__WEBPACK_IMPORTED_MODULE_3__["meta"].type("EveSOF
       locatorTurrets = []
     } = sof.hull;
     locatorTurrets.forEach(item => {
-      obj.locators.push(eve_item__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from(item));
+      obj.locators.push(eve__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"].from(item));
     });
     global__WEBPACK_IMPORTED_MODULE_0__["logger"].Debug({
       name: "Space object factory",
@@ -88191,7 +88969,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************!*\
   !*** ./unsupported/eve/index.js ***!
   \**********************************/
-/*! exports provided: EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
+/*! exports provided: EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88272,8 +89050,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMobile"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveRootTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
@@ -89614,834 +90390,6 @@ var EveRootTransform = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
 
 /***/ }),
 
-/***/ "./unsupported/eve/object/EveShip2.js":
-/*!********************************************!*\
-  !*** ./unsupported/eve/object/EveShip2.js ***!
-  \********************************************/
-/*! exports provided: EveShip2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return EveShip2; });
-/* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
-/* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-/* harmony import */ var eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object/EveObject */ "./eve/object/EveObject.js");
-/* harmony import */ var core_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/data */ "./core/data/index.js");
-/* harmony import */ var core_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/model */ "./core/model/index.js");
-/* harmony import */ var eve_item__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! eve/item */ "./eve/item/index.js");
-/* harmony import */ var eve_effect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! eve/effect */ "./eve/effect/index.js");
-/* harmony import */ var constant_d3d__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! constant/d3d */ "./global/constant/d3d.js");
-/* harmony import */ var core_batch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core/batch */ "./core/batch/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _class3, _temp;
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
-
-
-
-
-
-
-
-
-
-
-var EveShip2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip2"), _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Animation"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveBoosterSet2"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCustomMask"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("How to handle serializing these? They are loaded from the sof"), _dec24 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveShip2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
-  constructor(...args) {
-    super(...args);
-
-    _initializerDefineProperty(this, "animation", _descriptor, this);
-
-    _initializerDefineProperty(this, "attachments", _descriptor2, this);
-
-    _initializerDefineProperty(this, "boosters", _descriptor3, this);
-
-    _initializerDefineProperty(this, "boundingSphereCenter", _descriptor4, this);
-
-    _initializerDefineProperty(this, "boundingSphereRadius", _descriptor5, this);
-
-    _initializerDefineProperty(this, "children", _descriptor6, this);
-
-    _initializerDefineProperty(this, "customMasks", _descriptor7, this);
-
-    _initializerDefineProperty(this, "decals", _descriptor8, this);
-
-    _initializerDefineProperty(this, "dna", _descriptor9, this);
-
-    _initializerDefineProperty(this, "locatorSets", _descriptor10, this);
-
-    _initializerDefineProperty(this, "locators", _descriptor11, this);
-
-    _initializerDefineProperty(this, "mesh", _descriptor12, this);
-
-    _initializerDefineProperty(this, "rotationCurve", _descriptor13, this);
-
-    _initializerDefineProperty(this, "shadowEffect", _descriptor14, this);
-
-    _initializerDefineProperty(this, "shapeEllipsoidCenter", _descriptor15, this);
-
-    _initializerDefineProperty(this, "shapeEllipsoidRadius", _descriptor16, this);
-
-    _initializerDefineProperty(this, "translationCurve", _descriptor17, this);
-
-    _initializerDefineProperty(this, "killCount", _descriptor18, this);
-
-    _initializerDefineProperty(this, "boosterGain", _descriptor19, this);
-
-    _initializerDefineProperty(this, "effectChildren", _descriptor20, this);
-
-    _initializerDefineProperty(this, "visible", _descriptor21, this);
-
-    this._enableCurves = false;
-    this._pixelSizeAcross = 0;
-    this._lod = 3;
-    this._worldSpriteScale = 1;
-    this._localTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._worldTransform = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._perObjectData = core_data__WEBPACK_IMPORTED_MODULE_3__["Tw2PerObjectData"].from(EveShip2.perObjectData);
-  }
-
-  /**
-   * Initializes the ship
-   */
-  Initialize() {
-    this.RebuildBoosterSet();
-  }
-  /**
-   * Finds a turret set by it's locator
-   * @param {String} locator
-   * @returns {EveTurretSet}
-   */
-
-
-  FindTurretSetByLocatorName(locator) {
-    for (var i = 0; i < this.attachments.length; i++) {
-      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i].locatorName === locator) {
-        return this.attachments[i];
-      }
-    }
-  }
-  /**
-   * Finds all turret prefixes
-   * @param {Array<String>} [out=[]] - Receiving array
-   * @returns {Array<String>} out    - Receiving array
-   */
-
-
-  FindTurretPrefixes(out = []) {
-    function add(match) {
-      if (!match) return false;
-      var name = match[0].substring(0, match[0].length - 1);
-      if (!out.includes(name)) out.push(name);
-      return true;
-    }
-
-    for (var i = 0; i < this.locators.length; i++) {
-      var name = this.locators[i].name;
-
-      if (!add(/^locator_turret_([0-9]+)[a-z]$/i.exec(name))) {
-        add(/^locator_xl_([0-9]+)[a-z]$/i.exec(name));
-      }
-    }
-
-    out.sort();
-    return out;
-  }
-  /**
-   * Gets locator count for a specific locator group
-   * @param {String} prefix
-   * @returns {number}
-   */
-
-
-  GetLocatorCount(prefix) {
-    var locators = this.FindLocatorsByPrefix(prefix);
-    return locators.length;
-  }
-  /**
-   * Finds a locator's joint by name
-   * @param {String} name
-   * @returns {?mat4}
-   */
-
-
-  FindLocatorJointByName(name) {
-    var locator = this.FindLocatorBoneByName(name);
-    return locator ? locator.worldTransform : null;
-  }
-  /**
-   * Finds a locator's transform by it's name
-   * @param {String} name
-   * @returns {?mat4}
-   */
-
-
-  FindLocatorTransformByName(name) {
-    var locator = this.FindLocatorByName(name);
-    return locator ? locator.transform : null;
-  }
-  /**
-   * Checks if a locator prefix exists
-   * @param {String} prefix
-   * @returns {Boolean}
-   */
-
-
-  HasLocatorPrefix(prefix) {
-    for (var i = 0; i < this.locators.length; i++) {
-      if (this.locators[i].name.indexOf(prefix) === 0) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  /**
-   * Finds a locator's bone by it's name
-   * @param {String} name
-   * @returns {?Tw2Bone} null if not found
-   */
-
-
-  FindLocatorBoneByName(name) {
-    return this.animation ? this.animation.FindBoneForMesh(name, 0) : null;
-  }
-  /**
-   * Finds a locator by name
-   * @param {String} name
-   * @returns {?EveLocator2}
-   */
-
-
-  FindLocatorByName(name) {
-    for (var i = 0; i < this.locators.length; i++) {
-      if (this.locators[i].name === name) {
-        return this.locators[i];
-      }
-    }
-
-    return null;
-  }
-  /**
-   * Finds locators with a given prefix
-   * @param {String} prefix
-   * @param {Array} [out=[]}
-   * @returns {Array<EveLocator2>}
-   */
-
-
-  FindLocatorsByPrefix(prefix, out = []) {
-    for (var i = 0; i < this.locators.length; i++) {
-      if (this.locators[i].name.indexOf(prefix) === 0) {
-        out.push(this.locators[i]);
-      }
-    }
-
-    return out;
-  }
-  /**
-   * Resets LOD
-   */
-
-
-  ResetLod() {
-    this._lod = 3;
-  }
-  /**
-   * Updates lod
-   * @param {Tw2Frustum} frustum
-   */
-
-
-  UpdateLod(frustum) {
-    var center = math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this.boundingSphereCenter, this._worldTransform);
-
-    if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
-      this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-      if (this._pixelSizeAcross < 100) {
-        this._lod = 1;
-      } else {
-        this._lod = 2;
-      }
-    } else {
-      this._pixelSizeAcross = 0;
-      this._lod = 0;
-    }
-  }
-  /**
-   * Sets the local transform
-   * @param {mat4} local
-   */
-
-
-  SetTransform(local) {
-    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._localTransform, local);
-  }
-  /**
-   * Gets the local transform
-   * @param {mat4} out
-   * @returns {mat4}
-   */
-
-
-  GetTransform(out) {
-    return math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
-  }
-  /**
-   * Gets resources
-   * @param {Array} [out=[]]
-   * @returns {Array}
-   */
-
-
-  GetResources(out = []) {
-    this.PerChild(x => {
-      if ("GetResources" in x.struct) {
-        x.struct.GetResources(out);
-      }
-    });
-    return out;
-  }
-  /**
-   * Rebuilds boosters
-   * @return {boolean}
-   */
-
-
-  RebuildBoosterSet() {
-    if (this.boosters) {
-      this.boosters.UpdateItemsFromLocators(this.FindLocatorsByPrefix("locator_booster"));
-      return true;
-    }
-
-    return false;
-  }
-  /**
-   * Gets a turret set by it's locator name
-   * @param {String} locatorName
-   * @return {null|EveTurretSet}
-   */
-
-
-  GetTurretSetByLocatorName(locatorName) {
-    for (var i = 0; i < this.attachments.length; i++) {
-      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i].locatorName === locatorName) {
-        return this.attachments[i];
-      }
-    }
-
-    return null;
-  }
-  /**
-   * Removes a turret set
-   * @param {EveTurretSet} turretSet
-   * @returns {Boolean} true if updated
-   */
-
-
-  RemoveTurretSet(turretSet) {
-    var index = this.attachments.indexOf(turretSet);
-    if (index === -1) return false;
-    this.attachments.splice(index, 1);
-    return true;
-  }
-  /**
-   * Adds a turret set
-   * @param {EveTurretSet} turretSet
-   * @returns {Boolean} true if updated
-   */
-
-
-  AddTurretSet(turretSet) {
-    if (!turretSet.locatorName) {
-      throw new ReferenceError("Turret set must have a locator name");
-    }
-
-    var existingTurretSet = this.GetTurretSetByLocatorName(turretSet.locatorName);
-    if (existingTurretSet === turretSet) return false;
-    this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
-    this.attachments.push(turretSet);
-    this.RebuildTurretSet(turretSet);
-    return true;
-  }
-  /**
-   * Rebuilds a turret set
-   * @param {EveTurretSet} turretSet
-   * @return {boolean}
-   */
-
-
-  RebuildTurretSet(turretSet) {
-    var prefix = turretSet.locatorName,
-        count = this.GetLocatorCount(prefix),
-        locators = [];
-
-    for (var j = 0; j < count; ++j) {
-      var name = prefix + String.fromCharCode("a".charCodeAt(0) + j),
-          locator = this.FindLocatorByName(name);
-
-      if (locator) {
-        locator.FindBone(this.animation);
-        locators.push(locator);
-      }
-    }
-
-    turretSet.UpdateItemsFromLocators(locators);
-    return true;
-  }
-  /**
-   * Rebuilds overlays from a supplied array
-   * @param {Array<EveMeshOverlayEffect>} overlays
-   * @return {boolean}
-   */
-
-
-  RebuildOverlays(overlays = []) {
-    var updated = false;
-
-    for (var i = 0; i < this.attachments.length; i++) {
-      if (this.attachments[i] instanceof eve_effect__WEBPACK_IMPORTED_MODULE_6__["EveMeshOverlayEffect"]) {
-        updated = true;
-        this.attachments.splice(i, 1);
-        i--;
-      }
-    }
-
-    for (var _i = 0; _i < overlays.length; _i++) {
-      this.attachments.push(overlays[_i]);
-      updated = true;
-    }
-
-    return updated;
-  }
-  /**
-   * Per frame update
-   * @param {Number} dt
-   */
-
-
-  Update(dt) {
-    if (this._lod < 1 || !this.display) {
-      return;
-    }
-
-    if (this.boosters) {
-      if (this.boosters._locatorDirty) {
-        this.RebuildBoosterSet();
-      }
-
-      this.boosters.Update(dt, this._worldTransform);
-    }
-
-    for (var i = 0; i < this.attachments.length; i++) {
-      // TODO: Normalize
-      if (this.attachments[i] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"] && this.attachments[i]._locatorDirty) {
-        this.RebuildTurretSet(this.attachments[i]);
-      }
-
-      this.attachments[i].Update(dt, this);
-    }
-
-    for (var _i2 = 0; _i2 < this.children.length; _i2++) {
-      this.children[_i2].Update(dt, this._worldTransform);
-    }
-
-    for (var _i3 = 0; _i3 < this.effectChildren.length; _i3++) {
-      this.effectChildren[_i3].Update(dt, this._worldTransform, this._lod);
-    }
-
-    if (this.animation) {
-      this.animation.Update(dt);
-    }
-  }
-  /**
-   * Gets render batches
-   * @param {number} mode
-   * @param {Tw2BatchAccumulator} accumulator
-   */
-
-
-  GetBatches(mode, accumulator) {
-    if (!this.display || this._lod < 1) return;
-    var show = this.visible,
-        res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
-
-    if (show.mesh && res) {
-      this.mesh.GetBatches(mode, accumulator, this._perObjectData);
-    }
-
-    var doFiringEffects = show.firingEffect;
-
-    if (this._lod > 1) {
-      if (show.boosters && this.boosters) {
-        this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
-        this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
-        this.boosters.GetBatches(mode, accumulator, this._perObjectData);
-      } // TODO: normalize GetBatches for all attachments
-
-
-      for (var i = 0; i < this.attachments.length; i++) {
-        var item = this.attachments[i];
-
-        switch (item.constructor) {
-          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"]:
-            if (show.turretSets) {
-              doFiringEffects = false;
-              item.GetBatches(mode, accumulator, this._perObjectData, show.firingEffect);
-            }
-
-            break;
-
-          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpotlightSet"]:
-            if (show.spotlightSets) {
-              item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
-            }
-
-            break;
-
-          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EvePlaneSet"]:
-            if (show.planeSets) {
-              item.GetBatches(mode, accumulator, this._perObjectData);
-            }
-
-            break;
-
-          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveSpriteSet"]:
-            if (show.spriteSets) {
-              item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
-            }
-
-            break;
-
-          case eve_item__WEBPACK_IMPORTED_MODULE_5__["EveCurveLineSet"]:
-            if (show.lineSets) {
-              item.GetBatches(mode, accumulator);
-            }
-
-            break;
-
-          case eve_effect__WEBPACK_IMPORTED_MODULE_6__["EveMeshOverlayEffect"]:
-            if (show.overlayEffects) {
-              item.GetBatches(mode, accumulator, this._perObjectData, this.mesh);
-            }
-
-            break;
-
-          default:
-            console.log("Attachment not supported");
-            break;
-        }
-      }
-
-      if (res) {
-        if (show.decals) {
-          var killMarks = show.killmarks && this._lod > 2 ? this.killCount : 0;
-
-          for (var _i4 = 0; _i4 < this.decals.length; _i4++) {
-            this.decals[_i4].GetBatches(mode, accumulator, this._perObjectData, res, killMarks);
-          }
-        }
-      }
-    }
-
-    if (doFiringEffects) {
-      for (var _i5 = 0; _i5 < this.attachments.length; _i5++) {
-        if (this.attachments[_i5] instanceof eve_item__WEBPACK_IMPORTED_MODULE_5__["EveTurretSet"]) {
-          this.attachments[_i5].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
-        }
-      }
-    }
-
-    if (show.children) {
-      for (var _i6 = 0; _i6 < this.children.length; _i6++) {
-        this.children[_i6].GetBatches(mode, accumulator, this._perObjectData);
-      }
-    }
-
-    if (show.effectChildren) {
-      for (var _i7 = 0; _i7 < this.effectChildren.length; _i7++) {
-        this.effectChildren[_i7].GetBatches(mode, accumulator, this._perObjectData);
-      }
-    }
-  }
-  /**
-   * Per frame update
-   * @param {mat4} parentTransform
-   * @param {Number} dt
-   * @param {Number} worldSpriteScale
-   */
-
-
-  UpdateViewDependentData(parentTransform, dt, worldSpriteScale) {
-    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
-
-    if (this._enableCurves && this.rotationCurve || this.translationCurve) {
-      var rotation = eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.quat_0,
-          translation = eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0,
-          scaling = math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._localTransform);
-
-      if (this.rotationCurve) {
-        this.rotationCurve.GetValueAt(dt, rotation);
-      }
-
-      if (this.translationCurve) {
-        this.translationCurve.GetValueAt(dt, translation);
-      }
-
-      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this._localTransform, rotation, translation, scaling);
-    }
-
-    if (parentTransform) {
-      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, parentTransform, this._localTransform);
-    } else {
-      math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransform, this._localTransform);
-    }
-
-    var res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
-
-    if (res && this.animation) {
-      if (!this.animation.HasGeometryResource(res)) {
-        this.animation.SetGeometryResource(res);
-      }
-
-      if (this.animation.animations.length) {
-        this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
-      }
-    } // TODO: Replace in Update or ViewDependantUpdate
-
-
-    if (worldSpriteScale !== this._worldSpriteScale) {
-      this._worldSpriteScale = worldSpriteScale;
-
-      if (this.boosters) {
-        this.boosters.SetWorldSpriteScale(worldSpriteScale);
-      }
-
-      for (var i = 0; i < this.attachments.length; i++) {
-        if ("SetWorldSpriteScale" in this.attachments[i]) {
-          this.attachments[i].SetWorldSpriteScale(worldSpriteScale);
-        }
-      }
-    }
-
-    for (var _i8 = 0; _i8 < this.children.length; ++_i8) {
-      this.children[_i8].UpdateViewDependentData(this._worldTransform);
-    }
-
-    math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-
-    var center = this._perObjectData.vs.Get("EllipsoidCenter"),
-        radii = this._perObjectData.vs.Get("EllipsoidRadii");
-
-    if (this.shapeEllipsoidRadius[0] > 0) {
-      center[0] = this.shapeEllipsoidCenter[0];
-      center[1] = this.shapeEllipsoidCenter[1];
-      center[2] = this.shapeEllipsoidCenter[2];
-      radii[0] = this.shapeEllipsoidRadius[0];
-      radii[1] = this.shapeEllipsoidRadius[1];
-      radii[2] = this.shapeEllipsoidRadius[2];
-    } else if (res) {
-      var {
-        maxBounds,
-        minBounds
-      } = res;
-      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].subtract(center, maxBounds, minBounds);
-      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scale(center, center, 0.5 * 1.732050807);
-      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].add(radii, maxBounds, minBounds);
-      math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scale(radii, radii, 0.5);
-    }
-
-    for (var _i9 = 0; _i9 < this.customMasks.length; ++_i9) {
-      this.customMasks[_i9].UpdatePerObjectData(this._worldTransform, this._perObjectData, _i9, this.visible.customMasks);
-    }
-
-    for (var _i10 = 0; _i10 < this.attachments.length; _i10++) {
-      if ("UpdateViewDependentData" in this.attachments[_i10]) {
-        this.attachments[_i10].UpdateViewDependentData(this._worldTransform, dt, worldSpriteScale);
-      }
-    }
-  }
-  /**
-   * Per object data
-   * @type {{ps: ((string|number[])[]|(string|number)[])[], vs: ((string|number)[]|(string|number[])[])[]}}
-   */
-
-
-}, _class3.perObjectData = {
-  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["Unknown0", [0, 1, 0, 0]], //  1: Used to be shipdata 1 ??
-  ["Unknown1", 4], ["Unknown2", 4], ["Unknown3", 4], ["CustomMaskMatrix0", math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()], ["CustomMaskMatrix1", math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
-  ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "animation", [_dec2, _dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return new core_model__WEBPACK_IMPORTED_MODULE_4__["Tw2AnimationController"]();
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "attachments", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "boosters", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "boundingSphereCenter", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "boundingSphereRadius", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "children", [_dec8], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "customMasks", [_dec9], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "decals", [_dec10], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "dna", [_dec11], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return "";
-  }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "locatorSets", [_dec12], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "locators", [_dec13], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec14], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "rotationCurve", [_dec15], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec16], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidCenter", [_dec17], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
-  }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidRadius", [_dec18], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
-  }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "translationCurve", [_dec19], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "killCount", [_dec20], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 0;
-  }
-}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "boosterGain", [_dec21], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "effectChildren", [_dec22, _dec23], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec24], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return {
-      mesh: true,
-      children: true,
-      effectChildren: true,
-      planeSets: true,
-      spotlightSets: true,
-      decals: true,
-      spriteSets: true,
-      overlayEffects: true,
-      lineSets: true,
-      killmarks: true,
-      customMasks: true,
-      turretSets: true,
-      boosters: true,
-      shadows: true
-    };
-  }
-})), _class2)) || _class);
-
-/***/ }),
-
 /***/ "./unsupported/eve/object/EveStation2.js":
 /*!***********************************************!*\
   !*** ./unsupported/eve/object/EveStation2.js ***!
@@ -90454,9 +90402,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return EveStation2; });
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! utils */ "./global/utils/index.js");
 /* harmony import */ var math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! math */ "./global/math/index.js");
-/* harmony import */ var eve_object_EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object/EveObject */ "./eve/object/EveObject.js");
+/* harmony import */ var eve_object_EveShip2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve/object/EveShip2 */ "./eve/object/EveShip2.js");
 /* harmony import */ var core_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/model */ "./core/model/index.js");
-/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveShip2 */ "./unsupported/eve/object/EveShip2.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -90469,8 +90416,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-
-var EveStation2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStation2"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Animation"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveSet"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriPointLight"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends _EveShip2__WEBPACK_IMPORTED_MODULE_4__["EveShip2"] {
+var EveStation2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStation2"), _dec3 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Animation"), _dec4 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec6 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec9 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveSet"), _dec10 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec11 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec12 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec13 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriPointLight"), _dec14 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec15 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec16 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec17 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec18 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec19 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec21 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec22 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec23 = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends eve_object_EveShip2__WEBPACK_IMPORTED_MODULE_2__["EveShip2"] {
   constructor(...args) {
     super(...args);
 
@@ -90663,7 +90609,7 @@ var EveStation2 = (_dec = utils__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemen
 /*!*****************************************!*\
   !*** ./unsupported/eve/object/index.js ***!
   \*****************************************/
-/*! exports provided: EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2 */
+/*! exports provided: EveEffectRoot2, EveMobile, EveRootTransform, EveStation2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -90677,12 +90623,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveRootTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveRootTransform */ "./unsupported/eve/object/EveRootTransform.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _EveRootTransform__WEBPACK_IMPORTED_MODULE_2__["EveRootTransform"]; });
 
-/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveShip2 */ "./unsupported/eve/object/EveShip2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _EveShip2__WEBPACK_IMPORTED_MODULE_3__["EveShip2"]; });
-
-/* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveStation2 */ "./unsupported/eve/object/EveStation2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _EveStation2__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
-
+/* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveStation2 */ "./unsupported/eve/object/EveStation2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _EveStation2__WEBPACK_IMPORTED_MODULE_3__["EveStation2"]; });
 
 
 
@@ -91381,7 +91323,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./unsupported/index.js ***!
   \******************************/
-/*! exports provided: EvePointLightBatch, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
+/*! exports provided: EvePointLightBatch, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2ExternalParameter, Tr2Texture2dLodParameter, Tr2PostProcess, Tr2PostProcess2, Tr2PPBloomEffect, Tr2PPDesaturateEffect, Tr2PPDynamicExposureEffect, Tr2PPFadeEffect, Tr2PPFidelityFXEffect, Tr2PPFilmGrainEffect, Tr2PPFogEffect, Tr2PPGodRaysEffect, Tr2PPLutEffect, Tr2PPSignalLossEffect, Tr2PPVignetteEffect, Tr2LodResource, TriMatrix, Tr2DistanceTracker, TriObserverLocal, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tr2ScalarExprCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, Tw2CurveSetRange, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierHalo, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveChildBulletStorm, EveChildCloud, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildParticleSphere, EveChildQuad, EveStarfield, EveStretch2, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveTrailSetRenderBatch, EveTrailsSet, EveEffectRoot2, EveMobile, EveRootTransform, EveStation2, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, Tr2Model, Tr2PlaneConstraint, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tr2GpuParticleSystem, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionPlaySound, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2ActionSpawnParticles, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, AudEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -91538,8 +91480,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveMobile"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveRootTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveShip2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveStation2"]; });
 

@@ -8,6 +8,7 @@ const
     mat4_0 = mat4.create();
 
 
+@meta.type("Tw2Transform")
 export class Tw2Transform extends meta.Model
 {
 

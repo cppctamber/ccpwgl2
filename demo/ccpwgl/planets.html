@@ -4,8 +4,8 @@
     <title>Planets Demo</title>
 
     <link rel="stylesheet" href="demos.css">
-    <script type="text/javascript" src="../dist/ccpwgl2_int.js"></script>
-    <script type="text/javascript" src="../dist/ccpwgl.js"></script>
+    <script type="text/javascript" src="../../dist/ccpwgl2_int.js"></script>
+    <script type="text/javascript" src="./ccpwgl.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="demos.js"></script>
 
@@ -100,7 +100,7 @@
 
                 let angle = Math.PI * 2 * i / planetsData.length;
 
-                planet.transform.Set({
+                planet.transform.SetValues({
                     scale: 10000,
                     translation: [ 100000 * Math.cos(angle), 0, 100000 * Math.sin(angle) ]
                 });

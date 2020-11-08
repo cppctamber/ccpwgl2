@@ -39,16 +39,13 @@ import {
     EveSpaceObjectDecal,
     EveSpotlightSet,
     EveSpriteSet,
-    EveSpriteSetItem
-} from "eve/item";
+    EveSpriteSetItem,
+    EveShip2
+} from "eve";
 
-import { EveShip2, EveStation2 } from "../unsupported/eve/object";
+import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
-
-
-let skinsByTypeID = null;
-
 
 @meta.type("EveSOFData")
 export class EveSOFData

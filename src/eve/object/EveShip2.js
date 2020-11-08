@@ -3,14 +3,12 @@ import { vec3, mat4 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
-
 import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
-import { RM_ADDITIVE, RM_TRANSPARENT } from "constant/d3d";
-import { Tw2GeometryBatch } from "core/batch";
 
 
 @meta.type("EveShip2")
+@meta.stage(2)
 export class EveShip2 extends EveObject
 {
 

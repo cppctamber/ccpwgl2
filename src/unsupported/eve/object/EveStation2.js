@@ -1,8 +1,7 @@
 import { meta } from "utils";
 import { vec3 } from "math";
-import { EveObject } from "eve/object/EveObject";
+import { EveShip2 } from "eve/object/EveShip2";
 import { Tw2Animation } from "core/model";
-import { EveShip2 } from "./EveShip2";
 
 
 @meta.notImplemented

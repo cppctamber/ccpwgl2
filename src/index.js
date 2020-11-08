@@ -7,4 +7,5 @@ import { tw2 } from "./global";
 
 tw2.Register(config);
 
-export { tw2 };
+export { tw2, tw2 as CCPWGL };
+

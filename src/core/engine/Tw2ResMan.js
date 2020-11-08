@@ -2,7 +2,7 @@ import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
-import { assignIfExists, getPathExtension, isBoolean, isDNA, isError, isFunction } from "utils";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "utils";
 
 
 export class Tw2ResMan extends Tw2EventEmitter

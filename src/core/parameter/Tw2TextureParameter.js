@@ -297,7 +297,6 @@ export class Tw2TextureParameter extends Tw2Parameter
         this.overrides && this.overrides.enabled ? this.overrides.GetValues() : null;
     }
 
-
     /**
      * Checks if a value is equal to the parameter's resource path
      * @param {*} value

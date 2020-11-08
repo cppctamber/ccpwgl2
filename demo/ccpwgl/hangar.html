@@ -1,32 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SOF Browser - CCPWGL Demos</title>
+    <title>SOF Station Browser - CCPWGL Demos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
     <link rel="stylesheet" href="demos.css">
-    <script type="text/javascript" src="../dist/ccpwgl2_int.js"></script>
-    <script type="text/javascript" src="../dist/ccpwgl.js"></script>
+    <script type="text/javascript" src="../../dist/ccpwgl2_int.js"></script>
+    <script type="text/javascript" src="./ccpwgl.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="demos.js"></script>
 
     <script type="text/javascript">
 
-        var camera, scene, ship;
+        var canvas, camera, scene, ship, hangar;
 
         $(document).ready(function()
         {
+            var hangars = [
+                "res:/dx9/model/hangar/amarr/ah1/ah1.red",
+                "res:/dx9/model/hangar/caldari/ch1/ch1.red",
+                "res:/dx9/model/hangar/gallente/gh1/gh1.red",
+                "res:/dx9/model/hangar/minmatar/mh1/mh1.red"
+            ];
+
+            var stationPath = hangars[Math.floor(Math.random() * 4)];
+            var shipHeightFromLandingPad = 500;
+
             ccpwgl.initialize("mainCanvas", demos.options);
-            camera = ccpwgl.createCamera();
-            scene = ccpwgl.loadScene("res:/dx9/scene/universe/m10_cube.red");
+            ccpwgl.debug = true;
+            camera = ccpwgl.createCamera({ poi: [ 0, shipHeightFromLandingPad, 0 ] });
+
+            scene = ccpwgl.loadScene(stationPath, function()
+            {
+                var backgroundObjects = this.wrappedScene.backgroundObjects;
+
+                // Hide glaring lights on caldari hangar
+                if (stationPath === hangars[1])
+                {
+                    backgroundObjects[0].display = false;
+                }
+
+                // Hide station ships
+                for (var i = 1; i < backgroundObjects.length; i++)
+                {
+                    if (backgroundObjects[i] instanceof tw2.EveShip)
+                    {
+                        backgroundObjects[i].display = false;
+                    }
+                }
+            });
 
             var lastHull = null;
-            var longAxis = null;
 
             function loadDna(dna)
             {
-                longAxis = null;
-
                 ccpwgl.getSofHullConstructor(dna, function(constructor)
                 {
                     if (constructor)
@@ -39,9 +66,20 @@
                         {
 
                         }
-
                         ship = scene[constructor](dna, function()
                         {
+                            // Position the ship above the landing pad
+                            // This probably should be calculated from bounding sphere...
+                            this.transform.Set({
+                                translation: [ 0, shipHeightFromLandingPad, 0 ]
+                            });
+
+                            // Turn boosters down
+                            if (this.setBoosterStrength)
+                            {
+                                this.setBoosterStrength(0.1);
+                            }
+
                             var hull = dna.split(":")[0];
                             if (lastHull !== hull)
                             {
@@ -49,11 +87,6 @@
                                 lastHull = hull;
                             }
                         });
-
-                        if ("setBoosterStrength" in ship)
-                        {
-                            ship.setBoosterStrength($("#booster-intensity").val() / 50);
-                        }
                     }
                 });
             }
@@ -87,28 +120,9 @@
                 scene.getObject(0).setKillCount(parseInt($(this).val()));
             });
 
-            const loadingElement = document.getElementById("loading");
-
             ccpwgl.OnEvent("pre_render", function()
             {
-                if (ccpwgl.isLoading())
-                {
-                    loadingElement.style.display = "block";
-                    loadingElement.innerText = "Loading";
-                }
-                else if (ship)
-                {
-                    if (!longAxis)
-                    {
-                        longAxis = ship.getLongAxis().toLocaleString() + "m long axis";
-                        loadingElement.style.display = "block";
-                        loadingElement.innerText = longAxis;
-                    }
-                }
-                else
-                {
-                    loadingElement.style.display = "none";
-                }
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
         });
     </script>
@@ -124,7 +138,7 @@
         <button id="state" class="btn" data-pane="state-pane">State</button>
     </div>
 </div>
-<div id="loading" style="color:white; top:10px; left:10px">Loading...</div>
+<div id="loading">Loading...</div>
 <div id="browse-pane" class="pane visible">
     <div class="pane-heading">Browse</div>
     <div class="flex-horizontal">
