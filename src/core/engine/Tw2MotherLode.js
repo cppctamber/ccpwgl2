@@ -8,60 +8,6 @@ export class Tw2MotherLode
     }
 
     /**
-     * Updated watches objects
-     * @param {Number} maxFrames
-     * @param {Number} maxWatched
-     * @param {Number} maxTime;
-     */
-    UpdateWatched(maxFrames, maxWatched, maxTime)
-    {
-        const
-            now = Date.now(),
-            len = Math.min(this._watching.length, maxWatched);
-
-        for (let i = 0; i < this._watching.length; i++)
-        {
-            // Limit time  watching
-            if (maxTime && Date.now() - now >= maxTime)
-            {
-                return;
-            }
-
-            const
-                w = this._watching[i],
-                res = this.GetWatchedResourceDetail(w.object);
-
-            w.frames++;
-
-            // Update progress if there was a change (include 0)
-            if (w.total !== res.total || w.pending !== res.pending)
-            {
-                w.total = res.total;
-                w.pending = res.pending;
-                if (w.onProgress) w.onProgress(res, w.object);
-            }
-
-            // Finished
-            if (!res.pending)
-            {
-                this._watching.splice(i, 1);
-                i--;
-                w.onCompleted(true);
-                break;
-            }
-
-            // Took too long
-            if (w.frames >= maxFrames)
-            {
-                this._watching.splice(i, 1);
-                i--;
-                w.onError(new Error("Maximum watch duration reached"));
-                break;
-            }
-        }
-    }
-
-    /**
      * Watches an object and resolved a promise when all resources have completed processing
      * @param {*} object
      * @param {Function} [onProgress]
@@ -113,24 +59,38 @@ export class Tw2MotherLode
         const index = this.GetWatchedIndex(obj);
         if (index !== -1)
         {
-            const watched = this._watching[index];
+            const { onCompleted } = this._watching[index];
             this._watching.splice(index, 1);
-            watched.onCompleted(false);
+            onCompleted(false);
             return true;
         }
         return false;
     }
 
     /**
+     * Purges all watched objects and forces all promises to resolve
+     */
+    PurgeWatched()
+    {
+        for (let i = 0; i < this._watching.length;  i++)
+        {
+            const { onCompleted } = this._watching[i];
+            this._watching.splice(i, 1);
+            onCompleted(false);
+            i--;
+        }
+    }
+
+    /**
      * Gets the watched index of an object
-     * @param {Object} obj
+     * @param {Object} object
      * @return {number}
      */
-    GetWatchedIndex(obj)
+    GetWatchedIndex(object)
     {
         for (let i = 0; i < this._watching.length; i++)
         {
-            if (this._watching[i].object === obj)
+            if (this._watching[i].object === object)
             {
                 return i;
             }
@@ -172,6 +132,60 @@ export class Tw2MotherLode
         }
 
         return out;
+    }
+
+    /**
+     * Updated watches objects
+     * @param {Number} maxFrames
+     * @param {Number} maxWatched
+     * @param {Number} maxTime;
+     */
+    UpdateWatched(maxFrames, maxWatched, maxTime)
+    {
+        const
+            now = Date.now(),
+            len = Math.min(this._watching.length, maxWatched);
+
+        for (let i = 0; i < this._watching.length; i++)
+        {
+            // Limit time  watching
+            if (maxTime && Date.now() - now >= maxTime)
+            {
+                return;
+            }
+
+            const
+                w = this._watching[i],
+                res = this.GetWatchedResourceDetail(w.object);
+
+            w.frames++;
+
+            // Update progress if there was a change (include 0)
+            if (w.total !== res.total || w.pending !== res.pending)
+            {
+                w.total = res.total;
+                w.pending = res.pending;
+                if (w.onProgress) w.onProgress(res, w.object);
+            }
+
+            // Finished
+            if (!res.pending)
+            {
+                this._watching.splice(i, 1);
+                i--;
+                w.onCompleted(true);
+                break;
+            }
+
+            // Took too long
+            if (w.frames >= maxFrames)
+            {
+                this._watching.splice(i, 1);
+                i--;
+                w.onError(new Error("Maximum watch duration reached"));
+                break;
+            }
+        }
     }
 
     /**

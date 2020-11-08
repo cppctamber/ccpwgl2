@@ -78,6 +78,24 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Unwatches an object and forces its promise to resolve
+     * @param {*}  object
+     * @return {boolean}
+     */
+    UnWatch(object)
+    {
+        return this.motherLode.UnWatch(object);
+    }
+
+    /**
+     * Purges all watches objects and forces their promises to resolve
+     */
+    PurgeWatched()
+    {
+        return this.motherLode.PurgeWatched();
+    }
+
+    /**
      * Fires on resource errors
      * - Used when a resource can only be identified by it's path
      * @param {String} path
