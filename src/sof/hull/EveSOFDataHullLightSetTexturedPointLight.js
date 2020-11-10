@@ -19,6 +19,9 @@ export class EveSOFDataHullLightSetTexturedPointLight
     position = vec3.create();
 
     @meta.float
+    noiseOctaves = 0;
+
+    @meta.float
     radius = 0;
 
     @meta.path
