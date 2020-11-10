@@ -252,7 +252,7 @@ export class EveSpotlightSet extends EveObjectSet
                         spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity * this.intensity;
                         spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity * this.intensity;
                         spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity * this.intensity;
-                        spriteArray[offset + 3] = 0; //item.spriteColor[3]; // Not needed?
+                        spriteArray[offset + 3] = item.spriteColor[3]; // Not needed?
 
                         spriteArray[offset + 16] = item.spriteScale[0] * this._worldSpriteScale;
                         spriteArray[offset + 17] = 1;
@@ -263,7 +263,7 @@ export class EveSpotlightSet extends EveObjectSet
                         spriteArray[offset] = item.flareColor[0] * item.flareIntensity * this.intensity;
                         spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity * this.intensity;
                         spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity * this.intensity;
-                        spriteArray[offset + 3] = 0; //item.flareColor[3]; // Not needed?
+                        spriteArray[offset + 3] = item.flareColor[3]; // Not needed?
 
                         spriteArray[offset + 16] = 1;
                         spriteArray[offset + 17] = item.spriteScale[1] * this._worldSpriteScale;

@@ -89,8 +89,10 @@ export class EveSOFData
             boosterGlowScale: 0.125,
             boosterHaloScale: 0.5,
             boosterSymHalo: 0.125,
-            boosterBrightness: 0.8,
-            boosterScale: [ 0.9, 0.9, 0.9 ]
+            boosterBrightness: 1,
+            boosterScale: [ 0.9, 0.9, 0.9 ],
+            boosterAlpha: 0,
+            spotlightAlpha: 0
         },
 
         effect: {
@@ -1046,6 +1048,7 @@ export class EveSOFData
     static SetupSpotlightSets(data, obj, sof, options)
     {
         const { isSkinned = false, spotlightSets = [] } = sof.hull;
+        const { spotlightAlpha = 1 } = options.multiplier;
 
         spotlightSets.forEach(srcSet =>
         {
@@ -1091,6 +1094,10 @@ export class EveSOFData
                     vec4.copy(item.flareColor, faction.flareColor);
                     vec4.copy(item.spriteColor, faction.spriteColor);
                 }
+
+                item.coneColor[3] *= spotlightAlpha;
+                item.flareColor[3] *= spotlightAlpha;
+                item.spriteColor[3] *= spotlightAlpha;
                 item.UpdateValues();
             });
 
@@ -1315,7 +1322,16 @@ export class EveSOFData
         }
 
         const { shape0, shape1, warpShape0, warpShape1 } = src;
-        const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1 } = options.multiplier;
+        const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1, boosterAlpha=1 } = options.multiplier;
+
+        // Adjust booster colours so they look better
+        const
+            Color0 = vec4.multiplyScalar([], shape0.color, boosterBrightness),
+            Color1 = vec4.multiplyScalar([], shape1.color, boosterBrightness);
+
+        Color0[3] *= boosterAlpha;
+        Color1[3] *= boosterAlpha;
+
 
         // obj.boosters = obj.boosters || new EveBoosterSet();
         // obj.boosters.SetValues({
@@ -1352,13 +1368,13 @@ export class EveSOFData
                     NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
                     NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
                     NoiseFrequency0: shape0.noiseFrequency,
-                    Color0: vec3.multiplyScalar([], shape0.color, boosterBrightness),
+                    Color0,
                     NoiseFunction1: shape1.noiseFunction,
                     NoiseSpeed1: shape1.noiseSpeed,
                     NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
                     NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
                     NoiseFrequency1: shape1.noiseFrequency,
-                    Color1: vec3.multiplyScalar([], shape1.color, boosterBrightness),
+                    Color1,
                     WarpNoiseFunction0: warpShape0.noiseFunction,
                     WarpNoiseSpeed0: warpShape0.noiseSpeed,
                     WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
