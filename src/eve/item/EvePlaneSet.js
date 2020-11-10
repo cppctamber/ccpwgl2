@@ -261,7 +261,7 @@ export class EvePlaneSet extends EveObjectSet
                 array[vtxOffset + 12] = item.color[0];
                 array[vtxOffset + 13] = item.color[1];
                 array[vtxOffset + 14] = item.color[2];
-                array[vtxOffset + 15] = 0; // item.color[3]; Not needed?
+                array[vtxOffset + 15] = item.color[3]; // Not needed?
 
                 array[vtxOffset + 16] = item.layer1Transform[0];
                 array[vtxOffset + 17] = item.layer1Transform[1];

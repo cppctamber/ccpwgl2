@@ -92,7 +92,8 @@ export class EveSOFData
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
             boosterAlpha: 0,
-            spotlightAlpha: 0
+            spotlightAlpha: 0,
+            planeAlpha: 0
         },
 
         effect: {
@@ -1119,6 +1120,7 @@ export class EveSOFData
     static SetupPlaneSets(data, obj, sof, options)
     {
         const { isSkinned, planeSets } = sof.hull;
+        const { planeAlpha } = options.multiplier;
 
         planeSets.forEach(srcSet =>
         {
@@ -1134,7 +1136,7 @@ export class EveSOFData
                 parameters: {
                     PlaneData: [
                         0,  // Power of Fade Angle
-                        1,  //srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
+                        srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
                         0,  // Unused
                         0   // Unused
                     ]
@@ -1156,6 +1158,8 @@ export class EveSOFData
                 {
                     vec4.copy(item.color, faction.color);
                 }
+
+                item.color[3] *= planeAlpha;
 
                 if (EveSOFData.isZeroColor(item.color))
                 {
