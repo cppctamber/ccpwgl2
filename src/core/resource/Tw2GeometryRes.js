@@ -21,6 +21,8 @@ import {
 } from "../geometry";
 
 
+
+
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
@@ -206,6 +208,8 @@ export class Tw2GeometryRes extends Tw2Resource
 
         mesh.name = name;
         mesh.declaration = declaration;
+
+        mesh.bufferData = bufferData;
 
         mesh.bufferLength = bufferData.length;
         mesh.buffer = gl.createBuffer();
@@ -575,9 +579,9 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Tw2Effect} effect
      * @param {String} technique
      * @param instanceVB
-     * @param instanceDecl
-     * @param instanceStride
-     * @param instanceCount
+     * @param {Tw2VertexDeclaration} instanceDecl
+     * @param {Number} instanceStride
+     * @param {Number} instanceCount
      * @returns {Boolean}
      */
     RenderAreasInstanced(meshIx, start, count, effect, technique, instanceVB, instanceDecl, instanceStride, instanceCount)
@@ -601,8 +605,10 @@ export class Tw2GeometryRes extends Tw2Resource
 
             gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
             mesh.declaration.SetPartialDeclaration(d, passInput, mesh.declaration.stride);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, instanceVB);
-            const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 8, 1);
+            const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 0, 1);
+
             d.ApplyShadowState();
 
             for (let i = 0; i < count; ++i)

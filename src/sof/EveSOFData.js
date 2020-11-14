@@ -1,5 +1,5 @@
-import { resMan, logger } from "global";
-import { vec3, vec4, mat4 } from "math";
+import { resMan, logger, device } from "global";
+import { vec3, vec4, mat4, quat } from "math";
 import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
 import {
@@ -17,6 +17,10 @@ import {
     Tw2Effect,
     Tw2Mesh,
     Tw2MeshArea,
+    Tw2InstancedMesh,
+    Tw2GeometryRes,
+    Tw2GeometryMesh,
+    Tw2VertexDeclaration,
     //Tw2AnimationController
 } from "core";
 
@@ -40,12 +44,14 @@ import {
     EveSpotlightSet,
     EveSpriteSet,
     EveSpriteSetItem,
-    EveShip2
+    EveShip2,
+    EveChildMesh
 } from "eve";
 
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
+import { GL_FLOAT } from "constant/gl";
 
 @meta.type("EveSOFData")
 export class EveSOFData
@@ -637,6 +643,7 @@ export class EveSOFData
         this.SetupDecals(data, obj, sof, options);
         this.SetupBoosters(data, obj, sof, options);
         this.SetupLocators(data, obj, sof, options);
+        this.SetupInstancedMesh(data, obj, sof, options);
 
         //  TODO
         this.SetupAudio(data, obj, sof, options);
@@ -644,7 +651,6 @@ export class EveSOFData
         this.SetupLights(data, obj, sof, options);
         this.SetupObservers(data, obj, sof, options);
         this.SetupChildren(data, obj, sof, options);
-        this.SetupInstancedMesh(data, obj, sof, options);
         this.SetupControllers(data, obj, sof, options);
 
         return obj;
@@ -707,13 +713,15 @@ export class EveSOFData
         if (transformLayer)
         {
             mask.isMirrored = transformLayer.isMirrored;
-            mask.Compose(transformLayer.rotation, transformLayer.position, transformLayer.scaling).RebuildTransforms();
+            mask.Compose(transformLayer.rotation, transformLayer.position, transformLayer.scaling);
         }
         else
         {
             mask.isMirrored = false;
-            mask.Identity().RebuildTransforms();
+            mask.Identity();
         }
+
+        mask.RebuildTransforms();
 
         let pU = 0,
             pV = 0;
@@ -837,7 +845,7 @@ export class EveSOFData
         {
             await resMan.FetchResource(resPath);
         }
-        catch(err)
+        catch (err)
         {
             // If a cake file, try to fall back to wbg file
             if (getPathExtension(resPath) === "cake")
@@ -976,12 +984,6 @@ export class EveSOFData
         mesh.Initialize();
         obj.mesh = mesh;
     }
-
-    /**
-     * Temporary catchment for found res path inserts
-     * @type {{}}
-     */
-    static knownResPathInserts = {};
 
     /**
      *
@@ -1326,7 +1328,7 @@ export class EveSOFData
         }
 
         const { shape0, shape1, warpShape0, warpShape1 } = src;
-        const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1, boosterAlpha=1 } = options.multiplier;
+        const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1, boosterAlpha = 1 } = options.multiplier;
 
         // Adjust booster colours so they look better
         const
@@ -1585,28 +1587,174 @@ export class EveSOFData
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        logger.Debug({
-            name: "Space object factory",
-            message: "Instance meshes not implemented"
-        });
+        const { gl } = device;
+        const { hull } = sof;
+        const { instancedMeshes = [] } = hull;
 
-        /*
-        const { instancedMeshes=[] } = sof.hull;
-        for (var i = 0; i < instancedMeshes.length; ++i)
+        const
+            m = mat4.create(),
+            q = quat.create(),
+            p = vec3.create(),
+            s = vec3.create(),
+            v = vec3.create();
+
+        for (let h = 0; h < instancedMeshes.length; h++)
         {
-            var him = instancedMeshes[i];
-            var mesh = new Tw2InstancedMesh();
-            mesh.instanceGeometryResPath = him.instanceGeometryResPath;
+            const
+                him = instancedMeshes[h],
+                mesh = new Tw2InstancedMesh(),
+                iMesh = new Tw2GeometryMesh();
+
+            iMesh.declaration = Tw2VertexDeclaration.from([
+                { usage: "TEXCOORD", usageIndex: 8, elements: 4, attr:  "attr3" },
+                { usage: "TEXCOORD", usageIndex: 9, elements: 4, attr:  "attr4" },
+                { usage: "TEXCOORD", usageIndex: 10, elements: 4, attr:  "attr5" },
+            ]);
+
+            iMesh.declaration.stride = 12 * 4;
+            iMesh.declaration.name = him.name;
+
+            const vertices = [];
+            for (let i = 0; i < him.instances.length; i++)
+            {
+                const { data } = him.instances[i];
+
+                q[0] = data[0];
+                q[1] = data[1];
+                q[2] = data[2];
+                q[3] = data[3];
+                s[0] = data[4];
+                s[1] = data[5];
+                s[2] = data[6];
+                p[0] = data[7];
+                p[1] = data[8];
+                p[2] = data[9];
+                mat4.fromRotationTranslationScale(m, q, p, s);
+                mat4.transpose(m, m);
+
+                vertices.push(m[0]);
+                vertices.push(m[1]);
+                vertices.push(m[2]);
+                vertices.push(m[3]);
+                vertices.push(m[4]);
+                vertices.push(m[5]);
+                vertices.push(m[6]);
+                vertices.push(m[7]);
+                vertices.push(m[8]);
+                vertices.push(m[9]);
+                vertices.push(m[10]);
+                vertices.push(m[11]);
+            }
+
+            iMesh.bufferData = new Float32Array(vertices);
+            iMesh.bufferLength = iMesh.bufferData.length;
+            iMesh.buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, iMesh.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, iMesh.bufferData, gl.STATIC_DRAW);
+            // Do not retain in memory unless asked to
+            if (!resMan.systemMirror) iMesh.bufferData = null;
+
+            // Setup resource to hold results
+            const res = new Tw2GeometryRes();
+            res.meshes[0] = iMesh;
+            res.OnPrepared();
+
+            // Complete mesh
             mesh.geometryResPath = him.geometryResPath;
+            mesh.instanceGeometryResource = res;
             mesh.Initialize();
 
-            this.FillMeshAreas(data, get(mesh, "opaqueAreas", []), sof, options, "opaqueAreas", him.shader);
-
-            var child = new EveChildMesh();
+            // Setup child
+            const child = new EveChildMesh();
+            child.useSpaceObjectData = true;
+            child.useSRT = false;
             child.mesh = mesh;
             obj.effectChildren.push(child);
+
+            const { opaqueAreas } = mesh;
+
+            // Turn this into a proper method
+            get(hull, "opaqueAreas", []).forEach(hullArea =>
+            {
+                let { name = "", index = 0, count = 1, areaType } = hullArea;
+
+                const area = new Tw2MeshArea();
+                area.name = name;
+                area.index = index;
+                area.count = count;
+                opaqueAreas.push(area);
+
+                const config = data.generic.GetShaderConfig(him.shader, sof.hull.isSkinned);
+                hullArea.Assign(config);
+                const effect = area.effect = new Tw2Effect();
+                effect.name = area.name + "_effect";
+                effect.effectFilePath = config.effectFilePath;
+                effect.autoParameter = true;
+
+                // Get textures
+                him.textures.forEach(texture =>
+                {
+                    effect.SetTextures({ [texture.name]: texture.resFilePath });
+                });
+
+                // Area parameters
+                // Todo: Clean this up
+                let areaData = { colorType: -1 };
+
+                if (sof.faction.HasAreaType(areaType))
+                {
+                    sof.faction.AssignAreaType(areaType, areaData);
+                }
+                else
+                {
+                    sof.faction.AssignAreaType(0, areaData);
+                    logger.Debug({
+                        name: "Space object factory",
+                        message: "Could not resolve area type: " + areaType
+                    });
+                }
+
+                // Get custom materials
+                Object.assign(areaData, sof.area);
+                data.AssignMaterialParameters(areaData, config.parameters);
+
+                // Area lights colour
+                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
+                if (glowColor)
+                {
+                    const { colorType } = areaData;
+
+                    if (sof.faction.HasColorType(colorType))
+                    {
+                        sof.faction.GetColorType(colorType, glowColor);
+                    }
+                    else
+                    {
+                        sof.faction.GetColorType(0, glowColor);
+                        logger.Debug({
+                            name: "Space object factory",
+                            message: "Using primary colours, could not resolve glow color type: " + colorType
+                        });
+                    }
+
+                    vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+                    config.parameters.GeneralGlowColor = glowColor; //temp
+                }
+
+                if (config.textures.PmdgMap)
+                {
+                    config.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, config.textures.PmdgMap, sof.resPathInsert);
+                }
+
+                // Update effect
+                effect.SetParameters(config.parameters);
+                effect.SetTextures(config.textures);
+                effect.SetOverrides(config.overrides);
+                effect.Initialize();
+            });
+
         }
-         */
+
     }
 
     /**
