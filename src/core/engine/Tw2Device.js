@@ -178,6 +178,8 @@ export class Tw2Device extends Tw2EventEmitter
             throw new Error("Setting device options after gl creation is not yet supported");
         }
 
+        if ("events" in opt) this.AddEvents(opt.events);
+
         if ("performanceClock" in opt)
         {
             if (opt.performance && "performance" in window)
@@ -432,10 +434,11 @@ export class Tw2Device extends Tw2EventEmitter
      */
     Tick()
     {
-        let resized = false;
+        this._resized = false;
+
         if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight)
         {
-            resized = this.Resize();
+            this._resized = this.Resize();
         }
 
         const
@@ -454,9 +457,10 @@ export class Tw2Device extends Tw2EventEmitter
         ]);
 
         this.frameCounter++;
-        return resized;
+
+        return this._resized;
     }
-    
+
     /**
      * Sets World transform matrix
      * @param {mat4} matrix

@@ -266,6 +266,7 @@ export class Tw2Library extends Tw2EventEmitter
     Register(options)
     {
         if (!options) return;
+        if (options.events) this.AddEvents(options.events);
         if (options.debug !== undefined) this.SetDebugMode(options.debug);
         if (options.resourceHandler) this.SetCustomResourceHandler(options.resourceHandler);
         if (options.black) this.RegisterBlackPathHandlers(options.black);
@@ -457,24 +458,26 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (this._customResourceHandler)
         {
-            result = this._customResourceHandler(value);
-            if (result) return result;
+            result = await this._customResourceHandler(value);
         }
 
-        if (util.isDNA(value))
+        if (!result)
         {
-            result = await this.eveSof.FetchObject(value);
-        }
-        else if (util.isString(value))
-        {
-            const ext = util.getPathExtension(value);
-            if (this.store.extensions.IsLoadingObject(ext))
+            if (util.isDNA(value))
             {
-                result = await this.resMan.FetchObject(value);
+                result = await this.eveSof.FetchObject(value);
             }
-            else
+            else if (util.isString(value))
             {
-                result = await this.resMan.FetchResource(value);
+                const ext = util.getPathExtension(value);
+                if (this.store.extensions.IsLoadingObject(ext))
+                {
+                    result = await this.resMan.FetchObject(value);
+                }
+                else
+                {
+                    result = await this.resMan.FetchResource(value);
+                }
             }
         }
 

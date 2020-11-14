@@ -55,6 +55,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
+
+        if ("events" in opt) this.AddEvents(opt.events);
+
         assignIfExists(this, opt, [
             "systemMirror",
             "maxPrepareTime",

@@ -39,6 +39,7 @@ export class Tw2Logger extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
+        if ("events" in opt) this.AddEvents(opt.events);
         assignIfExists(this, opt, [ "name", "display", "history", "throttle" ]);
         assignIfExists(this.visible, opt.visible, [ "log", "info", "debug", "warn", "error" ]);
     }
