@@ -1,5 +1,5 @@
 import { resMan, logger, device } from "global";
-import { vec3, vec4, mat4, quat } from "math";
+import { vec3, vec4, mat4, quat, num } from "math";
 import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
 import {
@@ -31,7 +31,7 @@ import {
     ErrSOFMaterialNotFound,
     ErrSOFFactionNotFound,
     ErrSOFPatternNotFound,
-    ErrSOFRaceNotFound
+    ErrSOFRaceNotFound, EveSOF
 } from "sof/EveSOF";
 
 import {
@@ -1112,6 +1112,27 @@ export class EveSOFData
         });
     }
 
+    static billBoards = [
+        "billboards/common/egonics_immersia.webm",
+        "billboards/common/eve_cdia_guristas_billboard.webm",
+        "billboards/common/eve_shipad_abaddon_timeless.webm",
+        "billboards/common/eve_shipad_astero_timeless.webm",
+        "billboards/common/eve_shipad_cynabal_timeless.webm",
+        "billboards/common/eve_shipad_dominix_timeless.webm",
+        "billboards/common/eve_shipad_drake_timeless.webm",
+        "billboards/common/genolution.webm",
+        "billboards/common/khanid_works.webm",
+        "billboards/common/laidai.webm",
+        "billboards/common/matigu_sushi.webm",
+        "billboards/common/mirelle_glasses.webm",
+        "billboards/common/project_discovery_covid.webm",
+        "billboards/common/quafe.webm",
+        "billboards/common/sinfina_mondo.webm",
+        "billboards/takeover/eve_concord_billboard_takeover.webm",
+        "billboards/triglavianhangar/trigstationbillboard.webm",
+    ];
+
+
     /**
      *
      * @param {EveSOFData} data
@@ -1129,8 +1150,16 @@ export class EveSOFData
             const set = new EvePlaneSet();
             set.name = srcSet.name;
 
+            // Add a random billboard
+            let MaskMap = srcSet.maskMapResPath;
+            const nameUpper = set.name.split(" ").join("").toUpperCase();
+            if (nameUpper.includes("BILLBOARD"))
+            {
+                const { billBoards } = EveSOFData;
+                MaskMap = "cdn:/video/" + billBoards[num.randomInt(0, billBoards.length - 1)];
+            }
+
             // TODO: Usage
-            // TODO: AtlasSize
 
             set.effect = Tw2Effect.from({
                 effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
@@ -1138,7 +1167,7 @@ export class EveSOFData
                 parameters: {
                     PlaneData: [
                         0,  // Power of Fade Angle
-                        srcSet.atlasSize,  // srcSet.atlasSize doesn't work?
+                        srcSet.atlasSize || 1,
                         0,  // Unused
                         0   // Unused
                     ]
@@ -1146,7 +1175,7 @@ export class EveSOFData
                 textures: {
                     Layer1Map: srcSet.layer1MapResPath,
                     Layer2Map: srcSet.layer2MapResPath,
-                    MaskMap: srcSet.maskMapResPath
+                    MaskMap
                 }
             });
 
@@ -1606,9 +1635,9 @@ export class EveSOFData
                 iMesh = new Tw2GeometryMesh();
 
             iMesh.declaration = Tw2VertexDeclaration.from([
-                { usage: "TEXCOORD", usageIndex: 8, elements: 4, attr:  "attr3" },
-                { usage: "TEXCOORD", usageIndex: 9, elements: 4, attr:  "attr4" },
-                { usage: "TEXCOORD", usageIndex: 10, elements: 4, attr:  "attr5" },
+                { usage: "TEXCOORD", usageIndex: 8, elements: 4, attr: "attr3" },
+                { usage: "TEXCOORD", usageIndex: 9, elements: 4, attr: "attr4" },
+                { usage: "TEXCOORD", usageIndex: 10, elements: 4, attr: "attr5" },
             ]);
 
             iMesh.declaration.stride = 12 * 4;
@@ -1671,90 +1700,45 @@ export class EveSOFData
             child.mesh = mesh;
             obj.effectChildren.push(child);
 
-            const { opaqueAreas } = mesh;
 
-            // Turn this into a proper method
-            get(hull, "opaqueAreas", []).forEach(hullArea =>
+            // Setup mesh area
+            const area = new Tw2MeshArea();
+            area.name = "instance";
+            area.index = 0;
+            area.count = 1;
+            child.mesh.opaqueAreas.push(area);
+
+            // Setup effect
+            const config = data.generic.GetShaderConfig(him.shader, sof.hull.isSkinned);
+
+            const effect = area.effect = new Tw2Effect();
+            effect.name = area.name + "_effect";
+            effect.effectFilePath = config.effectFilePath;
+            effect.autoParameter = true;
+
+            // Get textures
+            config.textures = him.AssignTextures(config.textures);
+
+            // Area parameters
+            let areaData = sof.faction.AssignAreaType(0, { colorType: 0 });
+            // Get custom materials
+            Object.assign(areaData, sof.area);
+            data.AssignMaterialParameters(areaData, config.parameters);
+            // Area lights colour
+            const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
+            if (glowColor)
             {
-                let { name = "", index = 0, count = 1, areaType } = hullArea;
+                sof.faction.GetColorType(areaData.colorType, glowColor);
+                vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
+                config.parameters.GeneralGlowColor = glowColor; //temp
+            }
 
-                const area = new Tw2MeshArea();
-                area.name = name;
-                area.index = index;
-                area.count = count;
-                opaqueAreas.push(area);
-
-                const config = data.generic.GetShaderConfig(him.shader, sof.hull.isSkinned);
-                hullArea.Assign(config);
-                const effect = area.effect = new Tw2Effect();
-                effect.name = area.name + "_effect";
-                effect.effectFilePath = config.effectFilePath;
-                effect.autoParameter = true;
-
-                // Get textures
-                him.textures.forEach(texture =>
-                {
-                    effect.SetTextures({ [texture.name]: texture.resFilePath });
-                });
-
-                // Area parameters
-                // Todo: Clean this up
-                let areaData = { colorType: -1 };
-
-                if (sof.faction.HasAreaType(areaType))
-                {
-                    sof.faction.AssignAreaType(areaType, areaData);
-                }
-                else
-                {
-                    sof.faction.AssignAreaType(0, areaData);
-                    logger.Debug({
-                        name: "Space object factory",
-                        message: "Could not resolve area type: " + areaType
-                    });
-                }
-
-                // Get custom materials
-                Object.assign(areaData, sof.area);
-                data.AssignMaterialParameters(areaData, config.parameters);
-
-                // Area lights colour
-                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
-                if (glowColor)
-                {
-                    const { colorType } = areaData;
-
-                    if (sof.faction.HasColorType(colorType))
-                    {
-                        sof.faction.GetColorType(colorType, glowColor);
-                    }
-                    else
-                    {
-                        sof.faction.GetColorType(0, glowColor);
-                        logger.Debug({
-                            name: "Space object factory",
-                            message: "Using primary colours, could not resolve glow color type: " + colorType
-                        });
-                    }
-
-                    vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
-                    config.parameters.GeneralGlowColor = glowColor; //temp
-                }
-
-                if (config.textures.PmdgMap)
-                {
-                    config.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, config.textures.PmdgMap, sof.resPathInsert);
-                }
-
-                // Update effect
-                effect.SetParameters(config.parameters);
-                effect.SetTextures(config.textures);
-                effect.SetOverrides(config.overrides);
-                effect.Initialize();
-            });
-
+            // Update effect
+            effect.SetParameters(config.parameters);
+            effect.SetTextures(config.textures);
+            effect.SetOverrides(config.overrides);
+            effect.Initialize();
         }
-
     }
 
     /**

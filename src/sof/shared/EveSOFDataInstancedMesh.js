@@ -52,4 +52,18 @@ export class EveSOFDataInstancedMesh
     @meta.list("EveSOFDataTexture")
     textures = [];
 
+    /**
+     * Assigns textures to an object
+     * @param {Object} [out={}]
+     * @return {Object} out
+     */
+    AssignTextures(out={})
+    {
+        for (let i = 0; i < this.textures.length; i++)
+        {
+            this.textures[i].Assign(out);
+        }
+        return out;
+    }
+
 }
