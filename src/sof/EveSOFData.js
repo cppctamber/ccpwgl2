@@ -109,6 +109,26 @@ export class EveSOFData
             shadowSkinned: null
         },
 
+        billBoards : [
+            "cdn:/video/billboards/common/egonics_immersia.webm",
+            "cdn:/video/billboards/common/eve_cdia_guristas_billboard.webm",
+            "cdn:/video/billboards/common/eve_shipad_abaddon_timeless.webm",
+            "cdn:/video/billboards/common/eve_shipad_astero_timeless.webm",
+            "cdn:/video/billboards/common/eve_shipad_cynabal_timeless.webm",
+            "cdn:/video/billboards/common/eve_shipad_dominix_timeless.webm",
+            "cdn:/video/billboards/common/eve_shipad_drake_timeless.webm",
+            "cdn:/video/billboards/common/genolution.webm",
+            "cdn:/video/billboards/common/khanid_works.webm",
+            "cdn:/video/billboards/common/laidai.webm",
+            "cdn:/video/billboards/common/matigu_sushi.webm",
+            "cdn:/video/billboards/common/mirelle_glasses.webm",
+            "cdn:/video/billboards/common/project_discovery_covid.webm",
+            "cdn:/video/billboards/common/quafe.webm",
+            "cdn:/video/billboards/common/sinfina_mondo.webm",
+            "cdn:/video/billboards/takeover/eve_concord_billboard_takeover.webm",
+            "cdn:/video/billboards/triglavianhangar/trigstationbillboard.webm",
+        ],
+
         effectPath: {
             plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
@@ -1112,27 +1132,6 @@ export class EveSOFData
         });
     }
 
-    static billBoards = [
-        "billboards/common/egonics_immersia.webm",
-        "billboards/common/eve_cdia_guristas_billboard.webm",
-        "billboards/common/eve_shipad_abaddon_timeless.webm",
-        "billboards/common/eve_shipad_astero_timeless.webm",
-        "billboards/common/eve_shipad_cynabal_timeless.webm",
-        "billboards/common/eve_shipad_dominix_timeless.webm",
-        "billboards/common/eve_shipad_drake_timeless.webm",
-        "billboards/common/genolution.webm",
-        "billboards/common/khanid_works.webm",
-        "billboards/common/laidai.webm",
-        "billboards/common/matigu_sushi.webm",
-        "billboards/common/mirelle_glasses.webm",
-        "billboards/common/project_discovery_covid.webm",
-        "billboards/common/quafe.webm",
-        "billboards/common/sinfina_mondo.webm",
-        "billboards/takeover/eve_concord_billboard_takeover.webm",
-        "billboards/triglavianhangar/trigstationbillboard.webm",
-    ];
-
-
     /**
      *
      * @param {EveSOFData} data
@@ -1155,8 +1154,11 @@ export class EveSOFData
             const nameUpper = set.name.split(" ").join("").toUpperCase();
             if (nameUpper.includes("BILLBOARD"))
             {
-                const { billBoards } = EveSOFData;
-                MaskMap = "cdn:/video/" + billBoards[num.randomInt(0, billBoards.length - 1)];
+                const { billBoards=[] } = options;
+                if  (billBoards.length)
+                {
+                    MaskMap = billBoards[num.randomInt(0, billBoards.length - 1)];
+                }
             }
 
             // TODO: Usage
