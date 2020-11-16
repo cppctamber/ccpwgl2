@@ -1,23 +1,10 @@
 import { meta } from "utils";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2Resource } from "./Tw2Resource";
-import { Tw2Shader } from "./Tw2Shader";
+import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 
 
-/**
- * Tw2EffectRes
- *
- * @property {Array} passes
- * @property {*} annotation
- * @property {Array} permutations
- * @property {Array} offsets
- * @property {*} reader
- * @property {Number} version
- * @property {String} stringTable
- * @property {*} shaders
- * @inherits Tw2Resource
- */
 @meta.type("Tw2EffectRes")
 export class Tw2EffectRes extends Tw2Resource
 {
@@ -30,6 +17,9 @@ export class Tw2EffectRes extends Tw2Resource
     version = 0;
     stringTable = "";
     shaders = {};
+
+    ReadString = null;
+    validShadowShader = false;
 
     _requestResponseType = "arraybuffer";
 
@@ -52,24 +42,7 @@ export class Tw2EffectRes extends Tw2Resource
         this.stringTable = "";
         this.shaders = {};
 
-        const reader = new Tw2BinaryReader(new Uint8Array(data));
-        let stringTable = "";
-
-        /**
-         * ReadString
-         * @returns {String}
-         * @private
-         */
-        function ReadString()
-        {
-            const offset = reader.ReadUInt32();
-            let end = offset;
-            while (stringTable.charCodeAt(end))
-            {
-                ++end;
-            }
-            return stringTable.substr(offset, end - offset);
-        }
+        const reader = this.reader = new Tw2BinaryReader(new Uint8Array(data));
 
         const version = reader.ReadUInt32();
         if (version < 2 || version > 8)
@@ -78,8 +51,24 @@ export class Tw2EffectRes extends Tw2Resource
             return;
         }
 
+        /**
+         * ReadString
+         * @returns {String}
+         */
+        this.ReadString = function()
+        {
+            const offset = reader.ReadUInt32();
+            let end = offset;
+            while (stringTable.charCodeAt(end))
+            {
+                ++end;
+            }
+            return stringTable.substr(offset, end - offset);
+        };
+
         let headerSize,
-            stringTableSize;
+            stringTableSize,
+            stringTable;
 
         if (version < 5)
         {
@@ -105,21 +94,11 @@ export class Tw2EffectRes extends Tw2Resource
             this.stringTableOffset = reader.cursor;
             stringTable = String.fromCharCode.apply(null, reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
             reader.cursor += stringTableSize;
+
             const permutationCount = reader.ReadUInt8();
             for (let perm = 0; perm < permutationCount; ++perm)
             {
-                let permutation = {
-                    name: ReadString(),
-                    defaultOption: reader.ReadUInt8(),
-                    description: ReadString(),
-                    type: reader.ReadUInt8(),
-                    options: {},
-                    optionCount: reader.ReadUInt8()
-                };
-                for (let j = 0; j < permutation.optionCount; ++j)
-                {
-                    permutation.options[ReadString()] = j;
-                }
+                const permutation = Tw2ShaderPermutation.ReadCCPBinary(reader, this);
                 this.permutations.push(permutation);
             }
 
@@ -142,6 +121,8 @@ export class Tw2EffectRes extends Tw2Resource
             reader.ReadUInt32();
             reader.cursor = reader.ReadUInt32();
         }
+
+
         this.reader = reader;
         this.version = version;
         this.stringTable = stringTable;
@@ -169,20 +150,20 @@ export class Tw2EffectRes extends Tw2Resource
         {
             let permutation = this.permutations[i];
             let value = permutation.defaultOption;
+
             if (options.hasOwnProperty(permutation.name))
             {
-                let valueName = options[permutation.name];
-                if (!permutation.options.hasOwnProperty(valueName))
+                try
                 {
-                    this.OnError(new ErrShaderPermutationValue({
-                        path: this.path,
-                        permutation: permutation.name,
-                        valueName: valueName
-                    }));
+                    value = permutation.GetOption(value);
+                }
+                catch(err)
+                {
+                    this.OnError(err);
                     return null;
                 }
-                value = permutation.options[valueName];
             }
+
             index += value * multiplier;
             multiplier *= permutation.optionCount;
         }
@@ -200,7 +181,7 @@ export class Tw2EffectRes extends Tw2Resource
         let shader = null;
         try
         {
-            shader = new Tw2Shader(this.reader, this.version, this.stringTable, this.stringTableOffset, this.path);
+            shader = Tw2Shader.fromCCPBinary(this.reader, this);
         }
         catch (error)
         {
@@ -234,18 +215,6 @@ export class ErrShaderHeaderSize extends Tw2Error
     constructor(data)
     {
         super(data, "Effect file contains no compiled effects");
-    }
-}
-
-
-/**
- * Throws when a shader has an invalid permutation value
- */
-export class ErrShaderPermutationValue extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Invalid shader permutation value");
     }
 }
 

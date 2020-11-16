@@ -79,6 +79,7 @@ export const config = {
         extensions: {
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
+            "fx" : core.Tw2EffectRes,
             "wbg": core.Tw2GeometryRes,
             "cake": core.Tw2GeometryRes,
             "png": core.Tw2TextureRes,

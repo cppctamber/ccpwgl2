@@ -11,8 +11,9 @@ import {
     GL_LINEAR_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_LINEAR,
     GL_MIRRORED_REPEAT,
-    GL_CLAMP_TO_EDGE
+    GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP
 } from "constant";
+import { quat } from "math/index";
 
 
 // Texture Wrap modes
@@ -304,7 +305,7 @@ export class Tw2SamplerState extends meta.Model
     {
         const
             targetType = this.samplerType,
-            gl = device.gl,
+            { gl } = device,
             ext = device.GetExtension("EXT_texture_filter_anisotropic"),
             minFilter = useNoMipFilter ? this.minFilterNoMips : this.minFilter;
 
@@ -361,6 +362,70 @@ export class Tw2SamplerState extends meta.Model
         {
             this.ComputeHash();
         }
+    }
+
+    /**
+     * Creates a sampler state from ccp binary
+     * @param {Tw2BinaryReader}  reader
+     * @param {Tw2EffectRes} res
+     * @param {Array<Tw2ShaderStageTexture>} stageTextures
+     * @returns {Tw2SamplerState}
+     */
+    static fromCCPBinary(reader, res, stageTextures)
+    {
+        const sampler = new Tw2SamplerState();
+        sampler.registerIndex = reader.ReadUInt8();
+        sampler.name = res.version >= 4 ? res.ReadString() : "";
+        sampler._comparison = reader.ReadUInt8();     // not used
+
+        const
+            filterMode = reader.ReadUInt8(),
+            magFilterMode = reader.ReadUInt8(),
+            mipFilterMode = reader.ReadUInt8(),
+            addressUMode = reader.ReadUInt8(),
+            addressVMode = reader.ReadUInt8(),
+            addressWMode = reader.ReadUInt8();
+
+        sampler._mipLODBias = reader.ReadFloat32();    // not used
+
+        const maxAnisotropy = reader.ReadUInt8();
+
+        sampler._comparisonFunc = reader.ReadUInt8(); // not used
+
+        sampler._borderColor = quat.fromValues(
+            reader.ReadFloat32(),
+            reader.ReadFloat32(),
+            reader.ReadFloat32(),
+            reader.ReadFloat32()
+        );
+
+        sampler._minLOD = reader.ReadFloat32();       // not used
+        sampler._maxLOD = reader.ReadFloat32();       // not used
+
+        if (res.version < 4) reader.ReadUInt8();
+
+        //  Get texture types
+        for (let n = 0; n < stageTextures.length; ++n)
+        {
+            if (stageTextures[n].registerIndex === sampler.registerIndex)
+            {
+                sampler.samplerType = stageTextures[n].type === 4 ? GL_TEXTURE_CUBE_MAP: GL_TEXTURE_2D;
+                sampler.isVolume = stageTextures[n].type === 3;
+                break;
+            }
+        }
+
+        sampler.ResolveModes({
+            mipFilterMode,
+            filterMode,
+            magFilterMode,
+            addressUMode,
+            addressVMode,
+            addressWMode,
+            maxAnisotropy
+        });
+
+        return sampler;
     }
 
     /**

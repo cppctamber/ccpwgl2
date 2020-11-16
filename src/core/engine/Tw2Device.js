@@ -57,13 +57,16 @@ import {
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
 } from "constant";
-import { device } from "global/tw2";
 
 
 export class Tw2Device extends Tw2EventEmitter
 {
     name = "Device";
 
+    /**
+     *
+     * @type {null|WebGLRenderingContext|WebGL2RenderingContext}
+     */
     gl = null;
     xr = null;
 
@@ -105,7 +108,7 @@ export class Tw2Device extends Tw2EventEmitter
     antialiasing = true;
     msaaSamples = 0;
     wrapModes = [];
-    shadowHandles = null;
+
     perObjectData = null;
 
     _extensions = {};
@@ -113,6 +116,7 @@ export class Tw2Device extends Tw2EventEmitter
     _alphaTestState = null;
     _depthOffsetState = null;
     _shadowStateBuffer = null;
+    _shadowHandles = null;
     _quadBuffer = null;
     _quadDecl = null;
     _cameraQuadBuffer = null;
@@ -157,6 +161,15 @@ export class Tw2Device extends Tw2EventEmitter
         this.logger = logger;
         this.startTime = this.now;
         this.currentTime = this.startTime;
+    }
+
+    /**
+     * Sets shadow handles
+     * @param {WebGLProgram} program
+     */
+    SetShadowHandles(program)
+    {
+        this._shadowHandles = program;
     }
 
     /**
@@ -894,7 +907,7 @@ export class Tw2Device extends Tw2EventEmitter
             invertedAlphaTest,
             alphaTestRef;
 
-        if (this.shadowHandles && this._alphaTestState.states[RS_ALPHATESTENABLE])
+        if (this._shadowHandles && this._alphaTestState.states[RS_ALPHATESTENABLE])
         {
             switch (this._alphaTestState.states[RS_ALPHAFUNC])
             {
@@ -951,7 +964,7 @@ break;
 
             const clipPlaneEnable = 0;
             gl.uniform4f(
-                this.shadowHandles.shadowStateInt,
+                this._shadowHandles.shadowStateInt,
                 invertedAlphaTest,
                 alphaTestRef,
                 alphaTestFunc,

@@ -8,6 +8,7 @@ export * from "./post";
 export * from "./reader";
 export * from "./resource";
 export * from "./sampler";
+export * from "./shader";
 export * from "./store";
 export * from "./value";
 export * from "./vertex";

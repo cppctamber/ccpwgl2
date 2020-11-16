@@ -272,7 +272,7 @@ export class Tw2TextureRes extends Tw2Resource
     {
         const
             d = device,
-            gl = d.gl;
+            { gl } = device;
 
         this.KeepAlive();
 
