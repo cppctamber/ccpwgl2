@@ -92,7 +92,7 @@ export class EveSpotlightSet extends EveObjectSet
     _indexBuffer = null;
     _spriteVertexBuffer = null;
     _worldSpriteScale = 1;
-
+    _indexOrder = [ 0, 1, 2, 2, 3, 0 ];
 
     /**
      * Alias for this.items
@@ -163,6 +163,26 @@ export class EveSpotlightSet extends EveObjectSet
             this._worldSpriteScale = scale;
             this._dirty = true;
         }
+    }
+
+    /**
+     * Sets the order of the index buffer
+     * @param {Number} a
+     * @param {Number} b
+     * @param {Number} c
+     * @param {Number} d
+     * @param {Number} e
+     * @param {Number} f
+     */
+    SetIndexOrder(a, b,  c, d, e, f)
+    {
+        this._indexOrder[0] = a;
+        this._indexOrder[1] = b;
+        this._indexOrder[2] = c;
+        this._indexOrder[3] = d;
+        this._indexOrder[4] = e;
+        this._indexOrder[5] = f;
+        this._dirty = true;
     }
 
     /**
@@ -292,6 +312,8 @@ export class EveSpotlightSet extends EveObjectSet
             }
         }
 
+        const order = this._indexOrder;
+
         this._spriteVertexBuffer = d.gl.createBuffer();
         d.gl.bindBuffer(d.gl.ARRAY_BUFFER, this._spriteVertexBuffer);
         d.gl.bufferData(d.gl.ARRAY_BUFFER, spriteArray, d.gl.STATIC_DRAW);
@@ -304,12 +326,12 @@ export class EveSpotlightSet extends EveObjectSet
                 offset = i * 6,
                 vtxOffset = i * 4;
 
-            indexes[offset] = vtxOffset;
-            indexes[offset + 1] = vtxOffset + 1;
-            indexes[offset + 2] = vtxOffset + 2;
-            indexes[offset + 3] = vtxOffset + 2;
-            indexes[offset + 4] = vtxOffset + 3;
-            indexes[offset + 5] = vtxOffset;
+            indexes[offset] = vtxOffset + order[0];
+            indexes[offset + 1] = vtxOffset + order[1]; //1;
+            indexes[offset + 2] = vtxOffset + order[2]; //2;
+            indexes[offset + 3] = vtxOffset + order[3]; //2;
+            indexes[offset + 4] = vtxOffset + order[4]; //3;
+            indexes[offset + 5] = vtxOffset + order[5]; //0
         }
 
         this._indexBuffer = d.gl.createBuffer();

@@ -44,7 +44,8 @@ const FilterToModeTable = {
 
 
 @meta.type("Tw2SamplerState")
-export class Tw2SamplerState extends meta.Model
+// TODO: Clean this up
+export class Tw2SamplerState
 {
 
     @meta.string
@@ -362,6 +363,29 @@ export class Tw2SamplerState extends meta.Model
         {
             this.ComputeHash();
         }
+    }
+
+    /**
+     *
+     * TODO: Use utility functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @return {Tw2SamplerState}
+     */
+    static fromJSON(json, context)
+    {
+        const { name, registerIndex, ...modes } = json;
+
+        if (!name || registerIndex === undefined)
+        {
+            throw new ReferenceError("Invalid sampler definition");
+        }
+
+        const sampler = new Tw2SamplerState();
+        sampler.name = name;
+        sampler.registerIndex = registerIndex;
+        sampler.ResolveModes(modes);
+        return sampler;
     }
 
     /**

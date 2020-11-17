@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { vec3 } from "math";
 import { EveShip2 } from "eve/object/EveShip2";
-import { Tw2Animation } from "core/model";
+import { Tw2AnimationController } from "core/model";
 
 
 @meta.notImplemented
@@ -9,9 +9,9 @@ import { Tw2Animation } from "core/model";
 export class EveStation2 extends EveShip2
 {
 
-    @meta.struct("Tw2Animation")
+    @meta.struct("Tw2AnimationController")
     @meta.isPrivate
-    animations = new Tw2Animation();
+    animation = new Tw2AnimationController();
 
     @meta.list("EveObjectSet")
     attachments = [];

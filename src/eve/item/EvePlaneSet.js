@@ -288,10 +288,11 @@ export class EvePlaneSet extends EveObjectSet
             }
         }
 
-        this._vertexBuffer = device.gl.createBuffer();
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._vertexBuffer);
-        device.gl.bufferData(device.gl.ARRAY_BUFFER, array, device.gl.STATIC_DRAW);
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, null);
+        const { gl } = device;
+        this._vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         const indexes = new Uint16Array(itemCount * 6);
         for (let i = 0; i < itemCount; ++i)
@@ -308,10 +309,10 @@ export class EvePlaneSet extends EveObjectSet
             indexes[offset + 5] = vtxOffset + 2;
         }
 
-        this._indexBuffer = device.gl.createBuffer();
-        device.gl.bindBuffer(device.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        device.gl.bufferData(device.gl.ELEMENT_ARRAY_BUFFER, indexes, device.gl.STATIC_DRAW);
-        device.gl.bindBuffer(device.gl.ELEMENT_ARRAY_BUFFER, null);
+        this._indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount * 6;
 
         super.Rebuild();
@@ -343,19 +344,17 @@ export class EvePlaneSet extends EveObjectSet
     {
         if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
 
-        const
-            d = device,
-            gl = d.gl;
+        const { gl } = device;
 
-        d.SetStandardStates(d.RM_ADDITIVE);
+        device.SetStandardStates(device.RM_ADDITIVE);
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
         for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass)
         {
             this.effect.ApplyPass(technique, pass);
-            if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 140)) return false;
-            d.ApplyShadowState();
+            if (!this._decl.SetDeclaration(device, this.effect.GetPassInput(technique, pass), 140)) return false;
+            device.ApplyShadowState();
             gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0);
         }
         return true;

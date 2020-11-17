@@ -52,6 +52,7 @@ import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
 import { GL_FLOAT } from "constant/gl";
+import { EveHazeSet, EveHazeSetItem } from "unsupported/eve";
 
 @meta.type("EveSOFData")
 export class EveSOFData
@@ -665,6 +666,8 @@ export class EveSOFData
         this.SetupLocators(data, obj, sof, options);
         this.SetupInstancedMesh(data, obj, sof, options);
 
+        this.SetupHazeSets(data, obj,  sof, options);
+
         //  TODO
         this.SetupAudio(data, obj, sof, options);
         this.SetupModelCurves(data, obj, sof, options);
@@ -718,6 +721,47 @@ export class EveSOFData
         logger.Debug({
             name: "Space object factory",
             message: "Observers not implemented"
+        });
+    }
+
+    /**
+     * Sets up haze sets
+     * // TODO: Share haze sets...
+     * // TODO: Animated haze sets...
+     * @param data
+     * @param obj
+     * @param sof
+     * @param options
+     */
+    static SetupHazeSets(data, obj, sof, options)
+    {
+        sof.hull.hazeSets.forEach(srcSet =>
+        {
+            const haze = new EveHazeSet();
+
+            srcSet.items.forEach(srcSetItem =>
+            {
+                const item = EveHazeSetItem.from(srcSetItem);
+
+                const { colorType } = srcSetItem;
+
+                if (sof.faction.HasColorType(colorType))
+                {
+                    sof.faction.GetColorType(colorType, item.color);
+                }
+                else
+                {
+                    sof.faction.GetColorType(0, item.color);
+                    logger.Debug({
+                        name: "Space object factory",
+                        message: "Using primary colours, could not resolve glow color type: " + colorType
+                    });
+                }
+
+                haze.items.push(item);
+            });
+
+            obj.attachments.push(haze);
         });
     }
 

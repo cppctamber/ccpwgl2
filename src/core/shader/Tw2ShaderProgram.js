@@ -35,14 +35,18 @@ export class Tw2ShaderProgram
      * @param {String} vertexShader
      * @param {String} fragmentShader
      * @param {Tw2ShaderPass} pass
-     * @param {Tw2EffectRes} res
+     * @param {Tw2EffectRes} context
      * @param {Boolean} [skipError]
      */
-    static create(vertexShader, fragmentShader, pass, res, skipError)
+    static create(vertexShader, fragmentShader, pass, context, skipError)
     {
         const
             { gl } = device,
             program = new Tw2ShaderProgram();
+
+        console.dir(pass);
+        console.dir(vertexShader);
+        console.dir(fragmentShader);
 
         // Create and link program
         program.program = gl.createProgram();
@@ -56,7 +60,7 @@ export class Tw2ShaderProgram
             if (!skipError)
             {
                 throw new ErrShaderLink({
-                    path: res.path,
+                    path: context.path,
                     infoLog: gl.getProgramInfoLog(program.program)
                 });
             }

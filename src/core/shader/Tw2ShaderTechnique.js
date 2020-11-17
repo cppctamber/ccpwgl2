@@ -66,13 +66,36 @@ export class Tw2ShaderTechnique
     }
 
     /**
+     *
+     * TODO: Replace with util functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @param {String} key
+     * @return {Tw2ShaderTechnique}
+     */
+    static fromJSON(json, context, key)
+    {
+        const { name=key, passes=[] } = json;
+
+        const technique = new Tw2ShaderTechnique();
+        technique.name = name;
+
+        for (let i = 0; i < passes.length; i++)
+        {
+            technique.passes.push(Tw2ShaderPass.fromJSON(passes[i], context));
+        }
+
+        return technique;
+    }
+
+    /**
      * Reads ccp shader techniques binary
      * @param {Tw2BinaryReader} reader
-     * @param {Tw2EffectRes}  res
+     * @param {Tw2EffectRes}  context
      * @param {String} name
      * @returns {Tw2ShaderTechnique}
      */
-    static fromCCPBinary(reader, res, name)
+    static fromCCPBinary(reader, context, name)
     {
         const technique = new Tw2ShaderTechnique();
         technique.name = name;
@@ -80,11 +103,10 @@ export class Tw2ShaderTechnique
         const passCount = reader.ReadUInt8();
         for (let i = 0; i < passCount; i++)
         {
-            technique.passes.push(Tw2ShaderPass.fromCCPBinary(reader, res));
+            technique.passes.push(Tw2ShaderPass.fromCCPBinary(reader, context));
         }
 
         return technique;
     }
-
 
 }

@@ -162,7 +162,7 @@ export class Tw2CakeReader
         }
 
         let vertexSize = 0,
-            vertexCount = 0;
+            vertexCount = declarations.length ? declarations[0].vertices.length : 0;
 
         // Create declarations
         this.declaration = new Tw2VertexDeclaration();
@@ -171,11 +171,7 @@ export class Tw2CakeReader
             const { vertices, usageIndex, usage, elements, name } = declarations[i];
 
             // Validate vertex counts
-            if (i === 0)
-            {
-                vertexCount = vertices.length;
-            }
-            else if (vertices.length !== vertexCount)
+            if (vertices.length !== vertexCount)
             {
                 throw new ReferenceError(`Unexpected vertex count: ${name}`);
             }

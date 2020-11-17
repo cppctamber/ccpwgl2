@@ -1,4 +1,5 @@
-import { meta } from "utils";
+import { assignIfExists, meta } from "utils";
+import { Tw2Shader } from "core/shader/Tw2Shader";
 
 
 @meta.type("Tw2ShaderAnnotation")
@@ -32,17 +33,35 @@ export class Tw2ShaderAnnotation
     @meta.string
     widget = "";
 
+    /**
+     * Creates an annotation from json
+     * TODO: Replace with util functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @param {String} [key]
+     * @return {Tw2ShaderAnnotation}
+     */
+    static fromJSON(json, context, key)
+    {
+        const annotation = new Tw2ShaderAnnotation();
+        assignIfExists(annotation, json, [
+            "name", "description", "component1", "component2",
+            "component3", "component4", "display", "group", "widget"
+        ]);
+        annotation.name = annotation.name || key;
+        return annotation;
+    }
 
     /**
      * Reads ccp shader annotations
      * @param {Tw2BinaryReader} reader
-     * @param {Tw2EffectRes}  res
+     * @param {Tw2EffectRes}  context
      * @return {Tw2ShaderAnnotation}
      */
-    static fromCCPBinary(reader, res)
+    static fromCCPBinary(reader, context)
     {
         const annotation = new Tw2ShaderAnnotation();
-        annotation.name = res.ReadString();
+        annotation.name = context.ReadString();
 
         const annotationCount = reader.ReadUInt8();
         let components = [];
@@ -50,7 +69,7 @@ export class Tw2ShaderAnnotation
         for (let annotationIx = 0; annotationIx < annotationCount; ++annotationIx)
         {
             let
-                key = res.ReadString(),
+                key = context.ReadString(),
                 type = reader.ReadUInt8(),
                 value;
 
@@ -69,7 +88,7 @@ export class Tw2ShaderAnnotation
                     break;
 
                 default:
-                    value = res.ReadString();
+                    value = context.ReadString();
             }
 
             // Normalize the annotations

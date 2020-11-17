@@ -240,7 +240,7 @@ export class EveSpriteSet extends EveObjectSet
             return;
         }
 
-        const gl = device.gl;
+        const { gl } = device;
 
         if (this.useQuads)
         {

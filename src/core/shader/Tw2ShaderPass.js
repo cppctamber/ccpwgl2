@@ -1,6 +1,5 @@
 import { meta } from "utils";
 import { device } from "global";
-import { Tw2Shader } from "./Tw2Shader";
 import { Tw2ShaderStage } from "./Tw2ShaderStage";
 import { Tw2ShaderState } from "./Tw2ShaderState";
 import { Tw2ShaderProgram } from "./Tw2ShaderProgram";
@@ -99,26 +98,53 @@ export class Tw2ShaderPass
     }
 
     /**
+     *
+     * TODO: Replace with utility functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @return {Tw2ShaderPass}
+     */
+    static fromJSON(json, context)
+    {
+        // Always false for now
+        context.validShadowShader = false;
+
+        const pass = new Tw2ShaderPass();
+
+        const { vertex={}, fragment={}, states=[] } = json;
+
+        pass.stages[0] = Tw2ShaderStage.fromJSON(vertex, context, Tw2ShaderStage.Type.VERTEX);
+        pass.stages[1] = Tw2ShaderStage.fromJSON(fragment, context, Tw2ShaderStage.Type.FRAGMENT);
+
+        for (let i = 0; i < states.length; i++)
+        {
+            pass.states.push(Tw2ShaderState.fromJSON(states[i], context));
+        }
+
+        return this.createPrograms(pass, context);
+    }
+
+    /**
      * Reads ccp shader binary pass
      * @param {Tw2BinaryReader} reader
-     * @param {Tw2EffectRes}  res
+     * @param {Tw2EffectRes}  context
      * @returns {Tw2ShaderPass}
      */
-    static fromCCPBinary(reader, res)
+    static fromCCPBinary(reader, context)
     {
         const
             pass = new Tw2ShaderPass(),
             stageCount = reader.ReadUInt8();
 
         // Reset to true  for each pass
-        res.validShadowShader = true;
+        context.validShadowShader = true;
 
         // Stages
         for (let i = 0; i < stageCount; i++)
         {
-            pass.stages.push(Tw2ShaderStage.fromCCPBinary(reader, res));
-            if (res.version >= 3) reader.ReadUInt8();
-            if (res.version > 7) reader.ReadUInt8();
+            pass.stages.push(Tw2ShaderStage.fromCCPBinary(reader, context));
+            if (context.version >= 3) reader.ReadUInt8();
+            if (context.version > 7) reader.ReadUInt8();
         }
 
         // States
@@ -128,22 +154,32 @@ export class Tw2ShaderPass
             pass.states.push(Tw2ShaderState.fromCCPBinary(reader));
         }
 
+        return this.createPrograms(pass, context);
+    }
+
+    /**
+     * Creates the shader programs
+     * @param {Tw2ShaderPass} pass
+     * @param {Tw2EffectRes} context
+     */
+    static createPrograms(pass, context)
+    {
         // link shaders
         pass.shaderProgram = Tw2ShaderProgram.create(
             pass.stages[0].shader,
             pass.stages[1].shader,
             pass,
-            res.path
+            context
         );
 
         // Link shadow shader
-        if (res.validShadowShader)
+        if (context.validShadowShader)
         {
             pass.shadowShaderProgram = Tw2ShaderProgram.create(
                 pass.stages[0].shadowShader,
                 pass.stages[1].shadowShader,
                 pass,
-                res.path,
+                context,
                 true
             );
 
@@ -159,5 +195,6 @@ export class Tw2ShaderPass
 
         return pass;
     }
+
 
 }

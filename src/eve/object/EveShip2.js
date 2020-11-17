@@ -5,6 +5,7 @@ import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
+import { EveHazeSet } from "unsupported/eve/item/EveHazeSet";
 
 
 @meta.type("EveShip2")
@@ -88,6 +89,7 @@ export class EveShip2 extends EveObject
         spotlightSets: true,
         decals: true,
         spriteSets: true,
+        hazeSets: true,
         overlayEffects: true,
         lineSets: true,
         killmarks: true,
@@ -571,6 +573,13 @@ export class EveShip2 extends EveObject
                         if (show.overlayEffects)
                         {
                             item.GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+                        }
+                        break;
+
+                    case EveHazeSet:
+                        if (show.hazeSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
                         }
                         break;
 

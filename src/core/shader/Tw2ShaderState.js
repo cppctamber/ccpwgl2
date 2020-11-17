@@ -12,6 +12,21 @@ export class Tw2ShaderState
     value = 0;
 
     /**
+     *
+     * TODO: Replace with utility functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @return {Tw2ShaderState}
+     */
+    static fromJSON(json, context)
+    {
+        const state = new Tw2ShaderState();
+        if (json.state !== undefined) state.state = json.state;
+        if (json.value !== undefined) state.value = json.value;
+        return state;
+    }
+
+    /**
      * Reads ccp shader state binary
      * @param {Tw2BinaryReader} reader
      * @return {Tw2ShaderState}

@@ -93,12 +93,22 @@ export class Tw2Shader
             cb7: { name: "ConstantFragment", source: stage1, target: result.ps.parameter, isStage: true, short: "cb7" }
         };
 
+        const AttributePrefix = {
+            cb: "Constant buffer",
+            s: "Sampler",
+            c: "Constant",
+            v: "Vertex",
+            r: "Rotation"
+        };
+
         const CBHReverse = {
+            "ConstantVertex": "cb0",
             "PerFrameVS": "cb1",
             "PerObjectVS": "cb3",
             "PerFramePS": "cb2",
             "PerObjectPS": "cb4",
-            "PerObjectFFE": "cb5"
+            "PerObjectFFE": "cb5",
+            "ConstantFragment": "cb7"
         };
 
         const Swizzle = [ "x", "y", "z", "w" ];
@@ -116,7 +126,7 @@ export class Tw2Shader
 
                 name = `${per.short}[${offset / 4}]_${name}`;
 
-                target[name] = target[name] || {};
+                target[name] = target[name] || [];
                 target[name][ix] = array[ix];
                 return;
             }
@@ -145,7 +155,7 @@ export class Tw2Shader
                 // Parameter
                 else
                 {
-                    target[name] = target[name] || {};
+                    target[name] = target[name] || [];
                     target[name][ix] = constantValues[offset + ix];
                 }
                 return;
@@ -159,7 +169,7 @@ export class Tw2Shader
             if (!line) return;
 
             // Todo: Use a single regex to get the results...
-            const match = line.match(/cb[0123457]\[\d+\]\.?[xyzw]?[xyzw]?[xyzw]?[xyzw]+/g); //(cb[0123457])\[(\d+)\]\.([xyzw]+)
+            const match = line.match(/cb[0123457]\[\d+\](|\.?[xyzw]?[xyzw]?[xyzw]?[xyzw])+/g); //(cb[0123457])\[(\d+)\]\.([xyzw]+)
 
             if (!match) return;
 
@@ -170,8 +180,10 @@ export class Tw2Shader
                 const
                     cbh = split.match(/(cb[0-7])/g)[0],
                     index = parseInt(split.replace(cbh, "").replace("[", "").replace("]", "")) * 4,
-                    // Todo: Handle when a whole value is used, excluding the initial definition of the constant buffer
-                    elements = swizzle.split("").map(x => Swizzle.indexOf(x));
+                    elements = swizzle && swizzle.length ? swizzle.split("").map(x => Swizzle.indexOf(x)) : [ 0, 1, 2, 3 ];
+
+                console.log(`cb:${cbh}:${index}`);
+                console.dir(elements);
 
                 const source = CBH[cbh];
 
@@ -255,33 +267,64 @@ export class Tw2Shader
     }
 
     /**
-     * Reads ccp shader binary
-     * @param {Tw2BinaryReader} reader
-     * @param {Tw2EffectRes} res
+     * Creates a shader from JSON
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
      * @return {Tw2Shader}
      */
-    static fromCCPBinary(reader, res)
+    static fromJSON(json, context)
+    {
+        const { techniques = {}, annotations = {} } = json;
+
+        const shader = new Tw2Shader();
+
+        for (const key in techniques)
+        {
+            if (techniques.hasOwnProperty(key))
+            {
+                shader.techniques[key] = Tw2ShaderTechnique.fromJSON(techniques[key], context, key);
+            }
+        }
+
+        for (const key in annotations)
+        {
+            if (annotations.hasOwnProperty(key))
+            {
+                shader.annotations[key] = Tw2ShaderAnnotation.fromJSON(annotations[key], context, key);
+            }
+        }
+
+        return shader;
+    }
+
+    /**
+     * Reads ccp shader binary
+     * @param {Tw2BinaryReader} reader
+     * @param {Tw2EffectRes} context
+     * @return {Tw2Shader}
+     */
+    static fromCCPBinary(reader, context)
     {
         const shader = new Tw2Shader();
 
         //  Techniques
-        const techniqueCount = res.version > 6 ? reader.ReadUInt8() : 1;
+        const techniqueCount = context.version > 6 ? reader.ReadUInt8() : 1;
         for (let i = 0; i < techniqueCount; i++)
         {
-            const name = res.version > 6 ? res.ReadString() : "Main";
+            const name = context.version > 6 ? context.ReadString() : "Main";
 
             if (shader.techniques[name])
             {
                 throw new Error("Invalid technique, already defined: " + name);
             }
-            shader.techniques[name] = Tw2ShaderTechnique.fromCCPBinary(reader, res, name);
+            shader.techniques[name] = Tw2ShaderTechnique.fromCCPBinary(reader, context, name);
         }
 
         // Annotations
         const parameterCount = reader.ReadUInt16();
         for (let paramIx = 0; paramIx < parameterCount; ++paramIx)
         {
-            const annotation = Tw2ShaderAnnotation.fromCCPBinary(reader, res);
+            const annotation = Tw2ShaderAnnotation.fromCCPBinary(reader, context);
             shader.annotations[annotation.name] = annotation;
         }
 

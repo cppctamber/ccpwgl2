@@ -110,12 +110,94 @@ export class Tw2ShaderStage
     }
 
     /**
+     *
+     * TODO: Replace with utility functions
+     * @param {Object} json
+     * @param {Tw2EffectRes} context
+     * @param {Number} [type]
+     * @return {Tw2ShaderStage}
+     */
+    static fromJSON(json, context, type = Tw2ShaderStage.Type.INVALID)
+    {
+        const stage = new Tw2ShaderStage();
+        stage.type = type;
+
+        const { constants = [], textures = [], samplers = [], inputDefinitions = [], shader, shadowShader } = json;
+
+        // Declarations
+        for (let i = 0; i < inputDefinitions.length; i++)
+        {
+            stage.inputDefinition.elements.push(Tw2VertexElement.from(inputDefinitions[i]));
+        }
+        stage.inputDefinition.RebuildHash();
+
+        // Debugging
+        if (Tw2Shader.DEBUG_ENABLED)
+        {
+            stage.shaderCode = shader;
+            stage.shadowShaderCode = shadowShader;
+        }
+
+        // Compile normal shader
+        stage.shader = this.compileShader(stage.type, "", shader, context.path);
+
+        // Compile shadow shader
+        if (context.validShadowShader && shadowShader)
+        {
+            stage.shadowShader = this.compileShader(stage.type, "", shadowShader, context.path, true);
+        }
+
+        //  Setup constants - must be ordered
+        // Todo: Enforce offset definition always? Then can use an object instead
+        for (let i = 0; i < constants.length; i++)
+        {
+            const constant = Tw2ShaderStageConstant.fromJSON(constants[i], context);
+            stage.constants.push(constant);
+
+            if (!Tw2ShaderStageConstant.IgnoreOffset.includes(constant.name))
+            {
+                // Set defaults from here?
+                if (constant._autoOffset) constant.offset = stage.constantSize;
+                stage.constantSize = constant.offset + constant.size;
+            }
+        }
+
+        // Set constant values (defaults)
+        stage.constantValues = new Float32Array(stage.constantSize);
+        for (let i = 0; i < stage.constants.length; i++)
+        {
+            const { name , defaults, offset } = stage.constants[i];
+            if (!Tw2ShaderStageConstant.IgnoreOffset.includes(name))
+            {
+                for (let i = 0; i < defaults.length; i++)
+                {
+                    stage.constantValues[offset + i] = defaults[i];
+                }
+            }
+        }
+
+        // Setup textures
+        for (let i = 0; i < textures.length; i++)
+        {
+            stage.textures.push(Tw2ShaderStageTexture.fromJSON(textures[i], context));
+        }
+
+        // Setup samplers
+        for (let i = 0; i < samplers.length; i++)
+        {
+            stage.samplers.push(Tw2SamplerState.fromJSON(samplers[i], context));
+        }
+
+        return stage;
+    }
+
+    /**
      * Reads ccp shader stage binary
      * @param {Tw2BinaryReader}reader
-     * @param {Tw2EffectRes}  res
+     * @param {Tw2EffectRes}  context
      * @returns {Tw2ShaderStage}
      */
-    static fromCCPBinary(reader, res)
+    static fromCCPBinary(reader, context)
     {
         const stage = new Tw2ShaderStage();
         stage.type = reader.ReadUInt8();
@@ -148,7 +230,7 @@ export class Tw2ShaderStage
             shadowShaderCode;
 
         // Read shader code
-        if (res.version < 5)
+        if (context.version < 5)
         {
             shaderSize = reader.ReadUInt32();
             shaderCode = reader.data.subarray(reader.cursor, reader.cursor + shaderSize);
@@ -163,12 +245,12 @@ export class Tw2ShaderStage
             shaderSize = reader.ReadUInt32();
             let so = reader.ReadUInt32();
             // Bad conversions from HLSL
-            shaderCode = this.inspectShaderCode(res.stringTable.substr(so, shaderSize), res.path);
+            shaderCode = this.inspectShaderCode(context.stringTable.substr(so, shaderSize), context.path);
 
             shadowShaderSize = reader.ReadUInt32();
             so = reader.ReadUInt32();
             // Bad conversions from HLSL
-            shadowShaderCode = this.inspectShaderCode(res.stringTable.substr(so, shadowShaderSize), res.path);
+            shadowShaderCode = this.inspectShaderCode(context.stringTable.substr(so, shadowShaderSize), context.path);
         }
 
         if (Tw2Shader.DEBUG_ENABLED)
@@ -178,23 +260,23 @@ export class Tw2ShaderStage
         }
 
         //  Compile normal shader
-        stage.shader = this.compileShader(stage.type, "", shaderCode, res.path);
+        stage.shader = this.compileShader(stage.type, "", shaderCode, context.path);
 
         // Compile shadow shader
-        if (res.validShadowShader)
+        if (context.validShadowShader)
         {
             if (shadowShaderSize === 0)
             {
-                stage.shadowShader = this.compileShader(stage.type, "\n#define PS\n", shaderCode, res.path, true);
+                stage.shadowShader = this.compileShader(stage.type, "\n#define PS\n", shaderCode, context.path, true);
             }
             else
             {
-                stage.shadowShader = this.compileShader(stage.type, "", shadowShaderCode, res.path, true);
+                stage.shadowShader = this.compileShader(stage.type, "", shadowShaderCode, context.path, true);
             }
 
             if (stage.shadowShader === null)
             {
-                res.validShadowShader = false;
+                context.validShadowShader = false;
             }
         }
         else
@@ -202,7 +284,7 @@ export class Tw2ShaderStage
             stage.shadowShader = null;
         }
 
-        if (res.version >= 3)
+        if (context.version >= 3)
         {
             reader.ReadUInt32();
             reader.ReadUInt32();
@@ -214,7 +296,7 @@ export class Tw2ShaderStage
         const constantCount = reader.ReadUInt32();
         for (let constantIx = 0; constantIx < constantCount; ++constantIx)
         {
-            const constant = Tw2ShaderStageConstant.fromCCPBinary(reader, res);
+            const constant = Tw2ShaderStageConstant.fromCCPBinary(reader, context);
             stage.constants.push(constant);
             if (!Tw2ShaderStageConstant.IgnoreOffset.includes(constant.name))
             {
@@ -226,7 +308,7 @@ export class Tw2ShaderStage
         //  Constant values  (defaults)
         const constantValueSize = reader.ReadUInt32() / 4;
         stage.constantValues = new Float32Array(constantValueSize);
-        if (res.version < 5)
+        if (context.version < 5)
         {
             for (let i = 0; i < constantValueSize; ++i)
             {
@@ -239,7 +321,7 @@ export class Tw2ShaderStage
                 co = reader.ReadUInt32(),
                 bo = reader.cursor;
 
-            reader.cursor = res.stringTableOffset + co;
+            reader.cursor = context.stringTableOffset + co;
             for (let i = 0; i < constantValueSize; ++i)
             {
                 stage.constantValues[i] = reader.ReadFloat32();
@@ -248,19 +330,43 @@ export class Tw2ShaderStage
         }
         stage.constantSize = Math.max(stage.constantSize, constantValueSize);
 
+        // Populate stage constant defaults?
+        for (let i = 0; i < stage.constants.length; i++)
+        {
+            const { name, elements, offset, dimension } = stage.constants[i];
+
+            if (!Tw2ShaderStageConstant.IgnoreOffset.includes(name))
+            {
+                let defaultValues = [];
+
+                for (let x = 0; x < elements.length; x++)
+                {
+                    for (let n = 0; n < dimension; n++)
+                    {
+                        let index = x * dimension + n;
+                        defaultValues[index] = stage.constantValues[index + offset];
+                    }
+                }
+
+                if (defaultValues.length)
+                {
+                    stage.constants[i].defaults = defaultValues;
+                }
+            }
+        }
 
         // Textures
         const textureCount = reader.ReadUInt8();
         for (let textureIx = 0; textureIx < textureCount; ++textureIx)
         {
-            stage.textures.push(Tw2ShaderStageTexture.fromCCPBinary(reader, res));
+            stage.textures.push(Tw2ShaderStageTexture.fromCCPBinary(reader, context));
         }
 
         // Samplers
         const samplerCount = reader.ReadUInt8();
         for (let samplerIx = 0; samplerIx < samplerCount; ++samplerIx)
         {
-            stage.samplers.push(Tw2SamplerState.fromCCPBinary(reader, res, stage.textures));
+            stage.samplers.push(Tw2SamplerState.fromCCPBinary(reader, context, stage.textures));
         }
 
         return stage;

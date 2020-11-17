@@ -64,22 +64,22 @@ export class Tw2ShaderPermutation
     /**
      * Reads a ccp shader permutation binary
      * @param {Tw2BinaryReader} reader
-     * @param {Tw2EffectRes} res
+     * @param {Tw2EffectRes} context
      * @return {Tw2ShaderPermutation}
      */
-    static fromCCPBinary(reader, res)
+    static fromCCPBinary(reader, context)
     {
         const permutation = new Tw2ShaderPermutation();
-        permutation.name = res.ReadString();
+        permutation.name = context.ReadString();
         permutation.defaultOption = reader.ReadUInt8();
-        permutation.description = res.ReadString();
+        permutation.description = context.ReadString();
         permutation.type = reader.ReadUInt8();
         permutation.optionCount = reader.ReadUInt8();
 
         for (let i = 0; i < permutation.optionCount; i++)
         {
             const option = new Tw2ShaderPermutationOption();
-            option.name = res.ReadString();
+            option.name = context.ReadString();
             option.value = i;
         }
 
