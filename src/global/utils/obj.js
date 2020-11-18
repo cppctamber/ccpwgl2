@@ -1,5 +1,33 @@
-import { isTyped, isArrayLike, isArray } from "./type";
+import { isTyped, isArrayLike, isArray, isPlain } from "./type";
 import { toArray } from "utils/arr";
+
+/**
+ * Empties an array or plain object
+ * @param {Array|Object} obj
+ * @return {Array|Object} obj
+ */
+export function emptyObject(obj)
+{
+    if (isArray(obj))
+    {
+        obj.splice(0);
+        return obj;
+    }
+
+    if (isPlain(obj))
+    {
+        for (const key in obj)
+        {
+            if (obj.hasOwnProperty(key))
+            {
+                Reflect.deleteProperty(obj, key);
+            }
+        }
+        return obj;
+    }
+
+    throw new ReferenceError("Invalid object, expected array or plain object");
+}
 
 /**
  * Assigns property values if they exist in a source object

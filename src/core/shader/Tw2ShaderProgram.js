@@ -44,10 +44,6 @@ export class Tw2ShaderProgram
             { gl } = device,
             program = new Tw2ShaderProgram();
 
-        console.dir(pass);
-        console.dir(vertexShader);
-        console.dir(fragmentShader);
-
         // Create and link program
         program.program = gl.createProgram();
         gl.attachShader(program.program, vertexShader);

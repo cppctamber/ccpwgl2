@@ -1,6 +1,6 @@
-import { meta } from "utils";
+import { emptyObject, meta } from "utils";
 import { Tw2BinaryReader } from "../reader";
-import { Tw2Resource } from "./Tw2Resource";
+import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 
@@ -16,32 +16,20 @@ export class Tw2EffectRes extends Tw2Resource
     reader = null;
     version = 0;
     stringTable = "";
-    shaders = {};
+    shaders = [];
 
     ReadString = null;
     validShadowShader = false;
 
+    _extension = null;
     _requestResponseType = "arraybuffer";
 
-
     /**
-     * Prepares the effect
-     * - Creates Shaders
-     * - Sets shadow states for shaders
-     * - Parses Jessica shader annotations
-     * @param data
+     * Prepares ccp binary
+     * @param {ArrayBuffer} data
      */
-    Prepare(data)
+    PrepareFX(data)
     {
-        this.permutations = [];
-        this.offsets = [];
-        this.passes = [];
-        this.annotations = {};
-        this.reader = null;
-        this.version = 0;
-        this.stringTable = "";
-        this.shaders = {};
-
         const reader = this.reader = new Tw2BinaryReader(new Uint8Array(data));
 
         const version = reader.ReadUInt32();
@@ -122,27 +110,18 @@ export class Tw2EffectRes extends Tw2Resource
             reader.cursor = reader.ReadUInt32();
         }
 
-
         this.reader = reader;
         this.version = version;
         this.stringTable = stringTable;
-
-        this.OnPrepared();
     }
 
     /**
-     * Gets/creates a shader for the given permutation options
-     *
-     * @param {Object.<string, string>} options - Permutation options
-     * @returns {Tw2Shader|null}
+     * Gets shader from ccp binary
+     * @param {Object} options
+     * @return {Tw2Shader}
      */
-    GetShader(options)
+    GetShaderFX(options)
     {
-        if (!this.IsGood())
-        {
-            return null;
-        }
-
         let index = 0;
         let multiplier = 1;
 
@@ -188,8 +167,124 @@ export class Tw2EffectRes extends Tw2Resource
             this.OnError(error);
             return null;
         }
-        this.shaders[index] = shader;
-        return shader;
+
+        return this.shaders[index] = shader;
+    }
+
+    /**
+     * Prepares json shader format
+     * @param {Object} data
+     */
+    PrepareJSON(data)
+    {
+        this.reader = data;
+    }
+
+    /**
+     * Gets shader from json
+     * @param {Object} options
+     * @return {Tw2Shader}
+     */
+    GetShaderJSON(options)
+    {
+        const json = this.reader;
+        this.reader = null;
+        return this.shaders[0] = Tw2Shader.fromJSON(json, this);
+    }
+
+    /**
+     * Prepares the effect
+     * - Creates Shaders
+     * - Sets shadow states for shaders
+     * - Parses Jessica shader annotations
+     * @param {ArrayBuffer|Object} data
+     */
+    Prepare(data)
+    {
+        this.permutations.splice(0);
+        this.offsets.splice(0);
+        this.passes.splice(0);
+        emptyObject(this.annotations);
+        this.reader = null;
+        this.version = 0;
+        this.stringTable = "";
+        this.shaders.splice(0);
+
+        switch(this._extension)
+        {
+            case "fx":
+            case "sm_hi":
+            case "sm_lo":
+            case "sm_depth":
+                this.PrepareFX(data);
+                break;
+
+            case "sm_json":
+                this.PrepareJSON(data);
+                break;
+
+            default:
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
+        }
+
+        this.OnPrepared();
+    }
+
+    /**
+     * Gets/creates a shader for the given permutation options
+     * @param {Object.<string, string>} options - Permutation options
+     * @returns {Tw2Shader|null}
+     */
+    GetShader(options)
+    {
+        if (!this.IsGood())
+        {
+            return null;
+        }
+
+        switch(this._extension)
+        {
+            case "fx":
+            case "sm_hi":
+            case "sm_lo":
+            case "sm_depth":
+                return this.GetShaderFX(options);
+
+            case "sm_json":
+                return this.GetShaderJSON(options);
+
+            default:
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
+        }
+    }
+
+    /**
+     * Custom load handler
+     * @param {String} path
+     * @param {String} extension
+     */
+    DoCustomLoad(path, extension)
+    {
+        this._extension = null;
+
+        switch(extension)
+        {
+            case "fx":
+            case "sm_hi":
+            case "sm_lo":
+            case "sm_depth":
+                this._requestResponseType = "arraybuffer";
+                this._extension = extension;
+                return;
+
+            case "sm_json":
+                this._requestResponseType = "json";
+                this._extension = extension;
+                return;
+
+            default:
+                throw new ErrResourceFormatUnsupported({ format: this._extension });
+        }
     }
 
 }

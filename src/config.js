@@ -77,6 +77,7 @@ export const config = {
         },
 
         extensions: {
+            "sm_json": core.Tw2EffectRes,
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
             "fx" : core.Tw2EffectRes,

@@ -182,9 +182,6 @@ export class Tw2Shader
                     index = parseInt(split.replace(cbh, "").replace("[", "").replace("]", "")) * 4,
                     elements = swizzle && swizzle.length ? swizzle.split("").map(x => Swizzle.indexOf(x)) : [ 0, 1, 2, 3 ];
 
-                console.log(`cb:${cbh}:${index}`);
-                console.dir(elements);
-
                 const source = CBH[cbh];
 
                 for (let i = 0; i < elements.length; i++)
