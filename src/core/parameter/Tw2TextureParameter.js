@@ -53,6 +53,15 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
+     * Checks if the parameter has a texture that was attached
+     * @returns {Boolean}
+     */
+    get isAttached()
+    {
+        return (this.textureRes && this._isAttached);
+    }
+
+    /**
      * Constructor
      * @param {String} [name]        - Name of the texture parameter
      * @param {String} [texturePath] - The texture's resource path
@@ -62,15 +71,6 @@ export class Tw2TextureParameter extends Tw2Parameter
         super();
         if (name) this.name = name;
         if (texturePath) this.SetValue(texturePath);
-    }
-
-    /**
-     * Checks if the parameter has a texture that was attached
-     * @returns {Boolean}
-     */
-    get isTextureAttached()
-    {
-        return (this.textureRes && this._isAttached);
     }
 
     /**
@@ -98,7 +98,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     GetValue()
     {
-        return this.isTextureAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
+        return this.isAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
     }
 
     /**
@@ -179,6 +179,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (res)
         {
             this.textureRes = null;
+            this._isAttached = false;
             res.UnregisterNotification(this);
             this.EmitEvent(Tw2Resource.Event.RES_REMOVED, this, res);
             return true;
@@ -192,6 +193,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     OnValueChanged(opt)
     {
+        // Don't update res when a texture is attached
         this.resourcePath = this.resourcePath ? this.resourcePath.toLowerCase() : "";
 
         if (this.resourcePath.indexOf("rgba:/") === 0)
@@ -212,7 +214,7 @@ export class Tw2TextureParameter extends Tw2Parameter
                 res.Attach(texture, this.resourcePath);
             }
         }
-        else
+        else if (!this.isAttached)
         {
             const res = this.resourcePath ? resMan.GetResource(this.resourcePath) : null;
             this._SetTextureRes(res);
