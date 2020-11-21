@@ -13,7 +13,7 @@ export class Tw2Resource extends Tw2Notifications
 
     _state = Tw2Resource.State.NO_INIT;
     _errors = [];
-    _requested = 0;
+    _requested = null;
     _requestResponseType = null;
 
     /**
@@ -224,6 +224,7 @@ export class Tw2Resource extends Tw2Notifications
     {
         if (this._SetState(Tw2Resource.State.LOADED))
         {
+            if (this._requested === null)  this._requested = Date.now();
             log.time = (Date.now() - this._requested) * 0.001;
             resMan.OnPathEvent(this.path, "loaded", log);
             this.UpdateNotifications(Tw2Resource.Callback.LOADED);
@@ -238,6 +239,7 @@ export class Tw2Resource extends Tw2Notifications
     {
         if (this._SetState(Tw2Resource.State.PREPARED))
         {
+            if (this._requested === null) this._requested = Date.now();
             log.time = (Date.now() - this._requested) * 0.001;
             resMan.OnPathEvent(this.path, "prepared", log);
             this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
