@@ -3,6 +3,7 @@ import { Tw2BinaryReader } from "../reader";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
+import { resMan } from "global";
 
 
 @meta.type("Tw2EffectRes")
@@ -22,7 +23,8 @@ export class Tw2EffectRes extends Tw2Resource
     validShadowShader = false;
 
     _extension = null;
-    _requestResponseType = "arraybuffer";
+    _requestResponseType = null;
+
 
     /**
      * Prepares ccp binary
@@ -86,7 +88,7 @@ export class Tw2EffectRes extends Tw2Resource
             const permutationCount = reader.ReadUInt8();
             for (let perm = 0; perm < permutationCount; ++perm)
             {
-                const permutation = Tw2ShaderPermutation.ReadCCPBinary(reader, this);
+                const permutation = Tw2ShaderPermutation.fromCCPBinary(reader, this);
                 this.permutations.push(permutation);
             }
 
@@ -187,9 +189,12 @@ export class Tw2EffectRes extends Tw2Resource
      */
     GetShaderJSON(options)
     {
-        const json = this.reader;
-        this.reader = null;
-        return this.shaders[0] = Tw2Shader.fromJSON(json, this);
+        if (!this.shaders[0])
+        {
+            this.shaders[0] = Tw2Shader.fromJSON(this.reader, this);
+            this.reader = null;
+        }
+        return this.shaders[0];
     }
 
     /**
@@ -287,6 +292,28 @@ export class Tw2EffectRes extends Tw2Resource
         }
     }
 
+    /**
+     * Creates an effect res from json
+     * @param {Object} data
+     * @return {Tw2EffectRes}
+     */
+    static fromJSON(data)
+    {
+        if (!data.name) throw new ReferenceError("Invalid shader name");
+
+        const
+            res = new Tw2EffectRes(),
+            name = "manual:/" + data.name + ".sm_json";
+
+        res.path = name.toLowerCase();
+        res._extension = "sm_json";
+        res.doNotPurge = 1;
+        res.Prepare(data);
+
+        // Add so it can be loaded from elsewhere
+        resMan.motherLode.Add(res.path, res);
+        return res;
+    }
 }
 
 
