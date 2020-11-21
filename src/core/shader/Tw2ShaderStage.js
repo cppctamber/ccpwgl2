@@ -1,4 +1,4 @@
-import { getKeyFromValue, isString, meta } from "utils";
+import { getKeyFromValue, isArray, isString, meta } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import { ErrShaderCompile, Tw2Shader } from "./Tw2Shader";
@@ -6,6 +6,7 @@ import { Tw2ShaderStageConstant } from "./Tw2ShaderStageConstant";
 import { Tw2ShaderStageTexture } from "./Tw2ShaderStageTexture";
 import { device } from "global/tw2";
 import shaderOverrides from "./shaderOverrides";
+import { Tw2ShaderAnnotation } from "core/shader/Tw2ShaderAnnotation";
 
 
 @meta.type("Tw2ShaderStage")
@@ -54,7 +55,7 @@ export class Tw2ShaderStage
      */
     get string()
     {
-        const name = getKeyFromValue(Tw2ShaderStage, this.type);
+        const name = getKeyFromValue(Tw2ShaderStage.Type, this.type);
         return name !== undefined ? name : "INVALID";
     }
 
@@ -147,18 +148,78 @@ export class Tw2ShaderStage
             stage.shadowShader = this.compileShader(stage.type, "", shadowShader, context.path, true);
         }
 
-        //  Setup constants - must be ordered
-        // Todo: Enforce offset definition always? Then can use an object instead
+        // Auto insert static per data objects
+        this.AutoInsertJSONPerData(type, constants, context);
+
+
+        let manuallyDefinedConstantOffset = false;
+
+        /**
+         * Resolves/validates a constant's offset
+         * @param {*} obj
+         * @return {Number}
+         */
+        function getOffset(obj)
+        {
+            //  Must be 64 or higher
+            if (Tw2ShaderStageConstant.IgnoreOffset.includes(obj.name))
+            {
+                if (obj.offset >= 64) return obj.offset;
+                // Try to guess from predefined values
+                let offset = Tw2ShaderStage.jsonPerData[obj.name];
+                if (offset !== undefined && offset >= 64) return offset;
+                throw new ReferenceError("Invalid per object/frame offset: " + offset);
+            }
+
+            let offset;
+            if (obj.offset !== -1)
+            {
+                manuallyDefinedConstantOffset = true;
+                offset = obj.offset;
+            }
+            else if (manuallyDefinedConstantOffset)
+            {
+                throw new ReferenceError("Cannot auto offset when an offset has been manually defined");
+            }
+            else if (obj.size === -1 || obj.size === undefined)
+            {
+                throw new ReferenceError("Invalid constant size");
+            }
+            else
+            {
+                offset = stage.constantSize;
+            }
+
+            if (!obj.size)
+            {
+                throw new ReferenceError("Constant has invalid size");
+            }
+
+            // Must be less than 64 (Webgl limit)
+            if (offset + obj.size >= 64)
+            {
+                throw new ReferenceError("Constant offset out of bounds");
+            }
+
+            stage.constantSize += obj.size;
+            return offset;
+        }
+
+        //  Setup constants (must be ordered)
         for (let i = 0; i < constants.length; i++)
         {
+            if (!constants[i].name) constants[i].name = "Constant" + i;
             const constant = Tw2ShaderStageConstant.fromJSON(constants[i], context);
+            constant.offset = getOffset(constant);
             stage.constants.push(constant);
 
-            if (!Tw2ShaderStageConstant.IgnoreOffset.includes(constant.name))
+            // Annotations defined directly on constant
+            if (constants[i].ui)
             {
-                // Set defaults from here?
-                if (constant._autoOffset) constant.offset = stage.constantSize;
-                stage.constantSize = constant.offset + constant.size;
+                const annotation = Tw2ShaderAnnotation.fromJSON(constants[i].ui, context);
+                if (!annotation.name) annotation.name = constant.name;
+                if (!annotation.group) annotation.group = "Constant";
+                context.annotations[annotation.name] = annotation;
             }
         }
 
@@ -166,7 +227,7 @@ export class Tw2ShaderStage
         stage.constantValues = new Float32Array(stage.constantSize);
         for (let i = 0; i < stage.constants.length; i++)
         {
-            const { name , defaults, offset } = stage.constants[i];
+            const { name, defaults, offset } = stage.constants[i];
             if (!Tw2ShaderStageConstant.IgnoreOffset.includes(name))
             {
                 for (let i = 0; i < defaults.length; i++)
@@ -176,20 +237,155 @@ export class Tw2ShaderStage
             }
         }
 
-        // Setup textures
-        for (let i = 0; i < textures.length; i++)
+        let manuallyDefinedRegisterIndices = false;
+
+        /**
+         * Resolves register indices
+         * @param {*} obj
+         * @param {Number} index
+         * @return {Number}
+         */
+        function getRegisterIndex(obj, index)
         {
-            stage.textures.push(Tw2ShaderStageTexture.fromJSON(textures[i], context));
+            if (obj.registerIndex !== undefined)
+            {
+                manuallyDefinedRegisterIndices = true;
+                return obj.registerIndex;
+            }
+            else if (manuallyDefinedRegisterIndices)
+            {
+                throw new ReferenceError("Cannot automatically resolve a register index when one has already been defined");
+            }
+            else
+            {
+                return index;
+            }
         }
 
-        // Setup samplers
+        // Setup textures and samplers
+        for (let i = 0; i < textures.length; i++)
+        {
+            const registerIndex = getRegisterIndex(textures[i], i);
+
+            let {
+                name = "Texture" + i,
+                isAutoregister = 0,
+                isSRGB = 1,
+                type = 2,
+                samplerName = name + "Sampler",
+                ui,
+                ...sampler
+            } = textures[i];
+
+            sampler.name = samplerName;
+            sampler.registerIndex = registerIndex;
+
+            stage.textures.push(Tw2ShaderStageTexture.fromJSON({
+                name,
+                isAutoregister,
+                isSRGB,
+                registerIndex,
+                type
+            }, context));
+            stage.samplers.push(Tw2SamplerState.fromJSON(sampler, context));
+
+            // Annotations defined directly on texture
+            if (ui)
+            {
+                const annotation = Tw2ShaderAnnotation.fromJSON(ui, context);
+                if (!annotation.name) annotation.name = textures[i].name;
+                if (!annotation.group) annotation.group = "Textures";
+                context.annotations[annotation.name] = annotation;
+            }
+        }
+
+        /*
         for (let i = 0; i < samplers.length; i++)
         {
-            stage.samplers.push(Tw2SamplerState.fromJSON(samplers[i], context));
+            samplers[i].registerIndex = getRegisterIndex(samplers[i], i);
+            stage.samplers.push(samplers[i]);
         }
+         */
 
         return stage;
     }
+
+    /**
+     * Sorts an object by offset
+     * @param {*} a
+     * @param {*} b
+     * @return {number}
+     */
+    static SortOffset(a, b)
+    {
+        if (a.offset < b.offset) return 1;
+        if (a.offset > b.offset) return -1;
+        return 0;
+    }
+
+    /**
+     * Sorts an object by register index
+     * @param {*} a
+     * @param {*} b
+     * @return {number}
+     */
+    static SortRegisterIndex(a, b)
+    {
+        if (a.registerIndex < b.registerIndex) return 1;
+        if (a.registerIndex > b.registerIndex) return -1;
+        return 0;
+    }
+
+    /**
+     * Automatically inserts per data
+     * @param {Number} type
+     * @param {Array} constants
+     * @param {Tw2EffectRes} context
+     * @return {boolean}
+     */
+    static AutoInsertJSONPerData(type, constants, context)
+    {
+        let hasFrame = false,
+            hasObject = false;
+
+        let PerFrame = type === 0 ? "PerFrameVS" : "PerFramePS",
+            PerObject = type === 0 ? "PerObjectVS" : "PerObjectPS";
+
+        for (let i = 0; i < constants.length; i++)
+        {
+            if (constants[i].name === PerFrame)
+            {
+                hasFrame = true;
+            }
+            else if (constants[i].name === PerObject)
+            {
+                hasObject = true;
+            }
+        }
+
+        if (!hasFrame)
+        {
+            constants.push(Object.assign({}, this.jsonPerData[PerFrame]));
+        }
+
+        if (!hasObject)
+        {
+            constants.push(Object.assign({}, this.jsonPerData[PerObject]));
+        }
+
+        return !hasFrame || !hasObject;
+    }
+
+    /**
+     * Standard json per data
+     * @type {Object}
+     */
+    static jsonPerData = {
+        PerFrameVS: { name: "PerFrameVS", size: 136, type: 3, offset: 880 },
+        PerObjectVS: { name: "PerObjectVS", size: 104, type: 3, offset: 64 },
+        PerFramePS: { name: "PerFramePS", size: 88, type: 3, offset: 880 },
+        PerObjectPS: { name: "PerObjectPS", size: 88, type: 3, offset: 64 },
+    };
 
     /**
      * Reads ccp shader stage binary
@@ -244,12 +440,12 @@ export class Tw2ShaderStage
         {
             shaderSize = reader.ReadUInt32();
             let so = reader.ReadUInt32();
-            // Bad conversions from HLSL
+            // Handle bad conversions from HLSL
             shaderCode = this.inspectShaderCode(context.stringTable.substr(so, shaderSize), context.path);
 
             shadowShaderSize = reader.ReadUInt32();
             so = reader.ReadUInt32();
-            // Bad conversions from HLSL
+            // Handle bad conversions from HLSL
             shadowShaderCode = this.inspectShaderCode(context.stringTable.substr(so, shadowShaderSize), context.path);
         }
 
@@ -305,7 +501,7 @@ export class Tw2ShaderStage
             }
         }
 
-        //  Constant values  (defaults)
+        //  Constant values  (default values)
         const constantValueSize = reader.ReadUInt32() / 4;
         stage.constantValues = new Float32Array(constantValueSize);
         if (context.version < 5)
@@ -330,27 +526,20 @@ export class Tw2ShaderStage
         }
         stage.constantSize = Math.max(stage.constantSize, constantValueSize);
 
-        // Populate stage constant defaults?
+        // Populate stage constant default values?
         for (let i = 0; i < stage.constants.length; i++)
         {
-            const { name, elements, offset, dimension } = stage.constants[i];
+            const { name, elements, offset, dimension, defaults } = stage.constants[i];
 
             if (!Tw2ShaderStageConstant.IgnoreOffset.includes(name))
             {
-                let defaultValues = [];
-
                 for (let x = 0; x < elements.length; x++)
                 {
                     for (let n = 0; n < dimension; n++)
                     {
                         let index = x * dimension + n;
-                        defaultValues[index] = stage.constantValues[index + offset];
+                        defaults[index] = stage.constantValues[index + offset] || 0;
                     }
-                }
-
-                if (defaultValues.length)
-                {
-                    stage.constants[i].defaults = defaultValues;
                 }
             }
         }

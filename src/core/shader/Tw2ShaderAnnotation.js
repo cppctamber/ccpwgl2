@@ -1,5 +1,26 @@
 import { assignIfExists, meta } from "utils";
-import { Tw2Shader } from "core/shader/Tw2Shader";
+
+/*
+export class Tw2ShaderAnnotationComponent
+{
+
+    @meta.string
+    name = "";
+
+    @meta.string
+    description = "";
+
+    @meta.uint
+    index = -1;
+
+    @meta.float
+    default = 0.0;
+
+    @meta.type
+    type = 0;
+
+}
+ */
 
 
 @meta.type("Tw2ShaderAnnotation")
@@ -12,17 +33,8 @@ export class Tw2ShaderAnnotation
     @meta.string
     description = "";
 
-    @meta.string
-    component1 = "";
-
-    @meta.string
-    component2 = "";
-
-    @meta.string
-    component3 = "";
-
-    @meta.string
-    component4 = "";
+    @meta.array
+    components = [];
 
     @meta.boolean
     display = true;
@@ -44,10 +56,16 @@ export class Tw2ShaderAnnotation
     static fromJSON(json, context, key)
     {
         const annotation = new Tw2ShaderAnnotation();
-        assignIfExists(annotation, json, [
-            "name", "description", "component1", "component2",
-            "component3", "component4", "display", "group", "widget"
-        ]);
+        assignIfExists(annotation, json, [ "name", "description", "display", "group", "widget" ]);
+
+        if (json.components)
+        {
+            for (let i = 0; i < json.components.length; i++)
+            {
+                annotation.components[i] = json.components[i];
+            }
+        }
+
         annotation.name = annotation.name || key;
         return annotation;
     }
@@ -98,10 +116,7 @@ export class Tw2ShaderAnnotation
                     annotation.widget = value.toUpperCase();
                     if (annotation.widget === "LINEARCOLOR")
                     {
-                        annotation.component1 = "Linear red";
-                        annotation.component2 = "Linear green";
-                        annotation.component3 = "Linear blue";
-                        annotation.component4 = "Linear alpha";
+                        annotation.components = [ "Linear red", "Linear green", "Linear blue", "Linear Alpha" ];
                     }
                     break;
 
@@ -118,19 +133,19 @@ export class Tw2ShaderAnnotation
                     break;
 
                 case "COMPONENT1":
-                    annotation.component1 = value;
+                    annotation.components[0] = value;
                     break;
 
                 case "COMPONENT2":
-                    annotation.component2 = value;
+                    annotation.components[1] = value;
                     break;
 
                 case "COMPONENT3":
-                    annotation.component2 = value;
+                    annotation.components[2] = value;
                     break;
 
                 case "COMPONENT4":
-                    annotation.component3 = value;
+                    annotation.components[3] = value;
                     break;
 
                 default:

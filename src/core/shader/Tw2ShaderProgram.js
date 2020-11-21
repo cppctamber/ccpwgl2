@@ -78,14 +78,14 @@ export class Tw2ShaderProgram
             gl.uniform1i(program.samplerHandles[j], j);
         }
 
-        //
+        // Volume samplers?
         for (let j = 0; j < 16; ++j)
         {
             program.samplerHandles[j + 12] = gl.getUniformLocation(program.program, "vs" + j);
             gl.uniform1i(program.samplerHandles[j + 12], j + 12);
         }
 
-        // Collect vertex declarations
+        // Collect used vertex declarations
         const { elements } = pass.stages[0].inputDefinition;
         for (let j = 0; j < elements.length; ++j)
         {

@@ -1,4 +1,4 @@
-import { assignIfExists, getKeyFromValue, isArray, isNumber, isVector, meta, toArray } from "utils";
+import { getKeyFromValue, meta, toArray } from "utils";
 
 
 @meta.type("Tw2ShaderStageConstant")
@@ -9,7 +9,7 @@ export class Tw2ShaderStageConstant
     name = "";
 
     @meta.uint
-    dimension = 1;
+    dimension = 0;
 
     @meta.uint
     elements = 0;
@@ -22,7 +22,7 @@ export class Tw2ShaderStageConstant
     isSRGB = false;
 
     @meta.uint
-    offset = 0;
+    offset = -1;
 
     @meta.uint
     size = 0;
@@ -31,12 +31,9 @@ export class Tw2ShaderStageConstant
     type = 0;
 
     @meta.vector
-    @meta.alias("value")
     defaults = [];
 
-    _autoOffset = false;
-
-
+    
     /**
      * Gets the constant's type as a string
      * @returns {String}
@@ -58,69 +55,53 @@ export class Tw2ShaderStageConstant
     {
         let {
             name,
-            dimension=null,
+            dimension=0,
             elements=1,
-            isAutoRegister=0,
+            isAutoregister=0,
             isSRGB=0,
-            offset=null,
-            size=null,
+            offset=-1,
+            size=0,
             type=Tw2ShaderStageConstant.Type.PARAMETER,
             value=[] // Will default to 0 for all values if not defined
         } = json;
 
         // Convert numbers to array
         value = toArray(value);
-
+        //  Guess dimension
+        if (value.length) dimension = value.length;
         // Guess size
-        if (size === null)
-        {
-            if (dimension)
-            {
-                size = dimension * elements;
-            }
-            // How to know how many dimensions?
-            else if (value.length)
-            {
-                size = value.length;
-            }
-        }
+        if (!size && dimension) size = dimension * elements;
 
-        if (!name || (dimension === null && size === null))
+        if (!name || !size)
         {
             throw new ReferenceError("Invalid shader constant definition: invalid inputs");
         }
 
         const constant = new Tw2ShaderStageConstant();
         constant.name = name;
-        constant.isAutoregister = isAutoRegister;
+        constant.isAutoregister = isAutoregister;
         constant.elements = elements;
         constant.type = type;
         constant.isSRGB = isSRGB;
         constant.size = size;
 
-        // Set default values
-        for (let i = 0; i < constant.size; i++)
-        {
-            constant.defaults[i] = value[i] !== undefined ? value[i] : 0;
-        }
+        //  Should be able to use the type for this
+        const isIgnored = Tw2ShaderStageConstant.IgnoreOffset.includes(constant.name);
 
-        if (offset === null)
+        // Set default values
+        if (isIgnored)
         {
-            if (!Tw2ShaderStageConstant.IgnoreOffset.includes(constant.name))
-            {
-                constant._autoOffset = json.offset === undefined;
-            }
-            else
-            {
-                // We can guess these...
-                throw new ReferenceError("Invalid shader constant definition: PER definitions must have an offset");
-            }
+            constant.defaults = null;
         }
         else
         {
-            constant.offset = offset;
+            for (let i = 0; i < constant.size; i++)
+            {
+                constant.defaults[i] = value[i] !== undefined ? value[i] : 0;
+            }
         }
 
+        constant.offset = offset;
         return constant;
     }
 
@@ -152,7 +133,8 @@ export class Tw2ShaderStageConstant
         "PerFrameVS",
         "PerObjectVS",
         "PerFramePS",
-        "PerObjectPS"
+        "PerObjectPS",
+        "PerObjectPSInt"
     ];
 
     /**

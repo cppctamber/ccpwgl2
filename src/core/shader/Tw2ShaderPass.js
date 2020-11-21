@@ -21,6 +21,23 @@ export class Tw2ShaderPass
     @meta.list("Tw2ShaderState")
     states = [];
 
+    /**
+     * Gets the vertex shader
+     * @return {Tw2ShaderStage}
+     */
+    get vertex()
+    {
+        return this.stages[0];
+    }
+
+    /**
+     * Gets the fragment shader
+     * @return {Tw2ShaderStage}
+     */
+    get fragment()
+    {
+        return this.stages[1];
+    }
 
     /**
      * Applies a shader pass

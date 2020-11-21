@@ -15,7 +15,7 @@ export class Tw2ShaderStageTexture
     isSRGB = 0;
 
     @meta.uint
-    registerIndex = 0;
+    registerIndex = -1;
 
     @meta.uint
     type = 0;
@@ -39,7 +39,7 @@ export class Tw2ShaderStageTexture
      */
     static fromJSON(json, context)
     {
-        const { registerIndex, name, type=Tw2ShaderStageTexture.TEXTURE_2D, isSRGB=0, isAutoregister=0 } = json;
+        const { registerIndex, name, type=Tw2ShaderStageTexture.TEXTURE_2D, isSRGB=1, isAutoregister=0 } = json;
 
         if (!name || registerIndex === undefined)
         {
