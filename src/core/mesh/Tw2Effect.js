@@ -100,8 +100,20 @@ export class Tw2Effect extends meta.Model
     @meta.boolean
     autoParameter = false;
 
+
+    _isAttached = false;
+
     //resources
     //constParameters
+
+    /**
+     * Identifies if the effect res has been manually attached
+     * @return {boolean}
+     */
+    get isAttached()
+    {
+        return this._isAttached;
+    }
 
     /**
      * Initializes the Tw2Effect
@@ -123,26 +135,39 @@ export class Tw2Effect extends meta.Model
         this.UpdateValues(opt);
     }
 
+
     /**
      * Gets the effect's file path
      * @return {string}
      */
     GetValue()
     {
-        return this.effectFilePath;
+        return this._isAttached ? null : this.effectFilePath;
+    }
+
+    /**
+     * Attaches an effect res
+     * @param {Tw2EffectRes} res
+     * @return {boolean}
+     */
+    AttachEffectRes(res)
+    {
+        return this._SetEffectRes(res, true);
     }
 
     /**
      * Sets an effect res
      * @param {Tw2EffectRes} res
+     * @param {Boolean} [isAttached]
      * @return {boolean} True if updated
      * @private
      */
-    _SetEffectRes(res)
+    _SetEffectRes(res, isAttached)
     {
         if (this.effectRes !== res)
         {
             this._RemoveEffectRes();
+            this._isAttached = !!isAttached;
             this.effectRes = res;
             // TODO: Need to delay one frame
             res.RegisterNotification(this);
@@ -163,6 +188,7 @@ export class Tw2Effect extends meta.Model
         {
             this.effectRes =  null;
             this.shader = null;
+            this._isAttached = false;
             this.UnBindParameters();
             res.UnregisterNotification(this);
             this.EmitEvent(Tw2Resource.Event.RES_REMOVED, this, res);
@@ -177,9 +203,22 @@ export class Tw2Effect extends meta.Model
      */
     OnValueChanged(opt)
     {
-        this.effectFilePath = this.effectFilePath ?  this.effectFilePath.toLowerCase() :"";
-        const res =  this.effectFilePath ? resMan.GetResource(device.ToEffectPath(this.effectFilePath)) : null;
-        if (!this._SetEffectRes(res)) this.BindParameters();
+        let res;
+
+        if (this.isAttached)
+        {
+            res = this.effectRes;
+        }
+        else
+        {
+            this.effectFilePath = this.effectFilePath ? this.effectFilePath.toLowerCase() : "";
+            res = this.effectFilePath ? resMan.GetResource(device.ToEffectPath(this.effectFilePath)) : null;
+        }
+
+        if (!this._SetEffectRes(res))
+        {
+            this.BindParameters();
+        }
     }
 
     /**
@@ -521,8 +560,11 @@ export class Tw2Effect extends meta.Model
         }
 
         const cbh = program.constantBufferHandles;
+        // vertex constants
         if (cbh[0]) gl.uniform4fv(cbh[0], p.stages[0].constantBuffer);
+        // Fragment constants
         if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
+
         if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
         if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
         const pod = d.perObjectData;
