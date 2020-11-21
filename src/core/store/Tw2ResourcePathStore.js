@@ -73,7 +73,7 @@ export class Tw2ResourcePathStore extends Tw2GenericStore
      * Identifies any restricted keys
      * @type {Array}
      */
-    static restrictedKeys = [ "rgba" ];
+    static restrictedKeys = [ "rgba", "manual", "dynamic" ];
 
 }
 

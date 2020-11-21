@@ -1,4 +1,4 @@
-import { meta, assignIfExists } from "utils";
+import { meta, assignIfExists, getPathExtension } from "utils";
 import { device, resMan, store } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
@@ -212,7 +212,12 @@ export class Tw2Effect extends meta.Model
         else
         {
             this.effectFilePath = this.effectFilePath ? this.effectFilePath.toLowerCase() : "";
-            res = this.effectFilePath ? resMan.GetResource(device.ToEffectPath(this.effectFilePath)) : null;
+
+            // Auto fx quality
+            const extension = getPathExtension(this.effectFilePath);
+            if (extension === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
+
+            res = this.effectFilePath ? resMan.GetResource(this.effectFilePath) : null;
         }
 
         if (!this._SetEffectRes(res))

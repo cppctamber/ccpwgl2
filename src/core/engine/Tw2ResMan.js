@@ -273,6 +273,12 @@ export class Tw2ResMan extends Tw2EventEmitter
             return res;
         }
 
+        // Manually created resources
+        if (path.indexOf("manual:/") === 0)
+        {
+            throw new ErrFeatureNotImplemented({ feature: "Manually created resource" });
+        }
+
         try
         {
             const Constructor = this.store.extensions.FromPath(path);
