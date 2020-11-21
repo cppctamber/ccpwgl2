@@ -52,7 +52,7 @@ export class Tw2SamplerState
     name = "";
 
     @meta.uint
-    registerIndex = 0;
+    registerIndex = -1;
 
     @meta.uint
     minFilter = GL_LINEAR;
@@ -114,7 +114,7 @@ export class Tw2SamplerState
      */
     set addressUMode(mode)
     {
-        if (this.addressUMode !== mode)
+        if (this.addressUMode !== mode && mode !== undefined)
         {
             this.addressU = WrapModes[mode];
             this._dirty = null;
@@ -136,7 +136,7 @@ export class Tw2SamplerState
      */
     set addressVMode(mode)
     {
-        if (this.addressVMode !== mode)
+        if (this.addressVMode !== mode && mode !== undefined)
         {
             this.addressV = WrapModes[mode];
             this._dirty = null;
@@ -158,7 +158,7 @@ export class Tw2SamplerState
      */
     set addressWMode(mode)
     {
-        if (this.addressUMode !== mode)
+        if (this.addressUMode !== mode && mode !== undefined)
         {
             this.addressW = WrapModes[mode];
             this._dirty = null;
@@ -180,7 +180,10 @@ export class Tw2SamplerState
      */
     set filterMode(filterMode)
     {
-        this.UpdateFilterModes(filterMode, this.mipFilterMode, this.magFilterMode);
+        if (filterMode !== undefined && filterMode !== this.filterMode)
+        {
+            this.UpdateFilterModes(filterMode, this.mipFilterMode, this.magFilterMode);
+        }
     }
 
     /**
@@ -207,7 +210,10 @@ export class Tw2SamplerState
      */
     set mipFilterMode(mipFilterMode)
     {
-        this.UpdateFilterModes(this.filterMode, mipFilterMode, this.magFilterMode);
+        if (mipFilterMode !== undefined && mipFilterMode !== this.mipFilterMode)
+        {
+            this.UpdateFilterModes(this.filterMode, mipFilterMode, this.magFilterMode);
+        }
     }
 
     /**
@@ -342,13 +348,13 @@ export class Tw2SamplerState
             addressUMode,
             addressVMode,
             addressWMode,
-            maxAnisotropy,
+            maxAnisotropy=this.maxAnisotropy,
             filterMode,
             mipFilterMode,
             magFilterMode
         } = modes;
 
-        if (maxAnisotropy !== undefined && maxAnisotropy !== this.maxAnisotropy)
+        if (maxAnisotropy !== this.maxAnisotropy)
         {
             this.maxAnisotropy = maxAnisotropy;
             this.hash = null;
@@ -357,6 +363,7 @@ export class Tw2SamplerState
         this.addressUMode = addressUMode;
         this.addressVMode = addressVMode;
         this.addressWMode = addressWMode;
+
         this.UpdateFilterModes(filterMode, mipFilterMode, magFilterMode);
 
         if (this.hash === null)
@@ -374,9 +381,9 @@ export class Tw2SamplerState
      */
     static fromJSON(json, context)
     {
-        const { name, registerIndex, ...modes } = json;
+        const { name, registerIndex=-1, ...modes } = json;
 
-        if (!name || registerIndex === undefined)
+        if (!name || registerIndex === -1)
         {
             throw new ReferenceError("Invalid sampler definition");
         }
