@@ -18,6 +18,7 @@ const Rerouted = [
     "cdn:/texture/particle/whitesharp.dds",
 ];
 
+
 /****************** TEMPORARY *************************/
 
 
@@ -32,7 +33,8 @@ export const config = {
     black: {
         "*":  path => path.replace("res:/", "cdn:/").toLowerCase(),
         "dds": path => Rerouted.includes(path) ? path.replace("cdn:/", "res:/") + ".0.png" : path,
-        "gr2": path => path.replace(".gr2", ".cake")
+        "gr2": path => path.replace(".gr2", ".cake"),
+        "red": path  => path.replace(".red", ".black")
     },
 
     device: {
@@ -77,6 +79,7 @@ export const config = {
         },
 
         extensions: {
+            "sm_depth" : core.Tw2EffectRes,
             "sm_json": core.Tw2EffectRes,
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
