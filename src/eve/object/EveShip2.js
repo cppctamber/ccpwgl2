@@ -6,7 +6,7 @@ import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet } from "unsupported/eve/item/EveHazeSet";
-
+import { Tw2GeometryBatch } from "core/batch";
 
 @meta.type("EveShip2")
 @meta.stage(2)
@@ -70,6 +70,7 @@ export class EveShip2 extends EveObject
         CCPWGL only
 
      */
+
     @meta.uint
     killCount = 0;
 
@@ -108,6 +109,39 @@ export class EveShip2 extends EveObject
     _localTransform = mat4.create();
     _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveShip2.perObjectData);
+
+    /**
+     * Gets a shadow batch
+     * @param mode
+     * @param accumulator
+     * @return {boolean}
+     */
+    GetShadowBatch(mode, accumulator)
+    {
+        if (!this.display || !this.visible.shadows)
+        {
+            return false;
+        }
+
+        if (!this.mesh || !this.mesh.IsGood() || !this.shadowEffect || !this.shadowEffect.IsGood())
+        {
+            return false;
+        }
+
+        const { geometryResource, meshIndex } = this.mesh;
+
+        const batch = new Tw2GeometryBatch();
+        batch.renderMode = mode;
+        batch.perObjectData = this._perObjectData;
+        batch.geometryRes = geometryResource;
+        batch.meshIx = meshIndex;
+        batch.start = 0;
+        batch.count = geometryResource.meshes[meshIndex].areas.length;
+        batch.effect = this.shadowEffect;
+        accumulator.Commit(batch);
+
+        return true;
+    }
 
     /**
      * Initializes the ship

@@ -1,5 +1,5 @@
 import { meta, isString, perArrayChild, assignIfExists, get, toArray } from "utils";
-import { resMan, store } from "global";
+import { tw2 } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -103,7 +103,7 @@ export class Tw2Mesh extends meta.Model
     {
         if (this.geometryResPath !== "")
         {
-            this._geometryResource = resMan.GetResource(this.geometryResPath);
+            this._geometryResource = tw2.GetResource(this.geometryResPath);
         }
     }
 
@@ -301,7 +301,7 @@ export class Tw2Mesh extends meta.Model
                 {
                     const
                         type = src[name][i].__type || "Tw2MeshArea",
-                        Constructor = store.constructors.Get(type);
+                        Constructor = tw2.GetClass(type);
 
                     dest[name].push(Constructor.from(src[name][i], { index: i }));
                 }

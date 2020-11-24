@@ -7,6 +7,9 @@ import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
 import * as math from "math";
 import * as util from "utils";
+import * as stores from "core/store";
+import { isFunction } from "utils";
+import { isArray } from "utils";
 
 
 let count = 0;
@@ -19,6 +22,42 @@ export class Tw2Library extends Tw2EventEmitter
     consts = consts;
 
     /**
+     * Variable type store
+     * @type {Tw2VariableTypeStore}
+     */
+    variableTypes = new stores.Tw2VariableTypeStore();
+
+    /**
+     * Variable store
+     * @type {Tw2VariableStore}
+     */
+    variables = new stores.Tw2VariableStore(this.variableTypes);
+
+    /**
+     * Resource prefix:path store
+     * @type {Tw2ResourcePathStore}
+     */
+    paths = new stores.Tw2ResourcePathStore();
+
+    /**
+     * Dynamic resource path store
+     * @type {Tw2ResourceDynamicPathStore}
+     */
+    dynamicPaths = new stores.Tw2ResourceDynamicPathStore();
+
+    /**
+     * Resource extension store
+     * @type {Tw2ResourceExtensionStore}
+     */
+    extensions = new stores.Tw2ResourceExtensionStore();
+
+    /**
+     * Constructor/Class store
+     * @type {Tw2ConstructorStore}
+     */
+    constructors = new stores.Tw2ConstructorStore();
+
+    /**
      * Logger
      * @type {Tw2Logger}
      */
@@ -28,19 +67,13 @@ export class Tw2Library extends Tw2EventEmitter
      * Resource manager
      * @type {Tw2ResMan}
      */
-    resMan = null;
+    resMan = new Tw2ResMan(this);
 
     /**
      * Device
      * @type {Tw2Device}
      */
-    device = null;
-
-    /**
-     * Store
-     * @type {Tw2Store}
-     */
-    store = null;
+    device = new Tw2Device(this).BindEvents(this);
 
     /**
      * Debug mode
@@ -57,13 +90,24 @@ export class Tw2Library extends Tw2EventEmitter
     _customResourceHandler = null;
 
 
+
     /**
-     * Alias for device.gl
-     * @returns {*}
+     * Alias for device.dt
+     * @returns {number}
      */
-    get gl()
+    get dt()
     {
-        return this.device.gl;
+        return this.device.dt;
+    }
+
+
+    /**
+     * Alias for device.fps
+     * @return {number}
+     */
+    get fps()
+    {
+        return this.device.fps;
     }
 
     /**
@@ -85,6 +129,15 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Alias for device.gl
+     * @returns {*}
+     */
+    get gl()
+    {
+        return this.device.gl;
+    }
+
+    /**
      * Alias for device.canvas
      * @returns {*}
      */
@@ -100,15 +153,6 @@ export class Tw2Library extends Tw2EventEmitter
     get canvas2d()
     {
         return this.device.canvas2d;
-    }
-
-    /**
-     * Alias for device.dt
-     * @returns {number}
-     */
-    get dt()
-    {
-        return this.device.dt;
     }
 
     /**
@@ -139,22 +183,25 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Constructor
-     * @param {Tw2Store} store
+     * Alias for resMan.systemMirror
+     * @return {boolean}
      */
-    constructor(store)
+    get systemMirror()
+    {
+        return this.resMan.systemMirror;
+    }
+
+    /**
+     * Constructor
+     */
+    constructor()
     {
         count++;
         if (count > 1) throw new ErrSingletonInstantiation();
 
         super();
 
-        this.const = consts;
-        this.resMan = new Tw2ResMan(store, this.logger);
-        this.device = new Tw2Device(store, this.logger);
-        this.store = store;
-
-        this.device.OnEvent("resized", evt => this.EmitEvent("resized", evt));
+        this.constructors.OnEvent("stored", ({ key, value }) => this.constructor.prototype[key] = value);
 
         let eveSof;
         Object.defineProperty(this, "eveSof", {
@@ -209,7 +256,7 @@ export class Tw2Library extends Tw2EventEmitter
     StartFrame()
     {
         this.device.Tick();
-        this.resMan.Tick(this.device);
+        this.resMan.Tick();
     }
 
     /**
@@ -241,14 +288,53 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Outputs a log to console
-     * @param {String} logType
-     * @param {String|{}} log
-     * @returns {*}
+     * Creates a generic log
+     * @param {Object} log
+     * @returns {Object} log
      */
-    Log(logType, log)
+    Log(log)
     {
-        return this.logger.Add(logType, log);
+        return this.logger.Log(log);
+    }
+
+    /**
+     * Creates an error log
+     * @param {Object} log
+     * @return {Object}
+     */
+    Error(log)
+    {
+        return this.logger.Error(log);
+    }
+
+    /**
+     * Creates a debug log
+     * @param {Object} log
+     * @return {Object}
+     */
+    Debug(log)
+    {
+        return this.logger.Debug(log);
+    }
+
+    /**
+     * Creates a warning log
+     * @param {Object} log
+     * @return {Object}
+     */
+    Warning(log)
+    {
+        return this.logger.Warning(log);
+    }
+
+    /**
+     * Creates an info log
+     * @param {Object} log
+     * @return {Object} log
+     */
+    Info(log)
+    {
+        return this.logger.Info(log);
     }
 
     /**
@@ -269,11 +355,22 @@ export class Tw2Library extends Tw2EventEmitter
         if (options.events) this.AddEvents(options.events);
         if (options.debug !== undefined) this.SetDebugMode(options.debug);
         if (options.resourceHandler) this.SetCustomResourceHandler(options.resourceHandler);
+
         if (options.black) this.RegisterBlackPathHandlers(options.black);
         if (options.logger) this.logger.Register(options.logger);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);
-        if (options.store) this.store.Register(options.store);
+
+        if (options.store)
+        {
+            const opt = options.store;
+            if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
+            if (opt.constructors) this.constructors.Register(opt.constructors);
+            if (opt.variables) this.variables.Register(opt.variables);
+            if (opt.paths) this.paths.Register(opt.paths);
+            if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
+            if (opt.extensions) this.extensions.Register(opt.extensions);
+        }
     }
 
     /**
@@ -281,9 +378,9 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {String} resPath
      * @returns {String}
      */
-    GetResolvedURL(resPath)
+    GetURL(resPath)
     {
-        return this.store.paths.Resolve(resPath);
+        return this.paths.Resolve(resPath);
     }
 
     /**
@@ -323,7 +420,8 @@ export class Tw2Library extends Tw2EventEmitter
     SetDebugMode(bool)
     {
         this._debugMode = bool;
-        this.store.SetDebugMode(bool);
+        this.constructors.SetDebugMode(bool);
+        this.resMan.SetDebugMode(bool);
         this.logger.SetDebugMode(bool);
         return this;
     }
@@ -336,6 +434,15 @@ export class Tw2Library extends Tw2EventEmitter
     {
         this._customResourceHandler = func;
         return this;
+    }
+
+    /**
+     * Checks if alpha test is enabled
+     * @return {Boolean}
+     */
+    IsAlphaTestEnabled()
+    {
+        return this.device.IsAlphaTestEnabled();
     }
 
     /**
@@ -436,6 +543,25 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Manually adds a resource
+     * @param {String} resPath
+     * @param {Tw2Resource} resource
+     */
+    AddResource(resPath, resource)
+    {
+        return this.resMan.motherLode.Add(resPath, resource);
+    }
+
+    /**
+     * Manually removes a resource
+     * @param {String} resPath
+     */
+    RemoveResource(resPath)
+    {
+        return this.resMan.motherLode.Remove(resPath);
+    }
+
+    /**
      * Gets a resource
      * @param {String} resPath
      * @param {Function} [onResolved]
@@ -450,11 +576,24 @@ export class Tw2Library extends Tw2EventEmitter
     /**
      * Fetches a resource
      * @param {*} value
-     * @return {Promise<Object|Array>}
+     * @param {Function|Boolean} [awaitResources]
+     * @return {Promise<Object>}
      */
-    async Fetch(value)
+    async Fetch(value, awaitResources)
     {
         let result;
+
+        // Short hand to allowing empty values
+        if (isArray(value))
+        {
+            if (!value[0] && value[1]) return null;
+            value = value[0];
+        }
+
+        if (!value)
+        {
+            throw new ReferenceError("Invalid resPath: must be defined");
+        }
 
         if (this._customResourceHandler)
         {
@@ -470,7 +609,7 @@ export class Tw2Library extends Tw2EventEmitter
             else if (util.isString(value))
             {
                 const ext = util.getPathExtension(value);
-                if (this.store.extensions.IsLoadingObject(ext))
+                if (this.extensions.IsLoadingObject(ext))
                 {
                     result = await this.resMan.FetchObject(value);
                 }
@@ -486,7 +625,51 @@ export class Tw2Library extends Tw2EventEmitter
             throw new ReferenceError("Invalid argument");
         }
 
+        if (awaitResources)
+        {
+            if (isFunction(awaitResources))
+            {
+                await this.resMan.Watch(result, awaitResources);
+            }
+            else
+            {
+                await this.resMan.Watch(result);
+            }
+        }
+
         return result;
+    }
+
+    /**
+     * Fetches resPaths from a (flat) plain object and returns the results in the same structure
+     * @param {Object} obj
+     * @param {Function|Boolean} [awaitResources]
+     * @return {Promise<Object>}
+     */
+    async FetchPlain(obj, awaitResources)
+    {
+        const innerProgress = createInnerProgress(awaitResources, Object.keys(obj).length);
+
+        return Promise.all(Object
+            .keys(obj)
+            .map(key => this.Fetch(obj[key], innerProgress).then(val => ({ key, val })))
+        ).then(items =>
+        {
+            let result = {};
+            items.forEach(item => result[item.key] = item.val);
+            return result;
+        });
+    }
+
+    /**
+     * Fetches an array of res paths
+     * @param {Array} arr
+     * @param {Function|Boolean} [awaitResources]
+     * @return {Promise<Array>}
+     */
+    async FetchAll(arr, awaitResources)
+    {
+        return Promise.all(arr.map(x => this.Fetch(x, createInnerProgress(awaitResources, arr.length))));
     }
 
     /**
@@ -498,7 +681,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     CreateVariable(name, value, Type)
     {
-        return this.store.variables.Create(name, value, Type);
+        return this.variables.Create(name, value, Type);
     }
 
     /**
@@ -508,7 +691,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasVariable(name)
     {
-        return this.store.variables.Has(name);
+        return this.variables.Has(name);
     }
 
     /**
@@ -518,7 +701,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetVariable(name)
     {
-        return this.store.variables.Get(name);
+        return this.variables.Get(name);
     }
 
     /**
@@ -528,7 +711,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetVariableValue(name)
     {
-        return this.store.variables.GetValue(name);
+        return this.variables.GetValue(name);
     }
 
     /**
@@ -539,7 +722,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetVariable(name, variable)
     {
-        return this.store.variables.Set(name, variable);
+        return this.variables.Set(name, variable);
     }
 
     /**
@@ -551,7 +734,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetVariableValue(name, value, opt)
     {
-        return this.store.variables.SetValue(name, value, opt);
+        return this.variables.SetValue(name, value, opt);
     }
 
     /**
@@ -561,7 +744,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasExtension(extension)
     {
-        return this.store.extensions.Has(extension);
+        return this.extensions.Has(extension);
     }
 
     /**
@@ -571,7 +754,17 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetExtension(extension)
     {
-        return this.store.extensions.Get(extension);
+        return this.extensions.Get(extension);
+    }
+
+    /**
+     * Gets an extension constructor from a path
+     * @param {String} path
+     * @return {Function|Class}
+     */
+    GetExtensionFromPath(path)
+    {
+        return this.extensions.FromPath(path);
     }
 
     /**
@@ -582,7 +775,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetExtension(extension, value)
     {
-        return this.store.extensions.Set(extension, value);
+        return this.extensions.Set(extension, value);
     }
 
     /**
@@ -592,7 +785,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasClass(name)
     {
-        return this.store.constructors.Has(name);
+        return this.constructors.Has(name);
     }
 
     /**
@@ -602,7 +795,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetClass(name)
     {
-        return this.store.constructors.Get(name);
+        return this.constructors.Get(name);
     }
 
     /**
@@ -613,7 +806,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetClass(name, Constructor)
     {
-        return this.store.constructors.Set(name, Constructor);
+        return this.constructors.Set(name, Constructor);
     }
 
     /**
@@ -623,7 +816,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasPath(prefix)
     {
-        return this.store.paths.Has(prefix);
+        return this.paths.Has(prefix);
     }
 
     /**
@@ -633,7 +826,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetPath(prefix)
     {
-        return this.store.paths.Get(prefix);
+        return this.paths.Get(prefix);
     }
 
     /**
@@ -644,7 +837,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetPath(prefix, path)
     {
-        return this.store.paths.Set(prefix, path);
+        return this.paths.Set(prefix, path);
     }
 
     /**
@@ -654,7 +847,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasDynamicPath(prefix)
     {
-        return this.store.dynamicPaths.Has(prefix);
+        return this.dynamicPaths.Has(prefix);
     }
 
     /**
@@ -664,7 +857,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetDynamicPath(prefix)
     {
-        return this.store.dynamicPaths.Get(prefix);
+        return this.dynamicPaths.Get(prefix);
     }
 
     /**
@@ -675,7 +868,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetDynamicPath(prefix, value)
     {
-        return this.store.dynamicPaths.Set(prefix, value);
+        return this.dynamicPaths.Set(prefix, value);
     }
 
     /**
@@ -685,7 +878,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     HasType(name)
     {
-        return this.store.variableTypes.Has(name);
+        return this.variableTypes.Has(name);
     }
 
     /**
@@ -695,7 +888,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetType(name)
     {
-        return this.store.variableTypes.Get(name);
+        return this.variableTypes.Get(name);
     }
 
     /**
@@ -704,7 +897,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     GetTypeByValue(value)
     {
-        return this.store.variableTypes.GetByValue(value);
+        return this.variableTypes.GetByValue(value);
     }
 
     /**
@@ -715,7 +908,49 @@ export class Tw2Library extends Tw2EventEmitter
      */
     SetType(name, Constructor)
     {
-        return this.store.variableTypes.Set(name, Constructor);
+        return this.variableTypes.Set(name, Constructor);
     }
+
+}
+
+/**
+ * Creates an inner progress handler
+ * @param {undefined|Function}  awaitProgress
+ * @param {Number} [total=0]
+ * @returns {Boolean|Function}
+ */
+function createInnerProgress(awaitProgress, total = 0)
+{
+
+    if (!isFunction(awaitProgress))
+    {
+        return !!awaitProgress;
+    }
+
+    let map = new Map();
+
+    let lastPercent = 0;
+
+    return function(result, object)
+    {
+        map.set(object, result);
+
+        const all = {
+            total,
+            pending: 0,
+            objects: 0,
+            percent: 0
+        };
+
+        map.forEach(r =>
+        {
+            all.total += r.total;
+            all.pending += r.pending;
+            all.objects += r.objects;
+        });
+
+        all.percent = parseFloat(((all.total - all.pending) / all.total * 100).toFixed(2));
+        awaitProgress(result, object, all);
+    };
 
 }

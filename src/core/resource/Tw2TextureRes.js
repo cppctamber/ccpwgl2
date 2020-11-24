@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { num } from "math";
-import { resMan, device, logger } from "global";
+import { device, resMan, tw2 } from "global";
 import { ErrHTTPRequest } from "../engine/Tw2ResMan";
 import {
     Tw2Resource,
@@ -168,7 +168,7 @@ export class Tw2TextureRes extends Tw2Resource
                 // Temporarily output uncompressed rgb/rgba dds info
                 if (isRGB || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
                 {
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Tw2TextureRes",
                         message: `Partial support for ${name}: ${this.path}`,
                         data: info
@@ -180,7 +180,7 @@ export class Tw2TextureRes extends Tw2Resource
                 {
                     mipmaps = 1;
 
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Tw2TextureRes",
                         message: `Texture not power of 2: ${this.path}`,
                         data: info

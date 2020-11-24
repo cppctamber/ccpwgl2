@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
 import resPathInserts from "./resPathInsert.json";
-import { logger } from "global/tw2";
+import { tw2 } from "global/tw2";
 
 
 @meta.type("EveSOFDataFaction")
@@ -170,7 +170,7 @@ export class EveSOFDataFaction
 
         if (!EveSOFDataFaction.IsValidResPathInsert(hull, resPathInsert))
         {
-            logger.Debug({
+            tw2.Debug({
                 name: "Space object factory",
                 message: `ResPathInsert not found for hull ${hull}: ${resPathInsert}`
             });

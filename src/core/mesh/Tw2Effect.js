@@ -1,5 +1,5 @@
 import { meta, assignIfExists, getPathExtension } from "utils";
-import { device, resMan, store } from "global";
+import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
@@ -217,7 +217,7 @@ export class Tw2Effect extends meta.Model
             const extension = getPathExtension(this.effectFilePath);
             if (extension === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
 
-            res = this.effectFilePath ? resMan.GetResource(this.effectFilePath) : null;
+            res = this.effectFilePath ? tw2.GetResource(this.effectFilePath) : null;
         }
 
         if (!this._SetEffectRes(res))
@@ -353,8 +353,6 @@ export class Tw2Effect extends meta.Model
         this.UnBindParameters();
         if (!this.IsGood()) return false;
 
-        const { variables } = store;
-
         for (let techniqueName in this.shader.techniques)
         {
             if (this.shader.techniques.hasOwnProperty(techniqueName))
@@ -403,10 +401,10 @@ export class Tw2Effect extends meta.Model
                                     });
                                 }
                             }
-                            else if (variables.Has(name))
+                            else if (tw2.HasVariable(name))
                             {
                                 stage.parameters.push({
-                                    parameter: variables.Get(name),
+                                    parameter: tw2.GetVariable(name),
                                     constantBuffer: stage.constantBuffer,
                                     offset: constant.offset,
                                     size: constant.size
@@ -414,7 +412,7 @@ export class Tw2Effect extends meta.Model
                             }
                             else if (constant.isAutoregister && Type)
                             {
-                                const variable = variables.Create(name, undefined, Type);
+                                const variable = tw2.CreateVariable(name, undefined, Type);
                                 if (variable)
                                 {
                                     stage.parameters.push({
@@ -437,7 +435,7 @@ export class Tw2Effect extends meta.Model
                                     value = value[0];
                                 }
 
-                                const param = variables.Create(name, value, Type);
+                                const param = tw2.CreateVariable(name, value, Type);
                                 if (param)
                                 {
                                     this.parameters[name] = param;
@@ -466,13 +464,13 @@ export class Tw2Effect extends meta.Model
                             {
                                 param = this.parameters[name];
                             }
-                            else if (variables.Has(name))
+                            else if (tw2.HasVariable(name))
                             {
-                                param = variables.Get(name);
+                                param = tw2.GetVariable(name);
                             }
                             else if (stageRes.textures[k].isAutoregister)
                             {
-                                param = variables.Create(name, undefined, Tw2TextureParameter);
+                                param = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
                             }
                             else if (this.autoParameter)
                             {
@@ -735,7 +733,7 @@ export class Tw2Effect extends meta.Model
                 }
                 else
                 {
-                    const parameter = store.variables.Create(key, value);
+                    const parameter = tw2.CreateVariable(key, value);
                     if (parameter)
                     {
                         this.parameters[key] = parameter;

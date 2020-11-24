@@ -1,4 +1,4 @@
-import { store } from "global";
+import { tw2 } from "global";
 import { Tw2BinaryReader } from "./Tw2BinaryReader";
 import { ErrFeatureNotImplemented, Tw2Error } from "../Tw2Error";
 
@@ -120,7 +120,7 @@ export class Tw2ObjectReader
         }
 
         let Constructor;
-        if (!store.constructors.Has(data.type))
+        if (!tw2.HasClass(data.type))
         {
             if (Tw2ObjectReader.DEBUG_ENABLED)
             {
@@ -133,7 +133,7 @@ export class Tw2ObjectReader
         }
         else
         {
-            Constructor = store.constructors.Get(data.type);
+            Constructor = tw2.GetClass(data.type);
         }
 
         const object = new Constructor();

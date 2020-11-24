@@ -1,5 +1,5 @@
 import { meta, isString, perArrayChild, get, assignIfExists } from "utils";
-import { resMan } from "global";
+import { tw2 } from "global";
 import { vec3 } from "math";
 import { Tw2InstancedMeshBatch } from "../batch";
 import { Tw2Mesh } from "./Tw2Mesh";
@@ -110,12 +110,12 @@ export class Tw2InstancedMesh extends meta.Model
     {
         if (this.geometryResPath !== "")
         {
-            this._geometryResource = resMan.GetResource(this.geometryResPath);
+            this._geometryResource = tw2.GetResource(this.geometryResPath);
         }
 
         if (this.instanceGeometryResPath !== "")
         {
-            this.instanceGeometryResource = resMan.GetResource(this.instanceGeometryResPath);
+            this.instanceGeometryResource = tw2.GetResource(this.instanceGeometryResPath);
         }
     }
 

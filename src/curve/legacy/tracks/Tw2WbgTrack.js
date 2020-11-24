@@ -1,5 +1,5 @@
 import { generateID, defineMetadata } from "utils";
-import { resMan } from "global";
+import { tw2 } from "global";
 import { vec3, quat, mat4, curve } from "math";
 
 /**
@@ -57,7 +57,7 @@ export function Tw2WbgTrack()
     {
         if (this.geometryResPath)
         {
-            this.geometryRes = resMan.GetResource(this.geometryResPath, res => SetCurves(this));
+            this.geometryRes = tw2.GetResource(this.geometryResPath, res => SetCurves(this));
         }
     };
 

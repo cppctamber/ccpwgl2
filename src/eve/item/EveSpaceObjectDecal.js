@@ -1,5 +1,5 @@
 import { meta, assignIfExists } from "utils";
-import { device, store } from "global";
+import { device, tw2 } from "global";
 import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
@@ -215,8 +215,8 @@ export class EveSpaceObjectDecal extends meta.Model
             bkCount = mesh.areas[0].count,
             bkIndexType = mesh.indexType;
 
-        store.variables.SetValue("u_DecalMatrix", this._localTransform);
-        store.variables.SetValue("u_InvDecalMatrix", this._localTransformInverse);
+        tw2.SetVariableValue("u_DecalMatrix", this._localTransform);
+        tw2.SetVariableValue("u_InvDecalMatrix", this._localTransformInverse);
 
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;

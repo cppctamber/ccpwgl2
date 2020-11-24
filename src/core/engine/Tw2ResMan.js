@@ -16,8 +16,8 @@ export class Tw2ResMan extends Tw2EventEmitter
     purgeTime = 30;
 
     maxWatchedFrames = 500;
-    maxWatchedCount = 10;
-    maxWatchTime = 0.05;
+    maxWatchedCount = 0;
+    maxWatchTime = 0.5;
 
     _prepareBudget = 0;
     _prepareQueue = [];
@@ -38,14 +38,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Constructor
-     * @param {Tw2Store} store
-     * @param {Tw2Logger} logger
+     * @param {Tw2Library} tw2
      */
-    constructor(store, logger)
+    constructor(tw2)
     {
         super();
-        this.store = store;
-        this.logger = logger;
+        this.tw2 = tw2;
     }
 
     /**
@@ -67,6 +65,26 @@ export class Tw2ResMan extends Tw2EventEmitter
             "maxWatchCount",
             "maxWatchFrames"
         ]);
+    }
+
+    /**
+     * Sets debug mode
+     * @param {Boolean} bool
+     */
+    SetDebugMode(bool)
+    {
+        // Reload geometry when set to true?
+        this.systemMirror = bool;
+    }
+
+    /**
+     * Gets the current debug mode
+     * @param {Boolean} bool
+     * @return {boolean}
+     */
+    GetDebugMode(bool)
+    {
+        return this.systemMirror;
     }
 
     /**
@@ -138,7 +156,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         log.name = "Resource manager";
 
         this.EmitEvent(eventName, path, res, err);
-        this.logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+        this.tw2.logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
     }
 
     /**
@@ -172,10 +190,9 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Internal update function. It is called every frame.
-     * @param {Tw2Device} device
      * @returns {Boolean}
      */
-    Tick(device)
+    Tick()
     {
         if (this._prepareQueue.length === 0 && this._pendingLoads.length === 0)
         {
@@ -191,7 +208,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         this._prepareBudget = this.maxPrepareTime;
 
-        const startTime = device.now;
+        const startTime = this.tw2.now;
         while (this._prepareQueue.length)
         {
             const
@@ -204,7 +221,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             try
             {
                 res.Prepare(data, xml);
-                this._prepareBudget -= (device.now - startTime) * 0.001;
+                this._prepareBudget -= (this.tw2.now - startTime) * 0.001;
                 if (this._prepareBudget < 0) break;
             }
             catch (err)
@@ -216,7 +233,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         this.motherLode.UpdateWatched(this._maxWatchedFrames, this._maxWatchedCount);
 
-        this._purgeTime += device.dt;
+        this._purgeTime += this.tw2.dt;
 
         if (this._purgeTime > 1)
         {
@@ -281,7 +298,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         try
         {
-            const Constructor = this.store.extensions.FromPath(path);
+            const Constructor = this.tw2.GetExtensionFromPath(path);
             res = new Constructor();
         }
         catch (err)
@@ -364,7 +381,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         try
         {
-            const url = this.store.paths.Resolve(res.path);
+            const url = this.tw2.GetURL(res.path);
 
             res.OnRequested(eventLog);
 
@@ -506,7 +523,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     BuildUrl(path)
     {
-        return this.store.paths.Resolve(path);
+        return this.tw2.GetURL(path);
     }
 
     /**

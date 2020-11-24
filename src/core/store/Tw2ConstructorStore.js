@@ -1,6 +1,5 @@
 import { STORE, Tw2GenericStore } from "./Tw2GenericStore";
 import { isFunction } from "utils";
-import { logger } from "global/tw2";
 
 
 export class Tw2ConstructorStore extends Tw2GenericStore
@@ -8,14 +7,12 @@ export class Tw2ConstructorStore extends Tw2GenericStore
 
     /**
      * Constructor
-     * @param {Class|Function} Constructor
      */
-    constructor(Constructor)
+    constructor()
     {
         super();
         const PRIVATE = STORE.get(this);
-        PRIVATE.Constructor = Constructor;
-        PRIVATE.DEBUG_MODE = false;
+        PRIVATE.DEBUG_ENABLED = false;
     }
 
     /**
@@ -32,7 +29,6 @@ export class Tw2ConstructorStore extends Tw2GenericStore
             if ("DEBUG_ENABLED" in value)
             {
                 value.DEBUG_ENABLED = bool;
-                if (bool) logger.Log({ name: key, message: "Debug mode enabled" });
             }
         }
     }
@@ -64,9 +60,10 @@ export class Tw2ConstructorStore extends Tw2GenericStore
      */
     static onBefore(Ctor, key, source)
     {
-        const { Constructor, DEBUG_MODE } = STORE.get(source);
-        if (Constructor) Constructor.prototype[key] = Ctor;
-        if ("DEBUG_ENABLED" in Ctor) Ctor.DEBUG_ENABLED = DEBUG_MODE;
+        if ("DEBUG_ENABLED" in Ctor)
+        {
+            Ctor.DEBUG_ENABLED = STORE.get(source).DEBUG_ENABLED;
+        }
     }
 
     /**

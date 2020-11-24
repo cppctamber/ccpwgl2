@@ -5,12 +5,54 @@ import { isArray, isFunction } from "utils";
  * @type {WeakMap<object, *>}
  */
 const PRIVATE = new WeakMap();
+const BOUND = new WeakMap();
 
 /**
  * Tw2EventEmitter
  */
 export class Tw2EventEmitter
 {
+
+    /**
+     * Binds an emitter's events to a BOUND emitter
+     * - BOUND emitted last
+     * @param {*} emitter
+     * @param {String} [prefix]
+     * @return {*}
+     */
+    BindEvents(emitter, prefix)
+    {
+        const bound = BOUND.get(this);
+        if (bound)
+        {
+            if (bound.emitter !== emitter)
+            {
+                throw new Error("Emitter already bound");
+            }
+            return this;
+        }
+
+        if (prefix) prefix = prefix.toLowerCase();
+
+        BOUND.set(this, { emitter, prefix });
+        return this;
+    }
+
+    /**
+     * Unbinds an emitter from it's BOUND emitter
+     * @param {*} emitter
+     * @return {boolean}
+     */
+    UnBindEvents(emitter)
+    {
+        const bound = BOUND.get(this);
+        if (bound && bound.emitter === this)
+        {
+            BOUND.delete(this);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Emits an event
@@ -24,6 +66,7 @@ export class Tw2EventEmitter
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
+
         if (eventName in events)
         {
             events[eventName].forEach((value, key) =>
@@ -36,6 +79,13 @@ export class Tw2EventEmitter
             {
                 Reflect.deleteProperty(events, eventName);
             }
+        }
+
+        const bound = BOUND.get(this);
+        if (bound)
+        {
+            let boundEventName = bound.prefix ? `${bound.prefix}_${eventName}` : eventName;
+            BOUND.get(this).EmitEvent(boundEventName, ...args);
         }
 
         return this;

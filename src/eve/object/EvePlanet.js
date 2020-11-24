@@ -1,10 +1,11 @@
 import { meta, isObjectLike } from "utils";
-import { device, resMan } from "global";
-import { mat4 } from "math";
-import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
+import { device, tw2 } from "global";
+import { vec3, mat4 } from "math";
+import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter, Tw2Resource } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 
+// TODO: Add "OnValueChanged" handler
 
 @meta.type("EvePlanet")
 export class EvePlanet extends EveObject
@@ -34,6 +35,13 @@ export class EvePlanet extends EveObject
     @meta.isPrivate
     heightMapResPath2 = "";
 
+    @meta.list("EveChild")
+    @meta.notImplemented
+    effectChildren = [];
+
+    @meta.float
+    radius = 0;
+
     _heightDirty = false;
     _lockedResources = [];
     _watchedResources = [];
@@ -41,6 +49,30 @@ export class EvePlanet extends EveObject
     _useLOD = true;
     _atmosphere = null;
     _planet = null;
+
+    /**
+     * Constructor
+     * @return {number}
+     */
+    constructor()
+    {
+        super();
+
+        Object.defineProperty(this, "radius", {
+            get()
+            {
+                const s = this.highDetail.scaling;
+                return Math.max(s[0], s[1], s[2]) / 2;
+            },
+            set(radius)
+            {
+                const s = this.highDetail.scaling;
+                s[0] = s[1] = s[2] = radius * 2;
+                this.highDetail.UpdateValues();
+            }
+        });
+
+    }
 
     /**
      * Rebuilds the planet
@@ -61,18 +93,19 @@ export class EvePlanet extends EveObject
      */
     async Fetch(options={})
     {
-        const { name="", itemID=0, resPath="", atmospherePath="", heightMap1="", heightMap2="" } = options;
+        const { name="", itemID=0, resPath="", atmospherePath="", heightMap1="", heightMap2="",  radius=0 } = options;
 
         this.name = name;
         this.itemID = itemID;
         this.heightMapResPath1 = heightMap1;
         this.heightMapResPath2 = heightMap2;
         this.highDetail.children.splice(0);
+        this.radius = radius;
 
         const [ zOnly, planet, atmosphere ] = await Promise.all([
-            resMan.FetchObject(EvePlanet.ZOnlyModelPath),
-            resPath ? resMan.FetchObject(resPath) : null,
-            atmospherePath ? resMan.FetchObject(atmospherePath) : null
+            EvePlanet.ZOnlyModelPath,
+            resPath,
+            atmospherePath
         ]);
 
         this._planet = planet;
@@ -83,7 +116,10 @@ export class EvePlanet extends EveObject
         return this;
     }
 
-
+    /**
+     * Planet z only model
+     * @type {string}
+     */
     static ZOnlyModelPath = "res:/dx9/model/worldobject/planet/planetzonly.red";
 
     /**
@@ -99,17 +135,19 @@ export class EvePlanet extends EveObject
      */
     Create(options = {}, onLoaded)
     {
-        const { name = "", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2 } = options;
+        const { name = "", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2, radius=0 } = options;
 
         this.name = name;
         this.itemID = itemID;
         this.heightMapResPath1 = heightMap1;
         this.heightMapResPath2 = heightMap2;
         this.highDetail.children.splice(0);
+        this.radius = radius;
         this._heightDirty = true;
         this._planet = null;
         this._atmosphere = null;
         this._heightDirty = true;
+        this.radius = radius;
 
         let loadingParts = 1;
         if (resPath) loadingParts++;
@@ -129,7 +167,7 @@ export class EvePlanet extends EveObject
 
         if (resPath)
         {
-            resMan.GetObject(resPath, obj =>
+            tw2.Fetch(resPath).then(obj =>
             {
                 obj.resPath = resPath;
                 this._planet = obj;
@@ -140,7 +178,7 @@ export class EvePlanet extends EveObject
 
         if (atmospherePath)
         {
-            resMan.GetObject(atmospherePath, obj =>
+            tw2.Fetch(atmospherePath).then(obj =>
             {
                 obj.resPath = atmospherePath;
                 this._atmosphere = obj;
@@ -149,7 +187,7 @@ export class EvePlanet extends EveObject
             });
         }
 
-        resMan.GetObject(EvePlanet.ZOnlyModelPath, obj =>
+        tw2.Fetch(EvePlanet.ZOnlyModelPath).then(obj =>
         {
             this.zOnlyModel = obj;
             onPartLoaded();
@@ -216,7 +254,7 @@ export class EvePlanet extends EveObject
         if (visited.includes(obj)) return;
         visited.push(obj);
 
-        if (obj && obj.constructor.__isResource)
+        if (obj && obj instanceof Tw2Resource)
         {
             result.push(obj);
             return;

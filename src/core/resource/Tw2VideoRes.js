@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { device, resMan } from "global";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
-import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../engine/Tw2ResMan";
+import { ErrHTTPRequest } from "../engine/Tw2ResMan";
 
 
 @meta.type("Tw2VideoRes")

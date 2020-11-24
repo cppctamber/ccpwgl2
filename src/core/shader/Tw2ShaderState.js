@@ -6,10 +6,11 @@ export class Tw2ShaderState
 {
 
     @meta.float
-    state = 0;
+    state = -1;
 
     @meta.float
-    value = 0;
+    value = -1;
+
 
     /**
      *

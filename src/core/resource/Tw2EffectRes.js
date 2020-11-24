@@ -3,7 +3,7 @@ import { Tw2BinaryReader } from "../reader";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
-import { resMan } from "global";
+import { tw2 } from "global";
 
 
 @meta.type("Tw2EffectRes")
@@ -311,7 +311,7 @@ export class Tw2EffectRes extends Tw2Resource
         res.Prepare(data);
 
         // Add so it can be loaded from elsewhere
-        resMan.motherLode.Add(res.path, res);
+        tw2.AddResource(res.path, res);
         return res;
     }
 }

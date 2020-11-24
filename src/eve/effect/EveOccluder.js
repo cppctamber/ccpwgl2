@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { device, store } from "global";
+import { device, tw2 } from "global";
 import { vec4, mat4 } from "math";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
@@ -47,7 +47,7 @@ export class EveOccluder extends meta.Model
             this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
         }
 
-        store.variables.SetValue("OccluderValue", [ (1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0 ]);
+        tw2.SetVariableValue("OccluderValue", [ (1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0 ]);
 
         g.accumulator.Render();
 

@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { resMan } from "global";
+import { tw2 } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
 
@@ -45,7 +45,7 @@ export class EveTrailsSet extends meta.Model
     {
         if (this.geometryResPath)
         {
-            this._geometryRes = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+            this._geometryRes = tw2.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
         }
     }
 

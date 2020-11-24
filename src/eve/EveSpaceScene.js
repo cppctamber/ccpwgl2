@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { device, resMan, store } from "global";
+import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
@@ -143,7 +143,6 @@ export class EveSpaceScene extends meta.Model
 
     @meta.notImplemented
     @meta.struct("Tw2Effect")
-    @meta.todo("Do shadows need their own render mode and batch accumulation?")
     shadowEffect = null;
 
     @meta.plain
@@ -206,7 +205,7 @@ export class EveSpaceScene extends meta.Model
         this.SetEnvMapReflection(this.envMapPath);
         this.SetEnvMapDiffuse(this.envMap1ResPath);
         this.SetEnvMapBlur(this.envMap2ResPath);
-        this.SetPostProcess(this.postProcessPath);
+        this.FetchPostProcess(this.postProcessPath).then();
 
         // Shift own objects to the background objects array
         // This is to stop wrapped scenes from accidentally purging the scene's own objects
@@ -265,7 +264,7 @@ export class EveSpaceScene extends meta.Model
      * Sets the post processing path
      * @param {String} path
      */
-    SetPostProcess(path = "")
+    async FetchPostProcess(path = "")
     {
         if (!path)
         {
@@ -275,8 +274,10 @@ export class EveSpaceScene extends meta.Model
         else
         {
             this.postProcessPath = path.toLowerCase();
-            resMan.GetObject(path, obj => this.postProcess = obj);
+            this.postProcess = await tw2.Fetch(path);
         }
+
+        return this.postProcess;
     }
 
     /**
@@ -293,7 +294,7 @@ export class EveSpaceScene extends meta.Model
         else
         {
             this.envMapResPath = path;
-            this._envMapRes = resMan.GetResource(path);
+            this._envMapRes = tw2.GetResource(path);
         }
     }
 
@@ -311,7 +312,7 @@ export class EveSpaceScene extends meta.Model
         else
         {
             this.envMap1ResPath = path.toLowerCase();
-            this._envMap1Res = resMan.GetResource(path);
+            this._envMap1Res = tw2.GetResource(path);
         }
     }
 
@@ -329,7 +330,7 @@ export class EveSpaceScene extends meta.Model
         }
 
         this.envMap2ResPath = path.toLowerCase();
-        this._envMap2Res = resMan.GetResource(path);
+        this._envMap2Res = tw2.GetResource(path);
     }
 
     /**
@@ -438,7 +439,7 @@ export class EveSpaceScene extends meta.Model
     {
         if (!this._emptyTexture)
         {
-            this._emptyTexture = resMan.GetResource("res:/texture/global/black.dds.0.png");
+            this._emptyTexture = tw2.GetResource("res:/texture/global/black.dds.0.png");
         }
 
         return this._emptyTexture;
@@ -456,14 +457,12 @@ export class EveSpaceScene extends meta.Model
             this.curveSets[i].Update(dt);
         }
 
-        this.PerChildObject("Update", dt);
-
-        /*
         if (this.starField)
         {
             this.starField.Update(dt);
         }
-        */
+
+        this.PerChildObject("Update", dt);
     }
 
     /**
@@ -645,12 +644,19 @@ export class EveSpaceScene extends meta.Model
             // TODO: Implement starfield
         }
 
+
+        if(this.shadowEffect)
+        {
+            // TODO: Implement shadow effect
+        }
+
         if (this.postProcess)
         {
             // TODO: Implement post processing
         }
-
+        
         this._batches.Render();
+
 
         if (show.lensflares)
         {
@@ -721,7 +727,7 @@ export class EveSpaceScene extends meta.Model
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
-        vs.Set("SunData.DirWorld", sunDir);
+        vs.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         vs.Set("TargetResolution", d.targetResolution);
         vs.Set("ViewInverseTransposeMat", d.viewInverse);
@@ -735,7 +741,7 @@ export class EveSpaceScene extends meta.Model
         ps.Set("ViewInverseTransposeMat", d.viewInverse);
         ps.Set("ViewMat", d.viewTranspose);
         ps.Set("EnvMapRotationMat", envMapTransform);
-        ps.Set("SunData.DirWorld", sunDir);
+        ps.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
 
@@ -768,9 +774,9 @@ export class EveSpaceScene extends meta.Model
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
-        store.variables.Get("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
-        store.variables.Get("EnvMap1").AttachTextureRes(envMap1);
-        store.variables.Get("EnvMap2").AttachTextureRes(envMap2);
+        tw2.GetVariable("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
+        tw2.GetVariable("EnvMap1").AttachTextureRes(envMap1);
+        tw2.GetVariable("EnvMap2").AttachTextureRes(envMap2);
     }
 
     /**

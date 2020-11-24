@@ -1,4 +1,4 @@
-import { resMan, logger, device } from "global";
+import { tw2 } from "global";
 import { vec3, vec4, mat4, quat, num } from "math";
 import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
@@ -688,7 +688,7 @@ export class EveSOFData
      */
     static SetupModelCurves(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Model curves not implemented"
         });
@@ -703,7 +703,7 @@ export class EveSOFData
      */
     static SetupLights(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Lights not implemented"
         });
@@ -718,7 +718,7 @@ export class EveSOFData
      */
     static SetupObservers(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Observers not implemented"
         });
@@ -752,7 +752,7 @@ export class EveSOFData
                 else
                 {
                     sof.faction.GetColorType(0, item.color);
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Space object factory",
                         message: "Using primary colours, could not resolve glow color type: " + colorType
                     });
@@ -907,7 +907,7 @@ export class EveSOFData
 
         try
         {
-            await resMan.FetchResource(resPath);
+            await tw2.Fetch(resPath);
         }
         catch (err)
         {
@@ -961,7 +961,7 @@ export class EveSOFData
                 if (effect.effectFilePath.includes("quadheatdetail"))
                 {
                     effect.effectFilePath = effect.effectFilePath.replace("quadheatdetail", "quaddetail");
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Space object factory",
                         message: "Patching missing shader: " + effect.effectFilePath
                     });
@@ -986,7 +986,7 @@ export class EveSOFData
                 else
                 {
                     sof.faction.AssignAreaType(0, areaData);
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Space object factory",
                         message: "Could not resolve area type: " + areaType
                     });
@@ -1009,7 +1009,7 @@ export class EveSOFData
                     else
                     {
                         sof.faction.GetColorType(0, glowColor);
-                        logger.Debug({
+                        tw2.Debug({
                             name: "Space object factory",
                             message: "Using primary colours, could not resolve glow color type: " + colorType
                         });
@@ -1087,7 +1087,7 @@ export class EveSOFData
                 {
                     sof.faction.GetColorType(0, color);
 
-                    logger.Debug({
+                    tw2.Debug({
                         name: "Space object factory",
                         message: "Using primary color for spriteSet: " + srcItem.colorType
                     });
@@ -1301,7 +1301,7 @@ export class EveSOFData
                 // If we can't find the logo type ignore the logo
                 if (!faction.HasLogoType(logoType))
                 {
-                    logger.Log({
+                    tw2.Log({
                         name: "Space object factory",
                         message: `Could not find logo type for decal: ${name} (${logoType})`
                     });
@@ -1331,7 +1331,7 @@ export class EveSOFData
                     else
                     {
                         faction.GetColorType(0, DecalGlowColor);
-                        logger.Debug({
+                        tw2.Debug({
                             name: "Space object factory",
                             message: `Using primary color for decal glow: ${name} (${glowColorType})`
                         });
@@ -1507,7 +1507,7 @@ export class EveSOFData
             obj.locators.push(EveLocator2.from(item));
         });
 
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Locator sets not implemented"
         });
@@ -1522,7 +1522,7 @@ export class EveSOFData
      */
     static SetupAudio(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Audio not implemented"
         });
@@ -1539,7 +1539,7 @@ export class EveSOFData
      */
     static SetupAnimations(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Animations not implemented"
         });
@@ -1554,7 +1554,7 @@ export class EveSOFData
      */
     static SetupChildren(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Child objects not implemented"
         });
@@ -1595,11 +1595,11 @@ export class EveSOFData
             const { redFilePath } = children[i];
             if (redFilePath)
             {
-                resMan.GetObject(redFilePath, EveSOFData.OnChildLoaded(children[i]));
+                tw2.Fetch(redFilePath).then(EveSOFData.OnChildLoaded(children[i]));
             }
             else
             {
-                logger.Debug({
+                tw2.Debug({
                     name: "Space object factory",
                     message: `No resource path found for "${sof.hull.name}" child at index ${i}`
                 });
@@ -1617,7 +1617,7 @@ export class EveSOFData
      */
     static BindParticleEmitters(data, obj, curveSet, curve)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Binding child particle emitters not implemented"
         });
@@ -1645,7 +1645,7 @@ export class EveSOFData
         }
         else
         {
-            logger.Debug({
+            tw2.Debug({
                 name: "Space  object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
             });
@@ -1662,7 +1662,7 @@ export class EveSOFData
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        const { gl } = device;
+        const { gl } = tw2;
         const { hull } = sof;
         const { instancedMeshes = [] } = hull;
 
@@ -1727,7 +1727,7 @@ export class EveSOFData
             gl.bindBuffer(gl.ARRAY_BUFFER, iMesh.buffer);
             gl.bufferData(gl.ARRAY_BUFFER, iMesh.bufferData, gl.STATIC_DRAW);
             // Do not retain in memory unless asked to
-            if (!resMan.systemMirror) iMesh.bufferData = null;
+            if (!tw2.systemMirror) iMesh.bufferData = null;
 
             // Setup resource to hold results
             const res = new Tw2GeometryRes();
@@ -1796,7 +1796,7 @@ export class EveSOFData
      */
     static SetupControllers(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space object factory",
             message: "Animation controllers not implemented"
         });
@@ -1811,7 +1811,7 @@ export class EveSOFData
      */
     static SetupTurretMaterial(data, obj, sof, options)
     {
-        logger.Debug({
+        tw2.Debug({
             name: "Space  object factory",
             message: "Turret materials not implemented"
         });

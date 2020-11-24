@@ -1,4 +1,4 @@
-import { resMan } from "global";
+import { tw2 } from "global";
 import { meta, toArray } from "utils";
 
 
@@ -124,15 +124,16 @@ export class Tr2LodResource extends meta.Model
             else if (high) path = high;
         }
 
-        return path ? resMan.GetResource(path) : null;
+        return path ? tw2.GetResource(path) : null;
     }
 
     /**
      * Creates a lod resource from a plain object
      * @param {*} values
+     * @param {Object} [opt]
      * @returns {Tr2LodResource}
      */
-    static from(values)
+    static from(values, opt)
     {
         const item = new Tr2LodResource();
         if (values)

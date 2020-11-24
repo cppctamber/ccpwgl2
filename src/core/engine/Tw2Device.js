@@ -70,10 +70,11 @@ export class Tw2Device extends Tw2EventEmitter
     gl = null;
     xr = null;
 
-    store = null;
     canvas2d = null;
 
     dt = 0;
+    fps = 0;
+
     frameCounter = 0;
     startTime = null;
     currentTime = null;
@@ -126,6 +127,9 @@ export class Tw2Device extends Tw2EventEmitter
     _blitEffect = null;
     _Date = Date;
 
+    _fpsFrameCount = 0;
+    _fpsPreviousTime = 0;
+
     /**
      * Gets the current gl context version
      * @returns {number}
@@ -151,14 +155,12 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Constructor
-     * @param {Tw2Store} store
-     * @param {Tw2Logger} logger
+     * @param {Tw2Library} tw2
      */
-    constructor(store, logger)
+    constructor(tw2)
     {
         super();
-        this.store = store;
-        this.logger = logger;
+        this.tw2 = tw2;
         this.startTime = this.now;
         this.currentTime = this.startTime;
     }
@@ -231,7 +233,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         const gl = this.gl = Tw2Device.CreateContext(params, canvas);
 
-        this.logger.Debug({
+        this.tw2.Debug({
             name: "Device",
             message: `Webgl${this.glVersion} context created`
         });
@@ -269,6 +271,8 @@ export class Tw2Device extends Tw2EventEmitter
         {
             gl.hasInstancedArrays = returnTrue;
         }
+
+        this.GetExtension("WEBGL_depth_texture");
 
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
         if (anisotropicFilterExt)
@@ -344,6 +348,10 @@ export class Tw2Device extends Tw2EventEmitter
         };
 
         this._shadowStateBuffer = new Float32Array(24);
+
+        // Event handlers
+        this.canvas.addEventListener("webglcontextlost", e => this.EmitEvent("context_lost", this));
+        this.canvas.addEventListener("webglcontextrestored", e => this.EmitEvent("context_restored", this));
     }
 
     /**
@@ -394,14 +402,18 @@ export class Tw2Device extends Tw2EventEmitter
         }
         else
         {
-            this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
-            this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
+            //this.canvas.style.width = this.canvas.clientWidth + "px";
+            //this.canvas.style.height = this.canvas.clientHeight + "px";
+            this.canvas.width = Math.round(this.canvas.clientWidth * this.viewportPixelRatio);
+            this.canvas.height = Math.round(this.canvas.clientHeight * this.viewportPixelRatio);
         }
 
+        /*
         if (this.viewportHeight === this.canvas.height && this.viewportWidth === this.canvas.width)
         {
             return false;
         }
+         */
 
         this.viewportWidth = this.canvas.width;
         this.viewportHeight = this.canvas.height;
@@ -414,7 +426,7 @@ export class Tw2Device extends Tw2EventEmitter
             this.canvas2d.height = this.viewportHeight;
         }
 
-        this.store.variables.SetValue("ViewportSize", [
+        this.tw2.variables.SetValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -455,24 +467,33 @@ export class Tw2Device extends Tw2EventEmitter
         }
 
         const
-            previousTime = this.previousTime === null ? 0 : this.previousTime,
-            now = this.now;
+            now = this.now,
+            previousTime = this.previousTime === null ? now : this.previousTime;
 
         this.currentTime = (now - this.startTime) * 0.001;
-        this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
+        this.dt = (now - previousTime) * 0.001;
         this.previousTime = now;
 
-        this.store.variables.SetValue("Time", [
+        this.tw2.variables.SetValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
             previousTime
         ]);
 
+        this._fpsFrameCount ++;
+        if (now >= this._fpsPreviousTime + 1000)
+        {
+            this.fps = (this._fpsFrameCount * 1000) / (now - this._fpsPreviousTime);
+            this._fpsFrameCount = 0;
+            this._fpsPreviousTime = now;
+        }
+
         this.frameCounter++;
 
         return this._resized;
     }
+
 
     /**
      * Sets World transform matrix
@@ -517,7 +538,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        this.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+        this.tw2.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**

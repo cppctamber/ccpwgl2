@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { resMan, } from "global";
+import { tw2 } from "global";
 import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "core";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
@@ -53,7 +53,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     {
         if (this.geometryResourcePath !== "")
         {
-            this.geometryResource = resMan.GetResource(this.geometryResourcePath, res =>
+            this.geometryResource = tw2.GetResource(this.geometryResourcePath, res =>
             {
                 res.systemMirror = true;
                 this.OnResPrepared(res);

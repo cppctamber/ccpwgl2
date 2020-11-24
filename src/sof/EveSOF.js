@@ -1,4 +1,4 @@
-import { resMan, logger } from "global";
+import { tw2 } from "global";
 import { vec3, vec4, quat } from "math";
 import { get, assignIfExists, isArray, isDNA } from "utils";
 import {
@@ -893,7 +893,7 @@ export function EveSOF()
         }
         else
         {
-            logger.Warn({
+            tw2.Warning({
                 name: "Space object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
             });
@@ -917,7 +917,7 @@ export function EveSOF()
                 vec3.copy(obj.translation, get(child, "translation", [ 0, 0, 0 ]));
                 quat.copy(obj.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
                 vec3.copy(obj.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-                var id = get(child, "id", -1);
+                const id = get(child, "id", -1);
                 if (id !== -1 && curves[id])
                 {
                     BindParticleEmitters(obj, curveSet, curves[id]);
@@ -931,11 +931,11 @@ export function EveSOF()
             const resPath = children[i]["redFilePath"];
             if (resPath)
             {
-                resMan.GetObject(resPath, onChildLoaded(children[i]));
+                tw2.Fetch(resPath).then(onChildLoaded(children[i]));
             }
             else
             {
-                logger.Warn({
+                tw2.Warning({
                     name: "Space object factory",
                     message: `No resource path found for "${hull.name}" child at index ${i}`
                 });
@@ -1111,14 +1111,15 @@ export function EveSOF()
                     }
                 });
 
-                sofPromise = resMan.FetchObject("res:/dx9/model/spaceobjectfactory/data.red")
+                sofPromise = tw2.Fetch("res:/dx9/model/spaceobjectfactory/data.red")
                     .then(sof => data = sof)
                     .catch(err =>
                     {
-                        logger.Error({
+                        tw2.Error({
                             name: "Space object factory",
                             message: "Could not load data"
                         });
+                        throw err;
                     });
             }
 

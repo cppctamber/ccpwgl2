@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { store, device } from "global";
+import { tw2, device } from "global";
 import { RS_COLORWRITEENABLE } from "constant";
 import { vec3, vec4, mat4 } from "math";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
@@ -184,7 +184,7 @@ export class EveLensflare extends meta.Model
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
-        store.variables.SetValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
+        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 
@@ -256,7 +256,7 @@ export class EveLensflare extends meta.Model
 
         const dir = this._direction;
 
-        store.variables.SetValue("LensflareFxDirectionScale", [ dir[0], dir[1], dir[2], 1 ]);
+        tw2.SetVariableValue("LensflareFxDirectionScale", [ dir[0], dir[1], dir[2], 1 ]);
 
         vec4.set(dist, dir[0], dir[1], dir[2], 0);
         vec4.transformMat4(dist, dist, device.view);

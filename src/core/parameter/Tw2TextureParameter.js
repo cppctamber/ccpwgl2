@@ -1,5 +1,5 @@
-import { meta, isString, createTextCanvas, createTextTextureFromCanvas } from "utils";
-import { resMan, device } from "global";
+import { meta, isString } from "utils";
+import { tw2, device } from "global";
 import { Tw2SamplerOverride } from "../sampler/Tw2SamplerOverride";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
@@ -216,7 +216,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         }
         else if (!this.isAttached)
         {
-            const res = this.resourcePath ? resMan.GetResource(this.resourcePath) : null;
+            const res = this.resourcePath ? tw2.GetResource(this.resourcePath) : null;
             this._SetTextureRes(res);
         }
     }

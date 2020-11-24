@@ -1,4 +1,4 @@
-import { resMan } from "global";
+import { tw2 } from "global";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
 import { Tw2BlackReader } from "../reader/Tw2BlackReader";
@@ -133,7 +133,7 @@ export class Tw2LoadingObject extends Tw2Resource
                 this._objects[i].onRejected(err);
             }
         }
-        resMan.motherLode.Remove(this.path);
+        tw2.RemoveResource(this.path);
         this._objects.splice(0);
         return err;
     }
@@ -144,7 +144,7 @@ export class Tw2LoadingObject extends Tw2Resource
      */
     OnPrepared(eventLog)
     {
-        resMan.motherLode.Remove(this.path);
+        tw2.RemoveResource(this.path);
         this._objects.splice(0);
         super.OnPrepared(eventLog);
     }

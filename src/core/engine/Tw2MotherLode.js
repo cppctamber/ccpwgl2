@@ -20,21 +20,21 @@ export class Tw2MotherLode
         if (index !== -1) return this._watching[index]._promise;
 
         // Get resource counts
-        const res = this.GetWatchedResourceDetail(object);
+        const r = this.GetWatchedResourceDetail(object);
 
         // Update progress (include 0)
-        if (onProgress) onProgress(res, object);
+        if (onProgress) onProgress(r, object);
 
         // Already complete
-        if (!res.pending) return object;
+        if (!r.pending) return object;
 
         // Watcher
         const watched = {
             object,
             onProgress,
             frames: 0,
-            total: res.total,
-            pending: res.pending
+            total: r.total,
+            pending: r.pending
         };
 
         this._watching.push(watched);
@@ -137,19 +137,23 @@ export class Tw2MotherLode
     /**
      * Updated watches objects
      * @param {Number} maxFrames
-     * @param {Number} maxWatched
-     * @param {Number} maxTime;
+     * @param {Number} maxWatched (0 for unlimited)
+     * @param {Number} maxTime (0 for unlimited)
      */
     UpdateWatched(maxFrames, maxWatched, maxTime)
     {
-        const
-            now = Date.now(),
-            len = Math.min(this._watching.length, maxWatched);
+        const now = Date.now();
 
         for (let i = 0; i < this._watching.length; i++)
         {
-            // Limit time  watching
+            // Limit time watching
             if (maxTime && Date.now() - now >= maxTime)
+            {
+                return;
+            }
+
+            // Limit how many can be watched
+            if (maxWatched &&  maxWatched >= i)
             {
                 return;
             }

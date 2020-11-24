@@ -1,4 +1,4 @@
-import { store } from "global";
+import { tw2 } from "global";
 import { vec2, vec3, vec4, mat4 } from "math";
 import { ErrFeatureNotImplemented } from "../Tw2Error";
 import { ErrBinaryReaderReadError } from "./Tw2BlackBinaryReader";
@@ -74,7 +74,7 @@ export function object(reader, id)
     const
         context = reader.context,
         givenId = id !== undefined,
-        debugEnabled = store.constructors.GetDebugMode();
+        debugEnabled = tw2.GetDebugMode();
 
     if (!givenId)
     {

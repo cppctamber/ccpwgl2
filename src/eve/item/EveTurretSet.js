@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { resMan, device } from "global";
+import { tw2, device } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
 import {
     Tw2PerObjectData,
@@ -220,14 +220,14 @@ export class EveTurretSet extends EveObjectSet
     {
         if (this.turretEffect && this.geometryResPath !== "")
         {
-            this.geometryResource = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+            this.geometryResource = tw2.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
             this._activeAnimation.SetGeometryResource(this.geometryResource);
             this._inactiveAnimation.SetGeometryResource(this.geometryResource);
         }
 
         if (this.firingEffectResPath !== "")
         {
-            resMan.GetObject(this.firingEffectResPath, object => this.firingEffect = object);
+            tw2.Fetch(this.firingEffectResPath).then(object => this.firingEffect = object);
         }
 
         this.Rebuild();

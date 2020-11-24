@@ -69,7 +69,7 @@ export class Tw2Logger extends Tw2EventEmitter
      * @param {Object|String} log
      * @return {eventLog}
      */
-    Warn(log)
+    Warning(log)
     {
         return this.Add("warn", log);
     }

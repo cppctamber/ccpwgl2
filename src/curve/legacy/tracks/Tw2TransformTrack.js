@@ -1,5 +1,5 @@
 import { meta, generateID } from "utils";
-import { resMan } from "global";
+import { tw2 } from "global";
 import { curve, vec3, quat, mat4 } from "math";
 
 
@@ -56,7 +56,7 @@ export class Tw2TransformTrack
     {
         if (this.resPath !== "")
         {
-            this.res = resMan.GetResource(this.resPath);
+            this.res = tw2.GetResource(this.resPath);
         }
     }
 

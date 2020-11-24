@@ -3,24 +3,67 @@ import { getMetadata, hasMetadata } from "../utils/reflect";
 import { isArray, isFunction, isObjectObject } from "../utils/type";
 import { propTypes } from "./ModelPropertyTypes";
 import { readOnly } from "./@generic";
-import { logger } from "global/tw2";
+import { tw2 } from "global/tw2";
 
+
+// TODO: Identify why Model can't extend Tw2EventEmitter without webpack having a fit
 
 const PRIVATE = new WeakMap();
+const BOUND = new WeakMap();
 
 
-export class Model 
+export class Model
 {
 
     @readOnly
     _id = generateID();
 
+    /**
+     * Binds an emitter's events to a BOUND emitter
+     * - BOUND emitted last
+     * @param {*} emitter
+     * @param {String} [prefix]
+     * @return {*}
+     */
+    BindEvents(emitter, prefix)
+    {
+        const bound = BOUND.get(this);
+        if (bound)
+        {
+            if (bound.emitter !== emitter)
+            {
+                throw new Error("Emitter already bound");
+            }
+            return this;
+        }
+
+        if (prefix) prefix = prefix.toLowerCase();
+
+        BOUND.set(this, { emitter, prefix });
+        return this;
+    }
+
+    /**
+     * Unbinds an emitter from it's BOUND emitter
+     * @param {*} emitter
+     * @return {boolean}
+     */
+    UnBindEvents(emitter)
+    {
+        const bound = BOUND.get(this);
+        if (bound && bound.emitter === this)
+        {
+            BOUND.delete(this);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Emits an event
      * @param {String} eventName
      * @param args
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     EmitEvent(eventName, ...args)
     {
@@ -28,6 +71,7 @@ export class Model
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
+
         if (eventName in events)
         {
             events[eventName].forEach((value, key) =>
@@ -42,13 +86,20 @@ export class Model
             }
         }
 
+        const bound = BOUND.get(this);
+        if (bound)
+        {
+            let boundEventName = bound.prefix ? `${bound.prefix}_${eventName}` : eventName;
+            BOUND.get(this).EmitEvent(boundEventName, ...args);
+        }
+
         return this;
     }
 
     /**
      * Adds events from a plain object
      * @param {Object} options
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     AddEvents(options)
     {
@@ -98,7 +149,7 @@ export class Model
      * @param {Function} listener
      * @param {*} [context]
      * @param {Boolean} [once]
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     OnEvent(eventName, listener, context, once)
     {
@@ -145,7 +196,7 @@ export class Model
      * @param {String} eventName
      * @param {Function} listener
      * @param {*} [context]
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     OnceEvent(eventName, listener, context)
     {
@@ -156,7 +207,7 @@ export class Model
      * Removes a listener from a specific event or from all events by passing "*"
      * @param {String} eventName
      * @param {Function} listener
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     OffEvent(eventName, listener)
     {
@@ -231,7 +282,7 @@ export class Model
     /**
      * Clears an event of listeners
      * @param {String} eventName
-     * @returns {*}
+     * @returns {Tw2EventEmitter}
      */
     ClearEvent(eventName)
     {
@@ -252,6 +303,7 @@ export class Model
         }
         return this;
     }
+
 
     /**
      * Copies an instance's values
@@ -819,7 +871,7 @@ export class Model
 
         if (skipped)
         {
-            logger.Debug({
+            tw2.Debug({
                 name: `${getMetadata("type", item.constructor)}.set`,
                 message: "Properties values skipped",
                 data: skipped
