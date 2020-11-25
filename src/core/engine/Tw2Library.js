@@ -19,7 +19,7 @@ export class Tw2Library extends Tw2EventEmitter
 
     math = math;
     util = util;
-    consts = consts;
+    const = consts;
 
     /**
      * Variable type store
@@ -73,7 +73,7 @@ export class Tw2Library extends Tw2EventEmitter
      * Device
      * @type {Tw2Device}
      */
-    device = new Tw2Device(this).BindEvents(this);
+    device = new Tw2Device(this);
 
     /**
      * Debug mode
@@ -88,7 +88,6 @@ export class Tw2Library extends Tw2EventEmitter
      * @private
      */
     _customResourceHandler = null;
-
 
 
     /**
@@ -201,6 +200,14 @@ export class Tw2Library extends Tw2EventEmitter
 
         super();
 
+        // Forward device events
+        this.device.AddEvents({
+            resized: (...args) => this.EmitEvent("resized", ...args),
+            context_lost: (...args) => this.EmitEvent("context_lost", ...args),
+            context_restored: (...args) => this.EmitEvent("context_restored", ...args),
+            context_created: (...args) => this.EmitEvent("context_created", ...args)
+        });
+
         this.constructors.OnEvent("stored", ({ key, value }) => this.constructor.prototype[key] = value);
 
         let eveSof;
@@ -219,21 +226,32 @@ export class Tw2Library extends Tw2EventEmitter
 
     /**
      * Initializes the library
-     * @param {{}} [options]
-     * @param {String|HTMLCanvasElement} [options.canvas] - Canvas element or id
-     * @param {{}} [options.device]                       - Optional device parameters
-     * @param {{}} [options.resMan]                       - Optional resMan parameters
-     * @param {{}} [options.store]                        - Optional store parameters
-     * @param {{}} [options.glParams]                     - Optional gl parameters
-     * @param {Function} [options.render]                 - Optional render function
+     * @param {{}} opt
+     * @param {Function} [opt.render]                   - Optional function to automatically call per frame
+     * @param {String|HTMLCanvasElement} opt.canvas     - Canvas element or id
+     * @param {String|HTMLCanvasElement} [opt.canvas2d] - Optional 2d canvas element or id
+     * @param {Object} [opt.glParams]                   - Optional gl params
+     * @param {Boolean} [opt.debug]                     - toggles debug mode
+     * @param {Function} [opt.resourceHandler]          - An optional resource handler
+     * @param {Object} [opt.events]                     - Optional event listener config
+     * @param {Object} [opt.black]                      - Configuration for black file extension handling
+     * @param {Object} [opt.variableTypes]
+     * @param {Object} [opt.constructors]
+     * @param {Object} [opt.variables]
+     * @param {Object} [opt.paths]
+     * @param {Object} [opt.dynamicPaths]
+     * @param {Object} [opt.extensions]
+     * @param {Object} [opt.logger]                     - Optional logger config
+     * @param {Object} [opt.resMan]                     - Optional resource manager config
+     * @param {Object} [opt.device]                     - Optional device config
      */
-    Initialize(options = {})
+    Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas2d, ...opt } = options;
+        const { render, glParams, canvas, canvas2d, ...options } = opt;
 
-        this.Register(opt);
+        this.Register(options);
 
-        this.device.CreateDevice({ canvas, canvas2d, glParams });
+        this.device.Create({ canvas, canvas2d, glParams });
 
         if (render)
         {
@@ -338,39 +356,42 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Registers library options
-     * @param {*} options
-     * @param {Boolean} options.debug
-     * @param {Function} options.resourceHandler
-     * @param {*} options.logger
-     * @param {*} options.client
-     * @param {*} options.resMan
-     * @param {*} options.device
-     * @param {*} options.store
-     * @param {*} options.black
+     * Registers library opt
+     * @param {*} opt
+     * @param {Boolean} opt.debug
+     * @param {Function} opt.resourceHandler
+     * @param {Object} opt.black
+     * @param {Object} opt.variableTypes
+     * @param {Object} opt.constructors
+     * @param {Object} opt.variables
+     * @param {Object} opt.paths
+     * @param {Object} opt.dynamicPaths
+     * @param {Object} opt.extensions
+     * @param {Object} opt.logger
+     * @param {Object} opt.resMan
+     * @param {Object} opt.device
      */
-    Register(options)
+    Register(opt)
     {
-        if (!options) return;
-        if (options.events) this.AddEvents(options.events);
-        if (options.debug !== undefined) this.SetDebugMode(options.debug);
-        if (options.resourceHandler) this.SetCustomResourceHandler(options.resourceHandler);
+        if (!opt) return;
 
-        if (options.black) this.RegisterBlackPathHandlers(options.black);
-        if (options.logger) this.logger.Register(options.logger);
-        if (options.resMan) this.resMan.Register(options.resMan);
-        if (options.device) this.device.Register(options.device);
+        if (opt.events) this.AddEvents(opt.events);
+        if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
+        if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
+        if (opt.black) this.RegisterBlackPathHandlers(opt.black);
+        if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
+        if (opt.constructors) this.constructors.Register(opt.constructors);
+        if (opt.variables) this.variables.Register(opt.variables);
+        if (opt.paths) this.paths.Register(opt.paths);
+        if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
+        if (opt.extensions) this.extensions.Register(opt.extensions);
 
-        if (options.store)
-        {
-            const opt = options.store;
-            if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
-            if (opt.constructors) this.constructors.Register(opt.constructors);
-            if (opt.variables) this.variables.Register(opt.variables);
-            if (opt.paths) this.paths.Register(opt.paths);
-            if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
-            if (opt.extensions) this.extensions.Register(opt.extensions);
-        }
+        if (opt.logger) this.logger.Register(opt.logger);
+        if (opt.resMan) this.resMan.Register(opt.resMan);
+        if (opt.device) this.device.Register(opt.device);
+
+        // Short cut to device.glParams
+        if (opt.glParams) this.device.Register({ glParams: opt.glParams });
     }
 
     /**

@@ -3,3 +3,4 @@ export * from "./dds";
 export * from "./gl";
 export * from "./web";
 export * from "./type";
+export * from "./ccpwgl";

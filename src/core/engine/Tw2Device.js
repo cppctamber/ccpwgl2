@@ -1,5 +1,5 @@
 import { num, vec3, vec4, mat4 } from "math";
-import { get, isString } from "utils";
+import { assignIfExists, get, isString } from "utils";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Effect } from "../mesh/Tw2Effect";
@@ -131,6 +131,23 @@ export class Tw2Device extends Tw2EventEmitter
     _fpsPreviousTime = 0;
 
     /**
+     * Default webgl context parameters
+     * @type {Object}
+     * @private
+     */
+    _glParams = {
+        alpha: true,
+        depth: true,
+        stencil: false,
+        antialias: true,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: false,
+        powerPreference: "default",
+        failIfMajorPerformanceCaveat: false,
+        descynchronized: false
+    };
+
+    /**
      * Gets the current gl context version
      * @returns {number}
      */
@@ -174,6 +191,7 @@ export class Tw2Device extends Tw2EventEmitter
         this._shadowHandles = program;
     }
 
+
     /**
      * Registers options
      * @param {*} [opt]
@@ -190,7 +208,17 @@ export class Tw2Device extends Tw2EventEmitter
 
         if (this.gl)
         {
-            throw new Error("Setting device options after gl creation is not yet supported");
+            throw new Error("Setting device options after gl creation is not supported");
+        }
+
+        if ("glParams" in opt)
+        {
+            assignIfExists(this._glParams, opt.glParams, [
+                "alpha", "depth", "stencil", "antialias",
+                "premultipliedAlpha", "preserveDrawingBuffer",
+                "powerPreference", "failIfMajorPerformanceCaveat",
+                "descynchronized"
+            ]);
         }
 
         if ("events" in opt) this.AddEvents(opt.events);
@@ -210,28 +238,59 @@ export class Tw2Device extends Tw2EventEmitter
         if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
         if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
         if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
-        if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
+        if ("antialiasing" in opt) {this.enableAntialiasing = opt.antialiasing;}
         if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
         if ("webxr" in opt) this.enableWebxr = opt.webxr;
     }
 
     /**
-     * Creates webgl Device
-     * @params {*} options
-     * @throws ErrWebglContext           - When unable to create a webgl context
+     * Gets the gl parameters passed to the gl context
+     * @return {Object|null}
      */
-    CreateDevice({ canvas, canvas2d, glParams = {} } = {})
+    GetGLParams()
+    {
+        return this.gl ? Object.assign({}, this._glParams) : null;
+    }
+
+    /**
+     * Creates webgl Device
+     * @param  {HTMLCanvasElement|String} canvas    - 3d canvas
+     * @param {HTMLCanvasElement|String} [canvas2d] - optional 2d canvas
+     * @param {Object} [glParams]                   - gl parameters
+     * @throws ErrWebglContext                      - When unable to create a webgl context
+     */
+    Create({ canvas, canvas2d, glParams } = {})
     {
         this.gl = null;
         this.effectDir = "/effect.gles2/";
 
-        const params = Object.assign({}, glParams);
-        params.alpha = get(params, "alpha", false);
-        params.webgl2 = this.enableWebgl2;
-        params.xrCompatible = this.enableWebxr;
-        params.antialiasing = this.enableAntialiasing ? get(params, "antialiasing", true) : false;
+        // Register any settings
+        if (glParams) this.Register({ glParams });
 
-        const gl = this.gl = Tw2Device.CreateContext(params, canvas);
+        // Disable antialiasing if required
+        if (!this.enableAntialiasing)
+        {
+            this._glParams.antialias = false;
+        }
+
+        // Extend standard gl params
+        const params = Object.assign({}, this._glParams, {
+            webgl2: this.enableWebgl2,
+            xrCompatible: this.enableWebxr
+        });
+
+        try
+        {
+            this.gl = Tw2Device.CreateContext(params, canvas);
+            this.EmitEvent("context_created", this);
+        }
+        catch(err)
+        {
+            this.EmitEvent("context_failed", this);
+            throw err;
+        }
+
+        const { gl } = this;
 
         this.tw2.Debug({
             name: "Device",
@@ -255,6 +314,7 @@ export class Tw2Device extends Tw2EventEmitter
             returnFalse = () => false,
             returnTrue = () => true;
 
+        // Handle different webgl versions
         if (this.glVersion === 1)
         {
             this.GetExtension("OES_standard_derivatives");
@@ -272,12 +332,22 @@ export class Tw2Device extends Tw2EventEmitter
             gl.hasInstancedArrays = returnTrue;
         }
 
-        this.GetExtension("WEBGL_depth_texture");
+        if (params.depth)
+        {
+            this.GetExtension("WEBGL_depth_texture");
+        }
 
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
         if (anisotropicFilterExt)
         {
-            anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
+            if (this.enableAnisotropicFiltering)
+            {
+                anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
+            }
+            else
+            {
+                anisotropicFilterExt.maxAnisotropy = 0;
+            }
         }
 
         // CCP mobile shader binary (is this depreciated?)
@@ -299,7 +369,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
         this.antialiasing = this.msaaSamples > 1;
 
-        this.Resize();
+        this.Resize(true);
 
         const vertices = [
             1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0,
@@ -392,9 +462,10 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Handles resize events
+     * @param  {Boolean} [force]
      * @returns  {Boolean} true if updated
      */
-    Resize()
+    Resize(force)
     {
         if (this.enableWebxr && this.xr && this.xr.isGood)
         {
@@ -402,18 +473,14 @@ export class Tw2Device extends Tw2EventEmitter
         }
         else
         {
-            //this.canvas.style.width = this.canvas.clientWidth + "px";
-            //this.canvas.style.height = this.canvas.clientHeight + "px";
-            this.canvas.width = Math.round(this.canvas.clientWidth * this.viewportPixelRatio);
-            this.canvas.height = Math.round(this.canvas.clientHeight * this.viewportPixelRatio);
+            this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
+            this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
         }
 
-        /*
-        if (this.viewportHeight === this.canvas.height && this.viewportWidth === this.canvas.width)
+        if (!force && this.canvas.width === this.viewportWidth && this.canvas.height === this.viewportHeight)
         {
-            return false;
+            return  false;
         }
-         */
 
         this.viewportWidth = this.canvas.width;
         this.viewportHeight = this.canvas.height;
@@ -459,12 +526,7 @@ export class Tw2Device extends Tw2EventEmitter
      */
     Tick()
     {
-        this._resized = false;
-
-        if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight)
-        {
-            this._resized = this.Resize();
-        }
+        this._resized = this.Resize();
 
         const
             now = this.now,
@@ -481,10 +543,10 @@ export class Tw2Device extends Tw2EventEmitter
             previousTime
         ]);
 
-        this._fpsFrameCount ++;
+        this._fpsFrameCount++;
         if (now >= this._fpsPreviousTime + 1000)
         {
-            this.fps = (this._fpsFrameCount * 1000) / (now - this._fpsPreviousTime);
+            this.fps = Math.floor((this._fpsFrameCount * 1000) / (now - this._fpsPreviousTime));
             this._fpsFrameCount = 0;
             this._fpsPreviousTime = now;
         }
@@ -1134,7 +1196,7 @@ break;
             canvas = document.createElement("canvas");
         }
 
-        const contextTypes = params.webgl2 ? [ "webgl2" ] : [ "webgl", "experimental-webgl" ];
+        const contextTypes = params.webgl2 ? [ "webgl2", "webgl", "experimental-webgl" ] : [ "webgl", "experimental-webgl" ];
 
         let context = null;
         for (let contextType of contextTypes)
