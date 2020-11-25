@@ -1,7 +1,7 @@
-import { meta, isObjectLike } from "utils";
+import { getPathExtension, meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, mat4 } from "math";
-import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter, Tw2Resource } from "core";
+import { Tw2Effect, Tw2RenderTarget, Tw2Resource } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 
@@ -42,58 +42,20 @@ export class EvePlanet extends EveObject
     @meta.float
     radius = 0;
 
-    _heightDirty = false;
-    _lockedResources = [];
-    _watchedResources = [];
+    _pendingLoad = null;
     _lod = 3;
     _useLOD = true;
     _atmosphere = null;
     _planet = null;
 
     /**
-     * Constructor
-     * @return {number}
-     */
-    constructor()
-    {
-        super();
-
-        Object.defineProperty(this, "radius", {
-            get()
-            {
-                const s = this.highDetail.scaling;
-                return Math.max(s[0], s[1], s[2]) / 2;
-            },
-            set(radius)
-            {
-                const s = this.highDetail.scaling;
-                s[0] = s[1] = s[2] = radius * 2;
-                this.highDetail.UpdateValues();
-            }
-        });
-
-    }
-
-    /**
-     * Rebuilds the planet
-     */
-    Rebuild()
-    {
-        if (this._planet)
-        {
-            this._heightDirty = true;
-            EvePlanet.MeshLoaded(this, this._planet);
-        }
-    }
-
-    /**
      * Fetches planet async
      * @param {Object} options
      * @return {Promise<EvePlanet>}
      */
-    async Fetch(options={})
+    async Fetch(options = {})
     {
-        const { name="", itemID=0, resPath="", atmospherePath="", heightMap1="", heightMap2="",  radius=0 } = options;
+        const { name = "", itemID = 0, resPath = "", atmospherePath = "", heightMap1 = "", heightMap2 = "", radius = 0 } = options;
 
         this.name = name;
         this.itemID = itemID;
@@ -102,96 +64,39 @@ export class EvePlanet extends EveObject
         this.highDetail.children.splice(0);
         this.radius = radius;
 
-        const [ zOnly, planet, atmosphere ] = await Promise.all([
-            EvePlanet.ZOnlyModelPath,
+        const d = radius * 2;
+        vec3.set(this.highDetail.scaling, d, d, d);
+
+        const [ zOnly, planet, atmosphere ] = await tw2.FetchAll([
+            EvePlanet.zOnlyModelPath,
             resPath,
-            atmospherePath
+            [ atmospherePath, true ]
         ]);
 
         this._planet = planet;
         this._atmosphere = atmosphere;
         this.zOnlyModel = zOnly;
 
-        EvePlanet.MeshLoaded(this, this._planet);
-        return this;
+        this.highDetail.children[0] = planet;
+        if (atmosphere) this.highDetail.children[1] = atmosphere;
+
+        return this.Rebuild();
     }
 
     /**
      * Planet z only model
      * @type {string}
      */
-    static ZOnlyModelPath = "res:/dx9/model/worldobject/planet/planetzonly.red";
+    static zOnlyModelPath = "res:/dx9/model/worldObject/planet/planetZOnly.red";
 
     /**
-     * Creates the planet from an options object
-     * @param {{}} options={}                   - an object containing the planet's options
-     * @param {String} options.name             - the planet's name
-     * @param {number} options.itemID           - the item id is used for randomization
-     * @param {String} options.resPath          - .red file for a planet, or planet template
-     * @param {String} [options.atmospherePath] - optional .red file for a planet's atmosphere
-     * @param {String} options.heightMap1       - the planet's first height map
-     * @param {String} options.heightMap2       - the planet's second height map
-     * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
+     * Sync alias for Fetch
+     * @param {Object} options
+     * @param {Function} [onLoaded]
      */
-    Create(options = {}, onLoaded)
+    Create(options, onLoaded=x=>x)
     {
-        const { name = "", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2, radius=0 } = options;
-
-        this.name = name;
-        this.itemID = itemID;
-        this.heightMapResPath1 = heightMap1;
-        this.heightMapResPath2 = heightMap2;
-        this.highDetail.children.splice(0);
-        this.radius = radius;
-        this._heightDirty = true;
-        this._planet = null;
-        this._atmosphere = null;
-        this._heightDirty = true;
-        this.radius = radius;
-
-        let loadingParts = 1;
-        if (resPath) loadingParts++;
-        if (atmospherePath) loadingParts++;
-
-        /**
-         * Handles the optional onLoaded callback which is fired when all parts have loaded
-         */
-        function onPartLoaded()
-        {
-            loadingParts--;
-            if (loadingParts < 1 && onLoaded)
-            {
-                onLoaded();
-            }
-        }
-
-        if (resPath)
-        {
-            tw2.Fetch(resPath).then(obj =>
-            {
-                obj.resPath = resPath;
-                this._planet = obj;
-                EvePlanet.MeshLoaded(this, obj);
-                onPartLoaded();
-            });
-        }
-
-        if (atmospherePath)
-        {
-            tw2.Fetch(atmospherePath).then(obj =>
-            {
-                obj.resPath = atmospherePath;
-                this._atmosphere = obj;
-                this.highDetail.children.push(obj);
-                onPartLoaded();
-            });
-        }
-
-        tw2.Fetch(EvePlanet.ZOnlyModelPath).then(obj =>
-        {
-            this.zOnlyModel = obj;
-            onPartLoaded();
-        });
+        this.Fetch(options).then(onLoaded);
     }
 
     /**
@@ -209,7 +114,8 @@ export class EvePlanet extends EveObject
     UpdateLod(frustum)
     {
         const { scaling, translation } = this.highDetail;
-        this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, scaling[0]) ? 0 : 3;
+        const d = Math.max(scaling[0], scaling[1], scaling[2]);
+        this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, d) ? 0 : 3;
     }
 
     /**
@@ -228,6 +134,7 @@ export class EvePlanet extends EveObject
     SetTransform(m)
     {
         this.highDetail.SetTransform(m);
+        this.radius = mat4.maxScaleOnAxis(m);
     }
 
     /**
@@ -240,36 +147,6 @@ export class EvePlanet extends EveObject
         if (this.highDetail) this.highDetail.GetResources(out);
         if (this.effectHeight) this.effectHeight.GetResources(out);
         return out;
-    }
-
-    /**
-     * GetPlanetResources
-     * Todo: Replace this, using this.GetResources();
-     * @param obj
-     * @param visited
-     * @param result
-     */
-    GetPlanetResources(obj, visited, result)
-    {
-        if (visited.includes(obj)) return;
-        visited.push(obj);
-
-        if (obj && obj instanceof Tw2Resource)
-        {
-            result.push(obj);
-            return;
-        }
-
-        for (let prop in obj)
-        {
-            if (obj.hasOwnProperty(prop))
-            {
-                if (isObjectLike(obj[prop]))
-                {
-                    this.GetPlanetResources(obj[prop], visited, result);
-                }
-            }
-        }
     }
 
     /**
@@ -300,62 +177,13 @@ export class EvePlanet extends EveObject
     }
 
     /**
-     * Creates the planet's height map
-     * TODO: Figure out why this doesn't always work
-     */
-    CreateHeightMap()
-    {
-        this.heightMap.Set();
-        device.SetStandardStates(device.RM_FULLSCREEN);
-        device.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-        device.gl.clear(device.gl.COLOR_BUFFER_BIT);
-        device.RenderFullScreenQuad(this.effectHeight);
-        this.heightMap.Unset();
-    }
-
-    /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this._heightDirty && this._watchedResources.length && this.heightMapResPath1 !== "")
-        {
-            for (let i = 0; i < this._watchedResources.length; ++i)
-            {
-                if (this._watchedResources[i] && !this._watchedResources[i].IsGood()) return;
-            }
-
-            this._watchedResources = [];
-            this.CreateHeightMap();
-
-            this._heightDirty = false;
-            for (let i = 0; i < this._lockedResources.length; ++i)
-            {
-                if (!this._lockedResources[i]) continue;
-                this._lockedResources[i].doNotPurge--;
-            }
-
-            const mainMesh = this.highDetail.children[0].mesh;
-            let originalEffect = null;
-
-            if (mainMesh.transparentAreas.length)
-            {
-                originalEffect = mainMesh.transparentAreas[0].effect;
-            }
-            else if (mainMesh.opaqueAreas.length)
-            {
-                originalEffect = mainMesh.opaqueAreas[0].effect;
-            }
-
-            if (originalEffect)
-            {
-                originalEffect.parameters["HeightMap"].textureRes = this.heightMap.texture;
-            }
-        }
-
-        if (this.display && this._lod)
+        if (this.display && this._lod && this._planet)
         {
             this.highDetail.GetBatches(mode, accumulator);
         }
@@ -376,111 +204,84 @@ export class EvePlanet extends EveObject
 
     /**
      * Internal helper function that fires when a planet's mesh has loaded
-     * @property {EvePlanet} planet
-     * @property {*} obj
+     * @return {Promise<EvePlanet|null>}
      */
-    static MeshLoaded(planet, obj)
+    async Rebuild()
     {
-        planet.highDetail.children.unshift(obj);
-        planet._lockedResources.splice(0);
-        planet.GetPlanetResources(planet.highDetail, [], planet._lockedResources);
+        const { effectHeight, heightMap } = this;
 
-        let mainMesh = planet.highDetail.children[0].mesh,
-            originalEffect = null,
-            resPath;
+        function getMainEffect(t)
+        {
+            const a = t.mesh ? t.mesh.transparentAreas[0] || t.mesh.opaqueAreas[0] : null;
+            return a ? a.effect : null;
+        }
 
-        if (mainMesh.transparentAreas.length)
+        function copyParameters(target, source)
         {
-            originalEffect = mainMesh.transparentAreas[0].effect;
-            resPath = originalEffect.effectFilePath;
+            const { parameters } = source;
+            for (const key in parameters)
+            {
+                if (parameters.hasOwnProperty(key))
+                {
+                    target.parameters[key] = parameters[key];
+                }
+            }
         }
-        else if (mainMesh.opaqueAreas.length)
-        {
-            originalEffect = mainMesh.opaqueAreas[0].effect;
-            resPath = originalEffect.effectFilePath;
-        }
-        else
-        {
+
+        let originalEffect = getMainEffect(this.highDetail.children[0]),
             resPath = "res:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
-        }
-        resPath = resPath.replace(".fx", "BlitHeight.fx");
 
-        planet._watchedResources.splice(0);
-        for (let param in originalEffect.parameters)
+        if (originalEffect)
         {
-            if (originalEffect.parameters.hasOwnProperty(param))
-            {
-                planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-                if ("textureRes" in originalEffect.parameters[param])
-                {
-                    planet._watchedResources.push(originalEffect.parameters[param].textureRes);
-                }
-            }
+            resPath = originalEffect.effectFilePath;
+            copyParameters(effectHeight, originalEffect);
         }
 
-        for (let i = 0; i < planet.highDetail.children[0].children.length; ++i)
+        for (let i = 0; i < this.highDetail.children[0].children.length; ++i)
         {
-            mainMesh = planet.highDetail.children[0].children[i].mesh;
-            if (!mainMesh) continue;
-
-            originalEffect = null;
-            if (mainMesh.transparentAreas.length)
-            {
-                originalEffect = mainMesh.transparentAreas[0].effect;
-            }
-            else if (mainMesh.opaqueAreas.length)
-            {
-                originalEffect = mainMesh.opaqueAreas[0].effect;
-            }
-            else
-            {
-                continue;
-            }
-
-            for (let param in originalEffect.parameters)
-            {
-                if (originalEffect.parameters.hasOwnProperty(param))
-                {
-                    planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-                    if ("textureRes" in originalEffect.parameters[param])
-                    {
-                        planet._watchedResources.push(originalEffect.parameters[param].textureRes);
-                    }
-                }
-            }
+            let effect = getMainEffect(this.highDetail.children[0].children[i]);
+            if (effect) copyParameters(effectHeight, originalEffect);
         }
 
-        const NormalHeight1 = new Tw2TextureParameter("NormalHeight1", planet.heightMapResPath1);
-        NormalHeight1.Initialize();
-        planet._watchedResources.push(NormalHeight1.textureRes);
-        planet._lockedResources.push(NormalHeight1.textureRes);
-        planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
+        effectHeight.SetParameters({
+            Random: this.itemID % 100,
+            TargetTextureHeight: 1048,
+            NormalHeight1: this.heightMapResPath1,
+            NormalHeight2: this.heightMapResPath2
+        });
 
-        const NormalHeight2 = new Tw2TextureParameter("NormalHeight2", planet.heightMapResPath2);
-        NormalHeight2.Initialize();
-        planet._watchedResources.push(NormalHeight2.textureRes);
-        planet._lockedResources.push(NormalHeight2.textureRes);
-        planet.effectHeight.parameters.NormalHeight2 = NormalHeight2;
+        // Replace standard effect with blit height effect
+        const ext = "." + getPathExtension(resPath);
+        resPath = resPath.replace(ext, `BlitHeight${ext}`);
+        effectHeight.SetValue(resPath);
 
-        planet.effectHeight.parameters.Random = new Tw2FloatParameter("Random", planet.itemID % 100);
-        planet.effectHeight.parameters.TargetTextureHeight = new Tw2FloatParameter("TargetTextureHeight", 1024);
-
-        planet.effectHeight.effectFilePath = resPath;
-        planet.effectHeight.Initialize();
-        planet._heightDirty = true;
-        planet.heightMap.Create(2048, 1024, false);
-        planet._watchedResources.push(planet.effectHeight.effectRes);
-
-        for (let i = 0; i < planet._lockedResources.length; ++i)
+        // If already watching, any updates will be caught
+        if (this._pendingLoad)
         {
-            if (!planet._lockedResources[i]) continue;
-
-            planet._lockedResources[i].doNotPurge++;
-            if (planet._lockedResources[i].IsPurged())
-            {
-                planet._lockedResources[i].Reload();
-            }
+            return this._pendingLoad;
         }
+
+        // Wait until everything is loaded
+        return this._pendingLoad = tw2.Watch(this, res => console.dir(res)).then(() =>
+        {
+            this.heightMap.Create(2048, 1024, false);
+            this.heightMap.Set();
+            device.SetStandardStates(device.RM_FULLSCREEN);
+            device.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            device.gl.clear(device.gl.COLOR_BUFFER_BIT);
+            device.RenderFullScreenQuad(this.effectHeight);
+            this.heightMap.Unset();
+
+            if (originalEffect)
+            {
+                originalEffect.SetTextures({ HeightMap: "" });
+                originalEffect.parameters["HeightMap"].AttachTextureRes(heightMap.texture);
+            }
+
+            this._pendingLoad = null;
+            return this;
+        });
+
     }
 
 }
