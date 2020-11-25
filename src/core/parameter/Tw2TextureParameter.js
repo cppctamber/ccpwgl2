@@ -84,12 +84,20 @@ export class Tw2TextureParameter extends Tw2Parameter
     /**
      * Sets the texture path
      * @param {String} value
+     * @param {Object} opt
      * @returns {Boolean} true if changed
      */
-    SetValue(value)
+    SetValue(value, opt)
     {
-        this.resourcePath = value;
-        this.UpdateValues();
+        if (value) value = value.toLowerCase();
+
+        if (!this.EqualsValue(value))
+        {
+            this.resourcePath = value;
+            this.UpdateValues(opt);
+            return true;
+        }
+        return false;
     }
 
     /**
