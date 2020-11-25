@@ -2,7 +2,7 @@ CCP WebGL Library
 ======
 An implementation of CCP Games graphics engine in webgl.
 
-This version of the library provides partial support for newer ships (no child effects or animations) and reading client resources, but requires a resource server to do so (not provided yet).
+This version of the library provides partial support for newer ships (no child effects or animations) and reading client resources, but requires a resource server to do so as ccp's servers do not provide CORS headers which webgl requires. [This server is not provided yet](https://github.com/cppctamber/ccpwgl2-server).
 
 
 Core files
