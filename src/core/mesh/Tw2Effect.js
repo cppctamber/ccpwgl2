@@ -666,11 +666,7 @@ export class Tw2Effect extends meta.Model
                 {
                     if (param)
                     {
-                        if (!param.EqualsValue(value))
-                        {
-                            param.SetValue(value);
-                            updated = true;
-                        }
+                        if (param.SetValue(value)) updated = true;
                     }
                     else
                     {
@@ -723,13 +719,7 @@ export class Tw2Effect extends meta.Model
 
                 if (param)
                 {
-                    if (param.constructor.isValue(value) && !param.EqualsValue(value))
-                    {
-                        if (this.parameters[key].SetValue(value))
-                        {
-                            updated = true;
-                        }
-                    }
+                    if (this.parameters[key].SetValue(value)) updated = true;
                 }
                 else
                 {
