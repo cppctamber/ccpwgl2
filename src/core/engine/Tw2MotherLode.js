@@ -8,7 +8,7 @@ export class Tw2MotherLode
     }
 
     /**
-     * Watches an object and resolved a promise when all resources have completed processing
+     * Watches an object and resolves a promise when all resources have completed processing
      * @param {*} object
      * @param {Function} [onProgress]
      * @return {Promise<*>}
@@ -17,13 +17,24 @@ export class Tw2MotherLode
     {
         // Check if already watching
         const index = this.GetWatchedIndex(object);
-        if (index !== -1) return this._watching[index]._promise;
+        if (index !== -1)
+        {
+            const watched = this._watching[index];
+            if (!watched.onProgress.includes(onProgress))
+            {
+                watched.onProgress.push(onProgress);
+            }
+            return this._watching[index]._promise;
+        }
 
         // Get resource counts
         const r = this.GetWatchedResourceDetail(object);
 
         // Update progress (include 0)
-        if (onProgress) onProgress(r, object);
+        if (onProgress)
+        {
+            onProgress(r, object);
+        }
 
         // Already complete
         if (!r.pending) return object;
@@ -31,11 +42,16 @@ export class Tw2MotherLode
         // Watcher
         const watched = {
             object,
-            onProgress,
+            onProgress: [],
             frames: 0,
             total: r.total,
             pending: r.pending
         };
+
+        if (onProgress)
+        {
+            watched.onProgress.push(onProgress);
+        }
 
         this._watching.push(watched);
 
@@ -72,7 +88,7 @@ export class Tw2MotherLode
      */
     PurgeWatched()
     {
-        for (let i = 0; i < this._watching.length;  i++)
+        for (let i = 0; i < this._watching.length; i++)
         {
             const { onCompleted } = this._watching[i];
             this._watching.splice(i, 1);
@@ -153,7 +169,7 @@ export class Tw2MotherLode
             }
 
             // Limit how many can be watched
-            if (maxWatched &&  maxWatched >= i)
+            if (maxWatched && maxWatched >= i)
             {
                 return;
             }
@@ -169,7 +185,10 @@ export class Tw2MotherLode
             {
                 w.total = res.total;
                 w.pending = res.pending;
-                if (w.onProgress) w.onProgress(res, w.object);
+                for (let i = 0; i < w.onProgress.length; i++)
+                {
+                    w.onProgress[i](res, w.object);
+                }
             }
 
             // Finished

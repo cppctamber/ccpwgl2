@@ -595,6 +595,27 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Watches an objects progress and resolves when all resources have completed processing
+     * @param {*} obj
+     * @param {Function} [onProgress]
+     * @return {Promise<*>}
+     */
+    async Watch(obj, onProgress)
+    {
+        return this.resMan.Watch(obj, onProgress);
+    }
+
+    /**
+     * Unwatches an object
+     * @param {*} obj
+     * @return {boolean}
+     */
+    Unwatch(obj)
+    {
+        return  this.resMan.UnWatch(obj);
+    }
+
+    /**
      * Fetches a resource
      * @param {*} value
      * @param {Function|Boolean} [awaitResources]
@@ -650,11 +671,11 @@ export class Tw2Library extends Tw2EventEmitter
         {
             if (isFunction(awaitResources))
             {
-                await this.resMan.Watch(result, awaitResources);
+                await this.Watch(result, awaitResources);
             }
             else
             {
-                await this.resMan.Watch(result);
+                await this.Watch(result);
             }
         }
 
