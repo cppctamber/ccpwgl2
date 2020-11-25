@@ -1,15 +1,15 @@
 CCP WebGL Library
 ======
-An implementation of CCP Games graphics engine in webgl.
+A webgl implementation of CCP Game's Eve Online graphics engine.
 
-This version of the library provides partial support for newer ships (no child effects or animations) and reading client resources but requires a resource server to do so (ccp's servers do not provide CORS headers which webgl requires). [This server is not provided yet](https://github.com/cppctamber/ccpwgl2-server).
+This version of the library provides partial support for newer ships and reading client resources but requires a resource server to do so (ccp's servers do not provide CORS headers which webgl requires). [A resource server is not yet provided](https://github.com/cppctamber/ccpwgl2-server).
 
+The original library can be found here: https://github.com/ccpgames/ccpwgl
 
 Core files
 -----
 * `dist/ccpwgl_int2.js`      - ccp webgl core library
 * `dist/ccpwgl_int2.min.js`  - minified ccp webgl core library
-
 
 Installation
 ------
@@ -20,7 +20,6 @@ Installation
 Build
 -----
 * Run `webpack` to lint, format and build `dist/ccpwgl2_int.js` and `dist/ccpwgl2_int.min.js` 
-* Run `npm run watcher` to automatically rebuild `dist/ccpwgl2_int.js` and `dist/ccpwgl_int2.min.js` while developing
 
 Demos
 -----
@@ -45,9 +44,9 @@ These demos require a custom resource server
 
 Registering your custom resource server
 ------
-Configuring the ccpwgl2 library to use your custom resource server can be done in a few ways:
+Registering your custom resource server with the library can be done in a few ways:
 
-- Register a custom config object:
+- Register a custom config object along with your other settings:
 ```
 const customConfig = {
     ...,
@@ -55,19 +54,10 @@ const customConfig = {
     ...
 }
 tw2.Register(customConfig);
-
+```
 - Set the path by itself: 
 ```
 tw2.SetPath("cdn", "https://localhost:3000")
-```
-
-- Set config during library initialization:
-```
-tw2.Initialize({
-    ...
-    paths: { cdn: "https://localhost:3000 }
-    ...
-});
 ```
 
 ```
