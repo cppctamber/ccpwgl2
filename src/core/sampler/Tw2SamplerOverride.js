@@ -47,7 +47,7 @@ export class Tw2SamplerOverride extends meta.Model
     /**
      * Fires on value changes
      */
-    UpdateValues()
+    OnValueChanged()
     {
         this._isDirty = true;
     }

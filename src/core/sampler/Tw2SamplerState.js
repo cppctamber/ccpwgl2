@@ -117,7 +117,7 @@ export class Tw2SamplerState
         if (this.addressUMode !== mode && mode !== undefined)
         {
             this.addressU = WrapModes[mode];
-            this._dirty = null;
+            this.hash = null;
         }
     }
 
@@ -139,7 +139,7 @@ export class Tw2SamplerState
         if (this.addressVMode !== mode && mode !== undefined)
         {
             this.addressV = WrapModes[mode];
-            this._dirty = null;
+            this.hash = null;
         }
     }
 
@@ -161,7 +161,7 @@ export class Tw2SamplerState
         if (this.addressUMode !== mode && mode !== undefined)
         {
             this.addressW = WrapModes[mode];
-            this._dirty = null;
+            this.hash = null;
         }
     }
 
