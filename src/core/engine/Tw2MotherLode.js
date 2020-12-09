@@ -43,7 +43,7 @@ export class Tw2MotherLode
         const watched = {
             object,
             onProgress: [],
-            frames: 0,
+            start: Date.now(),
             total: r.total,
             pending: r.pending
         };
@@ -152,33 +152,19 @@ export class Tw2MotherLode
 
     /**
      * Updated watches objects
-     * @param {Number} maxFrames
-     * @param {Number} maxWatched (0 for unlimited)
-     * @param {Number} maxTime (0 for unlimited)
+     * @param {Number} maxWatchedUpdateTime (0 for unlimited)
+     * @param {Number} maxWatchedCount (0 for unlimited)
+     * @param {Number} maxWatchedTime (0 for unlimited)
      */
-    UpdateWatched(maxFrames, maxWatched, maxTime)
+    UpdateWatched(maxWatchedUpdateTime, maxWatchedCount, maxWatchedTime)
     {
-        const now = Date.now();
+        const start = Date.now();
 
         for (let i = 0; i < this._watching.length; i++)
         {
-            // Limit time watching
-            if (maxTime && Date.now() - now >= maxTime)
-            {
-                return;
-            }
-
-            // Limit how many can be watched
-            if (maxWatched && maxWatched >= i)
-            {
-                return;
-            }
-
             const
                 w = this._watching[i],
                 res = this.GetWatchedResourceDetail(w.object);
-
-            w.frames++;
 
             // Update progress if there was a change (include 0)
             if (w.total !== res.total || w.pending !== res.pending)
@@ -200,14 +186,29 @@ export class Tw2MotherLode
                 break;
             }
 
+            const now = Date.now();
+
             // Took too long
-            if (w.frames >= maxFrames)
+            if (maxWatchedTime && (now - w.start) / 1000 >= maxWatchedTime)
             {
                 this._watching.splice(i, 1);
                 i--;
                 w.onError(new Error("Maximum watch duration reached"));
                 break;
             }
+
+            // Limit time watching
+            if (maxWatchedUpdateTime && (now - start) / 1000 >= maxWatchedUpdateTime)
+            {
+                return;
+            }
+
+            // Limit how many can be watched at once
+            if (maxWatchedCount && i > maxWatchedCount)
+            {
+                return;
+            }
+
         }
     }
 

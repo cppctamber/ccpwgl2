@@ -15,9 +15,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     activeFrame = 0;
     purgeTime = 30;
 
-    maxWatchedFrames = 500;
+    maxWatchedUpdateTime = 0.05;
     maxWatchedCount = 0;
-    maxWatchedTime = 0.5;
+    maxWatchedTime = 60;
 
     _prepareBudget = 0;
     _prepareQueue = [];
@@ -63,7 +63,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             "purgeTime",
             "maxWatchedTime",
             "maxWatchedCount",
-            "maxWatchedFrames"
+            "maxWatchedUpdateTime"
         ]);
     }
 
@@ -231,7 +231,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             }
         }
 
-        this.motherLode.UpdateWatched(this.maxWatchedFrames, this.maxWatchedCount, this.maxWatchedTime);
+        this.motherLode.UpdateWatched(this.maxWatchedUpdateTime , this.maxWatchedCount, this.maxWatchedTime);
 
         this._purgeTime += this.tw2.dt;
 
