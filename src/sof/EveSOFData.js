@@ -31,7 +31,7 @@ import {
     ErrSOFMaterialNotFound,
     ErrSOFFactionNotFound,
     ErrSOFPatternNotFound,
-    ErrSOFRaceNotFound, EveSOF
+    ErrSOFRaceNotFound,
 } from "sof/EveSOF";
 
 import {
@@ -51,7 +51,6 @@ import {
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
-import { GL_FLOAT } from "constant/gl";
 import { EveHazeSet, EveHazeSetItem } from "unsupported/eve";
 
 @meta.type("EveSOFData")

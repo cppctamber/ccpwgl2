@@ -17,12 +17,41 @@ export class Tw2Resource extends Tw2Notifications
     _requestResponseType = null;
 
     /**
+     * Identifies that the object is a resource
+     * @return {boolean}
+     */
+    get isResource()
+    {
+        return true;
+    }
+    /**
      * Gets the request response type
      * @returns {null|String}
      */
     get requestResponseType()
     {
         return this._requestResponseType;
+    }
+
+    /**
+     * Locks a resource from being purged
+     */
+    Lock()
+    {
+        this.doNotPurge ++;
+        this.activeFrame = resMan.activeFrame;
+        if (this.IsPurged() || this.IsUnloaded())
+        {
+            this.Reload({ hide: true, detail: "locked" });
+        }
+    }
+
+    /**
+     * Allows a resource to be purged
+     */
+    Unlock()
+    {
+        this.doNotPurge = Math.max(this.doNotPurge - 1,  0);
     }
 
     /**
