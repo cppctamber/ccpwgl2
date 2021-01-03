@@ -46,9 +46,9 @@ tri3.$v3 = function(a)
  */
 tri3.area = function(a)
 {
-    let ax = a[7] - a[3],
-        ay = a[8] - a[4],
-        az = a[9] - a[5],
+    let ax = a[6] - a[3],
+        ay = a[7] - a[4],
+        az = a[8] - a[5],
         bx = a[0] - a[3],
         by = a[1] - a[4],
         bz = a[2] - a[5];
@@ -152,16 +152,16 @@ tri3.fromArray = mat3.fromArray;
  * Gets bary centric coordinates
  *
  * @author three.js (converted)
- * @param {tri3} out
+ * @param {vec3} out
  * @param {tri3} a
  * @param {vec3} point
  * @returns {tri3} out
  */
 tri3.getBaryCentricCoordinates = function(out, a, point)
 {
-    let ax = a[7] - a[0],
-        ay = a[8] - a[1],
-        az = a[9] - a[2],
+    let ax = a[6] - a[0],
+        ay = a[7] - a[1],
+        az = a[8] - a[2],
 
         bx = a[3] - a[0],
         by = a[4] - a[1],
@@ -395,9 +395,9 @@ tri3.getMidpoint = function(out, a)
  */
 tri3.getNormal = function(out, a)
 {
-    let ax = a[7] - a[3],
-        ay = a[8] - a[4],
-        az = a[9] - a[5],
+    let ax = a[6] - a[3],
+        ay = a[7] - a[4],
+        az = a[8] - a[5],
         bx = a[0] - a[3],
         by = a[1] - a[4],
         bz = a[2] - a[5];
