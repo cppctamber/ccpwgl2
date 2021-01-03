@@ -167,15 +167,15 @@ tri3.getBaryCentricCoordinates = function(out, a, point)
         by = a[4] - a[1],
         bz = a[5] - a[2],
 
-        cx = point[0] - a[0],
-        cy = point[1] - a[1],
-        cz = point[2] - a[2];
+        cx = point[0] - ax,
+        cy = point[1] - ay,
+        cz = point[2] - az;
 
-    let dot00 = ax[0] * ax[0] + ay[1] * ay[1] + az[2] * az[2],
-        dot01 = ax[0] * bx[0] + ay[1] * by[1] + az[2] * bz[2],
-        dot02 = ax[0] * cx[0] + ay[1] * cy[1] + az[2] * cz[2],
-        dot11 = bx[0] * bx[0] + by[1] * by[1] + bz[2] * bz[2],
-        dot12 = bx[0] * cx[0] + by[1] * cy[1] + bz[2] * cz[2];
+    let dot00 = ax * ax + ay * ay + az * az,
+        dot01 = ax * bx + ay * by + az * bz,
+        dot02 = ax * cx + ay * cy + az * cz,
+        dot11 = bx * bx + by * by + bz * bz,
+        dot12 = bx * cx + by * cy + bz * cz;
 
     let denom = (dot00 * dot11 - dot01 * dot01);
 
