@@ -7,6 +7,9 @@
   "boostervolumetric": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<12;++i){"
   },
+  "quadv5": {
+    "gl_FragData[0].w=(-r0.x)+c21.x;" : "gl_FragData[0].w=(r0.x)+c21.x;"
+  },
   "fxarmorimpactv5": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
   },

@@ -123,7 +123,14 @@ export class Tw2ShaderStage
         const stage = new Tw2ShaderStage();
         stage.type = type;
 
-        const { constants = [], textures = [], samplers = [], inputDefinitions = [], shader, shadowShader } = json;
+        const {
+            constants = [],
+            textures = [],
+            //samplers = [],
+            inputDefinitions = [],
+            shader,
+            shadowShader
+        } = json;
 
         // Declarations
         for (let i = 0; i < inputDefinitions.length; i++)

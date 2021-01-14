@@ -173,6 +173,9 @@ export class Tw2Shader
 
             if (!match) return;
 
+            // Skip initial definition
+            if (line.includes("uniform vec4 cb")) return;
+
             for (let i = 0; i < match.length; i++)
             {
                 let [ split, swizzle ] = match[i].split(".");
