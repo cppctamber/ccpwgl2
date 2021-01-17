@@ -721,7 +721,10 @@ var ccpwgl = (function(tw2)
 
             for (var i = 0; i < self.wrappedObjects.length; i++)
             {
-                self.wrappedObjects[0].RebuildOverlays(o);
+                if (self.wrappedObjects[i].RebuildOverlays)
+                {
+                    self.wrappedObjects[i].RebuildOverlays(o);
+                }
             }
         }
 
@@ -946,7 +949,10 @@ var ccpwgl = (function(tw2)
 
             for (var i = 0; i < self.wrappedObjects.length; i++)
             {
-                self.wrappedObjects[0].RebuildOverlays(o);
+                if (self.wrappedObjects[i].RebuildOverlays)
+                {
+                    self.wrappedObjects[i].RebuildOverlays(o);
+                }
             }
         }
 

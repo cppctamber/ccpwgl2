@@ -33,13 +33,11 @@
                     explosionData[1] = currentTime + this.wrappedObjects[0].duration;
                 });
 
-                explosion.transform.Set({
-                    translation: [
+                explosion.transform.SetTranslation([
                         Math.random() * 2 * radius - radius,
                         Math.random() * 2 * radius - radius,
                         Math.random() * 2 * radius - radius
-                    ]
-                });
+                ]).UpdateValues();
 
                 return explosion;
             }
