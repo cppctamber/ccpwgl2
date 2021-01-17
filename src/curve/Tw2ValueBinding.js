@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { getKeyFromValue, meta } from "utils";
 import { vec4 } from "math";
 import { Tw2Vector4Parameter, Tw2Error } from "core";
 import { isArrayLike, isBoolean, isNumber } from "utils";
@@ -18,10 +18,10 @@ import { isArrayLike, isBoolean, isNumber } from "utils";
  * @property {String} sourceAttribute      -
  * @property {*} sourceObject              -
  * @property {Function} _copyFunc          -
- * @property {Number} _destinationElement  -
+ * @property {Number|Array|null} _destinationElement  -
  * @property {Boolean} _destinationIsArray -
  * @property {Boolean} _destinationIsRGBA  -
- * @property {Number} _sourceElement       -
+ * @property {Number|Array|null} _sourceElement       -
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
@@ -74,140 +74,28 @@ export class Tw2ValueBinding extends meta.Model
     OnValueChanged()
     {
         if (this._copyFunc !== null) return;
-
         if (!this.sourceObject || this.sourceAttribute === "") return;
         if (!this.destinationObject || this.destinationAttribute === "") return;
 
-        /*
-        if (this.sourceObject && "_ref" in this.sourceObject)
-        {
-            this.sourceObject = this.FindIDFromRoot(this.sourceObject._ref);
-            if (!this.sourceObject) throw new ErrBindingReference({object: "source"});
-        }
-
-        // Handle destination by reference
-        if (this.destinationObject && "_ref" in this.destinationObject)
-        {
-            this.destinationObject = this.FindIDFromRoot(this.destinationObject._ref);
-            if (!this.destinationObject) throw new ErrBindingReference({object: "destination"});
-        }
-         */
-
         let srcSwizzled = false,
-            destSwizzled = false,
-            srcSwizzle = this.sourceAttribute.substr(-2);
+            destSwizzled = false;
 
-        if (srcSwizzle === ".x" || srcSwizzle === ".r")
+        const s = Tw2ValueBinding.FromAttribute(this.sourceAttribute);
+        if (s.swizzle)
         {
             srcSwizzled = true;
-            this._sourceElement = 0;
-            this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
-            this._sourceIsRGBA = srcSwizzle === ".r";
-        }
-        else if (srcSwizzle === ".y" || srcSwizzle === ".g")
-        {
-            srcSwizzled = true;
-            this._sourceElement = 1;
-            this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
-            this._sourceIsRGBA = srcSwizzle === ".g";
-        }
-        else if (srcSwizzle === ".z" || srcSwizzle === ".b")
-        {
-            srcSwizzled = true;
-            this._sourceElement = 2;
-            this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
-            this._sourceIsRGBA = srcSwizzle === ".b";
-        }
-        else if (srcSwizzle === ".w" || srcSwizzle === ".a")
-        {
-            srcSwizzled = true;
-            this._sourceElement = 3;
-            this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
-            this._sourceIsRGBA = srcSwizzle === ".a";
-        }
-        else if (this.sourceObject instanceof Tw2Vector4Parameter)
-        {
-            if (this.sourceAttribute === "v1")
-            {
-                srcSwizzled = true;
-                this._sourceElement = 0;
-                this.sourceAttribute = "value";
-            }
-            else if (this.sourceAttribute === "v2")
-            {
-                srcSwizzled = true;
-                this._sourceElement = 1;
-                this.sourceAttribute = "value";
-            }
-            else if (this.sourceAttribute === "v3")
-            {
-                srcSwizzled = true;
-                this._sourceElement = 2;
-                this.sourceAttribute = "value";
-            }
-            else if (this.sourceAttribute === "v4")
-            {
-                srcSwizzled = true;
-                this._sourceElement = 3;
-                this.sourceAttribute = "value";
-            }
+            this._sourceElement = s.element;
+            this._sourceIsRGBA = [ "r", "g", "b", "a" ].includes(s.swizzle);
+            this.sourceAttribute = s.attr;
         }
 
-        let destSwizzle = this.destinationAttribute.substr(-2);
-        if (destSwizzle === ".x" || destSwizzle === ".r")
+        const d = Tw2ValueBinding.FromAttribute(this.destinationAttribute);
+        if (d.swizzle)
         {
             destSwizzled = true;
-            this._destinationElement = 0;
-            this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
-            this._destinationIsRGBA = destSwizzle === ".r";
-        }
-        else if (destSwizzle === ".y" || destSwizzle === ".g")
-        {
-            destSwizzled = true;
-            this._destinationElement = 1;
-            this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
-            this._destinationIsRGBA = destSwizzle === ".g";
-        }
-        else if (destSwizzle === ".z" || destSwizzle === ".b")
-        {
-            destSwizzled = true;
-            this._destinationElement = 2;
-            this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
-            this._destinationIsRGBA = destSwizzle === ".b";
-        }
-        else if (destSwizzle === ".w" || destSwizzle === ".a")
-        {
-            destSwizzled = true;
-            this._destinationElement = 3;
-            this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
-            this._destinationIsRGBA = destSwizzle === ".a";
-        }
-        else if (this.destinationObject instanceof Tw2Vector4Parameter)
-        {
-            if (this.destinationAttribute === "v1")
-            {
-                destSwizzled = true;
-                this._destinationElement = 0;
-                this.destinationAttribute = "value";
-            }
-            else if (this.destinationAttribute === "v2")
-            {
-                destSwizzled = true;
-                this._destinationElement = 1;
-                this.destinationAttribute = "value";
-            }
-            else if (this.destinationAttribute === "v3")
-            {
-                destSwizzled = true;
-                this._destinationElement = 2;
-                this.destinationAttribute = "value";
-            }
-            else if (this.destinationAttribute === "v4")
-            {
-                destSwizzled = true;
-                this._destinationElement = 3;
-                this.destinationAttribute = "value";
-            }
+            this._destinationElement = d.element;
+            this._sourceIsRGBA = [ "r", "g", "b", "a" ].includes(d.swizzle);
+            this.destinationAttribute = d.attr;
         }
 
         const
@@ -222,7 +110,7 @@ export class Tw2ValueBinding extends meta.Model
                 name: this.name,
                 objectType: "source",
                 property: this.sourceAttribute,
-                object: src
+                object: this.sourceObject
             });
         }
 
@@ -241,6 +129,38 @@ export class Tw2ValueBinding extends meta.Model
             srcIsArr = this._sourceIsArray = isArrayLike(src),
             destIsArr = this._destinationIsArray = isArrayLike(dest),
             con = Tw2ValueBinding;
+
+        const
+            se = isArrayLike(this._sourceElement),
+            de = isArrayLike(this._destinationElement);
+
+        if (se || de)
+        {
+            if (!srcIsArr || !destIsArr)
+            {
+                throw new Error("Invalid swizzle(s), expected two arrays");
+            }
+
+            if (se && !de)
+            {
+                this._destinationElement = [];
+                for (let i = 0; i < this._destinationElement.length; i++)
+                {
+                    this._destinationElement[i] = i;
+                }
+            }
+            else if (!se && de)
+            {
+                this._sourceElement = [];
+                for (let i = 0; i < this._sourceElement.length; i++)
+                {
+                    this._sourceElement[i] = i;
+                }
+            }
+
+            this._copyFunc = Tw2ValueBinding.CopySwizzledArrays;
+            return;
+        }
 
         let copyFunc;
         if (srcIsArr === destIsArr && typeof src === typeof dest)
@@ -419,12 +339,26 @@ export class Tw2ValueBinding extends meta.Model
                 return attribute + isRGBA ? ".a" : ".w";
 
             default:
+
+                if (isArrayLike(element))
+                {
+                    let swizzle = ".";
+                    for (let i = 0; i < element.length; i++)
+                    {
+                        let value = getKeyFromValue(this.CharacterSwizzle, element[i]);
+                        if (value === undefined) throw new Error("Unknown swizzle source: " + element[i]);
+                        swizzle += value;
+                    }
+                    return attribute + swizzle;
+                }
+
                 return attribute;
         }
     }
 
     /**
      * Gets target values
+     * TODO: What is this for?
      * @param {*} object
      * @param {String} attribute
      * @param {Number} [element]
@@ -439,51 +373,128 @@ export class Tw2ValueBinding extends meta.Model
             isRGBA = attribute.toUpperCase().includes("COLOR");
         }
 
-        // Looks to be depreciated
-        if (object instanceof Tw2Vector4Parameter && attribute === "value")
-        {
-            switch (element)
-            {
-                case 0:
-                    attribute = "v0";
-                    break;
-
-                case 1:
-                    attribute = "v1";
-                    break;
-
-                case 2:
-                    attribute = "v2";
-                    break;
-
-                case 3:
-                    attribute = "v3";
-                    break;
-            }
-        }
-        else
-        {
-            switch (element)
-            {
-                case 0:
-                    attribute += isRGBA ? ".r" : ".x";
-                    break;
-
-                case 1:
-                    attribute += isRGBA ? ".g" : ".y";
-                    break;
-
-                case 2:
-                    attribute += isRGBA ? ".b" : ".z";
-                    break;
-
-                case 3:
-                    attribute += isRGBA ? ".a" : ".w";
-                    break;
-            }
-        }
+        attribute = this.GetAttribute(object, attribute, element, isRGBA);
 
         return { object, attribute };
+    }
+
+    /**
+     * Standard swizzles
+     * @type {{a: number, r: number, b: number, g: number, w: number, x: number, y: number, z: number}}
+     */
+    static CharacterSwizzle = {
+        x: 0,
+        r: 0,
+        y: 1,
+        g: 1,
+        z: 2,
+        b: 2,
+        w: 3,
+        a: 3
+    };
+
+    /**
+     * Vector4 Swizzles
+     * @type {{v1: number, v2: number, v3: number, v4: number}}
+     */
+    static Vector4Swizzle = {
+        v1: 0,
+        v2: 1,
+        v3: 2,
+        v4: 3
+    };
+
+    /**
+     * Gets binding data from an attribute
+     * @param {String} attr
+     * @return {{swizzle: string, attr: string, element: *}|{attr: *}|{swizzle: string, attr: string, element: []}}
+     */
+
+    /**
+     * Gets swizzle data
+     * @param {String} attr
+     * @return {{attr: string, element: string|Array|null, swizzle: string|null }}
+     */
+    static FromAttribute(attr)
+    {
+        const { Vector4Swizzle, CharacterSwizzle } = Tw2ValueBinding;
+
+        let str = attr.split(".")[1];
+
+        if (!str || !str.length)
+        {
+            return {
+                attr,
+                element: null,
+                swizzle: null
+            };
+        }
+
+        str = str.toLowerCase();
+
+        if (str in Vector4Swizzle)
+        {
+            return {
+                attr: "value",
+                element: Vector4Swizzle[str],
+                swizzle: str
+            };
+        }
+
+        if (str in CharacterSwizzle)
+        {
+            return {
+                attr: attr.substring(0, attr.length - 2),
+                element: CharacterSwizzle[str],
+                swizzle: str
+            };
+        }
+
+        if (str.length === 1)
+        {
+            throw new Error("Invalid swizzle: " + str);
+        }
+
+        let element = [];
+        for (let i = 0; i < str.length; i++)
+        {
+            element[i] = CharacterSwizzle[str[i].toLowerCase()];
+            if (element[i] === undefined)
+            {
+                throw new Error("Invalid swizzle: " + str);
+            }
+        }
+
+        return {
+            attr: attr.substring(0, attr.length - str.length - 1),
+            element,
+            swizzle: str
+        };
+    }
+    
+    /**
+     * Copies swizzled arrays
+     * @param {Tw2ValueBinding} a
+     */
+    static CopySwizzledArrays(a)
+    {
+        const
+            src = a.sourceObject[a.sourceAttribute],
+            dest = a.destinationObject[a.destinationAttribute],
+            se = a._sourceElement,
+            de = a._destinationElement;
+
+        const len = Math.min(se.length, de.length);
+
+        for (let i = 0; i < len; i++)
+        {
+            if (dest[de[i]] === undefined || src[se[i]] === undefined)
+            {
+                throw new Error("Invalid swizzle(s)");
+            }
+
+            dest[de[i]] = src[se[i]] * a.scale + a.offset[0];
+        }
     }
 
     /**

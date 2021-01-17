@@ -25,6 +25,7 @@ export class Tw2CurveSet extends meta.Model
     scale = 1;
 
     @meta.notImplemented
+    @meta.boolean
     useSimTimeRebase = false;
 
     @meta.float
