@@ -274,7 +274,7 @@ export class Tw2Mesh extends meta.Model
                 batch.renderMode = mode;
                 batch.perObjectData = perObjectData;
                 batch.geometryRes = mesh._geometryResource;
-                batch.meshIx = mesh.meshIndex;
+                batch.meshIx = area.meshIndex;
                 batch.start = area.index;
                 batch.count = area.count;
                 batch.effect = area.effect;

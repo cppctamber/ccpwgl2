@@ -31,24 +31,8 @@ export class Tw2MeshArea extends meta.Model
     @meta.boolean
     useSHLighting = false;
 
-
-    /**
-     * Alias for index
-     * @returns {Number}
-     */
-    get meshIndex()
-    {
-        return this.index;
-    }
-
-    /**
-     * Alias for index
-     * @param {Number} val
-     */
-    set meshIndex(val)
-    {
-        this.index = val;
-    }
+    @meta.uint
+    meshIndex = 0;
 
     /**
      * Gets a mesh areas's resources
