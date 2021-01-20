@@ -97,7 +97,7 @@ export class EveSOFData
             boosterSymHalo: 0.125,
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
-            boosterAlpha: 0,
+            boosterAlpha: 0.5,
             spotlightAlpha: 0,
             planeAlpha: 0
         },
@@ -1185,7 +1185,7 @@ export class EveSOFData
     static SetupPlaneSets(data, obj, sof, options)
     {
         const { isSkinned, planeSets } = sof.hull;
-        const { planeAlpha } = options.multiplier;
+        const { planeAlpha=1 } = options.multiplier;
 
         planeSets.forEach(srcSet =>
         {
@@ -1409,8 +1409,9 @@ export class EveSOFData
             Color0 = vec4.multiplyScalar([], shape0.color, boosterBrightness),
             Color1 = vec4.multiplyScalar([], shape1.color, boosterBrightness);
 
-        Color0[3] *= boosterAlpha;
-        Color1[3] *= boosterAlpha;
+        Color0[3] = boosterAlpha;
+        Color1[3] = boosterAlpha;
+
 
 
         // obj.boosters = obj.boosters || new EveBoosterSet();

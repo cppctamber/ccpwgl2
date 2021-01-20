@@ -6,4 +6,5 @@ export * from "./EveSOFDataGenericShader";
 export * from "./EveSOFDataGenericString";
 export * from "./EveSOFDataGenericSwarm";
 export * from "./EveSOFDataGenericVariant";
+export  * from "./EveSOFDataVisibilityGroup";
 

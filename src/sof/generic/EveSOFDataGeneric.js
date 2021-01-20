@@ -30,6 +30,9 @@ export class EveSOFDataGeneric
     @meta.struct("EveSOFDataGenericHullDamage")
     hullDamage = null;
 
+    @meta.list()
+    hullCategories = [];
+
     @meta.list("EveSOFDataGenericString")
     materialPrefixes = [];
 
@@ -54,7 +57,7 @@ export class EveSOFDataGeneric
     @meta.list("EveSOFDataGenericVariant")
     variants = [];
 
-    @meta.list("EveSOFDataGenericString")
+    @meta.list("EveSOFDataVisibilityGroup")
     visibilityGroups = [];
 
     /**
