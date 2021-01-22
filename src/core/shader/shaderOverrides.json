@@ -8,7 +8,7 @@
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<12;++i){"
   },
   "quadv5": {
-    "gl_FragData[0].w=(-r0.x)+c21.x;" : "gl_FragData[0].w=(r0.x)+c21.x;"
+    "gl_FragData[0].w=(-r0.x)+c21.x;": "gl_FragData[0].w=(r0.x)+c21.x;"
   },
   "fxarmorimpactv5": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
@@ -22,5 +22,8 @@
     "r1.xyz=r0.zzw*c[0+a0.x].xyx;": "if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}",
     "texcoord.xyw=r0.zzw*c[0+a0.x].zwz;": "if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}",
     "r0.x=saturate(sqrt(abs(r0.x)));": "r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);"
+  },
+  "planeglow" : {
+    "r1.x=dot(r0,cb3[0]);" : "r1.x=dot(r0,-cb3[0]); // Mirror"
   }
 }
