@@ -406,19 +406,19 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
-        for (let i = 0; i < this.objects.length; i++)
-        {
-            if (funcName in this.objects[i])
-            {
-                this.objects[i][funcName](...args);
-            }
-        }
-
         for (let i = 0; i < this.backgroundObjects.length; i++)
         {
             if (funcName in this.backgroundObjects[i])
             {
                 this.backgroundObjects[i][funcName](...args);
+            }
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (funcName in this.objects[i])
+            {
+                this.objects[i][funcName](...args);
             }
         }
 
@@ -471,7 +471,7 @@ export class EveSpaceScene extends meta.Model
      * @param {Array.<EveObject>} objectArray
      * @param {Tw2BatchAccumulator} [accumulator=this._batches]
      */
-    RenderBatches(mode, objectArray, accumulator = this._batches)
+    GetRenderBatches(mode, objectArray, accumulator = this._batches)
     {
         for (let i = 0; i < objectArray.length; ++i)
         {
@@ -486,7 +486,7 @@ export class EveSpaceScene extends meta.Model
      * Renders the background effect
      * @param {Boolean} [force=this.visible.environment]
      */
-    RenderBackgroundEffect(force=this.visible.environment)
+    RenderBackgroundEffect(force = this.visible.environment)
     {
         if (this.backgroundEffect)
         {
@@ -542,10 +542,10 @@ export class EveSpaceScene extends meta.Model
 
             this._batches.Clear();
             d.gl.depthRange(0.9, 1);
-            this.RenderBatches(d.RM_OPAQUE, this.planets);
-            this.RenderBatches(d.RM_DECAL, this.planets);
-            this.RenderBatches(d.RM_TRANSPARENT, this.planets);
-            this.RenderBatches(d.RM_ADDITIVE, this.planets);
+            this.GetRenderBatches(d.RM_OPAQUE, this.planets);
+            this.GetRenderBatches(d.RM_DECAL, this.planets);
+            this.GetRenderBatches(d.RM_TRANSPARENT, this.planets);
+            this.GetRenderBatches(d.RM_ADDITIVE, this.planets);
             this._batches.Render();
             d.SetProjection(tempProj, true);
             this.ApplyPerFrameData();
@@ -558,17 +558,6 @@ export class EveSpaceScene extends meta.Model
             this.PerChildObject("UpdateLod", this._frustum);
         }
 
-        if (show.objects)
-        {
-            for (let i = 0; i < this.objects.length; ++i)
-            {
-                if (this.objects[i].UpdateViewDependentData)
-                {
-                    this.objects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
-                }
-            }
-        }
-
         if (show.backgroundObjects)
         {
             for (let i = 0; i < this.backgroundObjects.length; i++)
@@ -576,6 +565,17 @@ export class EveSpaceScene extends meta.Model
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
                     this.backgroundObjects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
+                }
+            }
+        }
+
+        if (show.objects)
+        {
+            for (let i = 0; i < this.objects.length; ++i)
+            {
+                if (this.objects[i].UpdateViewDependentData)
+                {
+                    this.objects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
                 }
             }
         }
@@ -606,28 +606,30 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
-        if (show.objects)
-        {
-            this.RenderBatches(d.RM_OPAQUE, this.objects);
-            this.RenderBatches(d.RM_DECAL, this.objects);
-            this.RenderBatches(d.RM_TRANSPARENT, this.objects);
-            this.RenderBatches(d.RM_ADDITIVE, this.objects);
-            //this.RenderBatches(d.RM_DISTORTION, this.objects);
-        }
-
         if (show.backgroundObjects)
         {
-            this.RenderBatches(d.RM_OPAQUE, this.backgroundObjects);
-            this.RenderBatches(d.RM_DECAL, this.backgroundObjects);
-            this.RenderBatches(d.RM_TRANSPARENT, this.backgroundObjects);
-            this.RenderBatches(d.RM_ADDITIVE, this.backgroundObjects);
-            //this.RenderBatched(d.RM_DISTORTION, this.backgroundObjects);
+            this.GetRenderBatches(d.RM_OPAQUE, this.backgroundObjects);
+            this.GetRenderBatches(d.RM_DECAL, this.backgroundObjects);
+            this.GetRenderBatches(d.RM_TRANSPARENT, this.backgroundObjects);
+            this.GetRenderBatches(d.RM_ADDITIVE, this.backgroundObjects);
+            //this.GetRenderBatched(d.RM_DISTORTION, this.backgroundObjects);
         }
+
+        if (show.objects)
+        {
+            this.GetRenderBatches(d.RM_OPAQUE, this.objects);
+            this.GetRenderBatches(d.RM_DECAL, this.objects);
+            this.GetRenderBatches(d.RM_TRANSPARENT, this.objects);
+            this.GetRenderBatches(d.RM_ADDITIVE, this.objects);
+            //this.GetRenderBatches(d.RM_DISTORTION, this.objects);
+        }
+
+
 
         if (show.lineSets)
         {
-            this.RenderBatches(d.RM_TRANSPARENT, this.lineSets);
-            this.RenderBatches(d.RM_ADDITIVE, this.lineSets);
+            this.GetRenderBatches(d.RM_TRANSPARENT, this.lineSets);
+            this.GetRenderBatches(d.RM_ADDITIVE, this.lineSets);
         }
 
 
@@ -645,7 +647,7 @@ export class EveSpaceScene extends meta.Model
         }
 
 
-        if(this.shadowEffect)
+        if (this.shadowEffect)
         {
             // TODO: Implement shadow effect
         }
@@ -654,7 +656,7 @@ export class EveSpaceScene extends meta.Model
         {
             // TODO: Implement post processing
         }
-        
+
         this._batches.Render();
 
 
@@ -756,14 +758,16 @@ export class EveSpaceScene extends meta.Model
             ps.Set("MiscSettings", [ d.currentTime, 0, 0, 1 ]);
         }
 
-        ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
-        ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
-        ps.Set("TargetResolution", d.targetResolution);
+        ps.Set("ShadowMapSettings", [ 1,1,0,0 ]);
+        ps.SetIndex("ShadowCameraRange", 0, 1);
+        //vs.Set("ShadowViewMat", this._shadowViewMatTranspose);
+        //vs.Set("ShadowViewProjectionMat", this._shadowViewProjectionMatTranspose);
 
+        ps.Set("TargetResolution", d.targetResolution);
+        ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
-        ps.SetIndex("ShadowCameraRange", 0, 1);
         ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
         ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
 
@@ -819,6 +823,7 @@ export class EveSpaceScene extends meta.Model
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
             [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1
+            [ "Unknown0", 4 ]
         ],
         vs: [
             [ "ViewInverseTransposeMat", 16 ],

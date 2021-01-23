@@ -86,8 +86,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
     groupIndex = -1;
 
 
-    _localTransform = mat4.create();
-
     /**
      * Alias for maskAtlasID
      * @returns {number}
@@ -112,7 +110,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
      */
     OnValueChanged()
     {
-        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
         this._dirty = true;
     }
 
@@ -240,7 +237,7 @@ export class EvePlaneSet extends EveObjectSet
             array[offset + 2 * vertexSize + vertexSize - 3] = 2;
             array[offset + 3 * vertexSize + vertexSize - 3] = 3;
 
-            const itemTransform = mat4.fromRotationTranslationScale(item._localTransform, item.rotation, item.position, item.scaling);
+            const itemTransform = mat4.fromRotationTranslationScale(EveObjectSet.global.mat4_0, item.rotation, item.position, item.scaling);
 
             for (let j = 0; j < 4; ++j)
             {

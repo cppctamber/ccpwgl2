@@ -20,9 +20,6 @@ export class EveCustomMask extends Tw2Transform
     @meta.byte
     materialIndex = 0;
 
-    @meta.vector3
-    position = vec3.create();
-
     @meta.quaternion
     rotation = quat.create();
 
@@ -43,6 +40,25 @@ export class EveCustomMask extends Tw2Transform
         Gloss: new Tw2Vector4Parameter("Gloss", [ 0, 0, 0, 0 ])
     };
 
+    /**
+     * Alias for translation
+     * @returns {vec3}
+     */
+    @meta.vector3
+    get position()
+    {
+        return this.translation;
+    }
+
+    /**
+     * Alias for translation
+     * @param {vec3} v
+     */
+    set position(v)
+    {
+        this.SetTranslation(v);
+    }
+
     _worldInverseTranspose = mat4.create();
 
     /**
@@ -54,7 +70,7 @@ export class EveCustomMask extends Tw2Transform
      */
     UpdatePerObjectData(parentTransform, perObjectData, index, visible)
     {
-        this.SetParentTransform(parentTransform);
+        this.SetParentTransform(parentTransform).RebuildTransforms();
         const targets = this.display && visible ? this.targetMaterials : vec4.ZERO;
         perObjectData.ps.Set("CustomMaskTarget" + index, targets);
         perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);

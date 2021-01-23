@@ -78,7 +78,6 @@ export class EveShip2 extends EveObject
     boosterGain = 1;
 
     @meta.list("EveChild")
-    @meta.todo("How to handle serializing these? They are loaded from the sof")
     effectChildren = [];
 
     @meta.plain
@@ -324,6 +323,22 @@ export class EveShip2 extends EveObject
             this._pixelSizeAcross = 0;
             this._lod = 0;
         }
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            if (this.children[i].UpdateLod)
+            {
+                this.children[i].UpdateLod(frustum, this._lod);
+            }
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            if (this.effectChildren[i].UpdateLod)
+            {
+                this.effectChildren[i].UpdateLod(frustum, this._lod);
+            }
+        }
     }
 
     /**
@@ -343,6 +358,16 @@ export class EveShip2 extends EveObject
     GetTransform(out)
     {
         return mat4.copy(out, this._localTransform);
+    }
+
+    /**
+     * Gets the world transform
+     * @param {mat4} out
+     * @return {mat4}
+     */
+    GetWorldTransform(out)
+    {
+        return mat4.copy(out, this._worldTransform);
     }
 
     /**
@@ -766,9 +791,14 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        const worldNoTranslation = mat4.copy(EveObject.global.mat4_0, this._worldTransform);
+        worldNoTranslation[12] = 0;
+        worldNoTranslation[13] = 0;
+        worldNoTranslation[14] = 0;
+
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].UpdatePerObjectData(worldNoTranslation, this._perObjectData, i, this.visible.customMasks);
         }
 
         for (let i = 0; i < this.attachments.length; i++)
@@ -810,7 +840,8 @@ export class EveShip2 extends EveObject
             [ "CustomMaskMaterialID0", 4 ],
             [ "CustomMaskMaterialID1", 4 ],
             [ "CustomMaskTarget0", 4 ],
-            [ "CustomMaskTarget1", 4 ]
+            [ "CustomMaskTarget1", 4 ],
+            [ "Unknown4", 4 ]
         ]
     };
 

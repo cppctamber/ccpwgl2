@@ -203,6 +203,26 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
+     * Gets the object's transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetTransform(out)
+    {
+        return mat4.copy(out, this.transform);
+    }
+
+    /**
+     * Gets the object's world transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetWorldTransform(out)
+    {
+        return mat4.copy(out, this._worldTransform);
+    }
+
+    /**
      * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
@@ -254,6 +274,22 @@ export class EveSpaceObject extends EveObject
         else
         {
             this._lod = 0;
+        }
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            if (this.children[i].UpdateLod)
+            {
+                this.children[i].UpdateLod(frustum, this._lod);
+            }
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            if (this.effectChildren[i].UpdateLod)
+            {
+                this.effectChildren[i].UpdateLod(frustum, this._lod);
+            }
         }
     }
 
@@ -476,9 +512,14 @@ export class EveSpaceObject extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        const worldNoTranslation = mat4.copy(EveObject.global.mat4_0, this._worldTransform);
+        worldNoTranslation[12] = 0;
+        worldNoTranslation[13] = 0;
+        worldNoTranslation[14] = 0;
+
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].UpdatePerObjectData(worldNoTranslation, this._perObjectData, i, this.visible.customMasks);
         }
 
         for (let i = 0; i < this.lineSets.length; ++i)
