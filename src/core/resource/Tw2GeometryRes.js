@@ -195,77 +195,82 @@ export class Tw2GeometryRes extends Tw2Resource
      */
     PrepareCAKE(data)
     {
-        const
-            gl = device.gl,
-            result = new Tw2CakeReader(data);
+        const gl = device.gl;
 
-        const { bufferData, indexData, declaration, areas, name = this.path } = result;
+        // TODO: Do this properly...
+        const meshes = data.split("MESH");
 
-        // TODO: Add support for more than one mesh
-        const mesh = new Tw2GeometryMesh();
-        this.meshes[0] = mesh;
-        this.models[0] = new Tw2GeometryModel();
-
-        mesh.name = name;
-        mesh.declaration = declaration;
-
-        mesh.bufferData = bufferData;
-
-        mesh.bufferLength = bufferData.length;
-        mesh.buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-
-        mesh.indexes = gl.createBuffer();
-        mesh.indexType = indexData.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
-
-        for (let i = 0; i < areas.length; ++i)
+        for (let i = 0; i < meshes.length; i++)
         {
-            const { name, start, count } = areas[i];
-            const area = new Tw2GeometryMeshArea();
-            area.name = name;
-            area.start = start;
-            area.count = count;
-            mesh.areas.push(area);
-            mesh.RebuildAreaBounds(area, bufferData, indexData, true);
-        }
+            const result = new Tw2CakeReader(meshes[i]);
 
-        mesh._areas = areas.length;
-        mesh._faces = indexData.length / 3;
-        mesh._vertices = bufferData.length / (mesh.declaration.stride / 4);
+            const { bufferData, indexData, declaration, areas, name = this.path } = result;
 
-        if (this.systemMirror)
-        {
+            // TODO: Add support for more than one mesh
+            const mesh = new Tw2GeometryMesh();
+            this.meshes[i] = mesh;
+            this.models[i] = new Tw2GeometryModel();
+
+            mesh.name = name;
+            mesh.declaration = declaration;
             mesh.bufferData = bufferData;
-            mesh.indexData = indexData;
+
+            mesh.bufferLength = bufferData.length;
+            mesh.buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+
+            mesh.indexes = gl.createBuffer();
+            mesh.indexType = indexData.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
+            for (let i = 0; i < areas.length; ++i)
+            {
+                const { name, start, count } = areas[i];
+                const area = new Tw2GeometryMeshArea();
+                area.name = name;
+                area.start = start;
+                area.count = count;
+                mesh.areas.push(area);
+                mesh.RebuildAreaBounds(area, bufferData, indexData, true);
+            }
+
+            mesh._areas = areas.length;
+            mesh._faces = indexData.length / 3;
+            mesh._vertices = bufferData.length / (mesh.declaration.stride / 4);
+
+            if (this.systemMirror)
+            {
+                mesh.bufferData = bufferData;
+                mesh.indexData = indexData;
+            }
+
+            /*
+            const { models, animations, boneBindings, blendShapes } = result;
+
+            for (let i = 0; i < boneBindings.length; i++)
+            {
+                // TODO: Bone bindings
+            }
+
+            for (let i = 0; i < blendShapes.length; i++)
+            {
+                //TODO: Blend shapes
+            }
+
+            for (let i = 0; i < models; i++)
+            {
+                //TODO: Models
+            }
+
+            for (let i = 0; i < animations; i++)
+            {
+                //TODO: Animations
+            }
+
+             */
         }
-
-        /*
-        const { models, animations, boneBindings, blendShapes } = result;
-
-        for (let i = 0; i < boneBindings.length; i++)
-        {
-            // TODO: Bone bindings
-        }
-
-        for (let i = 0; i < blendShapes.length; i++)
-        {
-            //TODO: Blend shapes
-        }
-
-        for (let i = 0; i < models; i++)
-        {
-            //TODO: Models
-        }
-
-        for (let i = 0; i < animations; i++)
-        {
-            //TODO: Animations
-        }
-
-         */
 
         this.RebuildBounds();
         this.OnPrepared();

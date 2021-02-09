@@ -31,7 +31,7 @@ export class Tw2CakeReader
         }
 
         const
-            lines = data.split("\n"),
+            lines = data.split(/\r?\n/),
             indexData = [],
             declarations = [];
 
@@ -50,12 +50,11 @@ export class Tw2CakeReader
                 split = line.split(":"),
                 name = split[0].toUpperCase();
 
-
             let value = split[1];
             if (!value)
             {
                 throw new Tw2Error({
-                    message: "Unexpected value",
+                    message: `Unexpected value on line ${currentLine}: ${split[0]}`,
                     data: split[0]
                 });
             }
