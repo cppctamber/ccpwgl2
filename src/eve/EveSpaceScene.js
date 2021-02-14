@@ -164,6 +164,11 @@ export class EveSpaceScene extends meta.Model
         starField: true
     };
 
+    _shadowView = mat4.create();
+    _shadowViewProjection = mat4.create();
+    _shadowViewTranspose = mat4.create();
+    _shadowViewProjectionTranspose = mat4.create();
+
     _localTransform = mat4.create();
     _debugHelper = null;
     _batches = new Tw2BatchAccumulator();
@@ -530,7 +535,7 @@ export class EveSpaceScene extends meta.Model
             newProj[10] = zf / (zn - zf);
             newProj[14] = (zf * zn) / (zn - zf);
             d.SetProjection(newProj, true);
-            this.ApplyPerFrameData();
+            this.UpdateViewProjectionFrameData();
 
             for (let i = 0; i < this.planets.length; ++i)
             {
@@ -548,7 +553,7 @@ export class EveSpaceScene extends meta.Model
             this.GetRenderBatches(d.RM_ADDITIVE, this.planets);
             this._batches.Render();
             d.SetProjection(tempProj, true);
-            this.ApplyPerFrameData();
+            this.UpdateViewProjectionFrameData();
             d.gl.depthRange(0, 0.9);
         }
 
@@ -625,12 +630,13 @@ export class EveSpaceScene extends meta.Model
         }
 
 
-
         if (show.lineSets)
         {
             this.GetRenderBatches(d.RM_TRANSPARENT, this.lineSets);
             this.GetRenderBatches(d.RM_ADDITIVE, this.lineSets);
         }
+
+        this._batches.Render();
 
 
         if (show.lensflares)
@@ -685,26 +691,61 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Applies view projection frame data
+     */
+    UpdateViewProjectionFrameData()
+    {
+        mat4.transpose(this._shadowViewTranspose, this._shadowView);
+        mat4.transpose(this._shadowViewProjectionTranspose, this._shadowViewProjection);
+
+        const
+            d = device,
+            vs = this._perFrameVS,
+            ps = this._perFramePS;
+
+        d.perFrameVSData = vs;
+        d.perFramePSData = ps;
+
+        vs.Set("TargetResolution", d.targetResolution);
+        vs.Set("ViewInverseTransposeMat", d.viewInverse);
+        vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
+        vs.Set("ViewMat", d.viewTranspose);
+        vs.Set("ProjectionMat", d.projectionTranspose);
+        vs.Set("ShadowViewMat", this._shadowViewTranspose);
+        vs.Set("ShadowViewProjectionMat", this._shadowViewProjectionTranspose);
+
+        ps.Set("TargetResolution", d.targetResolution);
+        ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
+        ps.Set("ViewInverseTransposeMat", d.viewInverse);
+        ps.Set("ViewMat", d.viewTranspose);
+        ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+        ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+    }
+
+    /**
      * Applies per frame data
      */
     ApplyPerFrameData()
     {
+        this.UpdateViewProjectionFrameData();
+
         const
             d = device,
             g = EveSpaceScene.global,
             world = this._localTransform,
+            //shadowViewTranspose = g.mat4_0,
+            //shadowViewProjectionTranspose = g.mat4_1,
             envMapTransform = g.mat4_2,
             sunDir = g.vec3_0,
             show = this.visible;
 
+        // Environment
         mat4.fromQuat(envMapTransform, this.envMapRotation);
         mat4.scale(envMapTransform, envMapTransform, this.envMapScaling);
-
         mat4.multiply(envMapTransform, envMapTransform, world);
         envMapTransform[12] = 0;
         envMapTransform[13] = 0;
         envMapTransform[14] = 0;
-
         mat4.transpose(envMapTransform, envMapTransform);
 
         // Sun direction
@@ -712,66 +753,60 @@ export class EveSpaceScene extends meta.Model
         vec3.negate(sunDir, sunDir);
         vec3.normalize(sunDir, sunDir);
 
-        let distance = this.fogEnd - this.fogStart;
-        if (Math.abs(distance) < 1e-5) distance = 1e-5;
-        const f = 1.0 / distance;
+        const
+            vs = this._perFrameVS,
+            ps = this._perFramePS;
 
-        const vs = this._perFrameVS;
+        d.perFrameVSData = vs;
+        d.perFramePSData = ps;
 
         if (this.visible.fog)
         {
+            let distance = this.fogEnd - this.fogStart;
+            if (Math.abs(distance) < 1e-5) distance = 1e-5;
+            const f = 1.0 / distance;
+
             vs.Set("FogFactors", [ this.fogEnd * f, f, this.fogMax, 1 ]);
+            ps.Set("SceneData.FogColor", this.fogColor);
+            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
         }
         else
         {
             vs.Set("FogFactors", [ 0, 0, 0, 0 ]);
+            ps.Set("SceneData.FogColor", [ 0, 0, 0, 0 ]);
+            ps.Set("MiscSettings", [ d.currentTime, 0, 0, 1 ]);
         }
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
         vs.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
-        vs.Set("TargetResolution", d.targetResolution);
-        vs.Set("ViewInverseTransposeMat", d.viewInverse);
-        vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
-        vs.Set("ViewMat", d.viewTranspose);
-        vs.Set("ProjectionMat", d.projectionTranspose);
         vs.Set("EnvMapRotationMat", envMapTransform);
-        d.perFrameVSData = vs;
+        //vs.Set("TargetResolution", d.targetResolution);
+        //vs.Set("ViewInverseTransposeMat", d.viewInverse);
+        //vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
+        //vs.Set("ViewMat", d.viewTranspose);
+        //vs.Set("ProjectionMat", d.projectionTranspose);
+        //mat4.transpose(shadowViewTranspose, this._shadowView);
+        //mat4.transpose(shadowViewProjectionTranspose, this._shadowViewProjection);
+        //vs.Set("ShadowViewMat", shadowViewTranspose);
+        //vs.Set("ShadowViewProjectionMat", shadowViewProjectionTranspose);
 
-        const ps = this._perFramePS;
-        ps.Set("ViewInverseTransposeMat", d.viewInverse);
-        ps.Set("ViewMat", d.viewTranspose);
         ps.Set("EnvMapRotationMat", envMapTransform);
         ps.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-
-        if (this.visible.fog)
-        {
-            ps.Set("SceneData.FogColor", this.fogColor);
-            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
-        }
-        else
-        {
-            ps.Set("SceneData.FogColor", [ 0, 0, 0, 0 ]);
-            ps.Set("MiscSettings", [ d.currentTime, 0, 0, 1 ]);
-        }
-
-        ps.Set("ShadowMapSettings", [ 1,1,0,0 ]);
+        ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
         ps.SetIndex("ShadowCameraRange", 0, 1);
-        //vs.Set("ShadowViewMat", this._shadowViewMatTranspose);
-        //vs.Set("ShadowViewProjectionMat", this._shadowViewProjectionMatTranspose);
-
-        ps.Set("TargetResolution", d.targetResolution);
-        ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
-        ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
-        ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
-
-        d.perFramePSData = ps;
+        //ps.Set("TargetResolution", d.targetResolution);
+        //ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
+        //ps.Set("ViewInverseTransposeMat", d.viewInverse);
+        //ps.Set("ViewMat", d.viewTranspose);
+        //ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+        //ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
 
         const
             envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
