@@ -20,10 +20,12 @@ export class Tw2MotherLode
         if (index !== -1)
         {
             const watched = this._watching[index];
-            if (!watched.onProgress.includes(onProgress))
+
+            if (onProgress && !watched.onProgress.includes(onProgress))
             {
                 watched.onProgress.push(onProgress);
             }
+
             return this._watching[index]._promise;
         }
 
