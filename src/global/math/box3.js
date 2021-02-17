@@ -593,6 +593,29 @@ box3.fromValues = function(minx, miny, minz, maxx, maxy, maxz)
 };
 
 /**
+ * Gets a box3's center
+ *
+ * @param {vec3} out
+ * @param {box3} a
+ * @return {vec3} out
+ */
+box3.getCenter = function(out, a)
+{
+    if  (box3.isEmpty(a))
+    {
+        out[0] = 0;
+        out[1] = 0;
+        out[2] = 0;
+        return out;
+    }
+
+    out[0] = (a[0] + a[3]) * 0.5;
+    out[1] = (a[1] + a[4]) * 0.5;
+    out[2] = (a[2] + a[5]) * 0.5;
+    return out;
+};
+
+/**
  * Sets a vec3 from a point clamped to a box3
  *
  * @param {vec3} out     - receiving vec3
