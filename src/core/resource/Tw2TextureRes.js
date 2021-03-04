@@ -42,7 +42,9 @@ import {
     FOURCC_DXT1,
     FOURCC_DXT10,
     FOURCC_DXT3,
-    FOURCC_DXT5, DDPF_FOURCC
+    FOURCC_DXT5,
+    DDPF_FOURCC,
+    DDPF_ALPHAPIXELS
 } from "constant";
 
 
@@ -130,11 +132,13 @@ export class Tw2TextureRes extends Tw2Resource
 
             case "dds":
                 const info = Tw2TextureRes.GetDDSInfo(data);
+                info.filePath = this.path;
 
                 let {
                     name,
                     fourCC,
                     isRGB,
+                    isLuminance,
                     isCube,
                     blockBytes,
                     dataOffset,
@@ -156,7 +160,7 @@ export class Tw2TextureRes extends Tw2Resource
                 }
 
                 // Don't support anything else yet
-                if (!isCompressed && !isRGB)
+                if (!isCompressed && !isRGB  && !isLuminance)
                 {
                     throw new ErrResourceFormatNotImplemented({
                         format: "DDS",
@@ -166,15 +170,14 @@ export class Tw2TextureRes extends Tw2Resource
                 }
 
                 // Temporarily output uncompressed rgb/rgba dds info
-                if (isRGB || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
+                if (isRGB ||  isLuminance || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
                 {
                     tw2.Debug({
                         name: "Tw2TextureRes",
-                        message: `Partial support for ${name}: ${this.path}`,
+                        message: `Partial or incomplete support for ${name}: ${this.path}`,
                         data: info
                     });
                 }
-
 
                 if (device.glVersion === 1 && !info.isPowerOfTwo)
                 {
@@ -199,10 +202,14 @@ export class Tw2TextureRes extends Tw2Resource
                 this._isPowerOfTwo = info.isPowerOfTwo;
                 this._width = width;
                 this._height = height;
+
+                // Todo: Fix mip generation
                 this._useNoMipFilter = true;
 
                 this.texture = gl.createTexture();
                 gl.bindTexture(this._target, this.texture);
+
+                let unpackAlignment = gl.getParameter(gl.UNPACK_ALIGNMENT);
 
                 for (let face = 0; face < faces; face++)
                 {
@@ -222,12 +229,26 @@ export class Tw2TextureRes extends Tw2Resource
                             gl.compressedTexImage2D(t, mip, this._internalFormat, w, h, 0, byteArray);
                             o += dataLength;
                         }
+                        else if  (isLuminance)
+                        {
+                            unpackAlignment =  1;
+
+                            let unpaddedRowSize = w,
+                                paddedRowSize = Math.floor((w + unpackAlignment - 1) / unpackAlignment) * unpackAlignment;
+
+                            dataLength = paddedRowSize * (height - 1) + unpaddedRowSize;
+
+                            gl.pixelStorei(gl.UNPACK_ALIGNMENT, unpackAlignment);
+                            byteArray = Tw2TextureRes.GetLuminanceArrayBuffer(w, h, data.byteOffset  + o, dataLength,  data.buffer);
+                            gl.texImage2D(t, mip, this._internalFormat, w, h, 0, this._format, this._type, byteArray);
+                            o += dataLength;
+                        }
                         else//if (isRGB)
                         {
                             const { rOffset, bOffset, gOffset, aOffset, bpp } = info;
 
-                            //  Why?
-                            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+                            unpackAlignment = 1;
+                            gl.pixelStorei(gl.UNPACK_ALIGNMENT, unpackAlignment);
 
                             if (format === gl.RGB)
                             {
@@ -564,6 +585,7 @@ export class Tw2TextureRes extends Tw2Resource
             name: Tw2TextureRes.Int32ToFourCC(fourCC),
             isPowerOfTwo: Tw2TextureRes.IsPowerOfTwo(width, height),
             isLuminance: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_LUMINANCE) === DDPF_LUMINANCE,
+            hasAlpha: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_ALPHAPIXELS) === DDPF_ALPHAPIXELS,
             isRGB: (header[DDS_HEADER_OFFSET_PF_FLAGS] & DDPF_RGB) === DDPF_RGB,
             isVolume: (header[DDS_HEADER_OFFSET_CAPS2]) & DDSCAPS2_VOLUME === DDSCAPS2_VOLUME,
             dataOffset: header[DDS_HEADER_OFFSET_SIZE] + 4,
@@ -664,6 +686,7 @@ export class Tw2TextureRes extends Tw2Resource
                     info.bpp = bpp;
                     info.type = gl.UNSIGNED_BYTE;
                     info.clientSupport = true;
+                    info.isUncompressedRGBA = true;
 
                     info.rOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_R_MASK]);
                     info.gOffset = num.getLongWordOrder(header[DDS_HEADER_OFFSET_G_MASK]);
@@ -687,9 +710,20 @@ export class Tw2TextureRes extends Tw2Resource
 
                 if (info.isLuminance)
                 {
-                    info.name = "Luminance";
-                    //info.type = gl.UNSIGNED_INT;
-                    //info.format = gl.LUMINANCE;
+                    if (info.hasAlpha)
+                    {
+                        info.name = "Luminance Alpha";
+                        info.type =  gl.UNSIGNED_BYTE;
+                        info.format = gl.LUMINANCE_ALPHA;
+                        info.internalFormat = gl.LUMINANCE_ALPHA;
+                    }
+                    else
+                    {
+                        info.name = "Luminance";
+                        info.type = gl.UNSIGNED_BYTE;
+                        info.format = gl.LUMINANCE;
+                        info.internalFormat = gl.LUMINANCE;
+                    }
                     info.clientSupport = true;
                     break;
                 }
@@ -713,6 +747,26 @@ export class Tw2TextureRes extends Tw2Resource
         }
 
         return info;
+    }
+
+    static GetLuminanceArrayBuffer(width, height, dataOffset, dataLength, arrayBuffer)
+    {
+        const
+            byteArray = new Uint8Array(dataLength),
+            srcData = new Uint8Array(arrayBuffer, dataOffset);
+
+        let index = 0;
+        for (let y = 0; y < height; y++)
+        {
+            for (let x = 0; x < width; x++)
+            {
+                let srcPos = (x + y * width);
+                byteArray[index] = srcData[srcPos];
+                index++;
+            }
+        }
+
+        return byteArray;
     }
 
     /**
