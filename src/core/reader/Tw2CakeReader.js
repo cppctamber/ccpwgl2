@@ -3,7 +3,9 @@ import { GL_FLOAT } from "constant";
 import { isString, isVector, isVector3 } from "utils";
 import { Tw2Error } from "core/Tw2Error";
 
-
+/**
+ * Todo: Simplify this format
+ */
 export class Tw2CakeReader
 {
 
@@ -18,6 +20,27 @@ export class Tw2CakeReader
     models = null;
     animations = null;
 
+    /**
+     * Constructs geometry data from cake data
+     * @param {String} data
+     * @return {[]}
+     */
+    static Construct(data)
+    {
+        if (!isString(data))
+        {
+            throw new ReferenceError("Invalid format, expected string");
+        }
+
+        const meshesRaw = data.split("MESH");
+
+        const result = [];
+        for (let i  =  0;  i  <  meshesRaw.length; i++)
+        {
+            result.push(new Tw2CakeReader(meshesRaw[i]));
+        }
+        return result;
+    }
 
     /**
      * Constructor
@@ -44,13 +67,25 @@ export class Tw2CakeReader
         function parseLine()
         {
             const line = lines[currentLine];
-            if (!line) return { name: "EMPTY", value: undefined };
+
+            // Empty
+            if (!line)
+            {
+                return { name: "EMPTY", value: undefined };
+            }
 
             const
                 split = line.split(":"),
                 name = split[0].toUpperCase();
 
             let value = split[1];
+
+            // Comment
+            if (name === "#")
+            {
+                return { name: "NOTE", value: value || "" };
+            }
+
             if (!value)
             {
                 throw new Tw2Error({
@@ -83,6 +118,11 @@ export class Tw2CakeReader
             {
                 case "EMPTY":
                     currentLine++;
+                    break;
+
+                case "NOTE":
+                    currentLine++;
+                    // Ignore notes for now
                     break;
 
                 case "NAME":

@@ -197,23 +197,18 @@ export class Tw2GeometryRes extends Tw2Resource
     {
         const gl = device.gl;
 
-        // TODO: Do this properly...
-        const meshes = data.split("MESH");
+        const meshes = Tw2CakeReader.Construct(data);
 
         for (let i = 0; i < meshes.length; i++)
         {
-            const result = new Tw2CakeReader(meshes[i]);
+            const { bufferData, indexData, declaration, areas, name = this.path } = meshes[i];
 
-            const { bufferData, indexData, declaration, areas, name = this.path } = result;
-
-            // TODO: Add support for more than one mesh
             const mesh = new Tw2GeometryMesh();
             this.meshes[i] = mesh;
             this.models[i] = new Tw2GeometryModel();
 
             mesh.name = name;
             mesh.declaration = declaration;
-            mesh.bufferData = bufferData;
 
             mesh.bufferLength = bufferData.length;
             mesh.buffer = gl.createBuffer();
