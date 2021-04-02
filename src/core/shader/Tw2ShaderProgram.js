@@ -100,6 +100,11 @@ export class Tw2ShaderProgram
                     attr
                 });
                 program.input.elements.push(el);
+
+                // Write back location
+                elements[j]._attr = attr;
+                elements[j]._registerIndex = j;
+                elements[j].location = location;
             }
         }
         program.input.RebuildHash();
@@ -114,6 +119,8 @@ export class Tw2ShaderProgram
         const { samplers } = pass.stages[1];
         for (let j = 0; j < samplers.length; ++j)
         {
+            samplers[j]._attr = `s${samplers[j].registerIndex}`;
+
             if (samplers[j].isVolume)
             {
                 program.volumeSlices[samplers[j].registerIndex] = gl.getUniformLocation(program.program, "s" + samplers[j].registerIndex + "sl");

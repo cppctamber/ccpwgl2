@@ -34,7 +34,7 @@ export class Tw2ShaderAnnotation
     description = "";
 
     @meta.array
-    components = [];
+    components = null;
 
     @meta.boolean
     display = true;
@@ -58,13 +58,16 @@ export class Tw2ShaderAnnotation
         const annotation = new Tw2ShaderAnnotation();
         assignIfExists(annotation, json, [ "name", "description", "display", "group", "widget" ]);
 
+        const components = [];
         if (json.components)
         {
             for (let i = 0; i < json.components.length; i++)
             {
-                annotation.components[i] = json.components[i];
+                components[i] = json.components[i];
             }
         }
+
+        if (components.length) annotation.components = components;
 
         annotation.name = annotation.name || key;
         return annotation;
@@ -81,8 +84,9 @@ export class Tw2ShaderAnnotation
         const annotation = new Tw2ShaderAnnotation();
         annotation.name = context.ReadString();
 
-        const annotationCount = reader.ReadUInt8();
-        let components = [];
+        const
+            annotationCount = reader.ReadUInt8(),
+            components = [];
 
         for (let annotationIx = 0; annotationIx < annotationCount; ++annotationIx)
         {
@@ -116,7 +120,10 @@ export class Tw2ShaderAnnotation
                     annotation.widget = value.toUpperCase();
                     if (annotation.widget === "LINEARCOLOR")
                     {
-                        annotation.components = [ "Linear red", "Linear green", "Linear blue", "Linear Alpha" ];
+                        components[0] = "Linear red";
+                        components[1] = "Linear green";
+                        components[2] = "Linear blue";
+                        components[3] = "Linear alhpa";
                     }
                     break;
 
@@ -133,25 +140,36 @@ export class Tw2ShaderAnnotation
                     break;
 
                 case "COMPONENT1":
-                    annotation.components[0] = value;
+                    components[0] = value;
                     break;
 
                 case "COMPONENT2":
-                    annotation.components[1] = value;
+                    components[1] = value;
                     break;
 
                 case "COMPONENT3":
-                    annotation.components[2] = value;
+                    components[2] = value;
                     break;
 
                 case "COMPONENT4":
-                    annotation.components[3] = value;
+                    components[3] = value;
                     break;
 
                 default:
                     key = key.charAt(0).toLowerCase() + key.substring(1);
                     annotation[key] = value;
             }
+        }
+
+        if (!annotation.widget && annotation.name.toUpperCase().includes("MAP"))
+        {
+            annotation.widget = "TEXTURE";
+            annotation.group = "Textures";
+        }
+
+        if (components.length)
+        {
+            annotation.components = components;
         }
 
         return annotation;
