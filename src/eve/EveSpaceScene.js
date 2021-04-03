@@ -164,6 +164,8 @@ export class EveSpaceScene extends meta.Model
         starField: true
     };
 
+    _shadowCameraRange = vec4.fromValues(1,0,0,0);
+    _shadowMapSettings = vec4.fromValues(1,1,0,0);
     _shadowView = mat4.create();
     _shadowViewProjection = mat4.create();
     _shadowViewTranspose = mat4.create();
@@ -796,8 +798,9 @@ export class EveSpaceScene extends meta.Model
         ps.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-        ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
-        ps.SetIndex("ShadowCameraRange", 0, 1);
+        ps.Set("ShadowMapSettings", this._shadowMapSettings);
+        ps.Set("ShadowCameraRange",  this._shadowCameraRange);
+        //ps.SetIndex("ShadowCameraRange", 0, 1);
         ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
