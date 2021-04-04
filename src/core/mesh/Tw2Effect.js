@@ -1,4 +1,4 @@
-import { meta, assignIfExists, getPathExtension } from "utils";
+import { meta, assignIfExists, getPathExtension, isPlain } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
@@ -186,7 +186,7 @@ export class Tw2Effect extends meta.Model
         const res = this.effectRes;
         if (res)
         {
-            this.effectRes =  null;
+            this.effectRes = null;
             this.shader = null;
             this._isAttached = false;
             this.UnBindParameters();
@@ -628,170 +628,75 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
-     * Gets an object containing the textures currently set in the Tw2Effect
+     * * Gets flattened texture values
      * @param {{}} [out={}]
-     * @returns {Object.<string, string>} out
+     * @return {{}}
      */
     GetTextures(out = {})
     {
-        for (let key in this.parameters)
-        {
-            if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof Tw2TextureParameter)
-            {
-                let resourcePath = this.parameters[key].GetValue();
-                if (resourcePath) out[key] = resourcePath;
-            }
-        }
-        return out;
+        return Tw2Effect.getParameterObject(this.parameters, out, true, false, true);
     }
 
-    /**
-     * Sets textures from an object
-     * @param {{string:string}} options
-     * @param {Boolean} [skipUpdate]
-     * @returns {Boolean} true if updated
-     */
-    SetTextures(options = {}, skipUpdate)
-    {
-        let updated = false;
-        for (let key in options)
-        {
-            if (options.hasOwnProperty(key) && options[key] !== undefined)
-            {
-                const
-                    value = options[key],
-                    param = this.parameters[key];
-
-                if (Tw2TextureParameter.isValue(value))
-                {
-                    if (param)
-                    {
-                        if (param.SetValue(value)) updated = true;
-                    }
-                    else
-                    {
-                        this.parameters[key] = new Tw2TextureParameter(key, value);
-                        updated = true;
-                    }
-                }
-            }
-        }
-
-        if (updated && !skipUpdate) this.UpdateValues();
-        return updated;
-    }
 
     /**
-     * Gets an object containing all non texture parameters currently set in the Tw2Effect
-     * - Matches sof parameter object
+     * Gets flattened parameter values
      * @param {{}} [out={}]
-     * @returns {Object.<string, *>}
+     * @return {{}}
      */
     GetParameters(out = {})
     {
-        for (let key in this.parameters)
-        {
-            if (this.parameters.hasOwnProperty(key) && !(this.parameters[key] instanceof Tw2TextureParameter))
-            {
-                out[key] = this.parameters[key].GetValue();
-            }
-        }
-        return out;
+        return Tw2Effect.getParameterObject(this.parameters, out, false, true, true);
     }
 
-    /**
-     * Sets parameters from an object
-     * @param {{string:*}} [options={}]
-     * @param {Boolean} [skipUpdate]
-     * @returns {Boolean} true if updated
-     */
-    SetParameters(options = {}, skipUpdate)
-    {
-        let updated = false;
-
-        for (let key in options)
-        {
-            if (options.hasOwnProperty(key) && options[key] !== undefined)
-            {
-                const
-                    value = options[key],
-                    param = this.parameters[key];
-
-                if (param)
-                {
-                    if (this.parameters[key].SetValue(value)) updated = true;
-                }
-                else
-                {
-                    const parameter = tw2.CreateVariable(key, value);
-                    if (parameter)
-                    {
-                        this.parameters[key] = parameter;
-                        updated = true;
-                    }
-                }
-            }
-        }
-
-        if (updated && !skipUpdate) this.UpdateValues();
-        return updated;
-    }
 
     /**
-     * Sets texture overrides
-     * @param {*} [options={}]
-     * @param {Boolean} [skipUpdate]
-     * @returns {Boolean} true if updated
-     */
-    SetOverrides(options = {}, skipUpdate)
-    {
-        let updated = false;
-
-        for (let key in options)
-        {
-            if (options.hasOwnProperty(key) && options[key] !== undefined)
-            {
-                let param = this.parameters[key];
-
-                // Allow creating of parameter from overrides in  case method is
-                // called before SetTextures.
-                // Todo: Remove this once proper sampler overrides are implemented
-                if (!param)
-                {
-                    param = this.parameters[key] = new Tw2TextureParameter(key);
-                    updated = true;
-                }
-
-                if (param instanceof Tw2TextureParameter)
-                {
-                    param.SetOverrides(options[key]);
-                }
-            }
-        }
-
-        if (updated && !skipUpdate) this.UpdateValues();
-        return updated;
-    }
-
-    /**
-     * Gets texture overrides
-     * @param {{ string: {}}} [out={}]
+     * Gets flattened texture override values
+     * @param {{}} [out={}]
+     * @return {{}}
      */
     GetOverrides(out = {})
     {
-        for (let key in this.parameters)
-        {
-            if (this.parameters.hasOwnProperty(key))
-            {
-                const param = this.parameters[key];
-                if (param && param instanceof Tw2TextureParameter && param.useAllOverrides)
-                {
-                    const result = this.parameters[key].GetOverrides();
-                    if (result) out[key] = result;
-                }
-            }
-        }
-        return out;
+        return Tw2Effect.getParameterObject(this.parameters, out, true, true, false);
+    }
+
+    /**
+     * Sets textures from flattened values
+     * @param {{}} values            - the values to set
+     * @param {Boolean} [skipUpdate] - skips updating the effect
+     * @return {boolean}             - true if updated
+     */
+    SetTextures(values = {}, skipUpdate)
+    {
+        const updated = Tw2Effect.setParameterObject(this.parameters, values, true, false, true);
+        if (updated && !skipUpdate) this.UpdateValues();
+        return updated;
+    }
+
+    /**
+     * Sets parameters from flattened values
+     * - This will set any type of parameter, texture or override parameter
+     * @param {{}} values            - the values to set
+     * @param {Boolean} [skipUpdate] - skips updating the effect
+     * @return {boolean}             - true if updated
+     */
+    SetParameters(values = {}, skipUpdate)
+    {
+        const updated = Tw2Effect.setParameterObject(this.parameters, values);
+        if (updated && !skipUpdate) this.UpdateValues();
+        return updated;
+    }
+
+    /**
+     * Sets texture overrides from flattened values
+     * @param {{}} values            - the values to set
+     * @param {Boolean} [skipUpdate] - skips updating the effect
+     * @return {boolean}             - true if updated
+     */
+    SetOverrides(values = {}, skipUpdate)
+    {
+        const updated = Tw2Effect.setParameterObject(this.parameters, Tw2Effect.getNormalizedOverrides(values), true, true, false);
+        if (updated && !skipUpdate) this.UpdateValues();
+        return updated;
     }
 
     /**
@@ -900,6 +805,176 @@ export class Tw2Effect extends meta.Model
         out.overrides = a.GetOverrides();
         out.options = Object.assign(a.options);
         return out;
+    }
+
+    /**
+     * Gets parameter values as a plain object
+     * @param {*} source
+     * @param {*} out
+     * @param {Boolean} [excludeParameters]
+     * @param {Boolean} [excludeTextures]
+     * @param {Boolean} [excludeOverrides]
+     * @return {{}}
+     */
+    static getParameterObject(source, out, excludeParameters, excludeTextures, excludeOverrides)
+    {
+        for (const key in source)
+        {
+            if (source.hasOwnProperty(key))
+            {
+                if (source[key] instanceof Tw2TextureParameter)
+                {
+                    if (!excludeOverrides)
+                    {
+                        out[key + "Sampler"] = source[key].GetOverrides() || null;
+                    }
+
+                    if (!excludeTextures)
+                    {
+                        out[key] = source[key].GetValue();
+                    }
+                }
+                else if (!excludeParameters)
+                {
+                    out[key] = source[key].GetValue([]);
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Temporary function which ensures overrides have "Sampler" in their name
+     * @param {*} [values={}]
+     * @returns {*}
+     */
+    static getNormalizedOverrides(values={})
+    {
+        const out = {};
+        for (const key in values)
+        {
+            if (values.hasOwnProperty(key))
+            {
+                if (key.indexOf("Sampler") !== key.length - 7)
+                {
+                    out[key + "Sampler"] = values[key];
+                }
+                else
+                {
+                    out[key] = values[key];
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Sets parameter values from an object
+     * @param {*} target
+     * @param {*} src
+     * @param {Boolean} [excludeParameters]
+     * @param {Boolean} [excludeTextures]
+     * @param {Boolean} [excludeOverrides]
+     * @return {boolean}
+     */
+    static setParameterObject(target, src, excludeParameters, excludeTextures, excludeOverrides)
+    {
+        let updated = false;
+        for (let key in src)
+        {
+            if (src.hasOwnProperty(key) && src[key] !== undefined)
+            {
+                const value = src[key];
+
+                // Catch texture overrides
+                let isOverride = false;
+                if (isPlain(value) || key.includes("Sampler") && key.lastIndexOf("Sampler") === key.length - 7)
+                {
+                    key = key.replace("Sampler", "");
+                    isOverride = true;
+                }
+
+                if (key in target)
+                {
+                    if (target[key] instanceof Tw2TextureParameter)
+                    {
+                        if (isOverride)
+                        {
+                            if (!excludeOverrides)
+                            {
+                                if (value === null)
+                                {
+                                    target[key].RemoveOverrides();
+                                    updated = true;
+                                }
+                                else if (target[key].SetOverrides(value))
+                                {
+                                    updated = true;
+                                }
+                            }
+                        }
+                        else if (!excludeTextures)
+                        {
+                            if (value === null)
+                            {
+                                target[key].Destroy();
+                                Reflect.delete(target, key);
+                                updated = true;
+                            }
+                            else if (!excludeTextures && target[key].SetValue(value))
+                            {
+                                updated = true;
+                            }
+                        }
+                    }
+                    else if (!excludeParameters)
+                    {
+                        if (value === null)
+                        {
+                            target[key].Destroy();
+                            Reflect.delete(target, key);
+                            updated = true;
+                        }
+                        else if (target[key].SetValue(value))
+                        {
+                            updated = true;
+                        }
+                    }
+                }
+                else if (value !== null)
+                {
+                    if (isOverride)
+                    {
+                        if (!excludeOverrides)
+                        {
+                            target[key] = new Tw2TextureParameter(key);
+                            target[key].SetOverrides(value);
+                            updated = true;
+                        }
+                    }
+                    else
+                    {
+                        const param = tw2.CreateVariable(key, value);
+
+                        if (param instanceof Tw2TextureParameter)
+                        {
+                            if (!excludeTextures && param)
+                            {
+                                target[key] = param;
+                                updated = true;
+                            }
+                        }
+                        else if (!excludeParameters)
+                        {
+                            target[key] = param;
+                            updated = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return updated;
     }
 
     /**

@@ -89,7 +89,9 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     SetValue(value, opt)
     {
-        if (value) value = value.toLowerCase();
+        if (value === undefined) return false;
+
+        value = value ? value.toLowerCase() : "";
 
         if (!this.EqualsValue(value))
         {
@@ -252,13 +254,30 @@ export class Tw2TextureParameter extends Tw2Parameter
     /**
      * Sets the textures overrides
      * TODO: Move to Tw2Effect
-     * @param {{}} [values={}] - values to update
+     * @param {{}|null} [values] - values to update
      * @param {Object} [opt]
-     * @returns {Boolean} true if updated
+     * @returns {Boolean}        - true if updated
      */
     SetOverrides(values, opt)
     {
+        // Null is treated as "delete"
+        if (values === null)
+        {
+            if (this.overrides)
+            {
+                this.RemoveOverrides();
+                return true;
+            }
+            return false;
+        }
+
         this.overrides = this.overrides || new Tw2SamplerOverride();
+
+        // Temporary until overrides implemented on Tw2Effect
+        if (!this.overrides.name)
+        {
+            this.overrides.name = this.name + "Sampler";
+        }
 
         if (this.overrides.SetValues(values, opt))
         {
@@ -272,13 +291,15 @@ export class Tw2TextureParameter extends Tw2Parameter
     /**
      * Removes overrides
      * TODO: Move to Tw2Effect
+     * @param {Object} [opt]
      * @return {boolean}
      */
-    RemoveOverrides()
+    RemoveOverrides(opt)
     {
         if (this.overrides)
         {
             this.overrides = null;
+            this.EmitEvent("overrides_removed", this, opt);
             return true;
         }
         return false;
@@ -291,7 +312,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     GetOverrides()
     {
-        this.overrides && this.overrides.enabled ? this.overrides.GetValues() : null;
+        return this.overrides ? this.overrides.GetValues() : null;
     }
 
 

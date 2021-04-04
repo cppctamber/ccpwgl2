@@ -1,6 +1,7 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
-import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform } from "core";
+import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform, Tw2Effect } from "core";
+import { GL_REPEAT } from "constant/gl";
 
 
 @meta.type("EveCustomMask")
@@ -79,8 +80,88 @@ export class EveCustomMask extends Tw2Transform
     }
 
     /**
+     * Gets parameters as a flat object
+     * @param {*} [out={}]
+     * @return {{}} out
+     */
+    GetParameters(out = {})
+    {
+        return Tw2Effect.getParameterObject(this.parameters, out, false, true, true);
+    }
+
+    /**
+     * Sets parameters from a flat object
+     * @param {*} [values]
+     * @param {Boolean} skipUpdate
+     * @return {boolean}
+     */
+    SetParameters(values, skipUpdate)
+    {
+        const updated = Tw2Effect.setParameterObject(this.parameters, values, false, true, true);
+        if (updated && !skipUpdate) this.UpdateValues();
+        return updated;
+    }
+
+    /**
+     * Serializes a custom mask
+     * @param {EveCustomMask} a
+     * @param {Object} [out={}]
+     * @param {Object} [opt]
+     * @return {Object} out
+     */
+    static get(a, out, opt)
+    {
+        out = super.get(a, out, opt);
+
+        const { PatternMaskMap, PatternMaskMap: { overrides } } = a.parameters;
+        out.resourcePath = PatternMaskMap.GetValue();
+        out.addressUMode = overrides ? overrides.addressUMode : GL_REPEAT;
+        out.addressVMode = overrides ? overrides.addressVMode : GL_REPEAT;
+
+        out.parameters = a.GetParameters();
+        return out;
+    }
+
+    /**
+     * Deserializes a custom mask
+     * @param {EveCustomMask} a
+     * @param {Object} [values]
+     * @param {Object} [opt]
+     * @return {boolean}
+     */
+    static set(a, values, opt = {})
+    {
+        let { skipUpdate, ...options } = opt;
+
+        let updated = super.set(a, values, { ...options, skipUpdate: true });
+
+        if (values)
+        {
+            const { parameters, addressUMode, addressVMode, resourcePath } = values;
+
+            if (a.parameters.PatternMaskMap.SetValue(resourcePath))
+            {
+                updated = true;
+            }
+
+            if (a.parameters.PatternMaskMap.SetOverrides({ addressUMode, addressVMode }))
+            {
+                updated = true;
+            }
+
+            if (parameters && a.SetParameters(parameters, true)) updated = true;
+        }
+
+        if (updated && !skipUpdate)
+        {
+            a.UpdateValues(opt);
+        }
+
+        return updated;
+    }
+
+    /**
      * Applies custom mask's parameters to an effect
-     * TODO: Clean this up
      * @param {Tw2Effect} effect
      * @param {EveCustomMask} mask
      * @param index
@@ -89,55 +170,36 @@ export class EveCustomMask extends Tw2Transform
     {
         const
             prefix = index === 0 ? "PMtl1" : "PMtl2",
-            patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map",
-            DiffuseName = effect.parameters[prefix + "DiffuseColor"],
-            DustDiffuseName = effect.parameters[prefix + "DustDiffuseColor"],
-            FresnelName = effect.parameters[prefix + "FresnelColor"],
-            GlossName = effect.parameters[prefix + "Gloss"],
-            PatternTexture = effect.parameters[patternName];
+            patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map";
 
-        const { DiffuseColor, DustDiffuseColor, FresnelColor, Gloss, PatternMaskMap } = mask.parameters;
+        const
+            dst = effect.parameters,
+            src = mask.parameters;
 
-        if (DiffuseName)
+        function bind(source, destination)
         {
-            DiffuseName.SetValue(DiffuseColor.GetValue());
-            DiffuseColor.OnEvent("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
-        }
-
-        if (DustDiffuseName)
-        {
-            DustDiffuseName.SetValue(DustDiffuseColor.GetValue());
-            DustDiffuseColor.OnEvent("modified", () => DustDiffuseName.SetValue(DustDiffuseName.GetValue()));
-        }
-
-        if (FresnelName)
-        {
-            FresnelName.SetValue(FresnelColor.GetValue());
-            FresnelColor.OnEvent("modified", () => FresnelName.SetValue(FresnelColor.GetValue()));
-        }
-
-        if (GlossName)
-        {
-            GlossName.SetValue(Gloss.GetValue());
-            Gloss.OnEvent("modified", () => GlossName.SetValue(Gloss.GetValue()));
-        }
-
-        if (PatternTexture)
-        {
-            PatternTexture.overrides = PatternMaskMap.overrides;
-            PatternTexture.SetValue(PatternMaskMap.GetValue());
-
-            PatternMaskMap.OnEvent("overrides_modified", () =>
+            if (source && destination)
             {
-                PatternTexture.overrides = PatternMaskMap.overrides;
-            });
+                destination.SetValue(source.GetValue());
+                source.OnEvent("modified", () => destination.SetValue(source.GetValue()));
 
-            PatternMaskMap.OnEvent("modified", () =>
-            {
-                PatternTexture.SetValue(PatternMaskMap.resourcePath);
-            });
+                if (source instanceof Tw2TextureParameter)
+                {
+                    destination.overrides = source.overrides;
 
+                    source.OnEvent("overrides_modified", () =>
+                    {
+                        destination.overrides = source.overrides;
+                    });
+                }
+            }
         }
+
+        bind(src.DiffuseColor, dst[prefix + "DiffuseColor"]);
+        bind(src.DustDiffuseColor, dst[prefix + "DustDiffuseColor"]);
+        bind(src.FresnelColor, dst[prefix + "FresnelColor"]);
+        bind(src.Gloss, dst[prefix + "Gloss"]);
+        bind(src.PatternMaskMap, dst[patternName]);
     }
 
 }
