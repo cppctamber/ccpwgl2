@@ -24,7 +24,7 @@ class Tw2ConstantParameter
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
-        item.SetValue(new Float32Array([ r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32() ]));
+        item.SetValue(r.ReadF32Array(4));
         return item;
     }
 

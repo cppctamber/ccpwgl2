@@ -1,18 +1,17 @@
 import { meta } from "utils";
 
-
 @meta.notImplemented
 @meta.type("Tr2IntSkinnedObject")
 export class Tr2IntSkinnedObject extends meta.Model
 {
 
-    @meta.list("Tw2CurveSet")
-    curveSets = [];
-
-    @meta.struct("TriMatrix")
+    @meta.raw()
     transform = null;
 
-    @meta.struct("Tr2SkinnedModel")
+    @meta.struct()
     visualModel = null;
+
+    @meta.list("Tw2CurveSet")
+    curveSets = [];
 
 }

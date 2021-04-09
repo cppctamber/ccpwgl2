@@ -161,12 +161,57 @@ export class Tw2BlackBinaryReader
 
     /**
      *
+     * @param {Number} n
+     * @returns {Float32Array}
+     */
+    ReadF32Array(n)
+    {
+        if (n < 0)
+        {
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument should be positive but got "${n}"`
+            });
+        }
+
+        let value = new Float32Array(n);
+        for (let i = 0; i < n; i++)
+        {
+            value[i] = this.ReadF32();
+        }
+        return value;
+    }
+
+
+    /**
+     *
      * @returns {number}
      */
     ReadF64()
     {
         const value = this.data.getFloat64(this.cursor, true);
         this.cursor += 8;
+        return value;
+    }
+
+    /**
+     *
+     * @param {Number} n
+     * @returns {Float64Array}
+     */
+    ReadF64Array(n)
+    {
+        if (n < 0)
+        {
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument should be positive but got "${n}"`
+            });
+        }
+
+        let value = new Float64Array(n);
+        for (let i = 0; i < n; i++)
+        {
+            value[i] = this.ReadF64();
+        }
         return value;
     }
 

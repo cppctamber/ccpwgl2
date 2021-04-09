@@ -110,6 +110,12 @@ export function object(reader, id)
         if (blackReaders[propertyName])
         {
             reader = blackReaders[propertyName];
+
+            // Allow passing in of classes with custom black struct readers
+            if (reader.blackStruct)
+            {
+                reader = reader.blackStruct;
+            }
         }
         // Defined as black meta data
         else if (hasMetadata("black", result, propertyName))

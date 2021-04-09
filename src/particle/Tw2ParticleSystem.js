@@ -171,7 +171,7 @@ export class Tw2ParticleSystem extends meta.Model
                 customName: src.customName,
                 dimension: src.GetDimension(),
                 usageIndex: src.usageIndex,
-                usedByGPU: src.usedByGPU
+                usedByGPU: !!src.usedByGPU
             });
 
             //el.buffer = this._buffers[bufferIndex];

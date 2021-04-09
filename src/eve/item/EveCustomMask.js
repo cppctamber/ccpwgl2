@@ -18,7 +18,7 @@ export class EveCustomMask extends Tw2Transform
     @meta.boolean
     isMirrored = false;
 
-    @meta.byte
+    @meta.uint
     materialIndex = 0;
 
     @meta.quaternion
