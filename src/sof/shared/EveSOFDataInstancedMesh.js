@@ -13,19 +13,7 @@ class EveSOFDataInstancedMeshInstanceReader
 
     static blackStruct(reader)
     {
-        return new EveSOFDataInstancedMeshInstanceReader([
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32(),
-            reader.ReadF32()
-        ]);
+        return new EveSOFDataInstancedMeshInstanceReader(reader.ReadF32Array(11));
     }
 }
 
