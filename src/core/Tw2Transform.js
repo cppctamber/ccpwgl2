@@ -235,6 +235,17 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
+     * Gets the world rotation as a euler in  degrees
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
+    GetWorldEulerInDegrees(out)
+    {
+        this.GetWorldEuler(out);
+        return vec3.degrees(out, out);
+    }
+
+    /**
      * Gets the world axis angle
      * @param {vec3} axis
      * @returns {Number}
@@ -411,8 +422,18 @@ export class Tw2Transform extends meta.Model
      */
     GetEuler(out)
     {
-        this.GetRotation(quat_0);
-        return vec3.euler.fromQuat(out, quat_0);
+        return vec3.euler.fromQuat(out, this.GetRotation(quat_0));
+    }
+
+    /**
+     * Gets the local rotation as a euler
+     * @param {vec3} out
+     * @returns {vec3}
+     */
+    GetEulerInDegrees(out)
+    {
+        vec3.euler.fromQuat(vec3_0, this.GetRotation(quat_0));
+        return vec3.degrees(vec3_0, vec3_0);
     }
 
     /**
@@ -492,6 +513,17 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
+     * Sets the local rotation from a euler that uses degrees
+     * @param {vec3} e
+     * @returns {*}
+     */
+    SetRotationFromEulerDegrees(e)
+    {
+        vec3.radians(vec3_0, e);
+        return this.SetRotationFromEuler(vec3_0);
+    }
+
+    /**
      * Sets the local rotation from euler values
      * @param {Number} x
      * @param {Number} y
@@ -505,14 +537,26 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
+     * Sets the local rotation from euler values
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} z
+     * @returns {*}
+     */
+    SetRotationFromEulerDegreeValues(x, y, z)
+    {
+        vec3.set(vec3_0, x, y, z);
+        return this.SetRotationFromEulerDegrees(vec3_0);
+    }
+
+    /**
      * Sets the local rotation from a mat4
      * @param {mat4} m
      * @returns {*}
      */
     SetRotationFromMat4(m)
     {
-        mat4.getRotation(quat_0, m);
-        return this.SetRotation(quat_0);
+        return this.SetRotation(mat4.getRotation(quat_0, m));
     }
 
     /**

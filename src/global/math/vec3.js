@@ -51,9 +51,9 @@ vec3.addScalar = function(out, a, s)
  */
 vec3.degrees = function(out, a)
 {
-    out[0] = a[0] * num.RAD2DEG;
-    out[1] = a[1] * num.RAD2DEG;
-    out[2] = a[2] * num.RAD2DEG;
+    out[0] = num.degrees(a[0]);
+    out[1] = num.degrees(a[1]);
+    out[2] = num.degrees(a[2]);
     return out;
 };
 
@@ -66,9 +66,9 @@ vec3.degrees = function(out, a)
  */
 vec3.degreesUnwrapped = function(out, a)
 {
-    out[0] = num.unwrapDegrees(a[0] * num.RAD2DEG);
-    out[1] = num.unwrapDegrees(a[1] * num.RAD2DEG);
-    out[2] = num.unwrapDegrees(a[2] * num.RAD2DEG);
+    out[0] = num.degreesUnwrapped(a[0]);
+    out[1] = num.degreesUnwrapped(a[1]);
+    out[2] = num.degreesUnwrapped(a[2]);
     return out;
 };
 
@@ -143,6 +143,9 @@ vec3.euler = {};
  */
 vec3.euler.DEFAULT_ORDER = "XYZ";
 
+
+let mat4_0;
+
 /**
  * Sets a euler from a quat
  *
@@ -151,17 +154,12 @@ vec3.euler.DEFAULT_ORDER = "XYZ";
  * @param {string} [order=vec3.euler.DEFAULT_ORDER]
  * @returns {vec3} out
  */
-vec3.euler.fromQuat = (function()
+vec3.euler.fromQuat = function(out, q, order = vec3.euler.DEFAULT_ORDER)
 {
-    let mat4_0;
-
-    return function fromQuat(out, q, order = vec3.euler.DEFAULT_ORDER)
-    {
-        if (!mat4_0) mat4_0 = mat4.create();
-        mat4.fromQuat(mat4_0, q);
-        return vec3.euler.fromMat4(out, mat4_0, order);
-    };
-})();
+    if (!mat4_0) mat4_0 = mat4.create();
+    mat4.fromQuat(mat4_0, q);
+    return vec3.euler.fromMat4(out, mat4_0, order);
+};
 
 /**
  * Sets a euler from a mat4
@@ -273,7 +271,7 @@ vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
         throw new Error("Unrecognised euler order: " + order);
     }
 
-    return vec3.unwrapRadians(out, out);
+    return out;
 };
 
 /**
@@ -292,9 +290,9 @@ vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
 vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
 {
     const
-        x = num.unwrapRadians(euler[0]),
-        y = num.unwrapRadians(euler[1]),
-        z = num.unwrapRadians(euler[2]);
+        x = euler[0],
+        y = euler[1],
+        z = euler[2];
 
     const
         cosYaw = Math.cos(x / 2),
@@ -360,23 +358,25 @@ vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
 let vec3_0;
 
 /**
- * Gets a euler from quat in degrees
- * // Because you asked nicely
- * @param {vec3} out
- * @param {quat} v
+ * Gets a quat from a euler values
+ *
+ * @param {quat} out
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  * @param {String} [order]
- * @return {vec3} out
+ * @return {quat} out
  */
-vec3.euler.fromQuatInDegrees = function(out, v, order)
+vec3.euler.getQuatFromValues = function(out, x, y, z, order)
 {
     if (!vec3_0) vec3_0 = vec3.create();
-    vec3.euler.fromQuat(out, v, order);
-    return vec3.degrees(out, out);
+    vec3.set(vec3_0, x, y, z);
+    return vec3.euler.getQuat(out, vec3_0, order);
 };
 
 /**
  * Gets a quat from a euler that uses degrees
- * // Because you asked nicely
+ *
  * @param {quat} out
  * @param {vec3} v
  * @param {String} [order]
@@ -386,12 +386,12 @@ vec3.euler.getQuatFromDegrees = function(out, v, order)
 {
     if (!vec3_0) vec3_0 = vec3.create();
     vec3.radians(vec3_0, v);
-    return vec3.euler.getQuat(out, v, order);
+    return vec3.euler.getQuat(out, vec3_0, order);
 };
 
 /**
- * Gets a quat from degree values
- * // Because you asked nicely
+ * Gets a quat from euler degree values
+ *
  * @param {quat} out
  * @param {Number} x
  * @param {Number} y
@@ -405,6 +405,20 @@ vec3.euler.getQuatFromDegreeValues = function(out, x, y, z, order)
     vec3.set(vec3_0, x, y, z);
     vec3.radians(vec3_0, vec3_0);
     return vec3.euler.getQuat(out, vec3_0, order);
+};
+
+/**
+ * Sets a euler from quat, and stores in degrees
+ *
+ * @param {vec3} out
+ * @param {quat} q
+ * @param {String} [order]
+ * @return {vec3} out
+ */
+vec3.euler.fromQuatInDegrees = function(out, q, order)
+{
+    vec3.euler.fromQuat(out, q, order);
+    return vec3.degrees(out, out);
 };
 
 /**
@@ -556,9 +570,9 @@ vec3.project = function(out, a, m, viewport)
  */
 vec3.radians = function(out, a)
 {
-    out[0] = a[0] * num.DEG2RAD;
-    out[1] = a[1] * num.DEG2RAD;
-    out[2] = a[2] * num.DEG2RAD;
+    out[0] = num.radians(a[0]);
+    out[1] = num.radians(a[1]);
+    out[2] = num.radians(a[2]);
     return out;
 };
 
@@ -571,9 +585,9 @@ vec3.radians = function(out, a)
  */
 vec3.radiansUnwrapped = function(out, a)
 {
-    out[0] = num.unwrapRadians(a[0] * num.DEG2RAD);
-    out[1] = num.unwrapRadians(a[1] * num.DEG2RAD);
-    out[2] = num.unwrapRadians(a[2] * num.DEG2RAD);
+    out[0] = num.radiansUnwrapped(a[0]);
+    out[1] = num.radiansUnwrapped(a[1]);
+    out[2] = num.radiansUnwrapped(a[2]);
     return out;
 };
 
