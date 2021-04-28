@@ -517,6 +517,7 @@ export class Model
                 }
             }
         }
+
     }
 
     /**
@@ -539,33 +540,49 @@ export class Model
     }
 
     /**
+     * Finds an object by it's id
+     * @param {String} id
+     * @return {*}
+     */
+    FindObjectByID(id)
+    {
+        return this.Traverse(x =>
+        {
+            if (x.struct._id === id)
+            {
+                return x.struct;
+            }
+        });
+    }
+
+    /**
      * Traverses the object and it's child structs
      * @param {Function} func
-     * @param {Object} [opt={}]
-     * @param {Set} [visited=new Set()]
+     * @param {Object} [_opt={}]
+     * @param {Set} [_visited=new Set()]
      * @returns {*}
      */
-    Traverse(func, opt = {}, visited = new Set())
+    Traverse(func, _opt = {}, _visited = new Set())
     {
-        if (visited.has(this))
+        if (_visited.has(this))
         {
             return;
         }
 
-        visited.add(this);
+        _visited.add(this);
 
-        opt.path = opt.path || "root";
-        opt.struct = this;
+        _opt.path = _opt.path || "root";
+        _opt.struct = this;
 
-        const rv = func(opt);
+        const rv = func(_opt);
         if (rv !== undefined) return rv;
 
-        return this.PerChild(o =>
+        return this.PerChild(x =>
         {
-            if (o.struct && o.struct.Traverse)
+            if (x.struct && x.struct.Traverse)
             {
-                o.path = opt.path + o.path;
-                const rv = o.struct.Traverse(func, o, visited);
+                x.path = _opt.path + x.path;
+                const rv = x.struct.Traverse(func, x, _visited);
                 if (rv !== undefined) return rv;
             }
         });
@@ -613,11 +630,14 @@ export class Model
      */
     static get(item, out = {}, opt = {})
     {
-        if (!hasMetadata("type", this)) throw new ReferenceError("No meta type defined");
+        if (!hasMetadata("type", this))
+        {
+            throw new ReferenceError("No meta type defined");
+        }
 
         const isFirstGet = !opt._ids;
 
-        if (!opt._ids)
+        if (isFirstGet)
         {
             opt._ids = new Map();
         }
@@ -705,9 +725,10 @@ export class Model
             throw new ReferenceError("Invalid constructor");
         }
 
-        if (!hasMetadata("type", this))
+        const constructorType = getMetadata("type", this);
+        if (!constructorType)
         {
-            throw new ReferenceError("Not meta type defined");
+            throw new ReferenceError("No meta type defined");
         }
 
         if (values && !isObjectObject(values))
@@ -747,7 +768,7 @@ export class Model
                     if (values[key] === undefined)
                     {
                         skipped = skipped || {};
-                        skipped.undefined = skipped.undefined | [];
+                        skipped.undefined = skipped.undefined || [];
                         skipped.undefined.push(key);
                         continue;
                     }
@@ -781,7 +802,7 @@ export class Model
 
                     if (!handler)
                     {
-                        throw new TypeError("Unknown type: " + type);
+                        throw new TypeError(`${constructorType} > Unknown property type: ${type}`);
                     }
 
                     // Delete
@@ -797,7 +818,7 @@ export class Model
 
                     if (!handler.is(value, item[key], options))
                     {
-                        throw new TypeError("Invalid value for property " + key);
+                        throw new TypeError(`${constructorType} > Unexpected value type for property: ${key}`);
                     }
 
                     if (handler.equals(value, item[key]))
@@ -823,7 +844,7 @@ export class Model
         if (skipped)
         {
             tw2.Debug({
-                name: `${getMetadata("type", item.constructor)}.set`,
+                name: `${constructorType}.set`,
                 message: "Properties values skipped",
                 data: skipped
             });
