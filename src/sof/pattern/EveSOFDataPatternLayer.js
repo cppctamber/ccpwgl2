@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataPatternLayer")
-export class EveSOFDataPatternLayer
+export class EveSOFDataPatternLayer extends meta.Model
 {
 
     @meta.boolean

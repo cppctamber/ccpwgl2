@@ -3,7 +3,7 @@ import { quat, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullHazeSetItem")
-export class EveSOFDataHullHazeSetItem
+export class EveSOFDataHullHazeSetItem extends meta.Model
 {
 
     @meta.boolean

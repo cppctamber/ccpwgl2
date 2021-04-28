@@ -3,7 +3,7 @@ import { vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullSoundEmitter")
-export class EveSOFDataHullSoundEmitter
+export class EveSOFDataHullSoundEmitter extends meta.Model
 {
 
     @meta.string

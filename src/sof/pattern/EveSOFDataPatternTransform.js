@@ -3,7 +3,7 @@ import { quat, vec3, mat4 } from "math";
 
 
 @meta.type("EveSOFDataPatternTransform")
-export class EveSOFDataPatternTransform
+export class EveSOFDataPatternTransform extends meta.Model
 {
 
     @meta.boolean

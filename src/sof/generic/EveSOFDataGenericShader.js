@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataGenericShader")
-export class EveSOFDataGenericShader
+export class EveSOFDataGenericShader extends meta.Model
 {
 
     @meta.list("EveSOFDataParameter")

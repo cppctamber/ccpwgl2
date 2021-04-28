@@ -3,7 +3,7 @@ import { Tw2Error } from "core";
 
 
 @meta.type("EveSOFDataLogoSet")
-export class EveSOFDataLogoSet
+export class EveSOFDataLogoSet extends meta.Model
 {
 
     @meta.struct("EveSOFDataLogo")

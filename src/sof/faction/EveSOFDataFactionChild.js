@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataFactionChild")
-export class EveSOFDataFactionChild
+export class EveSOFDataFactionChild extends meta.Model
 {
 
     @meta.string

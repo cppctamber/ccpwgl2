@@ -1,25 +1,24 @@
 import { meta } from "utils";
 
 
-/**
- * Instanced Mesh instance reader
- */
-class EveSOFDataInstancedMeshInstanceReader
+@meta.type("EveSOFDataInstancedMeshInstanceReader")
+class EveSOFDataInstancedMeshInstanceReader extends meta.Model
 {
-    constructor(data)
-    {
-        this.data = data;
-    }
+
+    @meta.vector
+    data = null;
 
     static blackStruct(reader)
     {
-        return new EveSOFDataInstancedMeshInstanceReader(reader.ReadF32Array(11));
+        const item = new EveSOFDataInstancedMeshInstanceReader();
+        item.data = reader.ReadF32Array(11);
+        return item;
     }
 }
 
 
 @meta.type("EveSOFDataInstancedMesh")
-export class EveSOFDataInstancedMesh
+export class EveSOFDataInstancedMesh extends meta.Model
 {
 
     @meta.string
@@ -45,7 +44,7 @@ export class EveSOFDataInstancedMesh
      * @param {Object} [out={}]
      * @return {Object} out
      */
-    AssignTextures(out={})
+    AssignTextures(out = {})
     {
         for (let i = 0; i < this.textures.length; i++)
         {

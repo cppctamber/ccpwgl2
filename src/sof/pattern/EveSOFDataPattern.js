@@ -3,7 +3,7 @@ import { Tw2Error } from "core";
 
 
 @meta.type("EveSOFDataPattern")
-export class EveSOFDataPattern
+export class EveSOFDataPattern extends meta.Model
 {
 
     @meta.string

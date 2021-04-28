@@ -3,7 +3,7 @@ import { vec4 } from "math";
 
 
 @meta.type("EveSOFDataFactionPlaneSet")
-export class EveSOFDataFactionPlaneSet
+export class EveSOFDataFactionPlaneSet extends meta.Model
 {
 
     @meta.string

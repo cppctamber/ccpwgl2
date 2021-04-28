@@ -3,7 +3,7 @@ import { quat, vec3, mat4 } from "math";
 
 
 @meta.type("EveSOFDataTransform")
-export class EveSOFDataTransform
+export class EveSOFDataTransform extends meta.Model
 {
 
     @meta.uint

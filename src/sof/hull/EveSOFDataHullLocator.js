@@ -3,7 +3,7 @@ import { mat4 } from "math";
 
 
 @meta.type("EveSOFDataHullLocator")
-export class EveSOFDataHullLocator
+export class EveSOFDataHullLocator extends meta.Model
 {
 
     @meta.string

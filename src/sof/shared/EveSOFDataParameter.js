@@ -3,7 +3,7 @@ import { vec4 } from "math";
 
 
 @meta.type("EveSOFDataParameter")
-export class EveSOFDataParameter
+export class EveSOFDataParameter extends meta.Model
 {
 
     @meta.string

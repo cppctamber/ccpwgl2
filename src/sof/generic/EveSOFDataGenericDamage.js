@@ -3,7 +3,7 @@ import { vec2, vec4 } from "math";
 
 
 @meta.type("EveSOFDataGenericDamage")
-export class EveSOFDataGenericDamage
+export class EveSOFDataGenericDamage extends meta.Model
 {
 
     @meta.float

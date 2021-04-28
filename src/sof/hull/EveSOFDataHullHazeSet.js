@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataHullHazeSet")
-export class EveSOFDataHullHazeSet
+export class EveSOFDataHullHazeSet extends meta.Model
 {
 
     @meta.string

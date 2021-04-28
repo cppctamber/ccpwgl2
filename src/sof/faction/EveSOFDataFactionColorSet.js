@@ -4,7 +4,7 @@ import { Tw2Error } from "core";
 
 
 @meta.type("EveSOFDataFactionColorSet")
-export class EveSOFDataFactionColorSet
+export class EveSOFDataFactionColorSet extends meta.Model
 {
 
     @meta.color

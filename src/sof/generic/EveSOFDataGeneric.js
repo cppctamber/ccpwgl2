@@ -3,7 +3,7 @@ import { meta, findElementByPropertyValue } from "utils";
 
 
 @meta.type("EveSOFDataGeneric")
-export class EveSOFDataGeneric
+export class EveSOFDataGeneric extends meta.Model
 {
 
     @meta.path

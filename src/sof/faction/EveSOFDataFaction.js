@@ -5,7 +5,7 @@ import { tw2 } from "global/tw2";
 
 
 @meta.type("EveSOFDataFaction")
-export class EveSOFDataFaction
+export class EveSOFDataFaction extends meta.Model
 {
 
     @meta.string
@@ -237,5 +237,33 @@ export class EveSOFDataFaction
         return insert ? insert.includes(hull) : false;
     }
 
+    /**
+     * Gets a hull's res path inserts
+     * @param {String} hull
+     * @return {Array<String>}
+     */
+    static GetHullResPathInserts(hull)
+    {
+        if (!this.resPathInserts)
+        {
+            this.resPathInserts = Object.assign({}, resPathInserts);
+        }
+
+        const results = [];
+        for (const faction in this.resPathInserts)
+        {
+            if (this.resPathInserts.hasOwnProperty(faction) && this.resPathInserts[faction].includes(hull))
+            {
+                results.push(faction);
+            }
+        }
+        return results.sort();
+    }
+
+    /**
+     * Res path inserts
+     * @type {null|Object}
+     */
+    static resPathInserts = null;
 }
 

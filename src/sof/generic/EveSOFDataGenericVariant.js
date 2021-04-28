@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataGenericVariant")
-export class EveSOFDataGenericVariant
+export class EveSOFDataGenericVariant extends meta.Model
 {
 
     @meta.string

@@ -3,7 +3,7 @@ import { vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullSpriteSetItem")
-export class EveSOFDataHullSpriteSetItem
+export class EveSOFDataHullSpriteSetItem extends meta.Model
 {
 
     @meta.float

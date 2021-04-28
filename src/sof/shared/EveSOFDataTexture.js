@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataTexture")
-export class EveSOFDataTexture
+export class EveSOFDataTexture extends meta.Model
 {
 
     @meta.string

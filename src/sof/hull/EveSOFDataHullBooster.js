@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataHullBooster")
-export class EveSOFDataHullBooster
+export class EveSOFDataHullBooster extends meta.Model
 {
 
     @meta.boolean

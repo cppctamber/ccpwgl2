@@ -3,7 +3,7 @@ import { quat } from "math";
 
 
 @meta.type("EveSOFDataHullAnimation")
-export class EveSOFDataHullAnimation
+export class EveSOFDataHullAnimation extends meta.Model
 {
 
     @meta.string

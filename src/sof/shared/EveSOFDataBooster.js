@@ -3,7 +3,7 @@ import { vec4 } from "math";
 
 
 @meta.type("EveSOFDataBooster")
-export class EveSOFDataBooster
+export class EveSOFDataBooster extends meta.Model
 {
 
     @meta.color

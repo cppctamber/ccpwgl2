@@ -3,7 +3,7 @@ import { mat4, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullSpotlightSetItem")
-export class EveSOFDataHullSpotlightSetItem
+export class EveSOFDataHullSpotlightSetItem extends meta.Model
 {
 
     @meta.uint

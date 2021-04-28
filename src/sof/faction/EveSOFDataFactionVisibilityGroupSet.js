@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataFactionVisibilityGroupSet")
-export class EveSOFDataFactionVisibilityGroupSet
+export class EveSOFDataFactionVisibilityGroupSet extends meta.Model
 {
 
     @meta.list("EveSOFDataGenericString")
