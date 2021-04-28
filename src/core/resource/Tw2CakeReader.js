@@ -1,46 +1,42 @@
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { GL_FLOAT } from "constant";
-import { isString, isVector, isVector3 } from "utils";
+import { isString, isVector, isVector3, meta } from "utils";
 import { Tw2Error } from "core/Tw2Error";
+
 
 /**
  * Todo: Simplify this format
  */
+@meta.type("Tw2CakeReader")
 export class Tw2CakeReader
 {
 
+    @meta.string
     name = "";
+
+    @meta.list()
     areas = [];
+
+    @meta.struct("Tw2Declaration")
     declaration = null;
+
+    @meta.vector
     indexData = null;
+
+    @meta.vector
     bufferData = null;
 
-    boneBindings = null;
-    blendShapes = null;
-    models = null;
-    animations = null;
+    @meta.list()
+    boneBindings = [];
 
-    /**
-     * Constructs geometry data from cake data
-     * @param {String} data
-     * @return {[]}
-     */
-    static Construct(data)
-    {
-        if (!isString(data))
-        {
-            throw new ReferenceError("Invalid format, expected string");
-        }
+    @meta.list()
+    blendShapes = [];
 
-        const meshesRaw = data.split("MESH");
+    @meta.list()
+    models = [];
 
-        const result = [];
-        for (let i  =  0;  i  <  meshesRaw.length; i++)
-        {
-            result.push(new Tw2CakeReader(meshesRaw[i]));
-        }
-        return result;
-    }
+    @meta.list()
+    animations = [];
 
     /**
      * Constructor
@@ -48,10 +44,7 @@ export class Tw2CakeReader
      */
     constructor(data)
     {
-        if (!isString(data))
-        {
-            throw new ReferenceError("Invalid format, expected string");
-        }
+        Tw2CakeReader.validate(data);
 
         const
             lines = data.split(/\r?\n/),
@@ -78,12 +71,12 @@ export class Tw2CakeReader
                 split = line.split(":"),
                 name = split[0].toUpperCase();
 
-            let value = split[1];
+            let value = split[1] || "";
 
             // Comment
             if (name === "#")
             {
-                return { name: "NOTE", value: value || "" };
+                return { name, value };
             }
 
             if (!value)
@@ -112,7 +105,12 @@ export class Tw2CakeReader
 
         while (currentLine < lines.length)
         {
-            const { name, value } = parseLine();
+            let { name, value } = parseLine();
+
+            if (name in this.constructor.ShortName)
+            {
+                name = this.constructor.ShortName[name];
+            }
 
             switch (name)
             {
@@ -175,13 +173,7 @@ export class Tw2CakeReader
 
                     if (!declaration)
                     {
-                        declaration = {
-                            name,
-                            usageIndex: Tw2CakeReader.UsageIndex[name],
-                            usage: Tw2CakeReader.Usage[name],
-                            elements: Tw2CakeReader.Elements[name],
-                            vertices: []
-                        };
+                        declaration = Tw2CakeReader.getDeclarationObjectByName(name);
                         declarations.push(declaration);
                     }
 
@@ -255,15 +247,76 @@ export class Tw2CakeReader
         // TODO: Bones
     }
 
+    /**
+     * Constructs geometry data from cake data
+     * @param {String} data
+     * @return {[]}
+     */
+    static construct(data)
+    {
+        this.validate(data);
+
+        const
+            meshesRaw = data.split("MESH"),
+            result = [];
+
+        for (let i = 0; i < meshesRaw.length; i++)
+        {
+            result.push(new Tw2CakeReader(meshesRaw[i]));
+        }
+
+        return result;
+    }
+
+    /**
+     * Basic data validation
+     * @param {String} data
+     */
+    static validate(data)
+    {
+        if (!isString(data))
+        {
+            throw new ReferenceError("Invalid format, expected string");
+        }
+    }
+
     static IndexArray = Uint32Array;
 
-    static UsageIndex = {
-        POSITION: 0,
-        NORMAL: 0,
-        TANGENT: 0,
-        BITANGENT: 0,
-        TEXCOORD0: 0,
-        TEXCOORD1: 1
+    /**
+     * Gets a declaration object by name
+     * @param {String} name
+     * @return {{usageIndex: *, vertices: [], usage: *, elements: *, name: *}}
+     */
+    static getDeclarationObjectByName(name)
+    {
+        if(name in this.ShortName)
+        {
+            name = this.ShortName[name];
+        }
+
+        return  {
+            name,
+            vertices: [],
+            usageIndex: this.UsageIndex[name],
+            usage: this.Usage[name],
+            elements: this.Elements[name],
+        };
+    }
+
+    /**
+     * Provides support for newer cake version
+     * @type {{P: string, A: string, BT: string, "#": string, T: string, T0: string, M: string, T1: string, N: string}}
+     */
+    static ShortName = {
+        "#":"NOTE",
+        A:"AREA",
+        M:"NAME",
+        P:"POSITION",
+        N:"NORMAL",
+        T:"TANGENT",
+        BT:"BITANGENT",
+        T0:"TEXCOORD0",
+        T1:"TEXCOORD1"
     };
 
     static Elements = {
@@ -275,6 +328,15 @@ export class Tw2CakeReader
         TEXCOORD1: 2
     };
 
+    static UsageIndex = {
+        POSITION: 0,
+        NORMAL: 0,
+        TANGENT: 0,
+        BITANGENT: 0,
+        TEXCOORD0: 0,
+        TEXCOORD1: 1
+    };
+
     static Usage = {
         POSITION: Tw2VertexElement.Type.POSITION,
         NORMAL: Tw2VertexElement.Type.NORMAL,
@@ -283,4 +345,5 @@ export class Tw2CakeReader
         TEXCOORD0: Tw2VertexElement.Type.TEXCOORD,
         TEXCOORD1: Tw2VertexElement.Type.TEXCOORD
     };
+
 }

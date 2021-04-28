@@ -5,7 +5,7 @@ import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
+import { Tw2CakeReader } from "./Tw2CakeReader";
 import {
     Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -19,8 +19,6 @@ import {
     Tw2GeometryTrackGroup,
     Tw2GeometryTransformTrack
 } from "../geometry";
-
-
 
 
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
@@ -146,6 +144,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             case "cake":
+            //case "obj":
                 this._extension = extension;
                 this._requestResponseType = "text";
                 break;
@@ -177,8 +176,12 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             case "cake":
-                this.PrepareCAKE(data);
+                this.PrepareCustom(Tw2CakeReader.construct(data));
                 break;
+
+                //case "obj":
+                //    this.PrepareCustom(Tw2WaveFrontReader.construct(data));
+                //    break;
 
             default:
                 throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -186,26 +189,19 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
     /**
-     * Prepares a cake file
-     * TODO: Add support for more than one mesh
-     * TODO: Add support for models
-     * TODO: Add support for animations
-     * TODO: Add support for blend shapes
-     * @param {String} data
+     * Prepares custom formats
+     * @param {Array<Tw2GeometryReader>}meshes
      */
-    PrepareCAKE(data)
+    PrepareCustom(meshes)
     {
         const gl = device.gl;
 
-        const meshes = Tw2CakeReader.Construct(data);
-
         for (let i = 0; i < meshes.length; i++)
         {
-            const { bufferData, indexData, declaration, areas, name = this.path } = meshes[i];
+            const { bufferData, indexData, declaration, areas, name = `${this.path}_model_${i}` } = meshes[i];
 
             const mesh = new Tw2GeometryMesh();
             this.meshes[i] = mesh;
-            this.models[i] = new Tw2GeometryModel();
 
             mesh.name = name;
             mesh.declaration = declaration;
@@ -263,8 +259,10 @@ export class Tw2GeometryRes extends Tw2Resource
             {
                 //TODO: Animations
             }
-
              */
+
+            // Temporary
+            this.models[i] = new Tw2GeometryModel();
         }
 
         this.RebuildBounds();
