@@ -470,11 +470,11 @@ export class Tw2ShaderStage
         {
             if (shadowShaderSize === 0)
             {
-                stage.shadowShader = this.compileShader(stage.type, "\n#define PS\n", shaderCode, context.path, true);
+                stage.shadowShader = this.compileShader(stage.type, "//shadow\n#define PS\n", shaderCode, context.path, true);
             }
             else
             {
-                stage.shadowShader = this.compileShader(stage.type, "", shadowShaderCode, context.path, true);
+                stage.shadowShader = this.compileShader(stage.type, "//shadow\n", shadowShaderCode, context.path, true);
             }
 
             if (stage.shadowShader === null)
@@ -584,13 +584,16 @@ export class Tw2ShaderStage
             shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
             ccpShaderBinary = device.GetExtension("CCP_shader_binary");
 
+        let shaderName = path.split("/");
+        shaderName = `//${shaderName[shaderName.length - 1]}\n`;
+
         if (ccpShaderBinary)
         {
             ccpShaderBinary["shaderBinary"](shader, shaderCode);
         }
         else
         {
-            let source = prefix + (isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
+            let source = shaderName + prefix + (isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
             source = source.substr(0, source.length - 1);
             gl.shaderSource(shader, source);
             gl.compileShader(shader);
