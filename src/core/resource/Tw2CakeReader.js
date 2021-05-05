@@ -67,14 +67,18 @@ export class Tw2CakeReader
                 return { name: "EMPTY", value: undefined };
             }
 
-            const
-                split = line.split(":"),
+            let split = line.split(":"),
                 name = split[0].toUpperCase();
+
+            if (name in Tw2CakeReader.ShortName)
+            {
+                name = Tw2CakeReader.ShortName[name];
+            }
 
             let value = split[1] || "";
 
             // Comment
-            if (name === "#")
+            if (name === "NOTE")
             {
                 return { name, value };
             }
@@ -82,7 +86,7 @@ export class Tw2CakeReader
             if (!value)
             {
                 throw new Tw2Error({
-                    message: `Unexpected value on line ${currentLine}: ${split[0]}`,
+                    message: `Unexpected value on line ${currentLine + 1}: ${split[0]}`,
                     data: split[0]
                 });
             }
@@ -144,7 +148,7 @@ export class Tw2CakeReader
                         {
                             if (!isVector3(face.value))
                             {
-                                throw new ReferenceError("Unexpected face value: " + face.value);
+                                throw new ReferenceError(`Unexpected face value on line ${currentLine + 1}: ${face.value}`);
                             }
                             area.count += 3;
                             indexData.push(face.value[0]);
@@ -179,7 +183,7 @@ export class Tw2CakeReader
 
                     if (!isVector(value) || value.length !== declaration.elements)
                     {
-                        throw new ReferenceError(`Invalid value for declaration "${name}": ${value}`);
+                        throw new ReferenceError(`Invalid value for declaration "${name}" on line ${currentLine + 1}: ${value}`);
                     }
 
                     declaration.vertices.push(value);
@@ -187,7 +191,7 @@ export class Tw2CakeReader
                     break;
 
                 default:
-                    throw new ReferenceError(`Unexpected value type: "${name}"`);
+                    throw new ReferenceError(`Unexpected value type on line ${currentLine + 1}: ${name}`);
 
             }
         }
@@ -289,12 +293,12 @@ export class Tw2CakeReader
      */
     static getDeclarationObjectByName(name)
     {
-        if(name in this.ShortName)
+        if (name in this.ShortName)
         {
             name = this.ShortName[name];
         }
 
-        return  {
+        return {
             name,
             vertices: [],
             usageIndex: this.UsageIndex[name],
@@ -308,15 +312,16 @@ export class Tw2CakeReader
      * @type {{P: string, A: string, BT: string, "#": string, T: string, T0: string, M: string, T1: string, N: string}}
      */
     static ShortName = {
-        "#":"NOTE",
-        A:"AREA",
-        M:"NAME",
-        P:"POSITION",
-        N:"NORMAL",
-        T:"TANGENT",
-        BT:"BITANGENT",
-        T0:"TEXCOORD0",
-        T1:"TEXCOORD1"
+        "#": "NOTE",
+        A: "AREA",
+        M: "NAME",
+        P: "POSITION",
+        N: "NORMAL",
+        T: "TANGENT",
+        BT: "BITANGENT",
+        T0: "TEXCOORD0",
+        T1: "TEXCOORD1",
+        F: "FACE"
     };
 
     static Elements = {
@@ -341,7 +346,7 @@ export class Tw2CakeReader
         POSITION: Tw2VertexElement.Type.POSITION,
         NORMAL: Tw2VertexElement.Type.NORMAL,
         TANGENT: Tw2VertexElement.Type.TANGENT,
-        BITANGENT: Tw2VertexElement.Type.BITANGENT,
+        BITANGENT: Tw2VertexElement.Type.BINORMAL,
         TEXCOORD0: Tw2VertexElement.Type.TEXCOORD,
         TEXCOORD1: Tw2VertexElement.Type.TEXCOORD
     };
