@@ -6,6 +6,9 @@ import { quat, vec3 } from "math";
 export class EveSOFDataHullHazeSetItem extends meta.Model
 {
 
+    @meta.uint
+    boneIndex = -1;
+
     @meta.boolean
     boosterGainInfluence = false;
 

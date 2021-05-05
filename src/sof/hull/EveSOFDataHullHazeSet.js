@@ -14,4 +14,7 @@ export class EveSOFDataHullHazeSet extends meta.Model
     @meta.string
     visibilityGroup = "";
 
+    @meta.boolean
+    skinned = false;
+
 }
