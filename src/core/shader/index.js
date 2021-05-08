@@ -2,7 +2,6 @@ export * from "./Tw2Shader";
 export * from "./Tw2ShaderAnnotation";
 export * from "./Tw2ShaderPass";
 export * from "./Tw2ShaderPermutation";
-export * from "./Tw2ShaderPermutationOption";
 export * from "./Tw2ShaderProgram";
 export * from "./Tw2ShaderStage";
 export * from "./Tw2ShaderStageConstant";

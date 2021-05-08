@@ -1,5 +1,4 @@
 import { getKeyFromValue, meta } from "utils";
-import { Tw2ShaderPermutationOption } from "core/shader/Tw2ShaderPermutationOption";
 import { Tw2Error } from "core/Tw2Error";
 
 
@@ -19,8 +18,8 @@ export class Tw2ShaderPermutation
     @meta.uint
     type = Tw2ShaderPermutation.Type.INVALID;
 
-    @meta.plain
-    options = {};
+    @meta.array
+    options = [];
 
     @meta.uint
     optionCount = 0;
@@ -43,19 +42,21 @@ export class Tw2ShaderPermutation
      */
     HasOption(name)
     {
-        return name in this.options;
+        return this.options.indexOf(name.toUpperCase()) !== -1;
     }
 
     /**
      * Gets a permutation option's value
      * @param {String} name
-     * @return {String}
+     * @return {Number}
      */
     GetOption(name)
     {
+        name = name.toUpperCase();
+
         if (this.HasOption(name))
         {
-            return this.options[name];
+            return this.options.indexOf(name);
         }
 
         throw new ErrShaderPermutationOptionInvalid({ name: this.name, option: name });
@@ -78,26 +79,12 @@ export class Tw2ShaderPermutation
 
         for (let i = 0; i < permutation.optionCount; i++)
         {
-            const option = new Tw2ShaderPermutationOption();
-            option.name = context.ReadString();
-            option.value = i;
+            permutation.options[i] = context.ReadString();
         }
 
         return permutation;
     }
 
-    /**
-     * Permutation types
-     * @type {Object}
-     */
-    static Type = {
-        INVALID: -1,
-        UNKNOWN_0: 0,
-        UNKNOWN_1: 1,
-        UNKNOWN_2: 2,
-        UNKNOWN_3: 3,
-        UNKNOWN_4: 4
-    };
 }
 
 
