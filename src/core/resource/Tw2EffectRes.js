@@ -131,12 +131,11 @@ export class Tw2EffectRes extends Tw2Resource
         {
             let permutation = this.permutations[i];
             let value = permutation.defaultOption;
-
             if (options.hasOwnProperty(permutation.name))
             {
                 try
                 {
-                    value = permutation.GetOption(value);
+                    value = permutation.GetOption(options[permutation.name]);
                 }
                 catch(err)
                 {

@@ -18,12 +18,11 @@ export class Tw2ShaderPermutation
     @meta.uint
     type = Tw2ShaderPermutation.Type.INVALID;
 
-    @meta.array
-    options = [];
+    @meta.plain
+    options = {};
 
     @meta.uint
     optionCount = 0;
-
 
     /**
      * Gets the permutation's type as a string
@@ -31,8 +30,7 @@ export class Tw2ShaderPermutation
      */
     get string()
     {
-        const name = getKeyFromValue(Tw2ShaderPermutation.Type, this.type);
-        return name ? name : "INVALID";
+        return getKeyFromValue(Tw2ShaderPermutation.Type, this.type) || "INVALID";
     }
 
     /**
@@ -42,7 +40,7 @@ export class Tw2ShaderPermutation
      */
     HasOption(name)
     {
-        return this.options.indexOf(name.toUpperCase()) !== -1;
+        return name.toUpperCase() in this.options;
     }
 
     /**
@@ -56,7 +54,7 @@ export class Tw2ShaderPermutation
 
         if (this.HasOption(name))
         {
-            return this.options.indexOf(name);
+            return this.options[name];
         }
 
         throw new ErrShaderPermutationOptionInvalid({ name: this.name, option: name });
@@ -79,11 +77,24 @@ export class Tw2ShaderPermutation
 
         for (let i = 0; i < permutation.optionCount; i++)
         {
-            permutation.options[i] = context.ReadString();
+            permutation.options[context.ReadString()] = i;
         }
 
         return permutation;
     }
+
+    /**
+     * Permutation types
+     * @type {Object}
+     */
+    static Type = {
+        INVALID: -1,
+        UNKNOWN_0: 0,
+        UNKNOWN_1: 1,
+        UNKNOWN_2: 2,
+        UNKNOWN_3: 3,
+        UNKNOWN_4: 4
+    };
 
 }
 
