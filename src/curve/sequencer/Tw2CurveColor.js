@@ -27,6 +27,9 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     @meta.isPrivate
     currentValue = vec4.create();
 
+    @meta.notImplemented
+    @meta.boolean
+    srgbOutput = false;
 
     /**
      * Sorts the sequencer

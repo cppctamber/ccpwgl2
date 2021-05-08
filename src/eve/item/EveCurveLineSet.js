@@ -250,6 +250,15 @@ export class EveCurveLineSet extends EveObjectSet
         }
     });
 
+    @meta.struct("Tw2Effect")
+    pickEffect = null;
+
+    @meta.notImplemented
+    @meta.float
+    scrollSpeed = 1;
+
+    // CCPWGL only?
+
     @meta.float
     lineWidthFactor = 1;
 
@@ -260,8 +269,6 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.boolean
     pickable = true;
 
-    @meta.struct("Tw2Effect")
-    pickEffect = null;
 
     @meta.quaternion
     rotation = quat.create();

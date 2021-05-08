@@ -19,6 +19,7 @@ export class TriMatrix extends meta.Model
     @meta.float
     _14 = 0;
 
+
     @meta.float
     _21 = 0;
 
@@ -31,6 +32,7 @@ export class TriMatrix extends meta.Model
     @meta.float
     _24 = 0;
 
+
     @meta.float
     _31 = 0;
 
@@ -42,6 +44,7 @@ export class TriMatrix extends meta.Model
 
     @meta.float
     _34 = 0;
+
 
     @meta.float
     _41 = 0;
