@@ -8,6 +8,9 @@ export class Tw2Parameter extends meta.Model
     @meta.string
     name = "";
 
+    @meta.struct
+    annotation = null;
+
     /**
      * Gets the parameter's constant buffer size
      * @returns {Number} 0 if invalid

@@ -146,6 +146,52 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Sets parameters from a sof material
+     * @param {EveSOFDataMaterial} material
+     * @param {Number} index
+     * @return {boolean}
+     */
+    SetSOFDataMaterial(material, index)
+    {
+        const { parameters } = material;
+
+        let prefix;
+
+        switch (index)
+        {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                prefix = "Mtl" + index;
+                break;
+
+            case 5:
+            case 6:
+                prefix = "PMtl" + index - 4;
+                break;
+
+            default:
+                throw new Error("Invalid material index");
+        }
+
+        const values = {};
+
+        for (const key in parameters)
+        {
+            if (parameters.hasOwnProperty(key))
+            {
+                if (prefix + key in this)
+                {
+                    values[prefix + key] = Array.from(parameters[key].value);
+                }
+            }
+        }
+
+        return this.SetParameters(values);
+    }
+
+    /**
      * Attaches an effect res
      * @param {Tw2EffectRes} res
      * @return {boolean}
@@ -453,6 +499,11 @@ export class Tw2Effect extends meta.Model
                                         });
                                     }
                                 }
+                            }
+
+                            if (name in this.parameters && this.shader && name in this.shader.annotations)
+                            {
+                                this.parameters[name].annotation = this.shader.annotations[name];
                             }
                         }
 
