@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { EveChild } from "eve/child";
-import { vec4, quat } from "math";
 import { Tw2CurveScalarKey } from "unsupported/curve";
+import { EveLocator2 } from "eve";
 
 
 @meta.notImplemented
@@ -21,12 +21,10 @@ export class EveChildEffectPropagator extends EveChild
     @meta.float
     maxLifeTime = 0;
 
-    @meta.float
+    @meta.struct()
     triggerSphereRadiusCurve = null;
 
     @meta.float
-    turbulenceAmplitude = null;
-
-    //localLocators = null;
+    turbulenceAmplitude = 0;
 
 }

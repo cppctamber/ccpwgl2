@@ -28,6 +28,9 @@ export class Tr2PointLight extends meta.Model
     @meta.string
     name = "";
 
+    @meta.uint
+    boneIndex = -1;
+
     @meta.float
     brightness = 0;
 

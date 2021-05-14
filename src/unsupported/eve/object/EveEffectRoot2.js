@@ -17,6 +17,9 @@ export class EveEffectRoot2 extends EveObject
     @meta.float
     boundingSphereRadius = 0;
 
+    @meta.list()
+    controllers = [];
+
     @meta.list("Tw2CurveSet")
     curveSets = [];
 
@@ -37,6 +40,9 @@ export class EveEffectRoot2 extends EveObject
 
     @meta.quaternion
     rotation = quat.create();
+
+    @meta.struct()
+    rotationCurve = null;
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);

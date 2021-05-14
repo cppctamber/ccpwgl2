@@ -23,6 +23,9 @@ export class AudEventCurve extends Tw2Curve
     @meta.string
     name = "";
 
+    @meta.uint
+    extrapolation = 0;
+
     @meta.list("AudEventKey")
     keys = [];
 

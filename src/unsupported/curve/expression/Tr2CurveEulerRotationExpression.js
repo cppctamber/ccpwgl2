@@ -11,6 +11,9 @@ export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
     @meta.string
     name = "";
 
+    @meta.float
+    input1 = 0;
+
     @meta.list()
     inputs = [];
 

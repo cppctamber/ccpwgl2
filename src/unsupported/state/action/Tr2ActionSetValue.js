@@ -10,6 +10,9 @@ export class Tr2ActionSetValue extends Tw2Action
     @meta.string
     attribute = "";
 
+    @meta.boolean
+    delayBinding = false;
+
     @meta.path
     path = "";
 

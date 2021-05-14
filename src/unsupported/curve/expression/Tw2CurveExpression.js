@@ -12,6 +12,14 @@ export class Tw2CurveExpression extends Tw2Curve
     @meta.list()
     inputs = [];
 
+    /**
+     *
+     * @constructor
+     */
+    GetValueAt()
+    {
+
+    }
 
     /**
      * Updates the current value at a specific time

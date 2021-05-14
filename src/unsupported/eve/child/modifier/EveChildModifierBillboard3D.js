@@ -7,4 +7,7 @@ import { EveChildModifier } from "./EveChildModifier";
 export class EveChildModifierBillboard3D extends EveChildModifier
 {
 
+    @meta.boolean
+    fixed = false;
+
 }
