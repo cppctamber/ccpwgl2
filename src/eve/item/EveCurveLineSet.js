@@ -269,7 +269,6 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.boolean
     pickable = true;
 
-
     @meta.quaternion
     rotation = quat.create();
 
@@ -520,30 +519,32 @@ export class EveCurveLineSet extends EveObjectSet
 
     /**
      * Unloads the line set's buffers
+     * @param  {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._vb)
         {
             device.gl.deleteBuffer(this._vb);
             this._vb = null;
         }
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
     /**
      * Rebuilds the line set
+     * @param  {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
         //this.Unload(true);
-        this.RebuildItems();
+        this.RebuildItems(opt);
         this._vbSize = this.lineCount;
         this._dirty = false;
         const visibleItems = this._visibleItems.length;
         if (!visibleItems)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 
@@ -652,7 +653,7 @@ export class EveCurveLineSet extends EveObjectSet
         device.gl.bufferData(device.gl.ARRAY_BUFFER, data, device.gl.STATIC_DRAW);
         device.gl.bindBuffer(device.gl.ARRAY_BUFFER, null);
 
-        super.Rebuild();
+        super.Rebuild(opt);
     }
 
     /**

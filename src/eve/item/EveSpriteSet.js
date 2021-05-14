@@ -197,9 +197,9 @@ export class EveSpriteSet extends EveObjectSet
 
     /**
      * Unloads the sprite set's buffers
-     * @param {Boolean} [skipEvent]
+     * @param {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         const gl = device.gl;
 
@@ -223,20 +223,21 @@ export class EveSpriteSet extends EveObjectSet
             this._instanceBuffer = null;
         }
 
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
     /**
      * Rebuilds the sprite set's buffers
+     * @param {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.RebuildItems();
+        this.RebuildItems(opt);
         this._dirty = false;
         const itemCount = this._visibleItems.length;
         if (!itemCount)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 

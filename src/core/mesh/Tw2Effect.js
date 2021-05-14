@@ -245,9 +245,8 @@ export class Tw2Effect extends meta.Model
 
     /**
      * Fires on value changes
-     * @param {Object} opt
      */
-    OnValueChanged(opt)
+    OnValueChanged()
     {
         let res;
 
@@ -503,7 +502,14 @@ export class Tw2Effect extends meta.Model
 
                             if (name in this.parameters && this.shader && name in this.shader.annotations)
                             {
-                                this.parameters[name].annotation = this.shader.annotations[name];
+                                try
+                                {
+                                    this.parameters[name].annotation = this.shader.annotations[name];
+                                }
+                                catch(err)
+                                {
+                                    // Herp
+                                }
                             }
                         }
 

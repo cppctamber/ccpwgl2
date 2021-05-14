@@ -58,18 +58,20 @@ export class EveObjectSet extends meta.Model
     /**
      * Fires when an item is modified
      * @param {*} item
-     * @param {*} opt
+     * @param {Object} [opt]
      */
     OnItemModified(item, opt)
     {
+        const skipEvents = opt && opt.skipEvents;
+
         if (this.items.includes(item))
         {
             this._dirty = true;
-            this.EmitEvent("item_modified", item, opt);
+            if (!skipEvents) this.EmitEvent("item_modified", item, opt);
         }
         else
         {
-            this.EmitEvent("item_removed", item, opt);
+            if (!skipEvents) this.EmitEvent("item_removed", item, opt);
             item.OffEvent("modified", this.OnItemModified);
         }
     }
@@ -77,54 +79,34 @@ export class EveObjectSet extends meta.Model
     /**
      * Creates an item from an options object and then adds it to the set
      * @param {*} [values={}]
-     * @param {Boolean} [skipUpdate]
-     * @param {Boolean} [skipEvents]
+     * @param {Object} [opt]
      * @returns {*}
      */
-    CreateItem(values = {}, skipUpdate, skipEvents)
+    CreateItem(values = {}, opt)
     {
         const item = this.constructor.Item.from(values);
-
-        this.AddItem(item, true, true);
-
-        if (!skipEvents)
-        {
-            this.EmitEvent("item_created", item);
-        }
-
-        if (!skipUpdate)
-        {
-            this.UpdateValues();
-        }
-
+        this.items.push(item);
+        this._dirty = true;
+        item.OnEvent("modified", this.OnItemModified, this);
+        if (!opt || !opt.skipEvents) this.EmitEvent("item_created", item, opt);
+        if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
         return item;
     }
 
     /**
      * Adds a set item
      * @param {*} item
-     * @param {Boolean} [skipUpdate]
-     * @param {Boolean} [skipEvents]
+     * @param {Object} [opt]
      */
-    AddItem(item, skipUpdate, skipEvents)
+    AddItem(item, opt)
     {
         if (!this.items.includes(item))
         {
             this.items.push(item);
             this._dirty = true;
-
             item.OnEvent("modified", this.OnItemModified, this);
-
-            if (!skipEvents)
-            {
-                this.EmitEvent("item_added", item);
-            }
-
-            if (!skipUpdate)
-            {
-                this.UpdateValues(item);
-            }
-
+            if (!opt || !opt.skipEvents) this.EmitEvent("item_added", item, opt);
+            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
             return true;
         }
         return false;
@@ -133,29 +115,19 @@ export class EveObjectSet extends meta.Model
     /**
      * Removes a set item
      * @param {*} item
-     * @param {Boolean} [skipUpdate]
-     * @param {Boolean} [skipEvents]
+     * @param {object} [opt]
+     * @returns Boolean
      */
-    RemoveItem(item, skipUpdate, skipEvents)
+    RemoveItem(item, opt)
     {
         const index = this.items.indexOf(item);
         if (index !== -1)
         {
             this.items.splice(index, 1);
             this._dirty = true;
-
             item.OffEvent("modified", this.OnItemModified);
-
-            if (!skipEvents)
-            {
-                this.EmitEvent("item_removed", item);
-            }
-
-            if (!skipUpdate)
-            {
-                this.UpdateValues(item);
-            }
-
+            if (!opt || !opt.skipEvents) this.EmitEvent("item_removed", item, opt);
+            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
             return true;
         }
         return false;
@@ -163,47 +135,52 @@ export class EveObjectSet extends meta.Model
 
     /**
      * Clears all items
-     * @param {Boolean} [skipUpdate]
-     * @param {Boolean} [skipEvents]
+     * @param {Object} [opt]
+     * @returns Boolean
      */
-    ClearItems(skipUpdate, skipEvents)
+    ClearItems(opt)
     {
+        if (!this.items.length) return false;
+
         let items;
-        if (!skipEvents)
-        {
-            items = Array.from(this.items);
-        }
+
+        const skipEvents = opt && opt.skipEvents;
+        if (!skipEvents) items = Array.from(this.items);
 
         for (let i = 0; i < this.items.length; i++)
         {
-            this.RemoveItem(this.items[i], true, true);
+            this.RemoveItem(this.items[i], { skipEvents: true, skipUpdate: true });
             i--;
         }
 
         if (!skipEvents)
         {
-            this.EmitEvent("items_cleared", items);
+            this.EmitEvent("items_cleared", items, opt);
         }
 
-        if (!skipUpdate)
+        if (!opt || !opt.skipUpdate)
         {
-            this.UpdateValues();
+            this.UpdateValues(opt);
         }
+
+        return true;
     }
 
     /**
      * Rebuilds items
+     * @param  {Object} [opt]
      */
-    RebuildItems()
+    RebuildItems(opt)
     {
         this._visibleItems.splice(0);
         for (let i = 0; i < this.items.length; i++)
         {
             const item = this.items[i];
+            const skipEvents = opt && opt.skipEvents;
 
             if (!item.HasEvent("modified", this.OnItemModified))
             {
-                this.EmitEvent("item_added", item);
+                if (!skipEvents) this.EmitEvent("item_added", item,  opt);
                 item.OnEvent("modified", this.OnItemModified, this);
             }
 
@@ -212,9 +189,9 @@ export class EveObjectSet extends meta.Model
                 this._visibleItems.push(item);
             }
 
-            if (item._dirty)
+            if (item._dirty && !skipEvents)
             {
-                this.EmitEvent("item_rebuilt", item);
+                this.EmitEvent("item_rebuilt", item, opt);
             }
 
             item._dirty = false;
@@ -258,21 +235,26 @@ export class EveObjectSet extends meta.Model
 
     /**
      * Unloads the set's buffers
+     * @param  {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
-        if (!skipEvent)
+        if (!opt || !opt.skipEvents)
         {
-            this.EmitEvent("unloaded");
+            this.EmitEvent("unloaded", this, opt);
         }
     }
 
     /**
      * Rebuilds the set
+     * @param {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.EmitEvent("rebuilt");
+        if (!opt || !opt.skipEvents)
+        {
+            this.EmitEvent("rebuilt", this, opt);
+        }
     }
 
     /**

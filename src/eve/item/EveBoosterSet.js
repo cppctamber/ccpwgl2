@@ -190,16 +190,16 @@ export class EveBoosterSet extends EveObjectSet
 
     /**
      * Rebuilds a booster set's items
-     * @param {Boolean} [skipUpdate]
+     * @param {Object} [opt
      */
-    RebuildItems(skipUpdate)
+    RebuildItems(opt)
     {
         const
             glows = this.glows,
             g = EveBoosterSet.global,
             spritePos = g.vec3_0;
 
-        if (glows) glows.ClearItems();
+        if (glows) glows.ClearItems({ skipUpdate: true });
         this._visibleItems = [];
 
         for (let i = 0; i < this.items.length; i++)
@@ -230,7 +230,7 @@ export class EveBoosterSet extends EveObjectSet
                             maxScale: src.glowScale * scale,
                             color: src.glowColor,
                             warpColor: src.warpGlowColor
-                        });
+                        }, opt);
                     }
 
                     if (this.visible.symHalos && item.visible.symHalo)
@@ -244,7 +244,7 @@ export class EveBoosterSet extends EveObjectSet
                             maxScale: src.symHaloScale * scale,
                             color: src.haloColor,
                             warpColor: src.warpHaloColor
-                        });
+                        }, opt);
                     }
 
                     if (this.visible.halos && item.visible.halo)
@@ -258,7 +258,7 @@ export class EveBoosterSet extends EveObjectSet
                             maxScale: src.haloScaleY * scale,
                             color: src.haloColor,
                             warpColor: src.warpHaloColor
-                        });
+                        }, opt);
                     }
                 }
 
@@ -379,9 +379,9 @@ export class EveBoosterSet extends EveObjectSet
 
     /**
      * Unloads the booster's buffers
-     * @param {Boolean} [skipEvent]
+     * @param {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._positions)
         {
@@ -391,23 +391,24 @@ export class EveBoosterSet extends EveObjectSet
 
         if (this.glows)
         {
-            this.glows.Unload(skipEvent);
+            this.glows.Unload(opt);
         }
 
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
     /**
      * Rebuilds the boosters
+     * @param {object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.RebuildItems();
+        this.RebuildItems(opt);
         const itemCount = this._visibleItems.length;
         this._dirty = false;
         if (!itemCount)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 
@@ -449,8 +450,8 @@ export class EveBoosterSet extends EveObjectSet
         d.gl.bindBuffer(d.gl.ARRAY_BUFFER, null);
         this._positions.count = itemCount * 12 * 3;
 
-        if (this.glows) this.glows.Rebuild();
-        super.Rebuild();
+        if (this.glows) this.glows.Rebuild(opt);
+        super.Rebuild(opt);
     }
 
     /**

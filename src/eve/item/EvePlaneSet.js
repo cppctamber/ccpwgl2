@@ -117,17 +117,17 @@ export class EvePlaneSetItem extends EveObjectSetItem
      *
      * @param {EvePlaneSetItem} a
      * @param {Object} values
-     * @param {Object} [obj]
+     * @param {Object} [opt]
      * @return {boolean}
      */
-    static set(a, values, obj)
+    static set(a, values, opt)
     {
         if (values && values.maskMapAtlasIndex !== undefined)
         {
             values.maskAtlasID = values.maskMapAtlasIndex;
         }
 
-        return super.set(a, values, obj);
+        return super.set(a, values, opt);
     }
 
 }
@@ -188,9 +188,9 @@ export class EvePlaneSet extends EveObjectSet
 
     /**
      * Unloads the set's buffers
-     * @param {Boolean} [skipEvent]
+     * @param {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._vertexBuffer)
         {
@@ -204,21 +204,22 @@ export class EvePlaneSet extends EveObjectSet
             this._indexBuffer = null;
         }
 
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
     /**
      * Rebuilds the plane set's buffers
+     * @param {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.Unload(true);
-        this.RebuildItems();
+        this.Unload({ skipEvents: true });
+        this.RebuildItems(opt);
         this._dirty = false;
         const itemCount = this._visibleItems.length;
         if (!itemCount)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 
@@ -312,7 +313,7 @@ export class EvePlaneSet extends EveObjectSet
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount * 6;
 
-        super.Rebuild();
+        super.Rebuild(opt);
     }
 
     /**

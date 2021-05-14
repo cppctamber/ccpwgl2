@@ -341,6 +341,7 @@ export class Tw2SamplerState
     /**
      * Resolves modes
      * @param {Object} modes
+     * @returns {Boolean} true if updated
      */
     ResolveModes(modes = {})
     {
@@ -369,7 +370,10 @@ export class Tw2SamplerState
         if (this.hash === null)
         {
             this.ComputeHash();
+            return true;
         }
+
+        return false;
     }
 
     /**

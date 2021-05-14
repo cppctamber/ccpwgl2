@@ -82,8 +82,9 @@ export class EveSpaceObjectDecal extends meta.Model
 
     /**
      * Unloads the decal's buffers
+     * @param {object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._indexBuffer)
         {
@@ -91,18 +92,20 @@ export class EveSpaceObjectDecal extends meta.Model
             this._indexBuffer = null;
         }
 
-        if (!skipEvent)
+        if  (!opt || !opt.skipEvents)
         {
-            this.EmitEvent("unloaded");
+            this.EmitEvent("unloaded", this, opt);
         }
     }
 
     /**
      * Rebuilds the object's buffers
+     * @param  {object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.Unload(true);
+        this.Unload({ skipEvents: true });
+
         if (this.indexBuffer)
         {
             const
@@ -115,7 +118,11 @@ export class EveSpaceObjectDecal extends meta.Model
         }
 
         this._dirty = false;
-        this.EmitEvent("rebuilt");
+
+        if  (!opt || !opt.skipEvents)
+        {
+            this.EmitEvent("rebuilt", this, opt);
+        }
     }
 
     /**

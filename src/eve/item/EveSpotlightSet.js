@@ -127,9 +127,9 @@ export class EveSpotlightSet extends EveObjectSet
 
     /**
      * Unloads the spotlight set's buffers
-     * @param {Boolean} [skipEvent]
+     * @param {Object} [opt]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._coneVertexBuffer)
         {
@@ -149,7 +149,7 @@ export class EveSpotlightSet extends EveObjectSet
             this._indexBuffer = null;
         }
 
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
     /**
@@ -174,7 +174,7 @@ export class EveSpotlightSet extends EveObjectSet
      * @param {Number} e
      * @param {Number} f
      */
-    SetIndexOrder(a, b,  c, d, e, f)
+    SetIndexOrder(a, b, c, d, e, f)
     {
         this._indexOrder[0] = a;
         this._indexOrder[1] = b;
@@ -187,16 +187,17 @@ export class EveSpotlightSet extends EveObjectSet
 
     /**
      * Rebuilds the spotlight set's buffers
+     * @param {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.Unload(true);
-        this.RebuildItems();
+        this.Unload({ skipEvents: true });
+        this.RebuildItems(opt);
         this._dirty = false;
         const itemCount = this._visibleItems.length;
         if (!itemCount)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 
@@ -340,7 +341,7 @@ export class EveSpotlightSet extends EveObjectSet
         d.gl.bindBuffer(d.gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount;
 
-        super.Rebuild();
+        super.Rebuild(opt);
     }
 
     /**
@@ -416,10 +417,10 @@ export class EveSpotlightSet extends EveObjectSet
     /**
      * Creates an eve spotlight set from a plain object
      * @param {*} [values]
-     * @param {*} [options]
+     * @param {*} [opt]
      * @returns {EveSpotlightSet}
      */
-    static from(values, options)
+    static from(values, opt)
     {
         const item = new EveSpotlightSet();
 
@@ -460,7 +461,7 @@ export class EveSpotlightSet extends EveObjectSet
             }
         }
 
-        if (!options || !options.skipUpdate)
+        if (!opt || !opt.skipUpdate)
         {
             item.Initialize();
         }

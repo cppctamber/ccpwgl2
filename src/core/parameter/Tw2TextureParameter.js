@@ -199,9 +199,8 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Fire on value changes
-     * @param {Object} [opt]
      */
-    OnValueChanged(opt)
+    OnValueChanged()
     {
         // Don't update res when a texture is attached
         this.resourcePath = this.resourcePath ? this.resourcePath.toLowerCase() : "";

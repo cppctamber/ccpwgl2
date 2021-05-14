@@ -301,26 +301,14 @@ export class Model
 
     /**
      * Fires on value updates
-     * @param opt
+     * @param {Object} [opt]
      */
-    UpdateValues(opt = {})
+    UpdateValues(opt)
     {
-        const { skipEvents, ...options } = opt;
-
-        if (!skipEvents)
-        {
-            this.EmitEvent("modify", this, opt);
-        }
-
-        if (this["OnValueChanged"])
-        {
-            this["OnValueChanged"](options);
-        }
-
-        if (!skipEvents)
-        {
-            this.EmitEvent("modified", this, opt);
-        }
+        const skipEvents =  opt && opt.skipEvents;
+        if (!skipEvents) this.EmitEvent("modify", this, opt);
+        if (this["OnValueChanged"]) this["OnValueChanged"](opt);
+        if (!skipEvents) this.EmitEvent("modified", this, opt);
     }
 
     /**
@@ -894,4 +882,3 @@ export class Model
     }
 
 }
-

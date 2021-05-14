@@ -57,9 +57,8 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     /**
      * Fire on value changes
-     * @param {Object} [opt]
      */
-    OnValueChanged(opt)
+    OnValueChanged()
     {
         mat4.fromRotationTranslationScaleOrigin(this.transform, this.rotation, this.translation, this.scaling, this.rotationCenter);
         mat4.transpose(this.worldTransform, this.transform);

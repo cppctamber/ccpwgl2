@@ -82,10 +82,8 @@ export class Tw2VectorParameter extends meta.Model
 
     /**
      * Fires on value changes
-     * @param {*} [controller]- An optional parameter for tracking the object that called the function
-     * @param {Boolean} [skipUpdate] - An optional parameter to skip updates
      */
-    OnValueChanged(controller, skipUpdate)
+    OnValueChanged()
     {
         if (this._constantBuffer)
         {

@@ -603,12 +603,13 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Rebuilds the turret set
      * Todo: Move all rebuild methods here
+     * @param {Object} [opt]
      */
-    Rebuild()
+    Rebuild(opt)
     {
-        this.RebuildItems();
+        this.RebuildItems(opt);
         this._dirty = false;
-        super.Rebuild();
+        super.Rebuild(opt);
     }
 
     /**
