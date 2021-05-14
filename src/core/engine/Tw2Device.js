@@ -317,6 +317,7 @@ export class Tw2Device extends Tw2EventEmitter
         // Handle different webgl versions
         if (this.glVersion === 1)
         {
+            if (params.depth) this.GetExtension("WEBGL_depth_texture");
             this.GetExtension("OES_standard_derivatives");
             this.GetExtension("OES_element_index_uint");
             this.GetExtension("OES_texture_float");
@@ -332,10 +333,7 @@ export class Tw2Device extends Tw2EventEmitter
             gl.hasInstancedArrays = returnTrue;
         }
 
-        if (params.depth)
-        {
-            this.GetExtension("WEBGL_depth_texture");
-        }
+
 
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
         if (anisotropicFilterExt)

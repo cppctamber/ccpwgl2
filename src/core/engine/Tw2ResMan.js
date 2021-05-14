@@ -17,7 +17,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     maxWatchedUpdateTime = 0.05;
     maxWatchedCount = 0;
-    maxWatchedTime = 60;
+    maxWatchedTime = 240;
 
     _prepareBudget = 0;
     _prepareQueue = [];
