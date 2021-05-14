@@ -46,6 +46,8 @@ export class EveSpaceScene extends meta.Model
     @meta.color
     fogColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
 
+    //  ------------------[ Not supported by latest environment shader ]--------------------
+
     @meta.float
     fogEnd = 0;
 
@@ -54,6 +56,17 @@ export class EveSpaceScene extends meta.Model
 
     @meta.float
     fogStart = 0;
+
+    @meta.uint
+    fogBlur = 0;
+
+    @meta.uint
+    fogType = 0;
+
+    //  ------------------------------------------------------------------------------------
+
+    @meta.float
+    contrast = 1;
 
     @meta.notImplemented
     @meta.path
@@ -121,12 +134,6 @@ export class EveSpaceScene extends meta.Model
 
     @meta.vector3
     envMapScaling = vec3.fromValues(1, 1, 1); // Should this come from the background effect?
-
-    @meta.uint
-    fogBlur = 0;
-
-    @meta.uint
-    fogType = 0;
 
     @meta.list("EveLensflare")
     lensflares = [];
@@ -770,13 +777,13 @@ export class EveSpaceScene extends meta.Model
 
             vs.Set("FogFactors", [ this.fogEnd * f, f, this.fogMax, 1 ]);
             ps.Set("SceneData.FogColor", this.fogColor);
-            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
+            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, this.contrast ]);
         }
         else
         {
             vs.Set("FogFactors", [ 0, 0, 0, 0 ]);
             ps.Set("SceneData.FogColor", [ 0, 0, 0, 0 ]);
-            ps.Set("MiscSettings", [ d.currentTime, 0, 0, 1 ]);
+            ps.Set("MiscSettings", [ d.currentTime, 0, 0, this.contrast ]);
         }
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
