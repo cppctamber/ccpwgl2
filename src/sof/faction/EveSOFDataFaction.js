@@ -71,11 +71,32 @@ export class EveSOFDataFaction extends meta.Model
      * Gets a color by type
      * @param {Number} type
      * @param {vec4} out
+     * @param {Number} [fallback]
      * @returns {vec4} out
      */
-    GetColorType(type, out)
+    GetColorType(type, out, fallback)
     {
-        return this.colorSet.Get(type, out);
+        if (this.HasColorType(type))
+        {
+            return this.colorSet.Get(type, out);
+        }
+        else if (fallback !== undefined && this.HasColorType(fallback))
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Using fallback value, could not resolve color type: " + type
+            });
+            return this.colorSet.Get(fallback, out);
+        }
+
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Could not resolve color type: " + type
+        });
+
+        // Default to white?
+        out[0] = out[1] = out[2] = out[3] = 1;
+        return out;
     }
 
     /**
@@ -91,27 +112,46 @@ export class EveSOFDataFaction extends meta.Model
     /**
      * Gets an area by type
      * @param {Number} type
+     * @param {Number} [fallback]
      * @returns {Boolean}
      */
-    GetAreaType(type)
+    GetAreaType(type, fallback)
     {
         if (!this.areaTypes)
         {
             throw new ErrSOFAreaTypeNotFound({ type });
         }
 
-        return this.areaTypes.Get(type);
+        if (this.HasAreaType(type))
+        {
+            return this.areaTypes.Get(type);
+        }
+        else if (fallback !== undefined && this.HasAreaType(fallback))
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Using fallback value, could not resolve area type: " + type
+            });
+            return this.areaTypes.Get(fallback);
+        }
+
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Could not resolve area type: " + type
+        });
     }
 
     /**
      * Assigns an area type
      * @param {Number} type
      * @param {Object} out
+     * @param {Number}[fallback]
      * @returns {Object} out
      */
-    AssignAreaType(type, out)
+    AssignAreaType(type, out, fallback)
     {
-        return this.GetAreaType(type).Assign(out);
+        const  areaType = this.GetAreaType(type, fallback);
+        if (areaType)  areaType.Assign(out);
     }
 
     /**

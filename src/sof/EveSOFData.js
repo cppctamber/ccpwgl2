@@ -54,7 +54,7 @@ import { EveSOFDataFaction } from "sof/faction";
 import { EveHazeSet, EveHazeSetItem } from "unsupported/eve";
 
 @meta.type("EveSOFData")
-export class EveSOFData
+export class EveSOFData extends meta.Model
 {
 
     @meta.list("EveSOFDataFaction")
@@ -109,24 +109,49 @@ export class EveSOFData
             shadowSkinned: null
         },
 
-        billBoards : [
-            "cdn:/video/billboards/common/egonics_immersia.webm",
-            "cdn:/video/billboards/common/eve_cdia_guristas_billboard.webm",
-            "cdn:/video/billboards/common/eve_shipad_abaddon_timeless.webm",
-            "cdn:/video/billboards/common/eve_shipad_astero_timeless.webm",
-            "cdn:/video/billboards/common/eve_shipad_cynabal_timeless.webm",
-            "cdn:/video/billboards/common/eve_shipad_dominix_timeless.webm",
-            "cdn:/video/billboards/common/eve_shipad_drake_timeless.webm",
-            "cdn:/video/billboards/common/genolution.webm",
-            "cdn:/video/billboards/common/khanid_works.webm",
-            "cdn:/video/billboards/common/laidai.webm",
-            "cdn:/video/billboards/common/matigu_sushi.webm",
-            "cdn:/video/billboards/common/mirelle_glasses.webm",
-            "cdn:/video/billboards/common/project_discovery_covid.webm",
-            "cdn:/video/billboards/common/quafe.webm",
-            "cdn:/video/billboards/common/sinfina_mondo.webm",
-            "cdn:/video/billboards/takeover/eve_concord_billboard_takeover.webm",
-            "cdn:/video/billboards/triglavianhangar/trigstationbillboard.webm",
+        billBoards: [
+            "video/billboards/common/divinity_social.webm",
+            "video/billboards/common/egonics_immersia.webm",
+            "video/billboards/common/eve_cdia_guristas_billboard.webm",
+            "video/billboards/common/eve_shipad_abaddon_timeless.webm",
+            "video/billboards/common/eve_shipad_astero_timeless.webm",
+            "video/billboards/common/eve_shipad_cynabal_timeless.webm",
+            "video/billboards/common/eve_shipad_dominix_timeless.webm",
+            "video/billboards/common/eve_shipad_drake_timeless.webm",
+            "video/billboards/common/genolution.webm",
+            "video/billboards/common/ittu_ittu.webm",
+            "video/billboards/common/khanid_works.webm",
+            "video/billboards/common/laidai.webm",
+            "video/billboards/common/mabebu_trading.webm",
+            "video/billboards/common/matigu_sushi.webm",
+            "video/billboards/common/mirelle_glasses.webm",
+            "video/billboards/common/project_discovery_covid.webm",
+            "video/billboards/common/quafe.webm",
+            "video/billboards/common/sinfina_mondo.webm",
+            "video/billboards/fallback.png",
+            "video/billboards/takeover/eve_concord_billboard_takeover.webm",
+            "video/billboards/triglavianhangar/trigstationbillboard.webm",
+            "video/billboards_zn/common/fallback.webm",
+            "video/billboards_zn/fallback.png",
+            "video/billboards_zn/takeover/zorya4vorbis48.webm",
+            "video/billboards_zn/triglavianhangar/trigstationbillboard.webm",
+            "video/billboardswide/anoikis outlaws corp advert.webm",
+            "video/billboardswide/arc_billboard_chatchannel_v3.webm",
+            "video/billboardswide/corp channel advertisment.webm",
+            "video/billboardswide/evepodcasts.webm",
+            "video/billboardswide/guardiansgala3.webm",
+            "video/billboardswide/guardiansgala3a.webm",
+            "video/billboardswide/guardiansgala3b.webm",
+            "video/billboardswide/newanimation30fps_nosound_1024x576.webm",
+            "video/billboardswide/off_the_reservation..webm",
+            "video/billboardswide/rekium promo banner.webm",
+            "video/billboardswide/sinister. corporation.webm",
+            "video/billboardswide/solar_fleet_nosound.webm",
+            "video/billboardswide/solitude agora advert with nebula.webm",
+            "video/billboardswide/spatial instability billboard submission.webm",
+            "video/billboardswide/triumvirate_billboard_v1_1.webm",
+            "video/billboardswide/wolfthorninititive.webm",
+            "video/billboardswide/wreckingmachine.webm"
         ],
 
         effectPath: {
@@ -281,6 +306,17 @@ export class EveSOFData
     HasHull(name)
     {
         return !!findElementByPropertyValue(this.hull, "name", name);
+    }
+
+    /**
+     * Gets a hull's res path inserts
+     * @param {String} hull
+     * @return {Array<String>}
+     */
+    GetHullResPathInserts(hull)
+    {
+        this.GetHull(hull);
+        return EveSOFDataFaction.GetHullResPathInserts(hull);
     }
 
     /**
@@ -610,6 +646,47 @@ export class EveSOFData
     }
 
     /**
+     * Gets a parameter object from an array of material names
+     * @param {Array<String>} arr
+     * @return Object
+     */
+    GetParametersFromMaterials(arr)
+    {
+        let values = {};
+
+        for (let i = 0; i < 5; i++)
+        {
+            if (arr[i])
+            {
+                const material = this.GetMaterial(arr[i]);
+
+                let prefix;
+                switch (i)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                        prefix = "Mtl" + (i + 1);
+                        break;
+
+                    case 4:
+                    case 5:
+                        prefix = "PMtl" + (i - 3);
+                        break;
+                }
+
+                material.parameters.forEach(p =>
+                {
+                    values[prefix + p.name] = Array.from(p.value);
+                });
+            }
+        }
+
+        return values;
+    }
+
+    /**
      * Gets the names from a sof array
      * - If passed an array for out, returns names only in an array
      * - If passed an object for out, returns names and descriptions
@@ -665,7 +742,7 @@ export class EveSOFData
         this.SetupLocators(data, obj, sof, options);
         this.SetupInstancedMesh(data, obj, sof, options);
 
-        this.SetupHazeSets(data, obj,  sof, options);
+        this.SetupHazeSets(data, obj, sof, options);
 
         //  TODO
         this.SetupAudio(data, obj, sof, options);
@@ -723,6 +800,54 @@ export class EveSOFData
         });
     }
 
+    /*
+    //  Temporary  haze sets from sprite sets for testing
+    static SetupHazeSets(data, obj, sof, options)
+    {
+        const { isSkinned = false, hazeSets = [] } = sof.hull;
+
+        hazeSets.forEach(srcSet =>
+        {
+            //  If they aren't visible, don't bother to create them
+            if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup))
+            {
+                return;
+            }
+
+            const set = new EveSpriteSet();
+            set.name = srcSet.name;
+            set.display = true;
+            set.useQuads = true;
+            set.skinned = srcSet.skinned && isSkinned;
+            set.effect = options.effect.sprite;
+
+            srcSet.items.forEach(srcItem =>
+            {
+                const color = vec4.fromValues(1, 1, 1, 1);
+                sof.faction.GetColorType(srcItem.colorType, color, 0);
+                const scale = Math.max(srcItem.scaling[0], srcItem.scaling[1], srcItem.scaling[2]);
+
+                set.CreateItem({
+                    name: srcSet.name + "_temporary",
+                    color,
+                    boneIndex: srcItem.boneIndex,
+                    falloff: 0.95, //srcItem.hazeFalloff,
+                    intensity: srcItem.hazeBrightness,
+                    position: srcItem.position,
+                    minScale: 1, //scale,
+                    maxScale: 1  //scale
+                });
+
+            });
+
+            set.Initialize();
+            const arr = obj.attachments || obj.spriteSets;
+            arr.push(set);
+        });
+
+    }
+     */
+
     /**
      * Sets up haze sets
      * // TODO: Share haze sets...
@@ -734,6 +859,11 @@ export class EveSOFData
      */
     static SetupHazeSets(data, obj, sof, options)
     {
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Haze sets not implemented"
+        });
+
         sof.hull.hazeSets.forEach(srcSet =>
         {
             const haze = new EveHazeSet();
@@ -741,22 +871,7 @@ export class EveSOFData
             srcSet.items.forEach(srcSetItem =>
             {
                 const item = EveHazeSetItem.from(srcSetItem);
-
-                const { colorType } = srcSetItem;
-
-                if (sof.faction.HasColorType(colorType))
-                {
-                    sof.faction.GetColorType(colorType, item.color);
-                }
-                else
-                {
-                    sof.faction.GetColorType(0, item.color);
-                    tw2.Debug({
-                        name: "Space object factory",
-                        message: "Using primary colours, could not resolve glow color type: " + colorType
-                    });
-                }
-
+                sof.faction.GetColorType(srcSetItem.colorType, item.color, 0);
                 haze.items.push(item);
             });
 
@@ -975,21 +1090,8 @@ export class EveSOFData
                 }
 
                 // Area parameters
-                // Todo: Clean this up
-                let areaData = { colorType: -1 };
-
-                if (sof.faction.HasAreaType(areaType))
-                {
-                    sof.faction.AssignAreaType(areaType, areaData);
-                }
-                else
-                {
-                    sof.faction.AssignAreaType(0, areaData);
-                    tw2.Debug({
-                        name: "Space object factory",
-                        message: "Could not resolve area type: " + areaType
-                    });
-                }
+                const areaData = { colorType: -1 };
+                sof.faction.AssignAreaType(areaType, areaData, 0);
 
                 // Get custom materials
                 Object.assign(areaData, sof.area);
@@ -999,21 +1101,7 @@ export class EveSOFData
                 const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
                 if (glowColor)
                 {
-                    const { colorType } = areaData;
-
-                    if (sof.faction.HasColorType(colorType))
-                    {
-                        sof.faction.GetColorType(colorType, glowColor);
-                    }
-                    else
-                    {
-                        sof.faction.GetColorType(0, glowColor);
-                        tw2.Debug({
-                            name: "Space object factory",
-                            message: "Using primary colours, could not resolve glow color type: " + colorType
-                        });
-                    }
-
+                    sof.faction.GetColorType(areaData.colorType, glowColor, 0);
                     vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
                     config.parameters.GeneralGlowColor = glowColor; //temp
                 }
@@ -1077,22 +1165,7 @@ export class EveSOFData
             srcSet.items.forEach(srcItem =>
             {
                 const color = vec4.fromValues(1, 1, 1, 1);
-
-                if (sof.faction.HasColorType(srcItem.colorType))
-                {
-                    sof.faction.GetColorType(srcItem.colorType, color);
-                }
-                else
-                {
-                    sof.faction.GetColorType(0, color);
-
-                    tw2.Debug({
-                        name: "Space object factory",
-                        message: "Using primary color for spriteSet: " + srcItem.colorType
-                    });
-
-                }
-
+                sof.faction.GetColorType(srcItem.colorType, color, 0);
                 set.items.push(EveSpriteSetItem.from(Object.assign({}, srcItem, { color })));
             });
 
@@ -1185,7 +1258,9 @@ export class EveSOFData
     static SetupPlaneSets(data, obj, sof, options)
     {
         const { isSkinned, planeSets } = sof.hull;
-        const { planeAlpha=1 } = options.multiplier;
+        const { planeAlpha = 1 } = options.multiplier;
+
+        const _billboards = [];
 
         planeSets.forEach(srcSet =>
         {
@@ -1194,14 +1269,12 @@ export class EveSOFData
 
             // Add a random billboard
             let MaskMap = srcSet.maskMapResPath;
+
+            // Try to guess billboards
             const nameUpper = set.name.split(" ").join("").toUpperCase();
-            if (nameUpper.includes("BILLBOARD"))
+            if (nameUpper.includes("BILLBOARD") || nameUpper.includes("VIDEOS"))
             {
-                const { billBoards=[] } = options;
-                if  (billBoards.length)
-                {
-                    MaskMap = billBoards[num.randomInt(0, billBoards.length - 1)];
-                }
+                _billboards.push(set);
             }
 
             // TODO: Usage
@@ -1258,6 +1331,22 @@ export class EveSOFData
                 arr.push(set);
             }
         });
+
+        if (_billboards.length)
+        {
+            // Temp add billboard randomizer
+            obj.RandomizeBillboards = function()
+            {
+                _billboards.forEach(billboard =>
+                {
+                    const { billBoards = [] } = options;
+                    billboard.effect.parameters.MaskMap.SetValue("cdn:/" + billBoards[num.randomInt(0, billBoards.length - 1)]);
+                });
+            };
+
+            obj.RandomizeBillboards();
+        }
+
     }
 
     static isZeroColor(color)
@@ -1321,21 +1410,7 @@ export class EveSOFData
                 faction.GetLogoType(logoType).Assign(config);
 
                 const { DecalGlowColor } = config.parameters;
-                if (DecalGlowColor)
-                {
-                    if (faction.HasColorType(glowColorType))
-                    {
-                        faction.GetColorType(glowColorType, DecalGlowColor);
-                    }
-                    else
-                    {
-                        faction.GetColorType(0, DecalGlowColor);
-                        tw2.Debug({
-                            name: "Space object factory",
-                            message: `Using primary color for decal glow: ${name} (${glowColorType})`
-                        });
-                    }
-                }
+                if (DecalGlowColor) faction.GetColorType(glowColorType, DecalGlowColor, 0);
 
                 // Killmarks
                 if (usage === 1)
@@ -1411,7 +1486,6 @@ export class EveSOFData
 
         Color0[3] = boosterAlpha;
         Color1[3] = boosterAlpha;
-
 
 
         // obj.boosters = obj.boosters || new EveBoosterSet();
