@@ -65,7 +65,10 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     spriteScale = vec3.fromValues(1, 1, 1);
 
     @meta.matrix4
-    transform = mat4.create();
+    transform = mat4.create()
+
+    @meta.uint
+    colorType = -1;
 
 }
 
@@ -191,7 +194,7 @@ export class EveSpotlightSet extends EveObjectSet
      */
     Rebuild(opt)
     {
-        this.Unload({ skipEvents: true });
+        //this.Unload({ skipEvents: true });
         this.RebuildItems(opt);
         this._dirty = false;
         const itemCount = this._visibleItems.length;
