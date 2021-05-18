@@ -213,7 +213,7 @@ export class EvePlaneSet extends EveObjectSet
      */
     Rebuild(opt)
     {
-        this.Unload({ skipEvents: true });
+        //this.Unload({ skipEvents: true });
         this.RebuildItems(opt);
         this._dirty = false;
         const itemCount = this._visibleItems.length;
