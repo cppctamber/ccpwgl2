@@ -119,3 +119,20 @@ export function toUniqueArray(a)
 {
     return Array.from(new Set(toArray(a)));
 }
+
+/**
+ * Returns an array in chuncks
+ * @param {Array} arr
+ * @param {Number} chunkSize
+ * @return {Array}
+ */
+export function chunkArray(arr, chunkSize)
+{
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize)
+    {
+        const chunk = arr.slice(i, i + chunkSize);
+        res.push(chunk);
+    }
+    return res;
+}
