@@ -186,3 +186,39 @@ export function getKeyFromValue(obj, value)
         }
     }
 }
+
+/**
+ * Create an object composed of the picked object properties
+ * @param {Object} object
+ * @param {string[]} keys
+ * @returns {Object}
+ */
+export function pick(object, keys)
+{
+    return keys.reduce((obj, key) =>
+    {
+        if (object && Object.prototype.hasOwnProperty.call(object, key))
+        {
+            obj[key] = object[key];
+        }
+        return obj;
+    }, {});
+}
+
+/**
+ * Downloads an object as a json file
+ * @param {Object} exportObj
+ * @param {String} exportName
+ */
+export function downloadObjectAsJson(exportObj, exportName)
+{
+    const
+        dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj)),
+        downloadAnchorNode = document.createElement("a");
+
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
