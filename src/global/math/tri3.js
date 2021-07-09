@@ -386,6 +386,24 @@ tri3.getMidpoint = function(out, a)
     return out;
 };
 
+let tri3_0 = null;
+
+/**
+ * Gets normal vertices
+ *
+ * @param {vec3} out
+ * @param {vec3} v1
+ * @param {vec3} v2
+ * @param {vec3} v3
+ * @return {vec3} out
+ */
+tri3.getNormalFromVertices =  function(out, v1, v2, v3)
+{
+    if (!tri3_0) tri3_0 = tri3.create();
+    tri3.fromVertices(tri3_0, v1, v2, v3);
+    return tri3.getNormal(out, tri3_0);
+};
+
 /**
  * Gets a triangle's normal
  *
