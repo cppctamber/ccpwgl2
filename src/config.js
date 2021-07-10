@@ -17,11 +17,11 @@ const Rerouted = [
     "cdn:/texture/global/spotramp.dds",
     "cdn:/texture/global/whitesharp.dds",
     "cdn:/texture/particle/whitesharp.dds",
+    "cdn:/dx9/scene/starfield/stars01_tile2.dds"
 ];
 
 
 /****************** TEMPORARY *************************/
-
 
 /**
  * Register global configurations
@@ -37,8 +37,20 @@ export const config = {
         // Exchange "res" prefix in .black files with "cdn" so there are no conflicts with ccpwgl paths
         "*": path => path.replace("res:/", "cdn:/").toLowerCase(),
 
-        // Use old ccpwgl resource paths when we know a resource provided in a .black file doesn't work
-        "dds": path => Rerouted.includes(path) ? path.replace("cdn:/", "res:/") + ".0.png" : path,
+        "dds": path =>
+        {
+            // Use old ccpwgl resource paths when we know a resource provided in a .black file doesn't work
+            if (Rerouted.includes(path))
+            {
+                return path.replace("cdn:/", "res:/") + ".0.png";
+            }
+            // Handle cube maps that we can't load yet
+            else if (path.split(".").pop() === "dds" && path.includes("_cube"))
+            {
+                return path.replace(".dds", ".qube");
+            }
+            return path;
+        },
 
         // Replace .gr2 paths with interim .cake format (new sof will try to fall back to wbg if not found)
         // Cake format doesn't support any animations
@@ -202,6 +214,7 @@ export const config = {
         "png": core.Tw2TextureRes,
         "dds": core.Tw2TextureRes,
         "cube": core.Tw2TextureRes,
+        "qube": core.Tw2TextureRes,
         "mp4": core.Tw2VideoRes,
         "ogg": core.Tw2VideoRes,
         "webm": core.Tw2VideoRes,

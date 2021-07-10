@@ -160,7 +160,7 @@ export class Tw2TextureRes extends Tw2Resource
                 }
 
                 // Don't support anything else yet
-                if (!isCompressed && !isRGB  && !isLuminance)
+                if (!isCompressed && !isRGB && !isLuminance)
                 {
                     throw new ErrResourceFormatNotImplemented({
                         format: "DDS",
@@ -170,7 +170,7 @@ export class Tw2TextureRes extends Tw2Resource
                 }
 
                 // Temporarily output uncompressed rgb/rgba dds info
-                if (isRGB ||  isLuminance || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
+                if (isRGB || isLuminance || fourCC === FOURCC_ATI1 || fourCC === FOURCC_ATI2)
                 {
                     tw2.Debug({
                         name: "Tw2TextureRes",
@@ -229,9 +229,9 @@ export class Tw2TextureRes extends Tw2Resource
                             gl.compressedTexImage2D(t, mip, this._internalFormat, w, h, 0, byteArray);
                             o += dataLength;
                         }
-                        else if  (isLuminance)
+                        else if (isLuminance)
                         {
-                            unpackAlignment =  1;
+                            unpackAlignment = 1;
 
                             let unpaddedRowSize = w,
                                 paddedRowSize = Math.floor((w + unpackAlignment - 1) / unpackAlignment) * unpackAlignment;
@@ -239,7 +239,7 @@ export class Tw2TextureRes extends Tw2Resource
                             dataLength = paddedRowSize * (height - 1) + unpaddedRowSize;
 
                             gl.pixelStorei(gl.UNPACK_ALIGNMENT, unpackAlignment);
-                            byteArray = Tw2TextureRes.GetLuminanceArrayBuffer(w, h, data.byteOffset  + o, dataLength,  data.buffer);
+                            byteArray = Tw2TextureRes.GetLuminanceArrayBuffer(w, h, data.byteOffset + o, dataLength, data.buffer);
                             gl.texImage2D(t, mip, this._internalFormat, w, h, 0, this._format, this._type, byteArray);
                             o += dataLength;
                         }
@@ -362,6 +362,12 @@ export class Tw2TextureRes extends Tw2Resource
                 this._extension = extension;
                 this._isCube = true;
                 path = path.substr(0, path.length - 5) + ".png";
+                break;
+
+            case "qube":
+                this._extension = "cube";
+                path = path.replace(".qube", ".cube");
+                this._isCube = true;
                 break;
 
             case "png":
@@ -627,6 +633,8 @@ export class Tw2TextureRes extends Tw2Resource
                 info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_RGTC1_EXT"] : null;
                 info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
+                info.format = gl.UNSIGNED_BYTE;
+                info.format = gl.RED;
                 break;
 
             case FOURCC_ATI2: // BC5
@@ -634,6 +642,8 @@ export class Tw2TextureRes extends Tw2Resource
                 info.internalFormat = rgtc1 ? rgtc1["COMPRESSED_RED_GREEN_RGTC2_EXT"] : null;
                 info.clientSupport = !!info.internalFormat;
                 info.isCompressed = true;
+                info.format = gl.UNSIGNED_BYTE;
+                info.internalFormat = gl.RG;
                 break;
 
             case FOURCC_D3DFMT_R16G16B16A16F:
@@ -713,7 +723,7 @@ export class Tw2TextureRes extends Tw2Resource
                     if (info.hasAlpha)
                     {
                         info.name = "Luminance Alpha";
-                        info.type =  gl.UNSIGNED_BYTE;
+                        info.type = gl.UNSIGNED_BYTE;
                         info.format = gl.LUMINANCE_ALPHA;
                         info.internalFormat = gl.LUMINANCE_ALPHA;
                     }
