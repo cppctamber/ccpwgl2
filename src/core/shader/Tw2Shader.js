@@ -87,8 +87,8 @@ export class Tw2Shader
             cb0: { name: "ConstantVertex", source: stage0, target: result.vs.parameter, isStage: true, short: "cb0" },
             cb1: { name: "PerFrameVS", source: perFrameVSData, target: result.vs.frame, short: "cb1" },
             cb2: { name: "PerFramePS", source: perFramePSData, target: result.ps.frame, short: "cb2" },
-            cb3: { name: "PerObjectVS", source: perObjectData.vs, target: result.vs.object, short: "cb3" },
-            cb4: { name: "PerObjectPS", source: perObjectData.ps, target: result.ps.object, short: "cb4" },
+            cb3: { name: "PerObjectVS", source: perObjectData.vs || perObjectData._perFrameVS, target: result.vs.object, short: "cb3" },
+            cb4: { name: "PerObjectPS", source: perObjectData.ps  || perObjectData._perFramePS, target: result.ps.object, short: "cb4" },
             cb5: { name: "PerObjectFFE", source: perObjectData.ffe, target: result.ffe.object, short: "cb5" },
             cb7: { name: "ConstantFragment", source: stage1, target: result.ps.parameter, isStage: true, short: "cb7" }
         };

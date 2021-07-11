@@ -16,7 +16,7 @@ export class Model
 
     @readOnly
     _id = generateID();
-    
+
     /**
      * Emits an event
      * @param {String} eventName
@@ -43,7 +43,7 @@ export class Model
                 Reflect.deleteProperty(events, eventName);
             }
         }
-        
+
         return this;
     }
 
@@ -305,7 +305,7 @@ export class Model
      */
     UpdateValues(opt)
     {
-        const skipEvents =  opt && opt.skipEvents;
+        const skipEvents = opt && opt.skipEvents;
         if (!skipEvents) this.EmitEvent("modify", this, opt);
         if (this["OnValueChanged"]) this["OnValueChanged"](opt);
         if (!skipEvents) this.EmitEvent("modified", this, opt);
@@ -338,114 +338,95 @@ export class Model
      */
     Destructor(opt = {})
     {
-        const { skipEvents, clearChildren, ...options } = opt;
-
-        if (!skipEvents)
+        if (!opt || !opt.skipEvents)
         {
-            this.EmitEvent("destruct", this, options);
+            this.EmitEvent("destruct", this, opt);
         }
 
         if (this["OnDestruct"])
         {
-            this["OnDestruct"](options);
+            this["OnDestruct"]();
         }
 
-        if (clearChildren)
+        if (!opt || !opt.skipChildren)
         {
-            this.Clear({ skipUpdate: true, skipEvents: true });
+            this.Clear({ skipUpdate: true, skipEvents: true, controller: opt.controller });
         }
 
-        if (!skipEvents)
+        if (!opt || !opt.skipEvents)
         {
-            this.EmitEvent("destructed", this, options);
+            this.EmitEvent("destructed", this, opt);
         }
 
         this.ClearEvent("*");
     }
 
     /**
-     * Clears a child's objects
-     * @param opt
+     * Clears all child objects
+     * @param {Object} [opt={}]
      */
     Clear(opt = {})
     {
-        // Reset all children to their default values...
-        throw new Error("Not implemented");
-
-        /*
-        const { skipUpdate, skipEvent, ...options } = opt;
-
         let updated;
 
-        if (!skipEvent)
+        if (!opt.skipEvents)
         {
             this.EmitEvent("clear", this);
         }
 
         if (this["OnClear"])
         {
-            this["OnClear"](options);
+            this["OnClear"]();
         }
 
-        // Clear any struct lists
-        if (hasMetadata("structLists", this.constructor))
+        let childOpt;
+
+        const structLists = getMetadata("structLists", this.constructor) || [];
+        structLists.forEach(property =>
         {
-            const structLists = getMetadata("structLists", this.constructor);
-            structLists.forEach(property =>
+            if (getMetadata("isPrivate", this, property)) return;
+
+            for (let i = 0; i < this[property].length; i++)
             {
-                if (getMetadata("isPrivate", this, property)
+                if (this[property][i])
                 {
-                    return;
-                }
-
-                for (let i = 0; i < this[property].length; i++)
-                {
-                    if (this[property][i])
+                    if (this[property][i].Destructor)
                     {
-                        if (this[property][i].Destructor)
-                        {
-                            this[property][i].Destructor(options);
-                        }
-                        updated = true;
-                    }
-                }
-                this[property].splice(0);
-            });
-        }
-
-        // Clear any structs
-        if (hasMetadata("structs", this.constructor))
-        {
-            const structs = getMetadata("structs", this.constructor);
-            structs.forEach(property =>
-            {
-                if (getMetadata("isPrivate", this, property)
-                {
-                    return;
-                }
-
-                if (this[property])
-                {
-                    if (this[property].Destructor)
-                    {
-                        this[property].Destructor(options);
+                        this[property][i].Destructor({ controller: opt.controller });
                     }
                     updated = true;
-                    this[property] = null;
                 }
-            });
-        }
+            }
 
-        if (!skipEvent)
+            this[property].splice(0);
+        });
+
+        const structs = getMetadata("structs", this.constructor) || [];
+        structs.forEach(property =>
+        {
+            if (getMetadata("isPrivate", this, property)) return;
+
+            if (this[property])
+            {
+                if (this[property].Destructor)
+                {
+                    childOpt = childOpt || { controller : opt.controller };
+                    this[property].Destructor(childOpt);
+                }
+                this[property] = null;
+                updated = true;
+            }
+        });
+
+        if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("cleared", this);
         }
 
-        if (updated && !skipUpdate)
+        if (updated && (!opt || !opt.skipUpdate))
         {
-            this.UpdateValues(options);
+            this.UpdateValues(opt);
         }
-        */
     }
 
     /**
@@ -505,7 +486,6 @@ export class Model
                 }
             }
         }
-
     }
 
     /**

@@ -27,6 +27,27 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
     }
 
     /**
+     * Gets the value in RGBA
+     * - Value will be clamped
+     * @param {Float32Array|Array}out
+     * @return {*} out
+     */
+    GetRGBA(out=[])
+    {
+        return vec4.toRGBA(out, this.SetValue(out));
+    }
+
+    /**
+     * Sets the value from RGBA
+     * @param {Float32Array|Array} rgba
+     * @return {Boolean} true if updated
+     */
+    SetRGBA(rgba)
+    {
+        return this.SetValue(vec4.fromRGBA([], rgba));
+    }
+
+    /**
      * Gets the first value index
      * @returns {Number}
      */

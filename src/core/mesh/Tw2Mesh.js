@@ -1,4 +1,4 @@
-import { meta, isString, perArrayChild, assignIfExists, get, toArray } from "utils";
+import { meta, isString, perArrayChild, assignIfExists, get, toArray, isArray } from "utils";
 import { tw2 } from "global";
 import {
     RM_ADDITIVE,
@@ -148,6 +148,62 @@ export class Tw2Mesh extends meta.Model
 
         return out;
     }
+
+    /**
+     * Finds a mesh area by type and index
+     * @param {String} areasType
+     * @param {Number} index
+     * @param {Number} meshIndex
+     * @return {Tw2MeshArea|Tw2MeshLineArea}
+     */
+    FindMeshAreaByTypeAndIndex(areasType, index, meshIndex)
+    {
+        return Tw2Mesh.FindMeshAreaByTypeAndIndex(this, areasType, index, meshIndex);
+    }
+
+    /**
+     * Finds a mesh area by type and index
+     * @param {Tw2Mesh|Tw2InstancedMesh} mesh
+     * @param {String} areasType
+     * @param {Number} index
+     * @param {Number} [meshIndex=0]
+     * @return {Tw2MeshArea|Tw2MeshLineArea}
+     */
+    static FindMeshAreaByTypeAndIndex(mesh, areasType, index, meshIndex=0)
+    {
+        if (areasType in this.AreaType)
+        {
+            areasType = mesh[this.AreaType[areasType]];
+        }
+
+        const meshAreas = mesh[areasType];
+        if (!isArray(meshAreas))
+        {
+            throw new ReferenceError(`Invalid mesh area type: ${areasType}`);
+        }
+
+        if (meshAreas)
+        {
+            for (let i = 0; i < meshAreas.length; i++)
+            {
+                if (meshAreas[i].index === index && meshAreas[i].meshIndex === meshIndex)
+                {
+                    return meshAreas[i];
+                }
+            }
+        }
+    }
+
+    static AreaType = {
+        "TRANSPARENT": "transparentAreas",
+        "PICKABLE": "pickableAreas",
+        "DISTORTION": "distortionAreas",
+        "DEPTH": "depthAreas",
+        "DEPTH_NORMAL": "depthNormalAreas",
+        "ADDITIVE": "additiveAreas",
+        "OPAQUE": "opaqueAreas",
+        "OPAQUE_PREPASS": "opaquePrepassAreas",
+    };
 
     /**
      * Checks if the mesh's resource is good

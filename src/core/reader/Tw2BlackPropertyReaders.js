@@ -140,6 +140,7 @@ export function object(reader, id)
             throw new ErrBinaryReaderReadError({ readError: `Invalid reader for property "${propertyName}" for "${type}"` });
         }
 
+
         try
         {
             if (reader.custom)
@@ -155,6 +156,11 @@ export function object(reader, id)
                 }
 
                 result[propertyName] = reader(objectReader);
+            }
+
+            if (result.constructor.onAfterBlackPropertyReader)
+            {
+                result.constructor.onAfterBlackPropertyReader(propertyName, result);
             }
         }
         catch (err)

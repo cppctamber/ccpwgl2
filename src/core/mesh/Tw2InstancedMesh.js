@@ -162,6 +162,18 @@ export class Tw2InstancedMesh extends meta.Model
     }
 
     /**
+     * Finds a mesh area by type and index
+     * @param {String} areasType
+     * @param {Number} index
+     * @param {Number} [meshIndex=0]
+     * @return {Tw2MeshArea|Tw2MeshLineArea}
+     */
+    FindMeshAreaByTypeAndIndex(areasType, index, meshIndex)
+    {
+        return Tw2Mesh.FindMeshAreaByTypeAndIndex(this, areasType, index, meshIndex);
+    }
+
+    /**
      * Checks if the instances meshes' resources are good
      * @returns {Boolean}
      */
