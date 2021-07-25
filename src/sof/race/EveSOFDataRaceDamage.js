@@ -27,12 +27,12 @@ export class EveSOFDataRaceDamage extends meta.Model
         out.parameters = out.parameters || {};
         out.textures = out.textures || {};
 
-        for (let i = 0; i < this.armorImpactParameters; i++)
+        for (let i = 0; i < this.armorImpactParameters.length; i++)
         {
             this.armorImpactParameters[i].Assign(out.parameters);
         }
 
-        for (let i = 0; i < this.armorImpactTextures; i++)
+        for (let i = 0; i < this.armorImpactTextures.length; i++)
         {
             this.armorImpactTextures[i].Assign(out.textures);
         }
@@ -50,12 +50,12 @@ export class EveSOFDataRaceDamage extends meta.Model
         out.parameters = out.parameters || {};
         out.textures = out.textures || {};
 
-        for (let i = 0; i < this.shieldImpactParameters; i++)
+        for (let i = 0; i < this.shieldImpactParameters.length; i++)
         {
             this.shieldImpactParameters[i].Assign(out.parameters);
         }
 
-        for (let i = 0; i < this.shieldImpactTextures; i++)
+        for (let i = 0; i < this.shieldImpactTextures.length; i++)
         {
             this.shieldImpactTextures[i].Assign(out.textures);
         }
