@@ -448,16 +448,17 @@ export class Tw2ShaderStage
             shaderSize = reader.ReadUInt32();
             let so = reader.ReadUInt32();
             // Handle bad conversions from HLSL
-            shaderCode = this.inspectShaderCode(context.stringTable.substr(so, shaderSize), context.path);
+            shaderCode = this.inspectShaderCode(context.stringTable.substr(so, shaderSize), context.path, stage.type);
 
             shadowShaderSize = reader.ReadUInt32();
             so = reader.ReadUInt32();
             // Handle bad conversions from HLSL
-            shadowShaderCode = this.inspectShaderCode(context.stringTable.substr(so, shadowShaderSize), context.path);
+            shadowShaderCode = this.inspectShaderCode(context.stringTable.substr(so, shadowShaderSize), context.path, stage.type);
         }
 
         if (Tw2Shader.DEBUG_ENABLED)
         {
+            console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
             stage.shaderCode = shaderCode;
             stage.shadowShaderCode = shadowShaderCode;
         }
@@ -619,15 +620,19 @@ export class Tw2ShaderStage
      * TODO: Fix source files
      * @param {String} code
      * @param {String} path
+     * @param {Number} type
      * @returns {String}
      */
-    static inspectShaderCode(code, path)
+    static inspectShaderCode(code, path, type)
     {
         const
             fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
-            overrides = shaderOverrides[fileName];
+            mainOverrides = shaderOverrides[fileName],
+            shaderTypeSuffix = type === 0 ? ".vertex" : ".fragment",
+            typeOverrides = shaderOverrides[fileName + shaderTypeSuffix];
 
-        if (!overrides) return code;
+        const overrides = Object.assign({}, mainOverrides, typeOverrides);
+        if (!Object.keys(overrides).length) return code;
 
         function escapeRegExp(string)
         {
