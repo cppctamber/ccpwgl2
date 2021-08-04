@@ -24,4 +24,14 @@ export const PT_MATRIX4 = 71;
 export const PT_INDEX_BUFFER = 72;
 export const PT_ENUM = 80;
 
+export const VectorLengths = {
+    [PT_VECTOR2] : 2,
+    [PT_VECTOR3] : 3,
+    [PT_VECTOR4] : 4,
+    [PT_QUATERNION] : 4,
+    [PT_COLOR] : 4,
+    [PT_MATRIX3] : 9,
+    [PT_MATRIX4] : 16,
+};
+
 
