@@ -634,6 +634,10 @@ export class Tw2Effect extends meta.Model
             if (pod.ps && cbh[4]) gl.uniform4fv(cbh[4], pod.ps.data);
             if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
         }
+
+        if (d.perFrameCustomVSData && cbh[8]) gl.uniform4fv(cbh[8], d.perFrameCustomVSData.data);
+        if (d.perFrameCustomPSData && cbh[9]) gl.uniform4fv(cbh[9], d.perFrameCustomPSData.data);
+
     }
 
     /**

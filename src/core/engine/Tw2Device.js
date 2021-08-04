@@ -110,7 +110,10 @@ export class Tw2Device extends Tw2EventEmitter
     msaaSamples = 0;
     wrapModes = [];
 
-    perObjectData = null;
+    perFrameVSData = null;
+    perFramePSData = null;
+    perFrameCustomVSData = null;
+    perFrameCustomPSData = null;
 
     _extensions = {};
     _alphaBlendState = null;
@@ -332,8 +335,6 @@ export class Tw2Device extends Tw2EventEmitter
         {
             gl.hasInstancedArrays = returnTrue;
         }
-
-
 
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
         if (anisotropicFilterExt)
