@@ -53,8 +53,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     @meta.float
     width = 1;
 
-    @meta.enums(LineType)
-    @meta.isPrivate
+    @meta.uint
     type = LineType.INVALID;
 
 
