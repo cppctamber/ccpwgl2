@@ -78,6 +78,7 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
         mat4.invert(this._localTransformInverse, this._localTransform);
+        this._dirty = false;
     }
 
     /**
