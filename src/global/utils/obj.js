@@ -171,9 +171,10 @@ export function template(str, obj = {})
  * Gets an object's key from a value
  * @param {Object} obj
  * @param {*} value
+ * @param {*} [defaultValue]
  * @returns {string}
  */
-export function getKeyFromValue(obj, value)
+export function getKeyFromValue(obj, value, defaultValue)
 {
     for (const key in obj)
     {
@@ -185,6 +186,8 @@ export function getKeyFromValue(obj, value)
             }
         }
     }
+
+    return defaultValue;
 }
 
 /**
