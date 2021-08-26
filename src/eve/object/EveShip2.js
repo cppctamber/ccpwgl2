@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, mat4 } from "math";
+import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
@@ -7,6 +7,7 @@ import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineS
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet } from "unsupported/eve/item/EveHazeSet";
 import { Tw2GeometryBatch } from "core/batch";
+import { LodLevelPixels } from "constant/ccpwgl";
 
 @meta.type("EveShip2")
 @meta.stage(2)
@@ -103,44 +104,10 @@ export class EveShip2 extends EveObject
     _enableCurves = false;
     _pixelSizeAcross = 0;
 
-    _lod = 3;
     _worldSpriteScale = 1;
     _localTransform = mat4.create();
     _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveShip2.perObjectData);
-
-    /**
-     * Gets a shadow batch
-     * @param mode
-     * @param accumulator
-     * @return {boolean}
-     */
-    GetShadowBatch(mode, accumulator)
-    {
-        if (!this.display || !this.visible.shadows)
-        {
-            return false;
-        }
-
-        if (!this.mesh || !this.mesh.IsGood() || !this.shadowEffect || !this.shadowEffect.IsGood())
-        {
-            return false;
-        }
-
-        const { geometryResource, meshIndex } = this.mesh;
-
-        const batch = new Tw2GeometryBatch();
-        batch.renderMode = mode;
-        batch.perObjectData = this._perObjectData;
-        batch.geometryRes = geometryResource;
-        batch.meshIx = meshIndex;
-        batch.start = 0;
-        batch.count = geometryResource.meshes[meshIndex].areas.length;
-        batch.effect = this.shadowEffect;
-        accumulator.Commit(batch);
-
-        return true;
-    }
 
     /**
      * Initializes the ship
@@ -148,6 +115,67 @@ export class EveShip2 extends EveObject
     Initialize()
     {
         this.RebuildBoosterSet();
+    }
+
+    /**
+     * Rebuilds bounds
+     * Todo: Handle animations
+     * @param force
+     */
+    RebuildBounds(force)
+    {
+        if (this.animation && this.animation.animations.length)
+        {
+            throw new Error("Rebuilding bounds on animated meshes not yet supported");
+        }
+
+        super.RebuildBounds(force);
+
+        if (!this.mesh || !this.mesh.IsGood())
+        {
+            box3.empty(this._boundingBox);
+            sph3.empty(this._boundingSphere);
+            this._boundsDirty = true;
+            return false;
+        }
+
+        if (!force && !this._boundsDirty)
+        {
+            return;
+        }
+
+        box3.empty(this._boundingBox);
+
+        // TODO: Get from mesh and handle instanced mesh
+        this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
+
+        // Children
+        const { box3_0, sph3_0 } = EveObject.global;
+
+        const unionFromArrayItems = (array = []) =>
+        {
+            for (let i = 0; i < array.length; i++)
+            {
+                if ("GetBoundingBox" in array[i])
+                {
+                    array[i].GetBoundingBox(box3_0, force);
+                    box3.union(this._boundingBox, this._boundingBox, box3_0);
+                }
+                else if ("GetBoundingSphere" in array[i])
+                {
+                    array[i].GetBoundingSphere(sph3_0, force);
+                    box3.fromSph3(box3_0, sph3_0);
+                    box3.union(this._boundingBox, this._boundingBox, box3_0);
+                }
+            }
+        };
+
+        unionFromArrayItems(this.attachments);
+        unionFromArrayItems(this.effectChildren);
+        unionFromArrayItems(this.children);
+
+        sph3.fromBox3(this._boundingSphere, this._boundingBox);
+        this._boundsDirty = false;
     }
 
     /**
@@ -290,14 +318,6 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     * Resets LOD
-     */
-    ResetLod()
-    {
-        this._lod = 3;
-    }
-
-    /**
      * Updates lod
      * @param {Tw2Frustum} frustum
      */
@@ -309,13 +329,17 @@ export class EveShip2 extends EveObject
         {
             this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
 
-            if (this._pixelSizeAcross < 100)
+            if (this._pixelSizeAcross < LodLevelPixels.ONE)
             {
                 this._lod = 1;
             }
-            else
+            else if (this._pixelSizeAcross < LodLevelPixels.TWO)
             {
                 this._lod = 2;
+            }
+            else
+            {
+                this._lod = 3;
             }
         }
         else
@@ -334,10 +358,28 @@ export class EveShip2 extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].UpdateLod)
+            this.effectChildren[i].UpdateLod(frustum, this._lod);
+        }
+    }
+
+    /**
+     * Resets LOD
+     */
+    ResetLod()
+    {
+        this._lod = 3;
+
+        for (let i = 0; i < this.children.length; i++)
+        {
+            if (this.children[i].ResetLod)
             {
-                this.effectChildren[i].UpdateLod(frustum, this._lod);
+                this.children[i].ResetLod();
             }
+        }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].ResetLod();
         }
     }
 
@@ -548,7 +590,7 @@ export class EveShip2 extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, this._lod);
+            this.effectChildren[i].Update(dt, this._worldTransform);
         }
 
         if (this.animation)
@@ -556,6 +598,40 @@ export class EveShip2 extends EveObject
             this.animation.Update(dt);
         }
     }
+
+    /**
+     * Gets a shadow batch
+     * @param mode
+     * @param accumulator
+     * @return {boolean}
+     */
+    GetShadowBatch(mode, accumulator)
+    {
+        if (!this._lod < 1 || !this.display || !this.visible.shadows)
+        {
+            return false;
+        }
+
+        if (!this.mesh || !this.mesh.IsGood() || !this.shadowEffect || !this.shadowEffect.IsGood())
+        {
+            return false;
+        }
+
+        const { geometryResource, meshIndex } = this.mesh;
+
+        const batch = new Tw2GeometryBatch();
+        batch.renderMode = mode;
+        batch.perObjectData = this._perObjectData;
+        batch.geometryRes = geometryResource;
+        batch.meshIx = meshIndex;
+        batch.start = 0;
+        batch.count = geometryResource.meshes[meshIndex].areas.length;
+        batch.effect = this.shadowEffect;
+        accumulator.Commit(batch);
+
+        return true;
+    }
+
 
     /**
      * Gets render batches
@@ -791,14 +867,11 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
-        const worldNoTranslation = mat4.copy(EveObject.global.mat4_0, this._worldTransform);
-        worldNoTranslation[12] = 0;
-        worldNoTranslation[13] = 0;
-        worldNoTranslation[14] = 0;
+        const id = mat4.identity(EveObject.global.mat4_0);
 
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            this.customMasks[i].UpdatePerObjectData(worldNoTranslation, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].UpdatePerObjectData(id, this._perObjectData, i, this.visible.customMasks);
         }
 
         for (let i = 0; i < this.attachments.length; i++)
@@ -820,12 +893,17 @@ export class EveShip2 extends EveObject
             [ "WorldMatLast", 16 ],
             [ "Shipdata", [ 0, 1, 0, -10 ] ],
             [ "Clipdata1", 4 ],
+            [ "OldEllipsoidRadii", 4 ],
+            [ "OldEllipsoidCenter", 4 ],
+            [ "Unknown0", [
+                0,
+                1,     // glow brightness
+                0,
+                1      // effect scale?
+            ] ], //  1: Used to be shipdata 1 ??
+            [ "Unknown1", 4 ],
             [ "EllipsoidRadii", 4 ],
             [ "EllipsoidCenter", 4 ],
-            [ "Unknown0", [ 0, 1, 0, 0 ] ], //  1: Used to be shipdata 1 ??
-            [ "Unknown1", 4 ],
-            [ "Unknown2", 4 ],
-            [ "Unknown3", 4 ],
             [ "CustomMaskMatrix0", mat4.create() ],
             [ "CustomMaskMatrix1", mat4.create() ],
             [ "CustomMaskData0", [ 1, 0, 0, 0 ] ],

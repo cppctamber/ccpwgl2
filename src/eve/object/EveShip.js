@@ -171,7 +171,7 @@ export class EveShip extends EveSpaceObject
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display)
+        if (this.display && this._lod > 0)
         {
             super.GetBatches(mode, accumulator);
 

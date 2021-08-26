@@ -96,10 +96,6 @@ export class EveSpaceObject extends EveObject
     _offsetTransform = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
-    _boundingBox = null;
-    _boundingSphere = null;
-    _boundsDirty = true;
-
     /**
      * Initializes the EveSpaceObject
      */
@@ -112,65 +108,65 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
-     * Gets the object's bounding sphere
-     * @param {sph3} out
-     * @param {boolean} force
-     * @returns {boolean}
-     */
-    GetBoundingSphere(out, force)
-    {
-        this.RebuildBounds(force);
-        sph3.copy(out, this._boundingSphere);
-        return this._boundsDirty;
-    }
-
-    /**
-     * Gets the object's bounding box
-     * @param {box3} out
-     * @param {boolean} force
-     * @returns {boolean}
-     */
-    GetBoundingBox(out, force)
-    {
-        this.RebuildBounds(force);
-        box3.copy(out, this._boundingBox);
-        return this._boundsDirty;
-    }
-
-    /**
      * Rebuilds the object's bounds
+     * Todo: Handle animations
      * @param {boolean} force
      */
-    RebuildBounds(force = this._boundsDirty)
+    RebuildBounds(force)
     {
-        if (!this._boundingSphere)
+        if (this.animation && this.animation.animations.length)
         {
-            force = true;
-            // Don't use the built in bounding sphere as it isn't geometrically correct
-            this._boundingSphere = sph3.create();
-            this._boundingBox = sph3.create();
+            throw new Error("Rebuilding bounds on animated meshes not yet supported");
         }
 
-        const isGood = this.mesh && this.mesh.IsGood();
+        super.RebuildBounds(force);
 
-        if (force)
+        if (!this.mesh || !this.mesh.IsGood())
         {
-            if (isGood)
-            {
-                this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
-            }
-            else
-            {
-                box3.empty(this._boundingBox);
-            }
-
-            // TODO: Cycle through all children and update bounds...
-
-            sph3.fromBox3(this._boundingSphere, this._boundingBox);
+            box3.empty(this._boundingBox);
+            sph3.empty(this._boundingSphere);
+            this._boundsDirty = true;
+            return false;
         }
 
-        this._boundsDirty = isGood;
-        return isGood;
+        if (!force && !this._boundsDirty)
+        {
+            return;
+        }
+
+        const { box3_0, sph3_0 } = EveObject.global;
+
+        box3.empty(this._boundingBox);
+        this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
+
+        const unionFromArrayItems = (array = []) =>
+        {
+            for (let i = 0; i < array.length; i++)
+            {
+                if ("GetBoundingBox" in array[i])
+                {
+                    array[i].GetBoundingBox(box3_0, force);
+                    box3.union(this._boundingBox, this._boundingBox, box3_0);
+                }
+                else if ("GetBoundingSphere" in array[i])
+                {
+                    array[i].GetBoundingSphere(sph3_0, force);
+                    box3.fromSph3(box3_0, sph3_0);
+                    box3.union(this._boundingBox, this._boundingBox, box3_0);
+                }
+            }
+        };
+
+        unionFromArrayItems(this.spriteSets);
+        unionFromArrayItems(this.spotlightSets);
+        unionFromArrayItems(this.planeSets);
+        unionFromArrayItems(this.children);
+        unionFromArrayItems(this.effectChildren);
+        unionFromArrayItems(this.boosters);
+        unionFromArrayItems(this.turretSets);
+
+        sph3.fromBox3(this._boundingSphere, this._boundingBox);
+        this._boundsDirty = false;
     }
 
     /**

@@ -1,6 +1,6 @@
 import { getPathExtension, meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, mat4 } from "math";
+import { vec3, mat4,  quat, box3, sph3 } from "math";
 import { Tw2Effect, Tw2RenderTarget, Tw2Resource } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
@@ -42,11 +42,82 @@ export class EvePlanet extends EveObject
     @meta.float
     radius = 0;
 
+    @meta.uint
+    minScreenSize = 0;
+
+    @meta.uint
+    estimatedPixelDiameter = 0;
+
+    @meta.vector3
+    scaling = vec3.fromValues(1,1,1);
+
+    @meta.vector3
+    translation = vec3.fromValues(1,1,1);
+
+    @meta.quaternion
+    rotation  = quat.create();
+
+
+    _worldTransform = mat4.create();
+    _localTransform = mat4.create();
+
     _pendingLoad = null;
-    _lod = 3;
-    _useLOD = true;
     _atmosphere = null;
     _planet = null;
+
+    /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     */
+    SetTransform(m)
+    {
+        mat4.getRotation(this.rotation, m);
+        mat4.getScaling(this.scaling, m);
+        mat4.getTranslation(this.translation, m);
+
+        const radius = mat4.maxScaleOnAxis(m);
+        if (Math.round(this.radius) !== Math.round(radius))
+        {
+            this.radius = radius;
+            this._boundsDirty = true;
+        }
+    }
+
+    /**
+     * Gets the object's transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetTransform(out)
+    {
+        return mat4.copy(out, this._localTransform);
+    }
+
+    /**
+     * Gets the object's world transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetWorldTransform(out)
+    {
+        return mat4.copy(out, this._worldTransform);
+    }
+
+    /**
+     * Rebuilds bounds
+     * @param {Boolean} [force]
+     */
+    RebuildBounds(force)
+    {
+        super.RebuildBounds(force);
+
+        if (force || this._boundsDirty)
+        {
+            sph3.fromMat4(this._boundingSphere, this._localTransform);
+            box3.fromSph3(this._boundingBox, this._boundingSphere);
+            this._boundsDirty = false;
+        }
+    }
 
     /**
      * Fetches planet async
@@ -94,17 +165,9 @@ export class EvePlanet extends EveObject
      * @param {Object} options
      * @param {Function} [onLoaded]
      */
-    Create(options, onLoaded=x=>x)
+    Create(options, onLoaded = x => x)
     {
         this.Fetch(options).then(onLoaded);
-    }
-
-    /**
-     * Resets LOD
-     */
-    ResetLod()
-    {
-        this._lod = 3;
     }
 
     /**
@@ -113,28 +176,7 @@ export class EvePlanet extends EveObject
      */
     UpdateLod(frustum)
     {
-        const { scaling, translation } = this.highDetail;
-        const d = Math.max(scaling[0], scaling[1], scaling[2]);
-        this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, d) ? 0 : 3;
-    }
-
-    /**
-     * Toggles LOD calculations
-     * @param {Boolean} bool
-     */
-    UseLOD(bool)
-    {
-        this._useLOD = bool;
-    }
-
-    /**
-     * Sets the object's local transform
-     * @param {mat4} m
-     */
-    SetTransform(m)
-    {
-        this.highDetail.SetTransform(m);
-        this.radius = mat4.maxScaleOnAxis(m);
+        this._lod = !frustum.IsSphereVisible(this.translation, this.radius) ? 0 : 3;
     }
 
     /**
@@ -155,7 +197,12 @@ export class EvePlanet extends EveObject
      */
     UpdateViewDependentData(parentTransform)
     {
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
+        mat4.multiply(this._worldTransform, parentTransform, this._localTransform);
+
+        this.highDetail.SetTransform(this._localTransform);
         this.highDetail.UpdateViewDependentData(parentTransform);
+
         if (this.zOnlyModel)
         {
             this.zOnlyModel.translation = this.highDetail.translation;
@@ -170,7 +217,7 @@ export class EvePlanet extends EveObject
      */
     Update(dt)
     {
-        if (this.display && this._useLOD)
+        if (this.display)
         {
             this.highDetail.Update(dt);
         }
@@ -209,6 +256,8 @@ export class EvePlanet extends EveObject
     async Rebuild()
     {
         const { effectHeight, heightMap } = this;
+
+        this._boundsDirty = true;
 
         function getMainEffect(t)
         {
