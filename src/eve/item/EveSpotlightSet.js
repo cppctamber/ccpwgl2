@@ -52,7 +52,6 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     flareIntensity = 0;             // Non-standard faction intensity
 
     @meta.uint
-    @meta.todo("Identify if deprecated, only needed if creating a SOF object from the spotlight")
     groupIndex = -1;
 
     @meta.color
@@ -65,10 +64,10 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     spriteScale = vec3.fromValues(1, 1, 1);
 
     @meta.matrix4
-    transform = mat4.create()
+    transform = mat4.create();
 
     @meta.uint
-    colorType = -1;
+    colorType = 0;
 
 }
 
@@ -189,6 +188,12 @@ export class EveSpotlightSet extends EveObjectSet
     }
 
     /**
+     * Alpha multiplier
+     * @type {number}
+     */
+    static alphaMultiplier = 1;
+
+    /**
      * Rebuilds the spotlight set's buffers
      * @param {Object} [opt]
      */
@@ -224,7 +229,7 @@ export class EveSpotlightSet extends EveObjectSet
                     coneArray[offset] = item.coneColor[0] * item.coneIntensity * this.intensity;
                     coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity * this.intensity;
                     coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity * this.intensity;
-                    coneArray[offset + 3] = item.coneColor[3];
+                    coneArray[offset + 3] = item.coneColor[3] * EveSpotlightSet.alphaMultiplier;
 
                     coneArray[offset + 4] = item.transform[0];
                     coneArray[offset + 5] = item.transform[4];
