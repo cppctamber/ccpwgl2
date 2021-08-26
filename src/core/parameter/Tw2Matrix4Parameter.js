@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isArrayLike, meta } from "utils";
 import { mat4 } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
@@ -24,10 +24,11 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
 
         if (name) this.name = name;
 
-        if (value)
+        for (let i = 0; i < value.length; i++)
         {
-            mat4.copy(this.value, value);
+            this.value[i] = value[i];
         }
+
     }
 
     /**
@@ -123,11 +124,15 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
      */
     static constantBufferSize = 16;
 
-}
+    /**
+     * Checks if a value is a valid parameter input
+     * - Some effect parameters are just the rotation components
+     * @param {Float32Array|Array} value
+     * @returns {Boolean}
+     */
+    static isValue(value)
+    {
+        return (isArrayLike(value) && value.length === 16 || value.length === 12);
+    }
 
-
-export function Tw2MatrixParameter(name, value)
-{
-    console.warn("Tw2MatrixParameter is deprecated, use Tw2Matrix4Parameter instead");
-    return new Tw2Matrix4Parameter(name, value);
 }
