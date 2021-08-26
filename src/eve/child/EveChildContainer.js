@@ -78,6 +78,33 @@ export class EveChildContainer extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
 
+    /**
+     * Resets lod
+     */
+    ResetLod()
+    {
+        this._lod = 3;
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].ResetLod();
+        }
+    }
+
+    /**
+     * Updates lod
+     * @param {Tw2Frustum} frustum
+     * @param {Number} parentLod
+     */
+    UpdateLod(frustum, parentLod)
+    {
+        this._lod = parentLod;
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].UpdateLod(frustum, this._lod);
+        }
+    }
 
     /**
      * Gets object resources

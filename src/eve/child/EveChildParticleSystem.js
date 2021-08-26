@@ -44,6 +44,9 @@ export class EveChildParticleSystem extends EveChild
     @meta.vector3
     translation = vec3.create();
 
+    @meta.list()
+    transformModifiers = [];
+
     @meta.notImplemented
     @meta.boolean
     useDynamicLod = false;
@@ -56,6 +59,18 @@ export class EveChildParticleSystem extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
+
+
+    /**
+     * Updates lod
+     * @param {Tw2Frustum} frustum
+     * @param {Number} parentLod
+     */
+    UpdateLod(frustum, parentLod)
+    {
+        this._lod = !frustum.IsSphereVisible(this.translation, this.lodSphereRadius) ? 0 : 3;
+        //this._lod = Math.min(this._lod, parentLod);
+    }
 
     /**
      * Gets object resources

@@ -106,7 +106,7 @@ export class EveChildMesh extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.mesh) return;
+        if (!this.display || !this.mesh || this._lod < this.lowestLodVisible) return;
 
         if (this.useSpaceObjectData)
         {

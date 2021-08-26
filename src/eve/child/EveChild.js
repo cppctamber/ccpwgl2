@@ -5,9 +5,29 @@ import { vec3, mat4 } from "math";
 export class EveChild extends meta.Model
 {
 
+    _lod = 3;
+
     get isEffectChild()
     {
         return true;
+    }
+
+    /**
+     * Updates LOD
+     * @param {Tw2Frustum} frustum
+     * @param {Number} parentLod
+     */
+    UpdateLod(frustum, parentLod)
+    {
+        this._lod = parentLod;
+    }
+
+    /**
+     * Resets LOD
+     */
+    ResetLod()
+    {
+        this._lod = 3;
     }
 
     /**
@@ -15,7 +35,7 @@ export class EveChild extends meta.Model
      * @param {number} dt
      * @param {mat4} parentTransform
      */
-    @meta.abstract
+    // @meta.abstract
     Update(dt, parentTransform)
     {
 
@@ -26,10 +46,10 @@ export class EveChild extends meta.Model
      * @param {Array} [out=[]]
      * @returns {Array<Tw2Resource>} out
      */
-    @meta.abstract
+    //@meta.abstract
     GetResources(out = [])
     {
-
+        return out;
     }
 
     /**
@@ -38,7 +58,7 @@ export class EveChild extends meta.Model
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
-    @meta.abstract
+    //@meta.abstract
     GetBatches(mode, accumulator, perObjectData)
     {
 
