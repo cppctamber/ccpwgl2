@@ -770,8 +770,21 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < this.geometryResource.meshes.length; ++i)
         {
-            const decl = this.geometryResource.meshes[i].declaration;
-            decl.FindUsage(Tw2VertexElement.Type.TEXCOORD, 1).customSetter = customSetter;
+            const
+                decl = this.geometryResource.meshes[i].declaration,
+                found = decl.FindUsage(Tw2VertexElement.Type.TEXCOORD, 1);
+
+            if (found)
+            {
+                found.customSetter = customSetter;
+            }
+            else
+            {
+                tw2.Debug({
+                    name: "EveTurretSet",
+                    message: `Could not find usage TEXCOORD usage 1`
+                });
+            }
         }
 
         let rendered = 0;
