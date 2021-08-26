@@ -17,7 +17,6 @@ export class EveSOFDataGenericDecalShader extends meta.Model
     @meta.string
     shader = "";
 
-
     /**
      * Assigns the object's textures and parameters to an effect config
      * @param {Object} config={}]

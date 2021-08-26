@@ -1,5 +1,6 @@
 import { Tw2Error } from "core";
 import { meta, findElementByPropertyValue } from "utils";
+import { tw2 } from "global/tw2";
 
 
 @meta.type("EveSOFDataGeneric")
@@ -85,10 +86,21 @@ export class EveSOFDataGeneric extends meta.Model
         const
             isDecal = this.HasDecalShader(name),
             shader = isDecal ? this.GetDecalShader(name) : this.GetAreaShader(name),
-            { hasPatternMaskMaps = false } = shader,
-            effectFilePath = isDecal ?
-                this.GetDecalShaderPath(name, isAnimated) :
-                this.GetAreaShaderPath(name, isAnimated);
+            { hasPatternMaskMaps = false } = shader;
+
+        let effectFilePath = isDecal ?
+            this.GetDecalShaderPath(name, isAnimated) :
+            this.GetAreaShaderPath(name, isAnimated);
+
+        //  Handle missing shader
+        if (effectFilePath.includes("quadheatdetail"))
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Patching missing shader: " + effectFilePath
+            });
+            effectFilePath = effectFilePath.replace("quadheatdetail", "quaddetail");
+        }
 
         return shader.Assign({ effectFilePath, hasPatternMaskMaps, overrides: {} }, provided);
     }

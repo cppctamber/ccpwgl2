@@ -24,6 +24,10 @@ export class EveSOFDataInstancedMesh extends meta.Model
     @meta.string
     name = "";
 
+    @meta.uint
+    @meta.todo("Figure out constants")
+    displayModifier = 0;
+
     @meta.path
     geometryResPath = "";
 

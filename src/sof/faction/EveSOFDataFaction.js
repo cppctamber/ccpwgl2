@@ -150,8 +150,12 @@ export class EveSOFDataFaction extends meta.Model
      */
     AssignAreaType(type, out, fallback)
     {
-        const  areaType = this.GetAreaType(type, fallback);
-        if (areaType)  areaType.Assign(out);
+        const areaType = this.GetAreaType(type, fallback);
+        if (areaType)
+        {
+            areaType.Assign(out);
+            return out;
+        }
     }
 
     /**
@@ -167,16 +171,51 @@ export class EveSOFDataFaction extends meta.Model
     /**
      * Gets a logo by type
      * @param {Number} type
+     * @param {Number} [fallback]
      * @returns {EveSOFDataLogo}
      */
-    GetLogoType(type)
+    GetLogoType(type, fallback)
     {
         if (!this.logoSet)
         {
             throw new ErrSOFLogoSetTypeNotFound({ type });
         }
 
-        return this.logoSet.Get(type);
+        if (this.HasLogoType(type))
+        {
+            return this.logoSet.Get(type);
+        }
+        else if (fallback !== undefined && this.HasAreaType(fallback))
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Using fallback value, could not resolve area type: " + type
+            });
+            return this.areaTypes.Get(fallback);
+        }
+
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Could not resolve logo type: " + type
+        });
+
+    }
+
+    /**
+     * Assigns a logo type
+     * @param {Number} type
+     * @param {Object} out
+     * @param {Number} fallback
+     * @return {Object} out
+     */
+    AssignLogoType(type, out, fallback)
+    {
+        const logoType = this.GetLogoType(type, fallback);
+        if (logoType)
+        {
+            logoType.Assign(out);
+            return out;
+        }
     }
 
     /**

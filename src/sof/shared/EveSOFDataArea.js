@@ -75,7 +75,20 @@ export class EveSOFDataArea extends meta.Model
     @meta.struct("EveSOFDataAreaMaterial")
     Yellow = null;
 
+    _typesByIndex = [];
 
+    /**
+     * Gets a type by it's index
+     * @param {Number} type
+     * @return {*}
+     * @constructor
+     */
+    GetTypeByIndex(type)
+    {
+        const name = this._typesByIndex[type];
+        return this.hasOwnProperty(name) ? this[name] : null;
+    }
+    
     /**
      * Checks if a data area exists by type
      * @param {Number} type
@@ -83,14 +96,8 @@ export class EveSOFDataArea extends meta.Model
      */
     Has(type)
     {
-        const name = EveSOFDataArea.Type[type];
-
-        if (name === undefined)
-        {
-            throw new ErrSOFAreaTypeUnknown({ type });
-        }
-
-        return !!this[name];
+        const area = this.GetTypeByIndex(type);
+        return !!area;
     }
 
     /**
@@ -105,7 +112,7 @@ export class EveSOFDataArea extends meta.Model
             throw new ErrSOFAreaTypeNotFound({ type });
         }
 
-        return this[EveSOFDataArea.Type[type]];
+        return this.GetTypeByIndex(type);
     }
 
     /**
@@ -113,6 +120,7 @@ export class EveSOFDataArea extends meta.Model
      * TODO: Figure out how to automate the creation of this list
      * @type {string[]}
      */
+    /*
     static Type = [
         "Primary",
         "Glass",
@@ -126,6 +134,17 @@ export class EveSOFDataArea extends meta.Model
         "Primary",
         "Primary"
     ];
+    */
+
+    /**
+     * 
+     * @param propertyName
+     * @param object
+     */
+    static onAfterBlackPropertyReader(propertyName, object)
+    {
+        object._typesByIndex.push(propertyName);
+    }
 }
 
 /**

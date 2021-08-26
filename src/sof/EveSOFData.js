@@ -1,4 +1,4 @@
-import { tw2 } from "global";
+import { resMan, tw2 } from "global";
 import { vec3, vec4, mat4, quat, num } from "math";
 import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
@@ -8,7 +8,7 @@ import {
     isArray,
     get,
     findElementByPropertyValue,
-    getPathExtension
+    getPathExtension, isObjectObject
 } from "utils";
 
 import {
@@ -20,7 +20,7 @@ import {
     Tw2InstancedMesh,
     Tw2GeometryRes,
     Tw2GeometryMesh,
-    Tw2VertexDeclaration,
+    Tw2VertexDeclaration, Tw2Vector4Parameter,
     //Tw2AnimationController
 } from "core";
 
@@ -52,6 +52,7 @@ import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
 import { EveHazeSet, EveHazeSetItem } from "unsupported/eve";
+import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 
 @meta.type("EveSOFData")
 export class EveSOFData extends meta.Model
@@ -97,9 +98,7 @@ export class EveSOFData extends meta.Model
             boosterSymHalo: 0.125,
             boosterBrightness: 1,
             boosterScale: [ 0.9, 0.9, 0.9 ],
-            boosterAlpha: 0.5,
-            spotlightAlpha: 0,
-            planeAlpha: 0
+            boosterAlpha: 0.5
         },
 
         effect: {
@@ -109,7 +108,14 @@ export class EveSOFData extends meta.Model
             shadowSkinned: null
         },
 
-        billBoards: [
+        // Override standard materials
+        materialOverrides: {
+            orange_neon01: { FresnelColor: [ 0, 0, 0, 1 ] }
+        },
+
+        billboardsURL: "cdn:/billboards",
+
+        billboards: [
             "video/billboards/common/divinity_social.webm",
             "video/billboards/common/egonics_immersia.webm",
             "video/billboards/common/eve_cdia_guristas_billboard.webm",
@@ -135,22 +141,6 @@ export class EveSOFData extends meta.Model
             "video/billboards_zn/fallback.png",
             "video/billboards_zn/takeover/zorya4vorbis48.webm",
             "video/billboards_zn/triglavianhangar/trigstationbillboard.webm",
-            "video/billboardswide/anoikis outlaws corp advert.webm",
-            "video/billboardswide/arc_billboard_chatchannel_v3.webm",
-            "video/billboardswide/corp channel advertisment.webm",
-            "video/billboardswide/evepodcasts.webm",
-            "video/billboardswide/guardiansgala3.webm",
-            "video/billboardswide/guardiansgala3a.webm",
-            "video/billboardswide/guardiansgala3b.webm",
-            "video/billboardswide/newanimation30fps_nosound_1024x576.webm",
-            "video/billboardswide/off_the_reservation..webm",
-            "video/billboardswide/rekium promo banner.webm",
-            "video/billboardswide/sinister. corporation.webm",
-            "video/billboardswide/solar_fleet_nosound.webm",
-            "video/billboardswide/solitude agora advert with nebula.webm",
-            "video/billboardswide/spatial instability billboard submission.webm",
-            "video/billboardswide/triumvirate_billboard_v1_1.webm",
-            "video/billboardswide/wolfthorninititive.webm",
             "video/billboardswide/wreckingmachine.webm"
         ],
 
@@ -276,6 +266,32 @@ export class EveSOFData extends meta.Model
                 effectFilePath: this.GetShaderPath(effectPath.shadow, true)
             });
         }
+
+        // Fix any provided materials
+        const { materialOverrides } = this._options;
+        if (materialOverrides)
+        {
+            for (const name in materialOverrides)
+            {
+                if (materialOverrides.hasOwnProperty(name) && Object.keys(materialOverrides[name]).length)
+                {
+                    const material = this.material.find(x => x.name === name);
+                    if (material)
+                    {
+                        const overrides = materialOverrides[name];
+                        for (const paramName in overrides)
+                        {
+                            if (overrides.hasOwnProperty(paramName))
+                            {
+                                const parameter = material.parameters.find(x => x.name === paramName);
+                                if (parameter) vec4.copy(parameter.value, overrides[paramName]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -509,7 +525,7 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Parses a dna string
+     * Parses a dna string into  a dna object
      * @param {String} dna
      * @returns {Object}
      */
@@ -574,9 +590,16 @@ export class EveSOFData extends meta.Model
             }
         }
 
-        if (!pattern && faction.defaultPattern)
+        if (!pattern)
         {
-            pattern = { layer1: faction.defaultPattern };
+            if (faction.defaultPattern)
+            {
+                pattern = { layer1: faction.defaultPattern };
+            }
+            else if (hull.defaultPattern)
+            {
+                pattern = { layer1: hull.defaultPattern };
+            }
         }
 
         if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName)
@@ -595,32 +618,48 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Builds an object from dna
-     * @param {String} dna
-     * @returns {EveStation2|EveShip2}
+     * Converts from dna object to dna
+     * @param {*} options
+     * @return {string}
+     * @constructor
      */
-    async Build(dna)
+    ToDNA(options)
     {
-        const
-            sof = this.ParseDNA(dna),
-            object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
+        let { hull, faction, race, area, resPathInsert, pattern } = options;
 
-        object.dna = dna;
-        await EveSOFData.Build(this, object, sof, this._options);
-        if (object.Initialize) object.Initialize();
-        return object;
+        if (isObjectObject(hull)) hull = hull.name;
+        if (isObjectObject(faction)) faction = faction.name;
+        if (isObjectObject(race)) race = race.name;
+        if (isObjectObject(pattern)) pattern = pattern.name;
+
+        if (!hull || !faction || !race)
+        {
+            throw new ReferenceError("Invalid dna object");
+        }
+
+        let str = `${hull}:${faction}:${race}`.toLowerCase();
+
+        if (resPathInsert) str += ":respathinsert?resPathInsert";
+
+        if (area)
+        {
+            const materialString = `${area.material1 || "none"};${area.material2 || "none"};${area.material3 || "none"};${area.material4 || "none"}`.toLowerCase();
+            if (materialString !== "none;none;none;none") str += `:mesh?${materialString}`;
+        }
+
+        if (pattern)
+        {
+            str += `:pattern?${pattern}`;
+            if (area)
+            {
+                const patternString = `;${area.patternMaterial1 || "none"};${area.patternMaterial2 || "none"}`.toLowerCase();
+                if (patternString !== ";none;none") str += patternString;
+            }
+        }
+
+        return str;
     }
 
-    /**
-     * Rebuilds an object's dna
-     * @param {EveStation2|EveShip2} object
-     * @param {Object} [opt]
-     * @returns {EveStation2|EveShip2}
-     */
-    async Rebuild(object, opt)
-    {
-        throw new ErrFeatureNotImplemented({ feature: "Rebuilding existing sof object" });
-    }
 
     /**
      *  TEMPORARY
@@ -720,6 +759,38 @@ export class EveSOFData extends meta.Model
 
     /**
      * Builds an object from dna
+     * @param {String} dna
+     * @returns {EveStation2|EveShip2}
+     */
+    async Build(dna)
+    {
+        const
+            sof = this.ParseDNA(dna),
+            object = sof.hull.buildClass === 2 ? new EveStation2() : new EveShip2();
+
+        object.dna = dna;
+        await EveSOFData.Build(this, object, sof, this._options);
+        if (object.Initialize) object.Initialize();
+        return object;
+    }
+
+    /**
+     * Rebuilds an object's dna
+     * - TODO: Redo to ensure no duplicates when rebuilding
+     * @param {EveStation2|EveShip2} object
+     * @param {String} dna
+     * @returns {EveStation2|EveShip2}
+     */
+    async Rebuild(object, dna)
+    {
+        const sof = this.ParseDNA(dna);
+        object.dna = dna;
+        await EveSOFData.Build(this, object, sof, this._options);
+        return object;
+    }
+
+    /**
+     * Builds an object from dna
      * @param {EveSOFData } data
      * @param {*} obj
      * @param {object} sof
@@ -728,156 +799,49 @@ export class EveSOFData extends meta.Model
      */
     static async Build(data, obj, sof, options)
     {
-        this.SetupBounds(data, obj, sof, options);
-        this.SetupCustomMasks(data, obj, sof, options);
+        const args = [ data, obj, sof, options ];
+
+        if (options.billboardsURL)
+        {
+            try
+            {
+                const response = await fetch(resMan.BuildUrl(options.billboardsURL));
+                options.billboards = await response.json();
+            }
+            catch (err)
+            {
+                //Fall back to defaults
+            }
+        }
+
+        this.SetupBounds(...args);
+        this.SetupCustomMasks(...args);
 
         // Temporary
-        await this.SetupMesh(data, obj, sof, options);
+        await this.SetupMesh(...args);
 
-        this.SetupSpotlightSets(data, obj, sof, options);
-        this.SetupPlaneSets(data, obj, sof, options);
-        this.SetupSpriteSets(data, obj, sof, options);
-        this.SetupDecals(data, obj, sof, options);
-        this.SetupBoosters(data, obj, sof, options);
-        this.SetupLocators(data, obj, sof, options);
-        this.SetupInstancedMesh(data, obj, sof, options);
-
-        this.SetupHazeSets(data, obj, sof, options);
-
-        //  TODO
-        this.SetupAudio(data, obj, sof, options);
-        this.SetupModelCurves(data, obj, sof, options);
-        this.SetupLights(data, obj, sof, options);
-        this.SetupObservers(data, obj, sof, options);
-        this.SetupChildren(data, obj, sof, options);
-        this.SetupControllers(data, obj, sof, options);
-
+        // Supported
+        this.SetupSpotlightSets(...args);
+        this.SetupPlaneSets(...args);
+        this.SetupSpriteSets(...args);
+        this.SetupDecals(...args);
+        this.SetupBoosters(...args);
+        this.SetupLocators(...args);
+        this.SetupInstancedMesh(...args);
+        // Unsupported
+        this.SetupShadows(...args);
+        this.SetupLocatorSets(...args);
+        this.SetupHazeSets(...args);
+        this.SetupSpriteLineSets(...args);
+        this.SetupAudio(...args);
+        this.SetupModelCurves(...args);
+        this.SetupLights(...args);
+        this.SetupObservers(...args);
+        await this.SetupChildren(...args);
+        this.SetupControllers(...args);
         return obj;
     }
 
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupModelCurves(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Model curves not implemented"
-        });
-    }
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupLights(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Lights not implemented"
-        });
-    }
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupObservers(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Observers not implemented"
-        });
-    }
-
-    /*
-    //  Temporary  haze sets from sprite sets for testing
-    static SetupHazeSets(data, obj, sof, options)
-    {
-        const { isSkinned = false, hazeSets = [] } = sof.hull;
-
-        hazeSets.forEach(srcSet =>
-        {
-            //  If they aren't visible, don't bother to create them
-            if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup))
-            {
-                return;
-            }
-
-            const set = new EveSpriteSet();
-            set.name = srcSet.name;
-            set.display = true;
-            set.useQuads = true;
-            set.skinned = srcSet.skinned && isSkinned;
-            set.effect = options.effect.sprite;
-
-            srcSet.items.forEach(srcItem =>
-            {
-                const color = vec4.fromValues(1, 1, 1, 1);
-                sof.faction.GetColorType(srcItem.colorType, color, 0);
-                const scale = Math.max(srcItem.scaling[0], srcItem.scaling[1], srcItem.scaling[2]);
-
-                set.CreateItem({
-                    name: srcSet.name + "_temporary",
-                    color,
-                    boneIndex: srcItem.boneIndex,
-                    falloff: 0.95, //srcItem.hazeFalloff,
-                    intensity: srcItem.hazeBrightness,
-                    position: srcItem.position,
-                    minScale: 1, //scale,
-                    maxScale: 1  //scale
-                });
-
-            });
-
-            set.Initialize();
-            const arr = obj.attachments || obj.spriteSets;
-            arr.push(set);
-        });
-
-    }
-     */
-
-    /**
-     * Sets up haze sets
-     * // TODO: Share haze sets...
-     * // TODO: Animated haze sets...
-     * @param data
-     * @param obj
-     * @param sof
-     * @param options
-     */
-    static SetupHazeSets(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Haze sets not implemented"
-        });
-
-        sof.hull.hazeSets.forEach(srcSet =>
-        {
-            const haze = new EveHazeSet();
-
-            srcSet.items.forEach(srcSetItem =>
-            {
-                const item = EveHazeSetItem.from(srcSetItem);
-                sof.faction.GetColorType(srcSetItem.colorType, item.color, 0);
-                haze.items.push(item);
-            });
-
-            obj.attachments.push(haze);
-        });
-    }
 
     /**
      * Sets up a custom mask (or empties it)
@@ -910,7 +874,8 @@ export class EveSOFData extends meta.Model
         {
             ext = getPathExtension(layer.textureResFilePath);
 
-            mask.display = true;
+            // Todo: figure out why there are solid white textures that are visible
+            mask.display = !layer.textureResFilepath || layer.textureResFilepath.includes("solid_white");
             mask.materialIndex = layer.materialSource;
             mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
             vec4.set(mask.targetMaterials,
@@ -945,8 +910,13 @@ export class EveSOFData extends meta.Model
         }
         else
         {
-            // Don't reset any custom material for now
+            //mask.parameters.DiffuseColor.SetValue([ 0, 0, 0, 1 ]);
+            //mask.parameters.FresnelColor.SetValue([ 0, 0, 0, 1 ]);
+            //mask.parameters.DustDiffuseColor.SetValue([ 0, 0, 0, 1 ]);
+            //mask.parameters.Gloss.SetValue([ 0, 0, 0, 0 ]);
         }
+
+        // mask.UpdateValues({ controller: this });
     }
 
     /**
@@ -984,6 +954,7 @@ export class EveSOFData extends meta.Model
 
     /**
      *
+     * TODO: Generate missing bounds
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
@@ -994,8 +965,21 @@ export class EveSOFData extends meta.Model
         const bounds = get(sof.hull, "boundingSphere", [ 0, 0, 0, 0 ]);
         obj.boundingSphereRadius = bounds[3];
         vec3.copy(obj.boundingSphereCenter, bounds);
-        vec3.copy(obj.shapeEllipsoidCenter, get(sof.hull, "boundingEllipsoidCenter", [ 0, 0, 0 ]));
-        vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "boundingEllipsoidRadius", [ 0, 0, 0 ]));
+
+        const
+            center = vec3.copy(obj.shapeEllipsoidCenter, get(sof.hull, "shapeEllipsoidCenter", [ 0, 0, 0 ])),
+            radii = vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "shapeEllipsoidRadius", [ 0, 0, 0 ]));
+
+        /*
+        if (radii[0] <= 0)
+        {
+            const { maxBounds, minBounds } = obj.mesh.geometryResource;
+            vec3.subtract(center, maxBounds, minBounds);
+            vec3.scale(center, center, 0.5 * 1.732050807);
+            vec3.add(radii, maxBounds, minBounds);
+            vec3.scale(radii, radii, 0.5);
+        }
+         */
     }
 
     /**
@@ -1013,116 +997,135 @@ export class EveSOFData extends meta.Model
      */
     static async SetupMesh(data, obj, sof, options)
     {
-        const { hull } = sof;
-
-        // Get the mesh'es resource path
-        let resPath = get(hull, "geometryResFilePath", "");
-        if (!resPath) throw new TypeError("Hull has no geometry");
-
-        try
-        {
-            await tw2.Fetch(resPath);
-        }
-        catch (err)
-        {
-            // If a cake file, try to fall back to wbg file
-            if (getPathExtension(resPath) === "cake")
-            {
-                resPath = "res:/" + resPath.substring(resPath.indexOf(":") + 2).replace(".cake", ".wbg");
-                // Update the sof so it doesn't bother doing this again
-                sof.hull.geometryResFilePath = resPath;
-                sof.hull.skinned = !!sof.hull._wasSkinned;
-            }
-        }
+        let doInitialize = false;
 
         // Setup mesh
-        const mesh = obj.mesh || new Tw2Mesh();
-        mesh.geometryResPath = resPath;
-
-        // Setup shadows
-        if (!obj.shadowEffect)
+        if (!obj.mesh)
         {
-            obj.shadowEffect = sof.hull.isSkinned ? options.effect.shadowSkinned : options.effect.shadow;
+            obj.mesh = new Tw2Mesh();
+            doInitialize = true;
         }
+
+        const mesh = obj.mesh;
+
+        // Get the meshes' resource path
+        let resPath = get(sof.hull, "geometryResFilePath", "");
+        if (!resPath) throw new TypeError("Hull has no geometry");
+
+        // Only set if not already correct
+        if (mesh.geometryResPath !== resPath)
+        {
+            try
+            {
+                await tw2.Fetch(resPath);
+            }
+            catch (err)
+            {
+                // If a cake file, try to fall back to wbg file
+                if (getPathExtension(resPath) === "cake")
+                {
+                    resPath = "res:/" + resPath.substring(resPath.indexOf(":") + 2).replace(".cake", ".wbg");
+                    // Update the sof so it doesn't bother doing this again
+                    sof.hull.geometryResFilePath = resPath;
+                    sof.hull.skinned = !!sof.hull._wasSkinned;
+                }
+            }
+
+            mesh.geometryResPath = resPath;
+            doInitialize = true;
+        }
+
+        const { hull } = sof;
 
         /**
          * Setup a mesh area
+         * TODO: Handle extra mesh areas that are already defined
          * @param {String} areasName
          */
         const setupMeshArea = (areasName) =>
         {
-            const { generic } = this;
+            const toRemove = Array.from(obj.mesh[areasName]);
 
             get(hull, areasName, []).forEach(hullArea =>
             {
                 let { name = "", index = 0, count = 1, shader = "", areaType } = hullArea;
 
-                const area = new Tw2MeshArea();
-                area.name = name;
-                area.index = index;
-                area.count = count;
-                mesh[areasName].push(area);
-
-                const config = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
-                hullArea.Assign(config);
-
-                const effect = area.effect = new Tw2Effect();
-                effect.name = area.name + "_effect";
-                effect.effectFilePath = config.effectFilePath;
-                effect.autoParameter = true;
-
-                // Fix missing quadheatdetail shader
-                if (effect.effectFilePath.includes("quadheatdetail"))
+                // Check if already exists
+                let area = obj.mesh.FindMeshAreaByTypeAndIndex(areasName, index);
+                if (area)
                 {
-                    effect.effectFilePath = effect.effectFilePath.replace("quadheatdetail", "quaddetail");
-                    tw2.Debug({
-                        name: "Space object factory",
-                        message: "Patching missing shader: " + effect.effectFilePath
-                    });
+                    toRemove.splice(toRemove.indexOf(area, 1));
+                }
+                else
+                {
+                    area = new Tw2MeshArea();
+                    area.name = name;
+                    area.index = index;
+                    area.count = count;
+                    mesh[areasName].push(area);
                 }
 
-                // Booster effect color
-                const heatGlowColor = config.parameters["GeneralHeatGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
-                if (heatGlowColor)
+                // Get default shader values
+                const eff = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
+                eff.autoParameter = true;
+
+                // Get hull Area values
+                hullArea.Assign(eff);
+
+                // Heat colours
+                const heatGlowColor = eff.parameters["GeneralHeatGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
+                if (heatGlowColor && sof.race.booster.glowColor)
                 {
                     vec4.multiply(heatGlowColor, sof.race.booster.glowColor, options.multiplier.generalHeatGlowColor);
-                    config.parameters.GeneralHeatGlowColor = heatGlowColor; // temp
+                    eff.parameters.GeneralHeatGlowColor = heatGlowColor; // temp
                 }
 
                 // Area parameters
-                const areaData = { colorType: -1 };
+                const areaData = { colorType: 0 };
                 sof.faction.AssignAreaType(areaType, areaData, 0);
 
-                // Get custom materials
+                // Get custom values
                 Object.assign(areaData, sof.area);
-                data.AssignMaterialParameters(areaData, config.parameters);
+                data.AssignMaterialParameters(areaData, eff.parameters);
+
+                // Handle res path inserts
+                if (eff.textures.PmdgMap)
+                {
+                    eff.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, eff.textures.PmdgMap, sof.resPathInsert);
+                }
 
                 // Area lights colour
-                const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
+                const glowColor = eff.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
                 if (glowColor)
                 {
                     sof.faction.GetColorType(areaData.colorType, glowColor, 0);
                     vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
-                    config.parameters.GeneralGlowColor = glowColor; //temp
+                    eff.parameters.GeneralGlowColor = glowColor; //temp
                 }
 
-                if (config.textures.PmdgMap)
+                // Ensure we have an effect
+                if (!area.effect)
                 {
-                    config.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, config.textures.PmdgMap, sof.resPathInsert);
+                    area.effect = new Tw2Effect();
+                    area.effect.name = area.name + "_effect";
                 }
 
                 // Update effect
-                effect.SetParameters(config.parameters);
-                effect.SetTextures(config.textures);
-                effect.SetOverrides(config.overrides);
+                area.effect.SetValues(eff, { controller: this });
 
+                //  Update from custom masks
                 for (let i = 0; i < obj.customMasks.length; i++)
                 {
-                    EveCustomMask.ApplyMaterials(effect, obj.customMasks[i], i);
+                    EveCustomMask.ApplyMaterials(area.effect, obj.customMasks[i], i);
                 }
-
-                effect.Initialize();
             });
+
+            toRemove.forEach(area =>
+            {
+                area.Destructor();
+                obj.mesh[areasName].splice(obj.mesh[areasName].indexOf(area), 1);
+            });
+
         };
 
         setupMeshArea("additiveAreas");
@@ -1132,8 +1135,22 @@ export class EveSOFData extends meta.Model
         setupMeshArea("opaqueAreas");
         setupMeshArea("transparentAreas");
 
-        mesh.Initialize();
+        if (doInitialize) mesh.Initialize();
         obj.mesh = mesh;
+    }
+
+    /**
+     * Finds an  attachment by it's constructor and name
+     * @param {Array} arr
+     * @param {Function} Ctor
+     * @param {String} name
+     * @return {*} attachment
+     */
+    static FindAttachmentByConstructorAndName(arr, Ctor, name)
+    {
+        const found = arr.filter(x => x.constructor === Ctor && x.name === name);
+        if (found.length > 1) throw new ReferenceError(`Found ${found.length} attachments, expected 1`);
+        return found[0] ? found[0] : null;
     }
 
     /**
@@ -1145,17 +1162,32 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpriteSets(data, obj, sof, options)
     {
-        const { isSkinned = false, spriteSets = [] } = sof.hull;
+        const
+            { isSkinned = false, spriteSets = [] } = sof.hull,
+            arr = obj.attachments || obj.spriteSets,
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpriteSet);
 
         spriteSets.forEach(srcSet =>
         {
+            let set = this.FindAttachmentByConstructorAndName(arr, EveSpriteSet, srcSet.name);
+
             //  If they aren't visible, don't bother to create them
             if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup))
             {
                 return;
             }
 
-            const set = new EveSpriteSet();
+            if (set)
+            {
+                set.ClearItems();
+                toRemove.splice(toRemove.indexOf(set), 1);
+            }
+            else
+            {
+                set = new EveSpriteSet();
+                arr.push(set);
+            }
+
             set.name = srcSet.name;
             set.display = true;
             set.useQuads = true;
@@ -1170,15 +1202,24 @@ export class EveSOFData extends meta.Model
             });
 
             set.Initialize();
-
-            const arr = obj.attachments || obj.spriteSets;
-            arr.push(set);
-
         });
+
+        toRemove.forEach(set =>
+        {
+            set.Destructor();
+            arr.splice(arr.indexOf(set), 1);
+        });
+    }
+
+
+    static FindObjectsByConstructor(arr, Ctor)
+    {
+        return arr.filter(x => x.constructor === Ctor);
     }
 
     /**
      *
+     * TODO: Handle extra sets...
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
@@ -1186,12 +1227,28 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpotlightSets(data, obj, sof, options)
     {
-        const { isSkinned = false, spotlightSets = [] } = sof.hull;
-        const { spotlightAlpha = 1 } = options.multiplier;
+        const
+            { isSkinned = false, spotlightSets = [] } = sof.hull,
+            arr = obj.attachments || obj.spotlightSets,
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpotlightSet);
 
         spotlightSets.forEach(srcSet =>
         {
-            let coneShader, glowShader;
+            let set = this.FindAttachmentByConstructorAndName(arr, EveSpotlightSet, srcSet.name);
+            if (set)
+            {
+                set.ClearItems();
+                toRemove.splice(toRemove.indexOf(set), 1);
+            }
+            else
+            {
+                set = EveSpotlightSet.from({ name: srcSet.name });
+                arr.push(set);
+            }
+
+            let coneShader,
+                glowShader;
+
             if (options.useSpotlightPool)
             {
                 coneShader = options.effectPath.spotlightConePool;
@@ -1204,48 +1261,103 @@ export class EveSOFData extends meta.Model
                 glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
             }
 
-            const set = EveSpotlightSet.from({
-                name: srcSet.name,
+            set.SetValues({
+                display: true,
+                /*
                 items: srcSet.items,
                 coneEffect: {
                     effectFilePath: coneShader,
-                    parameters: {
-                        zOffset: srcSet.zOffset
-                    },
-                    textures: {
-                        TextureMap: srcSet.coneTextureResPath
-                    }
+                    parameters: { zOffset: srcSet.zOffset },
+                    textures: { TextureMap: srcSet.coneTextureResPath }
                 },
                 glowEffect: {
                     effectFilePath: glowShader,
-                    textures: {
-                        TextureMap: srcSet.glowTextureResPath
-                    }
+                    textures: { TextureMap: srcSet.glowTextureResPath }
                 }
+                */
             });
 
+            // Temporary
+            set.coneEffect = set.coneEffect || new Tw2Effect();
+            set.coneEffect.SetValues({
+                effectFilePath: coneShader,
+                parameters: { zOffset: srcSet.zOffset },
+                textures: { TextureMap: srcSet.coneTextureResPath }
+            });
+            set.glowEffect = set.glowEffect || new Tw2Effect();
+            set.glowEffect.SetValues({
+                effectFilePath: glowShader,
+                textures: { TextureMap: srcSet.glowTextureResPath }
+            });
+            srcSet.items.forEach(item => set.CreateItem(item));
+
+            // Update factions...
             set.items.forEach(item =>
             {
                 const faction = sof.faction.FindSpotlightSetByGroupIndex(item.groupIndex);
                 if (faction)
                 {
-                    vec4.copy(item.coneColor, faction.coneColor);
-                    vec4.copy(item.flareColor, faction.flareColor);
-                    vec4.copy(item.spriteColor, faction.spriteColor);
+                    item.SetValues({
+                        coneColor: faction.coneColor,
+                        flareColor: faction.flareColor,
+                        spriteColor: faction.spriteColor
+                    });
                 }
-
-                item.coneColor[3] *= spotlightAlpha;
-                item.flareColor[3] *= spotlightAlpha;
-                item.spriteColor[3] *= spotlightAlpha;
-                item.UpdateValues();
             });
-
-            set.Initialize();
-
-            const arr = obj.attachments || obj.spotlightSets;
-            arr.push(set);
-
         });
+
+        toRemove.forEach(set =>
+        {
+            set.Destructor();
+            arr.splice(arr.indexOf(set), 1);
+        });
+
+    }
+
+    /**
+     * Temporary billboard handler
+     * @param {*} obj
+     * @param {Object} options
+     */
+    static HandleBillboards(obj, options)
+    {
+        const
+            found = [],
+            arr = obj.attachments || obj.planeSets;
+
+        arr.forEach(set =>
+        {
+            if (set.constructor === EvePlaneSet)
+            {
+                // Try to guess billboards
+                const nameUpper = set.name.split(" ").join("").toUpperCase();
+                if (nameUpper.includes("BILLBOARD") || nameUpper.includes("VIDEOS"))
+                {
+                    found.push(set);
+                }
+            }
+        });
+
+        // Temp add billboard randomizer
+        if (found.length)
+        {
+            obj.RandomizeBillboards = function()
+            {
+                found.forEach(billboard =>
+                {
+                    const { billboards = [] } = options;
+                    let bb =  billboards[num.randomInt(0, billboards.length - 1)];
+                    if (bb.indexOf(":") === -1) bb = "cdn:/" + bb;
+                    billboard.effect.parameters.MaskMap.SetValue(bb);
+                });
+            };
+
+            obj.RandomizeBillboards();
+        }
+        else
+        {
+            obj.RandomizeBillboards = () => {};
+        }
     }
 
     /**
@@ -1257,98 +1369,90 @@ export class EveSOFData extends meta.Model
      */
     static SetupPlaneSets(data, obj, sof, options)
     {
-        const { isSkinned, planeSets } = sof.hull;
-        const { planeAlpha = 1 } = options.multiplier;
-
-        const _billboards = [];
+        const
+            { isSkinned, planeSets } = sof.hull,
+            arr = obj.attachments || obj.planeSets,
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EvePlaneSet);
 
         planeSets.forEach(srcSet =>
         {
-            const set = new EvePlaneSet();
-            set.name = srcSet.name;
+            let set = this.FindAttachmentByConstructorAndName(arr, EvePlaneSet, srcSet.name);
 
-            // Add a random billboard
-            let MaskMap = srcSet.maskMapResPath;
-
-            // Try to guess billboards
-            const nameUpper = set.name.split(" ").join("").toUpperCase();
-            if (nameUpper.includes("BILLBOARD") || nameUpper.includes("VIDEOS"))
+            if (set)
             {
-                _billboards.push(set);
+                set.ClearItems();
+                toRemove.splice(toRemove.indexOf(set), 1);
+            }
+            else
+            {
+                set = EvePlaneSet.from({ name: srcSet.name });
+                arr.push(set);
             }
 
-            // TODO: Usage
+            set.SetValues({
+                // TODO: handle missing properties
+                // TODO: handle usage
+                display: true,
+                /*
+                items: srcSet.items,
+                effect: {
+                    effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
+                    autoParameter: true,
+                    parameters: {
+                        PlaneData: [
+                            0,  // Power of Fade Angle
+                            srcSet.atlasSize || 1,
+                            0,  // Unused
+                            0   // Unused
+                        ]
+                    },
+                    textures: {
+                        Layer1Map: srcSet.layer1MapResPath,
+                        Layer2Map: srcSet.layer2MapResPath,
+                        MaskMap: srcSet.maskMapResPath
+                    }
+                }
+                 */
+            });
 
-            set.effect = Tw2Effect.from({
+            // Temporary
+            set.effect = set.effect || new Tw2Effect();
+            set.effect.SetValues({
                 effectFilePath: data.GetShaderPath(options.effectPath.plane, isSkinned && srcSet.skinned),
                 autoParameter: true,
-                parameters: {
-                    PlaneData: [
-                        0,  // Power of Fade Angle
-                        srcSet.atlasSize || 1,
-                        0,  // Unused
-                        0   // Unused
-                    ]
-                },
+                parameters: { PlaneData: [ 0, srcSet.atlasSize || 1, 0, 0 ] },
                 textures: {
                     Layer1Map: srcSet.layer1MapResPath,
                     Layer2Map: srcSet.layer2MapResPath,
-                    MaskMap
+                    MaskMap: srcSet.maskMapResPath
                 }
             });
+            srcSet.items.forEach(item => set.CreateItem(item));
 
-            srcSet.items.forEach(srcItem =>
+            // Update faction colours
+            set.items.forEach(item =>
             {
-                const item = EvePlaneSetItem.from(srcItem);
-                // TODO: Lots of new properties to add...
-
-                const faction = sof.faction.FindPlaneSetByGroupIndex(srcItem.groupIndex);
-                if (faction)
-                {
-                    vec4.copy(item.color, faction.color);
-                }
-
-                item.color[3] *= planeAlpha;
-
-                if (EveSOFData.isZeroColor(item.color))
-                {
-                    vec4.copy(item.color, options.devColor);
-                }
-
-                // If a plane set is zero coloured don't bother to create them
-                if (EveSOFData.isZeroColor(item.color))
-                {
-                    return;
-                }
-
-                set.items.push(item);
+                const faction = sof.faction.FindPlaneSetByGroupIndex(item.groupIndex);
+                if (faction) item.SetValues({ color: faction.color });
+                // Hide plane sets that are invisible???
+                if (EveSOFData.isZeroColor(item.color)) item.SetValues({ display: false });
             });
-
-            if (set.items.length)
-            {
-                set.Initialize();
-                const arr = obj.attachments || obj.planeSets;
-                arr.push(set);
-            }
         });
 
-        if (_billboards.length)
+        this.HandleBillboards(obj, options);
+
+        toRemove.forEach(set =>
         {
-            // Temp add billboard randomizer
-            obj.RandomizeBillboards = function()
-            {
-                _billboards.forEach(billboard =>
-                {
-                    const { billBoards = [] } = options;
-                    billboard.effect.parameters.MaskMap.SetValue("cdn:/" + billBoards[num.randomInt(0, billBoards.length - 1)]);
-                });
-            };
-
-            obj.RandomizeBillboards();
-        }
-
+            set.Destructor();
+            arr.splice(arr.indexOf(set), 1);
+        });
     }
 
+    /**
+     * Checks if a color is zero
+     * @param {vec4|Array} color
+     * @return {boolean}
+     */
     static isZeroColor(color)
     {
         return color[0] === 0 && color[1] === 0 && color[2] === 0 && color[3] === 0;
@@ -1370,75 +1474,98 @@ export class EveSOFData extends meta.Model
             PmdgMaps = obj.mesh.FindParameters("PmdgMap"),
             NoMaps = obj.mesh.FindParameters("NoMap"),
             PmdgMap = PmdgMaps[0] ? PmdgMaps[0].resourcePath : "",
-            NoMap = NoMaps[0] ? NoMaps[0].resourcePath : "";
+            NoMap = NoMaps[0] ? NoMaps[0].resourcePath : "",
+            provided = { textures: { PmdgMap, NoMap } },
+            toRemove = Array.from(obj.decals);
 
-        const provided = { textures: { PmdgMap, NoMap } };
-
-        hull.decalSets.forEach(setData =>
+        hull.decalSets.forEach(srcSet =>
         {
-            // Don't process irrelevant decals
-            if (setData.visibilityGroup && !faction.HasVisibilityGroup(setData.visibilityGroup))
-            {
-                return;
-            }
+            const setVisible = !srcSet.visibilityGroup || faction.HasVisibilityGroup(srcSet.visibilityGroup);
 
-            setData.items.forEach(itemData =>
+            srcSet.items.forEach(srcItem =>
             {
-                const { name, visibilityGroup, logoType, usage, glowColorType } = itemData;
+                const name = `${srcSet.name}_${srcItem.name}`;
+                let decal = this.FindAttachmentByConstructorAndName(obj.decals, EveSpaceObjectDecal, name);
 
-                // If we can't find the logo type ignore the logo
+                const { visibilityGroup, logoType, usage, glowColorType } = srcItem;
+
+                // Check visibility
+                let itemVisible = !visibilityGroup || faction.HasVisibilityGroup(visibilityGroup);
                 if (!faction.HasLogoType(logoType))
                 {
-                    tw2.Log({
+                    tw2.Debug({
                         name: "Space object factory",
                         message: `Could not find logo type for decal: ${name} (${logoType})`
                     });
-                    return;
+                    itemVisible = false;
                 }
+                if (!setVisible || !itemVisible) return;
 
-                // Don't add irrelevant decals (Should already have been caught)
-                if (visibilityGroup && !faction.HasVisibilityGroup(visibilityGroup))
+                if (decal)
                 {
-                    return;
+                    toRemove.splice(toRemove.indexOf(decal), 1);
+                }
+                else
+                {
+                    decal = EveSpaceObjectDecal.from({ name });
+                    obj.decals.push(decal);
                 }
 
-                const
-                    // How to tell what kind of effect to load??
-                    shader = options.decalUsage[usage],
-                    config = data.generic.GetShaderConfig(shader, false, provided);
+                // How to tell what kind of effect to load??
+                const effect = data.generic.GetShaderConfig(options.decalUsage[usage], false, provided);
 
-                faction.GetLogoType(logoType).Assign(config);
+                switch (usage)
+                {
+                    case 1:
+                        // killmarks
+                        effect.overrides.DecalAtMap = {
+                            addressUMode: WrapMode.REPEAT,
+                            addressVMode: WrapMode.REPEAT,
+                            filterMode: FilterMode.LINEAR,
+                            mipFilterMode: MipFilterMode.NONE
+                        };
+                        break;
 
-                const { DecalGlowColor } = config.parameters;
+                    case 5:
+                        // Glows
+                        effect.overrides.DecalAtMap = {
+                            addressUMode: WrapMode.CLAMP_TO_EDGE,
+                            addressVMode: WrapMode.CLAMP_TO_EDGE,
+                            filterMode: FilterMode.LINEAR,
+                            mipFilterMode: MipFilterMode.NONE
+                        };
+                        break;
+                }
+
+                // Faction
+                faction.AssignLogoType(logoType, effect);
+                const { DecalGlowColor } = effect.parameters;
                 if (DecalGlowColor) faction.GetColorType(glowColorType, DecalGlowColor, 0);
 
-                // Killmarks
-                if (usage === 1)
-                {
-                    config.overrides.DecalAtMap = {
-                        addressUMode: WrapMode.REPEAT,
-                        addressVMode: WrapMode.REPEAT,
-                        filterMode: FilterMode.LINEAR,
-                        mipFilterMode: MipFilterMode.NONE
-                    };
-                }
-                // Glows
-                else if (usage === 5)
-                {
-                    config.overrides.DecalAtMap = {
-                        addressUMode: WrapMode.CLAMP_TO_EDGE,
-                        addressVMode: WrapMode.CLAMP_TO_EDGE,
-                        filterMode: FilterMode.LINEAR,
-                        mipFilterMode: MipFilterMode.NONE
-                    };
-                }
+                // Item's values override faction
+                srcItem.Assign(effect);
 
-                // Item's values override logo types
-                itemData.Assign(config);
-
-                obj.decals.push(EveSpaceObjectDecal.from(Object.assign({}, itemData, { effect: config })));
+                //  Temporary
+                decal.decalEffect = decal.decalEffect || new Tw2Effect();
+                decal.decalEffect.SetValues(effect);
+                decal.SetValues(Object.assign({ display: true }, {
+                    rotation: srcItem.rotation,
+                    position: srcItem.position,
+                    scaling: srcItem.scaling,
+                    parentBoneIndex: srcItem.boneIndex,
+                    name: srcItem.name,
+                    indexBuffer: srcItem.indexBuffer
+                }));
+                //decal.SetValues(Object.assign({ display: true,  decalEffect: effect }, srcItem));
             });
         });
+
+        toRemove.forEach(item =>
+        {
+            item.Destructor();
+            obj.decals.splice(obj.decals.indexOf(item), 1);
+        });
+
     }
 
     /**
@@ -1451,31 +1578,9 @@ export class EveSOFData extends meta.Model
     static SetupBoosters(data, obj, sof, options)
     {
         const { hull, race } = sof;
-
-        // No  boosters
         if (!hull.booster || !race.booster) return;
 
-        const
-            src = race.booster,
-            srcItems = hull.booster.items || [];
-
-
-        for (let i = 0; i < srcItems.length; ++i)
-        {
-            const scaled = mat4.scale(mat4.create(), srcItems[i].transform, options.multiplier.boosterScale);
-
-            obj.locators.push(EveLocator2.from({
-                name: "locator_booster_" + (i + 1),
-                transform: scaled,
-                atlasIndex0: srcItems[i].atlasIndex0,
-                atlasIndex1: srcItems[i].atlasIndex1,
-                // TODO: Add support for new locator parameters
-                // hasTrail boolean
-                // lightScale float  <-- Can use instead of manual brightnessModifier?
-                // functionality vec4
-            }));
-        }
-
+        const src = race.booster;
         const { shape0, shape1, warpShape0, warpShape1 } = src;
         const { boosterGlowScale = 1, boosterHaloScale = 1, boosterSymHalo = 1, boosterBrightness = 1, boosterAlpha = 1 } = options.multiplier;
 
@@ -1486,6 +1591,49 @@ export class EveSOFData extends meta.Model
 
         Color0[3] = boosterAlpha;
         Color1[3] = boosterAlpha;
+
+        if (obj.boosters)
+        {
+            obj.boosters.effect.SetValues({
+                effectFilePath: options.effectPath.boosterVolumetric,
+                autoParameter: true,
+                parameters: {
+                    NoiseFunction0: shape0.noiseFunction,
+                    NoiseSpeed0: shape0.noiseSpeed,
+                    NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
+                    NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
+                    NoiseFrequency0: shape0.noiseFrequency,
+                    Color0,
+                    NoiseFunction1: shape1.noiseFunction,
+                    NoiseSpeed1: shape1.noiseSpeed,
+                    NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
+                    NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
+                    NoiseFrequency1: shape1.noiseFrequency,
+                    Color1,
+                    WarpNoiseFunction0: warpShape0.noiseFunction,
+                    WarpNoiseSpeed0: warpShape0.noiseSpeed,
+                    WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
+                    WarpNoiseAmplitudeEnd0: warpShape0.noiseAmplitureEnd,
+                    WarpNoiseFrequency0: warpShape0.noiseFrequency,
+                    WarpColor0: warpShape0.color,
+                    WarpNoiseFunction1: warpShape1.noiseFunction,
+                    WarpNoiseSpeed1: warpShape1.noiseSpeed,
+                    WarpNoiseAmplitudeStart1: warpShape1.noiseAmplitureStart,
+                    WarpNoiseAmplitudeEnd1: warpShape1.noiseAmplitureEnd,
+                    WarpNoiseFrequency1: warpShape1.noiseFrequency,
+                    WarpColor1: warpShape1.color,
+                    ShapeAtlasSize: [ src.shapeAtlasHeight, src.shapeAtlasCount, 0, 0 ],
+                    BoosterScale: src.scale,
+                },
+                textures: {
+                    ShapeMap: src.shapeAtlasResPath,
+                    GradientMap0: src.gradient0ResPath,
+                    GradientMap1: src.gradient1ResPath,
+                    NoiseMap: options.texturePath.noise32
+                }
+            });
+            return;
+        }
 
 
         // obj.boosters = obj.boosters || new EveBoosterSet();
@@ -1574,157 +1722,57 @@ export class EveSOFData extends meta.Model
      */
     static SetupLocators(data, obj, sof, options)
     {
-        const { locatorTurrets = [] } = sof.hull;
+        const
+            { locatorTurrets = [], booster } = sof.hull,
+            toRemove = Array.from(obj.locators);
 
         locatorTurrets.forEach(item =>
         {
-            obj.locators.push(EveLocator2.from(item));
-        });
-
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Locator sets not implemented"
-        });
-    }
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupAudio(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Audio not implemented"
-        });
-    }
-
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     * @returns {Array}
-     */
-    static SetupAnimations(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Animations not implemented"
-        });
-    }
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupChildren(data, obj, sof, options)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Child objects not implemented"
-        });
-
-        /*
-        const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
-
-        function onChildLoaded(child)
-        {
-            return function(loaded)
+            let locator = EveSOFData.FindAttachmentByConstructorAndName(obj.locators, EveLocator2, item.name);
+            if (locator)
             {
-                loaded.name = child.name;
-
-                if (loaded.isEffectChild)
-                {
-                    obj.effectChildren.push(loaded);
-                }
-                else
-                {
-                    obj.children.push(loaded);
-                }
-
-                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
-                quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
-                vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
-
-                const id = get(child, "id", -1);
-                if (id !== -1 && curves[id])
-                {
-                    EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
-                }
-            };
-        }
-
-        const { children = [] } = sof.hull;
-        for (let i = 0; i < children.length; ++i)
-        {
-            const { redFilePath } = children[i];
-            if (redFilePath)
-            {
-                tw2.Fetch(redFilePath).then(EveSOFData.OnChildLoaded(children[i]));
+                toRemove.splice(toRemove.indexOf(locator), 1);
             }
             else
             {
-                tw2.Debug({
-                    name: "Space object factory",
-                    message: `No resource path found for "${sof.hull.name}" child at index ${i}`
-                });
+                locator = new EveLocator2();
+                obj.locators.push(locator);
             }
-        }
-         */
-    }
-
-    /**
-     *
-     * @param {EveSOFData} data
-     * @param {*} obj
-     * @param {Tw2CurveSet} curveSet
-     * @param {Tw2Curve} curve
-     */
-    static BindParticleEmitters(data, obj, curveSet, curve)
-    {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Binding child particle emitters not implemented"
+            locator.SetValues(item);
         });
 
-        /*
-        if (isArray(obj.particleEmitters))
+        const items = booster && booster.items ? booster.items : [];
+        for (let i = 0; i < items.length; ++i)
         {
-            for (var i = 0; i < obj.particleEmitters.length; ++i)
+            const name = "locator_booster_" + (i + 1);
+
+            let locator = obj.FindLocatorByName(name);
+            if (locator)
             {
-                if ("rate" in obj.particleEmitters[i])
-                {
-                    var binding = new Tw2ValueBinding();
-                    binding.sourceObject = curve;
-                    binding.sourceAttribute = "currentValue";
-                    binding.destinationObject = obj.particleEmitters[i];
-                    binding.destinationAttribute = "rate";
-                    binding.Initialize();
-                    curveSet.bindings.push(binding);
-                }
+                toRemove.splice(toRemove.indexOf(locator), 1);
             }
-            for (i = 0; i < obj.children.length; ++i)
+            else
             {
-                this.BindParticleEmitters(obj.children[i], curveSet, curve);
+                locator = EveLocator2.from({ name });
+                obj.locators.push(locator);
             }
-        }
-        else
-        {
-            tw2.Debug({
-                name: "Space  object factory",
-                message: `Unable to bind particle emitters: ${obj.constructor.name}`
+
+            locator.SetValues({
+                transform: mat4.scale([], items[i].transform, options.multiplier.boosterScale),
+                atlasIndex0: items[i].atlasIndex0,
+                atlasIndex1: items[i].atlasIndex1,
+                // TODO: Add support for new locator parameters
+                hasTrail: items[i].hasTrail,
+                lightScale: items[i].lightScale,
+                functionality: items[i].functionality
             });
         }
-         */
+
+        toRemove.forEach(item =>
+        {
+            item.Destructor();
+            obj.locators.splice(obj.locators.indexOf(item), 1);
+        });
     }
 
     /**
@@ -1736,9 +1784,17 @@ export class EveSOFData extends meta.Model
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        const { gl } = tw2;
-        const { hull } = sof;
-        const { instancedMeshes = [] } = hull;
+
+        // TODO: Update if there are any changes
+        if (obj.mesh && obj.mesh.constructor === Tw2InstancedMesh)
+        {
+            return;
+        }
+
+        const
+            { gl } = tw2,
+            { hull } = sof,
+            { instancedMeshes = [] } = hull;
 
         const
             m = mat4.create(),
@@ -1840,10 +1896,13 @@ export class EveSOFData extends meta.Model
             config.textures = him.AssignTextures(config.textures);
 
             // Area parameters
-            let areaData = sof.faction.AssignAreaType(0, { colorType: 0 });
+            const areaData = { colorType: 0 };
+            sof.faction.AssignAreaType(0, areaData);
+
             // Get custom materials
             Object.assign(areaData, sof.area);
             data.AssignMaterialParameters(areaData, config.parameters);
+
             // Area lights colour
             const glowColor = config.parameters["GeneralGlowColor"] || vec4.fromValues(1, 1, 1, 1); // Temp
             if (glowColor)
@@ -1862,6 +1921,284 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Sets up shadow shader
+     * @param data
+     * @param obj
+     * @param sof
+     * @param options
+     * @return {Promise<void>}
+     * @constructor
+     */
+    static async SetupShadows(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Shadows not supported" });
+
+        /*
+        if (!obj.shadowEffect === null)
+        {
+            obj.shadowEffect = sof.hull.isSkinned ? options.effect.shadowSkinned : options.effect.shadow;
+        }
+        */
+    }
+
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static SetupLocatorSets(data, obj, sof, options)
+    {
+        const { hull } = sof;
+
+        hull.locatorSets.forEach(srcSet =>
+        {
+            const set = new EveLocatorSets();
+            set.name = srcSet.name;
+
+            srcSet.locators.forEach(srcItem =>
+            {
+                const locator = new EveLocatorSetItem();
+                locator.boneIndex = srcItem.boneIndex;
+                vec3.copy(locator.scaling, srcItem.scaling);
+                vec3.copy(locator.position, srcItem.position);
+                quat.copy(locator.rotation, srcItem.rotation);
+                set.locators.push(locator);
+            });
+
+            obj.locatorSets.push(set);
+        });
+
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static SetupModelCurves(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Model curves not implemented" });
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static SetupLights(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Lights not implemented" });
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static SetupObservers(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Observers not implemented" });
+    }
+
+    /**
+     * Sets up haze sets
+     * // TODO: Share haze sets...
+     * // TODO: Animated haze sets...
+     * @param data
+     * @param obj
+     * @param sof
+     * @param options
+     */
+    static SetupHazeSets(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Haze sets not implemented" });
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     * @returns {Array}
+     */
+    static SetupSpriteLineSets(data, obj, sof, options)
+    {
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Sprite line sets not implemented"
+        });
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static SetupAudio(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Audio not implemented" });
+    }
+
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     * @returns {Array}
+     */
+    static SetupAnimations(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Animations not implemented" });
+    }
+
+    /**
+     * Roots model path
+     * @type {string}
+     */
+    static modelPath = "cdn:/dx9/model/";
+
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
+    static async SetupChildren(data, obj, sof, options)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Child objects partially implemented" });
+
+        const effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
+
+        for (let i = 0; i < effects.length; i++)
+        {
+            const effect = await tw2.Fetch(effects[i].redFilePath);
+
+            // Disable curve sets for now
+            effect.Traverse(x =>
+            {
+                if (x.struct.curveSets)
+                {
+                    x.struct.curveSets.forEach(x => x.Stop());
+                }
+            });
+
+            quat.copy(effect.rotation, effects[i].rotation);
+            vec3.copy(effect.translation, effects[i].translation);
+            vec3.copy(effect.scaling, effects[i].scaling);
+            effect.UpdateValues();
+
+            obj.effectChildren.push(effect);
+        }
+
+
+        /*
+        const [ curveSet, curves ] = this.SetupAnimations(data, obj, sof, options);
+
+        function onChildLoaded(child)
+        {
+            return function(loaded)
+            {
+                loaded.name = child.name;
+
+                if (loaded.isEffectChild)
+                {
+                    obj.effectChildren.push(loaded);
+                }
+                else
+                {
+                    obj.children.push(loaded);
+                }
+
+                vec3.copy(loaded.translation, get(child, "translation", [ 0, 0, 0 ]));
+                quat.copy(loaded.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
+                vec3.copy(loaded.scaling, get(child, "scaling", [ 1, 1, 1 ]));
+
+                const id = get(child, "id", -1);
+                if (id !== -1 && curves[id])
+                {
+                    EveSOFData.BindParticleEmitters(data, loaded, curveSet, curves[id]);
+                }
+            };
+        }
+
+        const { children = [] } = sof.hull;
+        for (let i = 0; i < children.length; ++i)
+        {
+            const { redFilePath } = children[i];
+            if (redFilePath)
+            {
+                tw2.Fetch(redFilePath).then(EveSOFData.OnChildLoaded(children[i]));
+            }
+            else
+            {
+                tw2.Debug({
+                    name: "Space object factory",
+                    message: `No resource path found for "${sof.hull.name}" child at index ${i}`
+                });
+            }
+        }
+         */
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {*} obj
+     * @param {Tw2CurveSet} curveSet
+     * @param {Tw2Curve} curve
+     */
+    static BindParticleEmitters(data, obj, curveSet, curve)
+    {
+        tw2.Debug({ name: "Space object factory", message: "Binding child particle emitters not implemented" });
+
+        /*
+        if (isArray(obj.particleEmitters))
+        {
+            for (var i = 0; i < obj.particleEmitters.length; ++i)
+            {
+                if ("rate" in obj.particleEmitters[i])
+                {
+                    var binding = new Tw2ValueBinding();
+                    binding.sourceObject = curve;
+                    binding.sourceAttribute = "currentValue";
+                    binding.destinationObject = obj.particleEmitters[i];
+                    binding.destinationAttribute = "rate";
+                    binding.Initialize();
+                    curveSet.bindings.push(binding);
+                }
+            }
+            for (i = 0; i < obj.children.length; ++i)
+            {
+                this.BindParticleEmitters(obj.children[i], curveSet, curve);
+            }
+        }
+        else
+        {
+            tw2.Debug({
+                name: "Space  object factory",
+                message: `Unable to bind particle emitters: ${obj.constructor.name}`
+            });
+        }
+         */
+    }
+
+    /**
      *
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
@@ -1870,10 +2207,7 @@ export class EveSOFData extends meta.Model
      */
     static SetupControllers(data, obj, sof, options)
     {
-        tw2.Debug({
-            name: "Space object factory",
-            message: "Animation controllers not implemented"
-        });
+        tw2.Debug({ name: "Space object factory", message: "Animation controllers not implemented" });
     }
 
     /**
@@ -1885,11 +2219,110 @@ export class EveSOFData extends meta.Model
      */
     static SetupTurretMaterial(data, obj, sof, options)
     {
-        tw2.Debug({
-            name: "Space  object factory",
-            message: "Turret materials not implemented"
-        });
+        tw2.Debug({ name: "Space  object factory", message: "Turret materials not implemented" });
     }
+
+    /*
+    GetTurretMaterialParameter(name, parentFaction, areaData)
+    {
+        const { materialPrefixes } = this.generic;
+
+        let materialIdx = -1;
+        for (let i = 0; i < materialPrefixes.length; ++i)
+        {
+            if (name.substr(0, materialPrefixes[i].length) === materialPrefixes[i])
+            {
+                materialIdx = i;
+                name = name.substr(materialPrefixes[i].length);
+            }
+        }
+
+        if (materialIdx !== -1)
+        {
+            let turretMaterialIndex = get(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
+            if (turretMaterialIndex >= 0 && turretMaterialIndex < materialPrefixes.length)
+            {
+                name = materialPrefixes[turretMaterialIndex] + name;
+                if (name in areaData.parameters)
+                {
+                    return areaData.parameters[name];
+                }
+            }
+        }
+    }
+
+
+    static CombineTurretMaterial(name, parentValue, turretValue, overrideMethod)
+    {
+        const zeroColor = [ 0, 0, 0, 0 ];
+
+        switch (overrideMethod)
+        {
+            case "overridable":
+                return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
+
+            case "half_overridable":
+                if (name.indexOf("GlowColor") >= 0)
+                {
+                    return turretValue ? turretValue : zeroColor;
+                }
+                return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
+
+            case "not_overridable":
+            case "half_overridable_2":
+                return turretValue ? turretValue : zeroColor;
+        }
+
+        return zeroColor;
+    }
+
+    SetupTurretMaterial(turretSet, parentFactionName, turretFactionName)
+    {
+
+        const
+            parentFaction = this.GetFaction(parentFactionName),
+            turretFaction = turretFactionName ? this.GetFaction(turretFactionName) : null;
+
+        let parentArea = null;
+        if (parentFaction && parentFaction.areas && ("hull" in parentFaction.areas))
+        {
+            parentArea = parentFaction.areas.hull;
+        }
+
+        let turretArea = null;
+        if (turretFaction && turretFaction.areas && ("hull" in turretFaction.areas))
+        {
+            turretArea = turretFaction.areas.hull;
+        }
+
+        if (!parentArea && !turretArea)
+        {
+            return;
+        }
+
+        if (turretSet.turretEffect)
+        {
+            const params = turretSet.turretEffect.parameters;
+            for (let name in params)
+            {
+                if (params.hasOwnProperty(name))
+                {
+                    if (params[name].constructor.prototype !== Tw2Vector4Parameter.prototype) continue;
+                    
+                    let
+                        parentValue = null,
+                        turretValue = null;
+
+                    if (parentArea) parentValue = this.GetTurretMaterialParameter(name, parentFaction, parentArea);
+                    if (turretArea) turretValue = this.GetTurretMaterialParameter(name, parentFaction, parentArea);
+
+                    vec4.copy(params[name].value, this.constructor.CombineTurretMaterial(name, parentValue, turretValue, turretSet.turretEffect.name));
+                }
+            }
+            turretSet.turretEffect.BindParameters();
+        }
+    }
+     */
 
 }
 
