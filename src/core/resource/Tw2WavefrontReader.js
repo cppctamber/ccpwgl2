@@ -3,6 +3,7 @@ import { Tw2CakeReader } from "core/resource/Tw2CakeReader";
 import { isString } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { GL_FLOAT } from "constant/gl";
+import { tw2 } from "global/tw2";
 
 
 export class Tw2WaveFrontReader
@@ -74,7 +75,10 @@ export class Tw2WaveFrontReader
         }
         catch(err)
         {
-            console.debug("Could not generate tangents and bitangents...");
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Could not generate tangents and bitangents..."
+            });
         }
 
         let indexData = [];
@@ -95,12 +99,6 @@ export class Tw2WaveFrontReader
 
         let vertexSize = 0,
             vertexCount = declarations.length ? declarations[0].vertices.length : 0;
-
-        console.debug({
-            vertexCount,
-            declarations,
-            areas: this.areas
-        });
 
         for (let i = 0; i < declarations.length; i++)
         {
