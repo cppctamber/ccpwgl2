@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { getKeyFromValue, meta } from "utils";
 
 
 const ParticleType = {
@@ -53,7 +53,7 @@ export class Tw2ParticleElement
      */
     get string()
     {
-        return Tw2ParticleElement.TypeMap[this.elementType] || "UNKNOWN";
+        return getKeyFromValue(this.constructor.Type, this.elementType, "UNKNOWN");
     }
 
 
@@ -81,18 +81,6 @@ export class Tw2ParticleElement
      * Particle element types
      * @type {{LIFETIME: number, POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number}}
      */
-    static Type = ParticleType;
-
-    /**
-     * Particle element type map
-     * @type {string[]}
-     */
-    static TypeMap = [
-        "LIFETIME",
-        "POSITION",
-        "VELOCITY",
-        "MASS",
-        "CUSTOM"
-    ];
+    static Type = ParticleType
 
 }

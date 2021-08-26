@@ -1,4 +1,4 @@
-import { meta, isString } from "utils";
+import { meta, isString, getKeyFromValue } from "utils";
 import * as consts from "constant";
 
 
@@ -38,7 +38,7 @@ export class Tw2VertexElement
      */
     get string()
     {
-        return Tw2VertexElement.TypeMap[this.usage] || "UNKNOWN";
+        return getKeyFromValue(this.constructor.Type, this.usage, "UNKNOWN");
     }
 
 
@@ -94,24 +94,10 @@ export class Tw2VertexElement
         NORMAL: 2,
         TANGENT: 3,
         BINORMAL: 4,
+        BITANGENT: 4,
         TEXCOORD: 5,
         BLENDWEIGHT: 6,
         BLENDINDICES: 7
     };
-
-    /**
-     * Vertex element type map
-     * @type {string[]}
-     */
-    static TypeMap = [
-        "POSITION",
-        "COLOR",
-        "NORMAL",
-        "TANGENT",
-        "BINORMAL",
-        "TEXCOORD",
-        "BLENDWEIGHT",
-        "BLENDINDICES"
-    ];
 
 }
