@@ -76,7 +76,7 @@ export class Tw2WaveFrontReader
         catch(err)
         {
             tw2.Debug({
-                name: "Space object factory",
+                name: "Tw2WavefrontReader",
                 message: "Could not generate tangents and bitangents..."
             });
         }
