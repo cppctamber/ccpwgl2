@@ -6,6 +6,8 @@ import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2CakeReader } from "./Tw2CakeReader";
+import { Tw2WaveFrontReader } from "./Tw2WavefrontReader";
+
 import {
     Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -19,7 +21,6 @@ import {
     Tw2GeometryTrackGroup,
     Tw2GeometryTransformTrack
 } from "../geometry";
-
 
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
@@ -144,7 +145,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 break;
 
             case "cake":
-            //case "obj":
+            case "obj":
                 this._extension = extension;
                 this._requestResponseType = "text";
                 break;
@@ -179,9 +180,9 @@ export class Tw2GeometryRes extends Tw2Resource
                 this.PrepareCustom(Tw2CakeReader.construct(data));
                 break;
 
-                //case "obj":
-                //    this.PrepareCustom(Tw2WaveFrontReader.construct(data));
-                //    break;
+            case "obj":
+                this.PrepareCustom(Tw2WaveFrontReader.construct(data));
+                break;
 
             default:
                 throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -1045,6 +1046,7 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
 }
+
 
 
 /**

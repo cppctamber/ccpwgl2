@@ -29,6 +29,7 @@
     "regenerator-runtime": "^0.13.7",
     "terser-webpack-plugin": "^1.4.2",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webgl-obj-loader": "^2.0.8"
   }
 }

@@ -11,31 +11,14 @@ import { Tw2Error } from "core/Tw2Error";
 export class Tw2CakeReader
 {
 
-    @meta.string
     name = "";
-
-    @meta.list()
     areas = [];
-
-    @meta.struct("Tw2Declaration")
     declaration = null;
-
-    @meta.vector
     indexData = null;
-
-    @meta.vector
     bufferData = null;
-
-    @meta.list()
     boneBindings = [];
-
-    @meta.list()
     blendShapes = [];
-
-    @meta.list()
     models = [];
-
-    @meta.list()
     animations = [];
 
     /**
@@ -70,19 +53,23 @@ export class Tw2CakeReader
             let split = line.split(":"),
                 name = split[0].toUpperCase();
 
-            if (name in Tw2CakeReader.ShortName)
+            if (name.toUpperCase() in Tw2CakeReader.ShortName)
             {
-                name = Tw2CakeReader.ShortName[name];
+                name = Tw2CakeReader.ShortName[name.toUpperCase()];
             }
 
             let value = split[1] || "";
 
-            // Comment
-            if (name === "NOTE")
+            switch(name)
             {
-                return { name, value };
+                case "NOTE":
+                    return { name, value };
+
+                case "NAME":
+                    return { name, value };
             }
 
+            // All other options must have a value
             if (!value)
             {
                 throw new Tw2Error({
@@ -110,11 +97,6 @@ export class Tw2CakeReader
         while (currentLine < lines.length)
         {
             let { name, value } = parseLine();
-
-            if (name in this.constructor.ShortName)
-            {
-                name = this.constructor.ShortName[name];
-            }
 
             switch (name)
             {
