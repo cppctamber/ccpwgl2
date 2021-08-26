@@ -78,7 +78,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
-    @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
     boneIndex = -1;
 
     @meta.uint
@@ -208,6 +207,12 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
+     * Alpha multiplier
+     * @type {number}
+     */
+    static alphaMultiplier = 1;
+
+    /**
      * Rebuilds the plane set's buffers
      * @param {Object} [opt]
      */
@@ -259,7 +264,7 @@ export class EvePlaneSet extends EveObjectSet
                 array[vtxOffset + 12] = item.color[0];
                 array[vtxOffset + 13] = item.color[1];
                 array[vtxOffset + 14] = item.color[2];
-                array[vtxOffset + 15] = item.color[3]; // Not needed?
+                array[vtxOffset + 15] = item.color[3] * EvePlaneSet.alphaMultiplier;
 
                 array[vtxOffset + 16] = item.layer1Transform[0];
                 array[vtxOffset + 17] = item.layer1Transform[1];
