@@ -29,7 +29,6 @@ export class Tw2ShaderProgram
     @meta.array
     volumeSlices = [];
 
-
     /**
      * Creates a shader program
      * @param {String} vertexShader

@@ -40,8 +40,7 @@ export class Tw2ShaderStageConstant
      */
     get string()
     {
-        const name = getKeyFromValue(Tw2ShaderStageConstant.Type, this.type);
-        return name !== undefined ? name : "UNKNOWN";
+        return getKeyFromValue(Tw2ShaderStageConstant.Type, this.type, "UNKNOWN");
     }
 
     /**

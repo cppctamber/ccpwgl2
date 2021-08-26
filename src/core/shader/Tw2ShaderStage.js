@@ -55,8 +55,7 @@ export class Tw2ShaderStage
      */
     get string()
     {
-        const name = getKeyFromValue(Tw2ShaderStage.Type, this.type);
-        return name !== undefined ? name : "INVALID";
+        return getKeyFromValue(Tw2ShaderStage.Type, this.type, "INVALID");
     }
 
     /**

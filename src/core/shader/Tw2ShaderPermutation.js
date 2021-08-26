@@ -30,7 +30,7 @@ export class Tw2ShaderPermutation
      */
     get string()
     {
-        return getKeyFromValue(Tw2ShaderPermutation.Type, this.type) || "INVALID";
+        return getKeyFromValue(Tw2ShaderPermutation.Type, this.type, "INVALID");
     }
 
     /**

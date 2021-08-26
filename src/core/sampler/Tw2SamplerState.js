@@ -1,4 +1,6 @@
 import { meta } from "utils";
+import { quat } from "math";
+
 import {
     GL_LINEAR,
     GL_REPEAT,
@@ -13,8 +15,6 @@ import {
     GL_MIRRORED_REPEAT,
     GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP
 } from "constant";
-import { quat } from "math/index";
-
 
 // Texture Wrap modes
 const WrapModes = [

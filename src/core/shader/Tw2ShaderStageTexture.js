@@ -26,8 +26,7 @@ export class Tw2ShaderStageTexture
      */
     get string()
     {
-        const type = getKeyFromValue(Tw2ShaderStageTexture.Type, this.type);
-        return type ? type : "UNKNOWN";
+        return getKeyFromValue(Tw2ShaderStageTexture.Type, this.type, "UNKNOWN");
     }
 
     /**
