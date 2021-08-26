@@ -76,14 +76,6 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.uint
     groupIndex = -1;
 
-    @meta.string
-    @meta.todo("Remove this, and reference the name using the group index")
-    groupName = "";
-
-    @meta.uint
-    @meta.todo("Remove this after testing")
-    colorType = -1;
-
 }
 
 
@@ -374,7 +366,10 @@ export class EveSpriteSet extends EveObjectSet
             return this.RenderQuads(technique, world, perObjectData);
         }
 
-        if (!this.effect || !this.effect.IsGood() || !this._indexBuffer || !this._vertexBuffer) return false;
+        if (!this.display || !this.effect || !this.effect.IsGood() || !this._indexBuffer || !this._vertexBuffer)
+        {
+            return false;
+        }
 
         const
             d = device,
@@ -404,7 +399,10 @@ export class EveSpriteSet extends EveObjectSet
      */
     RenderBoosterGlow(technique, world, boosterGain, warpIntensity)
     {
-        if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
+        if (!this.display || !this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer)
+        {
+            return false;
+        }
 
         const
             d = device,
@@ -467,7 +465,10 @@ export class EveSpriteSet extends EveObjectSet
      */
     RenderQuads(technique, world, perObjectData)
     {
-        if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
+        if (!this.display || !this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer)
+        {
+            return false;
+        }
 
         const
             d = device,
