@@ -16,17 +16,20 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
     /**
      * Constructor
      * @param {String} [name='']
-     * @param {mat4|Float32Array} [value=mat4.create()]
+     * @param {mat4|Float32Array} [value]
      */
-    constructor(name = "", value = mat4.create())
+    constructor(name = "", value)
     {
         super();
 
         if (name) this.name = name;
 
-        for (let i = 0; i < value.length; i++)
+        if (value)
         {
-            this.value[i] = value[i];
+            for (let i = 0; i < value.length; i++)
+            {
+                this.value[i] = value[i];
+            }
         }
 
     }

@@ -15,19 +15,14 @@ export class Tw2FloatParameter extends Tw2Parameter
 
     /**
      * Constructor
-     * @param {String} [name='']
-     * @param {Number} [value=1]
+     * @param {String} [name]
+     * @param {Number} [value]
      */
-    constructor(name = "", value = 1)
+    constructor(name = "", value)
     {
         super();
-
         if (name) this.name = name;
-
-        if (value !== undefined)
-        {
-            this.value = isArrayLike(value) ? value[0] : value;
-        }
+        if (value !== undefined) this.value = isArrayLike(value) ? value[0] : value;
     }
 
     /**

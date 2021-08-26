@@ -16,8 +16,8 @@ export class Tw2Vector2Parameter extends Tw2VectorParameter
 
     /**
      * Constructor
-     * @param {String} [name='']
-     * @param {vec2|Array|Float32Array} [value=vec2.fromValues(1,1)]
+     * @param {String} [name]
+     * @param {vec2|Array|Float32Array} [value]
      */
     constructor(name, value)
     {
