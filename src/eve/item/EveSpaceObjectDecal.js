@@ -18,14 +18,12 @@ export class EveSpaceObjectDecal extends meta.Model
     display = true;
 
     @meta.uint
-    @meta.todo("Identify if deprecated, this may only be needed if created a SOF object from a decal")
     groupIndex = -1;
 
     @meta.indexBuffer
     indexBuffer = [];
 
     @meta.uint
-    @meta.todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?")
     parentBoneIndex = -1;
 
     @meta.boolean
@@ -55,7 +53,7 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     Initialize()
     {
-        this.Rebuild();
+        //this.Rebuild();
         this.UpdateValues();
     }
 
@@ -78,7 +76,6 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
         mat4.invert(this._localTransformInverse, this._localTransform);
-        this._dirty = false;
     }
 
     /**
@@ -116,9 +113,9 @@ export class EveSpaceObjectDecal extends meta.Model
             this._indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-        }
 
-        this._dirty = false;
+            this._dirty = false;
+        }
 
         if  (!opt || !opt.skipEvents)
         {
@@ -136,7 +133,8 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0)
     {
-        if (!this.display || !geometryRes || !geometryRes.meshes[0] || !this._indexBuffer)
+
+        if (!this.display || !geometryRes || !geometryRes.IsGood())
         {
             return;
         }
@@ -153,14 +151,15 @@ export class EveSpaceObjectDecal extends meta.Model
                 break;
         }
 
+        if (!effect || !effect.IsGood())
+        {
+            return;
+        }
+
         if (this._dirty)
         {
             this.Rebuild();
-        }
-
-        if (!effect || !effect.IsGood() || !geometryRes.IsGood())
-        {
-            return;
+            if (!this._dirty) return;
         }
 
         const batch = new Tw2ForwardingRenderBatch();
