@@ -98,7 +98,10 @@ export class Tw2TextureRes extends Tw2Resource
                     ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
                     gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, this._format, this._format, this._type, canvas);
                 }
-                gl.generateMipmap(this._target);
+                if (this._isPowerOfTwo || device.glVersion > 1)
+                {
+                    gl.generateMipmap(this._target);
+                }
                 gl.bindTexture(this._target, null);
                 this._hasMipMaps = true;
                 break;
@@ -112,7 +115,7 @@ export class Tw2TextureRes extends Tw2Resource
 
                 gl.bindTexture(this._target, this.texture);
                 gl.texImage2D(this._target, 0, this._format, this._format, this._type, data);
-                if (this._isPowerOfTwo)
+                if (this._isPowerOfTwo || device.glVersion > 1)
                 {
                     gl.generateMipmap(this._target);
                     this._hasMipMaps = true;
