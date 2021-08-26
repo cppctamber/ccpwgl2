@@ -39,6 +39,7 @@ export const config = {
 
         "dds": path =>
         {
+            /*
             // Use old ccpwgl resource paths when we know a resource provided in a .black file doesn't work
             if (Rerouted.includes(path))
             {
@@ -50,6 +51,14 @@ export const config = {
                 return path.replace(".dds", ".qube");
             }
             return path;
+             */
+
+            if (path.split(".").pop() === "dds" && path.includes("_cube"))
+            {
+                return path.replace(".dds", ".qube");
+            }
+
+            return path.replace(".dds", ".png");
         },
 
         // Replace .gr2 paths with interim .cake format (new sof will try to fall back to wbg if not found)
@@ -211,6 +220,7 @@ export const config = {
         "fx": core.Tw2EffectRes,
         "wbg": core.Tw2GeometryRes,
         "cake": core.Tw2GeometryRes,
+        "obj": core.Tw2GeometryRes,
         "png": core.Tw2TextureRes,
         "dds": core.Tw2TextureRes,
         "cube": core.Tw2TextureRes,
