@@ -1,13 +1,19 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
 import { Tw2PerObjectData } from "core";
-import { EveObject } from "./EveObject";
+import { EveObject } from "./object/EveObject";
 
 
 @meta.type("EveMissileWarhead")
 @meta.stage(2)
-export class EveMissileWarhead extends EveObject
+export class EveMissileWarhead extends meta.Model
 {
+
+    @meta.string
+    name = "";
+
+    @meta.boolean
+    display = true;
 
     @meta.notImplemented
     @meta.float
@@ -229,8 +235,14 @@ export class EveMissileWarhead extends EveObject
 
 @meta.type("EveMissile")
 @meta.stage(2)
-export class EveMissile extends EveObject
+export class EveMissile extends meta.Model
 {
+
+    @meta.string
+    name = "";
+
+    @meta.boolean
+    display = true;
 
     @meta.vector3
     @meta.isPrivate

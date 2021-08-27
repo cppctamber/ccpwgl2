@@ -1,4 +1,3 @@
-export * from "./EveMissile";
 export * from "./EveTransform";
 export * from "./EveEffectRoot";
 export * from "./EvePlanet";
