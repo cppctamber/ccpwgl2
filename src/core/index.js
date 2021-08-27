@@ -18,6 +18,7 @@ export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";
 
 // Custom Class
-export * from "./Tw2EventEmitter";
-export * from "./Tw2Transform";
 export * from "./Tw2Error";
+export * from "./Tw2EventEmitter";
+export * from "./Tw2RayCaster";
+export * from "./Tw2Transform";

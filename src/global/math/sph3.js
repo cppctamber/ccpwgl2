@@ -62,7 +62,10 @@ sph3.copy = vec4.copy;
  *
  * @returns {sph3}
  */
-sph3.create = vec4.create;
+sph3.create = function()
+{
+    return new Float32Array([ 0, 0, 0, 0 ]);
+};
 
 /**
  * Returns the distance between two spheres
@@ -281,7 +284,7 @@ sph3.union = function(out, a, b)
 
     if (bRadius >= separation + aRadius)
     {
-        return out === b ? out : sph3.clone(out, b);
+        return out === b ? out : sph3.copy(out, b);
     }
 
     if (!center) center = vec3.create();

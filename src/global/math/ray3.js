@@ -386,8 +386,8 @@ ray3.getIntersectBounds = function(out, a, min, max)
  * TODO: Flip internals of getIntersectBounds with this as it will be called more often
  *
  * @param {vec3} out
- * @param {ray3} a
- * @param {box3|Float32Array} b
+ * @param {ray3} ray
+ * @param {box3|Float32Array} box
  * @returns {null|vec3}
  */
 ray3.getIntersectBox3 = (function()

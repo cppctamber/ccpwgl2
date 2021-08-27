@@ -508,3 +508,33 @@ tri3.toVertices = function(a, v1, v2, v3)
     v3[2] = a[2];
     return a;
 };
+
+let vec3_0, vec3_1, vec3_2;
+
+/**
+ * Transforms a tri3 by a mat4
+ * TODO: Optimize
+ * @param {tri3} out
+ * @param {tri3} a
+ * @param {mat4} m
+ * @return {tri3}
+ */
+tri3.transformMat4 = function(out, a, m)
+{
+    if (!vec3_0)
+    {
+        vec3_0 = vec3.create();
+        vec3_1 = vec3.create();
+        vec3_2 = vec3.create();
+    }
+
+    tri3.getV1(vec3_0, a);
+    tri3.getV2(vec3_1, a);
+    tri3.getV3(vec3_2, a);
+
+    vec3.transformMat4(vec3_0, vec3_0, m);
+    vec3.transformMat4(vec3_1, vec3_1, m);
+    vec3.transformMat4(vec3_2, vec3_2, m);
+
+    return tri3.fromVertices(out, vec3_0, vec3_1, vec3_2);
+};
