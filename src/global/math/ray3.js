@@ -242,15 +242,15 @@ ray3.fromPerspective = function(out, coords, m, viewport)
 /**
  * Alternative to ray3.fromPerspective
  * @param {ray3} out         - receiving ray3
- * @param {vec2} mouse       - event.ClientX, canvasHeight - event.clientY
+ * @param {vec2} coords       - event.ClientX, canvasHeight - event.clientY
  * @param {vec4} viewport    - x, y, width, height
  * @param {mat4} invProjView - inverse projection view matrix
  */
-ray3.unproject = function(out, mouse, viewport, invProjView)
+ray3.unproject = function(out, coords, viewport, invProjView)
 {
     const
-        start = [ mouse[0], mouse[1], 0 ],
-        end = [ mouse[0], mouse[1], 1 ];
+        start = [ coords[0], coords[1], 0 ],
+        end = [ coords[0], coords[1], 1 ];
 
     vec3.unproject(start, start, viewport, invProjView);
     vec3.unproject(end, end, viewport, invProjView);

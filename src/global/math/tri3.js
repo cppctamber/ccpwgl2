@@ -210,7 +210,7 @@ tri3.getClosestEdgeToPoint = (function()
 {
     let v0, v1, edgeList;
 
-    return function getClosestEdgeToPoint(out, a, point)
+    return function getClosestEdgeToPoint(out, a, point, debug)
     {
         if (!v0)
         {
@@ -226,8 +226,10 @@ tri3.getClosestEdgeToPoint = (function()
         lne3.set(edgeList[0], a[0], a[1], a[2], a[3], a[4], a[5]); // vert a - vert b
         lne3.set(edgeList[1], a[3], a[4], a[5], a[6], a[7], a[8]); // vert b - vert c
         lne3.set(edgeList[2], a[6], a[7], a[8], a[0], a[1], a[2]); // vert c - vert a
-
-        let minDistance = Infinity;
+        
+        let minDistance = Infinity,
+            edgeIndex;
+        
         for (let i = 0; i < edgeList.length; i++)
         {
             // Get the closest point on the triangles edge to the closest point on the triangle to the supplied point
@@ -242,6 +244,29 @@ tri3.getClosestEdgeToPoint = (function()
                 out[3] = edgeList[i][3];
                 out[4] = edgeList[i][4];
                 out[5] = edgeList[i][5];
+                edgeIndex = i;
+            }
+        }
+
+        // Temporary
+        if (debug)
+        {
+            switch(edgeIndex)
+            {
+                case 0:
+                    debug.edgeStart = 0;
+                    debug.edgeEnd = 1;
+                    break;
+                    
+                case 1:
+                    debug.edgeStart = 1;
+                    debug.edgeEnd = 2;
+                    break;
+                    
+                default:
+                    debug.edgeStart = 2;
+                    debug.edgeEnd = 1;
+                    break;
             }
         }
 
@@ -329,7 +354,7 @@ tri3.getClosestVertexToPoint = (function()
 {
     let vec3_0, vec3_1, vec3_2;
 
-    return function(out, a, point)
+    return function(out, a, point, debug)
     {
         if (!vec3_0)
         {
@@ -350,6 +375,7 @@ tri3.getClosestVertexToPoint = (function()
                 tri3.getV3(vec3_2, a)
             ];
 
+        let foundIndex;
         // Find the closest triangle vertex
         for (let i = 0; i < vertices.length; i++)
         {
@@ -360,8 +386,11 @@ tri3.getClosestVertexToPoint = (function()
                 x = vertices[i][0];
                 y = vertices[i][1];
                 z = vertices[i][2];
+                foundIndex = i;
             }
         }
+        
+        if (debug) debug.closest = foundIndex;
 
         out[0] = x;
         out[1] = y;
