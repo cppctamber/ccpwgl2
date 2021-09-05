@@ -141,6 +141,14 @@ export class Tw2ShaderStage
         // Debugging
         if (Tw2Shader.DEBUG_ENABLED)
         {
+            console.group(context.path);
+            console.dir({
+                path: context.path,
+                shader,
+                shadowShader,
+                type: stage.type === 0 ? "vertex" : "fragment"
+            });
+            console.groupEnd();
             stage.shaderCode = shader;
             stage.shadowShaderCode = shadowShader;
         }
@@ -172,9 +180,9 @@ export class Tw2ShaderStage
             {
                 if (obj.offset >= 64) return obj.offset;
                 // Try to guess from predefined values
-                let offset = Tw2ShaderStage.jsonPerData[obj.name];
-                if (offset !== undefined && offset >= 64) return offset;
-                throw new ReferenceError("Invalid per object/frame offset: " + offset);
+                let predefined = Tw2ShaderStage.jsonPerData[obj.name];
+                if (predefined && predefined.offset >= 64) return offset;
+                throw new ReferenceError("Invalid per object/frame offset: " + obj.name);
             }
 
             let offset;
@@ -293,6 +301,7 @@ export class Tw2ShaderStage
                 registerIndex,
                 type
             }, context));
+
             stage.samplers.push(Tw2SamplerState.fromJSON(sampler, context));
 
             // Annotations defined directly on texture
@@ -387,10 +396,10 @@ export class Tw2ShaderStage
      * @type {Object}
      */
     static jsonPerData = {
-        PerFrameVS: { name: "PerFrameVS", size: 136, type: 3, offset: 880 },
-        PerObjectVS: { name: "PerObjectVS", size: 104, type: 3, offset: 64 },
-        PerFramePS: { name: "PerFramePS", size: 88, type: 3, offset: 880 },
-        PerObjectPS: { name: "PerObjectPS", size: 88, type: 3, offset: 64 },
+        PerFrameVS: { name: "PerFrameVS", size: 136, type: 3, offset: 880, dimension: 1 },
+        PerObjectVS: { name: "PerObjectVS", size: 104, type: 3, offset: 64, dimension: 1 },
+        PerFramePS: { name: "PerFramePS", size: 88, type: 3, offset: 880, dimension: 1 },
+        PerObjectPS: { name: "PerObjectPS", size: 88, type: 3, offset: 64, dimension: 1 },
     };
 
     /**
@@ -457,7 +466,10 @@ export class Tw2ShaderStage
 
         if (Tw2Shader.DEBUG_ENABLED)
         {
+            console.group(context.path);
             console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
+            console.groupEnd();
+
             stage.shaderCode = shaderCode;
             stage.shadowShaderCode = shadowShaderCode;
         }

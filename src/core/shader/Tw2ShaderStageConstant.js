@@ -54,8 +54,8 @@ export class Tw2ShaderStageConstant
     {
         let {
             name,
-            dimension=0,
-            elements=1,
+            dimension=1, // No way to guess the dimension
+            elements=0,
             isAutoregister=0,
             isSRGB=0,
             offset=-1,
@@ -66,10 +66,18 @@ export class Tw2ShaderStageConstant
 
         // Convert numbers to array
         value = toArray(value);
-        //  Guess dimension
-        if (value.length) dimension = value.length;
+
+        if (!size)
+        {
+            size = value.length;
+        }
+
         // Guess size
-        if (!size && dimension) size = dimension * elements;
+        if (!elements && size)
+        {
+            elements = size / dimension;
+            if (elements % 1 > 0) throw new ReferenceError("Invalid size or dimension");
+        }
 
         if (!name || !size)
         {
@@ -78,6 +86,7 @@ export class Tw2ShaderStageConstant
 
         const constant = new Tw2ShaderStageConstant();
         constant.name = name;
+        constant.dimension = dimension;
         constant.isAutoregister = isAutoregister;
         constant.elements = elements;
         constant.type = type;
