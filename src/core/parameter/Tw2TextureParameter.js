@@ -247,6 +247,8 @@ export class Tw2TextureParameter extends Tw2Parameter
 
             device.gl.activeTexture(device.gl.TEXTURE0 + stage);
             this.textureRes.Bind(sampler, slices);
+
+            this._sampler = sampler;
         }
     }
 

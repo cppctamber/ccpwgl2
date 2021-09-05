@@ -308,11 +308,8 @@ export class Tw2TextureRes extends Tw2Resource
         }
         else if (sampler.samplerType !== this._target)
         {
-            this._sampler = null;
             return;
         }
-
-        this._sampler = sampler;
 
         if (!this.texture)
         {
