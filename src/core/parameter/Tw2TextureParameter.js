@@ -31,7 +31,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     get useAllOverrides()
     {
-        return this.overrides ? this.overrides.enabled : false;
+        return this.overrides ? this.overrides.enable : false;
     }
 
     /**
@@ -43,12 +43,12 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (bool)
         {
             this.overrides = this.overrides || new Tw2SamplerOverride();
-            this.overrides.SetValues({ enabled: true });
+            this.overrides.SetValues({ enable: true });
         }
 
         if (!bool && this.overrides)
         {
-            this.overrides.SetValues({ enabled: false });
+            this.overrides.SetValues({ enable: false });
         }
     }
 
