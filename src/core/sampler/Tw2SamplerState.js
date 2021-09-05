@@ -89,7 +89,7 @@ export class Tw2SamplerState
     hash = null;
 
     @meta.uint
-    maxAnisotropy = 1;
+    maxAnisotropy = 4;
 
     // Not used
     _borderColor = null;
@@ -329,7 +329,8 @@ export class Tw2SamplerState
 
         if (ext && device.enableAnisotropicFiltering)
         {
-            gl.texParameterf(targetType, ext.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, ext.maxAnisotropy));
+            const maxAnisotropy = Math.min(this.maxAnisotropy, ext.maxAnisotropy);
+            gl.texParameterf(targetType, ext.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, maxAnisotropy));
         }
 
         if (this.hash === null)
@@ -385,7 +386,12 @@ export class Tw2SamplerState
      */
     static fromJSON(json, context)
     {
-        const { name, registerIndex=-1, ...modes } = json;
+        const {
+            name,
+            registerIndex=-1,
+            samplerType = GL_TEXTURE_2D,
+            ...modes
+        } = json;
 
         if (!name || registerIndex === -1)
         {
@@ -395,6 +401,7 @@ export class Tw2SamplerState
         const sampler = new Tw2SamplerState();
         sampler.name = name;
         sampler.registerIndex = registerIndex;
+        sampler.samplerType = samplerType;
         sampler.ResolveModes(modes);
         return sampler;
     }
