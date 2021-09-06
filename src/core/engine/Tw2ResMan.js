@@ -2,7 +2,7 @@ import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "utils";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, pick } from "utils";
 
 
 export class Tw2ResMan extends Tw2EventEmitter
@@ -73,8 +73,11 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     SetDebugMode(bool)
     {
-        // Reload geometry when set to true?
-        this.systemMirror = bool;
+        // If debug is true, turn system mirror on
+        if (bool)
+        {
+            this.systemMirror = bool;
+        }
     }
 
     /**
@@ -211,10 +214,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         const startTime = this.tw2.now;
         while (this._prepareQueue.length)
         {
-            const
-                res = this._prepareQueue[0][0],
-                data = this._prepareQueue[0][1],
-                xml = this._prepareQueue[0][2];
+            const [ res, data, xml ] = this._prepareQueue[0];
 
             this._prepareQueue.shift();
 
@@ -231,7 +231,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             }
         }
 
-        this.motherLode.UpdateWatched(this.maxWatchedUpdateTime , this.maxWatchedCount, this.maxWatchedTime);
+        this.motherLode.UpdateWatched(this.maxWatchedUpdateTime, this.maxWatchedCount, this.maxWatchedTime);
 
         this._purgeTime += this.tw2.dt;
 
