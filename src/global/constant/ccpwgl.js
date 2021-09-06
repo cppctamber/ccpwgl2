@@ -16,3 +16,8 @@ export const SceneLodSettings = {
     LOD_DISABLED: 0,
     LOD_ENABLED: 1
 };
+
+export const LodLevelPixels = {
+    ONE: 100,
+    TWO: 250
+};

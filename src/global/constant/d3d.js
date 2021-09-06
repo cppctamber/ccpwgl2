@@ -124,6 +124,8 @@ export const RS_SEPARATEALPHABLENDENABLE = 206;                         // TRUE 
 export const RS_SRCBLENDALPHA = 207;                                    // SRC blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
 export const RS_DESTBLENDALPHA = 208;                                   // DST blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
 export const RS_BLENDOPALPHA = 209;                                     // Blending operation for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE */// Cull Modes
+
+// Cull
 export const CULL_NONE = 1;
 export const CULL_CW = 2;
 export const CULL_CCW = 3;
