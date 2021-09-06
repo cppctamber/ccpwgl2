@@ -322,33 +322,12 @@ export class Tw2ShaderStage
         }
          */
 
+        // Order all arrays
+        stage.constants.sort((a, b) => a.offset - b.offset);
+        stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
+        stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
+
         return stage;
-    }
-
-    /**
-     * Sorts an object by offset
-     * @param {*} a
-     * @param {*} b
-     * @return {number}
-     */
-    static SortOffset(a, b)
-    {
-        if (a.offset < b.offset) return 1;
-        if (a.offset > b.offset) return -1;
-        return 0;
-    }
-
-    /**
-     * Sorts an object by register index
-     * @param {*} a
-     * @param {*} b
-     * @return {number}
-     */
-    static SortRegisterIndex(a, b)
-    {
-        if (a.registerIndex < b.registerIndex) return 1;
-        if (a.registerIndex > b.registerIndex) return -1;
-        return 0;
     }
 
     /**
@@ -576,6 +555,11 @@ export class Tw2ShaderStage
         {
             stage.samplers.push(Tw2SamplerState.fromCCPBinary(reader, context, stage.textures));
         }
+
+        // Order all arrays
+        stage.constants.sort((a, b) => a.offset - b.offset);
+        stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
+        stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
 
         return stage;
     }
