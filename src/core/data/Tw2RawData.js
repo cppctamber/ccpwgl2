@@ -5,6 +5,7 @@ import { ErrIndexBounds, Tw2Error } from "../Tw2Error";
  *
  * @property {Float32Array} data
  * @property {*} elements
+ * @property {Array} elementsSorted
  * @property {Number} nextOffset
  * @class
  */
@@ -13,6 +14,7 @@ export class Tw2RawData
 
     data = null;
     elements = {};
+    elementsSorted = [];
     _nextOffset = 0;
 
     /**
@@ -119,6 +121,9 @@ export class Tw2RawData
 
         this.elements[name] = { name, offset: this._nextOffset, array: null, size, value };
         this._nextOffset += size;
+
+        this.elementsSorted.push(this.elements[name]);
+        this.elementsSorted.sort((a,b) => a.offset - b.offset);
     }
 
     /**
