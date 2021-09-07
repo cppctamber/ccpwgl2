@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isArray, meta } from "utils";
 import { device } from "global";
 import { Tw2ShaderStage } from "./Tw2ShaderStage";
 import { Tw2ShaderState } from "./Tw2ShaderState";
@@ -133,10 +133,27 @@ export class Tw2ShaderPass
         pass.stages[0] = Tw2ShaderStage.fromJSON(vertex, context, Tw2ShaderStage.Type.VERTEX);
         pass.stages[1] = Tw2ShaderStage.fromJSON(fragment, context, Tw2ShaderStage.Type.FRAGMENT);
 
-        for (let i = 0; i < states.length; i++)
+        if (isArray(states))
         {
-            pass.states.push(Tw2ShaderState.fromJSON(states[i], context));
+            for (let i = 0; i < states.length; i++)
+            {
+                pass.states.push(Tw2ShaderState.fromJSON(states[i], context));
+            }
         }
+        else
+        {
+            for (const state in states)
+            {
+                if (states.hasOwnProperty(state))
+                {
+                    pass.states.push(Tw2ShaderState.fromJSON({
+                        state: Number(state),
+                        value: states[state]
+                    }, context));
+                }
+            }
+        }
+        pass.states.sort((a, b) => a.state - b.state);
 
         return this.createPrograms(pass, context);
     }
@@ -170,6 +187,7 @@ export class Tw2ShaderPass
         {
             pass.states.push(Tw2ShaderState.fromCCPBinary(reader));
         }
+        pass.states.sort((a, b) => a.state - b.state);
 
         return this.createPrograms(pass, context);
     }

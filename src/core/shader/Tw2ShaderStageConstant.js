@@ -54,8 +54,8 @@ export class Tw2ShaderStageConstant
     {
         let {
             name,
-            dimension=1, // No way to guess the dimension
-            elements=0,
+            dimension=0,
+            elements=1,  // No way to guess the elements
             isAutoregister=0,
             isSRGB=0,
             offset=-1,
@@ -73,10 +73,10 @@ export class Tw2ShaderStageConstant
         }
 
         // Guess size
-        if (!elements && size)
+        if (!dimension && size)
         {
-            elements = size / dimension;
-            if (elements % 1 > 0) throw new ReferenceError("Invalid size or dimension");
+            dimension = size / elements;
+            if (dimension % 1 > 0) throw new ReferenceError("Invalid size or elements");
         }
 
         if (!name || !size)

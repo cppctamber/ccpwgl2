@@ -75,7 +75,7 @@ export class Tw2ShaderTechnique
      */
     static fromJSON(json, context, key)
     {
-        let { name = key, passes, vertex, fragment } = json;
+        let { name = key, passes, vertex, fragment, states } = json;
 
         const technique = new Tw2ShaderTechnique();
         technique.name = name;
@@ -83,9 +83,9 @@ export class Tw2ShaderTechnique
         // Allow skipping passes array when there is only one
         if (!passes)
         {
-            if (vertex && fragment)
+            if (vertex || fragment || states)
             {
-                passes = [ { vertex, fragment } ];
+                passes = [ { vertex, fragment, states } ];
             }
             else
             {
