@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isArray, meta, toArray } from "utils";
 import { Tw2ShaderPass } from "./Tw2ShaderPass";
 
 
@@ -75,10 +75,23 @@ export class Tw2ShaderTechnique
      */
     static fromJSON(json, context, key)
     {
-        const { name=key, passes=[] } = json;
+        let { name = key, passes, vertex, fragment } = json;
 
         const technique = new Tw2ShaderTechnique();
         technique.name = name;
+
+        // Allow skipping passes array when there is only one
+        if (!passes)
+        {
+            if (vertex && fragment)
+            {
+                passes = [ { vertex, fragment } ];
+            }
+            else
+            {
+                throw new ReferenceError(`Shader has no program: ${context.path}`);
+            }
+        }
 
         for (let i = 0; i < passes.length; i++)
         {

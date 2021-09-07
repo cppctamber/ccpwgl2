@@ -1,4 +1,5 @@
-import { getKeyFromValue, meta } from "utils";
+import { assignIfExists, meta } from "utils";
+import { TEX_VOLUME, TexTypeToString, TexTypeToGLTexture } from "constant/d3d";
 
 
 @meta.type("Tw2ShaderStageTexture")
@@ -18,7 +19,25 @@ export class Tw2ShaderStageTexture
     registerIndex = -1;
 
     @meta.uint
-    type = 0;
+    type = -1;
+
+    /**
+     * Gets the texture's gl texture type
+     * @return {number}
+     */
+    get glType()
+    {
+        return this.type in TexTypeToGLTexture ? TexTypeToGLTexture[this.type] : 0;
+    }
+
+    /**
+     * Identifies if the texture is a volume
+     * @return {boolean}
+     */
+    get isVolume()
+    {
+        return this.type === TEX_VOLUME;
+    }
 
     /**
      * Gets the textures type as a string
@@ -26,7 +45,7 @@ export class Tw2ShaderStageTexture
      */
     get string()
     {
-        return getKeyFromValue(Tw2ShaderStageTexture.Type, this.type, "UNKNOWN");
+        return this.type in TexTypeToString ? TexTypeToString[this.type] : "UNKNOWN";
     }
 
     /**
@@ -38,19 +57,12 @@ export class Tw2ShaderStageTexture
      */
     static fromJSON(json, context)
     {
-        const { registerIndex, name, type=Tw2ShaderStageTexture.TEXTURE_2D, isSRGB=1, isAutoregister=0 } = json;
-
-        if (!name || registerIndex === undefined)
+        const texture = new Tw2ShaderStageTexture();
+        assignIfExists(texture, json, [ "name", "registerIndex", "type", "isSRGB", "isAutoregister" ]);
+        if (texture.registerIndex === -1 || texture.glType === 0)
         {
             throw new ReferenceError("Invalid shader texture definition");
         }
-
-        const texture = new Tw2ShaderStageTexture();
-        texture.name = name;
-        texture.registerIndex = registerIndex;
-        texture.type = type;
-        texture.isSRGB = isSRGB;
-        texture.isAutoregister = isAutoregister;
         return texture;
     }
 
@@ -70,19 +82,6 @@ export class Tw2ShaderStageTexture
         texture.isAutoregister = reader.ReadUInt8();
         return texture;
     }
-
-    /**
-     * Texture types
-     * @type {*}
-     */
-    static Type = {
-        UNKNOWN_0: 0,
-        UNKNOWN_1: 1,
-        TEXTURE_2D: 2,
-        VOLUME: 3,
-        CUBE_MAP: 4,
-        PROJECTION: 5, // ??
-    };
 
 }
 

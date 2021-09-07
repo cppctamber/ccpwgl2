@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { assignIfExists, meta } from "utils";
 import { quat } from "math";
 
 import {
@@ -7,13 +7,14 @@ import {
     GL_TEXTURE_2D,
     FilterMode,
     MipFilterMode,
+    TexTypeToGLTexture,
     GL_NEAREST,
     GL_NEAREST_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_LINEAR,
     GL_MIRRORED_REPEAT,
-    GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP
+    GL_CLAMP_TO_EDGE,
 } from "constant";
 
 // Texture Wrap modes
@@ -45,7 +46,7 @@ const FilterToModeTable = {
 
 @meta.type("Tw2SamplerState")
 // TODO: Clean this up
-export class Tw2SamplerState
+export class Tw2SamplerState extends meta.Model
 {
 
     @meta.string
@@ -76,7 +77,7 @@ export class Tw2SamplerState
     addressW = GL_REPEAT;
 
     @meta.uint
-    anisotropy = 1;
+    anisotropy = 4;
 
     @meta.uint
     samplerType = GL_TEXTURE_2D;
@@ -176,13 +177,25 @@ export class Tw2SamplerState
 
     /**
      * TEMP: Sets the filter by mode
-     * @param filterMode
+     * @param {Number} filterMode
      */
     set filterMode(filterMode)
     {
         if (filterMode !== undefined && filterMode !== this.filterMode)
         {
             this.UpdateFilterModes(filterMode, this.mipFilterMode, this.magFilterMode);
+        }
+    }
+
+    /**
+     * TEMP: Sets the mag filter by mode
+     * @param {Number} magFilterMode
+     */
+    set magFilterMode(magFilterMode)
+    {
+        if (magFilterMode !== undefined && magFilterMode !== this.magFilterMode)
+        {
+            this.UpdateFilterModes(this.filterMode, this.mipFilterMode, magFilterMode);
         }
     }
 
@@ -281,6 +294,14 @@ export class Tw2SamplerState
     }
 
     /**
+     * Fires on value update
+     */
+    OnValueUpdated()
+    {
+        this.hash = null;
+    }
+
+    /**
      * Computes the sampler hash
      */
     ComputeHash()
@@ -340,7 +361,7 @@ export class Tw2SamplerState
     }
 
     /**
-     * Resolves modes
+     * Resolves modes to gl values
      * @param {Object} modes
      * @returns {Boolean} true if updated
      */
@@ -350,22 +371,28 @@ export class Tw2SamplerState
             addressUMode,
             addressVMode,
             addressWMode,
-            maxAnisotropy=this.maxAnisotropy,
+            maxAnisotropy,
             filterMode,
             mipFilterMode,
-            magFilterMode
+            magFilterMode,
+            type
         } = modes;
 
-        if (maxAnisotropy !== this.maxAnisotropy)
+        if (maxAnisotropy !== undefined && maxAnisotropy !== this.maxAnisotropy)
         {
             this.maxAnisotropy = maxAnisotropy;
             this.hash = null;
         }
 
-        this.addressUMode = addressUMode;
-        this.addressVMode = addressVMode;
-        this.addressWMode = addressWMode;
+        if (type !== undefined && this.samplerType !== TexTypeToGLTexture[type])
+        {
+            this.samplerType = TexTypeToGLTexture[type];
+            this.hash = null;
+        }
 
+        if (addressUMode !== undefined) this.addressUMode = addressUMode;
+        if (addressVMode !== undefined) this.addressVMode = addressVMode;
+        if (addressWMode !== undefined) this.addressWMode = addressWMode;
         this.UpdateFilterModes(filterMode, mipFilterMode, magFilterMode);
 
         if (this.hash === null)
@@ -378,31 +405,17 @@ export class Tw2SamplerState
     }
 
     /**
-     *
-     * TODO: Use utility functions
+     * Creates a sampler from json
+     * TODO: Use utility function
      * @param {Object} json
      * @param {Tw2EffectRes} context
      * @return {Tw2SamplerState}
      */
-    static fromJSON(json, context)
+    static fromJSON(json={}, context)
     {
-        const {
-            name,
-            registerIndex=-1,
-            samplerType = GL_TEXTURE_2D,
-            ...modes
-        } = json;
-
-        if (!name || registerIndex === -1)
-        {
-            throw new ReferenceError("Invalid sampler definition");
-        }
-
         const sampler = new Tw2SamplerState();
-        sampler.name = name;
-        sampler.registerIndex = registerIndex;
-        sampler.samplerType = samplerType;
-        sampler.ResolveModes(modes);
+        assignIfExists(sampler, json, [ "name", "registerIndex", "samplerType", "isVolume" ]);
+        sampler.ResolveModes(json);
         return sampler;
     }
 
@@ -451,8 +464,8 @@ export class Tw2SamplerState
         {
             if (stageTextures[n].registerIndex === sampler.registerIndex)
             {
-                sampler.samplerType = stageTextures[n].type === 4 ? GL_TEXTURE_CUBE_MAP: GL_TEXTURE_2D;
-                sampler.isVolume = stageTextures[n].type === 3;
+                sampler.samplerType = stageTextures[n].glType;
+                sampler.isVolume = stageTextures[n].isVolume;
                 break;
             }
         }
