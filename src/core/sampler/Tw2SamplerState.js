@@ -237,7 +237,7 @@ export class Tw2SamplerState extends meta.Model
      */
     UpdateFilterModes(filterMode=this.filterMode, mipFilterMode=this.mipFilterMode, magFilterMode=this.magFilterMode)
     {
-        if (filterMode === this.filterMode && mipFilterMode === this.filterMode && magFilterMode === this.magFilterMode)
+        if (filterMode === this.filterMode && mipFilterMode === this.mipFilterMode && magFilterMode === this.magFilterMode)
         {
             return;
         }
