@@ -189,7 +189,8 @@ export const WrapMode = {
     //DEFAULT: -1,
     REPEAT: 1,
     MIRRORED_REPEAT: 2,
-    CLAMP_TO_EDGE: 3
+    CLAMP_TO_EDGE: 3,
+    CLAMP_TO_BORDER: 4  // Not supported by webgl
 };
 
 export const FilterMode = {

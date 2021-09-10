@@ -1,7 +1,6 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
 import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform, Tw2Effect } from "core";
-import { GL_REPEAT } from "constant/gl";
 
 
 @meta.type("EveCustomMask")
@@ -73,8 +72,21 @@ export class EveCustomMask extends Tw2Transform
     {
         this.SetParentTransform(parentTransform).RebuildTransforms();
         const targets = this.display && visible ? this.targetMaterials : vec4.ZERO;
+
+        let clampToBorderU = 0,
+            clampToBorderV = 0,
+            clampToBorderW = 0;
+
+        if (this.parameters && this.parameters.PatternMaskMap && this.parameters.PatternMaskMap.overrides)
+        {
+            const { addressUMode, addressVMode, addressWMode } = this.parameters.PatternMaskMap.overrides;
+            if (addressUMode === 4) clampToBorderU = 1;
+            if (addressVMode === 4) clampToBorderV = 1;
+            if (addressWMode === 4) clampToBorderW = 1;
+        }
+
         perObjectData.ps.Set("CustomMaskTarget" + index, targets);
-        perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
+        perObjectData.ps.Set("CustomMaskMaterialID" + index, [ this.materialIndex, clampToBorderU, clampToBorderV, clampToBorderW ]);
         perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
         perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
     }
@@ -115,8 +127,8 @@ export class EveCustomMask extends Tw2Transform
 
         const { PatternMaskMap, PatternMaskMap: { overrides } } = a.parameters;
         out.resourcePath = PatternMaskMap.GetValue();
-        out.addressUMode = overrides ? overrides.addressUMode : GL_REPEAT;
-        out.addressVMode = overrides ? overrides.addressVMode : GL_REPEAT;
+        out.addressUMode = overrides ? overrides.addressUMode : 1;
+        out.addressVMode = overrides ? overrides.addressVMode : 1;
 
         out.parameters = a.GetParameters();
         return out;
