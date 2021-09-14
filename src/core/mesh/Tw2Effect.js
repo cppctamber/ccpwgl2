@@ -132,6 +132,7 @@ export class Tw2Effect extends meta.Model
     SetValue(effectFilePath, opt)
     {
         this.effectFilePath = effectFilePath.toLowerCase();
+        this.autoParameter = true;
         this.UpdateValues(opt);
     }
 
@@ -425,7 +426,7 @@ export class Tw2Effect extends meta.Model
                         {
                             const
                                 constant = stageRes.constants[k],
-                                { name, Type } = constant;
+                                { name, type } = constant;
 
                             if (Tw2Effect.ConstantIgnore.includes(name)) continue;
 
@@ -455,9 +456,10 @@ export class Tw2Effect extends meta.Model
                                     size: constant.size
                                 });
                             }
-                            else if (constant.isAutoregister && Type)
+                            else if (constant.isAutoregister && type)
                             {
-                                const variable = tw2.CreateVariable(name, undefined, Type);
+                                // TODO: Map constant enums to internal type strings
+                                const variable = tw2.CreateVariable(name, undefined, type);
                                 if (variable)
                                 {
                                     stage.parameters.push({
@@ -480,7 +482,7 @@ export class Tw2Effect extends meta.Model
                                     value = value[0];
                                 }
 
-                                const param = tw2.CreateVariable(name, value, Type);
+                                const param = tw2.CreateVariable(name, value, type);
                                 if (param)
                                 {
                                     this.parameters[name] = param;
@@ -574,6 +576,17 @@ export class Tw2Effect extends meta.Model
         if (device["effectObserver"])
         {
             device["effectObserver"]["OnEffectChanged"](this);
+        }
+
+        // Automatically add unique ids for any picking shaders
+        // - CCP picking shaders expect an objectID and an areaID but it uses
+        // - the alpha channel which is not guaranteed to be enabled
+        if (this.autoParameter)
+        {
+            // CCP picking
+            if (this.parameters["objectId"]) this.parameters["objectId"].x = this._id;
+            // CPPC picking
+            if (this.parameters["Override"]) this.parameters["Override"].y = this._id;
         }
 
         this.autoParameter = false;
