@@ -1,6 +1,6 @@
 import { device } from "global";
 import { meta } from "utils";
-import { vec3, vec4, quat, mat4 } from "math";
+import { vec3, vec4, quat, box3, mat4, ray3, sph3 } from "math";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
@@ -63,11 +63,21 @@ export class EveCurveLineSetItem extends EveObjectSetItem
      * @param {vec3} direction
      * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
      */
-    ChangePositionFromRay(origin, direction, length = EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
+    ChangePositionFromOriginDirection(origin, direction, length = EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
     {
         vec3.copy(this.position1, origin);
         vec3.scaleAndAdd(this.position2, origin, direction, length);
         this.UpdateValues();
+    }
+
+    /**
+     * Changes the lines position from a ray3
+     * @param {ray3} ray
+     * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
+     */
+    ChangePositionFromRay3(ray, length = EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
+    {
+        return this.ChangePositionFromOriginDirection(ray3.$v1(ray), ray3.$v2(ray), length);
     }
 
     /**
@@ -354,6 +364,125 @@ export class EveCurveLineSet extends EveObjectSet
     }
 
     /**
+     * Adds lines from a box3
+     * @param {box3} box
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4} endColor
+     * @return {Array<EveCurveLineSetItem>}
+     */
+    AddBoxLinesFromBox3(box, width, startColor, endColor)
+    {
+        let nx = box[0],
+            ny = box[1],
+            nz = box[2],
+            xx = box[3],
+            xy = box[4],
+            xz = box[5];
+
+        let a1 = [ nx, ny, nz ],
+            a2 = [ nx, ny, xz ],
+            a3 = [ xx, ny, xz ],
+            a4 = [ xx, ny, nz ],
+            b1 = [ nx, xy, nz ],
+            b2 = [ nx, xy, xz ],
+            b3 = [ xx, xy, xz ],
+            b4 = [ xx, xy, nz ];
+
+        return [
+            // Bottom
+            this.AddStraightLine(a1, a2, width, startColor, endColor),
+            this.AddStraightLine(a2, a3, width, startColor, endColor),
+            this.AddStraightLine(a3, a4, width, startColor, endColor),
+            this.AddStraightLine(a4, a1, width, startColor, endColor),
+            // Top
+            this.AddStraightLine(b1, b2, width, startColor, endColor),
+            this.AddStraightLine(b2, b3, width, startColor, endColor),
+            this.AddStraightLine(b3, b4, width, startColor, endColor),
+            this.AddStraightLine(b4, b1, width, startColor, endColor),
+            // Sides
+            this.AddStraightLine(a1, b1, width, startColor, endColor),
+            this.AddStraightLine(a2, b2, width, startColor, endColor),
+            this.AddStraightLine(a3, b3, width, startColor, endColor),
+            this.AddStraightLine(a4, b4, width, startColor, endColor)
+        ];
+
+    }
+
+    /**
+     * Adds lines from bounds
+     * @param {vec3} min
+     * @param {vec3} max
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4} endColor
+     */
+    AddBoxLinesFromBounds(min, max, width, startColor, endColor)
+    {
+        const { box3_0 } = this.constructor.global;
+        return this.AddBoxLinesFromBox3(box3.fromBounds(box3_0, min, max), width, startColor, endColor);
+    }
+
+    /**
+     * Adds box lines from a sph3
+     * @param {sph3} sph
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4}  endColor
+     * @return {Array<EveCurveLineSetItem>}
+     */
+    AddBoxLinesFromSph3(sph, width, startColor, endColor)
+    {
+        const { box3_0 } = this.constructor.global;
+        return this.AddBoxLinesFromBox3(box3.fromSph3(box3_0, sph), width, startColor, endColor);
+    }
+
+    /**
+     * Adds lines from a sphere's position and radius
+     * @param {vec3} position
+     * @param {Number} radius
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4}  endColor
+     * @return {Array<EveCurveLineSetItem>}
+     */
+    AddBoxLinesFromPositionRadius(position, radius, width, startColor, endColor)
+    {
+        const { box3_0 } = this.constructor.global;
+        return this.AddBoxLinesFromBox3(box3.fromPositionRadius(box3_0, position, radius), width, startColor, endColor);
+    }
+
+    /**
+     * Creates box lines from an item
+     * @param {*} item
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4}  endColor
+     * @return {Array<EveCurveLineSetItem>}
+     */
+    AddBoxLinesFromItem(item, width, startColor, endColor)
+    {
+        if (item.GetBoundingBox)
+        {
+            const { box3_0 } = this.constructor.global;
+            if (item.GetBoundingBox(box3_0, true))
+            {
+                return this.AddBoxLinesFromBox3(box3_0, width, startColor, endColor);
+            }
+        }
+        else if (item.GetBoundingSphere)
+        {
+            const { sph3_0 } = this.constructor.global;
+            if (item.GetBoundingSphere(sph3_0, true))
+            {
+                return this.AddBoxLinesFromSph3(sph3_0, width, startColor, endColor);
+            }
+        }
+
+        throw new Error("Item doesn't provide bounds data or bounds dirty");
+    }
+
+    /**
      * Creates a straight line from a ray
      * @param {vec3} origin
      * @param {vec3} direction
@@ -363,12 +492,29 @@ export class EveCurveLineSet extends EveObjectSet
      * @param {vec4} endColor
      * @returns {EveCurveLineSetItem}
      */
-    AddStraightLineFromRay(origin, direction, length, width, startColor, endColor)
+    AddStraightLineFromOriginDirection(origin, direction, length, width, startColor, endColor)
     {
         const line = this.AddStraightLine([ 0, 0, 0 ], [ 0, 0, 0 ], width, startColor, endColor);
-        line.ChangePositionFromRay(origin, direction, length);
+        line.ChangePositionFromOriginDirection(origin, direction, length);
         return line;
     }
+
+    /**
+     * Creates a straight line from a ray
+     * @param {ray3} ray
+     * @param {Number} length
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4} endColor
+     * @returns {EveCurveLineSetItem}
+     */
+    AddStraightLineFromRay3(ray, length, width, startColor, endColor)
+    {
+        const line = this.AddStraightLine([ 0, 0, 0 ], [ 0, 0, 0 ], width, startColor, endColor);
+        line.ChangePositionFromRay3(ray, length);
+        return line;
+    }
+
 
     /**
      * Creates a straight line
@@ -903,6 +1049,8 @@ export class EveCurveLineSet extends EveObjectSet
                 vec4_0: vec4.create(), // color 1
                 vec4_1: vec4.create(), // color 2
                 mat4_0: mat4.create(),  // rotationMatrix
+                box3_0: box3.create(),
+                sph3_0: sph3.create()
             };
         }
     }
