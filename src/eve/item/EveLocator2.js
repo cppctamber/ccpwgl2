@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, mat4 } from "math";
+import { vec3, mat4, quat, box3, sph3 } from "math";
 
 
 @meta.type("EveLocator2")
@@ -24,6 +24,56 @@ export class EveLocator2 extends meta.Model
     @meta.struct("Tw2Bone")
     @meta.isPrivate
     bone = null;
+
+    /**
+     * Gets the locator type
+     * @return {Number}
+     */
+    get type()
+    {
+        const type = this.name.split("_")[1];
+        return EveLocator2.LocatorType[type.toUpperCase()] || -1;
+    }
+
+    /**
+     * Gets a bounding box for the locator
+     * @param {box3} out
+     */
+    GetBoundingBox(out)
+    {
+        return box3.fromPositionRadius(out, this.GetTranslation(vec3.create()), this.GetScale() * 2);
+    }
+
+    /**
+     * Gets a bounding sphere for the locator
+     * @param {sph3} out
+     */
+    GetBoundingSphere(out)
+    {
+        return sph3.fromPositionRadius(out, this.GetTranslation(vec3.create()), this.GetScale() * 2);
+    }
+
+    /**
+     * Intersects the locator
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @return {{distance: (number|*), point: vec3}}
+     */
+    Intersect(ray, intersects, worldTransform)
+    {
+        if (!ray.GetOption("locators", "skip"))
+        {
+            const intersect = ray.IntersectSph3(this.GetBoundingSphere(vec3.create()), worldTransform);
+            if (intersect)
+            {
+                intersect.name = this.name;
+                intersect.item = this;
+                intersects.push(intersect);
+                return intersect;
+            }
+        }
+    }
 
     /**
      * Gets glow translation
@@ -119,7 +169,24 @@ export class EveLocator2 extends meta.Model
     };
 
     /**
+     * Locator type
+     * @type {{CHAIN: number, XL_TURRET: number, ATTACH: number, ATOMIC: number, BOOSTER: number, TURRET: number, AUDIO: number}}
+     */
+    static LocatorType = {
+        UNKNOWN: 0,
+        AUDIO: 1,
+        ATTACH: 2,
+        BOOSTER: 3,
+        TURRET: 100,
+        XL_TURRET: 101,
+        LAUNCHER: 102,
+        CHAIN: 103,
+        ATOMIC: 104
+    };
+
+    /**
      * Locator types
+     * todo: Change to prefix
      * @type {{AUDIO: string, ATTACH: string, BOOSTER: string, TURRET: string, XL_TURRET: string}}
      */
     static Type = {
@@ -129,7 +196,8 @@ export class EveLocator2 extends meta.Model
         TURRET: "locator_turret",
         XL_TURRET: "locator_xl",
         CHAIN: "locator_chain",
-        ATOMIC: "locator_atomic"
+        ATOMIC: "locator_atomic",
+        LAUNCHER: "locator_launcher"
     };
 
 }
