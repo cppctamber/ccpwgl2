@@ -41,14 +41,23 @@ export class Tw2ShaderPass
 
     /**
      * Applies a shader pass
+     * @param {Array<{ state: Number, value: Number|Boolean }>} [stateOverride]
      */
-    Apply()
+    Apply(stateOverride)
     {
         const { gl } = device;
 
         for (let i = 0; i < this.states.length; i++)
         {
             device.SetRenderState(this.states[i].state, this.states[i].value);
+        }
+
+        if (stateOverride && stateOverride.length)
+        {
+            for (let i = 0; i < stateOverride.length; i++)
+            {
+                device.SetRenderState(stateOverride[i].state, stateOverride[i].value);
+            }
         }
 
         if (device.IsAlphaTestEnabled())

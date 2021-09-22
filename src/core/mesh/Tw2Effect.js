@@ -97,9 +97,14 @@ export class Tw2Effect extends meta.Model
     @meta.isPrivate
     shader = null;
 
+    // ccpwgl
+
     @meta.boolean
     autoParameter = false;
 
+    @meta.list()
+    @meta.isPrivate
+    stateOverride = null;
 
     _isAttached = false;
 
@@ -388,6 +393,16 @@ export class Tw2Effect extends meta.Model
                 Reflect.deleteProperty(this.techniques, t);
             }
         }
+
+        for (const param in this.parameters)
+        {
+            if (this.parameters.hasOwnProperty(param))
+            {
+                this.parameters[param].usedByCurrentEffect = false;
+                //this.parameters[param].usedByCurrentTechnique = false;
+            }
+        }
+
     }
 
     /**
@@ -399,6 +414,23 @@ export class Tw2Effect extends meta.Model
         this.UnBindParameters();
         if (!this.IsGood()) return false;
 
+        for (const param in this.parameters)
+        {
+            if (this.parameters.hasOwnProperty(param))
+            {
+                this.parameters[param].usedByCurrentEffect = false;
+                if (this.parameters[param] instanceof Tw2TextureParameter)
+                {
+                    this.parameters[param].usedByCurrentEffect = this.shader.HasTexture(param);
+                }
+                else
+                {
+                    this.parameters[param].usedByCurrentEffect = this.shader.HasConstant(param);
+                }
+                //this.parameters[param].usedByCurrentTechnique = false;
+            }
+        }
+
         for (let techniqueName in this.shader.techniques)
         {
             if (this.shader.techniques.hasOwnProperty(techniqueName))
@@ -408,8 +440,8 @@ export class Tw2Effect extends meta.Model
 
                 for (let i = 0; i < technique.passes.length; ++i)
                 {
-                    const pass = [];
-                    pass.stages = [];
+                    const pass = { state: null, stages : [] };
+
                     for (let j = 0; j < technique.passes[i].stages.length; ++j)
                     {
                         const
@@ -522,6 +554,7 @@ export class Tw2Effect extends meta.Model
                             if (name in this.parameters)
                             {
                                 param = this.parameters[name];
+                                param.isUsedByCurrentTechnique = true;
                             }
                             else if (tw2.HasVariable(name))
                             {
@@ -605,7 +638,7 @@ export class Tw2Effect extends meta.Model
             return;
         }
 
-        this.shader.ApplyPass(technique, pass);
+        this.shader.ApplyPass(technique, pass, this.techniques[technique][pass].state);
 
         const
             p = this.techniques[technique][pass],

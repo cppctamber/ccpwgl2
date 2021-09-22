@@ -207,12 +207,13 @@ export class Tw2Shader
 
     /**
      * Applies an Effect Pass
-     * @param {String} technique - technique name
-     * @param {Number} pass - effect.passes index
+     * @param {String} technique        - technique name
+     * @param {Number} pass             - effect.passes index
+     * @param {Array} [stateOverride<{ state: Number, value: Number|Boolean }>]   - state override
      */
-    ApplyPass(technique, pass)
+    ApplyPass(technique, pass, stateOverride)
     {
-        this.techniques[technique].passes[pass].Apply();
+        this.techniques[technique].passes[pass].Apply(stateOverride);
     }
 
     /**
