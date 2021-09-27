@@ -4,6 +4,7 @@ import { pln } from "./pln";
 import { sph3 } from "./sph3";
 import { box3 } from "./box3";
 import { tri3 } from "./tri3";
+import { mat3 } from "math/mat3";
 
 /**
  * 3D Ray
@@ -205,6 +206,32 @@ ray3.fromStartEnd = function(out, start, end)
     return ray3.normalize(out, out);
 };
 
+
+let mat3_0;
+
+/**
+ * Sets a ray3 from a mat4
+ * @param {ray3} out
+ * @param {mat4} m
+ * @return {ray3}
+ */
+ray3.fromMat4 = function(out, m)
+{
+    if (!mat3_0) mat3_0 = mat3.create();
+
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = -1;
+
+    vec3.transformMat4(ray3.$origin(out), ray3.$origin(out), m);
+    mat3.fromMat4(mat3_0, m);
+    vec3.transformMat3(ray3.$direction(out), ray3.$direction(out), mat3_0);
+    return ray3.normalize(out, out);
+};
+
 /**
  * Sets a ray3 from a screen coordinates and an inverse view projection matrix
  *
@@ -242,7 +269,7 @@ ray3.fromPerspective = function(out, coords, m, viewport)
 /**
  * Alternative to ray3.fromPerspective
  * @param {ray3} out         - receiving ray3
- * @param {vec2} coords       - event.ClientX, canvasHeight - event.clientY
+ * @param {vec2} coords      - event.ClientX, canvasHeight - event.clientY
  * @param {vec4} viewport    - x, y, width, height
  * @param {mat4} invProjView - inverse projection view matrix
  */
@@ -719,9 +746,12 @@ ray3.lookAt = function(out, a, p)
  */
 ray3.normalize = function(out, a)
 {
-    out[0] = a[0];
-    out[1] = a[1];
-    out[2] = a[2];
+    if (out !== a)
+    {
+        out[0] = a[0];
+        out[1] = a[1];
+        out[2] = a[2];
+    }
 
     let x = a[3],
         y = a[4],
