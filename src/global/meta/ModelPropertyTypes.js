@@ -15,11 +15,9 @@ import {
     isVectorEqual
 } from "../utils/type";
 
-
 export const propTypes = new Map();
 
 //  Helpers
-
 const getArray = (a, key) => Array.from(a[key]);
 const getPrimary = (a, key) => a[key];
 const setPrimary = (a, key, value) => a[key] = value;
@@ -29,7 +27,6 @@ const notImplemented = () => { throw new ReferenceError("Not implemented"); };
 
 
 // Boolean
-
 propTypes.set(Type.PT_BOOLEAN, {
     is: isBoolean,
     equals: equalsPrimary,
@@ -38,9 +35,7 @@ propTypes.set(Type.PT_BOOLEAN, {
     type: Type.PT_BOOLEAN
 });
 
-
 // Numbers
-
 function setNumber(type)
 {
     propTypes.set(type, {
@@ -58,7 +53,6 @@ setNumber(Type.PT_UINT);
 setNumber(Type.PT_USHORT);
 
 //  Strings
-
 function setString(type)
 {
     propTypes.set(type, {
@@ -69,44 +63,41 @@ function setString(type)
         type
     });
 }
-
 setString(Type.PT_STRING);
 setString(Type.PT_EXPRESSION);
 setString(Type.PT_PATH);
 
-
 // Vectors
-
-function setVector(type, Constructor)
+function setVector(type, Constructor, length)
 {
     propTypes.set(type, {
-        is: isVector,
+        is: x => isVector(x, length),
         equals: isVectorEqual,
         get: getArray,
         set: (a, key, value) =>
         {
             if (a[key].length !== value.length)
             {
-                if (Constructor)
-                {
-                    a[key] = new Constructor(value);
-                }
-                else
-                {
-                    a[key] = new a[key].constructor(value);
-                }
+                a[key] = new Constructor(value);
             }
             else
             {
                 a[key].set(value);
             }
         },
-        type: Type.PT_INDEX_BUFFER
+        type
     });
 }
 
-setVector(Type.PT_INDEX_BUFFER, Uint16Array);
 setVector(Type.PT_VECTOR, Float32Array);
+setVector(Type.PT_INT32_ARRAY, Int32Array);
+setVector(Type.PT_INT16_ARRAY, Int16Array);
+setVector(Type.PT_INT8_ARRAY, Int8Array);
+setVector(Type.PT_UINT32_ARRAY, Uint32Array);
+setVector(Type.PT_UINT16_ARRAY, Uint16Array);
+setVector(Type.PT_UINT32_ARRAY, Uint32Array);
+setVector(Type.PT_FLOAT32_ARRAY, Float32Array);
+setVector(Type.PT_FLOAT64_ARRAY, Float64Array);
 
 propTypes.set(Type.PT_MATRIX3, {
     is: isMatrix3,
@@ -150,14 +141,11 @@ function setVector4(type)
         type
     });
 }
-
 setVector4(Type.PT_VECTOR4);
 setVector4(Type.PT_COLOR);
 setVector4(Type.PT_QUATERNION);
 
-
 // Objects
-
 propTypes.set(Type.PT_PLAIN, {
     is: isPlain,
     equals: isEqual,
@@ -169,7 +157,7 @@ propTypes.set(Type.PT_PLAIN, {
 function setStruct(type)
 {
     propTypes.set(type, {
-        is(value, dest)
+        is(value)
         {
             if (!isPlain(value)) return false;
             // TODO:  Handle struct type checking...
@@ -178,17 +166,34 @@ function setStruct(type)
         equals: returnFalse,
         get(a, key, options)
         {
-            try
-            {
-                return a[key] === null ? null : a[key].GetValues({}, options);
-            }
-            catch (err)
-            {
-                console.dir(a[key]);
-                throw err;
-            }
+            return a[key] === null ? null : a[key].GetValues({}, options);
         },
-        set: notImplemented,
+        set: (a, key, value, opt) =>
+        {
+            notImplemented();
+            /*
+            // Delete
+            if (value === null)
+            {
+                if (!a[key]) return false;
+                a[key].Destructor(opt);
+                a[key] = null;
+                return true;
+            }
+
+            const types = toArray(getMetadata("type", a, key));
+
+            // Create
+            if (!a[key])
+            {
+
+            }
+
+            // TODO: check between current and new
+            a[key].ClearItems({ skipUpdate: true });
+            return a[key].SetValues(value);
+             */
+        },
         type
     });
 }
@@ -196,9 +201,8 @@ function setStruct(type)
 setStruct(Type.PT_STRUCT);
 setStruct(Type.PT_STRUCT_RAW);
 
-
 propTypes.set(Type.PT_STRUCT_LIST, {
-    is(value, dest)
+    is(value)
     {
         if (!isArray(value)) return false;
         // TODO: Handle struct type checking...
@@ -224,7 +228,64 @@ propTypes.set(Type.PT_STRUCT_LIST, {
         }
         return out;
     },
-    set: notImplemented,
+    set: (a, key, value, options) =>
+    {
+        notImplemented();
+        /*
+        if (value === null)
+        {
+            if (!a[key].length) return false;
+            for (let i = 0; i < a[key].length; i++)
+            {
+                a[key].Destructor(options);
+            }
+            a[key].splice(0);
+            return true;
+        }
+
+        let updated = false;
+
+        for (let i = 0; i < value.length; i++)
+        {
+            const { _id, ...values } = value[i];
+
+            // No id - we are adding...
+            if (!_id)
+            {
+                // identify the constructor
+            }
+            else
+            {
+                // Find existing id
+                let found;
+                for (let x = 0; x < a[key].length; x++)
+                {
+                    if (a[key]._id === _id)
+                    {
+                        found = a[key];
+                        break;
+                    }
+                }
+
+                // Update
+                if (found)
+                {
+                    if (a[key].SetValues(values))
+                    {
+                        updated = true;
+                    }
+                }
+                // Insert
+                else
+                {
+                    throw new Error("Inserting records not yet supported");
+                }
+            }
+
+            return updated;
+        }
+        */
+    },
     type: Type.PT_STRUCT_LIST
 });
 

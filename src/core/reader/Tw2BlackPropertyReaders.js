@@ -24,8 +24,18 @@ import {
     PT_STRUCT_RAW,
     PT_COLOR,
     PT_PLAIN,
-    PT_INDEX_BUFFER,
-    PT_ENUM
+    PT_ENUM,
+    PT_FLOAT64_ARRAY,
+    PT_FLOAT32_ARRAY,
+    PT_UINT32_ARRAY,
+    PT_UINT16_ARRAY,
+    PT_INT8_ARRAY,
+    PT_INT16_ARRAY,
+    PT_INT32_ARRAY,
+    PT_UINT8_CLAMPED_ARRAY,
+    PT_UINT8_ARRAY,
+    PT_VECTOR,
+    PT_MATRIX3
 } from "constant/type";
 
 let Types;
@@ -54,8 +64,18 @@ function getReaderFromType(type)
             [PT_STRUCT_LIST]: array,
             [PT_ARRAY]: array,
             [PT_PLAIN]: rawObject,
-            [PT_INDEX_BUFFER]: indexBuffer,
-            [PT_ENUM]: enums
+            [PT_ENUM]: enums,
+            [PT_FLOAT64_ARRAY]: indexBuffer,
+            [PT_FLOAT32_ARRAY]: indexBuffer,
+            [PT_UINT32_ARRAY]: indexBuffer,
+            [PT_UINT16_ARRAY]: indexBuffer,
+            [PT_INT8_ARRAY]: indexBuffer,
+            [PT_INT16_ARRAY]: indexBuffer,
+            [PT_INT32_ARRAY]: indexBuffer,
+            [PT_UINT8_CLAMPED_ARRAY]: indexBuffer,
+            [PT_UINT8_ARRAY]: indexBuffer,
+            [PT_VECTOR]: indexBuffer,
+            [PT_MATRIX3]: indexBuffer,
         };
     }
 

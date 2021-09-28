@@ -10,7 +10,6 @@ import {
     PT_ENUM,
     PT_EXPRESSION,
     PT_FLOAT,
-    PT_INDEX_BUFFER,
     PT_MATRIX3,
     PT_MATRIX4,
     PT_PATH,
@@ -26,7 +25,16 @@ import {
     PT_VECTOR,
     PT_VECTOR2,
     PT_VECTOR3,
-    PT_VECTOR4
+    PT_VECTOR4,
+    PT_FLOAT32_ARRAY,
+    PT_FLOAT64_ARRAY,
+    PT_INT8_ARRAY,
+    PT_INT16_ARRAY,
+    PT_INT32_ARRAY,
+    PT_UINT8_ARRAY,
+    PT_UINT8_CLAMPED_ARRAY,
+    PT_UINT16_ARRAY,
+    PT_UINT32_ARRAY
 } from "constant";
 
 
@@ -112,113 +120,33 @@ function create(propertyType, hasTypesOf)
     });
 }
 
-/**
- * Unknown value type
- * @type {PropertyDecorator}
- */
 export const unknown = create(PT_UNKNOWN);
-
-/**
- * Boolean property type
- * @type {PropertyDecorator}
- */
 export const boolean = create(PT_BOOLEAN);
-
-/**
- * String property type
- * @type {PropertyDecorator}
- */
 export const string = create(PT_STRING);
-
-/**
- * Path property type
- * @type {PropertyDecorator}
- */
 export const path = create(PT_PATH);
-
-/**
- * Expression property type
- * @type {PropertyDecorator}
- */
 export const expression = create(PT_EXPRESSION);
-
-/**
- * Float property type
- * @type {PropertyDecorator}
- */
 export const float = create(PT_FLOAT);
-
-/**
- * Uint property type
- * @type {PropertyDecorator}
- */
 export const uint = create(PT_UINT);
-
-/**
- * Ushort property type
- * @type {PropertyDecorator}
- */
 export const ushort = create(PT_USHORT);
-
-/**
- * Byte property type
- * @type {PropertyDecorator}
- */
 export const byte = create(PT_BYTE);
-
-/**
- * Array property type
- * @type {PropertyDecorator}
- */
 export const array = create(PT_ARRAY);
-
-/**
- * Vector 2 property type
- * @type {PropertyDecorator}
- */
 export const vector2 = create(PT_VECTOR2);
-
-/**
- * Vector 3 property type
- * @type {PropertyDecorator}
- */
 export const vector3 = create(PT_VECTOR3);
-
-/**
- * Vector 4 property type
- * @type {PropertyDecorator}
- */
 export const vector4 = create(PT_VECTOR4);
-
-/**
- * Linear colour property type
- * @type {PropertyDecorator}
- */
 export const color = create(PT_COLOR);
-
-/**
- * Quaternion property type
- * @type {PropertyDecorator}
- */
 export const quaternion = create(PT_QUATERNION);
-
-/**
- * Matrix 3 property type
- * @type {PropertyDecorator}
- */
 export const matrix3 = create(PT_MATRIX3);
-
-/**
- * Matrix 4 property type
- * @type {PropertyDecorator}
- */
 export const matrix4 = create(PT_MATRIX4);
 
-/**
- * Index buffer property type
- * @type {PropertyDecorator}
- */
-export const indexBuffer = create(PT_INDEX_BUFFER);
+export const int8Array = create(PT_INT8_ARRAY);
+export const int16Array = create(PT_INT16_ARRAY);
+export const int32Array = create(PT_INT32_ARRAY);
+export const uint8Array = create(PT_UINT8_ARRAY);
+export const uint8ClampedArray = create(PT_UINT8_CLAMPED_ARRAY);
+export const uint16Array = create(PT_UINT16_ARRAY);
+export const uint32Array = create(PT_UINT32_ARRAY);
+export const float32Array = create(PT_FLOAT32_ARRAY);
+export const float64Array = create(PT_FLOAT64_ARRAY);
 
 /**
  * Dynamic typed array

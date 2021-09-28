@@ -12,7 +12,7 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     @meta.uint
     boneIndex = -1;
 
-    @meta.indexBuffer
+    @meta.uint16Array
     indexBuffer = [];
 
     @meta.uint

@@ -20,7 +20,7 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.uint
     groupIndex = -1;
 
-    @meta.indexBuffer
+    @meta.uint16Array
     indexBuffer = [];
 
     @meta.uint
@@ -291,7 +291,8 @@ export class EveSpaceObjectDecal extends meta.Model
             [ "invWorldMatrix", 16 ],
             [ "decalMatrix", 16 ],
             [ "invDecalMatrix", 16 ],
-            [ "parentBoneMatrix", mat4.identity([]) ]
+            [ "parentBoneMatrix", mat4.identity([]) ],
+            [ "clampDecalToEdge", 4 ]
         ],
         ps: [
             [ "displayData", [ 0, 1, 0, 0 ] ],

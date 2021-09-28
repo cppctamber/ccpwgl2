@@ -21,8 +21,22 @@ export const PT_COLOR = 60;
 export const PT_QUATERNION = 61;
 export const PT_MATRIX3 = 70;
 export const PT_MATRIX4 = 71;
-export const PT_INDEX_BUFFER = 72;
+
 export const PT_ENUM = 80;
+
+export const PT_UINT8_ARRAY = 81;
+export const PT_UINT8_CLAMPED_ARRAY = 82;
+export const PT_UINT16_ARRAY = 83;
+export const PT_UINT32_ARRAY = 84;
+export const PT_INT8_ARRAY = 85;
+export const PT_INT16_ARRAY = 86;
+export const PT_INT32_ARRAY = 87;
+export const PT_FLOAT32_ARRAY = 88;
+export const PT_FLOAT64_ARRAY = 89;
+
+
+
+
 
 export const VectorLengths = {
     [PT_VECTOR2] : 2,
