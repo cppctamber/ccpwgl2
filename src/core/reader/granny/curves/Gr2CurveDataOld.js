@@ -6,10 +6,10 @@ import { Gr2Curve2 } from "./Gr2Curve2";
 export class Gr2CurveDataOld extends Gr2Curve2
 {
 
-    @meta.vector
+    @meta.float32Array
     knots = new Float32Array(0);
 
-    @meta.vector
+    @meta.float32Array
     controls = new this.constructor.ControlsConstructor(0);
 
 

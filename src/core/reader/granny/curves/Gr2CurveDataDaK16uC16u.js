@@ -9,11 +9,11 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
     @meta.uint
     oneOverKnotScaleTrunc = 0;
 
-    @meta.vector    // C# Single
+    @meta.float32Array
     controlScaleOffsets = new Float32Array(0);
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlsConstructor(0);
+    @meta.uint16Array
+    knotsControls = new Uint16Array(0);
 
 
     _knots = null;
@@ -140,20 +140,6 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
             this._quatBuffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), 4, this.controlScaleOffsets);
         }
     }
-
-  
-
-    /**
-     * Knots controls constructor
-     * @type {Uint16ArrayConstructor}
-     */
-    static ControlsConstructor = Uint16Array;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 2;
 
     /**
      * Gr2 format

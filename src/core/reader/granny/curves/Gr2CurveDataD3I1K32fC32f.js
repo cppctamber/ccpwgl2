@@ -13,8 +13,8 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
     @meta.vector3
     controlScales = vec3.create();
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlsConstructor(0);
+    @meta.float32Array
+    knotsControls = new Float32Array(0);
 
 
     _knots = null;
@@ -55,7 +55,10 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
      */
     RebuildKnots()
     {
-        this._knots = Gr2Curve2.GetKnotsFromControl(this.controls, this.GetKnotCount());
+        this._knots = Gr2Curve2.GetKnotsFromControl(
+            this.controls,
+            this.GetKnotCount()
+        );
     }
 
     /**
@@ -65,12 +68,6 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
     {
         this._buffer = rebuildBuffer(this.controls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
     }
-
-    /**
-     * Constructor for knots
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
 
     /**
      * Gr2 format

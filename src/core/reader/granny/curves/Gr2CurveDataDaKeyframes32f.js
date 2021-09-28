@@ -9,8 +9,8 @@ export class Gr2CurveDataDaKeyframes32f extends Gr2Curve2
     @meta.uint
     dimension = 0;
 
-    @meta.vector
-    controls = new this.constructor.ControlConstructor(0);
+    @meta.float32Array
+    controls = new Float32Array(0);
 
 
     /**
@@ -167,22 +167,10 @@ export class Gr2CurveDataDaKeyframes32f extends Gr2Curve2
     }
 
     /**
-     * Controls constructor
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlConstructor = Float32Array;
-
-    /**
      * Gr2 curve data format
      * @type {number}
      */
     static format = 0;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 4;
 
     /**
      * Identifies the values are floats

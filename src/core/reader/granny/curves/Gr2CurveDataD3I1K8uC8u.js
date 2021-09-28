@@ -6,25 +6,13 @@ import { meta } from "utils";
 export class Gr2CurveDataD3I1K8uC8u extends Gr2CurveDataD3I1K16uC16u
 {
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlsConstructor(0);
-
-    /**
-     * Knots control constructor
-     * @type {Uint8ArrayConstructor}
-     */
-    static ControlsConstructor = Uint8Array;
+    @meta.uint8Array
+    knotsControls = new Uint8Array(0);
 
     /**
      * Gr2 format
      * @type {number}
      */
     static format = 18;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 1;
 
 }

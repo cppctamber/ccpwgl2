@@ -16,8 +16,8 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
     @meta.float
     controlOffset = vec3.create();
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlConstructor(0);
+    @meta.uint16Array
+    knotsControls = new Uint16Array(0);
 
 
     _knots = null;
@@ -100,12 +100,6 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
             out[i * 9 + 8] = controls[count + i * 3 + 2] * scale[2] + offset[2];
         }
     }
-
-    /**
-     * Control constructor
-     * @type {Uint16ArrayConstructor}
-     */
-    static ControlConstructor = Uint16Array;
 
     /**
      * Gr2 curve data format

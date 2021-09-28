@@ -38,12 +38,6 @@ export class Gr2CurveDataD3Constant32f extends Gr2Curve2
     }
 
     /**
-     * Constructor for knots
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
-
-    /**
      * Gr2 format
      * @type {number}
      */

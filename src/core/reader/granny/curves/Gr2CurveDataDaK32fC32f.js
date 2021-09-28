@@ -6,11 +6,11 @@ import { meta } from "utils";
 export class Gr2CurveDataDaK32fC32f extends Gr2Curve2
 {
 
-    @meta.vector
+    @meta.float32Array
     knots = new Float32Array(0);
 
-    @meta.vector
-    controls = new this.constructor.ControlsConstructor(0);
+    @meta.float32Array
+    controls = new Float32Array(0);
 
 
     /**
@@ -73,18 +73,6 @@ export class Gr2CurveDataDaK32fC32f extends Gr2Curve2
         if (this.GetCurveType() === Gr2Curve2.Type.SCALE_SHEAR) return this.controls;
         super.GetMat3Buffer();
     }
-
-    /**
-     * Constructor for knots
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 4;
 
     /**
      * Gr2 format

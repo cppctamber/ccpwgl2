@@ -3,8 +3,9 @@ import { Tw2GeometryCurve } from "core/geometry";
 import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
 
 
+
 @meta.type("Gr2Curve2")
-export class Gr2Curve2
+export class Gr2Curve2 extends meta.Model
 {
 
     @meta.uint
@@ -110,9 +111,9 @@ export class Gr2Curve2
      * @param {TypedArray} controls
      * @param {Number} count
      * @param {Number} [scale=1]
-     * @return {Float32Array}
+     * @return {TypedArray}
      */
-    static GetKnotsFromControl(controls, count, scale = 1)
+    static GetKnotsFromControl(controls, count, scale = 1,)
     {
         const out = new Float32Array(count);
         for (let i = 0; i < count; i++) out[i] = controls[i] / scale;

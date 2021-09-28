@@ -12,8 +12,8 @@ export class Gr2CurveDataD4nK16uC15u extends Gr2Curve2
     @meta.float
     oneOverKnotScale = 0.0;
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlConstructor(0);
+    @meta.uint16Array
+    knotsControls = new Uint8Array(0);
 
 
     _knots = null;
@@ -54,7 +54,11 @@ export class Gr2CurveDataD4nK16uC15u extends Gr2Curve2
      */
     RebuildKnots()
     {
-        this._knots = Gr2Curve2.GetKnotsFromControl(this.knotsControls, this.GetKnotCount(), 1 / this.oneOverKnotScale);
+        this._knots = Gr2Curve2.GetKnotsFromControl(
+            this.knotsControls,
+            this.GetKnotCount(),
+            this.oneOverKnotScale,
+        );
     }
 
     /**
@@ -112,22 +116,10 @@ export class Gr2CurveDataD4nK16uC15u extends Gr2Curve2
     static SCALE_TABLE_MULTIPLIER = 0.000030518509;
 
     /**
-     * Control constructor
-     * @type {Uint16ArrayConstructor}
-     */
-    static ControlConstructor = Uint16Array;
-
-    /**
      * Gr2 curve data format
      * @type {number}
      */
     static format = 0;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 2;
 
 }
 

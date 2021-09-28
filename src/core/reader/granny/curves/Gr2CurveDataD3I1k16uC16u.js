@@ -14,8 +14,8 @@ export class Gr2CurveDataD3I1K16uC16u extends Gr2Curve2
     @meta.vector3
     controlScales = vec3.create();
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlsConstructor(0);
+    @meta.uint16Array
+    knotsControls = new Uint16Array(0);
 
     @meta.uint
     oneOverKnotScaleTrunc = 0;
@@ -83,23 +83,12 @@ export class Gr2CurveDataD3I1K16uC16u extends Gr2Curve2
         this._buffer = rebuildBuffer(this.controls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
     }
 
-    /**
-     * Knot control constructor
-     * @type {Uint16ArrayConstructor}
-     */
-    static ControlsConstructor = Uint16Array;
 
     /**
      * Gr2 format
      * @type {number}
      */
     static format = 17;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 2;
 
 }
 

@@ -13,7 +13,7 @@ export class Gr2CurveDataD3K16uC16u extends Gr2Curve2
     @meta.vector3
     controlScales = vec3.create();
 
-    @meta.vector
+    @meta.uint16Array
     knotsControls = new this.constructor.ControlsConstructor(0);
 
     @meta.uint

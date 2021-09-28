@@ -6,8 +6,8 @@ import { meta } from "utils";
 export class Gr2CurveDataD4nK8uC7u extends Gr2CurveDataD4nK16uC15u
 {
 
-    @meta.vector
-    knotsControls = new this.constructor.ControlConstructor(0);
+    @meta.uint8Array
+    knotsControls = new Uint8Array(0);
 
 
     /**
@@ -51,22 +51,10 @@ export class Gr2CurveDataD4nK8uC7u extends Gr2CurveDataD4nK16uC15u
     static SCALE_TABLE_MULTIPLIER = 0.0078740157;
 
     /**
-     * Control constructor
-     * @type {Uint8ArrayConstructor}
-     */
-    static ControlConstructor = Uint8Array;
-
-    /**
      * Gr2 curve data format
      * @type {number}
      */
     static format = 9;
-
-    /**
-     * Bytes per knot
-     * @type {number}
-     */
-    static bytesPerKnot = 1;
 
 }
 

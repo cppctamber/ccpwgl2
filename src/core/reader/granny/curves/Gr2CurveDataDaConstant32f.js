@@ -28,7 +28,6 @@ export class Gr2CurveDataDaConstant32f extends Gr2Curve2
         return new Float32Array([ 0.0 ]);
     }
 
-
     /**
      * Gets the matrix 3 buffer
      * @return {Float32Array}
@@ -37,21 +36,6 @@ export class Gr2CurveDataDaConstant32f extends Gr2Curve2
     {
         return this.controls;
     }
-
-    /*
-    _quatBuffer = null;
-    GetQuatBuffer()
-    {
-        if (!this._quatBuffer) this.RebuildQuatBuffer();
-        return this._quatBuffer;
-    }
-    */
-
-    /**
-     * Constructor for knots
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
 
     /**
      * Gr2 format
