@@ -4,7 +4,7 @@ import { Tw2Error } from "core/Tw2Error";
 /**
  * Todo: Replace with Tw2Store
  */
-export class Gr2Curve
+export class Gr2CurveReader
 {
 
     formats = new Map();
@@ -72,12 +72,13 @@ export class Gr2Curve
      * Creates a Tw2GeometryCurve from granny curve data in json format
      * @param {Object} json
      * @param {Number} dimension
+     * @param {Boolean} [purge]
      * @return {Tw2GeometryCurve}
      */
-    CreateTw2GeometryCurveFromJSON(json, dimension)
+    CreateTw2GeometryCurveFromJSON(json, dimension, purge)
     {
         const item = this.CreateCurveFromJSON(json);
-        return item.CreateTw2GeometryCurve(dimension);
+        return item.CreateTw2GeometryCurve(dimension, purge);
     }
 
 }

@@ -6,8 +6,8 @@ import { meta } from "utils";
 export class Gr2CurveDataDaConstant32f extends Gr2Curve2
 {
 
-    @meta.matrix3
-    controls = new this.constructor.ControlsConstructor([ 1, 0, 0, 0, 1, 0, 0, 0, 1 ]);
+    @meta.float32Array
+    controls = new Float32Array([ 1, 0, 0, 0, 1, 0, 0, 0, 1 ]);
 
 
     /**
@@ -43,10 +43,5 @@ export class Gr2CurveDataDaConstant32f extends Gr2Curve2
      */
     static format = 3;
 
-    /**
-     * Identifies float values
-     * @type {boolean}
-     */
-    static isFloat = true;
 
 }

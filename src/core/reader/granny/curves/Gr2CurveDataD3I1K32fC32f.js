@@ -66,7 +66,7 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
      */
     RebuildVec3Buffer()
     {
-        this._buffer = rebuildBuffer(this.controls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
+        this._buffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
     }
 
     /**

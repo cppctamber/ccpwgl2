@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isVectorEqual, meta } from "utils";
 import { Tw2GeometryCurve } from "core/geometry";
 import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
 
@@ -74,9 +74,10 @@ export class Gr2Curve2 extends meta.Model
     /**
      * Gets a Tw2GeometryCurve
      * @param {Number} dimension
+     * @param {Boolean} [purge]
      * @return {Tw2GeometryCurve}
      */
-    CreateTw2GeometryCurve(dimension)
+    CreateTw2GeometryCurve(dimension, purge)
     {
         let controls;
 
@@ -98,11 +99,46 @@ export class Gr2Curve2 extends meta.Model
                 throw new ErrGr2CurveDataDimensionInvalid({ dimension });
         }
 
+
         const curve = new Tw2GeometryCurve();
         curve.dimension = dimension;
         curve.degree = this.degree;
         curve.knots = Array.from(this.GetKnots());
         curve.controls = Array.from(controls);
+
+        if (purge)
+        {
+            let wasPurged = false;
+
+            const arr = Array.from(curve.controls).reverse();
+            const k = Array.from(curve.knots).reverse();
+            const count = arr.length / dimension - dimension;
+
+            for (let i = 0; i < count; i++)
+            {
+                const c = [], n = [];
+                for (let x = 0; x < dimension; x++)
+                {
+                    c[x] = arr[i * dimension + x];
+                    n[x] = arr[(i + 1) * dimension + x];
+                }
+
+                if (isVectorEqual(c, n))
+                {
+                    wasPurged = true;
+                    arr.splice(0, dimension);
+                    k.splice(0, 1);
+                    i--;
+                }
+            }
+
+            if (wasPurged)
+            {
+                curve.knots = k.reverse();
+                curve.controls = arr.reverse();
+            }
+        }
+
         return curve;
     }
 
@@ -144,16 +180,6 @@ export class Gr2Curve2 extends meta.Model
     static ConvertOneOverKnotScaleTrunc(oneOverKnotScaleTrunc)
     {
         return (new Float32Array((new Uint32Array([ oneOverKnotScaleTrunc << 16 ])).buffer))[0];
-    }
-
-    /**
-     * Creates a curve from json
-     * TODO: Implement
-     * @param {Object} json
-     */
-    static fromJSON(json)
-    {
-        throw new ErrFeatureNotImplemented({ feature: "granny curves from json" });
     }
 
     /**

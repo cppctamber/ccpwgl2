@@ -80,10 +80,4 @@ export class Gr2CurveDataDaK32fC32f extends Gr2Curve2
      */
     static format = 1;
 
-    /**
-     * Identifies float values
-     * @type {boolean}
-     */
-    static isFloat = true;
-
 }

@@ -172,10 +172,4 @@ export class Gr2CurveDataDaKeyframes32f extends Gr2Curve2
      */
     static format = 0;
 
-    /**
-     * Identifies the values are floats
-     * @type {boolean}
-     */
-    static isFloat = true;
-
 }

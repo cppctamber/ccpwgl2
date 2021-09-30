@@ -10,7 +10,7 @@ export class Gr2CurveDataOld extends Gr2Curve2
     knots = new Float32Array(0);
 
     @meta.float32Array
-    controls = new this.constructor.ControlsConstructor(0);
+    controls = new Float32Array(0);
 
 
     /**
@@ -107,11 +107,5 @@ export class Gr2CurveDataOld extends Gr2Curve2
     {
         Gr2Curve2.Evaluate(this.knots, this.controls, this.dimension, this.degree, time, value, cycle, duration);
     }
-
-    /**
-     * Controls constructor
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
 
 }

@@ -6,8 +6,8 @@ import { meta } from "utils";
 export class Gr2CurveDataD4Constant32f extends Gr2Curve2
 {
 
-    @meta.quaternion
-    controls = new this.constructor.ControlsConstructor([ 0, 0, 0, 1 ]);
+    @meta.float32Array
+    controls = new Float32Array([ 0, 0, 0, 1 ]);
 
 
     /**
@@ -47,21 +47,10 @@ export class Gr2CurveDataD4Constant32f extends Gr2Curve2
     */
 
     /**
-     * Constructor for knots
-     * @type {Float32ArrayConstructor}
-     */
-    static ControlsConstructor = Float32Array;
-
-    /**
      * Gr2 format
      * @type {number}
      */
     static format = 5;
 
-    /**
-     * Identifies float values
-     * @type {boolean}
-     */
-    static isFloat = true;
 
 }

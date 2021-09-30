@@ -34,7 +34,7 @@ export class Gr2CurveDataDaIdentity extends Gr2Curve2
      */
     GetVec3Buffer()
     {
-        return new this.constructor.ControlsConstructor([ 0, 0, 0 ]);
+        return new Float32Array([ 0, 0, 0 ]);
     }
 
     /**
@@ -43,7 +43,7 @@ export class Gr2CurveDataDaIdentity extends Gr2Curve2
      */
     GetQuatBuffer()
     {
-        return new this.constructor.ControlsConstructor([ 0, 0, 0, 1 ]);
+        return new Float32Array([ 0, 0, 0, 1 ]);
     }
 
     /**
@@ -52,7 +52,7 @@ export class Gr2CurveDataDaIdentity extends Gr2Curve2
      */
     GetMat3Buffer()
     {
-        return new this.constructor.ControlsConstructor([ 1, 0, 0, 0, 1, 0, 0, 0, 1 ]);
+        return new Float32Array([ 1, 0, 0, 0, 1, 0, 0, 0, 1 ]);
     }
 
     /**
@@ -60,11 +60,5 @@ export class Gr2CurveDataDaIdentity extends Gr2Curve2
      * @type {number}
      */
     static format = 2;
-
-    /**
-     * Identifies float values
-     * @type {boolean}
-     */
-    static isFloat = true;
 
 }

@@ -93,6 +93,7 @@ setVector(Type.PT_VECTOR, Float32Array);
 setVector(Type.PT_INT32_ARRAY, Int32Array);
 setVector(Type.PT_INT16_ARRAY, Int16Array);
 setVector(Type.PT_INT8_ARRAY, Int8Array);
+setVector(Type.PT_UINT8_ARRAY, Uint8Array);
 setVector(Type.PT_UINT32_ARRAY, Uint32Array);
 setVector(Type.PT_UINT16_ARRAY, Uint16Array);
 setVector(Type.PT_UINT32_ARRAY, Uint32Array);
