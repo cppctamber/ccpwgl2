@@ -119,7 +119,7 @@ export class Gr2CurveDataD4nK16uC15u extends Gr2Curve2
      * Gr2 curve data format
      * @type {number}
      */
-    static format = 0;
+    static format = 8;
 
 }
 
