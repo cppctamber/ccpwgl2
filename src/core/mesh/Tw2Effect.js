@@ -106,6 +106,10 @@ export class Tw2Effect extends meta.Model
     @meta.isPrivate
     stateOverride = null;
 
+    @meta.string
+    defaultTechnique = "Main";
+
+
     _isAttached = false;
 
     //resources
@@ -149,52 +153,6 @@ export class Tw2Effect extends meta.Model
     GetValue()
     {
         return this._isAttached ? null : this.effectFilePath;
-    }
-
-    /**
-     * Sets parameters from a sof material
-     * @param {EveSOFDataMaterial} material
-     * @param {Number} index
-     * @return {boolean}
-     */
-    SetSOFDataMaterial(material, index)
-    {
-        const { parameters } = material;
-
-        let prefix;
-
-        switch (index)
-        {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                prefix = "Mtl" + index;
-                break;
-
-            case 5:
-            case 6:
-                prefix = "PMtl" + index - 4;
-                break;
-
-            default:
-                throw new Error("Invalid material index");
-        }
-
-        const values = {};
-
-        for (const key in parameters)
-        {
-            if (parameters.hasOwnProperty(key))
-            {
-                if (prefix + key in this)
-                {
-                    values[prefix + key] = Array.from(parameters[key].value);
-                }
-            }
-        }
-
-        return this.SetParameters(values);
     }
 
     /**
@@ -370,6 +328,46 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Sets a technique pass state override
+     * @param {String} technique
+     * @param {Number} pass
+     * @param {Number} state
+     * @param {Number|Boolean} value
+     */
+    SetTechniquePassStateOverride(technique, pass, state, value)
+    {
+        if (!this.techniques[technique]) this.techniques[technique] = [];
+        if (!this.techniques[technique][pass]) this.techniques[technique][pass] = { state: [] };
+        if (!this.techniques[technique][pass].state) this.techniques[technique][pass].state = [];
+
+        const states = this.techniques[technique][pass].state;
+        const s = states.find(x => x.state === state);
+        if (!s)
+        {
+            states.push({ state, value });
+        }
+        else
+        {
+            s.value = value;
+        }
+    }
+
+    /**
+     * Gets a technique passes's state overrides
+     * @param {String} technique
+     * @param {Number} pass
+     * @return {null|{ state: Number, value: Number|Boolean}}
+     */
+    GetTechniquePassStateOverrides(technique, pass)
+    {
+        if (technique in this.techniques && this.techniques[technique][pass] && this.techniques[technique][pass].state)
+        {
+            return this.techniques[technique][pass].state;
+        }
+        return null;
+    }
+
+    /**
      * Unbinds parameters
      * @returns {Boolean}
      */
@@ -382,15 +380,18 @@ export class Tw2Effect extends meta.Model
                 let technique = this.techniques[t];
                 for (let i = 0; i < technique.length; ++i)
                 {
-                    for (let j = 0; j < technique[i].stages.length; ++j)
+                    if (technique[i].stages)
                     {
-                        for (let k = 0; k < technique[i].stages[j].reroutedParameters.length; ++k)
+                        for (let j = 0; j < technique[i].stages.length; ++j)
                         {
-                            technique[i].stages[j].reroutedParameters[k].Unbind();
+                            for (let k = 0; k < technique[i].stages[j].reroutedParameters.length; ++k)
+                            {
+                                technique[i].stages[j].reroutedParameters[k].Unbind();
+                            }
                         }
+                        technique[i].stages.splice(0);
                     }
                 }
-                Reflect.deleteProperty(this.techniques, t);
             }
         }
 
@@ -440,7 +441,7 @@ export class Tw2Effect extends meta.Model
 
                 for (let i = 0; i < technique.passes.length; ++i)
                 {
-                    const pass = { state: null, stages : [] };
+                    const pass = { state: this.GetTechniquePassStateOverrides(techniqueName, i), stages : [] };
 
                     for (let j = 0; j < technique.passes[i].stages.length; ++j)
                     {
@@ -723,13 +724,14 @@ export class Tw2Effect extends meta.Model
     /**
      * Render
      * @param {function} cb - callback
+     * @param {String} [technique]
      */
-    Render(cb)
+    Render(cb, technique = this.defaultTechnique)
     {
-        const count = this.GetPassCount("Main");
+        const count = this.GetPassCount(technique);
         for (let i = 0; i < count; ++i)
         {
-            this.ApplyPass("Main", i);
+            this.ApplyPass(technique, i);
             cb(this, i);
         }
     }
@@ -815,6 +817,28 @@ export class Tw2Effect extends meta.Model
         this.autoParameter = true;
         return this.BindParameters();
     }
+
+    /**
+     * Purges unused parameters
+     * @param {Object} [out={}]
+     * @return {Object} out
+     */
+    PurgeUnusedParameters(out={})
+    {
+        for (const key in this.parameters)
+        {
+            if (this.parameters.hasOwnProperty(key))
+            {
+                if (!this.parameters[key].usedByCurrentEffect)
+                {
+                    out[key] = this.parameters[key];
+                    Reflect.deleteProperty(this.parameters, key);
+                }
+            }
+        }
+        return out;
+    }
+
 
     /**
      * Fires a function per child
