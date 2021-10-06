@@ -278,6 +278,8 @@ export class Tw2Animation extends meta.Model
             }
         }
 
+        this.EmitEvent("playing", { animation: this, controller: this._controller });
+
         return true;
     }
 
