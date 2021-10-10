@@ -12,6 +12,24 @@ export class Tw2FloatParameter extends Tw2Parameter
     @meta.float
     value = 1;
 
+    /**
+     * Alias for value
+     * @return {Number}
+     */
+    get x()
+    {
+        return this.value;
+    }
+
+    /**
+     * Alias for set value
+     * @param {Number} val
+     */
+    set x(val)
+    {
+        this.SetValue(val);
+    }
+
 
     /**
      * Constructor
@@ -55,10 +73,22 @@ export class Tw2FloatParameter extends Tw2Parameter
      * Applies the parameter's value to a constant buffer
      * @param {Float32Array} constantBuffer
      * @param {Number} offset
+     * @param {*} unused
      */
-    Apply(constantBuffer, offset)
+    Apply(constantBuffer, offset, unused)
     {
         constantBuffer[offset] = this.value;
+    }
+
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        if (this._constantBuffer)
+        {
+            this.Apply(this._constantBuffer, this._offset);
+        }
     }
 
     /**
