@@ -1,8 +1,8 @@
 import { meta, assignIfExists } from "utils";
 import { device } from "global";
-import { Tw2RenderTarget } from "../Tw2RenderTarget";
-import { Tw2TextureRes } from "../resource/Tw2TextureRes";
-import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
+import { Tw2RenderTarget } from "../../Tw2RenderTarget";
+import { Tw2TextureRes } from "../../resource/Tw2TextureRes";
+import { Tw2TextureParameter, Tw2Vector4Parameter } from "../../parameter";
 import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
 
 

@@ -1,5 +1,6 @@
 import { meta, assignIfExists } from "utils";
-import { Tw2Effect } from "../mesh/Tw2Effect";
+import { Tw2Effect } from "../../mesh/Tw2Effect";
+
 
 
 @meta.type("Tw2PostEffectStep")
