@@ -16,10 +16,9 @@ export class Tw2ShaderState
      *
      * TODO: Replace with utility functions
      * @param {Object} json
-     * @param {Tw2EffectRes} context
      * @return {Tw2ShaderState}
      */
-    static fromJSON(json, context)
+    static fromJSON(json)
     {
         const state = new Tw2ShaderState();
         if (json.state !== undefined) state.state = json.state;

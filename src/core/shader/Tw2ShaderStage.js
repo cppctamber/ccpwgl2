@@ -1,4 +1,4 @@
-import { get, getKeyFromValue, isString, meta } from "utils";
+import { addToArray, get, getKeyFromValue, isString, meta } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import { ErrShaderCompile, Tw2Shader } from "./Tw2Shader";
@@ -57,6 +57,35 @@ export class Tw2ShaderStage
     get string()
     {
         return getKeyFromValue(Tw2ShaderStage.Type, this.type, "INVALID");
+    }
+
+    /**
+     * Gets the shader's parameter names
+     * @param {Object} [out={}]
+     * @return {{}} out
+     */
+    GetParameterNames(out={})
+    {
+        out.constants = out.constants || [];
+        out.textures = out.textures || [];
+        out.samplers = out.samplers || [];
+
+        for (let i = 0; i < this.constants.length; i++)
+        {
+            addToArray(out.constants, this.constants[i].name);
+        }
+
+        for (let i = 0; i < this.textures.length; i++)
+        {
+            addToArray(out.textures, this.textures[i].name);
+        }
+
+        for (let i = 0; i < this.samplers.length; i++)
+        {
+            addToArray(out.samplers, this.samplers[i].name);
+        }
+
+        return out;
     }
 
     /**

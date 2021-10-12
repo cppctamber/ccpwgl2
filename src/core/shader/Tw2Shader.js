@@ -217,6 +217,29 @@ export class Tw2Shader
     }
 
     /**
+     * Gets shader parameter names
+     * @param {Object} [out={}]
+     * @param {Object} [mask]
+     * @return {Object} out
+     */
+    GetParameterNames(out={}, mask)
+    {
+        if (mask && mask.technique)
+        {
+            return this.techniques[mask.technique] ? this.techniques[mask.technique].GetParameterNames(out, mask) : out;
+        }
+
+        for (const technique in this.techniques)
+        {
+            if (this.techniques.hasOwnProperty(technique))
+            {
+                this.techniques[technique].GetParameterNames(out, mask);
+            }
+        }
+
+        return out;
+    }
+    /**
      * Checks if a constant is supported
      * @param {String} name
      * @returns {Boolean}

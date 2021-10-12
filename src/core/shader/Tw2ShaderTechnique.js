@@ -13,6 +13,27 @@ export class Tw2ShaderTechnique
     passes = [];
 
     /**
+     * Gets technique parameters
+     * @param {Object} [out={}]
+     * @param {Object} [mask]
+     * @return {{}}
+     */
+    GetParameterNames(out={}, mask)
+    {
+        if (mask && mask.pass)
+        {
+            return this.passes[mask.pass] ? this.passes[mask.pass].GetParameterNames(out, mask) : out;
+        }
+
+        for (let i = 0; i < this.passes.length; i++)
+        {
+            this.passes[i].GetParameterNames(out, mask);
+        }
+
+        return out;
+    }
+
+    /**
      * Checks if a technique has a constant
      * @param {String} name
      * @return {boolean}

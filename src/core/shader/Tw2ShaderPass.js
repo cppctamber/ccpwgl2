@@ -73,6 +73,46 @@ export class Tw2ShaderPass
     }
 
     /**
+     * Sets a shader state
+     * @param {Number} state
+     * @param {Number|Boolean} value
+     */
+    SetState(state, value)
+    {
+        const found = this.states.find(x => x.state === state);
+        if (found)
+        {
+            found.value = value;
+        }
+        else
+        {
+            this.states.push(Tw2ShaderState.fromJSON({ state, value }));
+            this.states.sort((a, b) => a.state - b.state);
+        }
+    }
+
+    /**
+     * Gets pass parameters
+     * @param {Object} [out={}]
+     * @param {Object} [mask]
+     * @return {{}} out
+     */
+    GetParameterNames(out={}, mask)
+    {
+        if (mask && mask.stage)
+        {
+            return this.stages[mask.stage] ? this.stages[mask.stage].GetParameterNames(out, mask) : out;
+        }
+
+        for (let i = 0; i < this.stages.length; i++)
+        {
+            this.stages[i].GetParameterNames(out);
+        }
+
+        return out;
+    }
+
+    /**
      * Checks if a constant definition exist
      * @param {String} name
      * @return {boolean}
@@ -146,7 +186,7 @@ export class Tw2ShaderPass
         {
             for (let i = 0; i < states.length; i++)
             {
-                pass.states.push(Tw2ShaderState.fromJSON(states[i], context));
+                pass.states.push(Tw2ShaderState.fromJSON(states[i]));
             }
         }
         else
@@ -158,7 +198,7 @@ export class Tw2ShaderPass
                     pass.states.push(Tw2ShaderState.fromJSON({
                         state: Number(state),
                         value: states[state]
-                    }, context));
+                    }));
                 }
             }
         }
