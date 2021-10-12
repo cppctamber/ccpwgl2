@@ -70,6 +70,18 @@ export class Tw2TextureRes extends Tw2Resource
     _useNoMipFilter = false;
 
     /**
+     * Deletes gl objects
+     */
+    DeleteGL()
+    {
+        if (this.texture)
+        {
+            device.gl.deleteTexture(this.texture);
+            this.texture = null;
+        }
+    }
+
+    /**
      * Prepares the resource
      * @param {*|Image|arrayBuffer} data
      */
@@ -77,6 +89,8 @@ export class Tw2TextureRes extends Tw2Resource
     {
         const gl = device.gl;
         const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
+
+        this.DeleteGL();
 
         switch (this._extension)
         {
@@ -427,11 +441,7 @@ export class Tw2TextureRes extends Tw2Resource
      */
     Unload(log)
     {
-        if (this.texture)
-        {
-            device.gl.deleteTexture(this.texture);
-            this.texture = null;
-        }
+        this.DeleteGL();
         this._ClearMeta();
         this.OnUnloaded(log);
         return true;
@@ -444,9 +454,10 @@ export class Tw2TextureRes extends Tw2Resource
      */
     Attach(texture, path = "")
     {
+        this.DeleteGL();
+        this._ClearMeta();
         this.path = path;
         this.texture = texture;
-        this._ClearMeta();
         this._isAttached = true;
         this.OnLoaded({ hide: true, path: "attachment" });
         this.OnPrepared({ hide: true, path: "attachment" });

@@ -86,6 +86,8 @@ export class Tw2VideoRes extends Tw2Resource
     {
         const gl = device.gl;
 
+        this.DeleteGL();
+
         switch (this._extension)
         {
             case "mp4":
@@ -188,17 +190,24 @@ export class Tw2VideoRes extends Tw2Resource
     }
 
     /**
-     * Unloads the video and texture from memory
-     * @param {*} log
+     * Deletes the gl texture
      */
-    Unload(log)
+    DeleteGL()
     {
         if (this.texture)
         {
             device.gl.deleteTexture(this.texture);
             this.texture = null;
         }
+    }
 
+    /**
+     * Unloads the video and texture from memory
+     * @param {*} log
+     */
+    Unload(log)
+    {
+        this.DeleteGL();
         this._extension = null;
         this._isPlaying = false;
         this._playable = false;
@@ -206,6 +215,21 @@ export class Tw2VideoRes extends Tw2Resource
         this.video = null;
         this.OnUnloaded(log);
         return true;
+    }
+
+    /**
+     * Attaches a texture
+     * @param {WebGLTexture} texture
+     * @param {String} [path=""]
+     */
+    Attach(texture, path = "")
+    {
+        this.DeleteGL();
+        this.path = path;
+        this.texture = texture;
+        this._isAttached = true;
+        this.OnLoaded({ hide: true, path: "attachment" });
+        this.OnPrepared({ hide: true, path: "attachment" });
     }
 
     /**
