@@ -22,10 +22,19 @@ export class Tw2ShaderPass
     states = [];
 
     /**
-     * Gets the vertex shader
+     * Gets the fragment shader
      * @return {Tw2ShaderStage}
      */
     get vertex()
+    {
+        return this.stages[0];
+    }
+
+    /**
+     * alias for vertex
+     * @return {Tw2ShaderStage}
+     */
+    get vs()
     {
         return this.stages[0];
     }
@@ -35,6 +44,15 @@ export class Tw2ShaderPass
      * @return {Tw2ShaderStage}
      */
     get fragment()
+    {
+        return this.stages[1];
+    }
+
+    /**
+     * Alias for fragment
+     * @return {Tw2ShaderStage}
+     */
+    get ps()
     {
         return this.stages[1];
     }
@@ -52,11 +70,24 @@ export class Tw2ShaderPass
             device.SetRenderState(this.states[i].state, this.states[i].value);
         }
 
-        if (stateOverride && stateOverride.length)
+        if (stateOverride)
         {
-            for (let i = 0; i < stateOverride.length; i++)
+            if (isArray(stateOverride))
             {
-                device.SetRenderState(stateOverride[i].state, stateOverride[i].value);
+                for (let i = 0; i < stateOverride.length; i++)
+                {
+                    device.SetRenderState(stateOverride[i].state, stateOverride[i].value);
+                }
+            }
+            else
+            {
+                for (const key in stateOverride)
+                {
+                    if (stateOverride.hasOwnProperty(key))
+                    {
+                        device.SetRenderState(key, stateOverride[key]);
+                    }
+                }
             }
         }
 
@@ -74,11 +105,18 @@ export class Tw2ShaderPass
 
     /**
      * Sets a shader state
-     * @param {Number} state
+     * @param {String|Number} state  - Render state enum (string allowed in-case iterating an object)
      * @param {Number|Boolean} value
      */
     SetState(state, value)
     {
+        state = Number(state);
+
+        if (!isNaN(state))
+        {
+            throw new Error("Invalid render state: " + state);
+        }
+
         const found = this.states.find(x => x.state === state);
         if (found)
         {
@@ -92,12 +130,38 @@ export class Tw2ShaderPass
     }
 
     /**
+     * Sets states from an array or object
+     * @param {Array|Object} obj
+     */
+    SetStates(obj)
+    {
+        if (!obj) return;
+
+        if (isArray(obj))
+        {
+            for (let i = 0; i < obj.length; i++)
+            {
+                this.SetState(obj[i].state, obj[i].value);
+            }
+            return;
+        }
+
+        for (const key in obj)
+        {
+            if (obj.hasOwnProperty(key))
+            {
+                this.SetState(key, obj[key]);
+            }
+        }
+    }
+
+    /**
      * Gets pass parameters
      * @param {Object} [out={}]
      * @param {Object} [mask]
      * @return {{}} out
      */
-    GetParameterNames(out={}, mask)
+    GetParameterNames(out = {}, mask)
     {
         if (mask && mask.stage)
         {
@@ -177,32 +241,13 @@ export class Tw2ShaderPass
 
         const pass = new Tw2ShaderPass();
 
-        const { vertex={}, fragment={}, states=[] } = json;
+        let vertex = json.vertex || json.vs || {},
+            fragment = json.fragment || json.ps || {},
+            states = json.stages || [];
 
         pass.stages[0] = Tw2ShaderStage.fromJSON(vertex, context, Tw2ShaderStage.Type.VERTEX);
         pass.stages[1] = Tw2ShaderStage.fromJSON(fragment, context, Tw2ShaderStage.Type.FRAGMENT);
-
-        if (isArray(states))
-        {
-            for (let i = 0; i < states.length; i++)
-            {
-                pass.states.push(Tw2ShaderState.fromJSON(states[i]));
-            }
-        }
-        else
-        {
-            for (const state in states)
-            {
-                if (states.hasOwnProperty(state))
-                {
-                    pass.states.push(Tw2ShaderState.fromJSON({
-                        state: Number(state),
-                        value: states[state]
-                    }));
-                }
-            }
-        }
-        pass.states.sort((a, b) => a.state - b.state);
+        pass.SetStates(states);
 
         return this.createPrograms(pass, context);
     }

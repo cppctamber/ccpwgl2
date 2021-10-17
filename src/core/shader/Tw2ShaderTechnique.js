@@ -96,22 +96,16 @@ export class Tw2ShaderTechnique
      */
     static fromJSON(json, context, key)
     {
-        let { name = key, passes, vertex, fragment, states } = json;
+        let { name = key, passes } = json;
 
         const technique = new Tw2ShaderTechnique();
         technique.name = name;
 
-        // Allow skipping passes array when there is only one
+        // Allow skipping passes array when there is only one pass
+        // directly only the technique object
         if (!passes)
         {
-            if (vertex || fragment || states)
-            {
-                passes = [ { vertex, fragment, states } ];
-            }
-            else
-            {
-                throw new ReferenceError(`Shader has no program: ${context.path}`);
-            }
+            passes = [ json ];
         }
 
         for (let i = 0; i < passes.length; i++)
