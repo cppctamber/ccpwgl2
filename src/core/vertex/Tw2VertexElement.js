@@ -1,4 +1,4 @@
-import { meta, isString, getKeyFromValue } from "utils";
+import { meta, isString, getKeyFromValue, isNoU } from "utils";
 import * as consts from "constant";
 
 
@@ -57,6 +57,11 @@ export class Tw2VertexElement
             item.usage = isString(usage) ? this.Type[usage.toUpperCase()] : usage;
             item.usageIndex = usageIndex;
 
+            if (isNoU(item.usage))
+            {
+                throw new Error(`Invalid vertex usage: ${usage}`);
+            }
+
             // Optional
             const { elements = null, offset = 0, location = null, customSetter = null } = values;
             item.offset = offset;
@@ -94,10 +99,13 @@ export class Tw2VertexElement
         NORMAL: 2,
         TANGENT: 3,
         BINORMAL: 4,
-        BITANGENT: 4,
         TEXCOORD: 5,
         BLENDWEIGHT: 6,
-        BLENDINDICES: 7
+        BLENDINDICES: 7,
+        // ALIASES
+        BITANGENT: 4,
+        BLENDWEIGHTS: 6,
+        BLENDINDICE: 7,
     };
 
 }
