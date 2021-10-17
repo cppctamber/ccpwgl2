@@ -238,17 +238,10 @@ export class Tw2ShaderPass
     {
         // Always false for now
         context.validShadowShader = false;
-
         const pass = new Tw2ShaderPass();
-
-        let vertex = json.vertex || json.vs || {},
-            fragment = json.fragment || json.ps || {},
-            states = json.stages || [];
-
-        pass.stages[0] = Tw2ShaderStage.fromJSON(vertex, context, Tw2ShaderStage.Type.VERTEX);
-        pass.stages[1] = Tw2ShaderStage.fromJSON(fragment, context, Tw2ShaderStage.Type.FRAGMENT);
-        pass.SetStates(states);
-
+        pass.stages[0] = Tw2ShaderStage.fromJSON(json.vertex || json.vs, context, Tw2ShaderStage.Type.VERTEX);
+        pass.stages[1] = Tw2ShaderStage.fromJSON(json.fragment || json.ps, context, Tw2ShaderStage.Type.FRAGMENT);
+        pass.SetStates(json.stages);
         return this.createPrograms(pass, context);
     }
 
