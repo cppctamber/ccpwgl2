@@ -241,7 +241,7 @@ export class Tw2ShaderPass
         const pass = new Tw2ShaderPass();
         pass.stages[0] = Tw2ShaderStage.fromJSON(json.vertex || json.vs, context, Tw2ShaderStage.Type.VERTEX);
         pass.stages[1] = Tw2ShaderStage.fromJSON(json.fragment || json.ps, context, Tw2ShaderStage.Type.FRAGMENT);
-        pass.SetStates(json.stages);
+        pass.SetStates(json.states);
         return this.createPrograms(pass, context);
     }
 
