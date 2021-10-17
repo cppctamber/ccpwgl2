@@ -112,7 +112,7 @@ export class Tw2ShaderPass
     {
         state = Number(state);
 
-        if (!isNaN(state))
+        if (isNaN(state))
         {
             throw new Error("Invalid render state: " + state);
         }
