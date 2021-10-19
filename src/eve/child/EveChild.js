@@ -34,9 +34,10 @@ export class EveChild extends meta.Model
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Tw2PerObjectData} [perObjectData]
      */
     // @meta.abstract
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, perObjectData)
     {
 
     }
@@ -70,7 +71,8 @@ export class EveChild extends meta.Model
      */
     static global = {
         mat4_0: mat4.create(),
-        vec3_0: vec3.create()
+        vec3_0: vec3.create(),
+        mat4_1: mat4.create()
     };
 
     /**

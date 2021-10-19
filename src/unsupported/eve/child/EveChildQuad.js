@@ -35,6 +35,9 @@ export class EveChildQuad extends EveChild
     @meta.vector3
     translation = vec3.create();
 
+    @meta.float32Array
+    viewRotation = null;
+
     /**
      * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array

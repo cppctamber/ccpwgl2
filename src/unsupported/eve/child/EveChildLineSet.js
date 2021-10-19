@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { EveChild } from "eve/child";
-import { vec3, vec4 } from "math";
+import { vec3, vec4, quat } from "math";
 
 
 @meta.notImplemented
@@ -34,6 +34,12 @@ export class EveChildLineSet extends EveChild
 
     @meta.float
     minScreenSize = 0;
+
+    @meta.quaternion
+    rotation = quat.create();
+
+    @meta.vector3
+    scaling  = vec3.create();
 
     @meta.float
     scrollSpeed = 1;

@@ -5,7 +5,6 @@ import { EveChild } from "./EveChild";
 
 
 @meta.type("EveChildMesh", true)
-@meta.desc("Mesh attachment to space object")
 export class EveChildMesh extends EveChild
 {
 
@@ -56,7 +55,6 @@ export class EveChildMesh extends EveChild
     @meta.boolean
     useSpaceObjectData = true;
 
-
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
@@ -78,21 +76,30 @@ export class EveChildMesh extends EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Tw2PerObjectData|} perObjectData
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, perObjectData)
     {
+
         if (this.useSRT)
         {
             quat.normalize(this.rotation, this.rotation);
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 
-        /*
-        for (let i = 0; i < this.transformModifiers.length; i++)
+        // TODO: Figure out how this should work
+        if (this.transformModifiers.length)
         {
-            this.transformModifiers.Update(dt, this.localTransform);
+            for (let i = 0; i < this.transformModifiers.length; i++)
+            {
+                if ("Modify" in this.transformModifiers[i])
+                {
+                    this.transformModifiers[i].Modify(this, perObjectData);
+                }
+            }
         }
-        */
+
+
 
         mat4.copy(this._worldTransformLast, this._worldTransform);
         mat4.multiply(this._worldTransform, parentTransform, this.localTransform);

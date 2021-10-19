@@ -124,23 +124,41 @@ export class EveChildContainer extends EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Tw2PerObjectData} perObjectData
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, perObjectData)
     {
         if (this.useSRT)
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
-
-        /*
-        for (let i = 0; i < this.transformModifiers.length; i++)
+        // TODO: Figure out how this should work
+        if (this.transformModifiers.length)
         {
-            this.transformModifiers.Update(dt, this.localTransform);
+            for (let i = 0; i < this.transformModifiers.length; i++)
+            {
+                if ("Modify" in this.transformModifiers[i])
+                {
+                    this.transformModifiers[i].Modify(this, perObjectData);
+                }
+            }
         }
-        */
 
         mat4.copy(this._worldTransformLast, this._worldTransform);
-        mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+
+        let local = this.localTransform;
+
+        // Are there still bone indexes directly on the object??
+        if (this.boneIndex >= 0)
+        {
+            const { mat4_0 } = EveChild.global;
+            const bones = perObjectData.Get("JointMat");
+            mat4.fromJointMatIndex(mat4_0, bones, this.boneIndex);
+            local = mat4.multiply(mat4_0, mat4_0, this.localTransform);
+        }
+
+        mat4.multiply(this._worldTransform, parentTransform, local);
+
 
         for (let i = 0; i < this.curveSets.length; i++)
         {
@@ -149,13 +167,13 @@ export class EveChildContainer extends EveChild
 
         for (let i = 0; i < this.objects.length; i++)
         {
-            this.objects[i].Update(dt, this._worldTransform);
+            this.objects[i].Update(dt, this._worldTransform, perObjectData);
         }
 
         /*
         for (let i = 0; i < this.lights.length; i++)
         {
-            this.lights[i].Update(dt, this._worldTransform);
+            this.lights[i].Update(dt, this._worldTransform, perObjectData);
         }
         */
     }
