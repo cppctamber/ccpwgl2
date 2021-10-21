@@ -48,16 +48,21 @@ import {
 } from "constant";
 
 
-@meta.type("Tw2TextureRes2")
+@meta.type("Tw2TextureRes")
 export class Tw2TextureRes extends Tw2Resource
 {
 
     texture = null;
 
+    /**
+     * Canvas attachment
+     * @type {null|Tw2TextureResHTMLAttachment}
+     */
+    attachment = null;
+
     _currentSampler = 0;
     _isAttached = false;
-    _extension = "";
-
+    _extension = "";    
     _width = 0;
     _height = 0;
     _type = null;
@@ -68,6 +73,7 @@ export class Tw2TextureRes extends Tw2Resource
     _isCube = false;
     _isPowerOfTwo = false;
     _useNoMipFilter = false;
+
 
     /**
      * Deletes gl objects
@@ -313,6 +319,11 @@ export class Tw2TextureRes extends Tw2Resource
             { gl } = device;
 
         this.KeepAlive();
+        
+        if (this.attachment)
+        {
+            this.attachment.UpdateTextureRes(this);
+        }
 
         // Try to guess
         if (this._target === null)
