@@ -552,8 +552,9 @@ pln.normalize = function(out, a)
     return out;
 };
 
+
 /**
- * Sets a sphere from values
+ * Sets a plane from values
  *
  * @param {pln} out
  * @param {number} nX
@@ -563,6 +564,26 @@ pln.normalize = function(out, a)
  * @returns {pln} out
  */
 pln.set = vec4.set;
+
+
+/**
+ * Sets a plane from values and then normalizes the results
+ * @param {pln} out
+ * @param {Number} nx
+ * @param {Number} ny
+ * @param {Number} nz
+ * @param {Number} c
+ * @returns {pln} out
+ */
+pln.setAndNormalize = function(out, nx, ny, nz, c)
+{
+    out[0] = nx;
+    out[1] = ny;
+    out[2] = nz;
+    out[3] = c;
+    return pln.normalize(out, out);
+};
+
 
 /**
  * Sets a pln from an array at an optional offset

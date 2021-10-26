@@ -3,6 +3,42 @@ import { mat4, vec3 } from "gl-matrix";
 export { mat4 };
 
 /**
+ * Sets a mat4 from a bone joint mat
+ * @param {mat4} out
+ * @param {Float32Array} jointMat
+ * @param {Number} index
+ * @return {mat4}
+ */
+mat4.fromJointMatIndex = function(out, jointMat, index)
+{
+    if (index >= 0)
+    {
+        const offset = index * 12;
+        out[0] = jointMat[offset];
+        out[1] = jointMat[offset + 4];
+        out[2] = jointMat[offset + 8];
+        out[3] = 0;
+        out[4] = jointMat[offset + 1];
+        out[5] = jointMat[offset + 5];
+        out[6] = jointMat[offset + 9];
+        out[7] = 0;
+        out[8] = jointMat[offset + 2];
+        out[9] = jointMat[offset + 6];
+        out[10] = jointMat[offset + 10];
+        out[11] = 0;
+        out[12] = jointMat[offset + 3];
+        out[13] = jointMat[offset + 7];
+        out[14] = jointMat[offset + 11];
+        out[15] = 1;
+    }
+    else
+    {
+        mat4.identity(out, out);
+    }
+    return out;
+};
+
+/**
  * arcFromForward
  * @param {mat4} out
  * @param {vec3} v
