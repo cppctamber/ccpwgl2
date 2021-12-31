@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3 } from "math";
+import { vec3, quat } from "math";
 
 
 @meta.type("EveSOFDataHullSoundEmitter")
@@ -14,5 +14,8 @@ export class EveSOFDataHullSoundEmitter extends meta.Model
 
     @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
+    rotation = quat.create();
 
 }
