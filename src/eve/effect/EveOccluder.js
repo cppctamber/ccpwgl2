@@ -125,7 +125,7 @@ export class EveOccluder extends meta.Model
 
         g.effect = Tw2Effect.from({
             name: "Occluder sampler",
-            effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
+            effectFilePath: "cdn:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
             parameters: {
                 "OccluderPosition": [ 1, 1, 1, 1 ],
                 "OccluderIndex": [ 1, 1, 1 ],
