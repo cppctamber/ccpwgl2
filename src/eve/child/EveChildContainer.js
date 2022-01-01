@@ -76,7 +76,7 @@ export class EveChildContainer extends EveChild
 
 
     _worldTransform = mat4.create();
-    _worldTransformLast = mat4.create();
+    //_worldTransformLast = mat4.create();
 
     /**
      * Resets lod
@@ -144,20 +144,22 @@ export class EveChildContainer extends EveChild
             }
         }
 
-        mat4.copy(this._worldTransformLast, this._worldTransform);
+        // Note used
+        //mat4.copy(this._worldTransformLast, this._worldTransform);
 
-        let local = this.localTransform;
-
-        // Are there still bone indexes directly on the object??
+        // Are there still bone indexes directly on the container??
         if (this.boneIndex >= 0)
         {
             const { mat4_0 } = EveChild.global;
             const bones = perObjectData.Get("JointMat");
             mat4.fromJointMatIndex(mat4_0, bones, this.boneIndex);
-            local = mat4.multiply(mat4_0, mat4_0, this.localTransform);
+            mat4.multiply(mat4_0, mat4_0, this.localTransform);
+            mat4.multiply(this._worldTransform, parentTransform, mat4_0);
         }
-
-        mat4.multiply(this._worldTransform, parentTransform, local);
+        else
+        {
+            mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+        }
 
 
         for (let i = 0; i < this.curveSets.length; i++)
