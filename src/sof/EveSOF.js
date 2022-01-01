@@ -425,7 +425,7 @@ export function EveSOF()
                 display = !!layers[i].textureName,
                 materialSource = 0,
                 textureName = `PatternMask${i + 1}Map`,
-                textureResFilePath = "res:/texture/global/black.dds.0.png",
+                textureResFilePath = "cdn:/texture/global/black.png",
                 projectionTypeU = 0,
                 projectionTypeV = 0,
                 isTargetMtl1 = true,
@@ -607,10 +607,10 @@ export function EveSOF()
         }
     }
 
-    const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-    const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-    const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
-    const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
+    const EFF_SPOTLIGHT_CONE = "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
+    const EFF_SPOTLIGHT_CONE_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
+    const EFF_SPOTLIGHT_GLOW = "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
+    const EFF_SPOTLIGHT_GLOW_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
 
     /**
      * Sets up spotlight sets
@@ -688,8 +688,8 @@ export function EveSOF()
         }
     }
 
-    const EFF_PLANE = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
-    const EFF_PLANE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
+    const EFF_PLANE = "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
+    const EFF_PLANE_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
 
     /**
      * Sets up booster sets
@@ -762,11 +762,11 @@ export function EveSOF()
         }
     }
 
-    const EFF_BOOSTER_VOLUMETRIC = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
-    const EFF_BOOSTER_GLOW_SKINNED = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
-    const TEX_NOISE = "res:/Texture/global/noise.dds.0.png";
-    const TEX_NOISE_32_CUBE = "res:/Texture/Global/noise32cube_volume.dds.0.png";
-    const TEX_WHITE_SHARP = "res:/Texture/Particle/whitesharp.dds.0.png";
+    const EFF_BOOSTER_VOLUMETRIC = "cdn:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
+    const EFF_BOOSTER_GLOW_SKINNED = "cdn:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
+    const TEX_NOISE = "cdn:/Texture/global/noise.dds.0.png";
+    const TEX_NOISE_32_CUBE = "cdn:/Texture/Global/noise32cube_volume.dds.0.png";
+    const TEX_WHITE_SHARP = "cdn:/Texture/Particle/whitesharp.dds.0.png";
 
     /**
      * Sets up boosters
@@ -1104,14 +1104,14 @@ export function EveSOF()
             if (!sofPromise)
             {
                 spriteEffect = Tw2Effect.from({
-                    effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+                    effectFilePath: "cdn:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
                     parameters: {
                         MainIntensity: 1,
-                        GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
+                        GradientMap: "cdn:/texture/particle/whitesharp_gradient.dds.0.png"
                     }
                 });
 
-                sofPromise = tw2.Fetch("res:/dx9/model/spaceobjectfactory/data.red")
+                sofPromise = tw2.Fetch("cdn:/dx9/model/spaceobjectfactory/data.red")
                     .then(sof => data = sof)
                     .catch(err =>
                     {
