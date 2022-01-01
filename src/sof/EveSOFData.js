@@ -45,7 +45,7 @@ import {
     EveSpriteSet,
     EveSpriteSetItem,
     EveShip2,
-    EveChildMesh
+    EveChildMesh, EveChildContainer
 } from "eve";
 
 import { EveStation2 } from "../unsupported/eve/object";
@@ -84,8 +84,7 @@ export class EveSOFData extends meta.Model
     _options = {
 
         // Allow reverting to old spotlight sets
-        // new ones have weird artifacts with standard textures
-        useSpotlightPool: false,
+        useSpotlightPool: true,
 
         devColor: [ 0, 0, 0, 0 ],
 
@@ -148,6 +147,7 @@ export class EveSOFData extends meta.Model
             plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
             spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
+
             // TODO: Fix weird artifacts
             spotlightConePool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
             spotlightGlowPool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
@@ -641,6 +641,17 @@ export class EveSOFData extends meta.Model
 
         if (resPathInsert) str += ":respathinsert?resPathInsert";
 
+        if (!area)
+        {
+            area = {};
+            area.material1 = options.material1;
+            area.material2 = options.material2;
+            area.material3 = options.material3;
+            area.material4 = options.material4;
+            area.patternMaterial1 = options.material5;
+            area.patternMaterial2 = options.material6;
+        }
+
         if (area)
         {
             const materialString = `${area.material1 || "none"};${area.material2 || "none"};${area.material3 || "none"};${area.material4 || "none"}`.toLowerCase();
@@ -891,7 +902,7 @@ export class EveSOFData extends meta.Model
         {
             mask.display = false;
             mask.materialIndex = 0;
-            mask.parameters.PatternMaskMap.SetValue("res:/texture/global/black.dds.0.png");
+            mask.parameters.PatternMaskMap.SetValue("cdn:/texture/global/black.png");
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
 
@@ -1249,16 +1260,18 @@ export class EveSOFData extends meta.Model
             let coneShader,
                 glowShader;
 
+            set.skinned = isSkinned && srcSet.skinned;
+
             if (options.useSpotlightPool)
             {
+                set.useQuads = true;
                 coneShader = options.effectPath.spotlightConePool;
                 glowShader = options.effectPath.spotlightGlowPool;
             }
             else
             {
-                const animated = isSkinned && srcSet.skinned;
-                coneShader = data.GetShaderPath(options.effectPath.spotlightCone, animated);
-                glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, animated);
+                coneShader = data.GetShaderPath(options.effectPath.spotlightCone, set.skinned);
+                glowShader = data.GetShaderPath(options.effectPath.spotlightGlow, set.skinned);
             }
 
             set.SetValues({
@@ -1791,6 +1804,11 @@ export class EveSOFData extends meta.Model
             return;
         }
 
+        if (!sof.hull.instancedMeshes || !sof.hull.instancedMeshes.length)
+        {
+            return;
+        }
+
         const
             { gl } = tw2,
             { hull } = sof,
@@ -1802,6 +1820,10 @@ export class EveSOFData extends meta.Model
             p = vec3.create(),
             s = vec3.create(),
             v = vec3.create();
+
+        const container = new EveChildContainer();
+        container.name = "Instanced meshes";
+        obj.effectChildren.push(container);
 
         for (let h = 0; h < instancedMeshes.length; h++)
         {
@@ -1872,10 +1894,8 @@ export class EveSOFData extends meta.Model
             // Setup child
             const child = new EveChildMesh();
             child.useSpaceObjectData = true;
-            child.useSRT = false;
+            child.useSRT = true;
             child.mesh = mesh;
-            obj.effectChildren.push(child);
-
 
             // Setup mesh area
             const area = new Tw2MeshArea();
@@ -1917,6 +1937,9 @@ export class EveSOFData extends meta.Model
             effect.SetTextures(config.textures);
             effect.SetOverrides(config.overrides);
             effect.Initialize();
+
+            // Add to container
+            container.objects.push(child);
         }
     }
 
