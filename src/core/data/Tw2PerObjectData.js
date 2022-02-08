@@ -3,9 +3,9 @@ import { Tw2RawData } from "./Tw2RawData";
 /**
  * Tw2PerObjectData
  *
- * @property {?Tw2RawData} vs - Per object vertex shader data
- * @property {?Tw2RawData} ps - Per object pixel shader data
- * @class
+ * @property {Tw2RawData|null} vs - Per object vertex shader data
+ * @property {Tw2RawData|null} ps - Per object pixel shader data
+ * @property {Tw2RawData|null} ffe - Per object fixed function emulation
  */
 export class Tw2PerObjectData
 {
@@ -13,7 +13,6 @@ export class Tw2PerObjectData
     vs = null;
     ps = null;
     ffe = null;
-
 
     /**
      * Creates per object data from values
