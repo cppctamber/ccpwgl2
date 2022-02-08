@@ -4,6 +4,9 @@
   "description": "CCPWGL2",
   "author": "",
   "license": "MIT",
+  "scripts": {
+    "build" : "SET NODE_OPTIONS=--openssl-legacy-provider && webpack"
+  },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
     "type": "git",
@@ -28,8 +31,9 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.13.7",
     "terser-webpack-plugin": "^1.4.2",
+    "webgl-obj-loader": "^2.0.8",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
-    "webgl-obj-loader": "^2.0.8"
+    "quickhull3d": "^2.0.4"
   }
 }
