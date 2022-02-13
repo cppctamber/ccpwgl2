@@ -70,12 +70,13 @@ export class Tw2VariableStore extends Tw2GenericStore
     /**
      * Gets a variable's value
      * @param {String} name
+     * @param {*} [out]
      * @returns {Number|?String|Array|Float32Array}
      */
-    GetValue(name)
+    GetValue(name, out)
     {
         const variable = this.Get(name);
-        return variable.GetValue(name);
+        return variable.GetValue(out);
     }
 
     /**
