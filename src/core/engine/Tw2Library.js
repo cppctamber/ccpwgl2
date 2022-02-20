@@ -8,7 +8,7 @@ import * as consts from "constant";
 import * as math from "math";
 import * as util from "utils";
 import * as stores from "core/store";
-import { isFunction } from "utils";
+import { isFunction, isString } from "utils";
 import { isArray } from "utils";
 
 
@@ -18,7 +18,9 @@ export class Tw2Library extends Tw2EventEmitter
 {
 
     math = math;
+
     util = util;
+
     const = consts;
 
     /**
@@ -64,6 +66,12 @@ export class Tw2Library extends Tw2EventEmitter
     logger = new Tw2Logger();
 
     /**
+     * Audio context
+     * @type {null|Tw2AudMan}
+     */
+    audMan = null; //new Tw2AudMan();
+
+    /**
      * Resource manager
      * @type {Tw2ResMan}
      */
@@ -89,7 +97,6 @@ export class Tw2Library extends Tw2EventEmitter
      */
     _customResourceHandler = null;
 
-
     /**
      * Alias for device.dt
      * @returns {number}
@@ -98,7 +105,6 @@ export class Tw2Library extends Tw2EventEmitter
     {
         return this.device.dt;
     }
-
 
     /**
      * Alias for device.fps
@@ -259,12 +265,12 @@ export class Tw2Library extends Tw2EventEmitter
 
             const tick = () =>
             {
-                this.RequestAnimationFrame(tick);
+                this.device.RequestAnimationFrame(tick);
                 this.StartFrame();
                 this.EndFrame();
             };
 
-            this.RequestAnimationFrame(tick);
+            this.device.RequestAnimationFrame(tick);
         }
     }
 
@@ -275,6 +281,9 @@ export class Tw2Library extends Tw2EventEmitter
     {
         this.device.Tick();
         this.resMan.Tick();
+        if (this.audMan) this.audMan.Tick();
+        this.EmitEvent("start_frame", this.device.dt);
+        this.EmitEvent("tick", this.device.dt);
     }
 
     /**
@@ -282,7 +291,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     EndFrame()
     {
-        this.EmitEvent("tick", this.device.dt);
+        this.EmitEvent("end_frame", this.device.dt);
     }
 
     /**
@@ -390,7 +399,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.resMan) this.resMan.Register(opt.resMan);
         if (opt.device) this.device.Register(opt.device);
 
-        // Short cut to device.glParams
+        // Shortcut to device.glParams
         if (opt.glParams) this.device.Register({ glParams: opt.glParams });
     }
 
@@ -477,19 +486,98 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Sets the gl color mask
-     * @param colorMask
+     * Sets opaque render states
+     * @returns {Tw2Library}
+     * @constructor
+     */
+    SetOpaqueRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_OPAQUE);
+    }
+
+    /**
+     * Sets transparent render states
+     * @returns {Tw2Library}
+     */
+    SetTransparentRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_OPAQUE);
+    }
+
+    /**
+     * Sets additive render states
+     * @returns {Tw2Library}
+     */
+    SetAdditiveRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_ADDITIVE);
+    }
+
+    /**
+     * Sets decal render states
+     * @returns {Tw2Library}
+     */
+    SetDecalRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_DECAL);
+    }
+
+    /**
+     * Sets distortion render states
+     * @returns {Tw2Library}
+     */
+    SetDistortionRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_DISTORTION);
+    }
+
+    /**
+     * Sets pickable render states
+     * @returns {Tw2Library}
+     */
+    SetPickableRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_PICKABLE);
+    }
+
+    /**
+     * Sets fullscreen render states
+     * @returns {Tw2Library}
+     */
+    SetFullscreenRenderStates()
+    {
+        return this.SetStandardStates(consts.RM_FULLSCREEN);
+    }
+
+    /**
+     * Sets the gl color mask using an array or vector4
+     * @param {vec4|Array} colorMask
      * @returns {Tw2Library}
      */
     SetColorMask(colorMask)
     {
-        this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+        this.device.gl.colorMask(!!colorMask[0], !!colorMask[1], !!colorMask[2], !!colorMask[3]);
         return this;
     }
 
     /**
-     * Sets the gl clear color
-     * @param clearColor
+     * Gets the gl color mask
+     * @param {vec4|Array} [out=[]]
+     * @returns {vec4|Array} out
+     */
+    GetColorMask(out=[])
+    {
+        const colorMask = this.device.gl.getParameter(this.device.gl.COLOR_WRITEMASK);
+        for (let i = 0; i < colorMask.length; i++)
+        {
+            out[i] = colorMask[i] ? 1 : 0;
+        }
+        return colorMask;
+    }
+
+    /**
+     * Sets the gl clear color using an array or vector4
+     * @param {vec4|Array} clearColor
      * @returns {Tw2Library}
      */
     SetClearColor(clearColor)
@@ -499,19 +587,19 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Sets gl clear depth
-     * @param value
-     * @returns {Tw2Library}
+     * Gets the gl clear color
+     * @param {vec4|Array} [out=[]]
+     * @returns {vec4|Array} out
      */
-    SetClearDepth(value)
+    GetClearColor(out=[])
     {
-        this.device.gl.clearDepth(value);
-        return this;
+        const clearColor = this.device.gl.getParameter(this.device.gl.COLOR_CLEAR_VALUE);
+        return math.vec4.copy(out, clearColor);
     }
 
     /**
-     * Sets the gl viewport
-     * @param viewport
+     * Sets the gl viewport using an array or vector4
+     * @param {vec4|Array} viewport
      * @returns {Tw2Library}
      */
     SetViewport(viewport)
@@ -521,16 +609,112 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Clears gl
-     * @param value
-     * @returns {Tw2Library}
+     * Gets the gl viewport
+     * @param {Array|vec4} [out=[]]
+     * @returns {Array|vec4}
      */
-    SetClear(value)
+    GetViewport(out=[])
     {
-        this.device.gl.clear(value);
+        const viewport = this.device.gl.getParameter(this.device.gl.VIEWPORT);
+        return math.vec4.copy(out, viewport);
+    }
+
+    /**
+     * Sets GL Depth parameters
+     * @param {Boolean} [enabled]
+     * @param {String|Number} [depthFunc]
+     * @param {Number} [clearDepth]
+     * @constructor
+     */
+    SetDepth(enabled, depthFunc, clearDepth)
+    {
+        if (!enabled)
+        {
+            this.device.gl.disable(this.device.gl.DEPTH_TEST);
+        }
+        else
+        {
+            this.device.gl.enable(this.device.gl.DEPTH_TEST);
+        }
+
+        if (depthFunc !== undefined)
+        {
+            this.device.gl.depthFunc(isString(depthFunc) ? this.gl[depthFunc] : depthFunc);
+        }
+
+        if (clearDepth !== undefined)
+        {
+            this.device.gl.clearDepth(clearDepth);
+        }
+
         return this;
     }
 
+    /**
+     * Sets gl clear depth
+     * @param {Number} value
+     * @returns {Tw2Library}
+     */
+    SetClearDepth(value)
+    {
+        this.device.gl.clearDepth(value);
+        return this;
+    }
+
+    /**
+     * Gets the current gl clear depth
+     * @returns {Number}
+     */
+    GetClearDepth()
+    {
+        return this.device.gl.getParameter(this.device.gl.DEPTH_CLEAR_VALUE);
+    }
+
+
+    /**
+     * Clears buffer bits
+     * @param {Boolean} color
+     * @param {Boolean} depth
+     * @param {Boolean} stencil
+     * @returns {Tw2Library}
+     */
+    ClearBufferBits(color=true, depth=true, stencil=true)
+    {
+        let bits = 0;
+        if (color) bits |= this.device.gl.COLOR_BUFFER_BIT;
+        if (depth) bits |= this.device.gl.DEPTH_BUFFER_BIT;
+        if (stencil) bits |= this.device.gl.STENCIL_BUFFER_BIT;
+        this.device.gl.clear(bits);
+        return this;
+    }
+
+    /**
+     * Clears GL Depth
+     * @returns {Tw2Library}
+     */
+    ClearDepth()
+    {
+        return this.ClearBufferBits(false, true, false);
+    }
+
+    /**
+     * Clears GL Stencil
+     * @returns {Tw2Library}
+     */
+    ClearStencil()
+    {
+        return this.ClearBufferBits(false, false, true);
+    }
+
+    /**
+     * Clears GL Color
+     * @returns {Tw2Library}
+     */
+    ClearColor()
+    {
+        return this.ClearBufferBits(true, false, false);
+    }
+    
     /**
      * Sets the device projection matrix
      * @param {mat4} m
@@ -612,7 +796,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     Unwatch(obj)
     {
-        return  this.resMan.UnWatch(obj);
+        return this.resMan.UnWatch(obj);
     }
 
     /**
@@ -690,11 +874,11 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async FetchPlain(obj, awaitResources)
     {
-        const innerProgress = createInnerProgress(awaitResources, Object.keys(obj).length);
+        const outerProgress = createOuterProgress(awaitResources, Object.keys(obj).length);
 
         return Promise.all(Object
             .keys(obj)
-            .map(key => this.Fetch(obj[key], innerProgress).then(val => ({ key, val })))
+            .map(key => this.Fetch(obj[key], outerProgress).then(val => ({ key, val })))
         ).then(items =>
         {
             let result = {};
@@ -711,7 +895,9 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async FetchAll(arr, awaitResources)
     {
-        return Promise.all(arr.map(x => this.Fetch(x, createInnerProgress(awaitResources, arr.length))));
+        const outerProgress = createOuterProgress(awaitResources, arr.length);
+
+        return Promise.all(arr.map(x => this.Fetch(x, outerProgress)));
     }
 
     /**
@@ -748,12 +934,13 @@ export class Tw2Library extends Tw2EventEmitter
 
     /**
      * Gets a store variable's value
-     * @param name
+     * @param {String} name
+     * @param {*} [out]
      * @returns {*}
      */
-    GetVariableValue(name)
+    GetVariableValue(name, out)
     {
-        return this.variables.GetValue(name);
+        return this.variables.GetValue(name, out);
     }
 
     /**
@@ -956,12 +1143,12 @@ export class Tw2Library extends Tw2EventEmitter
 }
 
 /**
- * Creates an inner progress handler
+ * Creates outer progress handler
  * @param {undefined|Function}  awaitProgress
  * @param {Number} [total=0]
  * @returns {Boolean|Function}
  */
-function createInnerProgress(awaitProgress, total = 0)
+function createOuterProgress(awaitProgress, total = 0)
 {
 
     if (!isFunction(awaitProgress))
@@ -970,9 +1157,7 @@ function createInnerProgress(awaitProgress, total = 0)
     }
 
     let map = new Map();
-
-    let lastPercent = 0;
-
+    
     return function(result, object)
     {
         map.set(object, result);
@@ -992,7 +1177,7 @@ function createInnerProgress(awaitProgress, total = 0)
         });
 
         all.percent = parseFloat(((all.total - all.pending) / all.total * 100).toFixed(2));
-        awaitProgress(result, object, all);
+        awaitProgress(result, object, all, map);
     };
 
 }
