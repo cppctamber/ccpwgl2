@@ -163,6 +163,7 @@ export function object(reader, id)
 
         try
         {
+
             if (reader.custom)
             {
                 reader(objectReader, result, propertyName);
@@ -175,13 +176,15 @@ export function object(reader, id)
                     console.log(`'${type}' missing property: '${propertyName}'`);
                 }
 
-                result[propertyName] = reader(objectReader);
+                const item = reader(objectReader);
+                result[propertyName] = item;
+
+                if (result.constructor.onAfterBlackPropertyReader)
+                {
+                    result.constructor.onAfterBlackPropertyReader(propertyName, item, result);
+                }
             }
 
-            if (result.constructor.onAfterBlackPropertyReader)
-            {
-                result.constructor.onAfterBlackPropertyReader(propertyName, result);
-            }
         }
         catch (err)
         {
@@ -360,6 +363,7 @@ export function ushort(reader)
 
 /**
  * Reads a uint
+ * TODO: What to do with the maximum number "4294967295" ??
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Number}
  */

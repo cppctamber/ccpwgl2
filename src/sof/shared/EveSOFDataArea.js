@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { Tw2Error } from "core";
-
+import { EveSOFDataAreaMaterial } from "../shared/EveSOFDataAreaMaterial";
 
 @meta.type("EveSOFDataArea")
 export class EveSOFDataArea extends meta.Model
@@ -75,6 +75,7 @@ export class EveSOFDataArea extends meta.Model
     @meta.struct("EveSOFDataAreaMaterial")
     Yellow = null;
 
+    @meta.isPrivate
     _typesByIndex = [];
 
     /**
@@ -116,34 +117,18 @@ export class EveSOFDataArea extends meta.Model
     }
 
     /**
-     * Usage index
-     * TODO: Figure out how to automate the creation of this list
-     * @type {string[]}
+     * Optional method which receives the property and value written to the parent object
+     * @param {String} property
+     * @param {Object} value
+     * @param {Object} parent
      */
-    /*
-    static Type = [
-        "Primary",
-        "Glass",
-        "Sails",
-        "Reactor",
-        "Darkhull",
-        "Wreck",
-        "Rock",
-        "Monument",
-        // Below are incorrect, figure out what they are
-        "Primary",
-        "Primary"
-    ];
-    */
-
-    /**
-     * 
-     * @param propertyName
-     * @param object
-     */
-    static onAfterBlackPropertyReader(propertyName, object)
+    static onAfterBlackPropertyReader(property, value, parent)
     {
-        object._typesByIndex.push(propertyName);
+        if (value instanceof EveSOFDataAreaMaterial)
+        {
+            value.name = property;
+            parent._typesByIndex.push(property);
+        }
     }
 }
 
