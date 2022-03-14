@@ -5,7 +5,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "build" : "SET NODE_OPTIONS=--openssl-legacy-provider && webpack"
+    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
@@ -33,7 +33,6 @@
     "terser-webpack-plugin": "^1.4.2",
     "webgl-obj-loader": "^2.0.8",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
-    "quickhull3d": "^2.0.4"
+    "webpack-cli": "^3.3.12"
   }
 }

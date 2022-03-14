@@ -20,9 +20,6 @@ node_modules/
 # dotenv environment variables file
 .env
 
-#developement
-.dev/
-
-#cdn proxy resource folder
-cdn/cache
-/_dev/
+# developement
+_dev/
+_res/
