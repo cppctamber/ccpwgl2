@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec4, quat } from "math";
+import { vec4 } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
@@ -34,7 +34,7 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
      */
     GetRGBA(out=[])
     {
-        return vec4.toRGBA(out, this.SetValue(out));
+        return vec4.toRGBA(out, this.GetValue(out));
     }
 
     /**
