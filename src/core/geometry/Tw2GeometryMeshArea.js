@@ -27,31 +27,24 @@ export class Tw2GeometryMeshArea
     @meta.float
     boundsSphereRadius = 0;
 
-
     /**
-     * Gets the object's bounding box
+     * Gets the mesh area's bounding box
      * @param {box3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
+     * @return {box3} out
      */
-    GetBoundingBox(out, parentTransform)
+    GetBoundingBox(out)
     {
-        box3.fromBounds(out, this.minBounds, this.maxBounds);
-        if (parentTransform) box3.transformMat4(out, out, parentTransform);
-        return true;
+        return box3.fromBounds(out, this.minBounds, this.maxBounds);
     }
 
     /**
-     * Gets the object's bounding sphere
+     * gets the mesh area's bounding Sphere
      * @param {sph3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
+     * @return {sph3} out
      */
-    GetBoundingSphere(out, parentTransform)
+    GetBoundingSphere(out)
     {
-        sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-        if (parentTransform) sph3.transformMat4(out, out, parentTransform);
-        return true;
+        return sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
     }
 
 }
