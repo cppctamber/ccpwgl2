@@ -18,6 +18,7 @@ export const SceneLodSettings = {
 };
 
 export const LodLevelPixels = {
+    ZERO: 20,
     ONE: 100,
     TWO: 250
 };

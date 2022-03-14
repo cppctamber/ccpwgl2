@@ -1,18 +1,23 @@
 export const PT_UNKNOWN = 0;
 export const PT_BOOLEAN = 1;
+export const PT_ENUM = 2;
+
 export const PT_STRING = 10;
 export const PT_PATH = 11;
 export const PT_EXPRESSION = 12;
+
 export const PT_BYTE = 20;
 export const PT_UINT = 21;
 export const PT_USHORT = 22;
 export const PT_FLOAT = 23;
+
 export const PT_STRUCT = 30;
 export const PT_STRUCT_RAW = 31;
-//export const PT_STRUCT_PLAIN = 32;
 export const PT_STRUCT_LIST = 32;
+
 export const PT_PLAIN = 33;
 export const PT_ARRAY = 34;
+
 export const PT_VECTOR = 50;
 export const PT_VECTOR2 = 51;
 export const PT_VECTOR3 = 52;
@@ -21,8 +26,6 @@ export const PT_COLOR = 60;
 export const PT_QUATERNION = 61;
 export const PT_MATRIX3 = 70;
 export const PT_MATRIX4 = 71;
-
-export const PT_ENUM = 80;
 
 export const PT_UINT8_ARRAY = 81;
 export const PT_UINT8_CLAMPED_ARRAY = 82;
@@ -34,8 +37,24 @@ export const PT_INT32_ARRAY = 87;
 export const PT_FLOAT32_ARRAY = 88;
 export const PT_FLOAT64_ARRAY = 89;
 
-
-
+export const VectorConstructors = {
+    [PT_VECTOR2]: Float32Array,
+    [PT_VECTOR3]: Float32Array,
+    [PT_VECTOR4]: Float32Array,
+    [PT_QUATERNION]: Float32Array,
+    [PT_COLOR]: Float32Array,
+    [PT_MATRIX3]: Float32Array,
+    [PT_MATRIX4]: Float32Array,
+    [PT_FLOAT32_ARRAY] : Float32Array,
+    [PT_FLOAT64_ARRAY] : Float64Array,
+    [PT_UINT8_ARRAY] : Uint8Array,
+    [PT_UINT8_CLAMPED_ARRAY] : Uint8ClampedArray,
+    [PT_UINT16_ARRAY] : Uint16Array,
+    [PT_UINT32_ARRAY] : Uint32Array,
+    [PT_INT8_ARRAY] : Int8Array,
+    [PT_INT16_ARRAY] : Int16Array,
+    [PT_INT32_ARRAY] : Int32Array
+};
 
 
 export const VectorLengths = {
