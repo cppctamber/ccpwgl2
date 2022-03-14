@@ -152,7 +152,7 @@ export class Tw2ShaderStage
         const stage = new Tw2ShaderStage();
         stage.type = type;
 
-        const {
+        let {
             constants = [],
             textures = [],
             //samplers = [],
@@ -167,30 +167,6 @@ export class Tw2ShaderStage
             stage.inputDefinition.elements.push(Tw2VertexElement.from(inputDefinitions[i]));
         }
         stage.inputDefinition.RebuildHash();
-
-        // Debugging
-        if (Tw2Shader.DEBUG_ENABLED)
-        {
-            console.group(context.path);
-            console.dir({
-                path: context.path,
-                shader,
-                shadowShader,
-                type: stage.type === 0 ? "vertex" : "fragment"
-            });
-            console.groupEnd();
-            stage.shaderCode = shader;
-            stage.shadowShaderCode = shadowShader;
-        }
-
-        // Compile normal shader
-        stage.shader = this.compileShader(stage.type, "", shader, context.path);
-
-        // Compile shadow shader
-        if (context.validShadowShader && shadowShader)
-        {
-            stage.shadowShader = this.compileShader(stage.type, "", shadowShader, context.path, true);
-        }
 
 
         let manuallyDefinedConstantOffset = false;
@@ -337,7 +313,96 @@ export class Tw2ShaderStage
         stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
         stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
 
+
+        // Debugging
+        if (Tw2Shader.DEBUG_ENABLED)
+        {
+            if (shader) shader = this.MakeShaderCodeReadable(shader, stage.constants, stage.samplers, type);
+            if (shadowShader) shadowShader = this.MakeShaderCodeReadable(shadowShader, stage.constants, stage.samplers, type);
+
+            console.group(context.path);
+            console.dir({
+                path: context.path,
+                shader,
+                shadowShader,
+                type: stage.type === 0 ? "vertex" : "fragment"
+            });
+            console.groupEnd();
+            stage.shaderCode = shader;
+            stage.shadowShaderCode = shadowShader;
+        }
+
+        // Compile normal shader
+        stage.shader = this.compileShader(stage.type, "", shader, context.path);
+
+        // Compile shadow shader
+        if (context.validShadowShader && shadowShader)
+        {
+            stage.shadowShader = this.compileShader(stage.type, "", shadowShader, context.path, true);
+        }
+
         return stage;
+    }
+
+    static MakeShaderCodeReadable(shaderCode, constants, samplers, stageType)
+    {
+        let mainIndex = shaderCode.indexOf("main()");
+        if (mainIndex === -1) return shaderCode;
+
+
+        function escapeRegExp(string)
+        {
+            return string.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function replaceAll(str, find, replace)
+        {
+            return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
+        }
+
+        // Annotate samplers
+        if (stageType === 1)
+        {
+
+            // Add sampler name at the end of each uniform to make it easier to debug
+            for (let i = 0; i < samplers.length; i++)
+            {
+                // TODO: Replace this with regex
+                let { name, registerIndex } = samplers[i];
+                const
+                    samplerCube = `samplerCube s${registerIndex};`,
+                    sampler2D = `sampler2D s${registerIndex};`,
+                    sampler3D = `sampler3D s${registerIndex};`;
+
+                shaderCode = replaceAll(shaderCode, samplerCube, `${samplerCube} // ${name}`);
+                shaderCode = replaceAll(shaderCode, sampler2D, `${sampler2D} // ${name}`);
+                shaderCode = replaceAll(shaderCode, sampler3D, `${sampler3D} // ${name}`);
+            }
+        }
+
+        const insertIndex = shaderCode
+            .substr(mainIndex, mainIndex + 10)
+            .indexOf("{")
+            + mainIndex + 1;
+
+        let insertString = "\n";
+
+        // Make temporary vec4s to make it easier to read what the uniforms are
+        const prefix = stageType === 0 ? "cb0" : "cb7";
+        for (let i = 0; i < constants.length; i++)
+        {
+            let { dimension, offset, name } = constants[i];
+            if (dimension === 4)
+            {
+                name = "u" + name;
+                const short = `${prefix}[${offset/4}]`;
+                shaderCode = replaceAll(shaderCode, short, name);
+                insertString += `vec4 ${name}=${short};\n`;
+            }
+        }
+
+
+        return shaderCode.slice(0, insertIndex) + insertString + shaderCode.slice(insertIndex);
     }
 
     /**
@@ -400,41 +465,6 @@ export class Tw2ShaderStage
             so = reader.ReadUInt32();
             // Handle bad conversions from HLSL
             shadowShaderCode = this.inspectShaderCode(context.stringTable.substr(so, shadowShaderSize), context.path, stage.type);
-        }
-
-        if (Tw2Shader.DEBUG_ENABLED)
-        {
-            console.group(context.path);
-            console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
-            console.groupEnd();
-
-            stage.shaderCode = shaderCode;
-            stage.shadowShaderCode = shadowShaderCode;
-        }
-
-        //  Compile normal shader
-        stage.shader = this.compileShader(stage.type, "", shaderCode, context.path);
-
-        // Compile shadow shader
-        if (context.validShadowShader)
-        {
-            if (shadowShaderSize === 0)
-            {
-                stage.shadowShader = this.compileShader(stage.type, "//shadow\n#define PS\n", shaderCode, context.path, true);
-            }
-            else
-            {
-                stage.shadowShader = this.compileShader(stage.type, "//shadow\n", shadowShaderCode, context.path, true);
-            }
-
-            if (stage.shadowShader === null)
-            {
-                context.validShadowShader = false;
-            }
-        }
-        else
-        {
-            stage.shadowShader = null;
         }
 
         if (context.version >= 3)
@@ -519,6 +549,45 @@ export class Tw2ShaderStage
         stage.constants.sort((a, b) => a.offset - b.offset);
         stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
         stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
+
+
+        if (Tw2Shader.DEBUG_ENABLED)
+        {
+            if (shaderCode) shaderCode = this.MakeShaderCodeReadable(shaderCode, stage.constants, stage.samplers, stage.type);
+            if (shadowShaderCode) shadowShaderCode = this.MakeShaderCodeReadable(shadowShaderCode, stage.constants, stage.samplers, stage.type);
+
+            console.group(context.path);
+            console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
+            console.groupEnd();
+
+            stage.shaderCode = shaderCode;
+            stage.shadowShaderCode = shadowShaderCode;
+        }
+
+        //  Compile normal shader
+        stage.shader = this.compileShader(stage.type, "", shaderCode, context.path);
+
+        // Compile shadow shader
+        if (context.validShadowShader)
+        {
+            if (shadowShaderSize === 0)
+            {
+                stage.shadowShader = this.compileShader(stage.type, "//shadow\n#define PS\n", shaderCode, context.path, true);
+            }
+            else
+            {
+                stage.shadowShader = this.compileShader(stage.type, "//shadow\n", shadowShaderCode, context.path, true);
+            }
+
+            if (stage.shadowShader === null)
+            {
+                context.validShadowShader = false;
+            }
+        }
+        else
+        {
+            stage.shadowShader = null;
+        }
 
         return stage;
     }

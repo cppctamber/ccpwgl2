@@ -239,6 +239,7 @@ export class Tw2Shader
 
         return out;
     }
+
     /**
      * Checks if a constant is supported
      * @param {String} name
