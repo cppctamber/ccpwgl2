@@ -63,7 +63,7 @@ export const config = {
 
         // Replace .gr2 paths with interim .cake format (new sof will try to fall back to wbg if not found)
         // Cake format doesn't support any animations
-        "gr2": path => path.replace(".gr2", ".cake"),
+        "gr2": path => path.replace(".gr2", ".gr2_json"),
 
         // Replace all .red files provided in .black files as they are actually .black files
         "red": path => path.replace(".red", ".black")
@@ -213,11 +213,12 @@ export const config = {
     },
 
     extensions: {
-        "sm_depth": core.Tw2EffectRes,
         "sm_json": core.Tw2EffectRes,
+        "sm_depth": core.Tw2EffectRes,
         "sm_hi": core.Tw2EffectRes,
         "sm_lo": core.Tw2EffectRes,
         "fx": core.Tw2EffectRes,
+        "gr2_json" : core.Tw2GeometryRes,
         "wbg": core.Tw2GeometryRes,
         "cake": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,
@@ -262,6 +263,7 @@ export const config = {
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
         "EveSpaceSceneShadowMap": "",
+        "EveSpaceSceneDepthMap" : "",   // Custom
         "EnvMap1": "",
         "EnvMap2": "",
         "EnvMap3": "",
