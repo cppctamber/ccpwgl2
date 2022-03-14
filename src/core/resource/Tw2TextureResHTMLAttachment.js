@@ -1,4 +1,4 @@
-import { meta } from "utils/index";
+import { isString, meta } from "utils/index";
 import { Model } from "global/meta";
 import { device } from "global/tw2";
 import { ErrResourceFormatNotImplemented } from "./Tw2Resource";
@@ -40,25 +40,26 @@ export class Tw2TextureResHTMLAttachment extends Model
      * @param value
      * @param opt
      */
-    SetValue(value, opt)
+    SetValue(value=null, opt)
     {
-        if (!value || typeof value === "string")
+        if (value === null || isString(value))
         {
             if (this.id !== value)
             {
                 this.id = value;
-                if (!value) this._element = null;
+                this._element = null;
                 this.UpdateValues(opt);
                 return true;
             }
         }
         else if (this._element !== value)
         {
-            this._id = null;
+            this._id = value.id || null;
             this._element = value;
             this.UpdateValues(opt);
             return true;
         }
+
         return false;
     }
 
@@ -69,6 +70,16 @@ export class Tw2TextureResHTMLAttachment extends Model
     {
         if (this.id) this._element = document.getElementById(this.id);
         this._dirty = true;
+    }
+
+    /**
+     * Checks if the attachment is good
+     * @returns {Boolean}
+     */
+    IsGood()
+    {
+        // TODO: Check for the correct type of element
+        return !!(this._element && this._element.width && this._element.height);
     }
 
     /**
@@ -84,7 +95,7 @@ export class Tw2TextureResHTMLAttachment extends Model
         }
 
         // Only update if we have a visible element or an update is required
-        if (!this._element || !this._element.width || !this._element.height || res.texture && !this.update && !this.dirty)
+        if (!this.IsGood() || res.texture && !this.update && !this.dirty)
         {
             return;
         }

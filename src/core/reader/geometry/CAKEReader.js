@@ -5,10 +5,10 @@ import { Tw2Error } from "core/Tw2Error";
 
 
 /**
- * Todo: Simplify this format
+ * Todo: Deprecate this class (replaced by the gr2_json format)
  */
 @meta.type("Tw2CakeReader")
-export class Tw2CakeReader
+export class CAKEReader
 {
 
     name = "";
@@ -27,7 +27,8 @@ export class Tw2CakeReader
      */
     constructor(data)
     {
-        Tw2CakeReader.validate(data);
+
+        CAKEReader.validate(data);
 
         const
             lines = data.split(/\r?\n/),
@@ -53,9 +54,9 @@ export class Tw2CakeReader
             let split = line.split(":"),
                 name = split[0].toUpperCase();
 
-            if (name.toUpperCase() in Tw2CakeReader.ShortName)
+            if (name.toUpperCase() in CAKEReader.ShortName)
             {
-                name = Tw2CakeReader.ShortName[name.toUpperCase()];
+                name = CAKEReader.ShortName[name.toUpperCase()];
             }
 
             let value = split[1] || "";
@@ -117,7 +118,7 @@ export class Tw2CakeReader
                 case "AREA":
                     const area = {
                         name: value,
-                        start: indexData.length * Tw2CakeReader.IndexArray.BYTES_PER_ELEMENT,
+                        start: indexData.length * CAKEReader.IndexArray.BYTES_PER_ELEMENT,
                         count: 0
                     };
                     this.areas.push(area);
@@ -159,7 +160,7 @@ export class Tw2CakeReader
 
                     if (!declaration)
                     {
-                        declaration = Tw2CakeReader.getDeclarationObjectByName(name);
+                        declaration = CAKEReader.getDeclarationObjectByName(name);
                         declarations.push(declaration);
                     }
 
@@ -225,7 +226,7 @@ export class Tw2CakeReader
         }
 
         // Create index data
-        this.indexData = new Tw2CakeReader.IndexArray(indexData);
+        this.indexData = new CAKEReader.IndexArray(indexData);
 
         // TODO: Models
         // TODO: Animations
@@ -248,7 +249,7 @@ export class Tw2CakeReader
 
         for (let i = 0; i < meshesRaw.length; i++)
         {
-            result.push(new Tw2CakeReader(meshesRaw[i]));
+            result.push(new CAKEReader(meshesRaw[i]));
         }
 
         return result;
@@ -332,5 +333,23 @@ export class Tw2CakeReader
         TEXCOORD0: Tw2VertexElement.Type.TEXCOORD,
         TEXCOORD1: Tw2VertexElement.Type.TEXCOORD
     };
+
+    /**
+     * Request response type
+     * @type {string}
+     */
+    static requestResponseType = "text";
+
+    /**
+     * File extension
+     * @type {string}
+     */
+    static extension = "cake";
+
+    /**
+     * Identifies that the format needs to handle meshes one by one
+     * @type {boolean}
+     */
+    static byMesh = true;
 
 }

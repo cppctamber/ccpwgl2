@@ -1,13 +1,17 @@
-import { Mesh } from "webgl-obj-loader";
-import { Tw2CakeReader } from "core/resource/Tw2CakeReader";
+import { Mesh as ObjLoader } from "webgl-obj-loader";
+import { CAKEReader } from "./CAKEReader";
 import { isString } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { GL_FLOAT } from "constant/gl";
 import { tw2 } from "global/tw2";
 
 
-export class Tw2WaveFrontReader
+/**
+ * Todo: Convert to new geometry type
+ */
+export class OBJReader
 {
+
     name = "";
     areas = [];
     declaration = null;
@@ -20,7 +24,7 @@ export class Tw2WaveFrontReader
 
     constructor(data)
     {
-        const result = new Mesh(data);
+        const result = new ObjLoader(data);
 
         function toElements(source, stride, pad)
         {
@@ -50,26 +54,26 @@ export class Tw2WaveFrontReader
 
         const declarations = [];
 
-        const position = Tw2CakeReader.getDeclarationObjectByName("POSITION");
+        const position = CAKEReader.getDeclarationObjectByName("POSITION");
         position.vertices = toElements(result.vertices, 3);
         declarations.push(position);
 
-        const normal = Tw2CakeReader.getDeclarationObjectByName("NORMAL");
+        const normal = CAKEReader.getDeclarationObjectByName("NORMAL");
         normal.vertices = toElements(result.vertexNormals, 3);
         declarations.push(normal);
 
-        const tex0 = Tw2CakeReader.getDeclarationObjectByName("TEXCOORD0");
+        const tex0 = CAKEReader.getDeclarationObjectByName("TEXCOORD0");
         tex0.vertices = toElements(result.textures, 2);
         declarations.push(tex0);
 
         try
         {
             result.calculateTangentsAndBitangents();
-            const tangent = Tw2CakeReader.getDeclarationObjectByName("TANGENT");
+            const tangent = CAKEReader.getDeclarationObjectByName("TANGENT");
             tangent.vertices = toElements(result.tangents, 3, true);
             declarations.push(tangent);
 
-            const biTangent = Tw2CakeReader.getDeclarationObjectByName("BITANGENT");
+            const biTangent = CAKEReader.getDeclarationObjectByName("BITANGENT");
             biTangent.vertices = toElements(result.bitangents, 3, true);
             declarations.push(biTangent);
         }
@@ -142,7 +146,7 @@ export class Tw2WaveFrontReader
         }
 
         // Create index data
-        this.indexData = new Tw2CakeReader.IndexArray(indexData);
+        this.indexData = new CAKEReader.IndexArray(indexData);
 
         // TODO: Models
         // TODO: Animations
@@ -150,6 +154,11 @@ export class Tw2WaveFrontReader
         // TODO: Bones
     }
 
+    /**
+     * Constructs the object's meshes
+     * @param {*} data
+     * @returns {OBJReader[]}
+     */
     static construct(data)
     {
         this.validate(data);
@@ -168,5 +177,23 @@ export class Tw2WaveFrontReader
             throw new ReferenceError("Invalid format, expected string");
         }
     }
+
+    /**
+     * Request response type
+     * @type {string}
+     */
+    static requestResponseType = "text";
+
+    /**
+     * File extension
+     * @type {string}
+     */
+    static extension = "obj";
+
+    /**
+     * Identifies that the format needs to handle meshes one by one
+     * @type {boolean}
+     */
+    static byMesh = true;
 
 }

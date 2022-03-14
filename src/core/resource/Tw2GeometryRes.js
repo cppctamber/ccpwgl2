@@ -1,27 +1,45 @@
 import { meta } from "utils";
 import { resMan, device } from "global";
-import { box3, sph3, vec3, quat, mat3, mat4 } from "math";
-import { Tw2BinaryReader } from "../reader";
+import { box3, sph3, vec3 } from "math";
+import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-import { Tw2CakeReader } from "./Tw2CakeReader";
-import { Tw2WaveFrontReader } from "./Tw2WavefrontReader";
 
 import {
-    Tw2BlendShapeData,
     Tw2GeometryAnimation,
-    Tw2GeometryBone,
     Tw2GeometryCurve,
     Tw2GeometryMesh,
     Tw2GeometryMeshArea,
     Tw2GeometryMeshBinding,
     Tw2GeometryModel,
-    Tw2GeometrySkeleton,
-    Tw2GeometryTrackGroup,
-    Tw2GeometryTransformTrack
+    //Tw2BlendShapeData,
+    //Tw2GeometryBone,
+    //Tw2GeometrySkeleton,
+    //Tw2GeometryTrackGroup,
+    //Tw2GeometryTransformTrack
 } from "../geometry";
 
+
+// Todo: Change to registration process
+const readers = {
+    [OBJReader.extension.toLowerCase()] : OBJReader,
+    [CAKEReader.extension.toLowerCase()] : CAKEReader,
+    [GR2JsonReader.extension.toLowerCase()] : GR2JsonReader,
+    [WBGReader.extension.toLowerCase()] : WBGReader
+};
+
+/**
+ *
+ * @property {Array<Tw2GeometryMesh>} meshes
+ * @property {vec3} minBounds
+ * @property {vec3} maxBounds
+ * @property {vec3} boundsSpherePosition
+ * @property {Number} boundsSphereRadius
+ * @property {Array<Tw2GeometryModel>} models
+ * @property {Array<Tw2GeometryAnimation>} animations
+ * @property {Boolean} systemMirror
+ */
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
@@ -35,57 +53,106 @@ export class Tw2GeometryRes extends Tw2Resource
     animations = [];
     systemMirror = resMan.systemMirror;
 
-
     _requestResponseType = null;
     _extension = null;
-
-
-    /**
-     * Gets the object's bounding box
-     * @param {box3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
-     */
-    GetBoundingBox(out, parentTransform)
-    {
-        box3.fromBounds(out, this.minBounds, this.maxBounds);
-        if (parentTransform) box3.transformMat4(out, out, parentTransform);
-        return true;
-    }
+    _boundsDirty = true;
 
     /**
-     * Gets the object's bounding sphere
-     * @param {sph3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
+     *
+     * @param ray
+     * @param intersects
+     * @param worldTransform
+     * @param [cache={}]
+     * @returns {Array}
      */
-    GetBoundingSphere(out, parentTransform)
+    Intersect(ray, intersects, worldTransform, cache = {})
     {
-        sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-        if (parentTransform) sph3.transformMat4(out, out, parentTransform);
-        return true;
+        console.log("Intersecting geometry resource: " + this.path);
+
+        this.RebuildBounds();
+        const intersect = ray.IntersectBounds(this.minBounds, this.maxBounds, worldTransform);
+        if (!intersect) return [];
+
+        const internalIntersects = [];
+
+        if (this.meshes.length)
+        {
+            for (let i = 0; i < this.meshes.length; i++)
+            {
+                this.meshes[i]
+                    .Intersect(ray, intersects, worldTransform, cache)
+                    .forEach(intersect =>
+                    {
+                        intersect.geometryResource = this;
+                        intersect.meshIndex = i;
+                        internalIntersects.push(intersect);
+                    });
+            }
+        }
+
+        return internalIntersects.sort(ray._sortFunction);
     }
 
     /**
      * Rebuilds bounds
-     * @returns {Boolean} [fromVertex]
      */
-    RebuildBounds(fromVertex)
+    RebuildBounds(force)
     {
-        const
-            min = this.minBounds,
-            max = this.maxBounds;
-
-        box3.bounds.empty(min, max);
-        for (let i = 0; i < this.meshes.length; i++)
+        if (!this._boundsDirty && !force)
         {
-            const mesh = this.meshes[i];
-            mesh.RebuildBounds(fromVertex);
-            box3.bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
+            for (let i = 0; i < this.meshes.length; i++)
+            {
+                if (this.meshes[i]._boundsDirty)
+                {
+                    this._boundsDirty = true;
+                    break;
+                }
+            }
         }
 
-        this.boundsSphereRadius = box3.bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+        if (this._boundsDirty || force)
+        {
+            const
+                min = this.minBounds,
+                max = this.maxBounds;
+
+            box3.bounds.empty(min, max);
+            for (let i = 0; i < this.meshes.length; i++)
+            {
+                const mesh = this.meshes[i];
+                mesh.RebuildBounds(force);
+                box3.bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
+            }
+
+            this.boundsSphereRadius = box3.bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+            this._boundsDirty = false;
+        }
     }
+
+    /**
+     * Gets bounding box
+     * @param {box3} out
+     * @param {boolean} force
+     * @return {null|box3}
+     */
+    GetBoundingBox(out, force)
+    {
+        this.RebuildBounds(force);
+        return box3.fromBounds(out, this.minBounds, this.maxBounds);
+    }
+
+    /**
+     * Gets bounding sphere
+     * @param {sph3} out
+     * @param {boolean} force
+     * @return {null|sph3}
+     */
+    GetBoundingSphere(out, force)
+    {
+        this.RebuildBounds(force);
+        return sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    }
+
 
     /**
      * GetInstanceBuffer
@@ -137,26 +204,17 @@ export class Tw2GeometryRes extends Tw2Resource
         this._extension = null;
         this._requestResponseType = null;
 
-        switch (extension)
-        {
-            case "wbg":
-                this._extension = extension;
-                this._requestResponseType = "arraybuffer";
-                break;
+        const reader = readers[extension.toLowerCase()];
+        if (!reader) throw new ErrResourceFormatUnsupported({ format: extension });
 
-            case "cake":
-            case "obj":
-                this._extension = extension;
-                this._requestResponseType = "text";
-                break;
-
-            default:
-                throw new ErrResourceFormatUnsupported({ format: extension });
-        }
+        this._extension = extension;
+        this._requestResponseType = reader.requestResponseType;
     }
+
 
     /**
      * Prepares the object
+     * TODO: Normalize geometry readers
      * @param {*} data
      */
     Prepare(data)
@@ -170,30 +228,26 @@ export class Tw2GeometryRes extends Tw2Resource
         vec3.set(this.boundsSpherePosition, 0, 0, 0);
         this.boundsSphereRadius = 0;
 
-        switch (this._extension)
+        const reader = readers[this._extension];
+        if (!reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
+
+        // TODO: Remove this option
+        if (reader.byMesh)
         {
-            case "wbg":
-                this.PrepareWBG(data);
-                break;
-
-            case "cake":
-                this.PrepareCustom(Tw2CakeReader.construct(data));
-                break;
-
-            case "obj":
-                this.PrepareCustom(Tw2WaveFrontReader.construct(data));
-                break;
-
-            default:
-                throw new ErrResourceFormatUnsupported({ format: this._extension });
+            this.PrepareFromMeshes(reader.construct(data));
         }
+        else
+        {
+            reader.Prepare(data, this);
+        }
+
     }
 
     /**
      * Prepares custom formats
-     * @param {Array<Tw2GeometryReader>}meshes
+     * @param {Array<Object>}meshes
      */
-    PrepareCustom(meshes)
+    PrepareFromMeshes(meshes)
     {
         const gl = device.gl;
 
@@ -225,8 +279,9 @@ export class Tw2GeometryRes extends Tw2Resource
                 area.start = start;
                 area.count = count;
                 mesh.areas.push(area);
-                mesh.RebuildAreaBounds(area, bufferData, indexData, true);
             }
+
+            mesh.RecalculateAreaBounds(bufferData, indexData);
 
             mesh._areas = areas.length;
             mesh._faces = indexData.length / 3;
@@ -238,302 +293,11 @@ export class Tw2GeometryRes extends Tw2Resource
                 mesh.indexData = indexData;
             }
 
-            /*
-            const { models, animations, boneBindings, blendShapes } = result;
-
-            for (let i = 0; i < boneBindings.length; i++)
-            {
-                // TODO: Bone bindings
-            }
-
-            for (let i = 0; i < blendShapes.length; i++)
-            {
-                //TODO: Blend shapes
-            }
-
-            for (let i = 0; i < models; i++)
-            {
-                //TODO: Models
-            }
-
-            for (let i = 0; i < animations; i++)
-            {
-                //TODO: Animations
-            }
-             */
-
             // Temporary
             this.models[i] = new Tw2GeometryModel();
         }
 
         this.RebuildBounds();
-        this.OnPrepared();
-    }
-
-    /**
-     * Prepares a wbg file
-     * @param {ArrayBuffer} data
-     */
-    PrepareWBG(data)
-    {
-        const
-            gl = device.gl,
-            reader = new Tw2BinaryReader(new Uint8Array(data));
-
-        /* let fileVersion = */
-        reader.ReadUInt8();
-        const meshCount = reader.ReadUInt8();
-        for (let meshIx = 0; meshIx < meshCount; ++meshIx)
-        {
-            const mesh = new Tw2GeometryMesh();
-            mesh.name = reader.ReadString();
-            const buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.declaration, this.path);
-
-            if (buffer)
-            {
-                mesh.bufferLength = buffer.length;
-                mesh.buffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
-                gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.STATIC_DRAW);
-            }
-            else
-            {
-                mesh.buffer = null;
-            }
-
-            const indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
-            if (indexes)
-            {
-                mesh.indexes = gl.createBuffer();
-                mesh.indexType = indexes.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
-                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-            }
-            else
-            {
-                mesh.indexes = null;
-            }
-
-            const areaCount = reader.ReadUInt8();
-            for (let i = 0; i < areaCount; ++i)
-            {
-                const area = new Tw2GeometryMeshArea();
-                mesh.areas.push(area);
-
-                area.name = reader.ReadString();
-                area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
-                area.count = reader.ReadUInt32() * 3;
-
-                vec3.set(area.minBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-                vec3.set(area.maxBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-
-                area.boundsSphereRadius = box3.bounds.toPositionRadius(
-                    area.minBounds,
-                    area.maxBounds,
-                    area.boundsSpherePosition
-                );
-
-                // Recalculate bounds if missing
-                if (box3.bounds.isEmpty(area.minBounds, area.maxBounds))
-                {
-                    if (!mesh.RebuildAreaBounds(area, buffer, indexes, true))
-                    {
-                        console.log("Could not generate bounds for area: " + area.name || "unknown");
-                    }
-                }
-            }
-
-            const boneBindingCount = reader.ReadUInt8();
-            mesh.boneBindings = [];
-            for (let i = 0; i < boneBindingCount; ++i)
-            {
-                mesh.boneBindings[i] = reader.ReadString();
-            }
-
-            const annotationSetCount = reader.ReadUInt16();
-            if (annotationSetCount || this.systemMirror)
-            {
-                mesh.bufferData = buffer;
-                mesh.indexData = indexes;
-            }
-
-            if (annotationSetCount)
-            {
-                mesh.blendShapes = [];
-                for (let i = 0; i < annotationSetCount; ++i)
-                {
-                    mesh.blendShapes[i] = new Tw2BlendShapeData();
-                    mesh.blendShapes[i].name = reader.ReadString();
-                    mesh.blendShapes[i].buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.blendShapes[i].declaration, this.path);
-                    mesh.blendShapes[i].indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
-                }
-            }
-
-            mesh._areas = areaCount;
-            mesh._faces = indexes.length / 3;
-            mesh._vertices = buffer.length / (mesh.declaration.stride / 4);
-
-            /*
-
-            // Reduce memory footprint of vertices
-
-            const stride = mesh.declaration.stride / 4;
-            const vertCount = buffer.length / stride;
-            const position = mesh.declaration.FindUsage(0, 0);
-
-            mesh._vertices = new Float32Array(vertCount * 3);
-            for (let i = 0; i < mesh._vertices.length; i+=3)
-            {
-                const index = i * stride + position.offset;
-                for (let x = 0; x < 3; x ++)
-                {
-                    mesh._vertices[i + x] = buffer[index + x];
-                }
-            }
-
-            */
-
-            this.meshes[meshIx] = mesh;
-        }
-
-        // Rebuilds all bounds
-        this.RebuildBounds();
-
-        const modelCount = reader.ReadUInt8();
-        for (let modelIx = 0; modelIx < modelCount; ++modelIx)
-        {
-            const model = new Tw2GeometryModel();
-            model.name = reader.ReadString();
-            model.skeleton = new Tw2GeometrySkeleton();
-            const boneCount = reader.ReadUInt8();
-
-            for (let i = 0; i < boneCount; ++i)
-            {
-                const bone = new Tw2GeometryBone();
-                bone.name = reader.ReadString();
-                const flags = reader.ReadUInt8();
-                bone.parentIndex = reader.ReadUInt8();
-                if (bone.parentIndex === 255) bone.parentIndex = -1;
-
-                if ((flags & 1) !== 0)
-                {
-                    vec3.set(bone.position, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-                }
-                else
-                {
-                    vec3.set(bone.position, 0, 0, 0);
-                }
-
-                if ((flags & 2) !== 0)
-                {
-                    quat.set(bone.orientation, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-                }
-                else
-                {
-                    quat.identity(bone.orientation);
-                }
-
-                if ((flags & 4) !== 0)
-                {
-                    for (let k = 0; k < 9; ++k)
-                    {
-                        bone.scaleShear[k] = reader.ReadFloat32();
-                    }
-                }
-                else
-                {
-                    mat3.identity(bone.scaleShear);
-                }
-                model.skeleton.bones[i] = bone;
-            }
-
-            for (let i = 0; i < model.skeleton.bones.length; ++i)
-            {
-                model.skeleton.bones[i].UpdateTransform();
-                if (model.skeleton.bones[i].parentIndex !== -1)
-                {
-                    mat4.multiply(model.skeleton.bones[i].worldTransform, model.skeleton.bones[model.skeleton.bones[i].parentIndex].worldTransform, model.skeleton.bones[i].localTransform);
-                }
-                else
-                {
-                    mat4.copy(model.skeleton.bones[i].worldTransform, model.skeleton.bones[i].localTransform);
-                }
-                mat4.invert(model.skeleton.bones[i].worldTransformInv, model.skeleton.bones[i].worldTransform);
-            }
-
-            const meshBindingCount = reader.ReadUInt8();
-            for (let i = 0; i < meshBindingCount; ++i)
-            {
-                const mesh = reader.ReadUInt8();
-                if (mesh < this.meshes.length)
-                {
-                    Tw2GeometryRes.BindMeshToModel(this.meshes[mesh], model, this);
-                }
-            }
-            this.models[this.models.length] = model;
-        }
-
-        const animationCount = reader.ReadUInt8();
-        for (let i = 0; i < animationCount; ++i)
-        {
-            const animation = new Tw2GeometryAnimation();
-            animation.name = reader.ReadString();
-            animation.duration = reader.ReadFloat32();
-            const groupCount = reader.ReadUInt8();
-            for (let j = 0; j < groupCount; ++j)
-            {
-                const group = new Tw2GeometryTrackGroup();
-                group.name = reader.ReadString();
-                for (let m = 0; m < this.models.length; ++m)
-                {
-                    if (this.models[m].name === group.name)
-                    {
-                        group.model = this.models[m];
-                        break;
-                    }
-                }
-
-                const transformTrackCount = reader.ReadUInt8();
-                for (let k = 0; k < transformTrackCount; ++k)
-                {
-                    const track = new Tw2GeometryTransformTrack();
-                    track.name = reader.ReadString();
-                    track.orientation = Tw2GeometryRes.ReadCurve(reader);
-                    track.position = Tw2GeometryRes.ReadCurve(reader);
-                    track.scaleShear = Tw2GeometryRes.ReadCurve(reader);
-
-                    if (track.orientation)
-                    {
-                        let lastX = 0;
-                        let lastY = 0;
-                        let lastZ = 0;
-                        let lastW = 0;
-                        for (let n = 0; n < track.orientation.controls.length; n += 4)
-                        {
-                            let x = track.orientation.controls[n];
-                            let y = track.orientation.controls[n + 1];
-                            let z = track.orientation.controls[n + 2];
-                            let w = track.orientation.controls[n + 3];
-                            if (lastX * x + lastY * y + lastZ * z + lastW * w < 0)
-                            {
-                                track.orientation.controls[n] = -x;
-                                track.orientation.controls[n + 1] = -y;
-                                track.orientation.controls[n + 2] = -z;
-                                track.orientation.controls[n + 3] = -w;
-                            }
-                            lastX = x;
-                            lastY = y;
-                            lastZ = z;
-                            lastW = w;
-                        }
-                    }
-                    group.transformTracks[group.transformTracks.length] = track;
-                }
-                animation.trackGroups[animation.trackGroups.length] = group;
-            }
-            this.animations[this.animations.length] = animation;
-        }
-
         this.OnPrepared();
     }
 
@@ -564,10 +328,11 @@ export class Tw2GeometryRes extends Tw2Resource
             }
             else
             {
-                binding.bones[binding.bones.length] = bone;
+                binding.bones.push(bone);
+                bone.boundingBox = mesh.FindBoneBoundsByName(name);
             }
         }
-        model.meshBindings[model.meshBindings.length] = binding;
+        model.meshBindings.push(binding);
     }
 
     /**
@@ -1048,7 +813,6 @@ export class Tw2GeometryRes extends Tw2Resource
 }
 
 
-
 /**
  * Throws when a geometry mesh lacks an element required for a particle system
  */
@@ -1090,7 +854,7 @@ export class ErrGeometryMeshBoneNameInvalid extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Geometry mesh has invalid bone name for model");
+        super(data, "Geometry mesh '%mesh%' has invalid bone name '%bone%' for model '%model%'");
     }
 }
 
