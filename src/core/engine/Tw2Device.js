@@ -68,8 +68,6 @@ export class Tw2Device extends Tw2EventEmitter
      * @type {null|WebGLRenderingContext|WebGL2RenderingContext}
      */
     gl = null;
-    xr = null;
-
     canvas2d = null;
 
     dt = 0;
@@ -419,8 +417,18 @@ export class Tw2Device extends Tw2EventEmitter
         this._shadowStateBuffer = new Float32Array(24);
 
         // Event handlers
-        this.canvas.addEventListener("webglcontextlost", e => this.EmitEvent("context_lost", this));
-        this.canvas.addEventListener("webglcontextrestored", e => this.EmitEvent("context_restored", this));
+        this.canvas.addEventListener("webglcontextlost", () =>
+        {
+            this._contextLost = true;
+            this.EmitEvent("context_lost", this);
+        });
+
+        this.canvas.addEventListener("webglcontextrestored", () =>
+        {
+            this._contextLost = false;
+            this.EmitEvent("context_restored", this);
+        });
+
     }
 
     /**
@@ -466,15 +474,8 @@ export class Tw2Device extends Tw2EventEmitter
      */
     Resize(force)
     {
-        if (this.enableWebxr && this.xr && this.xr.isGood)
-        {
-            this.xr.OnResize(this.canvas);
-        }
-        else
-        {
-            this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
-            this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
-        }
+        this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
+        this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
 
         if (!force && this.canvas.width === this.viewportWidth && this.canvas.height === this.viewportHeight)
         {
@@ -777,7 +778,7 @@ export class Tw2Device extends Tw2EventEmitter
         if (this._blitEffect === null)
         {
             this._blitEffect = Tw2Effect.from({
-                effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
+                effectFilePath: "cdn:/graphics/effect/managed/space/system/blit.fx",
                 textures: {
                     BlitSource: ""
                 }
@@ -1024,12 +1025,12 @@ export class Tw2Device extends Tw2EventEmitter
                     break;
 
                     /*
-case CMP_NOTEQUAL:
-var alphaTestFunc = 1;
-var invertedAlphaTest = 1;
-var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-break;
-*/
+                case CMP_NOTEQUAL:
+                    var alphaTestFunc = 1;
+                    var invertedAlphaTest = 1;
+                    var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+                    break;
+                */
 
                 case CMP_GREATEREQUAL:
                     alphaTestFunc = 0;
@@ -1154,29 +1155,6 @@ break;
     }
 
     /**
-     * Requests an animation frame
-     * @param {Function} callback
-     */
-    RequestAnimationFrame(callback)
-    {
-        return this.xr
-            ? this.xr.RequestAnimationFrame(callback)
-            : this.constructor.RequestAnimationFrame(callback);
-    }
-
-    /**
-     * Cancels an animation frame
-     * @param {Number} id
-     */
-    CancelAnimationFrame(id)
-    {
-        return this.xr
-            ? this.xr.CancelAnimationFrame(id)
-            : this.constructor.CancelAnimationFrame(id);
-    }
-
-
-    /**
      * Creates a webgl context
      * @param params
      * @param canvas
@@ -1212,70 +1190,28 @@ break;
         return context;
     }
 
-    /**
-     * Requests an animation frame
-     * @type {Function}
-     */
-    static RequestAnimationFrame = (function()
-    {
-        const request = get(window, VendorRequestAnimationFrame);
-        return callback => request(callback);
-    })();
-
-    /**
-     * Cancels an animation frame
-     * @type {Function}
-     */
-    static CancelAnimationFrame = (function()
-    {
-        const cancel = get(window, VendorCancelAnimationFrame);
-        return id => cancel(id);
-    })();
-
-    /**
-     * Finds an XR Device
-     * @param {{}} [sessionOptions]
-     * @returns {Promise<XRDevice>}
-     */
-    static async FindXRDevice(sessionOptions)
-    {
-        if (!navigator.xr)
-        {
-            throw new ErrWebxrNotSupported();
-        }
-
-        let device;
-        try
-        {
-            device = await navigator.xr["requestDevice"]();
-        }
-        catch (err)
-        {
-            if (err.name === "NotFoundError" || err.message === "NotFoundError")
-            {
-                throw new ErrWebxrDeviceNotFound({ err: err.message });
-            }
-
-            throw new ErrWebxrRequestFailed({ err: err.message });
-        }
-
-        // Optionally pass session requirements
-        if (sessionOptions)
-        {
-            try
-            {
-                await device["supportsSession"](sessionOptions);
-            }
-            catch (err)
-            {
-                throw new ErrWebxrSessionNotSupported({ err: err.message });
-            }
-        }
-
-        return device;
-    }
-
 }
+
+/**
+ * Requests an animation frame
+ * @param {Function} callback
+ */
+Tw2Device.prototype.RequestAnimationFrame = (function()
+{
+    const request = get(window, VendorRequestAnimationFrame);
+    return callback => request(callback);
+})();
+
+/**
+ * Cancels an animation frame
+ * @param {Number} id
+ */
+Tw2Device.prototype.CancelAnimationFrame =  (function()
+{
+    const cancel = get(window, VendorCancelAnimationFrame);
+    return id => cancel(id);
+})();
+
 
 // Render Modes
 Tw2Device.prototype.RM_ANY = RM_ANY;
@@ -1297,49 +1233,5 @@ export class ErrWebglContext extends Tw2Error
     constructor(data)
     {
         super(data, "Unable to create webgl context (%version%)");
-    }
-}
-
-/**
- * Throws when webxr is not supported
- */
-export class ErrWebxrNotSupported extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Webxr not supported");
-    }
-}
-
-/**
- * Throws when a webxr device is not found
- */
-export class ErrWebxrDeviceNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Webxr device not found");
-    }
-}
-
-/**
- * Throws when there is an error requesting a webxr device
- */
-export class ErrWebxrRequestFailed extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Webxr request failed (%err%)");
-    }
-}
-
-/**
- * Throws when a webxr session type is not supported
- */
-export class ErrWebxrSessionNotSupported extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Webxr session not supported (%err%)");
     }
 }
