@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat3, mat4, quat, vec3 } from "math";
+import { mat3, mat4, quat, vec3, box3 } from "math";
 
 
 @meta.type("Tw2GeometryBone")
@@ -30,6 +30,11 @@ export class Tw2GeometryBone
     @meta.matrix4
     worldTransformInv = mat4.create();
 
+    @meta.float32Array
+    @meta.isPrivate
+    // reference
+    boundingBox = null;
+
 
     /**
      * Updates the Bone's transform
@@ -45,6 +50,45 @@ export class Tw2GeometryBone
         this.localTransform[13] = this.position[1];
         this.localTransform[14] = this.position[2];
         return this.localTransform;
+    }
+
+    /**
+     * Gets box bounds
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @return {box3} out
+     */
+    GetBoundingBox(out, force)
+    {
+        if (force) this.UpdateTransform();
+        if (!this.boundingBox) return box3.empty(out);
+        return box3.transformMat4(out, this.boundingBox, this.localTransform);
+    }
+
+    /**
+     * Gets box bounds
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @return {box3} out
+     */
+    GetWorldBoundingBoxInverse(out, force)
+    {
+        if (force) this.UpdateTransform();
+        if (!this.boundingBox) return box3.empty(out);
+        return box3.transformMat4(out, this.boundingBox, this.worldTransformInv);
+    }
+
+    /**
+     * Gets box bounds
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @return {box3} out
+     */
+    GetWorldBoundingBox(out, force)
+    {
+        if (force) this.UpdateTransform();
+        if (!this.boundingBox) return box3.empty(out);
+        return box3.transformMat4(out, this.boundingBox, this.worldTransform);
     }
 
     /**
