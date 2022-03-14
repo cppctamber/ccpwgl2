@@ -184,6 +184,9 @@ export class Tw2PostProcess extends meta.Model
 
         if (this._dirty || this._effectiveWidth !== width * this.quality || this._effectiveHeight !== height * this.quality)
         {
+
+            this.PopulateParameters();
+
             this._effectiveWidth = width * this.quality;
             this._effectiveHeight = height * this.quality;
 
@@ -224,6 +227,11 @@ export class Tw2PostProcess extends meta.Model
                     updated = true;
                 }
 
+                if (shader.HasConstant("g_camera") && !parameters.g_camera)
+                {
+                    parameters.g_camera = new Tw2Vector4Parameter("g_camera", [ 1, 1, 1, 1 ]);
+                }
+
                 if (updated) this.stages[i].BindParameters();
             }
 
@@ -245,9 +253,11 @@ export class Tw2PostProcess extends meta.Model
         gl.bindTexture(gl.TEXTURE_2D, null);
         device.SetStandardStates(device.RM_OPAQUE);
 
+        let cameraCache;
+
         for (let blitCount = 0, i = 0; i < this._visibleStages.length; i++)
         {
-            const { BlitCurrent, g_texelSize } = this._visibleStages[i].parameters;
+            const { BlitCurrent, g_texelSize, g_camera } = this._visibleStages[i].parameters;
             let renderTarget = null;
 
             if (BlitCurrent)
@@ -262,9 +272,35 @@ export class Tw2PostProcess extends meta.Model
             if (g_texelSize)
             {
                 let tex = renderTarget ? 1 / renderTarget.width : 1 / width;
+                // texel width
                 g_texelSize.value[0] = tex;
+                // texel height
                 g_texelSize.value[1] = tex;
+                // width
+                g_texelSize.value[2] = renderTarget ? renderTarget.width : width;
+                // height
+                g_texelSize.value[3] = renderTarget ? renderTarget.height : height;
+
                 g_texelSize.UpdateValues({ controller: this });
+            }
+
+            if (g_camera)
+            {
+                if (!cameraCache)
+                {
+                    cameraCache = [ 0, 0, 0, 0 ];
+                    const p = device.projection;
+                    // near plane
+                    cameraCache[0] = p[14] / (p[10] - 1.0);
+                    // far plane
+                    cameraCache[1] = p[14] / (p[10] + 1.0);
+                    // fov
+                    cameraCache[2] = 2 * Math.atan(1/p[5]) * 180 / Math.PI;
+                    // unused
+                    cameraCache[3] = 0;
+                }
+
+                g_camera.SetValue(cameraCache);
             }
 
             if (renderTarget)
