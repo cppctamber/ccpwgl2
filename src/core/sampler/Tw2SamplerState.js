@@ -23,8 +23,8 @@ const WrapModes = [
     GL_REPEAT,
     GL_MIRRORED_REPEAT,
     GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_EDGE,
+    GL_CLAMP_TO_EDGE, // Clamp to Border (Not supported by webgl)
+    GL_CLAMP_TO_EDGE  // Unknown
 ];
 
 // Mip filter mode conversions
