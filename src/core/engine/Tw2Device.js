@@ -1196,7 +1196,7 @@ export class Tw2Device extends Tw2EventEmitter
  * Requests an animation frame
  * @param {Function} callback
  */
-Tw2Device.prototype.RequestAnimationFrame = (function()
+Tw2Device.RequestAnimationFrame = Tw2Device.prototype.RequestAnimationFrame = (function()
 {
     const request = get(window, VendorRequestAnimationFrame);
     return callback => request(callback);
@@ -1206,7 +1206,7 @@ Tw2Device.prototype.RequestAnimationFrame = (function()
  * Cancels an animation frame
  * @param {Number} id
  */
-Tw2Device.prototype.CancelAnimationFrame =  (function()
+Tw2Device.CancelAnimationFrame = Tw2Device.prototype.CancelAnimationFrame =  (function()
 {
     const cancel = get(window, VendorCancelAnimationFrame);
     return id => cancel(id);
