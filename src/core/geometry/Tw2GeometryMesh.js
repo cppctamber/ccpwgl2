@@ -1,7 +1,8 @@
-import { meta, isNumber } from "utils";
-import { box3, sph3, vec3 } from "math";
-import { Tw2VertexDeclaration } from "../vertex";
+import { meta } from "utils";
+import { mat4, box3, sph3, tri3, vec3, ray3, lne3 } from "math";
+import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
+import { ErrIndexBounds, Tw2Error } from "core/Tw2Error";
 
 
 @meta.type("Tw2GeometryMesh")
@@ -24,9 +25,11 @@ export class Tw2GeometryMesh
     bufferLength = 0;
 
     @meta.struct("WebGLBuffer")
+    @meta.isPrivate
     bufferData = null;
 
     @meta.struct("WebGLBuffer")
+    @meta.isPrivate
     indexes = null;
 
     @meta.vector
@@ -47,109 +50,525 @@ export class Tw2GeometryMesh
     @meta.float
     boundsSphereRadius = 0;
 
-    @meta.list("Tw2GeometryBone")
-    bones = [];
+    //@meta.list("Tw2GeometryBone")
+    //bones = [];
 
     @meta.list("String")
     boneBindings = [];
 
+    @meta.list()
+    boneBounds = [];
+
+    @meta.list("Tw2BlendShapeData")
+    blendShapes = [];
 
     _faces = 0;
     _vertices = 0;
     _areas = 0;
+    _boundsDirty = true;
+
 
     /**
-     * Gets the object's bounding box
-     * @param {box3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
+     * Finds bone bounds by name
+     * @param {String} name
+     * @return {null|Float32Array}
      */
-    GetBoundingBox(out, parentTransform)
+    FindBoneBoundsByName(name)
     {
-        box3.fromBounds(out, this.minBounds, this.maxBounds);
-        if (parentTransform) box3.transformMat4(out, out, parentTransform);
-        return true;
+        name = name.toLowerCase();
+
+        let index = -1;
+        for (let i = 0; i < this.boneBindings.length; i++)
+        {
+            if (this.boneBindings[i].toLowerCase() === name)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index === -1)
+        {
+            throw new Error(`Bone not found ${name}`);
+        }
+
+        if (!this.boneBounds[index])
+        {
+            this.boneBounds[index] = box3.create();
+        }
+
+        return this.boneBounds[index];
     }
 
     /**
-     * Gets the object's bounding sphere
-     * @param {sph3} out
-     * @param {mat4} [parentTransform]
-     * @returns {Boolean} True if bounds are valid
+     *
+     * @param ray
+     * @param intersects
+     * @param worldTransform
+     * @param cache
      */
-    GetBoundingSphere(out, parentTransform)
+    Intersect(ray, intersects, worldTransform, cache = {})
     {
-        sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-        if (parentTransform) sph3.transformMat4(out, out, parentTransform);
-        return true;
+        if (ray.IsMasked(this)) return;
+
+        console.log("Intersecting geometry mesh " + this.name);
+
+        this.RebuildBounds();
+        const intersect = ray.IntersectBounds(this.minBounds, this.maxBounds, worldTransform);
+        if (!intersect) return;
+
+        const internalIntersects = [];
+        for (let i = 0; i < this.areas.length; i++)
+        {
+            this.IntersectAreas(this.areas[i], ray, intersects, worldTransform, cache)
+                .forEach(intersect => internalIntersects.push(intersect));
+        }
+
+        internalIntersects.sort(ray._sortFunction);
+        return internalIntersects;
+    }
+
+    /**
+     *
+     * @param {Tw2GeometryMeshArea} area
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {*} cache
+     * @return {Array}
+     */
+    IntersectAreas(area, ray, intersects, worldTransform, cache = {})
+    {
+        // If not position decl then how was it intersected?
+        const pDecl = this.declaration.FindUsage(0, 0);
+        if (!pDecl) return [];
+
+        const areaIndex = this.areas.indexOf(area);
+        console.log("Intersecting geometryArea " + areaIndex);
+
+        this.RebuildBounds();
+        const intersect = ray.IntersectBounds(area.minBounds, area.maxBounds, worldTransform);
+        if (!intersect) return [];
+
+        if (!ray.DoFaceIntersection())
+        {
+            intersect.name = this.name;
+            intersect.isGeometryArea = true;
+            intersect.areaIndex = areaIndex;
+            intersects.push(intersect);
+            return [ intersect ];
+        }
+
+        if (!cache.inverseWorldTransform)
+        {
+            cache.inverseWorldTransform = mat4.invert(mat4.create(), worldTransform);
+        }
+
+        if (!cache.rayLocal)
+        {
+            cache.rayLocal = ray3.transformMat4(ray3.create(), ray.ray, cache.inverseWorldTransform);
+        }
+
+        const
+            count = area.count / 3,
+            start = area.start / 3 / this.indexData.BYTES_PER_ELEMENT;
+
+        const { pointLocal, tri3_0, vec3_0, vec3_1, vec3_2, lne3_0 } = Tw2GeometryMesh.global;
+
+        console.log("Intersecting area faces...");
+
+        const internalIntersects = [];
+        for (let i = 0; i < count; i++)
+        {
+            const
+                index = i + start,
+                debug = this.GetFaceVertexPositions(
+                    vec3_0,
+                    vec3_1,
+                    vec3_2,
+                    index
+                );
+
+            tri3.fromVertices(tri3_0, vec3_0, vec3_1, vec3_2);
+            if (ray3.getIntersectTri3(pointLocal, cache.rayLocal, tri3_0, ray.DoBackfaceCulling()))
+            {
+                vec3.transformMat4(vec3_0, pointLocal, worldTransform);
+
+                const distance = vec3.squaredDistance(ray.ray, vec3_0);
+
+                console.log("Intersected area face " + index + " at distance " + distance + " at point " + Array.from(vec3_0));
+
+                if (distance > ray.nearSquared && distance < ray.farSquared)
+                {
+                    if (ray.DoFindClosestEdge()) tri3.getClosestEdgeToPoint(lne3_0, tri3_0, vec3_0, debug);
+                    if (ray.DoFindClosestVertex()) tri3.getClosestVertexToPoint(vec3_1, tri3_0, vec3_0, debug);
+
+                    const faceIntersect = {
+                        name: area.name,
+                        distance: distance,
+                        point: vec3.clone(vec3_0),
+                        item: this,
+                        areaIndex,
+                        faceIndex: index,
+                        edgeStartIndex: debug.vertexIndices[debug.edgeStart],
+                        edgeEndIndex: debug.vertexIndices[debug.edgeEnd],
+                        vertexIndex: debug.vertexIndices[debug.closest],
+                        isGeometryFace: true,
+                    };
+
+                    intersects.push(faceIntersect);
+                    internalIntersects.push(faceIntersect);
+                }
+            }
+        }
+
+        return internalIntersects.sort(ray._sortFunction);
+    }
+
+
+
+    /**
+     * Gets a usage declaration
+     * @param {Number} usage
+     * @param {Number} usageIndex
+     * @return {?Tw2VertexElement}
+     */
+    GetUsageDeclaration(usage, usageIndex)
+    {
+        if (this.declaration)
+        {
+            const decl = this.declaration.FindUsage(usage, usageIndex);
+            if (decl) return decl;
+        }
+        
+        return null;
     }
 
     /**
      * Rebuilds bounds
-     * @param {Boolean} [fromVertex]
+     * @param {Boolean} [force]
      */
-    RebuildBounds(fromVertex)
+    RebuildBounds(force)
     {
-        const
-            min = this.minBounds,
-            max = this.maxBounds;
-
-        box3.bounds.empty(min, max);
-        for (let i = 0; i < this.areas.length; i++)
+        if (this._boundsDirty || force)
         {
-            const area = this.areas[i];
-            this.RebuildAreaBounds(area, this.bufferData, this.indexData, fromVertex);
-            box3.bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
-        }
+            const
+                min = this.minBounds,
+                max = this.maxBounds;
 
-        this.boundsSphereRadius = box3.bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+            box3.bounds.empty(min, max);
+
+            if (force && this.bufferData && this.indexData)
+            {
+                this.RecalculateAreaBounds(this.bufferData, this.indexData);
+            }
+
+            for (let i = 0; i < this.areas.length; i++)
+            {
+                const area = this.areas[i];
+                box3.bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
+            }
+
+            this.boundsSphereRadius = box3.bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+            this._boundsDirty = false;
+        }
     }
 
     /**
-     * Rebuilds an area's bounds
-     * @param {Tw2GeometryMeshArea} area
-     * @param {*} bufferData
-     * @param {*} indexData
-     * @param {Boolean} [fromVertex]
+     * Recalculates area bounds from vertices if possible
+     * @param {Array|TypedArray} bufferData=[this.bufferData]
+     * @param {Array|TypedArray} indexData=[this.indexData]
+     * @return {boolean} true if rebuilt from vertices
      */
-    RebuildAreaBounds(area, bufferData, indexData, fromVertex)
+    RecalculateAreaBounds(bufferData = this.bufferData, indexData = this.indexData)
     {
-        if (!fromVertex || !bufferData || !indexData) return false;
+        if (!bufferData || !indexData) return false;
 
-        const pDecl = this.declaration.FindUsage(0, 0);
+        const pDecl = this.GetUsageDeclaration(0, 0);
         if (!pDecl) return false;
 
-        const
-            stride = this.declaration.stride / 4,
-            pOffset = pDecl.offset;
+        const { box3_0 } = Tw2GeometryMesh.global;
+        for (let i = 0; i < this.areas.length; i++)
+        {
+            const area = this.areas[i];
 
-        const box = Tw2GeometryMesh.GetBoundsFromVertices(
-            box3.create(),
-            area.start,
-            area.count,
-            stride,
-            pOffset,
-            bufferData,
-            indexData
-        );
+            Tw2GeometryMesh.GetBoundsFromVertices(
+                box3_0,
+                area.start / 3 / indexData.BYTES_PER_ELEMENT,
+                area.count / 3,
+                this.declaration.stride / 4,
+                pDecl.offset,
+                bufferData,
+                indexData
+            );
 
-        box3.toBounds(box, area.minBounds, area.maxBounds);
-        area.boundsSphereRadius = box3.toPositionRadius(box, area.boundsSpherePosition);
+            box3.toBounds(box3_0, area.minBounds, area.maxBounds);
+            area.boundsSphereRadius = box3.toPositionRadius(box3_0, area.boundsSpherePosition);
+        }
+
         return true;
     }
 
     /**
-     * Gets a face's vertex indices
+     * Gets the geometries bounding box
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @return {box3} out
+     */
+    GetBoundingBox(out, force)
+    {
+        this.RebuildBounds(force);
+        return box3.fromBounds(out, this.minBounds, this.maxBounds);
+    }
+
+    /**
+     * Gets the meshes bounding sphere
+     * @param {sph3} out
+     * @param {Boolean} force
+     * @return {sph3}
+     */
+    GetBoundingSphere(out, force)
+    {
+        this.RebuildBounds(force);
+        return sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    }
+
+    /**
+     * Gets face vertex elements
+     * @param {Array|Float32Array} v1
+     * @param {Array|Float32Array} v2
+     * @param {Array|Float32Array} v3
+     * @param {Number} index
+     * @param {Number} usage
+     * @param {Number} usageIndex
+     * @return {{faceIndex: Number, vertexIndices: [Number, Number, Number]}} - debug data
+     */
+    GetFaceVertexElements(v1, v2, v3, index, usage, usageIndex)
+    {
+        if (!this.bufferData || !this.indexData)
+        {
+            for (let i = 0; i < v1.length; i++) v1[i] = 0;
+            for (let i = 0; i < v2.length; i++) v2[i] = 0;
+            for (let i = 0; i < v3.length; i++) v3[i] = 0;
+            throw new ErrSystemMirrorDisabled();
+        }
+        
+        const d = this.GetUsageDeclaration(usage, usageIndex);
+        // If no declaration empty arrays
+        if (!d)
+        {
+            for (let i = 0; i < v1.length; i++) v1[i] = 0;
+            for (let i = 0; i < v2.length; i++) v2[i] = 0;
+            for (let i = 0; i < v3.length; i++) v3[i] = 0;
+            throw new ErrVertexDeclarationNotFound({ usage, usageIndex });
+        }
+        
+        const
+            indices = Tw2GeometryMesh.GetFaceVertexIndices([], index, this.indexData),
+            stride = this.declaration.stride / 4;
+
+        Tw2GeometryMesh.GetVertexElement(v1, indices[0], stride, d.offset, d.elements, this.bufferData);
+        Tw2GeometryMesh.GetVertexElement(v2, indices[1], stride, d.offset, d.elements, this.bufferData);
+        Tw2GeometryMesh.GetVertexElement(v3, indices[2], stride, d.offset, d.elements, this.bufferData);
+
+        // Debug data
+        return {
+            faceIndex: index,
+            vertexIndices: [
+                indices[0],
+                indices[1],
+                indices[2]
+            ]
+        };
+    }
+
+    /**
+     * Gets the vertex indices for a face
+     * @param {Number} index
+     * @return {vec3|Array
+     */
+    GetFaceVertexIndices(index)
+    {
+        return Tw2GeometryMesh.GetFaceVertexIndices([], index, this.indexData);
+    }
+
+    /**
+     * Gets a vertex element
+     * @param {Array|Float32Array} out
+     * @param {Number} index
+     * @param {Number} usage
+     * @param {Number} usageIndex
+     * @param {Array|Float32Array} [bufferData=this.bufferData] (required when building areas for the first time)
+     * @return {Array|Float32Array}
+     */
+    GetVertexElement(out, index, usage, usageIndex, bufferData = this.bufferData)
+    {
+        if (!this.bufferData)
+        {
+            for (let i = 0; i < out.length; i++) out[i] = 0;
+            throw new ErrSystemMirrorDisabled();
+        }
+
+        const decl = this.GetUsageDeclaration(usage, usageIndex);
+        if (!decl)
+        {
+            for (let i = 0; i < out.length; i++) out[i] = 0;
+            throw new ErrVertexDeclarationNotFound({ usage, usageIndex });
+        }
+
+        return Tw2GeometryMesh.GetVertexElement(
+            out,
+            index,
+            this.declaration.stride / 4,
+            decl.offset,
+            decl.elements,
+            bufferData
+        );
+    }
+
+    /**
+     * Gets a face's vertex positions
+     * @param {vec3} v1
+     * @param {vec3} v2
+     * @param {vec3} v3
+     * @param {number} index
+     * @return {{faceIndex: Number, vertexIndices: Number[]}}
+     */
+    GetFaceVertexPositions(v1, v2, v3, index)
+    {
+        return this.GetFaceVertexElements(v1, v2, v3, index, Tw2VertexElement.Type.POSITION, 0);
+    }
+    
+    /**
+     * Gets a tri3 for a face at a given index
+     * @param {tri3} out
+     * @param {Number} index
+     * @return {{faceIndex: Number, vertexIndices: [Number,Number,Number]}} - debug data
+     */
+    GetFaceTri3(out, index)
+    {
+        return this.GetFaceVertexPositions(tri3.$v1(out), tri3.$v2(out), tri3.$v3(out), index);
+    }
+
+    /**
+     * Gets a face's normal
      * @param {vec3} out
      * @param {Number} index
-     * @param {*} indexData
-     * @returns {vec3}
+     * @return {vec3} out
+     */
+    GetFaceNormal(out, index)
+    {
+        const face = Tw2GeometryMesh.global.tri3_0;
+        this.GetFaceTri3(face, index);
+        return tri3.getNormal(out, face);
+    }
+
+    /**
+     * Gets a face's midpoint
+     * @param {vec3} out
+     * @param {Number} index
+     * @return {vec3}
+     */
+    GetFaceMidPoint(out, index)
+    {
+        const face = Tw2GeometryMesh.global.tri3_0;
+        this.GetFaceTri3(face, index);
+        return tri3.getMidpoint(out, face);
+    }
+
+    /**
+     * Gets a vertex position by index
+     * @param {vec3|Array} out
+     * @param {Number} index
+     * @return {Array|Float32Array} out
+     */
+    GetVertexPosition(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.POSITION, 0);
+    }
+
+    /**
+     * Gets a vertex normal by index
+     * @param {vec3|Array} out
+     * @param {Number} index
+     * @return {Array|Float32Array} out
+     */
+    GetVertexNormal(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.NORMAL, 0);
+    }
+
+    /**
+     * Gets a vertex tangent by index
+     * TODO: Generate tangents when uv and normals exist
+     * @param {vec3|Array} out
+     * @param {Number} index
+     * @return {Array|Float32Array} out
+     */
+    GetVertexTangent(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.TANGENT, 0);
+    }
+
+    /**
+     * Gets a vertex bitangent by index
+     * TODO: Generate bitangents when uv and normals exist
+     * @param {vec3|Array} out
+     * @param {Number} index
+     * @return {Array|Float32Array} out
+     */
+    GetVertexBitangent(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.BITANGENT, 0);
+    }
+
+    /**
+     * Gets a uv by index
+     * @param {Float32Array|Array} out
+     * @param {Number} index
+     * @param {Number} [usage=0]
+     * @return {Array|Float32Array} out
+     */
+    GetVertexUV(out, index, usage)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.TEXCOORD, usage);
+    }
+
+    /**
+     * Gets the first uv by index
+     * @param {vec3|Array|Float32Array} out
+     * @param {Number} }index
+     * @returns {vec3|Array|Float32Array}
+     */
+    GetVertexTexCoord0(out, index)
+    {
+        return this.GetVertexUV(out, index, 0);
+    }
+
+    /**
+     * Gets the second uv by index
+     * @param {vec3|Array|Float32Array} out
+     * @param {Number} }index
+     * @returns {vec3|Array|Float32Array}
+     */
+    GetVertexTexCoord1(out, index)
+    {
+        return this.GetVertexUV(out, index, 1);
+    }
+    
+    /**
+     * Gets a face's vertex indices
+     * @param {vec3|Array} out
+     * @param {Number} index
+     * @param {Array|TypedArray} indexData
+     * @returns {vec3|Array}
      */
     static GetFaceVertexIndices(out, index, indexData)
     {
         if (index >= indexData.length / 3)
         {
-            throw new Error("Invalid index: " + index);
+            out[0] = out[1] = out[2] = 0;
+            throw new ErrIndexBounds();
         }
 
         for (let i = 0; i < 3; i++)
@@ -161,32 +580,41 @@ export class Tw2GeometryMesh
     }
 
     /**
-     * Gets a vertices's position
-     * @param {vec3} out
+     * Gets a vertex element from buffer data
+     * @param {Array|Float32Array} out
      * @param {Number} index
      * @param {Number} stride
      * @param {Number} offset
-     * @param {*} bufferData
-     * @returns {vec3}
+     * @param {Number} elements
+     * @param {Array|Float32Array} bufferData
+     * @return {*} out
      */
-    static GetVertexPosition(out, index, stride, offset, bufferData)
+    static GetVertexElement(out, index, stride, offset, elements, bufferData)
     {
-        if (!isNumber(index) || index > bufferData.length / stride)
+        if (index > bufferData.length / stride)
         {
-            throw new Error("Invalid vertex index: " + index);
+            for (let i = 0; i < out.length; i++) out[i] = 0;
+            throw new ErrIndexBounds();
         }
 
-        const ix = index * stride;
+        /*
+        if (out.length !== elements)
+        {
+            for (let i = 0; i < out.length; i++) out[i] = 0;
+            throw new ErrIndexBounds();
+        }
+         */
 
-        return vec3.set(out,
-            bufferData[ix + offset],
-            bufferData[ix + offset + 1],
-            bufferData[ix + offset + 2]
-        );
+        for (let i = 0; i < elements; i++)
+        {
+            out[i] = bufferData[index * stride + offset / 4 + i];
+        }
+
+        return out;
     }
 
     /**
-     * Updates an area's bounds
+     * Gets a bounding box from vertices
      * @param {box3} out
      * @param {Number} start
      * @param {Number} count
@@ -197,31 +625,51 @@ export class Tw2GeometryMesh
      */
     static GetBoundsFromVertices(out, start, count, stride, pOffset, bufferData, indexData)
     {
-        count = count / 3;
-        start = start / 3 / indexData.BYTES_PER_ELEMENT;
-
         const
-            vertexIndices = [],
-            indices = vec3.create(),
-            position = vec3.create();
+            indices = Tw2GeometryMesh.global.vec3_0,
+            position = Tw2GeometryMesh.global.vec3_1;
 
         box3.empty(out);
 
         for (let i = 0; i < count; i++)
         {
             this.GetFaceVertexIndices(indices, i + start, indexData);
+
             for (let x = 0; x < 3; x++)
             {
-                if (!vertexIndices.includes(indices[x]))
-                {
-                    vertexIndices.push(indices[x]);
-                    this.GetVertexPosition(position, indices[x], stride, pOffset, bufferData);
-                    box3.addPoint(out, out, position);
-                }
+                this.GetVertexElement(position, indices[x], stride, pOffset, 3, bufferData);
+                box3.addPoint(out, out, position);
             }
         }
 
         return out;
     }
 
+    static global = {
+        tri3_0: tri3.create(),
+        pointLocal: vec3.create(),
+        vec3_0: vec3.create(),
+        vec3_1: vec3.create(),
+        vec3_2: vec3.create(),
+        box3_0: box3.create(),
+        lne3_0: lne3.create()
+    };
+
+}
+
+
+export class ErrSystemMirrorDisabled extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "System mirror is required but has been disabled");
+    }
+}
+
+export class ErrVertexDeclarationNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Vertex usage %usage% not found for index %usageIndex%");
+    }
 }
