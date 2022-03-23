@@ -21,9 +21,19 @@ export class Tw2TextureParameter extends Tw2Parameter
     textureRes = null;
 
     @meta.struct("Tw2SamplerOverrides")
+    @meta.isPrivate
     overrides = null;
 
     _isAttached = false;
+
+    /**
+     * Alias for textureRes
+     * @returns {null|Tw2TextureRes}
+     */
+    get res()
+    {
+        return this.textureRes;
+    }
 
     /**
      * Temporary

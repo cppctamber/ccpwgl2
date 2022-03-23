@@ -102,14 +102,6 @@ export class Tw2Effect extends meta.Model
     @meta.boolean
     autoParameter = false;
 
-    @meta.list()
-    @meta.isPrivate
-    stateOverride = null;
-
-    @meta.string
-    defaultTechnique = "Main";
-
-
     _isAttached = false;
 
     //resources
@@ -122,6 +114,15 @@ export class Tw2Effect extends meta.Model
     get isAttached()
     {
         return this._isAttached;
+    }
+
+    /**
+     * Alias for effectRes
+     * @return {Tw2EffectRes}
+     */
+    get res()
+    {
+        return this.effectRes;
     }
 
     /**
@@ -210,7 +211,7 @@ export class Tw2Effect extends meta.Model
     /**
      * Fires on value changes
      */
-    OnValueChanged()
+    OnValueChanged(opt)
     {
         let res;
 
@@ -229,9 +230,9 @@ export class Tw2Effect extends meta.Model
             res = this.effectFilePath ? tw2.GetResource(this.effectFilePath) : null;
         }
 
-        if (!this._SetEffectRes(res))
+        if (this._SetEffectRes(res))
         {
-            this.BindParameters();
+            this.BindParameters(opt);
         }
     }
 
@@ -305,7 +306,7 @@ export class Tw2Effect extends meta.Model
         try
         {
             this.shader = res.GetShader(this.options);
-            this.BindParameters();
+            this.BindParameters({ controller: res });
             this.EmitEvent(Tw2Resource.Event.RES_PREPARED, this, res);
             res.UnregisterNotification(this);
         }
@@ -404,33 +405,28 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        for (const name in this.samplerOverrides)
+        {
+            if (this.samplerOverrides.hasOwnProperty(name) && this.samplerOverrides[name])
+            {
+                this.samplerOverrides[name].usedByCurrentEffect = false;
+                //this.parameters[param].usedByCurrentTechnique = false;
+            }
+        }
+
     }
 
     /**
      * Binds parameters
+     * @param {Object} [opt]
      * @returns {Boolean}
      */
-    BindParameters()
+    BindParameters(opt)
     {
         this.UnBindParameters();
         if (!this.IsGood()) return false;
 
-        for (const param in this.parameters)
-        {
-            if (this.parameters.hasOwnProperty(param))
-            {
-                this.parameters[param].usedByCurrentEffect = false;
-                if (this.parameters[param] instanceof Tw2TextureParameter)
-                {
-                    this.parameters[param].usedByCurrentEffect = this.shader.HasTexture(param);
-                }
-                else
-                {
-                    this.parameters[param].usedByCurrentEffect = this.shader.HasConstant(param);
-                }
-                //this.parameters[param].usedByCurrentTechnique = false;
-            }
-        }
+        let samplerOverrideNames = [];
 
         for (let techniqueName in this.shader.techniques)
         {
@@ -441,7 +437,7 @@ export class Tw2Effect extends meta.Model
 
                 for (let i = 0; i < technique.passes.length; ++i)
                 {
-                    const pass = { state: this.GetTechniquePassStateOverrides(techniqueName, i), stages : [] };
+                    const pass = { state: this.GetTechniquePassStateOverrides(techniqueName, i), stages: [] };
 
                     for (let j = 0; j < technique.passes[i].stages.length; ++j)
                     {
@@ -455,57 +451,52 @@ export class Tw2Effect extends meta.Model
                         stage.textures = [];
                         stage.constantBuffer.set(stageRes.constantValues);
 
+                        const { constantBuffer } = stage;
+
                         for (let k = 0; k < stageRes.constants.length; ++k)
                         {
-                            const
-                                constant = stageRes.constants[k],
-                                { name, type } = constant;
+                            if (Tw2Effect.ConstantIgnore.includes(stageRes.constants[k].name))
+                            {
+                                continue;
+                            }
 
-                            if (Tw2Effect.ConstantIgnore.includes(name)) continue;
+                            const { name, type, offset, size, isAutoregister, elements } = stageRes.constants[k];
+                            let parameter;
 
                             if (name in this.parameters)
                             {
-                                const param = this.parameters[name];
-                                if (param.Bind(stage.constantBuffer, constant.offset, constant.size))
+                                parameter = this.parameters[name];
+                                if (parameter.Bind(constantBuffer, offset, size))
                                 {
-                                    stage.reroutedParameters.push(param);
+                                    stage.reroutedParameters.push(parameter);
                                 }
                                 else
                                 {
-                                    stage.parameters.push({
-                                        parameter: param,
-                                        constantBuffer: stage.constantBuffer,
-                                        offset: constant.offset,
-                                        size: constant.size
-                                    });
+                                    stage.parameters.push({ parameter, constantBuffer, offset, size });
                                 }
                             }
                             else if (tw2.HasVariable(name))
                             {
                                 stage.parameters.push({
                                     parameter: tw2.GetVariable(name),
-                                    constantBuffer: stage.constantBuffer,
-                                    offset: constant.offset,
-                                    size: constant.size
+                                    constantBuffer,
+                                    offset,
+                                    size
                                 });
                             }
-                            else if (constant.isAutoregister && type)
+                            else if (isAutoregister && type)
                             {
                                 // TODO: Map constant enums to internal type strings
-                                const variable = tw2.CreateVariable(name, undefined, type);
-                                if (variable)
+                                parameter = tw2.CreateVariable(name, undefined, type);
+                                if (parameter)
                                 {
-                                    stage.parameters.push({
-                                        parameter: variable,
-                                        constantBuffer: stage.constantBuffer,
-                                        offset: constant.offset,
-                                        size: constant.size
-                                    });
+                                    this.parameters[name] = parameter;
+                                    stage.parameters.push({ parameter, constantBuffer, offset, size });
                                 }
                             }
-                            else if (this.autoParameter && constant.elements === 1)
+                            else if (this.autoParameter && elements === 1)
                             {
-                                let value = stage.constantBuffer.subarray(constant.offset, constant.offset + constant.size);
+                                let value = stage.constantBuffer.subarray(offset, offset + size);
                                 if (value.length === 0)
                                 {
                                     value = undefined;
@@ -515,59 +506,52 @@ export class Tw2Effect extends meta.Model
                                     value = value[0];
                                 }
 
-                                const param = tw2.CreateVariable(name, value, type);
-                                if (param)
+                                parameter = tw2.CreateVariable(name, value, type);
+                                if (parameter)
                                 {
-                                    this.parameters[name] = param;
-                                    if (param.Bind(stage.constantBuffer, constant.offset, constant.size))
+                                    this.parameters[name] = parameter;
+                                    if (parameter.Bind(constantBuffer, offset, size))
                                     {
-                                        stage.reroutedParameters.push(param);
+                                        stage.reroutedParameters.push(parameter);
                                     }
                                     else
                                     {
-                                        stage.parameter.push({
-                                            parameter: param,
-                                            constantBuffer: stage.constantBuffer,
-                                            offset: constant.offset,
-                                            size: constant.size
-                                        });
+                                        stage.parameter.push({ parameter, constantBuffer, offset, size });
                                     }
                                 }
                             }
 
-                            if (name in this.parameters && this.shader && name in this.shader.annotations)
+                            if (parameter)
                             {
-                                try
-                                {
-                                    this.parameters[name].annotation = this.shader.annotations[name];
-                                }
-                                catch(err)
-                                {
-                                    // Herp
-                                }
+                                parameter.usedByCurrentEffect = true;
                             }
                         }
 
                         for (let k = 0; k < stageRes.textures.length; ++k)
                         {
-                            const name = stageRes.textures[k].name;
-                            let param = null;
+                            const { name, isAutoregister } = stageRes.textures[k];
+
+                            let texture = null;
                             if (name in this.parameters)
                             {
-                                param = this.parameters[name];
-                                param.isUsedByCurrentTechnique = true;
+                                texture = this.parameters[name];
                             }
                             else if (tw2.HasVariable(name))
                             {
-                                param = tw2.GetVariable(name);
+                                texture = tw2.GetVariable(name);
                             }
-                            else if (stageRes.textures[k].isAutoregister)
+                            else if (isAutoregister)
                             {
-                                param = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
+                                texture = this.parameters[name] = tw2.CreateVariable(name, undefined, Tw2TextureParameter);
                             }
                             else if (this.autoParameter)
                             {
-                                param = this.parameters[name] = new Tw2TextureParameter(name);
+                                texture = this.parameters[name] = new Tw2TextureParameter(name);
+                            }
+
+                            if (texture)
+                            {
+                                texture.usedByCurrentEffect = true;
                             }
                             else
                             {
@@ -575,22 +559,37 @@ export class Tw2Effect extends meta.Model
                             }
 
                             const p = {
-                                parameter: param,
+                                parameter: texture,
                                 slot: stageRes.textures[k].registerIndex,
                                 sampler: null
                             };
 
                             for (let n = 0; n < stageRes.samplers.length; ++n)
                             {
-                                if (stageRes.samplers[n].registerIndex === p.slot)
+                                const { registerIndex, name } = stageRes.samplers[n];
+
+                                if (samplerOverrideNames.indexOf(name) === -1)
                                 {
-                                    if (stageRes.samplers[n].name in this.samplerOverrides)
+                                    if (!this.samplerOverrides[name])
                                     {
-                                        p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(device, stageRes.samplers[n]);
+                                        this.samplerOverrides[name] = null;
+                                    }
+                                    samplerOverrideNames.push(name);
+                                    samplerOverrideNames.sort();
+                                }
+
+                                if (registerIndex === p.slot)
+                                {
+                                    if (name in this.samplerOverrides && this.samplerOverrides[name])
+                                    {
+                                        const override = this.samplerOverrides[name];
+                                        p.sampler = override.GetSampler(stageRes.samplers[n]);
+                                        override.usedByCurrentEffect = true;
                                     }
                                     else
                                     {
                                         p.sampler = stageRes.samplers[n];
+                                        this.samplerOverrides[name] = null;
                                     }
                                     break;
                                 }
@@ -607,23 +606,66 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        // Automatically removes unused parameters
+        if (this.autoParameter)
+        {
+            // Automatically add unique ids for any picking shaders
+            // - CCP picking shaders expect an objectID and an areaID but it uses
+            // - the alpha channel which is not guaranteed to be enabled
+            // CCP picking
+            if (this.parameters["objectId"]) this.parameters["objectId"].x = this._id;
+            // CPPC picking
+            if (this.parameters["Override"]) this.parameters["Override"].y = this._id;
+
+            // Remove unnecessary parameters and textures
+            for (const key in this.parameters)
+            {
+                if (this.parameters.hasOwnProperty(key))
+                {
+                    const param = this.parameters[key];
+                    if (!param)
+                    {
+                        Reflect.deleteProperty(this.parameters, key);
+                    }
+                    else if (!param.usedByCurrentEffect)
+                    {
+                        Reflect.deleteProperty(this.parameters, key);
+                        //param.EmitEvent("removed", param, this);
+                    }
+                }
+            }
+
+            // Remove unnecessary overrides
+            for (const key in this.samplerOverrides)
+            {
+                if (this.samplerOverrides.hasOwnProperty(key))
+                {
+                    const override = this.samplerOverrides[key];
+                    if (!override)
+                    {
+                        if (samplerOverrideNames.indexOf(key) === -1)
+                        {
+                            Reflect.deleteProperty(this.samplerOverrides, key);
+                        }
+                    }
+                    else if (!override.usedByCurrentEffect)
+                    {
+                        Reflect.deleteProperty(this.samplerOverrides, key);
+                        //override.EmitEvent("removed", override, this);
+                    }
+                }
+            }
+        }
+
+        this.EmitEvent("modified", this);
+
         if (device["effectObserver"])
         {
             device["effectObserver"]["OnEffectChanged"](this);
         }
 
-        // Automatically add unique ids for any picking shaders
-        // - CCP picking shaders expect an objectID and an areaID but it uses
-        // - the alpha channel which is not guaranteed to be enabled
-        if (this.autoParameter)
-        {
-            // CCP picking
-            if (this.parameters["objectId"]) this.parameters["objectId"].x = this._id;
-            // CPPC picking
-            if (this.parameters["Override"]) this.parameters["Override"].y = this._id;
-        }
+        //this.autoParameter = false;
 
-        this.autoParameter = false;
         return true;
     }
 
@@ -726,7 +768,7 @@ export class Tw2Effect extends meta.Model
      * @param {function} cb - callback
      * @param {String} [technique]
      */
-    Render(cb, technique = this.defaultTechnique)
+    Render(cb, technique = "Main")
     {
         const count = this.GetPassCount(technique);
         for (let i = 0; i < count; ++i)
@@ -810,35 +852,13 @@ export class Tw2Effect extends meta.Model
 
     /**
      * Adds effect parameters automatically
-     * @returns {Boolean} true if updated
+     * @param {Object} [opt]
      */
-    PopulateParameters()
+    PopulateParameters(opt)
     {
         this.autoParameter = true;
-        return this.BindParameters();
+        this.BindParameters(opt);
     }
-
-    /**
-     * Purges unused parameters
-     * @param {Object} [out={}]
-     * @return {Object} out
-     */
-    PurgeUnusedParameters(out={})
-    {
-        for (const key in this.parameters)
-        {
-            if (this.parameters.hasOwnProperty(key))
-            {
-                if (!this.parameters[key].usedByCurrentEffect)
-                {
-                    out[key] = this.parameters[key];
-                    Reflect.deleteProperty(this.parameters, key);
-                }
-            }
-        }
-        return out;
-    }
-
 
     /**
      * Fires a function per child
@@ -923,14 +943,14 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
-     * Serializes a effect
+     * Serializes an effect
      * @param {Tw2Effect} a
      * @param {Object} [out={}]
      * @returns {Object} out
      */
     static get(a, out = {})
     {
-        assignIfExists(out, a, [ "name", "display", "effectFilePath" ]);
+        assignIfExists(out, a, [ "name", "display", "effectFilePath", "autoParameter" ]);
         out.parameters = a.GetParameters();
         out.textures = a.GetTextures();
         out.overrides = a.GetOverrides();
@@ -976,10 +996,11 @@ export class Tw2Effect extends meta.Model
 
     /**
      * Temporary function which ensures overrides have "Sampler" in their name
+     * TODO: Remove the need for this
      * @param {*} [values={}]
      * @returns {*}
      */
-    static getNormalizedOverrides(values={})
+    static getNormalizedOverrides(values = {})
     {
         const out = {};
         for (const key in values)
