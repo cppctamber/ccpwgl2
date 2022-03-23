@@ -9,6 +9,8 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "constant";
+import { box3 } from "math/box3";
+import { sph3 } from "math/sph3";
 
 
 @meta.type("Tw2Mesh", "Tr2Mesh")
@@ -76,24 +78,16 @@ export class Tw2Mesh extends meta.Model
     };
 
     @meta.struct("Tw2GeometryRes")
-    _geometryResource = null;
+    @meta.isPrivate
+    geometryResource = null;
 
     /**
-     * Temporary alias for _geometryResource
+     * Alias for geometryResource
      * @returns {null|Tw2GeometryRes}
      */
-    get geometryResource()
+    get res()
     {
-        return this._geometryResource;
-    }
-
-    /**
-     * Temporary alias for _geometryResource
-     * @param {Tw2GeometryRes} res
-     */
-    set geometryResource(res)
-    {
-        this._geometryResource = res;
+        return this.geometryResource;
     }
 
     /**
@@ -103,8 +97,92 @@ export class Tw2Mesh extends meta.Model
     {
         if (this.geometryResPath !== "")
         {
-            this._geometryResource = tw2.GetResource(this.geometryResPath);
+            this.geometryResource = tw2.GetResource(this.geometryResPath);
         }
+    }
+
+    /**
+     * Intersects the mesh
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache]
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        if (this.display && this.IsGood() && !ray.IsMasked(this))
+        {
+            //console.log("Intersecting mesh " + this.name);
+            return this.geometryResource.Intersect(ray, intersects, worldTransform, cache);
+        }
+    }
+
+    /**
+     *
+     * @param force
+     */
+    RebuildBounds(force)
+    {
+        if (this.IsGood())
+        {
+            this.geometryResource.RebuildBounds(force);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param {box3} out
+     * @param {Boolean} force
+     * @return {box3|null}
+     */
+    GetBoundingBox(out, force)
+    {
+        if (this.RebuildBounds(force))
+        {
+            return this.geometryResource.GetBoundingBox(out);
+        }
+
+        box3.empty(out);
+        return null;
+    }
+
+    /**
+     *
+     * @param {sph3} out
+     * @param {Boolean} force
+     * @return {sph3|null}
+     */
+    GetBoundingSphere(out, force)
+    {
+        if (this.RebuildBounds(force))
+        {
+            return this.geometryResource.GetBoundingSphere(out);
+        }
+
+        sph3.empty(out);
+        return null;
+    }
+
+    /**
+     * Sets the geometry resource
+     * @param path
+     */
+    SetGeometryRes(path)
+    {
+        this.geometryResPath = path;
+        this.geometryResource = path ? tw2.GetResource(this.geometryResPath) : null;
+    }
+
+    /**
+     * Gets the geometry resource
+     * TODO: Remove all usages
+     * @returns {null|Tw2GeometryResource}
+     */
+    GetGeometryRes()
+    {
+        return this.geometryResource;
     }
 
     /**
@@ -113,40 +191,18 @@ export class Tw2Mesh extends meta.Model
      * @param {Array} [out=[]]
      * @returns {Array} out
      */
-    FindParameters(options, out = [])
+    FindParameters(options, out)
     {
-        if (isString(options)) options = { name: options };
-        const { name, areaName, areaType } = options;
-
-        const findParameter = type =>
-        {
-            if (!areaType || areaType === type)
-            {
-                const meshAreas = this[type] || [];
-                for (let i = 0; i < meshAreas.length; i++)
-                {
-                    if (!areaName || meshAreas[i].name === areaName)
-                    {
-                        const parameter = meshAreas[i].FindParameter(name, out);
-                        if (parameter && !out.includes(parameter))
-                        {
-                            out.push(parameter);
-                        }
-                    }
-                }
-            }
-        };
-
-        findParameter("transparentAreas");
-        findParameter("pickableAreas");
-        findParameter("opaqueAreas");
-        findParameter("distortionAreas");
-        findParameter("depthAreas");
-        findParameter("additiveAreas");
-        findParameter("opaquePrepassAreas");
-        findParameter("depthNormalAreas");
-
-        return out;
+        return Tw2Mesh.FindParameters(this, options, [
+            "transparentAreas",
+            "pickableAreas",
+            "opaqueAreas",
+            "distortionAreas",
+            "depthAreas",
+            "additiveAreas",
+            "opaquePrepassAreas",
+            "depthNormalAreas",
+        ], out);
     }
 
     /**
@@ -162,65 +218,12 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
-     * Finds a mesh area by type and index
-     * @param {Tw2Mesh|Tw2InstancedMesh} mesh
-     * @param {String} areasType
-     * @param {Number} index
-     * @param {Number} [meshIndex=0]
-     * @return {Tw2MeshArea|Tw2MeshLineArea}
-     */
-    static FindMeshAreaByTypeAndIndex(mesh, areasType, index, meshIndex=0)
-    {
-        if (areasType in this.AreaType)
-        {
-            areasType = mesh[this.AreaType[areasType]];
-        }
-
-        const meshAreas = mesh[areasType];
-        if (!isArray(meshAreas))
-        {
-            throw new ReferenceError(`Invalid mesh area type: ${areasType}`);
-        }
-
-        if (meshAreas)
-        {
-            for (let i = 0; i < meshAreas.length; i++)
-            {
-                if (meshAreas[i].index === index && meshAreas[i].meshIndex === meshIndex)
-                {
-                    return meshAreas[i];
-                }
-            }
-        }
-    }
-
-    static AreaType = {
-        "TRANSPARENT": "transparentAreas",
-        "PICKABLE": "pickableAreas",
-        "DISTORTION": "distortionAreas",
-        "DEPTH": "depthAreas",
-        "DEPTH_NORMAL": "depthNormalAreas",
-        "ADDITIVE": "additiveAreas",
-        "OPAQUE": "opaqueAreas",
-        "OPAQUE_PREPASS": "opaquePrepassAreas",
-    };
-
-    /**
      * Checks if the mesh's resource is good
      * @returns {Boolean}
      */
     IsGood()
     {
-        return this._geometryResource && this._geometryResource.IsGood();
-    }
-
-    /**
-     * Gets the meshes' geometry resource
-     * @returns {null|Tw2GeometryRes}
-     */
-    GetGeometryRes()
-    {
-        return this._geometryResource;
+        return this.geometryResource && this.geometryResource.IsGood();
     }
 
     /**
@@ -230,9 +233,9 @@ export class Tw2Mesh extends meta.Model
      */
     GetResources(out = [])
     {
-        if (this._geometryResource && !out.includes(this._geometryResource))
+        if (this.geometryResource && !out.includes(this.geometryResource))
         {
-            out.push(this._geometryResource);
+            out.push(this.geometryResource);
         }
 
         const per = perArrayChild;
@@ -312,6 +315,72 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
+     * Finds all parameters in a mesh of a given name, optionally by area name and area type
+     * @param {Tw2Mesh|Tw2InstancedMesh}mesh
+     * @param {String|Object} options
+     * @param {Array<String>}areaNames
+     * @param {Array} [out=[]]
+     * @returns {Array} out
+     */
+    static FindParameters(mesh, options, areaNames, out = [])
+    {
+        if (isString(options)) options = { parameterName: options };
+        const { parameterName, areaName, areaType } = options;
+
+        for (let i = 0; i < areaNames.length; i++)
+        {
+            const type = areaNames[i];
+            if (!areaType || areaType === type)
+            {
+                const meshAreas = mesh[type] || [];
+                for (let i = 0; i < meshAreas.length; i++)
+                {
+                    if (!areaName || meshAreas[i].name === areaName)
+                    {
+                        const parameter = meshAreas[i].FindParameter(parameterName, out);
+                        if (parameter && !out.includes(parameter))
+                        {
+                            out.push(parameter);
+                        }
+                    }
+                }
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Finds a mesh area by type and index
+     * @param {Tw2Mesh|Tw2InstancedMesh} mesh
+     * @param {String} areasType
+     * @param {Number} index
+     * @param {Number} [meshIndex=0]
+     * @return {null|Tw2MeshArea|Tw2MeshLineArea}
+     */
+    static FindMeshAreaByTypeAndIndex(mesh, areasType, index, meshIndex=0)
+    {
+        const meshAreas = mesh[areasType];
+        if (!isArray(meshAreas))
+        {
+            throw new ReferenceError(`Invalid mesh area type: ${areasType}`);
+        }
+
+        if (meshAreas)
+        {
+            for (let i = 0; i < meshAreas.length; i++)
+            {
+                if (meshAreas[i].index === index && meshAreas[i].meshIndex === meshIndex)
+                {
+                    return meshAreas[i];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets render batches from a mesh area array and commits them to an accumulator
      * @param {Tw2Mesh} mesh
      * @param {Array.<Tw2MeshArea>} areas
@@ -329,7 +398,7 @@ export class Tw2Mesh extends meta.Model
                 const batch = new area.constructor.batchType();
                 batch.renderMode = mode;
                 batch.perObjectData = perObjectData;
-                batch.geometryRes = mesh._geometryResource;
+                batch.geometryRes = mesh.geometryResource;
                 batch.meshIx = area.meshIndex;
                 batch.start = area.index;
                 batch.count = area.count;

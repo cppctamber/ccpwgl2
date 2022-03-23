@@ -22,7 +22,7 @@ export class Tw2GeometryBatch extends Tw2RenderBatch
 
 
     /**
-     * Commits the Tw2InstancedMeshBatch for rendering
+     * Commits the geometry batch for rendering
      * @param {String} technique - technique name
      */
     Commit(technique)

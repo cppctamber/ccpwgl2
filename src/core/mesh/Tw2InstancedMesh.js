@@ -1,6 +1,6 @@
-import { meta, isString, perArrayChild, get, assignIfExists } from "utils";
+import { meta, perArrayChild, get, assignIfExists } from "utils";
 import { tw2 } from "global";
-import { vec3 } from "math";
+import { box3, sph3, vec3 } from "math";
 import { Tw2InstancedMeshBatch } from "../batch";
 import { Tw2Mesh } from "./Tw2Mesh";
 import {
@@ -12,8 +12,10 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "constant";
+import { ErrFeatureNotImplemented } from "core";
 
 
+@meta.todo("Is this deprecated?")
 @meta.type("Tw2InstancedMesh", "Tr2InstancedMesh")
 export class Tw2InstancedMesh extends meta.Model
 {
@@ -83,24 +85,17 @@ export class Tw2InstancedMesh extends meta.Model
         transparentAreas: true,
     };
 
-    _geometryResource = null;
+    @meta.struct("Tw2GeometryResource")
+    @meta.isPrivate
+    geometryResource = null;
 
     /**
-     * Temporary alias for _geometryResource
-     * @returns {null|Tw2GeometryRes}
+     * Alias for geometryResource
+     * @returns {null|Tw2GeometryResource}
      */
-    get geometryResource()
+    get res()
     {
-        return this._geometryResource;
-    }
-
-    /**
-     * Temporary alias for _geometryResource
-     * @param {Tw2GeometryRes} res
-     */
-    set geometryResource(res)
-    {
-        this._geometryResource = res;
+        return this.geometryResource;
     }
 
     /**
@@ -110,7 +105,7 @@ export class Tw2InstancedMesh extends meta.Model
     {
         if (this.geometryResPath !== "")
         {
-            this._geometryResource = tw2.GetResource(this.geometryResPath);
+            this.geometryResource = tw2.GetResource(this.geometryResPath);
         }
 
         if (this.instanceGeometryResPath !== "")
@@ -120,45 +115,74 @@ export class Tw2InstancedMesh extends meta.Model
     }
 
     /**
+     * Intersects the mesh
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache]
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        throw new ErrFeatureNotImplemented({ feature: "Instance mesh intersection" });
+    }
+
+    /**
+     * Rebuilds bounds
+     * @param {Boolean} force
+     * @returns {Boolean} true if rebuilt
+     */
+    RebuildBounds(force)
+    {
+        if (this.IsGood())
+        {
+            this.geometryResource.RebuildBounds(force);
+            if ("RebuildBounds" in this.instanceGeometryResource)
+            {
+                this.instanceGeometryResource.RebuildBounds(force);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the bounding box for the mesh
+     * @param {box3} out
+     * @param {Boolean} force
+     * @return {box3|null}
+     */
+    GetBoundingBox(out, force)
+    {
+        throw new ErrFeatureNotImplemented({ feature: "Instance mesh bounds" });
+    }
+
+    /**
+     * Gets the bounding sphere for the mesh
+     * @param {sph3} out
+     * @param {Boolean} force
+     * @return {sph3|null}
+     */
+    GetBoundingSphere(out, force)
+    {
+        throw new ErrFeatureNotImplemented({ feature: "Instance mesh bounds" });
+    }
+
+    /**
      * Finds all parameters of a given name
      * @param {Object|String} options
-     * @param {Array} [out=[]]
+     * @param {Array} [out]
      * @returns {Array} out
      */
-    FindParameters(options, out = [])
+    FindParameters(options, out)
     {
-        if (isString(options)) options = { name: options };
-        const { name, areaName, areaType } = options;
-
-        const findParameter = type =>
-        {
-            if (!areaType || areaType === type)
-            {
-                const meshAreas = this[type] || [];
-                for (let i = 0; i < meshAreas.length; i++)
-                {
-                    if (!areaName || meshAreas[i].name === areaName)
-                    {
-                        const parameter = meshAreas[i].FindParameter(name, out);
-                        if (parameter && !out.includes(parameter))
-                        {
-                            out.push(parameter);
-                        }
-                    }
-                }
-            }
-        };
-
-        findParameter("transparentAreas");
-        findParameter("pickableAreas");
-        findParameter("opaqueAreas");
-        findParameter("distortionAreas");
-        findParameter("depthAreas");
-        findParameter("additiveAreas");
-        findParameter("opaquePrepassAreas");
-        findParameter("depthNormalAreas");
-
-        return out;
+        return Tw2Mesh.FindParameters(this, options, [
+            "transparentAreas",
+            "pickableAreas",
+            "opaqueAreas",
+            "distortionAreas",
+            "depthAreas",
+            "additiveAreas",
+        ], out);
     }
 
     /**
@@ -181,19 +205,40 @@ export class Tw2InstancedMesh extends meta.Model
     {
         const
             instanced = this.instanceGeometryResource,
-            isResGood = this._geometryResource && this._geometryResource.IsGood(),
+            isResGood = this.geometryResource && this.geometryResource.IsGood(),
             isInstancedResGood = !instanced ? false : instanced.IsGood ? instanced.IsGood() : true;
 
         return isResGood && isInstancedResGood;
     }
 
     /**
-     * Gets the meshes' geometry resource
-     * @returns {null|Tw2GeometryRes}
+     * Sets the geometry resource
+     * @param {String} path
+     */
+    SetGeometryRes(path)
+    {
+        this.geometryResPath = path;
+        this.geometryResource = path ? tw2.GetResource(this.geometryResPath) : null;
+    }
+
+    /**
+     * Gets the geometry resource
+     * TODO: Remove all usages
+     * @returns {null|Tw2GeometryResource}
      */
     GetGeometryRes()
     {
-        return this._geometryResource;
+        return this.geometryResource;
+    }
+
+    /**
+     * Sets the instance geometry resource
+     * @param {String} path
+     */
+    SetInstanceGeometryRes(path)
+    {
+        this.instanceGeometryResPath = path;
+        this.instanceGeometryResource = path ? tw2.GetResource(this.instanceGeometryResPath) : null;
     }
 
     /**
@@ -203,9 +248,9 @@ export class Tw2InstancedMesh extends meta.Model
      */
     GetResources(out = [])
     {
-        if (this._geometryResource && !out.includes(this._geometryResource))
+        if (this.geometryResource && !out.includes(this.geometryResource))
         {
-            out.push(this._geometryResource);
+            out.push(this.geometryResource);
         }
 
         if (this.instanceGeometryResource && "GetResources" in this.instanceGeometryResource)
@@ -290,7 +335,7 @@ export class Tw2InstancedMesh extends meta.Model
         const buffer = this.instanceGeometryResource.GetInstanceBuffer(this.instanceMeshIndex);
         if (buffer)
         {
-            this._geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer,
+            this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer,
                 this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex),
                 this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex),
                 this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
@@ -324,13 +369,6 @@ export class Tw2InstancedMesh extends meta.Model
 
         if (values)
         {
-            /*
-            if (values.instanceGeometryResource)
-            {
-                item.instanceGeometryResource = values.instanceGeometryResource;
-            }
-            */
-
             assignIfExists(item, values, [
                 "name", "display", "geometryResPath",
                 "instanceGeometryResPath", "instanceMeshIndex"
