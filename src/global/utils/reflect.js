@@ -101,7 +101,7 @@ function getValidKeys(array)
     {
         if (array[i].indexOf(PREFIX) === 0)
         {
-            out.push(array[i].replace(PREFIX, ""));
+            out.push(array[i].replace(PREFIX + ":", ""));
         }
     }
     return out;
