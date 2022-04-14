@@ -16,6 +16,9 @@ import {
 export class Tr2MeshLod extends meta.Model
 {
 
+    @meta.string
+    name = "";
+
     @meta.list("Tw2MeshArea")
     additiveAreas = [];
 
