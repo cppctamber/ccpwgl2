@@ -121,9 +121,9 @@ vec4.toRGBA = function(out, linear, denormalizeAlpha)
  */
 vec4.fromRGBA = function(out, rgba, denormalizedAlpha)
 {
-    out[0] = rgba[0] / 255;
-    out[1] = rgba[1] / 255;
-    out[2] = rgba[2] / 255;
+    out[0] = num.linearFromColor(rgba[0]);
+    out[1] = num.linearFromColor(rgba[1]);
+    out[2] = num.linearFromColor(rgba[2]);
     out[3] = denormalizedAlpha ? num.linearFromColor(rgba[3]) : rgba[3];
     return out;
 };
@@ -137,9 +137,9 @@ vec4.fromRGBA = function(out, rgba, denormalizedAlpha)
  */
 vec4.fromRGB = function(out, rgb, linearAlpha = 1)
 {
-    out[0] = rgb[0] / 255;
-    out[1] = rgb[1] / 255;
-    out[2] = rgb[2] / 255;
+    out[0] = num.linearFromColor(rgb[0]);
+    out[1] = num.linearFromColor(rgb[1]);
+    out[2] = num.linearFromColor(rgb[2]);
     out[3] = linearAlpha;
     return out;
 };

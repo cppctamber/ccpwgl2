@@ -492,6 +492,12 @@ vec3.getSpherical = function(out, a)
     return out;
 };
 
+/**
+ * Makes a spherical value "safe"
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
 vec3.makeSphericalSafe = function(out, a)
 {
     out[0] = Math.max(num.EPSILON, Math.min(Math.PI - num.EPSILON, a[0]));
