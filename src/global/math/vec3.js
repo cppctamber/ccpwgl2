@@ -819,3 +819,41 @@ vec3.fromHex = function(out, hex)
     return out;
 };
 
+/**
+ * Sets a vec3 from an array with an optional offset
+ * @param {vec3} out
+ * @param {TypedArray|Array} array
+ * @param {Number} [offset=0]
+ * @returns {vec3} out
+ */
+vec3.fromArray = function(out, array, offset=0)
+{
+    out[0] = array[offset];
+    out[1] = array[offset + 1];
+    out[2] = array[offset + 2];
+    return out;
+};
+
+/**
+ * Sets a vec3 from a mat4 column
+ * @param {vec3} out
+ * @param {mat4} m
+ * @param {Number} index
+ * @returns {vec3} out
+ */
+vec3.fromMat4Column = function(out, m, index)
+{
+    return vec3.fromArray(out, m, index * 4);
+};
+
+/**
+ * Sets a vec3 from a mat3 column
+ * @param {vec3} out
+ * @param {mat4} m
+ * @param {Number} index
+ * @returns {vec3} out
+ */
+vec3.fromMat3Column = function(out, m, index)
+{
+    return vec3.fromArray(out, m, index * 3);
+};

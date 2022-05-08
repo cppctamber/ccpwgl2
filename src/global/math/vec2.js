@@ -1,4 +1,4 @@
-import { vec2 } from "gl-matrix";
+import { vec2, vec3 } from "gl-matrix";
 
 export { vec2 };
 
@@ -83,5 +83,19 @@ vec2.subtractScalar = function(out, a, s)
 {
     out[0] = a[0] - s;
     out[1] = a[1] - s;
+    return out;
+};
+
+/**
+ * Sets a vec2 from an array with an optional offset
+ * @param {vec3} out
+ * @param {TypedArray|Array} array
+ * @param {Number} [offset=0]
+ * @returns {vec3} out
+ */
+vec2.fromArray = function(out, array, offset=0)
+{
+    out[0] = array[offset];
+    out[1] = array[offset + 1];
     return out;
 };

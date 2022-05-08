@@ -1,4 +1,4 @@
-import { vec4 } from "gl-matrix";
+import { vec3, vec4 } from "gl-matrix";
 import { num } from "./num";
 
 export { vec4 };
@@ -207,5 +207,21 @@ vec4.fromHex = function(out, hex, defaultAlpha = 1)
         throw new TypeError("Invalid hex");
     }
 
+    return out;
+};
+
+/**
+ * Sets a vec4 from an array with an optional offset
+ * @param {vec3} out
+ * @param {TypedArray|Array} array
+ * @param {Number} [offset=0]
+ * @returns {vec3} out
+ */
+vec4.fromArray = function(out, array, offset=0)
+{
+    out[0] = array[offset];
+    out[1] = array[offset + 1];
+    out[2] = array[offset + 2];
+    out[3] = array[offset + 3];
     return out;
 };
