@@ -20,6 +20,12 @@ import { ErrGeometryFileType } from "core/resource";
 export class WBGReader
 {
 
+    static Prepare(data, res)
+    {
+        const reader = new WBGReader();
+        return reader.Prepare(data, res);
+    }
+
     /**
      * Prepares the resource data
      * @param {ArrayBuffer} data

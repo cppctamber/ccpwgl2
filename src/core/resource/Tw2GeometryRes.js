@@ -228,17 +228,17 @@ export class Tw2GeometryRes extends Tw2Resource
         vec3.set(this.boundsSpherePosition, 0, 0, 0);
         this.boundsSphereRadius = 0;
 
-        const reader = readers[this._extension];
-        if (!reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
+        const Reader = readers[this._extension];
+        if (!Reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
 
         // TODO: Remove this option
-        if (reader.byMesh)
+        if (Reader.byMesh)
         {
-            this.PrepareFromMeshes(reader.construct(data));
+            this.PrepareFromMeshes(Reader.construct(data));
         }
         else
         {
-            reader.Prepare(data, this);
+            Reader.Prepare(data, this);
         }
 
     }
