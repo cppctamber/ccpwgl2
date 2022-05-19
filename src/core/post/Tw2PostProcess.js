@@ -93,6 +93,20 @@ export class Tw2PostProcess extends meta.Model
     }
 
     /**
+     * Gets all resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>} out
+     */
+    GetResources(out=[])
+    {
+        for (let i = 0; i < this.stages.length; i++)
+        {
+            this.stages[i].GetResources(out);
+        }
+        return out;
+    }
+
+    /**
      * Keeps the post processing alive
      */
     KeepAlive()
