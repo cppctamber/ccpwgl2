@@ -210,7 +210,7 @@ export const MipFilterMode = {
 
 
 export const TEX_2D = 2;
-export const TEX_VOLUME =  3;
+export const TEX_VOLUME =  3;  // 2D ARRAY
 export const TEX_CUBE_MAP = 4;
 export const TEX_SHADOW_MAP = 5;  // is this right?
 
