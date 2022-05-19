@@ -2,6 +2,28 @@ import { isTyped, isArrayLike, isArray, isPlain } from "./type";
 import { toArray } from "utils/arr";
 
 /**
+ * Gets a random object element
+ * @param {Object} obj
+ * @returns {Array}
+ */
+export function getRandomObjectElement(obj)
+{
+    let key;
+
+    if (Array.isArray(obj))
+    {
+        key = Math.floor(Math.random() * (obj.length));
+    }
+    else
+    {
+        const keys = Object.keys(obj);
+        key = keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    return [ obj[key], key ];
+}
+
+/**
  * Empties an array or plain object
  * @param {Array|Object} obj
  * @return {Array|Object} obj
