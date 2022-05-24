@@ -43,14 +43,18 @@ export class Tw2InstancedMesh extends meta.Model
     @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
+    @meta.struct("Tw2GeometryResource")
+    @meta.isPrivate
+    geometryResource = null;
+
     @meta.path
     geometryResPath = "";
 
-    @meta.path
-    instanceGeometryResPath = "";
-
     @meta.struct()
     instanceGeometryResource = null;
+
+    @meta.path
+    instanceGeometryResPath = "";
 
     @meta.uint
     instanceMeshIndex = 0;
@@ -85,9 +89,7 @@ export class Tw2InstancedMesh extends meta.Model
         transparentAreas: true,
     };
 
-    @meta.struct("Tw2GeometryResource")
-    @meta.isPrivate
-    geometryResource = null;
+
 
     /**
      * Alias for geometryResource
@@ -112,6 +114,26 @@ export class Tw2InstancedMesh extends meta.Model
         {
             this.instanceGeometryResource = tw2.GetResource(this.instanceGeometryResPath);
         }
+    }
+
+    /**
+     * Sets the geometry path and loads it if another hasn't been requested since
+     * @param {string} resPath
+     * @returns { Promise<Boolean> }
+     */
+    async FetchGeometryResPath(resPath)
+    {
+        return Tw2Mesh.HandleFetch(this, "geometryResPath", "geometryResource", resPath);
+    }
+
+    /**
+     * Sets the instanced geometry path and loads it
+     * @param {string} resPath
+     * @returns { Promise<Boolean> }
+     */
+    async FetchInstanceGeometryResPath(resPath)
+    {
+        return Tw2Mesh.HandleFetch(this, "instanceGeometryResPath", "instanceGeometryResource", resPath);
     }
 
     /**

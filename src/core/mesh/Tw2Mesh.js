@@ -102,6 +102,53 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
+     * Handles fetching of geometry resources
+     * @param {*} parent
+     * @param {String} pathProperty
+     * @param {String} resProperty
+     * @param {String} resPath
+     * @returns {Promise<boolean>}
+     */
+    static async HandleFetch(parent, pathProperty, resProperty, resPath)
+    {
+        if (!resPath)
+        {
+            if (this[resProperty])
+            {
+                this[resProperty].RemoveNotification(this);
+                this[resProperty] = null;
+            }
+
+            if (this[pathProperty])
+            {
+                this[pathProperty] = "";
+                return true;
+            }
+
+            return false;
+        }
+
+        this[pathProperty] = resPath;
+        const res = await tw2.Fetch(resPath);
+        if (this[pathProperty] === resPath)
+        {
+            this[resProperty] = res;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sets the geometry path and loads it is another hasn't been loaded since
+     * @param {string} resPath
+     * @returns {Promise<Boolean>}
+     */
+    async FetchGeometryResPath(resPath)
+    {
+        return Tw2Mesh.HandleFetch(this, "geometryResPath", "geometryResource", resPath);
+    }
+
+    /**
      * Intersects the mesh
      * @param {Tw2RayCaster} ray
      * @param {Array} intersects
@@ -358,7 +405,7 @@ export class Tw2Mesh extends meta.Model
      * @param {Number} [meshIndex=0]
      * @return {null|Tw2MeshArea|Tw2MeshLineArea}
      */
-    static FindMeshAreaByTypeAndIndex(mesh, areasType, index, meshIndex=0)
+    static FindMeshAreaByTypeAndIndex(mesh, areasType, index, meshIndex = 0)
     {
         const meshAreas = mesh[areasType];
         if (!isArray(meshAreas))
@@ -428,6 +475,7 @@ export class Tw2Mesh extends meta.Model
                         type = src[name][i].__type || "Tw2MeshArea",
                         Constructor = tw2.GetClass(type);
 
+                    // Why is index put in the object?
                     dest[name].push(Constructor.from(src[name][i], { index: i }));
                 }
             }
@@ -443,7 +491,6 @@ export class Tw2Mesh extends meta.Model
     static from(values, options)
     {
         const item = new Tw2Mesh();
-        item.index = get(options, "index", 0);
 
         if (values)
         {

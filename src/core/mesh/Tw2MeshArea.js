@@ -34,6 +34,13 @@ export class Tw2MeshArea extends meta.Model
     @meta.uint
     meshIndex = 0;
 
+    // CCPWGL2 only
+
+    @meta.string
+    @meta.isPrivate
+    sofHullAreaName = "";
+
+
     /**
      * Gets a mesh areas's resources
      * @param {Array} out
@@ -63,7 +70,9 @@ export class Tw2MeshArea extends meta.Model
     static from(values, options)
     {
         const item = new this();
-        assignIfExists(item, options, "index");
+
+        // Why is this here?
+        if (options) assignIfExists(item, options, "index");
 
         if (values)
         {
