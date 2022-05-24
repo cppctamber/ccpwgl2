@@ -334,17 +334,37 @@ export class Model
 
     /**
      * Prepares the instance for destruction
+     * Todo: Refactor
      * @param opt
      */
-    Destructor(opt = {})
+    Destructor(opt)
+    {
+        console.log("Destructor has been replaced with 'Destroy'");
+        return this.Destroy(opt);
+    }
+
+    /**
+     * Prepares the instance for destruction
+     * @param opt
+     */
+    Destroy(opt = {})
     {
         if (!opt || !opt.skipEvents)
         {
+            this.EmitEvent("destroy", this, opt);
+            // Todo: refactor
             this.EmitEvent("destruct", this, opt);
         }
 
+        if (this["OnDestroy"])
+        {
+            this["OnDestroy"]();
+        }
+
+        // Todo: refactor
         if (this["OnDestruct"])
         {
+            console.log("'OnDestruct' has been replaced with 'OnDestroy'");
             this["OnDestruct"]();
         }
 
@@ -355,6 +375,8 @@ export class Model
 
         if (!opt || !opt.skipEvents)
         {
+            this.EmitEvent("destroyed", this, opt);
+            // Todo: Refactor
             this.EmitEvent("destructed", this, opt);
         }
 
@@ -390,7 +412,12 @@ export class Model
             {
                 if (this[property][i])
                 {
-                    if (this[property][i].Destructor)
+                    if (this[property][i].Destroy)
+                    {
+                        this[property][i].Destroy({ controller: opt.controller });
+                    }
+                    // Todo: Refactor
+                    else if (this[property][i].Destructor)
                     {
                         this[property][i].Destructor({ controller: opt.controller });
                     }
@@ -408,9 +435,15 @@ export class Model
 
             if (this[property])
             {
-                if (this[property].Destructor)
+                if (this[property].Destroy)
                 {
-                    childOpt = childOpt || { controller : opt.controller };
+                    childOpt = childOpt || { controller: opt.controller };
+                    this[property].Destroy(childOpt);
+                }
+                // Todo: Refactor
+                else if (this[property].Destructor)
+                {
+                    childOpt = childOpt || { controller: opt.controller };
                     this[property].Destructor(childOpt);
                 }
                 this[property] = null;
@@ -490,15 +523,28 @@ export class Model
 
     /**
      * Filters all structs
+     * Todo: Refactor
      * @param {Function} func  - the function to call on each struct
      * @param {Array} [out=[]] - optional receiving array
      * @returns {Array} out    - all structs where the func returned true
      */
-    Filter(func, out = [])
+    Filter(func, out)
+    {
+        console.log("'Filter' has been replaced with 'FilterStruct'");
+        return this.FilterStruct(func, out);
+    }
+
+    /**
+     * Filters all structs
+     * @param {Function} func  - the function to call on each struct
+     * @param {Array} [out=[]] - optional receiving array
+     * @returns {Array} out    - all structs where the func returned true
+     */
+    FilterStruct(func, out = [])
     {
         this.Traverse(opt =>
         {
-            if (func(opt) && !out.includes(opt.struct))
+            if (func(opt.struct, opt) && !out.includes(opt.struct))
             {
                 out.push(opt.struct);
             }
@@ -521,6 +567,21 @@ export class Model
                 return x.struct;
             }
         });
+    }
+
+    /**
+     * Finds the first struct to satisfy a function
+     * @param {Function} func
+     * @return {Array} out
+     */
+    FindStruct(func)
+    {
+        this.Traverse(opt =>
+        {
+            if (func(opt.struct, opt)) return opt.struct;
+        });
+
+        return null;
     }
 
     /**
@@ -716,9 +777,7 @@ export class Model
         // We'll need to clear all structs when copying...
         if (_clear)
         {
-            throw new Error("Copy feature not implemented");
-            //if (!values) throw new ReferenceError("Unexpected...");
-            //item.Clear({ skipUpdate: true, skipEvents: true });
+            item.Clear({ skipUpdate: true, skipEvents: true });
         }
 
         let skipped;
