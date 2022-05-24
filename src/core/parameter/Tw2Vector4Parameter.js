@@ -13,7 +13,6 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
     @meta.vector4
     value = vec4.fromValues(1, 1, 1, 1);
 
-
     /**
      * Constructor
      * @param {String} [name]
@@ -32,19 +31,40 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
      * @param {Float32Array|Array}out
      * @return {*} out
      */
-    GetRGBA(out=[])
+    GetRGBA(out = [])
     {
         return vec4.toRGBA(out, this.GetValue(out));
     }
 
     /**
-     * Sets the value from RGBA
+     * Sets the value from RGB or RGBA
      * @param {Float32Array|Array} rgba
      * @return {Boolean} true if updated
      */
     SetRGBA(rgba)
     {
         return this.SetValue(vec4.fromRGBA([], rgba));
+    }
+
+    /**
+     * Gets the value as a hex string without alpha
+     * @param {Boolean} [alpha] - true to get a hex with alpha
+     * @returns {*}
+     */
+    GetHex(alpha)
+    {
+        const color = this.GetValue([ 0, 0, 0, 1 ]);
+        return alpha ? vec4.toHexA(color) : vec4.toHex(color);
+    }
+
+    /**
+     * Sets the parameter from a hex string
+     * @param {String} hex
+     * @returns {Boolean}
+     */
+    SetHex(hex)
+    {
+        return this.SetValue(vec4.fromHex([], hex));
     }
 
     /**
