@@ -72,7 +72,6 @@ export class Tw2PostProcess extends meta.Model
      */
     _visibleStages = [];
 
-
     /**
      * Checks if the post process is good
      * @return {boolean}
@@ -149,11 +148,25 @@ export class Tw2PostProcess extends meta.Model
 
     /**
      * Per frame update
+     * TODO: Consider moving the rebuild method call here rather than in "Render"
      * @param dt
      * @param scene
      */
     Update(dt, scene)
     {
+
+        // Todo: Put this in the OnValueChanged method?
+        let effectiveHeight = tw2.height * this.quality,
+            effectiveWidth = tw2.width * this.quality;
+
+        if (this._effectiveWidth !== effectiveWidth || this._effectiveHeight !== effectiveHeight)
+        {
+            this._effectiveHeight = effectiveHeight;
+            this._effectiveWidth = effectiveWidth;
+            // - Do we really need to trigger a "modified" event when this changes
+            this.UpdateValues();
+        }
+
         if (!this._dirty && this.autoRebuild)
         {
             for (let i = 0; i < this.stages.length; i++)
@@ -161,7 +174,7 @@ export class Tw2PostProcess extends meta.Model
                 const found = this._visibleStages.indexOf(this.stages[i]) !== -1;
 
                 // Not supported by current effects
-                if ("display" in this.stages[i] && !this.stages[i].display && found)
+                if (found && "display" in this.stages[i] && !this.stages[i].display)
                 {
                     this._dirty = true;
                     break;
@@ -173,6 +186,75 @@ export class Tw2PostProcess extends meta.Model
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Rebuilds the post process
+     * @param {Object} [opt]
+     */
+    Rebuild(opt)
+    {
+        if (!this.IsGood())
+        {
+            this._dirty = true;
+            return;
+        }
+
+        const { gl, width, height } = tw2;
+
+        this.PopulateParameters();
+
+        if (!this._quadRT0) this._quadRT0 = new Tw2RenderTarget("RT0");
+        this._quadRT0.Create(this._effectiveWidth, this._effectiveHeight, false);
+
+        if (!this._quadRT1) this._quadRT1 = new Tw2RenderTarget("RT1");
+        this._quadRT1.Create(this._effectiveWidth, this._effectiveHeight, false);
+
+        gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        for (let i = 0; i < this.stages.length; i++)
+        {
+            const { shader, parameters } = this.stages[i];
+            let updated;
+
+            if (shader.HasTexture("BlitOriginal"))
+            {
+                if (!parameters.BlitOriginal)
+                {
+                    parameters.BlitOriginal = new Tw2TextureParameter("BlitOriginal");
+                    updated = true;
+                }
+                parameters.BlitOriginal.AttachTextureRes(this._blitOriginal);
+            }
+
+            if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent)
+            {
+                parameters.BlitCurrent = new Tw2TextureParameter("BlitCurrent");
+                updated = true;
+            }
+
+            if (shader.HasConstant("g_texelSize") && !parameters.g_texelSize)
+            {
+                parameters.g_texelSize = new Tw2Vector4Parameter("g_texelSize", [ 1, 1, 1, 1 ]);
+                updated = true;
+            }
+
+            if (shader.HasConstant("g_camera") && !parameters.g_camera)
+            {
+                parameters.g_camera = new Tw2Vector4Parameter("g_camera", [ 1, 1, 1, 1 ]);
+            }
+
+            if (updated) this.stages[i].BindParameters();
+        }
+
+        this._dirty = false;
+
+        if (!opt || !opt.skipEvents)
+        {
+            this.EmitEvent("rebuilt", this, opt);
         }
     }
 
@@ -196,60 +278,9 @@ export class Tw2PostProcess extends meta.Model
             this._dirty = true;
         }
 
-        if (this._dirty || this._effectiveWidth !== width * this.quality || this._effectiveHeight !== height * this.quality)
+        if (this._dirty)
         {
-
-            this.PopulateParameters();
-
-            this._effectiveWidth = width * this.quality;
-            this._effectiveHeight = height * this.quality;
-
-            if (!this._quadRT0) this._quadRT0 = new Tw2RenderTarget("RT0");
-            this._quadRT0.Create(this._effectiveWidth, this._effectiveHeight, false);
-
-            if (!this._quadRT1) this._quadRT1 = new Tw2RenderTarget("RT1");
-            this._quadRT1.Create(this._effectiveWidth, this._effectiveHeight, false);
-
-            gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            for (let i = 0; i < this.stages.length; i++)
-            {
-                const { shader, parameters } = this.stages[i];
-                let updated;
-
-                if (shader.HasTexture("BlitOriginal"))
-                {
-                    if (!parameters.BlitOriginal)
-                    {
-                        parameters.BlitOriginal = new Tw2TextureParameter("BlitOriginal");
-                        updated = true;
-                    }
-                    parameters.BlitOriginal.AttachTextureRes(this._blitOriginal);
-                }
-
-                if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent)
-                {
-                    parameters.BlitCurrent = new Tw2TextureParameter("BlitCurrent");
-                    updated = true;
-                }
-
-                if (shader.HasConstant("g_texelSize") && !parameters.g_texelSize)
-                {
-                    parameters.g_texelSize = new Tw2Vector4Parameter("g_texelSize", [ 1, 1, 1, 1 ]);
-                    updated = true;
-                }
-
-                if (shader.HasConstant("g_camera") && !parameters.g_camera)
-                {
-                    parameters.g_camera = new Tw2Vector4Parameter("g_camera", [ 1, 1, 1, 1 ]);
-                }
-
-                if (updated) this.stages[i].BindParameters();
-            }
-
-            this._dirty = false;
+            this.Rebuild();
         }
 
         // Check if there is anything to render
