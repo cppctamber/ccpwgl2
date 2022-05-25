@@ -53,6 +53,10 @@ export class EveLensflare extends meta.Model
     @meta.boolean
     update = true;
 
+    // Ccpwgl2 only
+    @meta.boolean
+    useSceneSunDirection=true;
+
     @meta.boolean
     doOcclusionQueries = true;
 
@@ -217,8 +221,9 @@ export class EveLensflare extends meta.Model
 
     /**
      * Prepares the lensflare for rendering
+     * @param {vec3} sunDirection
      */
-    PrepareRender()
+    PrepareRender(sunDirection)
     {
         if (!this.display) return;
 
@@ -231,6 +236,11 @@ export class EveLensflare extends meta.Model
             negDirVec = g.vec3_3,
             negPos = g.vec3_1,
             dist = g.vec4_1;
+
+        if (this.useSceneSunDirection && sunDirection)
+        {
+            vec3.copy(this.position, sunDirection);
+        }
 
         vec3.transformMat4(cameraPos, [ 0, 0, 0 ], device.viewInverse);
 
@@ -330,7 +340,7 @@ export class EveLensflare extends meta.Model
                 new Tw2RenderTarget(),
                 new Tw2RenderTarget(),
                 new Tw2RenderTarget(),
-                new Tw2RenderTarget()
+                new Tw2RenderTarget(),
             ];
         }
     }
