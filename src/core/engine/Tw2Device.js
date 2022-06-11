@@ -69,6 +69,8 @@ export class Tw2Device extends Tw2EventEmitter
      */
     gl = null;
     canvas2d = null;
+    autoClearCanvas2dPerFrame = true;
+    autoClearCanvas2dOnResize = true;
 
     dt = 0;
     fps = 0;
@@ -89,6 +91,7 @@ export class Tw2Device extends Tw2EventEmitter
     projectionTranspose = mat4.create();
     viewProjection = mat4.create();
     viewProjectionTranspose = mat4.create();
+    viewProjectionInverse = mat4.create();
 
     viewportWidth = 0;
     viewportHeight = 0;
@@ -239,10 +242,18 @@ export class Tw2Device extends Tw2EventEmitter
         if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
         if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
         if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
-        if ("antialiasing" in opt) {this.enableAntialiasing = opt.antialiasing;}
+        if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
         if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
         if ("webxr" in opt) this.enableWebxr = opt.webxr;
+
+        assignIfExists(this, opt, [
+            "autoClearCanvas2dPerFrame",
+            "autoClearCanvas2dOnResize"
+        ]);
+
     }
+
+
 
     /**
      * Gets the gl parameters passed to the gl context
@@ -260,10 +271,13 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {Object} [glParams]                   - gl parameters
      * @throws ErrWebglContext                      - When unable to create a webgl context
      */
-    Create({ canvas, canvas2d, glParams } = {})
+    Create({ canvas, canvas3d, canvas2d, glParams } = {})
     {
         this.gl = null;
         this.effectDir = "/effect.gles2/";
+
+        // Fallback
+        if (!canvas) canvas = canvas3d;
 
         // Register any settings
         if (glParams) this.Register({ glParams });
@@ -470,28 +484,23 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Handles resize events
      * @param  {Boolean} [force]
+     * @param {Boolean} [skipCanvas2dClear]
      * @returns  {Boolean} true if updated
      */
-    Resize(force)
+    Resize(force, skipCanvas2dClear)
     {
-        this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
-        this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
+        const
+            width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio),
+            height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
 
-        if (!force && this.canvas.width === this.viewportWidth && this.canvas.height === this.viewportHeight)
+        if (!force && width === this.viewportWidth && height === this.viewportHeight)
         {
             return  false;
         }
 
-        this.viewportWidth = this.canvas.width;
-        this.viewportHeight = this.canvas.height;
+        this.viewportWidth = this.canvas.width = width;
+        this.viewportHeight = this.canvas.height = height;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
-
-        // Handle 2d canvas
-        if (this.canvas2d)
-        {
-            this.canvas2d.width = this.viewportWidth;
-            this.canvas2d.height = this.viewportHeight;
-        }
 
         this.tw2.variables.SetValue("ViewportSize", [
             this.viewportWidth,
@@ -500,14 +509,21 @@ export class Tw2Device extends Tw2EventEmitter
             this.viewportHeight
         ]);
 
-        this.EmitEvent("resized", {
+        this.EmitEvent("resized", this, {
             width: this.viewportWidth,
             height: this.viewportHeight,
             aspect: this.viewportAspect,
-            canvas2d: this.canvas2d,
-            canvas3d: this.canvas,
-            xr: this.xr
         });
+
+        if (this.canvas2d)
+        {
+            this.canvas2d.width = width;
+            this.canvas2d.height = height;
+            if (!skipCanvas2dClear && this.autoClearCanvas2dOnResize)
+            {
+                this.ClearCanvas2d();
+            }
+        }
 
         return true;
     }
@@ -522,11 +538,22 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Clears the 2d canvas
+     * @param {Boolean} [skipEvent]
+     */
+    ClearCanvas2d(skipEvent)
+    {
+        const context = this.canvas2d.getContext("2d");
+        context.clearRect(0, 0, this.viewportWidth, this.viewportHeight);
+        if (!skipEvent) this.EmitEvent("canvas2d_cleared", context);
+    }
+
+    /**
      * Fires on the start of a frame
      */
     Tick()
     {
-        this._resized = this.Resize();
+        let resized = this.Resize(false, true);
 
         const
             now = this.now,
@@ -553,9 +580,12 @@ export class Tw2Device extends Tw2EventEmitter
 
         this.frameCounter++;
 
-        return this._resized;
+        // Auto redraw canvas 2d
+        if (this.canvas2d && (this.autoClearCanvas2dPerFrame || resized && this.autoClearCanvas2dOnResize))
+        {
+            this.ClearCanvas2d();
+        }
     }
-
 
     /**
      * Sets World transform matrix
@@ -600,6 +630,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
+        mat4.invert(this.viewProjectionInverse, this.viewProjection);
         this.tw2.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
