@@ -1112,29 +1112,13 @@ box3.translate = function(out, a, v)
  */
 box3.transformMat4 = function(out, a, m)
 {
-    if (!vec3_A)
-    {
-        vec3_A = [
-            vec3.create(), vec3.create(), vec3.create(), vec3.create(),
-            vec3.create(), vec3.create(), vec3.create(), vec3.create()
-        ];
-    }
-
-    if (box3.isEmpty(a))
-    {
-        return box3.empty(out);
-    }
-
-    vec3.transformMat4(vec3_A[0], [ a[0], a[1], a[2] ], m);
-    vec3.transformMat4(vec3_A[1], [ a[0], a[1], a[5] ], m);
-    vec3.transformMat4(vec3_A[2], [ a[0], a[4], a[2] ], m);
-    vec3.transformMat4(vec3_A[3], [ a[0], a[4], a[5] ], m);
-    vec3.transformMat4(vec3_A[4], [ a[3], a[1], a[2] ], m);
-    vec3.transformMat4(vec3_A[5], [ a[3], a[1], a[5] ], m);
-    vec3.transformMat4(vec3_A[6], [ a[3], a[4], a[2] ], m);
-    vec3.transformMat4(vec3_A[7], [ a[3], a[4], a[5] ], m);
-
-    return box3.fromPoints(out, vec3_A);
+    if (box3.isEmpty(a)) return box3.empty(out);
+    if (!vec3_A) vec3_A = [ vec3.create(), vec3.create(), vec3.create(), vec3.create() ];
+    vec3.set(vec3_A[0], a[0], a[1], a[2]);
+    vec3.set(vec3_A[1], a[3], a[4], a[5]);
+    vec3.transformMat4(vec3_A[2], vec3_A[0], m);
+    vec3.transformMat4(vec3_A[3], vec3_A[1], m);
+    return box3.fromBounds(out, vec3_A[2], vec3_A[3]);
 };
 
 /**
