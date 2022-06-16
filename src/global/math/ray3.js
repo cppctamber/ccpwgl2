@@ -983,5 +983,5 @@ ray3.fromEvent = function (ray, viewProjectionInverse, event, mouse, pixel, css)
         css[1] = cY;
     }
 
-    return ray3.unproject(ray, pixel, viewProjectionInverse, viewPort);
+    return ray3.unproject(ray, [ pX, pY ], viewProjectionInverse, viewPort);
 };
