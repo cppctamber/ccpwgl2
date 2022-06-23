@@ -211,7 +211,8 @@ export class Tw2Library extends Tw2EventEmitter
             resized: (...args) => this.EmitEvent("resized", ...args),
             context_lost: (...args) => this.EmitEvent("context_lost", ...args),
             context_restored: (...args) => this.EmitEvent("context_restored", ...args),
-            context_created: (...args) => this.EmitEvent("context_created", ...args)
+            context_created: (...args) => this.EmitEvent("context_created", ...args),
+            canvas2d_cleared: (...args) => this.EmitEvent("canvas2d_cleared", ...args)
         });
 
         this.constructors.OnEvent("stored", ({ key, value }) => this.constructor.prototype[key] = value);
@@ -253,11 +254,11 @@ export class Tw2Library extends Tw2EventEmitter
      */
     Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas2d, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, ...options } = opt;
 
         this.Register(options);
 
-        this.device.Create({ canvas, canvas2d, glParams });
+        this.device.Create({ canvas, canvas3d, canvas2d, glParams });
 
         if (render)
         {
