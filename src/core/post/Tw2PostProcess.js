@@ -17,6 +17,9 @@ export class Tw2PostProcess extends meta.Model
     @meta.boolean
     display = true;
 
+    @meta.string
+    name = "";
+
     @meta.float
     quality = 1;
 
@@ -71,6 +74,16 @@ export class Tw2PostProcess extends meta.Model
      * @private
      */
     _visibleStages = [];
+
+    /**
+     * Constructor
+     * @param {String} name
+     */
+    constructor(name="")
+    {
+        super();
+        this.name = name;
+    }
 
     /**
      * Checks if the post process is good
