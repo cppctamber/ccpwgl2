@@ -58,10 +58,11 @@ export class Tw2BatchAccumulator
 
     /**
      * Clears any accumulated render batches
+     * @returns the emptied batches
      */
     Clear()
     {
-        this.batches.splice(0);
+        return this.batches.splice(0);
     }
 
     /**
