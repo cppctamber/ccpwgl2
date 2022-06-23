@@ -1,14 +1,5 @@
-import { ErrFeatureNotImplemented } from "core/Tw2Error";
-import { vec3, pln, lne3, ray3, mat4, sph3, tri3, box3 } from "math";
-import {
-    RM_ADDITIVE,
-    RM_DEPTH,
-    RM_DISTORTION,
-    RM_FULLSCREEN,
-    RM_OPAQUE,
-    RM_PICKABLE,
-    RM_TRANSPARENT
-} from "constant/d3d";
+import { vec2, vec3, pln, lne3, ray3, mat4, sph3, tri3, box3, vec4 } from "math";
+import { device } from "global";
 
 /**
  * Ray intersection
@@ -23,48 +14,136 @@ let
     vec3_0,
     lne3_0,
     tri3_0,
+    mat4_0,
     pln_0;
-
 
 /**
  * Ray caster
+ *
+ * TODO: If there are no near and far comparisons we can use ray3.distanceSquared for a performance increase
+ * TODO: Or store near and far as squared values
  * @param {ray3} ray
- * @param {Number} near
- * @param {Number} far
- * @param {Array} masks
+ * @param {Number} nearSquared
+ * @param {Number} farSquared
  * @param {Object} options
+ * @param {Function|null} _maskFunction
  */
 export class Tw2RayCaster
 {
 
     ray = ray3.create();
-    near = 0;
-    far = Infinity;
-    masks = [];
+    nearSquared = 0;
+    farSquared = Infinity;
 
-    renderModes = {
-        [RM_OPAQUE] : true,
-        [RM_TRANSPARENT] : true,
-        [RM_ADDITIVE] : true,
-        [RM_DEPTH] : false,
-        [RM_DISTORTION] : false,
-        [RM_PICKABLE] : false,
-        [RM_FULLSCREEN] : false
-    };
+    _mousePosition = vec2.create();
+    _cssPosition =vec2.create();
+    _pixelPosition = vec2.create();
+    _viewport = vec4.create();
 
     options = {
-        /*
-        decal: { threshold: 1, skip: true },
-        banner: { threshold: 0 },
-        booster: { threshold: 1 },
-        locator: { threshold: 1 },
-        hazeSet: { threshold: 0 },
-        planeSet: { threshold: 0 },
-        spriteSet: { threshold: 0 },
-        spotlightSet: { threshold: 0 },
-        spriteLineSet: { threshold: 0 },
-        */
+        faces: { backfaceCulling: true },
+        edges: { computeClosest: true },
+        vertices: { computeClosest: true },
+        locators: { radius: 20 },
     };
+
+    _maskFunction = null;
+    _sortFunction = ray3.SORT;
+
+    /**
+     * Updates the ray caster from an event
+     * TODO: Remove element and use the event src
+     * @param {HTMLElement} element
+     * @param {event} event
+     */
+    UpdateFromEvent(element, event)
+    {
+        const { clientX, clientY } = event;
+        const rect = element.getBoundingClientRect();
+
+        vec2.set(this._mousePosition, clientX, clientY);
+
+        vec2.set(this._cssPosition,
+            this._mousePosition[0] - rect.left,
+            this._mousePosition[1] - rect.top);
+
+        vec2.set(this._pixelPosition,
+            this._cssPosition[0] * element.width / element.clientWidth,
+            element.height - this._cssPosition[1] * element.height / element.clientHeight - 1
+        );
+
+        vec4.set(this._viewport, 0,0, device.viewportWidth, device.viewportHeight);
+        this.Unproject(this._pixelPosition, this._viewport);
+    }
+
+    /**
+     * Gets a ray option
+     * @param {String} type
+     * @param {String} key
+     * @param {*} [defaultValue]
+     * @return {*}
+     */
+    GetOption(type, key, defaultValue)
+    {
+        if (type in this.options)
+        {
+            if (key in this.options[type])
+            {
+                return this.options[type];
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Checks if faces should be intersected
+     * @return {boolean}
+     */
+    DoFaceIntersection()
+    {
+        return !this.options.faces.skip || this.DoFindClosestEdge() || this.DoFindClosestVertex();
+    }
+
+    /**
+     * Checks if backface culling should be enabled
+     * @return {boolean}
+     */
+    DoBackfaceCulling()
+    {
+        return this.GetOption("faces", "backfaceCulling", true);
+    }
+
+    /**
+     * Checks if the closest edge should be calculated
+     * @return {boolean}
+     */
+    DoFindClosestEdge()
+    {
+        return this.GetOption("edges", "computeClosest", true);
+    }
+
+    /**
+     * Checks if closest vertex should be calculated
+     * @return {boolean}
+     */
+    DoFindClosestVertex()
+    {
+        return this.GetOption("vertices", "computeClosest", true);
+    }
+
+    /**
+     * Gets the ray in object space
+     * @param {ray3}  out
+     * @param {mat4} world
+     * @return {ray3} out
+     */
+    GetLocalRay(out, world)
+    {
+        const inverseWorld = mat4_0 = mat4_0 || mat4.create();
+        mat4.invert(inverseWorld, world);
+        ray3.transformMat4(out, out, inverseWorld);
+        return out;
+    }
 
     /**
      * Sets the ray from origin and direction
@@ -75,6 +154,16 @@ export class Tw2RayCaster
     {
         ray3.from(this.ray, origin, direction);
         ray3.normalize(this.ray, this.ray);
+    }
+
+    /**
+     * Sets the ray from start and end vectors
+     * @param {vec3} start
+     * @param {vec3} end
+     */
+    FromStartEnd(start, end)
+    {
+        ray3.fromStartEnd(this.ray, start, end);
     }
 
     /**
@@ -96,29 +185,63 @@ export class Tw2RayCaster
     }
 
     /**
-     * Masks constructors from intersection tests
-     * @param {Function} Ctor
+     * Unprojects pixels
+     * @param {vec2} pixelPosition
+     * @param {vec4} [viewPort]
+     * @param {mat4} [viewProjectionInverse]
      */
-    MaskConstructor(Ctor)
+    Unproject(pixelPosition, viewPort, viewProjectionInverse)
     {
-        if (!this.masks.includes(Ctor))
-        {
-            this.masks.push(Ctor);
-        }
+        ray3.unproject(
+            this.ray,
+            pixelPosition,
+            viewProjectionInverse || device.viewProjectionInverse,
+            viewPort || [ 0, 0, device.viewportWidth, device.viewportHeight ],
+        );
+    }
+
+    /*
+    GetObjectIDFromRGBA(c)
+    {
+        return ((c[0] << 8) | (c[1] & 0xff)) - 1;
+    }
+
+    GetCCPObjectIDFromRGBA(c)
+    {
+        throw new Error("Not implemented");
+    }
+     */
+
+    /**
+     * Checks if an object is masked
+     * @param {*} object
+     * @return {Boolean}
+     */
+    IsMasked(object)
+    {
+        return this._maskFunction ? this._maskFunction(object) : false;
+    }
+
+    /**
+     * Sets a mask function
+     * @param {Function} func
+     */
+    SetMask(func)
+    {
+        this._maskFunction = func;
     }
 
     /**
      * Intersects an object
      * @param {*} object
      * @param {Array} [intersects]
-     * @param {Boolean} [recursive]
      * @return {*[]}
      */
-    IntersectObject(object, intersects = [], recursive)
+    IntersectObject(object, intersects = [])
     {
         if ("Intersect" in object)
         {
-            object.Intersect(this, intersects, recursive);
+            object.Intersect(this, intersects);
             intersects.sort(ray3.SORT);
         }
 
@@ -129,14 +252,13 @@ export class Tw2RayCaster
      * Intersects objects
      * @param {Array} objects
      * @param {Array} intersects
-     * @param {Boolean} [recursive]
      * @return {Array} intersects
      */
-    IntersectObjects(objects, intersects = [], recursive)
+    IntersectObjects(objects, intersects = [])
     {
         for (let i = 0; i < objects.length; i++)
         {
-            this.IntersectObject(objects[i], intersects, recursive);
+            this.IntersectObject(objects[i], intersects);
         }
 
         intersects.sort(ray3.SORT);
@@ -152,12 +274,18 @@ export class Tw2RayCaster
     {
         if (ray3.intersectsSph3(this.ray, worldSphere))
         {
-            const distance = ray3.distanceToSph3(worldSphere);
-            if (distance > this.near && distance < this.far)
+            vec3_0 = vec3_0 || vec3.create();
+            ray3.getIntersectSph3(vec3_0, this.ray, worldSphere);
+
+            const distance = vec3.squaredDistance(this.ray, vec3_0);
+            if (distance > this.nearSquared && distance < this.farSquared)
             {
                 return {
+                    name: "",
+                    item: null,
+                    root: null,
                     distance,
-                    point: ray3.getIntersectSph3(vec3.create(), this.ray, worldSphere)
+                    point: vec3.clone(vec3_0)
                 };
             }
         }
@@ -171,10 +299,9 @@ export class Tw2RayCaster
      */
     IntersectSph3(sphere, world)
     {
-        const worldSphere = sph3_0 = sph3_0 = sph3.create();
-
-        sph3.transformMat4(worldSphere, sphere, world);
-        return this.IntersectWorldSph3(worldSphere);
+        sph3_0 = sph3_0 = sph3.create();
+        sph3.transformMat4(sph3_0, sphere, world);
+        return this.IntersectWorldSph3(sph3_0);
     }
 
     /**
@@ -190,6 +317,20 @@ export class Tw2RayCaster
     }
 
     /**
+     * Intersects a transform's position and a given radius
+     * @param {mat4} m
+     * @param {Number} radius
+     * @param {mat4} world
+     * @return {{distance: (number|*), point: vec3}}
+     */
+    IntersectTransformRadius(m, radius, world)
+    {
+        vec3_0 = vec3_0 || vec3.create();
+        mat4.getTranslation(vec3_0, m);
+        return this.IntersectSph3([ vec3_0[0], vec3_0[1], vec3_0[2], radius ], world);
+    }
+
+    /**
      * Intersects a world box3
      * @param {box3} worldBox
      * @return {{distance: (number|*), point: vec3}}
@@ -198,13 +339,16 @@ export class Tw2RayCaster
     {
         if (ray3.intersectsBox3(this.ray, worldBox))
         {
-            if (!vec3_0) vec3_0 = vec3.create();
+            vec3_0 = vec3_0 || vec3.create();
             ray3.getIntersectBox3(vec3_0, this.ray, worldBox);
 
-            const distance = ray3.distanceToPoint(vec3_0);
-            if (distance > this.near && distance < this.far)
+            const distance = vec3.squaredDistance(this.ray, vec3_0);
+            if (distance > this.nearSquared && distance < this.farSquared)
             {
                 return {
+                    name: "",
+                    item: null,
+                    root: null,
                     distance,
                     point: vec3.clone(vec3_0)
                 };
@@ -220,10 +364,9 @@ export class Tw2RayCaster
      */
     IntersectBox3(box, world)
     {
-        const worldBox = box3_0 = box3_0 || box3.create();
-
-        box3.transformMat4(worldBox, box, world);
-        return this.IntersectWorldBox3(worldBox);
+        box3_0 = box3_0 || box3.create();
+        box3.transformMat4(box3_0, box, world);
+        return this.IntersectWorldBox3(box3_0);
     }
 
     /**
@@ -250,13 +393,13 @@ export class Tw2RayCaster
     {
         if (ray3.intersectsPln(this.ray, worldPlane))
         {
-            const distance = ray3.distancePln(this.ray, worldPlane);
-            if (distance > this.near && distance < this.far)
+            vec3_0 = vec3_0 || vec3.create();
+            ray3.getIntersectPln(vec3_0, this.ray, worldPlane);
+
+            const distance = vec3.squaredDistance(this.ray, vec3_0);
+            if (distance > this.nearSquared && distance < this.farSquared)
             {
-                return {
-                    distance,
-                    point: ray3.getIntersectPln(vec3.create(), this.ray, worldPlane)
-                };
+                return { distance, point: vec3.clone(vec3_0) };
             }
         }
     }
@@ -269,10 +412,9 @@ export class Tw2RayCaster
      */
     IntersectPln(plane, nMatrix)
     {
-        const worldPlane = pln_0 = pln_0 || pln.create();
-
-        pln.transformMat4(worldPlane, plane, nMatrix);
-        return this.IntersectWorldPln(worldPlane);
+        pln_0 = pln_0 || pln.create();
+        pln.transformMat4(pln_0, plane, nMatrix);
+        return this.IntersectWorldPln(pln_0);
     }
 
     /**
@@ -287,90 +429,67 @@ export class Tw2RayCaster
         return this.IntersectPln([ normal[0], normal[1], normal[2], constant ], nMatrix);
     }
 
-    /**
-     * Intersects a world tri3
-     * @param {tri3} worldTriangle
-     * @param {Boolean} backFaceCulling
-     * @return {{distance: number, point: vec3}}
-     */
+
+    /*
     IntersectWorldTri3(worldTriangle, backFaceCulling)
     {
-        if (!vec3_0) vec3_0 = vec3.create();
+        vec3_0 = vec3_0 || vec3.create();
 
-        const
-            point = ray3.getIntersectTri3(this.ray, worldTriangle, backFaceCulling),
-            distance = ray3.distance(this.ray, point);
-
-        if (distance > this.near && distance < this.far)
+        if (ray3.getIntersectTri3(vec3_0, this.ray, worldTriangle, backFaceCulling))
         {
-            return {
-                distance,
-                point: vec3.clone(point)
-            };
+            const distance = ray3.distance(this.ray, vec3_0);
+            if (distance > this.nearSquared && distance <this.farSquared)
+            {
+                return {
+                    distance,
+                    point: vec3.clone(vec3_0)
+                };
+            }
         }
     }
 
-    /**
-     * Intersects a tri3
-     * @param {tri3} triangle
-     * @param {mat4} world
-     * @param {Boolean} [backFaceCulling]
-     * @return {{distance: number, point: vec3}}
-     */
     IntersectTri3(triangle, world, backFaceCulling)
     {
-        const worldTriangle = tri3_0 = tri3_0 || tri3.create();
-
-        tri3.transformMat4(worldTriangle, triangle, world);
-        return this.IntersectWorldTri3(worldTriangle, backFaceCulling);
+        tri3_0 = tri3_0 || tri3.create();
+        tri3.transformMat4(tri3_0, triangle, world);
+        return this.IntersectWorldTri3(tri3_0, backFaceCulling);
     }
 
-    /**
-     * Intersects triangle vertices
-     * @param {vec3} v1
-     * @param {vec3} v2
-     * @param {vec3} v3
-     * @param {mat4} world
-     * @param {Boolean} backFaceCulling
-     * @return {{distance: number, point: vec3}}
-     */
     IntersectTriangleVertices(v1, v2, v3, world, backFaceCulling)
     {
-        const worldTriangle = tri3_0 = tri3_0 || tri3.create();
-
-        tri3.fromVertices(worldTriangle, v1, v2, v3);
-        tri3.transformMat4(worldTriangle, worldTriangle, world);
-        return this.IntersectWorldTri3(worldTriangle, backFaceCulling);
+        tri3_0 = tri3_0 || tri3.create();
+        tri3.fromVertices(tri3_0, v1, v2, v3);
+        tri3.transformMat4(tri3_0, tri3_0, world);
+        return this.IntersectWorldTri3(tri3_0, backFaceCulling);
     }
 
-    /**
-     * Intersects a world lne3
-     * @param {lne3} worldLine
-     */
     IntersectWorldLne3(worldLine)
     {
         throw new ErrFeatureNotImplemented();
     }
 
-    /**
-     * Intersects a lne3
-     * @param {lne3|Array} line
-     * @param {mat4} world
-     */
     IntersectLne3(line, world)
     {
         throw new ErrFeatureNotImplemented();
     }
 
-    /**
-     * Intersects a lines start and end
-     * @param {vec3} start
-     * @param {vec3} end
-     * @param {mat4} world
-     */
     IntersectStartEnd(start, end, world)
     {
         throw new ErrFeatureNotImplemented();
     }
+    */
 
+    static Type = {
+        VERTEX: 0,
+        EDGE: 1,
+        FACE: 2,
+        MESH_AREA: 3,
+        MESH: 4,
+        GEOMETRY: 5,
+        SET_ITEM: 6,
+        LOCATOR: 7,
+        SET: 8,
+        OBJECT: 9,
+    };
 }
+
