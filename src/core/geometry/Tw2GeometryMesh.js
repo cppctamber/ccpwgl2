@@ -101,17 +101,15 @@ export class Tw2GeometryMesh
     }
 
     /**
-     *
-     * @param ray
-     * @param intersects
-     * @param worldTransform
-     * @param cache
+     * Intersects the mesh
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache={}]
      */
     Intersect(ray, intersects, worldTransform, cache = {})
     {
         if (ray.IsMasked(this)) return;
-
-        console.log("Intersecting geometry mesh " + this.name);
 
         this.RebuildBounds();
         const intersect = ray.IntersectBounds(this.minBounds, this.maxBounds, worldTransform);
@@ -120,8 +118,14 @@ export class Tw2GeometryMesh
         const internalIntersects = [];
         for (let i = 0; i < this.areas.length; i++)
         {
-            this.IntersectAreas(this.areas[i], ray, intersects, worldTransform, cache)
-                .forEach(intersect => internalIntersects.push(intersect));
+            const intersectedAreas = this.IntersectAreas(this.areas[i], ray, intersects, worldTransform, cache);
+            if (intersectedAreas)
+            {
+                for (let x = 0; x < intersectedAreas.length; x++)
+                {
+                    internalIntersects.push(intersectedAreas[x]);
+                }
+            }
         }
 
         internalIntersects.sort(ray._sortFunction);
