@@ -58,6 +58,7 @@ export const config = {
                 return path.replace(".dds", ".qube");
             }
 
+            //return path.replace("cdn:/", "test:/").replace("res:/", "rest:/");
             return path.replace(".dds", ".png");
         },
 
@@ -157,7 +158,7 @@ export const config = {
 
         // Enables auto purging of resources that aren't used
         // If set to false resources must be manually removed when no longer required
-        "autoPurgeResources": true,
+        "autoPurgeResources": false,
 
         // The amount of time to wait before purging an unused resource
         "purgeTime": 60,
@@ -208,7 +209,9 @@ export const config = {
         "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
 
         // Local resource server (not provided with this library)
-        "cdn": "http://localhost:3000/"
+        "cdn": "http://localhost:3000/",
+
+        //"test": "http://localhost:8080/builds/2021621/res/"
 
     },
 
@@ -263,13 +266,13 @@ export const config = {
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
         "EveSpaceSceneShadowMap": "",
-        "EveSpaceSceneDepthMap" : "",   // Custom
+        "EveSpaceSceneDepthMap" : "",           // Custom
         "EnvMap1": "",
         "EnvMap2": "",
         "EnvMap3": "",
         "ShadowLightness": 0,
         "OccluderValue": vec4.fromValues(1, 1, 0, 0),
         "LensflareFxOccScale": vec4.fromValues(1, 1, 0, 0),
-        "LensflareFxDirectionScale": vec4.create()
+        "LensflareFxDirectionScale": vec4.create(),
     }
 };
