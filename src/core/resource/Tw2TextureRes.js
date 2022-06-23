@@ -465,6 +465,7 @@ export class Tw2TextureRes extends Tw2Resource
      */
     Attach(texture, path = "")
     {
+        if (this.texture === texture) return;
         this.DeleteGL();
         this._ClearMeta();
         this.path = path;
@@ -541,14 +542,14 @@ export class Tw2TextureRes extends Tw2Resource
      * @returns {HTMLImageElement}
      * @constructor
      */
-    static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = device.gl.RGBA)
+    static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = device.gl.RGBA, type= device.gl.UNSIGNED_BYTE)
     {
         const gl = device.gl;
         const fb = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
         const data = new Uint8Array(width * height * 4);
-        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.readPixels(0, 0, width, height, format, type, data);
         gl.deleteFramebuffer(fb);
 
         const canvas = document.createElement("canvas");
@@ -561,6 +562,8 @@ export class Tw2TextureRes extends Tw2Resource
 
         const img = new Image();
         img.src = canvas.toDataURL();
+        //img.style.width = `${width}px`;
+        //img.style.height = `${height}px`;
         return img;
     }
 
