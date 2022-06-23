@@ -211,7 +211,6 @@ export class Tw2GeometryRes extends Tw2Resource
         this._requestResponseType = reader.requestResponseType;
     }
 
-
     /**
      * Prepares the object
      * TODO: Normalize geometry readers
@@ -351,13 +350,13 @@ export class Tw2GeometryRes extends Tw2Resource
     RenderAreasInstanced(meshIx, start, count, effect, technique, instanceVB, instanceDecl, instanceStride, instanceCount)
     {
         this.KeepAlive();
-        if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        const passCount = effect.GetPassCount(technique);
+        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
             gl = d.gl,
-            mesh = this.meshes[meshIx],
-            passCount = effect.GetPassCount(technique);
+            mesh = this.meshes[meshIx];
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
 
@@ -420,13 +419,13 @@ export class Tw2GeometryRes extends Tw2Resource
     RenderAreas(meshIx, start, count, effect, technique)
     {
         this.KeepAlive();
-        if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        const passCount = effect.GetPassCount(technique);
+        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
             gl = d.gl,
-            mesh = this.meshes[meshIx] || this.meshes[0],
-            passCount = effect.GetPassCount(technique);
+            mesh = this.meshes[meshIx] || this.meshes[0];
 
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
@@ -492,13 +491,13 @@ export class Tw2GeometryRes extends Tw2Resource
     RenderLines(meshIx, start, count, effect, technique)
     {
         this.KeepAlive();
-        if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        const passCount = effect.GetPassCount(technique);
+        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
             gl = d.gl,
-            mesh = this.meshes[meshIx],
-            passCount = effect.GetPassCount(technique);
+            mesh = this.meshes[meshIx];
 
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
