@@ -1098,15 +1098,17 @@ export class Tw2Device extends Tw2EventEmitter
         this.gl.frontFace(this.gl.CW);
         switch (renderMode)
         {
+
+            case RM_DEPTH:
             case RM_OPAQUE:
             case RM_PICKABLE:
+                this.SetRenderState(RS_ALPHABLENDENABLE, false);
+                this.SetRenderState(RS_ALPHATESTENABLE, false);
+                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_ZENABLE, true);
                 this.SetRenderState(RS_ZWRITEENABLE, true);
                 this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
                 this.SetRenderState(RS_CULLMODE, CULL_CW);
-                this.SetRenderState(RS_ALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
                 this.SetRenderState(RS_DEPTHBIAS, 0);
                 this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
@@ -1115,6 +1117,7 @@ export class Tw2Device extends Tw2EventEmitter
             case RM_DECAL:
                 this.SetRenderState(RS_ALPHABLENDENABLE, false);
                 this.SetRenderState(RS_ALPHATESTENABLE, true);
+                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_ALPHAFUNC, CMP_GREATER);
                 this.SetRenderState(RS_ALPHAREF, 127);
                 this.SetRenderState(RS_ZENABLE, true);
@@ -1124,10 +1127,10 @@ export class Tw2Device extends Tw2EventEmitter
                 this.SetRenderState(RS_BLENDOP, BLENDOP_ADD);
                 this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
                 this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
                 break;
 
+            case RM_DISTORTION:
             case RM_TRANSPARENT:
                 this.SetRenderState(RS_CULLMODE, CULL_CW);
                 this.SetRenderState(RS_ALPHABLENDENABLE, true);
@@ -1172,11 +1175,6 @@ export class Tw2Device extends Tw2EventEmitter
                 this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
                 break;
-
-            case RM_DISTORTION: // Same as Fullscreen?
-            case RM_DEPTH:
-                // TODO: Implement
-                return;
 
             default:
                 return;
