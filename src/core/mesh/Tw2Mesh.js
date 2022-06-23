@@ -41,7 +41,6 @@ export class Tw2Mesh extends meta.Model
     @meta.boolean
     display = true;
 
-    @meta.notImplemented
     @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
@@ -113,13 +112,13 @@ export class Tw2Mesh extends meta.Model
     {
         if (!resPath)
         {
-            if (this[resProperty])
+            if (parent[resProperty])
             {
-                this[resProperty].RemoveNotification(this);
-                this[resProperty] = null;
+                parent[resProperty].RemoveNotification(this);
+                parent[resProperty] = null;
             }
 
-            if (this[pathProperty])
+            if (parent[pathProperty])
             {
                 this[pathProperty] = "";
                 return true;
@@ -128,11 +127,11 @@ export class Tw2Mesh extends meta.Model
             return false;
         }
 
-        this[pathProperty] = resPath;
+        parent[pathProperty] = resPath;
         const res = await tw2.Fetch(resPath);
-        if (this[pathProperty] === resPath)
+        if (parent[pathProperty] === resPath)
         {
-            this[resProperty] = res;
+            parent[resProperty] = res;
             return true;
         }
         return false;
