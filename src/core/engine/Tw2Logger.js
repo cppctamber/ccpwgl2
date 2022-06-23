@@ -189,11 +189,12 @@ export class Tw2Logger extends Tw2EventEmitter
         }
         else
         {
-            this._logs = [];
+            this._logs.splice(0);
         }
 
         log._logged = true;
 
+        this.EmitEvent("any", log);
         this.EmitEvent(log.type, log);
         return log;
     }
