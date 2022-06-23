@@ -317,8 +317,10 @@ export class Tw2ShaderStage
         // Debugging
         if (Tw2Shader.DEBUG_ENABLED)
         {
+            /*
             if (shader) shader = this.MakeShaderCodeReadable(shader, stage.constants, stage.samplers, type);
             if (shadowShader) shadowShader = this.MakeShaderCodeReadable(shadowShader, stage.constants, stage.samplers, type);
+             */
 
             console.group(context.path);
             console.dir({
@@ -363,7 +365,7 @@ export class Tw2ShaderStage
         // Annotate samplers
         if (stageType === 1)
         {
-
+            /*
             // Add sampler name at the end of each uniform to make it easier to debug
             for (let i = 0; i < samplers.length; i++)
             {
@@ -378,6 +380,8 @@ export class Tw2ShaderStage
                 shaderCode = replaceAll(shaderCode, sampler2D, `${sampler2D} // ${name}`);
                 shaderCode = replaceAll(shaderCode, sampler3D, `${sampler3D} // ${name}`);
             }
+
+             */
         }
 
         const insertIndex = shaderCode
@@ -553,8 +557,10 @@ export class Tw2ShaderStage
 
         if (Tw2Shader.DEBUG_ENABLED)
         {
+            /*
             if (shaderCode) shaderCode = this.MakeShaderCodeReadable(shaderCode, stage.constants, stage.samplers, stage.type);
             if (shadowShaderCode) shadowShaderCode = this.MakeShaderCodeReadable(shadowShaderCode, stage.constants, stage.samplers, stage.type);
+             */
 
             console.group(context.path);
             console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
