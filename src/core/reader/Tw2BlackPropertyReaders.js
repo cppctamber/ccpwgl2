@@ -363,14 +363,20 @@ export function ushort(reader)
 
 /**
  * Reads a uint
- * TODO: What to do with the maximum number "4294967295" ??
+ * TODO: What to do with the maximum number 4294967295 and 2147483648 ??
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Number}
  */
 export function uint(reader)
 {
-    return reader.ReadU32();
+    const value = reader.ReadU32();
+    return value in uint.transforms ? uint.transforms[value] : value;
 }
+
+uint.transforms = {
+    4294967295: -1,
+    2147483648: -1
+};
 
 /**
  * Reads a byte
