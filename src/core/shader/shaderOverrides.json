@@ -7,9 +7,6 @@
   "boostervolumetric": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<12;++i){"
   },
-  "quadv5": {
-    "gl_FragData[0].w=(-r0.x)+c21.x;": "gl_FragData[0].w=(r0.x)+c21.x;"
-  },
   "fxarmorimpactv5": {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
   },
@@ -25,5 +22,26 @@
   },
   "motionfx":  {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<8;++i){"
+  },
+  "ubershaderquad" : {
+    "r0.xyz=c[0+a0.x].xyx*r0.zzw+r0.wwz;" : "if(a0.x==0){r0.xyz=c[0].xyx*r0.zzw+r0.wwz;texcoord.xy=c[0].zw;}else if(a0.x==1){r0.xyz=c[1].xyx*r0.zzw+r0.wwz;texcoord.xy=c[1].zw;}else if(a0.x==2){r0.xyz=c[2].xyx*r0.zzw+r0.wwz;}else if(a0.x==3){r0.xyz=c[3].xyx*r0.zzw+r0.wwz;}",
+    "texcoord.xy=c[0+a0.x].zw;": "if(a0.x==0){texcoord.xy=c[0].zw;}else if(a0.x==1){texcoord.xy=c[1].zw;}else if(a0.x==2){texcoord.xy=c[2].zw;}else if(a0.x==3){texcoord.xy=c[3].zw;}"
+  },
+  "avatarcombined.vertex" : {
+    "uniform vec4 cb0[204];" : "uniform vec4 cb0[204];\nuniform vec4 cb3[26];\n"
+  },
+  "avatarcombined.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<0;++i){"
+  },
+
+  "fxshieldimpactv5.fragment" : {
+    "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
+  },
+
+  "distortion.fragment" : {
+    "r0.z=r0.z*c1.z;" : "r0.z=r0.z/c1.z;",
+    "r0.z=1.0/r0.z;" : "r0.z=1.0*r0.z;"
   }
+
 }
+
