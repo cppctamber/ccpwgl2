@@ -38,7 +38,22 @@ export class Tw2BatchAccumulator
      */
     Commit(batch)
     {
-        this.batches.push(batch);
+        if (this.batches.indexOf(batch) === -1)
+        {
+            this.batches.push(batch);
+        }
+    }
+
+    /**
+     * Commits batches from an array
+     * @param {Array} arr
+     */
+    CommitFromArray(arr)
+    {
+        for (let i = 0; i < arr.length; i++)
+        {
+            this.Commit(arr[i]);
+        }
     }
 
     /**
@@ -46,7 +61,7 @@ export class Tw2BatchAccumulator
      */
     Clear()
     {
-        this.batches = [];
+        this.batches.splice(0);
     }
 
     /**
