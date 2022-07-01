@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { quat, vec3 } from "math";
+import { ErrIndexBounds } from "core";
 
 
 @meta.type("EveSOFDataHullDecalSetItem")
@@ -12,8 +13,8 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     @meta.uint
     boneIndex = -1;
 
-    @meta.uint16Array
-    indexBuffer = [];
+    @meta.list()
+    indexBuffers = [];
 
     @meta.uint
     glowColorType = 0;
@@ -44,6 +45,26 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
 
     @meta.string
     visibilityGroup = "";
+
+    // Backwards compatibility with old sofs
+    @meta.uint16Array
+    indexBuffer = null;
+
+    /**
+     * Gets the decals index buffer array
+     * @returns {Array}
+     */
+    GetIndexBuffers()
+    {
+        if (this.indexBuffer && this.indexBuffer.length)
+        {
+            return [ Array.from(this.indexBuffer) ];
+        }
+        else
+        {
+            return this.indexBuffers.map(x => Array.from(x.indexBuffer));
+        }
+    }
 
     /**
      * Assigns the object's textures and parameters to an effect config
