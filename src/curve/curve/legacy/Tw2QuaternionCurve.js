@@ -23,7 +23,7 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
     rightTangent = vec4.create();
 
     @meta.enums(Interpolation)
-    interpolation = 1;
+    interpolation = Interpolation.SPHERICAL_LINEAR;
 
 }
 
@@ -61,7 +61,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
     endTangent = vec4.create();
 
     @meta.enums(Interpolation)
-    interpolation = 1;
+    interpolation = Interpolation.SPHERICAL_LINEAR;
 
     @meta.list("Tw2QuaternionKey")
     keys = [];
@@ -78,7 +78,6 @@ export class Tw2QuaternionCurve extends Tw2Curve
     {
         Tw2Curve.Sort2(this);
     }
-
 
     /**
      * Gets the curve's length
@@ -113,6 +112,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
             value[0] = this.startValue[0];
             value[1] = this.startValue[1];
             value[2] = this.startValue[2];
+            value[3] = this.startValue[3];
             return value;
         }
 
@@ -127,6 +127,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
                 value[0] = this.startValue[0];
                 value[1] = this.startValue[1];
                 value[2] = this.startValue[2];
+                value[3] = this.startValue[3];
                 return value;
             }
             else
@@ -134,6 +135,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
                 value[0] = this.endValue[0];
                 value[1] = this.endValue[1];
                 value[2] = this.endValue[2];
+                value[3] = this.endValue[3];
                 return value;
             }
         }
@@ -183,6 +185,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
         value[0] = this.startValue[0];
         value[1] = this.startValue[1];
         value[2] = this.startValue[2];
+        value[3] = this.startValue[3];
 
         let startValue = this.startValue,
             endValue = this.endValue,
@@ -219,6 +222,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
                 return value;
 
             default:
+                console.log("Linear interpolation not supported...");
                 return value;
         }
     }
