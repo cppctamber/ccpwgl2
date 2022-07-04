@@ -1,7 +1,6 @@
 import { num } from "./num";
 import { vec3 } from "./vec3";
 import { sph3 } from "./sph3";
-import { mat4 } from "./mat4";
 
 /**
  * 3D Box
@@ -942,6 +941,28 @@ box3.set = function(out, aX, aY, aZ, bX, bY, bZ)
     out[3] = bX;
     out[4] = bY;
     out[5] = bZ;
+    return out;
+};
+
+/**
+ * Sets the box's min bounds
+ * @param {box3} out
+ * @param {vec3} v
+ * @returns {box3} out
+ */
+box3.setMinBounds = vec3.copy;
+
+/**
+ * Sets the box's max bounds
+ * @param {box3} out
+ * @param {vec3} v
+ * @returns {box3} out
+ */
+box3.setMaxBounds = function(out, v)
+{
+    out[3] = v[0];
+    out[4] = v[1];
+    out[5] = v[2];
     return out;
 };
 

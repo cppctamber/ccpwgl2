@@ -337,6 +337,20 @@ lne3.toArray = box3.toArray;
 lne3.toStartEnd = box3.toBounds;
 
 /**
+ * Sets the line start from a vector
+ * @param {lne3} out
+ * @param {vec3} v
+ */
+lne3.setStart = box3.setMinBounds;
+
+/**
+ * Sets the line end from a vector
+ * @param {lne3} out
+ * @param {vec3} v
+ */
+lne3.setEnd = box3.setMaxBounds;
+
+/**
  * Transforms a lne3 by a mat4
  *
  * @param {lne3} out

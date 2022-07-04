@@ -507,6 +507,36 @@ tri3.getV3 = function(out, v)
 };
 
 /**
+ * Sets the first position of a triangle
+ * @param {tri3} out
+ * @param {vec3} v
+ * @returns {tri3} out
+ */
+tri3.setV1 = lne3.setStart;
+
+/**
+ * Sets the second position of a triangle
+ * @param {tri3} out
+ * @param {vec3} v
+ * @returns {tri3} out
+ */
+tri3.setV2 = lne3.setEnd;
+
+/**
+ * Sets the second position of a triangle
+ * @param {tri3} out
+ * @param {vec3} v
+ * @returns {tri3} out
+ */
+tri3.setV3 = function(out, v)
+{
+    out[6] = v[0];
+    out[7] = v[1];
+    out[8] = v[2];
+    return out;
+};
+
+/**
  * Sets an array at an optional offset
  *
  * @param {mat3} a
@@ -567,3 +597,4 @@ tri3.transformMat4 = function(out, a, m)
 
     return tri3.fromVertices(out, vec3_0, vec3_1, vec3_2);
 };
+
