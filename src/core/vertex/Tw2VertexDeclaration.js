@@ -62,6 +62,17 @@ export class Tw2VertexDeclaration
     }
 
     /**
+     * Checks an element usage and usage index exists
+     * @param {Number} usage
+     * @param {Number} usageIndex
+     * @returns {boolean}
+     */
+    HasUsage(usage, usageIndex)
+    {
+        return this.FindUsage(usage, usageIndex) !== null;
+    }
+
+    /**
      * Finds an element by it's usage type and usage index
      * @param {Number} usage
      * @param {Number} usageIndex
