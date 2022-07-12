@@ -44,7 +44,11 @@ import {
     FOURCC_DXT3,
     FOURCC_DXT5,
     DDPF_FOURCC,
-    DDPF_ALPHAPIXELS
+    DDPF_ALPHAPIXELS,
+    DDS_MAGIC_SIZE,
+    DDS_HEADER_SIZE,
+    DDS_HEADER_DX10_SIZE,
+    DDS_DX10_FIELDS, DXGI_FORMATS
 } from "constant";
 
 
@@ -574,6 +578,7 @@ export class Tw2TextureRes extends Tw2Resource
      */
     static GetDDSInfo(data)
     {
+
         // Ensure we have data to work with
         if (!data.byteLength)
         {
@@ -763,8 +768,30 @@ export class Tw2TextureRes extends Tw2Resource
                     break;
                 }
 
-                console.dir(info);
+
+
                 const code = Tw2TextureRes.Int32ToFourCC(info.fourCC);
+
+                // Log dx10 dds details for now
+                if (code === "DX10")
+                {
+                    const d = new Uint32Array(data);
+                    const dx10Offset = DDS_MAGIC_SIZE + DDS_HEADER_SIZE;
+                    const dx10Header = new Uint32Array(
+                        d.buffer,
+                        dx10Offset,
+                        DDS_HEADER_DX10_SIZE / Uint32Array.BYTES_PER_ELEMENT
+                    );
+
+                    info.dxgiFormat = dx10Header[DDS_DX10_FIELDS.DXGI_FORMAT];
+                    info.resourceDimension = dx10Header[DDS_DX10_FIELDS.RESOURCE_DIMENSION];
+                    info.miscFlag = dx10Header[DDS_DX10_FIELDS.MISC_FLAG];
+                    info.arraySize = dx10Header[DDS_DX10_FIELDS.ARRAY_SIZE];
+                    info.dxgiFormatName = DXGI_FORMATS[info.dxgiFormat];
+                }
+
+                console.dir(info);
+
                 throw new ErrResourceFormatUnsupported({
                     format: "DDS",
                     reason: `FOURCC ${code}`,
