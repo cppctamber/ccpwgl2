@@ -212,13 +212,14 @@ export const MipFilterMode = {
 export const TEX_2D = 2;
 export const TEX_VOLUME =  3;  // 2D ARRAY
 export const TEX_CUBE_MAP = 4;
+export const TEX_PROJECTION = 5;  // is this right?
 export const TEX_SHADOW_MAP = 5;  // is this right?
 
 export const TexTypeToGLTexture  = {
     [TEX_2D] : GL_TEXTURE_2D,
     [TEX_VOLUME] : GL_TEXTURE_2D,
     [TEX_CUBE_MAP] : GL_TEXTURE_CUBE_MAP,
-    [TEX_SHADOW_MAP] : GL_TEXTURE_2D
+    [TEX_PROJECTION] : GL_TEXTURE_2D
 };
 
 // for debugging
@@ -226,6 +227,6 @@ export const TexTypeToString = {
     [TEX_2D] : "2D",
     [TEX_VOLUME] : "VOLUME",
     [TEX_CUBE_MAP] : "CUBE_MAP",
-    [TEX_SHADOW_MAP] : "SHADOW_MAP"
+    [TEX_PROJECTION] : "SHADOW_MAP"
 };
 
