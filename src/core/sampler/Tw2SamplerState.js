@@ -1,5 +1,4 @@
 import { assignIfExists, meta } from "utils";
-import { quat } from "math";
 
 import {
     GL_LINEAR,
@@ -93,7 +92,6 @@ export class Tw2SamplerState extends meta.Model
     maxAnisotropy = 4;
 
     // Not used
-    _borderColor = null;
     _comparison = null;
     _comparisonFunc = null;
     _mipLODBias = null;
