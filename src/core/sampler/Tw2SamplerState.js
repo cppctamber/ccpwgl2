@@ -447,12 +447,11 @@ export class Tw2SamplerState extends meta.Model
 
         sampler._comparisonFunc = reader.ReadUInt8(); // not used
 
-        sampler._borderColor = quat.fromValues(
-            reader.ReadFloat32(),
-            reader.ReadFloat32(),
-            reader.ReadFloat32(),
-            reader.ReadFloat32()
-        );
+        //borderColor not used
+        reader.ReadFloat32();
+        reader.ReadFloat32();
+        reader.ReadFloat32();
+        reader.ReadFloat32();
 
         sampler._minLOD = reader.ReadFloat32();       // not used
         sampler._maxLOD = reader.ReadFloat32();       // not used
