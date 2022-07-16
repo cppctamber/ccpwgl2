@@ -1,5 +1,5 @@
-import { quadDepthV5, skinnedQuadDepthV5 } from "./quadDepthV5";
-import { quadPickingV5, skinnedQuadPickingV5 } from "./quadPickingV5";
+import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
+import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { vs, ps, texture, constant } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";

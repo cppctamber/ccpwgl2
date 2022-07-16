@@ -151,10 +151,11 @@ export const decalV5 = {
                         r1.xy=r1.xy*c2.yy;
                         
                         // DecalNormalMap
-                        r3.xzy=clampToBorder(s7,r1.xy).xyz;
+                        r3.xzw=clampToBorder(s7,r1.xy).xyz;
+                        r3.w = 1.0 - r3.w;
                         
                         // DecalRoughnessMap
-                        r3.z=clampToBorder(s8, r1.xy).x;
+                        r3.y=clampToBorder(s8, r1.xy).x;
                         
                         r3.xzw=(-r3.yxz)+c2.xyy;
                         r1.zw=r3.wz*c3.yy+c3.zz;

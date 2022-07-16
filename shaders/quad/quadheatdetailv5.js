@@ -1,4 +1,4 @@
-import { skinnedQuadHeatV5, quadHeatV5 } from "./quadHeatV5";
+import { skinnedQuadHeatV5, quadHeatV5 } from "./quadheatv5";
 
 
 // Todo: Create a quad heat detail shader

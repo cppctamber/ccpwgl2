@@ -1,5 +1,5 @@
-import { quadDepthV5 } from "./quadDepthV5";
-import { quadPickingV5 } from "./quadPickingV5";
+import { quadDepthV5 } from "./quaddepthv5";
+import { quadPickingV5 } from "./quadpickingv5";
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { RS_ZWRITEENABLE } from "constant";

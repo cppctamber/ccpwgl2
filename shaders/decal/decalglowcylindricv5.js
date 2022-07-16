@@ -6,7 +6,7 @@ import { precision } from "../shared/func";
 export const decalGlowCylindricV5 = {
     name: "decalGlowCylindricV5",
     path: "graphics/effect.gles2/managed/space/decals/v5/",
-    description: "decal glow shader",
+    description: "decal glow cylindric shader",
     techniques: {
         Main: {
             vs: vs.decal_PosTexTan,

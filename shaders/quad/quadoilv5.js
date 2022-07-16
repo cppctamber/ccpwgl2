@@ -1,7 +1,7 @@
 import { vs, ps, constant, texture } from "./shared";
 import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
-import { quadDepthV5, skinnedQuadDepthV5 } from "./quadDepthV5";
-import { quadPickingV5, skinnedQuadPickingV5 } from "./quadPickingV5";
+import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
+import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 
 
 export const quadOilV5 = {

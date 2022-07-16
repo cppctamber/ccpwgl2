@@ -1,6 +1,6 @@
 import { constant, ps, texture, vs } from "./shared";
-import { quadDepthV5 } from "./quadDepthV5";
-import { quadPickingV5 } from "./quadPickingV5";
+import { quadDepthV5 } from "./quaddepthv5";
+import { quadPickingV5 } from "./quadpickingv5";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { clampToBorder } from "../shared/func";
 
