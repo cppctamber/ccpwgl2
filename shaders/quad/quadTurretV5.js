@@ -10,7 +10,7 @@ const quadTurretV5_PosBwtTex = {
     inputDefinitions: PosBwtTex,
     shader: `
 
-        ${vs.header}
+        ${vs.shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -151,7 +151,7 @@ const quadTurretV5_PosBwtTex = {
             gl_Position.w=dot(r1,cb1[7]);
             texcoord1.y=c0.z;
         
-            ${vs.footer}
+            ${vs.shadowFooter}
         }
     `
 };
@@ -172,7 +172,6 @@ export const quadTurretV5 = {
                 ],
                 shader: `
                 
-                    ${precision}
                     ${ps.header}
                     
                     varying vec4 texcoord1;
@@ -755,7 +754,7 @@ export const quadTurretV5 = {
                             gl_FragData[0].xyz=vec3(tmp.x?r1.x:r2.x,tmp.y?r1.y:r2.y,tmp.z?r1.z:r2.z);
                         }
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 
                 `

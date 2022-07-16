@@ -39,16 +39,6 @@ addShaders(others);
 addShaders(quad);
 
 
-let useOverrides = true;
-
-/**
- * Toggles using overridden shader paths
- * @param {Boolean} bool
- */
-export function useOverriddenShaderPaths(bool)
-{
-    useOverrides = !!bool;
-}
 
 /**
  * Gets an overridden shader path
@@ -58,8 +48,6 @@ export function useOverriddenShaderPaths(bool)
 export function getOverriddenShaderPath(shaderPath)
 {
     if (!shaderPath) return "";
-
-    if (!useOverrides) return shaderPath;
 
     const ext = shaderPath.substring(shaderPath.lastIndexOf("."));
     switch(ext)

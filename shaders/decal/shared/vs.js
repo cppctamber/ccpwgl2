@@ -1,25 +1,12 @@
-import { shadowHeader, shadowFooter } from "../../shared/vs";
+import { shadowHeader, shadowFooter } from "../../quad/shared/vs";
 import { PosTexTan } from "../../shared/input";
-
-
-export const header = `
-
-    ${shadowHeader}
-
-`;
-
-
-export const footer = `
-
-    ${shadowFooter}
-
-`;
 
 
 export const decal_PosTexTan = {
     inputDefinitions: PosTexTan,
     shader: `
-        ${header}
+    
+        ${shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -170,7 +157,7 @@ export const decal_PosTexTan = {
             texcoord5.xyz=v0.xyz;
             texcoord10.w=c1.x;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };

@@ -209,7 +209,7 @@ export const quadGlassV5 = {
                         r1.yzw=r6.www*cb7[9].xyz+r1.yzw;
                         
                         // AlbedoMap
-                        r7.xyz=texture2D(s2, v0.xy).xyz;
+                        r7.xyz=texture2D(s2,v0.xy).xyz;
                         
                         // RoughnessMap
                         r7.w=texture2D(s3,v0.xy).x;
@@ -217,8 +217,8 @@ export const quadGlassV5 = {
                         r7.xyz=r7.www*(-r1.yzw)+c17.xxx;
                         r1.yzw=r1.yzw*r7.www;
                         r7.xyz=r7.xyz*r1.xxx+r1.yzw;
-                        r1.x=clamp(dot(r4.xyz,r3.xyz),0.0, 1.0);
-                        r2.w=clamp(dot(r2.xyz,r4.xyz),0.0, 1.0);
+                        r1.x=clamp(dot(r4.xyz,r3.xyz),0.0,1.0);
+                        r2.w=clamp(dot(r2.xyz,r4.xyz),0.0,1.0);
                         r2.w=r2.w*r2.w;
                         r1.x=r1.x*r1.x;
                         r3.w=r6.y*cb7[11].x;
@@ -319,7 +319,7 @@ export const quadGlassV5 = {
                         r0.xyz=r0.xyz*(-r0.www)+r0.xyz;
                         gl_FragData[0].xyz=r6.xxx*r0.xyz+r1.xyz;
 
-                        ${ps.footer}                        
+                        ${ps.shadowFooter}                        
                     }
                 `
             },

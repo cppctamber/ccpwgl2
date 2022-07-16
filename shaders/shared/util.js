@@ -10,17 +10,20 @@ import {
 
 export { TEX_2D, TEX_CUBE_MAP, TEX_PROJECTION, TEX_VOLUME, WrapMode };
 
+
 export const WidgetType = {
     LINEAR_COLOR: "LINEARCOLOR",
     MIXED: "MIXEDVECTOR",
     TEXTURE: "TEXTURE"
 };
 
+
 const DEFAULT_TEX_UI = {
     group: "Textures",
     display: 1,
     widget: WidgetType.TEXTURE
 };
+
 
 const DEFAULT_SAMPLER = {
     addressUMode: WrapMode.REPEAT,
@@ -31,6 +34,7 @@ const DEFAULT_SAMPLER = {
     maxAnisotropy: 4
 };
 
+
 const DEFAULT_TEX_2D = {
     type: TEX_2D,
     isSRGB: 0,
@@ -38,6 +42,7 @@ const DEFAULT_TEX_2D = {
     isVolume: 0,
     sampler: DEFAULT_SAMPLER
 };
+
 
 const DEFAULT_TEX_CUBE_MAP = {
     type: TEX_CUBE_MAP,
@@ -47,6 +52,7 @@ const DEFAULT_TEX_CUBE_MAP = {
     sampler: DEFAULT_SAMPLER
 };
 
+
 const DEFAULT_TEX_VOLUME = {
     type: TEX_VOLUME,
     isSRGB: 0,
@@ -54,6 +60,7 @@ const DEFAULT_TEX_VOLUME = {
     isVolume: 0,
     sampler: DEFAULT_SAMPLER
 };
+
 
 const DEFAULT_TEX_PROJECTION = {
     type: TEX_PROJECTION,
@@ -69,6 +76,7 @@ const DEFAULT_TEX_PROJECTION = {
         maxAnisotropy: 4
     }
 };
+
 
 /**
  * Helper for creating textures and samplers
@@ -117,9 +125,39 @@ export function createTex(name, type, options = {})
     return data;
 }
 
+
+/**
+ * Helper for creating border and wrap versions of a texture
+ * @param {String} name
+ * @param {Number} type
+ * @param {Object} options
+ * @returns {*[]}
+ */
+export function createBorderAndWrap(name, type, options)
+{
+    const root = createTex(name, type, options);
+
+    return [
+        overrideTex(root, {
+            sampler: {
+                name: `${name}BorderSampler`,
+                addressUMode: WrapMode.CLAMP_TO_EDGE,
+                addressVMode: WrapMode.CLAMP_TO_EDGE
+            }
+        }),
+        overrideTex(root, {
+            sampler : {
+                name: `${name}WrapSampler`,
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT
+            }
+        })
+    ];
+}
+
+
 /**
  * Helper for overriding and existing texture
- * @param {String} name
  * @param {Object} src
  * @param {Object} override
  * @returns {*}
@@ -131,6 +169,7 @@ export function overrideTex(src, override={})
     if (override.sampler) out.sampler = Object.assign({}, src.sampler, override.sampler);
     return out;
 }
+
 
 /**
  * Creates a linear colour constant definition
@@ -153,6 +192,7 @@ export function createLinearColor(options = {})
 
     return data;
 }
+
 
 /**
  * Creates a gloss constant definition

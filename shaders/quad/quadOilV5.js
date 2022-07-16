@@ -356,7 +356,7 @@ export const quadOilV5 = {
                             gl_FragData[0].xyz=vec3(tmp.x?r1.x:r2.x,tmp.y?r1.y:r2.y,tmp.z?r1.z:r2.z);
                         }
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                                     
                 `

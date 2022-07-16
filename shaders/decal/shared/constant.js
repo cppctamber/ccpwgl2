@@ -5,13 +5,14 @@ export const DecalClampToBorder = {
     name: "DecalClampToBorder",
     value: [ 0, 0, 0, 0 ],
     ui: {
-        group: "Mode",
+        group: "Decal",
         description: "Overrides address modes to clamp to border",
         components: [
             "u",
             "v",
             "w"
-        ]
+        ],
+        widget: WidgetType.MIXED
     }
 };
 
@@ -47,7 +48,7 @@ export const DecalTextureScaling = {
 
 
 export const DecalGlowColor = createLinearColor({
-    name: "DecalGlowMap",
+    name: "DecalGlowColor",
     ui: {
         group: "Decal",
         description: "glow color"

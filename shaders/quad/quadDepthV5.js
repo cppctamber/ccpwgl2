@@ -29,7 +29,7 @@ export const quadDepthV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         gl_FragData[0]=c0.xxxy;
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                     
                 `

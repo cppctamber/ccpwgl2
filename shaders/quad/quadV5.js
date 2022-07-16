@@ -508,7 +508,7 @@ export const quadV5 = {
                         // Dirt test
                         gl_FragData[0].xyz = mix(gl_FragData[0].xyz, dirt * cb4[0].z, -dirt);
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 `
             }

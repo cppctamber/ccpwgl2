@@ -343,7 +343,7 @@ export const quadSailsV5 = {
                         }
                         gl_FragData[0].w=r1.x;
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 `
             },

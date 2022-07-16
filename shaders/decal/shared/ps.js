@@ -1,15 +1,2 @@
-import { shadowHeader, shadowFooter } from "../../shared/ps";
-
-
-export const header = `
-
-    ${shadowHeader}
-
-`;
-
-
-export const footer = `
-
-    ${shadowFooter}
-
-`;
+export { shadowHeader, shadowFooter } from "../../shared/ps";
+export { header } from "../../quad/shared/ps";

@@ -46,7 +46,7 @@ export const quadPickingV5 = {
                         r0.x=r0.x>=0.0?r0.y:(-r0.y);
                         gl_FragData[0].zw=r0.zx*c2.zw;
                     
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 `,
                 constants: [

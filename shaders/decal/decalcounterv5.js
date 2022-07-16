@@ -1,16 +1,6 @@
 import { texture, constant, vs, ps } from "./shared";
 import { precision } from "../shared/func";
-
-import {
-    BLEND_ONE, 
-    BLENDOP_ADD,
-    RS_ALPHABLENDENABLE,
-    RS_ALPHATESTENABLE, 
-    RS_BLENDOP, 
-    RS_DESTBLEND,
-    RS_SRCBLEND,
-    RS_ZWRITEENABLE,
-} from "global/constant";
+import * as d3d from "constant/d3d";
 
 
 export const decalcounterv5 = {
@@ -33,7 +23,7 @@ export const decalcounterv5 = {
                 shader: `
 
                     ${precision}
-                    ${ps.header}
+                    ${ps.shadowHeader}
                     
                     varying vec4 texcoord;
                     varying vec4 texcoord4;
@@ -173,18 +163,18 @@ export const decalcounterv5 = {
                         }
                         gl_FragData[0].w=c7.w;
                             
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
 
                 `
             },
             states: {
-                [RS_ZWRITEENABLE]: 0,
-                [RS_ALPHATESTENABLE]: 0,
-                [RS_SRCBLEND]: BLEND_ONE,
-                [RS_DESTBLEND]: BLEND_ONE,
-                [RS_ALPHABLENDENABLE]: 1,
-                [RS_BLENDOP]: BLENDOP_ADD
+                [d3d.RS_ZWRITEENABLE]: 0,
+                [d3d.RS_ALPHATESTENABLE]: 0,
+                [d3d.RS_SRCBLEND]: d3d.BLEND_ONE,
+                [d3d.RS_DESTBLEND]: d3d.BLEND_ONE,
+                [d3d.RS_ALPHABLENDENABLE]: 1,
+                [d3d.RS_BLENDOP]: d3d.BLENDOP_ADD
             }
         }
     }

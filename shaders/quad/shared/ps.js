@@ -1,5 +1,6 @@
 import { texture2DLodPolyfill, texture2DLod, precision, saturate } from "../../shared/func";
 import { shadowHeader, shadowFooter } from "../../shared/ps";
+export { shadowFooter };
 
 
 export const header = `
@@ -11,10 +12,3 @@ export const header = `
     ${shadowHeader}
     
 `;
-
-export const footer = `
-
-    ${shadowFooter}
-
-`;
-

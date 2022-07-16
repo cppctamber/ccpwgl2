@@ -1,24 +1,13 @@
 import { shadowHeader, shadowFooter } from "../../shared/vs";
 import { input } from "../../shared";
+export { shadowHeader, shadowFooter };
 
-
-export const header = `
-
-    ${shadowHeader}
-
-`;
-
-export const footer = `
-
-    ${shadowFooter}
-
-`;
 
 export const quadV5_PosTexTanTex = {
     inputDefinitions: input.PosTexTanTex,
     shader: `
 
-        ${header}
+        ${shadowHeader}
             
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -132,7 +121,7 @@ export const quadV5_PosTexTanTex = {
             texcoord5.w=r0.x;
             texcoord5.xyz=v0.xyz;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -141,7 +130,7 @@ export const quadOilV5_PosTexTanTex = {
     inputDefinitions: input.PosTexTanTex,
     shader: `
     
-        ${header}
+        ${shadowHeader}
     
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -241,7 +230,7 @@ export const quadOilV5_PosTexTanTex = {
             texcoord5.xyz=v0.xyz;
             texcoord6=c1.xxxx;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -250,7 +239,7 @@ export const quadV5_PosTex = {
     inputDefinitions: input.PosTex,
     shader: `
         
-        ${header}
+        ${shadowHeader}
                 
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -287,7 +276,7 @@ export const quadV5_PosTex = {
             texcoord=c0.xxxy*v0.xyzx;
             texcoord1.xy=v1.xy;
         
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -297,7 +286,7 @@ export const skinnedQuadV5_PosBwtTexTanTex = {
     inputDefinitions: input.PosBwtTexTanTex,
     shader: `
     
-        ${header}
+        ${shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -443,7 +432,7 @@ export const skinnedQuadV5_PosBwtTexTanTex = {
             texcoord4.w=r0.x;
             texcoord5.w=r0.x;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -452,7 +441,7 @@ export const skinnedQuadOilV5_PosBwtTexTanTex = {
     inputDefinitions: input.PosBwtTexTanTex,
     shader: `
     
-        ${header}
+        ${shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -584,7 +573,7 @@ export const skinnedQuadOilV5_PosBwtTexTanTex = {
             texcoord5.w=r0.x;
             texcoord6=c0.yyyy;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -593,7 +582,8 @@ export const skinnedQuadOilV5_PosBwtTexTanTex = {
 export const skinnedQuadV5_PosBwtTex = {
     inputDefinitions: input.PosBwtTex,
     shader: `
-        ${header}
+    
+        ${shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -664,7 +654,7 @@ export const skinnedQuadV5_PosBwtTex = {
             texcoord.w=c0.y;
             texcoord1.xy=v2.xy;
             
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -682,7 +672,7 @@ export const quadInstancedV5_PosTexTanTexTexTexTex = {
     ],
     shader: `
   
-        ${header}
+        ${shadowHeader}
         
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -805,7 +795,7 @@ export const quadInstancedV5_PosTexTanTexTexTexTex = {
             texcoord5.w=r0.x;
             texcoord6=c1.xxxx;
                          
-            ${footer}
+            ${shadowFooter}
         }
     `
 };
@@ -821,7 +811,7 @@ export const quadInstancedV5_PosTexTexTexTex = {
     ],
     shader: `
     
-        ${header}
+        ${shadowHeader}
        
         attribute vec4 attr0;
         attribute vec4 attr1;
@@ -872,7 +862,7 @@ export const quadInstancedV5_PosTexTexTexTex = {
             texcoord.w=c0.y;
             texcoord1.xy=v1.xy;
             
-            ${footer}
+            ${shadowFooter}
         }
     
     `

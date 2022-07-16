@@ -456,7 +456,7 @@ export const quadDetailV5 = {
                         r2.xyz=r2.xyz*c34.www;
                         {bvec3 tmp=greaterThanEqual(r0.xyz,vec3(0.0));gl_FragData[0].xyz=vec3(tmp.x?r1.x:r2.x,tmp.y?r1.y:r2.y,tmp.z?r1.z:r2.z);};
 
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                         
                     }
                 `

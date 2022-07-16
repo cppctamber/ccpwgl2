@@ -1,19 +1,8 @@
-import { vs, texture } from "./shared";
+import { vs, ps, texture } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { NormalMap, AoMap } from "../quad/shared/texture";
-import { header as psHeader, footer as psFooter } from "../quad/shared/ps";
-
-import {
-    BLENDOP_ADD,
-    RS_ALPHABLENDENABLE,
-    RS_BLENDOP,
-    RS_DESTBLEND,
-    RS_SRCBLEND,
-    RS_ZWRITEENABLE,
-    BLEND_SRCALPHA,
-    BLEND_INVSRCALPHA
-} from "global/constant";
+import * as d3d from "constant/d3d";
 
 
 export const decalV5 = {
@@ -37,7 +26,7 @@ export const decalV5 = {
                 ],
                 shader: `
                 
-                    ${psHeader}
+                    ${ps.header}
                     ${clampToBorder}
                     
                     varying vec4 texcoord;
@@ -312,17 +301,17 @@ export const decalV5 = {
                             gl_FragData[0].xyz=vec3(tmp.x?r1.x:r2.x,tmp.y?r1.y:r2.y,tmp.z?r1.z:r2.z);
                         }
                         
-                        ${psFooter}
+                        ${ps.shadowFooter}
                     }
                     `
             },
             states: {
-                [RS_ZWRITEENABLE] : 0,
-                [RS_ALPHABLENDENABLE] : 0,
-                [RS_SRCBLEND] : BLEND_SRCALPHA,
-                [RS_DESTBLEND] : BLEND_INVSRCALPHA,
-                [RS_ALPHABLENDENABLE] : 1,
-                [RS_BLENDOP] : BLENDOP_ADD
+                [d3d.RS_ZWRITEENABLE] : 0,
+                [d3d.RS_ALPHABLENDENABLE] : 0,
+                [d3d.RS_SRCBLEND] : d3d.BLEND_SRCALPHA,
+                [d3d.RS_DESTBLEND] : d3d.BLEND_INVSRCALPHA,
+                [d3d.RS_ALPHABLENDENABLE] : 1,
+                [d3d.RS_BLENDOP] : d3d.BLENDOP_ADD
             }
         }
     }

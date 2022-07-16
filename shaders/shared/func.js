@@ -145,6 +145,14 @@ export const clampToBorder = `
         return c;
     }
     
+    vec4 clampToBorder(sampler2D ts, vec2 uv, vec2 clampUV)
+    {
+        vec4 c = texture2D(ts, uv);    
+        if(clampUV.x > 0.0 && (uv.x>1.0 || uv.x<0.0)) return vec4(0.0);
+        if(clampUV.y > 0.0 && (uv.y>1.0 || uv.y<0.0)) return vec4(0.0);
+        return c;
+    }
+    
     vec4 clampToBorder(sampler2D ts, vec2 uv, vec4 borderColor)
     {
         vec4 c = texture2D(ts, uv);    
@@ -152,24 +160,17 @@ export const clampToBorder = `
         if(uv.y>1.0 || uv.y<0.0) return borderColor;
         return c;
     }
-
-    vec4 clampToBorder(sampler2D ts, vec2 uv, vec2 clamp_to_border)
-    {
-        vec4 c = texture2D(ts, uv);    
-        if(clamp_to_border.x > 0.0 && (uv.x>1.0 || uv.x<0.0)) return vec4(0.0);
-        if(clamp_to_border.y > 0.0 && (uv.y>1.0 || uv.y<0.0)) return vec4(0.0);
-        return c;
-    }
     
-    vec4 clampToBorder(sampler2D ts, vec2 uv, vec2 clamp_to_border, vec4 borderColor)
+    vec4 clampToBorder(sampler2D ts, vec2 uv, vec2 clampUV, vec4 borderColor)
     {
         vec4 c = texture2D(ts, uv);    
-        if(clamp_to_border.x > 0.0 && (uv.x>1.0 || uv.x<0.0)) return borderColor;
-        if(clamp_to_border.y > 0.0 && (uv.y>1.0 || uv.y<0.0)) return borderColor;
+        if(clampUV.x > 0.0 && (uv.x>1.0 || uv.x<0.0)) return borderColor;
+        if(clampUV.y > 0.0 && (uv.y>1.0 || uv.y<0.0)) return borderColor;
         return c;
     }
     
 `;
+
 
 export const getID = `
 
