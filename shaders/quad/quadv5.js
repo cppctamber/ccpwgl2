@@ -464,9 +464,6 @@ export const quadV5 = {
                         r0.xzw=r0.xzw*r4.xyz+r2.xyz;
                         r2.xyz=max(r0.xzw,c21.www);
                         r0.xzw=r1.xyz+r2.xyz;
-                        
-                        // use r2 as r1 gets reassigned
-                        // r1.xy=mix(v0.xy,v0.zw,cb7[0].yy); <----------------------------------------------------------
                         r2.xy=mix(v0.xy,v0.zw,cb7[0].yy);
                         
                         // NormalMap 
