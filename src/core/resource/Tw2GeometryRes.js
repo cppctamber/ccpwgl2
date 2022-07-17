@@ -53,21 +53,28 @@ export class Tw2GeometryRes extends Tw2Resource
     animations = [];
 
     _systemMirror = resMan.systemMirror;
+    _requestResponseType = null;
+    _extension = null;
+    _boundsDirty = true;
 
+    /**
+     * Gets the current system mirror status (whether vertex and face data is cached)
+     * @returns {boolean}
+     */
     get systemMirror()
     {
         return this._systemMirror;
     }
 
+    /**
+     * Sets the current system mirror status and clears any cached vertex or face data if false
+     * @param {boolean} value
+     */
     set systemMirror(value)
     {
         this._systemMirror = !!value;
         if (!value) this.ClearSystemMirror();
     }
-
-    _requestResponseType = null;
-    _extension = null;
-    _boundsDirty = true;
 
     /**
      * Clears system mirror data
