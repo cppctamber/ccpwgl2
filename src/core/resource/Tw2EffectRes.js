@@ -30,7 +30,7 @@ export class Tw2EffectRes extends Tw2Resource
      * Prepares ccp binary
      * @param {ArrayBuffer} data
      */
-    PrepareFX(data)
+    PrepareCCP(data)
     {
         const reader = this.reader = new Tw2BinaryReader(new Uint8Array(data));
 
@@ -122,7 +122,7 @@ export class Tw2EffectRes extends Tw2Resource
      * @param {Object} options
      * @return {Tw2Shader}
      */
-    GetShaderFX(options)
+    GetShaderCCP(options)
     {
         let index = 0;
         let multiplier = 1;
@@ -148,7 +148,7 @@ export class Tw2EffectRes extends Tw2Resource
             multiplier *= permutation.optionCount;
         }
 
-        if (this.shaders.hasOwnProperty(index))
+        if (this.shaders[index])
         {
             return this.shaders[index];
         }
@@ -183,6 +183,7 @@ export class Tw2EffectRes extends Tw2Resource
 
     /**
      * Gets shader from json
+     * TODO: Implement options
      * @param {Object} options
      * @return {Tw2Shader}
      */
@@ -220,7 +221,7 @@ export class Tw2EffectRes extends Tw2Resource
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                this.PrepareFX(data);
+                this.PrepareCCP(data);
                 break;
 
             case "sm_json":
@@ -252,7 +253,7 @@ export class Tw2EffectRes extends Tw2Resource
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                return this.GetShaderFX(options);
+                return this.GetShaderCCP(options);
 
             case "sm_json":
                 return this.GetShaderJSON(options);
@@ -293,24 +294,32 @@ export class Tw2EffectRes extends Tw2Resource
 
     /**
      * Creates an effect res from json
-     * @param {Object} data
-     * @return {Tw2EffectRes}
+     * @param {Object} json
+     * @param {Object} [options]
+     * @return {Tw2Resource}
      */
-    static fromJSON(data)
+    static fromJSON(json, options)
     {
-        if (!data.name) throw new ReferenceError("Invalid shader name");
+        if (!json.name) throw new ReferenceError("Invalid shader name");
 
-        const
-            res = new Tw2EffectRes(),
-            name = "manual:/" + data.name + ".sm_json";
+        const name = "manual:/" + json.name + ".sm_json";
+        if (tw2.resMan.motherLode.Has(name))
+        {
+            throw new ReferenceError("Shader already exists");
+        }
 
+        const res = new Tw2EffectRes();
         res.path = name.toLowerCase();
         res._extension = "sm_json";
         res.doNotPurge = 1;
-        res.Prepare(data);
+        res.Prepare(json);
 
         // Add so it can be loaded from elsewhere
         tw2.AddResource(res.path, res);
+
+        // Load the shader
+        res.GetShaderJSON(options);
+
         return res;
     }
 }
