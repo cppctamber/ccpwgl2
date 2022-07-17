@@ -322,7 +322,7 @@ export class Tw2ShaderStage
             if (shadowShader) shadowShader = this.MakeShaderCodeReadable(shadowShader, stage.constants, stage.samplers, type);
              */
 
-            console.group(context.path);
+            console.group(`${context.path} (${stage.type === 0 ? "vertex" : "fragment"})`);
             console.dir({
                 path: context.path,
                 shader,
@@ -562,8 +562,12 @@ export class Tw2ShaderStage
             if (shadowShaderCode) shadowShaderCode = this.MakeShaderCodeReadable(shadowShaderCode, stage.constants, stage.samplers, stage.type);
              */
 
-            console.group(context.path);
-            console.dir({ path: context.path, shaderCode, shadowShaderCode, type: stage.type  === 0 ? "vertex" : "fragment" });
+            console.group(`${context.path} (${stage.type === 0 ? "vertex" : "fragment"})`);
+            console.dir({
+                path: context.path,
+                shaderCode, shadowShaderCode,
+                type: stage.type  === 0 ? "vertex" : "fragment"
+            });
             console.groupEnd();
 
             stage.shaderCode = shaderCode;
