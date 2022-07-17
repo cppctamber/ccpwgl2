@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isPlain, meta } from "utils";
 import { device } from "global";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2ShaderAnnotation } from "./Tw2ShaderAnnotation";
@@ -291,6 +291,7 @@ export class Tw2Shader
         return false;
     }
 
+
     /**
      * Creates a shader from JSON
      * @param {Object} json
@@ -299,7 +300,7 @@ export class Tw2Shader
      */
     static fromJSON(json, context)
     {
-        const { techniques = {}, annotations = {} } = json;
+        let { techniques = {}, annotations = {} } = json;
 
         const shader = new Tw2Shader();
 
@@ -313,11 +314,13 @@ export class Tw2Shader
 
         for (const key in annotations)
         {
-            if (annotations.hasOwnProperty(key))
+            if (annotations.hasOwnProperty(key) && !context.annotations[key])
             {
-                shader.annotations[key] = Tw2ShaderAnnotation.fromJSON(annotations[key], context, key);
+                context.annotations[key] = Tw2ShaderAnnotation.fromJSON(annotations[key], context, key);
             }
         }
+
+        shader.annotations = context.annotations;
 
         return shader;
     }
