@@ -7,8 +7,8 @@ import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 
 export const quadV5 = {
     name: "quadV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "quad shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadV5",
+    description: "general quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
@@ -515,8 +515,8 @@ export const quadV5 = {
 
 
 export const skinnedQuadV5 = {
-    name: "skinned_QuadV5",
-    path: quadV5.path,
+    name: "skinned_quadV5",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadV5",
     description: `skinned ${quadV5.description}`,
     todo: quadV5.todo,
     techniques: {

@@ -7,8 +7,8 @@ import { clampToBorder } from "../shared/func";
 
 export const quadHeatV5 = {
     name: "quadHeatV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "Heat shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadHeatV5",
+    description: "heat quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
@@ -533,7 +533,7 @@ export const quadHeatV5 = {
 
 export const skinnedQuadHeatV5 = {
     name: "skinned_quadHeatV5",
-    path: quadHeatV5.path,
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadHeatV5",
     description: `skinned ${quadHeatV5.description}`,
     todo: quadHeatV5.todo,
     techniques: {

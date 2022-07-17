@@ -159,8 +159,8 @@ const quadTurretV5_PosBwtTex = {
 
 export const quadTurretV5 = {
     name: "quadV5",
-    path: "graphics/effect.gles2/managed/space/turret/v5/",
-    description: "turret shader (skinned)",
+    replaces: "graphics/effect.gles2/managed/space/turret/v5/quadV5",
+    description: "skinned turret quad shader",
     todo: "add dirt",
     techniques: {
         Picking: {

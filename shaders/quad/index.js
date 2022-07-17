@@ -9,3 +9,4 @@ export * from "./quadpickingv5";
 export * from "./quadsailsv5";
 export * from "./quadturretv5";
 export * from "./quadv5";
+export * from "./quadwreckv5";

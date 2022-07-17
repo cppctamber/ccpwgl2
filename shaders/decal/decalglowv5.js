@@ -5,7 +5,7 @@ import { clampToBorder, precision } from "../shared/func";
 
 export const decalGlowV5 = {
     name: "decalGlowV5",
-    path: "graphics/effect.gles2/managed/space/decals/v5/",
+    replaces: "graphics/effect.gles2/managed/space/decals/v5/decalGlowV5",
     description: "decal glow shader",
     techniques: {
         Main: {

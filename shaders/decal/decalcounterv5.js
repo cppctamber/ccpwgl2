@@ -5,7 +5,7 @@ import * as d3d from "constant/d3d";
 
 export const decalcounterv5 = {
     name: "decalcounterv5",
-    path: "graphics/effect.gles2/managed/space/decals/v5/",
+    replaces: "graphics/effect.gles2/managed/space/decals/v5/decalcounterv5",
     description: "killmark decal shader",
     techniques: {
         Main: {

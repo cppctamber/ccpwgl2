@@ -7,8 +7,8 @@ import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../sh
 
 export const quadDetailV5 = {
     name: "quadDetailV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "detail shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadDetailV5",
+    description: "detail quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
@@ -467,8 +467,8 @@ export const quadDetailV5 = {
 
 
 export const skinnedQuadDetailV5 = {
-    name: "skinned_QuadDetailV5",
-    path: quadDetailV5.path,
+    name: "skinned_quadDetailV5",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadDetailV5",
     description: `skinned ${quadDetailV5.description}`,
     todo: quadDetailV5.todo,
     techniques: {

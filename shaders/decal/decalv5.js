@@ -7,7 +7,7 @@ import * as d3d from "constant/d3d";
 
 export const decalV5 = {
     name: "decalV5",
-    path: "graphics/effect.gles2/managed/space/decals/v5/",
+    replaces: "graphics/effect.gles2/managed/space/decals/v5/decalV5",
     description: "decal shader",
     techniques: {
         Main: {

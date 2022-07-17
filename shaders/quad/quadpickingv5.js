@@ -4,7 +4,6 @@ import { constant } from "../shared";
 
 export const quadPickingV5 = {
     name: "quadPickingV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
     description: "picking shader",
     techniques: {
         Main: {
@@ -61,7 +60,6 @@ export const quadPickingV5 = {
 
 export const skinnedQuadPickingV5 = {
     name: "skinned_quadPicking",
-    path: quadPickingV5.path,
     description: `skinned ${quadPickingV5.description}`,
     techniques: {
         Main: {

@@ -160,7 +160,7 @@ export function createBorderAndWrap(name, type, options)
  * Helper for overriding and existing texture
  * @param {Object} src
  * @param {Object} override
- * @returns {*}
+ * @returns {Object}
  */
 export function overrideTex(src, override={})
 {
@@ -170,6 +170,19 @@ export function overrideTex(src, override={})
     return out;
 }
 
+/**
+ * Overrides a constant
+ * @param {Object} src
+ * @param {Object} override
+ * @returns {Object}
+ */
+export function overrideConstant(src, override={})
+{
+    const { ui, ...constant } = override;
+    const out = Object.assign({}, src, constant);
+    if (ui) out.ui = Object.assign({}, src.ui, ui);
+    return out;
+}
 
 /**
  * Creates a linear colour constant definition

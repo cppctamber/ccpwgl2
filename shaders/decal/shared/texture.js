@@ -1,4 +1,4 @@
-import { createBorderAndWrap, TEX_2D } from "../../shared/util";
+import { createBorderAndWrap, createTex, TEX_2D, TEX_CUBE_MAP, WrapMode } from "../../shared/util";
 
 
 const [ DecalAlbedoMap_SamplerBorder, DecalAlbedoMap_SamplerWrap ] = createBorderAndWrap("DecalAlbedoMap", TEX_2D, {
@@ -47,6 +47,24 @@ const [ DecalGlowMap_SamplerBorder, DecalGlowMap_SamplerWrap ] = createBorderAnd
     ui: {
         suffix: "_g",
         components: [ "glow mask" ]
+    }
+});
+
+
+//----------------------------------------------------------------------------------------[ hole ]--------------------//
+
+
+export const DecalHoleMap = createTex("DecalHoleMap", TEX_2D, {
+    sampler: {
+        addressUMode: WrapMode.CLAMP_TO_EDGE,
+        addressVMode: WrapMode.CLAMP_TO_EDGE
+    }
+});
+
+export const DecalInsideCubeMap = createTex("DecalInsideCubeMap", TEX_CUBE_MAP, {
+    sampler: {
+        addressUMode: WrapMode.CLAMP_TO_EDGE,
+        addressVMode: WrapMode.CLAMP_TO_EDGE
     }
 });
 

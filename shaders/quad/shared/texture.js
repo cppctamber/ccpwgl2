@@ -158,3 +158,18 @@ export const OilFilmLookupMap = createTex("OilFilmLookupMap", TEX_2D, {
         components: [ "red", "green", "blue", "alpha" ]
     }
 });
+
+
+//----------------------------------------------------------------------------------------[ wreck ]-------------------//
+
+
+export const AlphaThresholdMap = createTex("AlphaThresholdMap", TEX_2D, {
+    isSRGB: 1,
+    ui: {
+        description: "Alpha threshold map",
+        components: [ "red", "green", "blue", "alpha" ],
+        sampler: {
+
+        }
+    }
+});

@@ -7,8 +7,8 @@ import { clampToBorder } from "../shared/func";
 
 export const quadInstancedV5 = {
     name: "quadInstancedV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "Instanced shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadInstancedV5",
+    description: "instanced quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: {
@@ -416,7 +416,7 @@ export const quadInstancedV5 = {
 
 export const skinnedQuadInstancedV5 = {
     name: "skinned_quadInstancedV5",
-    path: quadInstancedV5.path,
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadInstancedV5",
     description: `skinned ${quadInstancedV5.description}`,
     techniques: quadInstancedV5.techniques
 };

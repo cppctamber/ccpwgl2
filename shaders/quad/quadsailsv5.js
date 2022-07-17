@@ -7,8 +7,8 @@ import { RS_ZWRITEENABLE } from "constant";
 
 export const quadSailsV5 = {
     name: "quadSailsV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "sail shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadSailsV5",
+    description: "sail quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
@@ -356,8 +356,8 @@ export const quadSailsV5 = {
 
 
 export const skinnedQuadSailsV5 = {
-    name: "skinned_QuadSailsV5",
-    path: quadSailsV5.path,
+    name: "skinned_quadSailsV5",
+    replaces: quadSailsV5.replaces,
     description: `skinned ${quadSailsV5.description}`,
     todo: quadSailsV5.todo,
     techniques: {

@@ -4,9 +4,10 @@ import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { NormalMap, AoMap } from "../quad/shared/texture";
 
+
 export const decalCylindricV5 = {
     name: "decalCylindricV5",
-    path: "graphics/effect.gles2/managed/space/decals/v5/",
+    replaces: "graphics/effect.gles2/managed/space/decals/v5/decalCylindricV5",
     description: "decal cylindric shader",
     techniques: {
         Main: {

@@ -362,3 +362,29 @@ export const DetailFresnelColor = createLinearColor({
     }
 });
 
+
+//----------------------------------------------------------------------------------------[ wreck ]-------------------//
+
+
+export const WreckColor = createLinearColor({
+    name: "WreckColor",
+    ui: {
+        group: "Wreck",
+        description: "albedo color"
+    }
+});
+
+export const WreckFactors = {
+    name: "WreckFactors",
+    value: [ 1, 1, 0, 0 ],
+    ui: {
+        group: "Wreck",
+        components: [
+            "map scale uv",
+            "map sharpness",
+            "glow intensity",
+            "glow flicker speed"
+        ]
+    }
+};
+

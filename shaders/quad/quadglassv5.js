@@ -7,8 +7,8 @@ import { CULL_CCW, RS_CULLMODE } from "constant";
 
 export const quadGlassV5 = {
     name: "quadGlassV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "glass shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadGlassV5",
+    description: "glass quad shader",
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
@@ -332,8 +332,8 @@ export const quadGlassV5 = {
 
 
 export const skinnedQuadGlassV5 = {
-    name: "skinned_QuadDepthV5",
-    path: quadGlassV5.path,
+    name: "skinned_quadGlassV5",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadGlassV5",
     description: `skinned ${quadGlassV5.description}`,
     todo: quadGlassV5.todo,
     techniques: {

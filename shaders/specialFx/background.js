@@ -73,7 +73,7 @@ const AlphaMap = createTex("AlphaMap", TEX_CUBE_MAP);
 
 export const test_background = {
     name: "background",
-    path: "graphics/effect.gles2/managed/space/specialfx/",
+    replaces: "graphics/effect.gles2/managed/space/specialfx/background",
     description: "nebula shader",
     todo: "Temporary fix, come back and fix this up",
     techniques: {

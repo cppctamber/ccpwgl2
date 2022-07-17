@@ -6,8 +6,8 @@ import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 
 export const quadOilV5 = {
     name: "quadOilV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "oil shader",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadOilV5",
+    description: "oil quad shader",
     todo: "Add dirt",
     techniques: {
         Picking: quadPickingV5.techniques.Main,
@@ -368,7 +368,7 @@ export const quadOilV5 = {
 
 export const skinnedQuadOilV5 = {
     name: "skinned_quadOilV5",
-    path: quadOilV5.path,
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadOilV5",
     description: `skinned ${quadOilV5.description}`,
     todo: quadOilV5.todo,
     techniques: {

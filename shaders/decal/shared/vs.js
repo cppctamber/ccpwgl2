@@ -1,5 +1,6 @@
 import { shadowHeader, shadowFooter } from "../../quad/shared/vs";
 import { PosTexTan } from "../../shared/input";
+export { shadowHeader, shadowFooter };
 
 
 export const decal_PosTexTan = {

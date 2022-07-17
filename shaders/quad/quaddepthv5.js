@@ -3,8 +3,7 @@ import { vs, ps } from "./shared";
 
 export const quadDepthV5 = {
     name: "quadDepthV5",
-    path: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/",
-    description: "depth shader",
+    description: "depth quad shader",
     techniques: {
         Main: {
             vs: vs.quadV5_PosTex,
@@ -41,7 +40,6 @@ export const quadDepthV5 = {
 
 export const skinnedQuadDepthV5 = {
     name: "skinned_quadDepthV5",
-    path: quadDepthV5.path,
     description: `skinned ${quadDepthV5.description}`,
     techniques: {
         Main: {
