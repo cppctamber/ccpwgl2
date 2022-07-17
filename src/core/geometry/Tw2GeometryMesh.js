@@ -67,6 +67,14 @@ export class Tw2GeometryMesh
     _areas = 0;
     _boundsDirty = true;
 
+    /**
+     * Clears system mirror data
+     */
+    ClearSystemMirror()
+    {
+        this.bufferData = null;
+        this.indexData = null;
+    }
 
     /**
      * Finds bone bounds by name
@@ -553,11 +561,33 @@ export class Tw2GeometryMesh
      * Gets the second uv by index
      * @param {vec3|Array|Float32Array} out
      * @param {Number} }index
-     * @returns {vec3|Array|Float32Array}
+     * @returns {vec3|Array|Float32Array} out
      */
     GetVertexTexCoord1(out, index)
     {
         return this.GetVertexUV(out, index, 1);
+    }
+
+    /**
+     * Gets the vertex blend weight
+     * @param {vec4|Array|Float32Array} out
+     * @param {Number} index
+     * @returns {vec4|Array|Float32Array} out
+     */
+    GetVertexBlendWeight(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.BLENDWEIGHT, 0);
+    }
+
+    /**
+     * Gets the vertex blend indice
+     * @param {vec4|Array|Float32Array} out
+     * @param {Number} index
+     * @returns {vec4|Array|Float32Array} out
+     */
+    GetVertexBlendIndice(out, index)
+    {
+        return this.GetVertexElement(out, index, Tw2VertexElement.Type.BLENDINDICE, 0);
     }
     
     /**
@@ -674,6 +704,6 @@ export class ErrVertexDeclarationNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Vertex usage %usage% not found for index %usageIndex%");
+        super(data, "Vertex usage %usage% not found for usage index %usageIndex%");
     }
 }

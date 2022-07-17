@@ -51,11 +51,34 @@ export class Tw2GeometryRes extends Tw2Resource
     boundsSphereRadius = 0;
     models = [];
     animations = [];
-    systemMirror = resMan.systemMirror;
+
+    _systemMirror = resMan.systemMirror;
+
+    get systemMirror()
+    {
+        return this._systemMirror;
+    }
+
+    set systemMirror(value)
+    {
+        this._systemMirror = !!value;
+        if (!value) this.ClearSystemMirror();
+    }
 
     _requestResponseType = null;
     _extension = null;
     _boundsDirty = true;
+
+    /**
+     * Clears system mirror data
+     */
+    ClearSystemMirror()
+    {
+        for (let i = 0; i < this.meshes.length; i++)
+        {
+            this.meshes[i].ClearSystemMirror();
+        }
+    }
 
     /**
      *
