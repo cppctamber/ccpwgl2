@@ -1,12 +1,14 @@
 import { tw2 } from "global";
 import { vec3, vec4, quat } from "math";
 import { get, assignIfExists, isArray, isDNA } from "utils";
+
 import {
     Tw2ScalarCurve2,
     Tw2ScalarKey2,
     Tw2CurveSet,
     Tw2ValueBinding
 } from "curve";
+
 import {
     Tw2TextureParameter,
     Tw2Vector4Parameter,
@@ -16,6 +18,7 @@ import {
     Tw2InstancedMesh,
     Tw2Error
 } from "core";
+
 import {
     EveBoosterSet,
     EveChildMesh,
@@ -27,7 +30,15 @@ import {
     EveSpaceObject,
     EveShip,
     EveCustomMask
-} from "../eve";
+} from "eve";
+
+import {
+    ErrSOFHullNotFound,
+    ErrSOFMaterialNotFound,
+    ErrSOFFactionNotFound,
+    ErrSOFPatternNotFound,
+    ErrSOFRaceNotFound,
+} from "sof/EveSOFData";
 
 
 export function EveSOF()
@@ -425,7 +436,7 @@ export function EveSOF()
                 display = !!layers[i].textureName,
                 materialSource = 0,
                 textureName = `PatternMask${i + 1}Map`,
-                textureResFilePath = "cdn:/texture/global/black.png",
+                textureResFilePath = "res:/texture/global/black.dds.0.png",
                 projectionTypeU = 0,
                 projectionTypeV = 0,
                 isTargetMtl1 = true,
@@ -607,10 +618,10 @@ export function EveSOF()
         }
     }
 
-    const EFF_SPOTLIGHT_CONE = "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-    const EFF_SPOTLIGHT_CONE_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-    const EFF_SPOTLIGHT_GLOW = "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
-    const EFF_SPOTLIGHT_GLOW_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
+    const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
+    const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
+    const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
+    const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
 
     /**
      * Sets up spotlight sets
@@ -688,8 +699,8 @@ export function EveSOF()
         }
     }
 
-    const EFF_PLANE = "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
-    const EFF_PLANE_SKINNED = "cdn:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
+    const EFF_PLANE = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
+    const EFF_PLANE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
 
     /**
      * Sets up booster sets
@@ -762,11 +773,11 @@ export function EveSOF()
         }
     }
 
-    const EFF_BOOSTER_VOLUMETRIC = "cdn:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
-    const EFF_BOOSTER_GLOW_SKINNED = "cdn:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
-    const TEX_NOISE = "cdn:/Texture/global/noise.dds.0.png";
-    const TEX_NOISE_32_CUBE = "cdn:/Texture/Global/noise32cube_volume.dds.0.png";
-    const TEX_WHITE_SHARP = "cdn:/Texture/Particle/whitesharp.dds.0.png";
+    const EFF_BOOSTER_VOLUMETRIC = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
+    const EFF_BOOSTER_GLOW_SKINNED = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
+    const TEX_NOISE = "res:/Texture/global/noise.dds.0.png";
+    const TEX_NOISE_32_CUBE = "res:/Texture/Global/noise32cube_volume.dds.0.png";
+    const TEX_WHITE_SHARP = "res:/Texture/Particle/whitesharp.dds.0.png";
 
     /**
      * Sets up boosters
@@ -1104,14 +1115,14 @@ export function EveSOF()
             if (!sofPromise)
             {
                 spriteEffect = Tw2Effect.from({
-                    effectFilePath: "cdn:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+                    effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
                     parameters: {
                         MainIntensity: 1,
-                        GradientMap: "cdn:/texture/particle/whitesharp_gradient.dds.0.png"
+                        GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
                     }
                 });
 
-                sofPromise = tw2.Fetch("cdn:/dx9/model/spaceobjectfactory/data.red")
+                sofPromise = tw2.Fetch("res:/dx9/model/spaceobjectfactory/data.red")
                     .then(sof => data = sof)
                     .catch(err =>
                     {
@@ -1451,58 +1462,3 @@ export function EveSOF()
 
 }
 
-
-/**
- * Fires when a sof hull is not found
- */
-export class ErrSOFHullNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Hull not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof faction is not found
- */
-export class ErrSOFFactionNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Faction not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof race is not found
- */
-export class ErrSOFRaceNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Race not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof material is not found
- */
-export class ErrSOFMaterialNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Material not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof pattern is not found
- */
-export class ErrSOFPatternNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Pattern not found (%name%)");
-    }
-}
