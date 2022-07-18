@@ -41,6 +41,9 @@
   "distortion.fragment" : {
     "r0.z=r0.z*c1.z;" : "r0.z=r0.z/c1.z;",
     "r0.z=1.0/r0.z;" : "r0.z=1.0*r0.z;"
+  },
+  "atmosphere" : {
+    "for(int i=0;i<i0.x;++i){": "for(int i=0;i<2;++i){"
   }
 
 }
