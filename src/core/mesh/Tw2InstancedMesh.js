@@ -90,7 +90,6 @@ export class Tw2InstancedMesh extends meta.Model
     };
 
 
-
     /**
      * Alias for geometryResource
      * @returns {null|Tw2GeometryResource}
@@ -98,6 +97,39 @@ export class Tw2InstancedMesh extends meta.Model
     get res()
     {
         return this.geometryResource;
+    }
+
+    /**
+     * Gets the current mesh index
+     * @returns {Number}
+     */
+    GetMeshIndex()
+    {
+        return this.instanceMeshIndex;
+    }
+
+    /**
+     * Sets the current mesh index
+     * @param {Number} index
+     */
+    SetMeshIndex(index)
+    {
+        this.instanceMeshIndex = index;
+    }
+
+    /**
+     * Clears system mirror data
+     */
+    ClearSystemMirror()
+    {
+        if (this.IsGood())
+        {
+            this.geometryResource.ClearSystemMirror();
+            if (this.instanceGeometryResource && "ClearSystemMirror" in this.instanceGeometryResource)
+            {
+                this.instanceGeometryResource.ClearSystemMirror();
+            }
+        }
     }
 
     /**
@@ -434,7 +466,7 @@ export class Tw2InstancedMesh extends meta.Model
                 batch.renderMode = mode;
                 batch.perObjectData = perObjectData;
                 batch.instanceMesh = mesh;
-                batch.meshIx = area.meshIndex;
+                batch.meshIx = area.meshIndex; // mesh.meshIndex; //
                 batch.start = area.index;
                 batch.count = area.count;
                 batch.effect = area.effect;

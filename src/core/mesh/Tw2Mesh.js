@@ -80,6 +80,18 @@ export class Tw2Mesh extends meta.Model
     @meta.isPrivate
     geometryResource = null;
 
+    @meta.float
+    @meta.notImplemented
+    maxVertexScale = 0.0;
+
+    @meta.boolean
+    @meta.notImplemented
+    rotatesVertices = false;
+
+    @meta.float
+    @meta.notImplemented
+    maxVertexDisplacement = 0.0;
+
     /**
      * Alias for geometryResource
      * @returns {null|Tw2GeometryRes}
@@ -87,6 +99,35 @@ export class Tw2Mesh extends meta.Model
     get res()
     {
         return this.geometryResource;
+    }
+
+    /**
+     * Gets the current mesh index
+     * @returns {number}
+     */
+    GetMeshIndex()
+    {
+        return this.meshIndex;
+    }
+
+    /**
+     * Sets the current mesh index
+     * @param index
+     */
+    SetMeshIndex(index)
+    {
+        this.meshIndex = index;
+    }
+
+    /**
+     * Clears system mirror data
+     */
+    ClearSystemMirror()
+    {
+        if (this.IsGood())
+        {
+            this.geometryResource.ClearSystemMirror();
+        }
     }
 
     /**
@@ -110,6 +151,7 @@ export class Tw2Mesh extends meta.Model
      */
     static async HandleFetch(parent, pathProperty, resProperty, resPath)
     {
+
         if (!resPath)
         {
             if (parent[resProperty])
@@ -129,7 +171,7 @@ export class Tw2Mesh extends meta.Model
 
         parent[pathProperty] = resPath;
         const res = await tw2.Fetch(resPath);
-        if (parent[pathProperty] === resPath)
+        if (parent[pathProperty] === resPath && parent[resProperty] !== res)
         {
             parent[resProperty] = res;
             return true;
@@ -445,7 +487,7 @@ export class Tw2Mesh extends meta.Model
                 batch.renderMode = mode;
                 batch.perObjectData = perObjectData;
                 batch.geometryRes = mesh.geometryResource;
-                batch.meshIx = area.meshIndex;
+                batch.meshIx = mesh.meshIndex;              //area.meshIndex;
                 batch.start = area.index;
                 batch.count = area.count;
                 batch.effect = area.effect;
