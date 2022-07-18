@@ -16,6 +16,15 @@ export class Tr2CurveConstant extends Tw2Curve
     value = vec4.create();
 
     /**
+     * Alias for value
+     * @returns {vec4}
+     */
+    get currentValue()
+    {
+        return this.value;
+    }
+
+    /**
      * Sorts the curve
      */
     Sort()
