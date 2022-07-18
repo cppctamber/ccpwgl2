@@ -1,7 +1,8 @@
 import { meta, perArrayChild } from "utils";
 import { box3, vec3, mat4, sph3 } from "math";
 import { Tw2AnimationController, Tw2PerObjectData } from "core";
-import { EveObject } from "./EveObject";
+import { EveObject } from "../EveObject";
+import { LodLevelPixels } from "constant/ccpwgl";
 
 
 @meta.type("EveSpaceObject")
@@ -67,9 +68,6 @@ export class EveSpaceObject extends EveObject
     @meta.list("EveSpriteSet")
     spriteSets = [];
 
-    @meta.matrix4
-    transform = mat4.create();
-
     @meta.list("EveTurretSet")
     turretSets = [];
 
@@ -90,10 +88,24 @@ export class EveSpaceObject extends EveObject
         boosters: true
     };
 
+    /**
+     * Alias for _localTransform
+     * @return {mat4}
+     */
+    @meta.matrix4
+    get transform()
+    {
+        return this._localTransform;
+    }
+
+    set transform(m)
+    {
+        mat4.copy(this._localTransform, m);
+    }
+
     _lod = 3;
     _worldSpriteScale = 1;
-    _worldTransform = mat4.create();
-    _offsetTransform = null;
+    _parentTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
     /**
@@ -105,32 +117,20 @@ export class EveSpaceObject extends EveObject
         {
             this.animation.SetGeometryResource(this.mesh.geometryResource);
         }
+
+        super.Initialize();
     }
 
-    /**
-     * Rebuilds the object's bounds
-     * Todo: Handle animations
-     * @param {boolean} force
-     */
-    RebuildBounds(force)
+    OnRebuildBounds()
     {
         if (this.animation && this.animation.animations.length)
         {
             throw new Error("Rebuilding bounds on animated meshes not yet supported");
         }
 
-        super.RebuildBounds(force);
-
         if (!this.mesh || !this.mesh.IsGood())
         {
-            box3.empty(this._boundingBox);
-            sph3.empty(this._boundingSphere);
             this._boundsDirty = true;
-            return false;
-        }
-
-        if (!force && !this._boundsDirty)
-        {
             return;
         }
 
@@ -145,12 +145,12 @@ export class EveSpaceObject extends EveObject
             {
                 if ("GetBoundingBox" in array[i])
                 {
-                    array[i].GetBoundingBox(box3_0, force);
+                    array[i].GetBoundingBox(box3_0);
                     box3.union(this._boundingBox, this._boundingBox, box3_0);
                 }
                 else if ("GetBoundingSphere" in array[i])
                 {
-                    array[i].GetBoundingSphere(sph3_0, force);
+                    array[i].GetBoundingSphere(sph3_0);
                     box3.fromSph3(box3_0, sph3_0);
                     box3.union(this._boundingBox, this._boundingBox, box3_0);
                 }
@@ -167,55 +167,7 @@ export class EveSpaceObject extends EveObject
 
         sph3.fromBox3(this._boundingSphere, this._boundingBox);
         this._boundsDirty = false;
-    }
 
-    /**
-     * Sets the object's local transform
-     * @param {mat4} m
-     * @param {mat4} offset
-     */
-    SetTransform(m, offset)
-    {
-        if (offset)
-        {
-            if (!this._offsetTransform)
-            {
-                this._offsetTransform = mat4.clone(offset);
-            }
-            else
-            {
-                mat4.copy(this._offsetTransform, offset);
-            }
-        }
-
-        if (this._offsetTransform)
-        {
-            mat4.multiply(this.transform, m, this._offsetTransform);
-        }
-        else
-        {
-            mat4.copy(this.transform, m);
-        }
-    }
-
-    /**
-     * Gets the object's transform
-     * @param {mat4} out
-     * @returns {mat4} out
-     */
-    GetTransform(out)
-    {
-        return mat4.copy(out, this.transform);
-    }
-
-    /**
-     * Gets the object's world transform
-     * @param {mat4} out
-     * @returns {mat4} out
-     */
-    GetWorldTransform(out)
-    {
-        return mat4.copy(out, this._worldTransform);
     }
 
     /**
@@ -258,17 +210,28 @@ export class EveSpaceObject extends EveObject
 
         if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
         {
-            if (frustum.GetPixelSizeAcross(center, this.boundingSphereRadius) < 100)
+            this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+            if (this._pixelSizeAcross < LodLevelPixels.ZERO)
+            {
+                this._lod = 0;
+            }
+            else if (this._pixelSizeAcross < LodLevelPixels.ONE)
             {
                 this._lod = 1;
             }
-            else
+            else if (this._pixelSizeAcross < LodLevelPixels.TWO)
             {
                 this._lod = 2;
+            }
+            else
+            {
+                this._lod = 3;
             }
         }
         else
         {
+            this._pixelSizeAcross = 0;
             this._lod = 0;
         }
 
@@ -442,16 +405,10 @@ export class EveSpaceObject extends EveObject
      */
     UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
+        mat4.copy(this._parentTransform, parentTransform);
         mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
-        if (parentTransform)
-        {
-            mat4.multiply(this._worldTransform, parentTransform, this.transform);
-        }
-        else
-        {
-            mat4.copy(this._worldTransform, this.transform);
-        }
+        this.RebuildTransforms({ force: true, skipUpdate: true });
 
         const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
 
