@@ -11,7 +11,7 @@ export class EvePointLightBatch extends Tw2RenderBatch
 
     /**
      * Commits the light for rendering
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
