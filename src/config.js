@@ -5,23 +5,8 @@ import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
-
 import { vec4, mat4 } from "math";
 
-
-/****************** TEMPORARY *************************/
-
-// TODO: Fix .dds files we know cause issues
-const Rerouted = [
-    "cdn:/texture/global/noise.dds",
-    "cdn:/texture/global/spotramp.dds",
-    "cdn:/texture/global/whitesharp.dds",
-    "cdn:/texture/particle/whitesharp.dds",
-    "cdn:/dx9/scene/starfield/stars01_tile2.dds"
-];
-
-
-/****************** TEMPORARY *************************/
 
 /**
  * Register global configurations
@@ -34,39 +19,24 @@ export const config = {
     // The paths in the black files must be changed
     black: {
 
-        // Exchange "res" prefix in .black files with "cdn" so there are no conflicts with ccpwgl paths
+        // Change "res" prefix in .black files to "cdn" so there are no conflicts with ccpwgl paths
         "*": path => path.replace("res:/", "cdn:/").toLowerCase(),
 
+        // Replace dds extension  with pngs
         "dds": path =>
         {
-            /*
-            // Use old ccpwgl resource paths when we know a resource provided in a .black file doesn't work
-            if (Rerouted.includes(path))
-            {
-                return path.replace("cdn:/", "res:/") + ".0.png";
-            }
-            // Handle cube maps that we can't load yet
-            else if (path.split(".").pop() === "dds" && path.includes("_cube"))
-            {
-                return path.replace(".dds", ".qube");
-            }
-            return path;
-             */
-
             if (path.split(".").pop() === "dds" && path.includes("_cube"))
             {
                 return path.replace(".dds", ".qube");
             }
 
-            //return path.replace("cdn:/", "test:/").replace("res:/", "rest:/");
             return path.replace(".dds", ".png");
         },
 
-        // Replace .gr2 paths with interim .cake format (new sof will try to fall back to wbg if not found)
-        // Cake format doesn't support any animations
-        "gr2": path => path.replace(".gr2", ".gr2_json"),
+        // Replace gr2 extension with gr2_json
 
-        // Replace all .red files provided in .black files as they are actually .black files
+        "gr2": path => path.replace(".gr2", ".gr2_json"),
+        // Replace red extension with black (they're all black files)
         "red": path => path.replace(".red", ".black")
 
     },
@@ -121,7 +91,7 @@ export const config = {
         // as measured from input events to rasterization, by desynchronizing the canvas paint cycle from the event
         // loop, bypassing the ordinary user agent rendering algorithm, or both. Insofar as this mode involves
         // bypassing the usual paint mechanisms, rasterization, or both, it might introduce visible tearing artifacts.
-        descynchronized : false
+        descynchronized: false
 
     },
 
@@ -209,9 +179,7 @@ export const config = {
         "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
 
         // Local resource server (not provided with this library)
-        "cdn": "http://localhost:3000/",
-
-        //"test": "http://localhost:8080/builds/2021621/res/"
+        "cdn": "http://localhost:3000/"
 
     },
 
@@ -221,7 +189,7 @@ export const config = {
         "sm_hi": core.Tw2EffectRes,
         "sm_lo": core.Tw2EffectRes,
         "fx": core.Tw2EffectRes,
-        "gr2_json" : core.Tw2GeometryRes,
+        "gr2_json": core.Tw2GeometryRes,
         "wbg": core.Tw2GeometryRes,
         "cake": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,
@@ -266,13 +234,17 @@ export const config = {
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
         "EveSpaceSceneShadowMap": "",
-        "EveSpaceSceneDepthMap" : "",           // Custom
+
         "EnvMap1": "",
         "EnvMap2": "",
         "EnvMap3": "",
         "ShadowLightness": 0,
-        "OccluderValue": vec4.fromValues(1, 1, 0, 0),
-        "LensflareFxOccScale": vec4.fromValues(1, 1, 0, 0),
-        "LensflareFxDirectionScale": vec4.create(),
+        "OccluderValue": [ 1, 1, 0, 0 ],
+        "LensflareFxOccScale": [ 1, 1, 0, 0 ],
+        "LensflareFxDirectionScale": [ 0, 0, 0, 0 ],
+
+        // Custom
+        "g_wreckShaderAdjustments": [ 1.1, 3.0, 0.1, 0 ],
+        "EveSpaceSceneDepthMap": "",
     }
 };

@@ -1,12 +1,29 @@
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
+import { WidgetType } from "../shared/util";
 
+
+const g_wreckShaderAdjustments = {
+    name: "g_wreckShaderAdjustments",
+    value: [ 1.1, 3.0, 0.1, 0 ],
+    autoRegister: true,
+    ui: {
+        description: "Provides adjustments so that wrecks look correct in webgl",
+        components: [
+            "adjust pow",
+            "albedo override",
+            "adjust lights"
+        ],
+        widget: WidgetType.MIXED,
+        display: 0
+    }
+};
 
 export const quadWreckV5 = {
     name: "quadWreckV5",
     replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadWreckV5",
     description: "wreck quad shader",
-    todo: "Fix decal mesh transparencies",
+    todo: "Add picking and depth",
     techniques : {
         Main: {
             vs: {
@@ -143,7 +160,8 @@ export const quadWreckV5 = {
                     constant.Mtl3Gloss,
                     constant.Mtl4Gloss,
                     constant.WreckColor,
-                    constant.WreckFactors
+                    constant.WreckFactors,
+                    g_wreckShaderAdjustments
                 ],
                 textures: [
                     EveSpaceSceneEnvMap,
@@ -186,7 +204,7 @@ export const quadWreckV5 = {
                    
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
-                    uniform vec4 cb7[16];
+                    uniform vec4 cb7[17];
                     
                     void main()
                     {
@@ -404,8 +422,15 @@ export const quadWreckV5 = {
                         // NormalMap
                         r2.ywx=texture2D(s5,r1.xy).xyz;
                         
-                        // AoMap
-                        r2.z=texture2D(s6,r1.xy).x;
+                        if (cb7[16].y > 0.0)
+                        {
+                            r2.z=cb7[16].y;
+                        }
+                        else
+                        {
+                            // AoMap
+                            r2.z=texture2D(s6,r1.xy).x;
+                        }
                         
                         r0.xzw=r0.xzw*r2.zzz+(-cb2[15].xyz);
                         r1.y=cb2[15].w*v4.w;
@@ -429,7 +454,7 @@ export const quadWreckV5 = {
                         r1.z=sqrt(abs(r1.z));
                         r1.w=r1.z*cb7[15].z;
                         r1.x=cb7[15].z*(-r1.z)+r1.x;
-                        r1.z=saturate((-cb7[15].z));
+                        r1.z=saturate((-cb7[15].z)) + cb7[16].z;
                         r1.x=r1.z*r1.x+r1.w;
                         r2.xyz=cb2[15].xyz;
                         r1.xzw=cb7[1].xyz*r1.xxx+(-r2.xyz);
@@ -444,7 +469,7 @@ export const quadWreckV5 = {
                         r0.xyz=cb7[14].xyz*(-r1.xyz)+r0.xyz;
                         r0.w=saturate(r1.w+v8.x);
                         r1.xyz=r1.xyz*cb7[14].xyz;
-                        r1.w=pow(r0.w,cb7[15].y);
+                        r1.w=pow(r0.w,cb7[15].y-cb7[16].x);
                         r0.xyz=r1.www*r0.xyz+r1.xyz;
                         r1.xyz=max(r0.xyz,c20.www);
                         r0.x=r1.x>0.0?log2(r1.x):-3.402823466e+38;
