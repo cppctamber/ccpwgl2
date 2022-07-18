@@ -25,6 +25,34 @@ export class EveSOFDataGenericShader extends meta.Model
     @meta.string
     transparencyTextureName = "";
 
+    /**
+     * Checks if the shader uses parameter or texture usage by name
+     * @param {String} key
+     * @returns {Object<name:String, value:String:Array>}
+     */
+    HasUsage(key)
+    {
+        if (!key) return false;
+
+        if (this.transparencyTextureName === key) return true;
+
+        for (let i = 0; i < this.defaultParameters.length; i++)
+        {
+            if (this.defaultParameters[i].name === key) return true;
+        }
+
+        for (let i = 0; i < this.parameters.length; i++)
+        {
+            if (this.parameters[i].str === key) return true;
+        }
+
+        for (let i = 0; i < this.defaultTextures.length; i++)
+        {
+            if (this.defaultTextures[i].name === key) return true;
+        }
+
+        return false;
+    }
 
     /**
      * Checks if the effect has pattern mask maps

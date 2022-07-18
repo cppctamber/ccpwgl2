@@ -18,6 +18,35 @@ export class EveSOFDataGenericDecalShader extends meta.Model
     shader = "";
 
     /**
+     * Checks if the shader uses parameter or texture usage by name
+     * @param {String} name
+     * @returns {Object<name:String, value:String:Array>}
+     */
+    HasUsage(name)
+    {
+        if (!name) return false;
+
+        if (this.transparencyTextureName === name) return true;
+
+        for (let i = 0; i < this.defaultParameters.length; i++)
+        {
+            if (this.defaultParameters[i].name === name) return true;
+        }
+
+        for (let i = 0; i < this.parameters.length; i++)
+        {
+            if (this.parameters[i].str === name) return true;
+        }
+
+        for (let i = 0; i < this.defaultTextures.length; i++)
+        {
+            if (this.defaultTextures[i].name === name) return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Assigns the object's textures and parameters to an effect config
      * @param {Object} config={}]
      * @param {Object} [provided={}]

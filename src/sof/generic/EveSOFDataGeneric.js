@@ -1,4 +1,4 @@
-import { Tw2Error } from "core";
+import { Tw2Effect, Tw2Error } from "core";
 import { meta, findElementByPropertyValue } from "utils";
 import { tw2 } from "global/tw2";
 
@@ -61,6 +61,7 @@ export class EveSOFDataGeneric extends meta.Model
     @meta.list("EveSOFDataVisibilityGroup")
     visibilityGroups = [];
 
+
     /**
      * Initializer
      */
@@ -72,6 +73,44 @@ export class EveSOFDataGeneric extends meta.Model
             this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx";
             // TODO: Figure out default parameters and textures for unpacked banner shader
         }
+
+        Tw2Effect.UNPACKED_TEXTURES = this.HasUnpackedTextures();
+    }
+
+    /**
+     * Checks if the sof is using unpacked textures
+     * @returns {boolean}
+     */
+    HasUnpackedTextures()
+    {
+        for (let i = 0; i < this.decalShaders.length; i++)
+        {
+            for (let x = 0; x < this.decalShaders[i].parentTextures.length; x++)
+            {
+                if (this.decalShaders[i].parentTextures[x].str === "NormalMap")
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a shader uses a texture or parameter name
+     * @param {String} shaderName
+     * @param {String} key
+     * @returns {boolean}
+     */
+    HasShaderUsage(shaderName, key)
+    {
+        if (!key) return false;
+
+        const
+            isDecal = this.HasDecalShader(shaderName),
+            shader = isDecal ? this.GetDecalShader(shaderName) : this.GetAreaShader(shaderName);
+
+        return shader.HasUsage(key);
     }
 
     /**
@@ -92,7 +131,7 @@ export class EveSOFDataGeneric extends meta.Model
             this.GetDecalShaderPath(name, isAnimated) :
             this.GetAreaShaderPath(name, isAnimated);
 
-        //  Handle missing shader
+        //  Handle missing heat detail shader
         if (effectFilePath.includes("quadheatdetail"))
         {
             tw2.Debug({
