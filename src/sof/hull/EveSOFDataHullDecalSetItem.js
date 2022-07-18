@@ -14,7 +14,7 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     boneIndex = -1;
 
     @meta.list()
-    indexBuffers = [];
+    indexBuffers = null;
 
     @meta.uint
     glowColorType = 0;
@@ -56,14 +56,17 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
      */
     GetIndexBuffers()
     {
-        if (this.indexBuffer && this.indexBuffer.length)
+        // Provide backwards compatibility for older SOF
+        if (this.indexBuffer)
         {
-            return [ Array.from(this.indexBuffer) ];
+            return [ this.indexBuffer ];
         }
-        else
+        else if (this.indexBuffers)
         {
-            return this.indexBuffers.map(x => Array.from(x.indexBuffer));
+            return this.indexBuffers.map(x => x.indexBuffer);
         }
+        // Throw an error?
+        return null;
     }
 
     /**
