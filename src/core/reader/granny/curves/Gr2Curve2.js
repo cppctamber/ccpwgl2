@@ -15,6 +15,20 @@ export class Gr2Curve2 extends meta.Model
     degree = 0;
 
 
+    @meta.uint
+    get format()
+    {
+        return this.constructor.format;
+    }
+
+    set format(v)
+    {
+        if (this.constructor.format !== v)
+        {
+            throw new ReferenceError(`Invalid format id "${v}" for curve, expected "${this.constructor.format}"`);
+        }
+    }
+
     /**
      * Gets the curve's duration
      * @return {Number}
@@ -101,6 +115,7 @@ export class Gr2Curve2 extends meta.Model
 
 
         const curve = new Tw2GeometryCurve();
+        curve.format = this.format;
         curve.dimension = dimension;
         curve.degree = this.degree;
         curve.knots = Array.from(this.GetKnots());
