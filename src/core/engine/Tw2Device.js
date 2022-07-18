@@ -599,14 +599,15 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Sets view matrix
      * @param {mat4} matrix
+     * @param {Boolean} [forceUpdateViewProjection]
      */
-    SetView(matrix)
+    SetView(matrix, forceUpdateViewProjection)
     {
         mat4.copy(this.view, matrix);
         mat4.invert(this.viewInverse, this.view);
         mat4.transpose(this.viewTranspose, this.view);
         mat4.getTranslation(this.eyePosition, this.viewInverse);
-        this.UpdateViewProjection();
+        if (forceUpdateViewProjection) this.UpdateViewProjection();
     }
 
     /**
@@ -1115,8 +1116,12 @@ export class Tw2Device extends Tw2EventEmitter
                 break;
 
             case RM_DECAL:
-                this.SetRenderState(RS_ALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ALPHATESTENABLE, true);
+                this.SetRenderState(RS_ALPHATESTENABLE, false);
+                this.SetRenderState(RS_ALPHABLENDENABLE, true);
+
+                this.SetRenderState(RS_SRCBLEND, BLEND_SRCALPHA);
+                this.SetRenderState(RS_DESTBLEND, BLEND_INVSRCALPHA);
+
                 this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_ALPHAFUNC, CMP_GREATER);
                 this.SetRenderState(RS_ALPHAREF, 127);
@@ -1133,14 +1138,14 @@ export class Tw2Device extends Tw2EventEmitter
             case RM_DISTORTION:
             case RM_TRANSPARENT:
                 this.SetRenderState(RS_CULLMODE, CULL_CW);
+                this.SetRenderState(RS_ALPHATESTENABLE, false);
                 this.SetRenderState(RS_ALPHABLENDENABLE, true);
                 this.SetRenderState(RS_SRCBLEND, BLEND_SRCALPHA);
                 this.SetRenderState(RS_DESTBLEND, BLEND_INVSRCALPHA);
                 this.SetRenderState(RS_BLENDOP, BLENDOP_ADD);
                 this.SetRenderState(RS_ZENABLE, true);
-                this.SetRenderState(RS_ZWRITEENABLE, false);
+                this.SetRenderState(RS_ZWRITEENABLE, false); // Should this be true for RM_DISTORTION?
                 this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
                 this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0); // -1.0
                 this.SetRenderState(RS_DEPTHBIAS, 0);
                 this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
