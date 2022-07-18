@@ -78,7 +78,7 @@ export class Tr2CurveScalar extends Tw2Curve
     @meta.uint
     extrapolationBefore = 0;
 
-    @meta.list("Tw2CurveScalarKey")
+    @meta.list(Tw2CurveScalarKey)
     keys = [];
 
     @meta.float
