@@ -1,5 +1,5 @@
 import { vs, ps, texture, constant } from "../quad/shared";
-import { quadPickingV5, quadDepthV5, skinnedQuadDepthV5, skinnedQuadPickingV5, quadV5 } from "../quad";
+import { quadPickingV5, quadDepthV5, skinnedQuadDepthV5, skinnedQuadPickingV5 } from "../quad";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { overrideConstant } from "../shared/util";
 
@@ -29,10 +29,18 @@ export const asteroidV5 = {
                     constant.Mtl2Gloss,
                     constant.Mtl3Gloss,
                     constant.Mtl4Gloss,
-                    overrideConstant(constant.Detail1Data, { value: [ 1, 1, 0, 0 ] }),
-                    overrideConstant(constant.DetailAlbedoColor, { value: [ 0, 0, 0, 0 ] }),
-                    overrideConstant(constant.DetailFresnelColor, { value: [ 0, 0, 0, 0 ] }),
-                    overrideConstant(constant.DetailSelector, { value: [ 1, 1, 1, 1 ] })
+                    overrideConstant(constant.Detail1Data, {
+                        value: [ 1, 1, 0, 0 ]
+                    }),
+                    overrideConstant(constant.DetailAlbedoColor, {
+                        value: [ 0, 0, 0, 0 ]
+                    }),
+                    overrideConstant(constant.DetailFresnelColor, {
+                        value: [ 0, 0, 0, 0 ]
+                    }),
+                    overrideConstant(constant.DetailSelector, {
+                        value: [ 1, 1, 1, 1 ]
+                    })
                 ],
                 textures: [
                     EveSpaceSceneEnvMap,
