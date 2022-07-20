@@ -16,7 +16,7 @@ export const G_TEXEL_SIZE = {
             "texel height"
         ],
         widget: WidgetType.MIXED,
-        display: false
+        display: 0
     }
 };
 
@@ -33,7 +33,7 @@ export const G_CAMERA = {
             "depth mode"
         ],
         widget: WidgetType.MIXED,
-        display: false
+        display: 0
     }
 };
 
@@ -99,7 +99,7 @@ export const ObjectID = {
     name: "objectID",
     value: [ 0, 0, 0, 0 ],
     ui: {
-        visible: 0
+        display: 0
     }
 };
 
@@ -107,6 +107,6 @@ export const AreaID = {
     name: "areaID",
     value: [ 0, 0, 0, 0 ],
     ui: {
-        visible: 0
+        display: 0
     }
 };
