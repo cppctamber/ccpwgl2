@@ -30,13 +30,16 @@ export const asteroidV5 = {
                     constant.Mtl3Gloss,
                     constant.Mtl4Gloss,
                     overrideConstant(constant.Detail1Data, {
-                        value: [ 1, 1, 0, 0 ]
+                        value: [ 1, 1, 0, 0 ],
+                        ui: { group: "Detail 1" }
                     }),
                     overrideConstant(constant.DetailAlbedoColor, {
-                        value: [ 0, 0, 0, 0 ]
+                        value: [ 0, 0, 0, 0 ],
+                        ui: { group: "Detail 1" }
                     }),
                     overrideConstant(constant.DetailFresnelColor, {
-                        value: [ 0, 0, 0, 0 ]
+                        value: [ 0, 0, 0, 0 ],
+                        ui: { group: "Detail 1" }
                     }),
                     overrideConstant(constant.DetailSelector, {
                         value: [ 1, 1, 1, 1 ]

@@ -301,6 +301,31 @@ const detailComponents = [
     "detail offset y"
 ];
 
+const detailDataComponents = [
+    "mtl1 intensity",
+    "mtl2 intensity",
+    "mtl3 intensity",
+    "mtl4 intensity",
+];
+
+const detailDataComponentGroups = [
+    "Detail",
+    "Detail",
+    "Detail",
+    "Detail"
+];
+
+export const DetailData = {
+    name: "DetailData",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail",
+        components: [ "detail 1 scale", "detail 2 scale" ],
+        componentGroups: [ "Detail 1", "Detail 2" ],
+        widget: WidgetType.MIXED
+    }
+};
+
 export const Detail1Data = {
     name: "Detail1Data",
     value: [ 0, 0, 0, 0 ],
@@ -336,12 +361,8 @@ export const DetailSelector = {
     value: [ 0, 0, 0, 0 ],
     ui: {
         group: "Detail",
-        components: [
-            "detail mtl1 strength",
-            "detail mtl2 strength",
-            "detail mtl3 strength",
-            "detail mtl4 strength",
-        ],
+        components: detailDataComponents,
+        componentGroups: detailDataComponentGroups,
         widget: WidgetType.MIXED
     }
 };
@@ -361,6 +382,73 @@ export const DetailFresnelColor = createLinearColor({
         description: "fresnel color"
     }
 });
+
+export const Detail1AlbedoColor = createLinearColor({
+    name: "Detail1AlbedoColor",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 1",
+        description: "albedo color"
+    }
+});
+
+export const Detail1FresnelColor = createLinearColor({
+    name: "Detail1FresnelColor",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 1",
+        description: "fresnel color"
+    }
+});
+
+export const Detail1Material = {
+    name: "Detail1Material",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 1",
+        description: "Select materials for detail 1",
+        components: detailDataComponents,
+    }
+};
+
+export const Detail2AlbedoColor = createLinearColor({
+    name: "Detail2AlbedoColor",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 2",
+        description: "albedo color"
+    }
+});
+
+export const Detail2FresnelColor = createLinearColor({
+    name: "Detail2FresnelColor",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 2",
+        description: "fresnel color"
+    }
+});
+
+export const Detail2Material = {
+    name: "Detail2Material",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail 2",
+        description: "Select materials for detail 2",
+        components: detailDataComponents,
+    }
+};
+
+export const GeneralTiling = {
+    name: "General Tiling",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Detail",
+        description: "Tiling of main textures",
+        components: [ "material map tiling", "base texture tiling" ],
+        widget: WidgetType.MIXED
+    }
+};
 
 
 //----------------------------------------------------------------------------------------[ wreck ]-------------------//
