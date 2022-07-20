@@ -357,7 +357,7 @@ export const quadSailsV5 = {
 
 export const skinnedQuadSailsV5 = {
     name: "skinned_quadSailsV5",
-    replaces: quadSailsV5.replaces,
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadSailsV5",
     description: `skinned ${quadSailsV5.description}`,
     todo: quadSailsV5.todo,
     techniques: {
