@@ -372,7 +372,7 @@ export const quadEnvironmentV5 = {
 
 export const skinnedQuadEnvironmentV5 = {
     name: "skinnedQuadEnvironmentV5",
-    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadEnvironmentV5",
+    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinnedQuadEnvironmentV5",
     description: `skinned ${quadEnvironmentV5.description}`,
     techniques: {
         Picking: skinnedQuadPickingV5.techniques.Main,
