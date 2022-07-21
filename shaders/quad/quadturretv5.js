@@ -249,7 +249,7 @@ export const quadTurretV5 = {
                 inputDefinitions: PosBwtTexTanTex,
                 shader: `
 
-                    ${vs.header}
+                    ${vs.shadowHeader}
                     
                     attribute vec4 attr0;
                     attribute vec4 attr1;
@@ -448,7 +448,7 @@ export const quadTurretV5 = {
                         texcoord5.w=r0.x;
                         texcoord6=c1.zzzz;
                         
-                        ${vs.footer}
+                        ${vs.shadowFooter}
                     }
                 `
             },
