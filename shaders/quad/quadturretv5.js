@@ -204,7 +204,7 @@ export const quadTurretV5 = {
                         r0.x=r0.x>=0.0?r0.y:(-r0.y);
                         gl_FragData[0].zw=r0.zx*c2.zw;
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 
                 `
@@ -239,7 +239,7 @@ export const quadTurretV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         gl_FragData[0]=c0.xxxy;
                         
-                        ${ps.footer}
+                        ${ps.shadowFooter}
                     }
                 `
             }
