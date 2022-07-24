@@ -10,7 +10,7 @@ const NebulaScaling = {
     ui: {
         group: "Nebula",
         description: "Nebula scaling",
-        components: [ "x axis", "y axis", "z axis" ],
+        components: [ "scale x", "scale y", "scale z" ],
         visible: 0,
         widget: WidgetType.MIXED
     }
@@ -33,6 +33,7 @@ const AlphaBlend1 = {
     ui: {
         group: "Stars",
         components: [ "1u", "1v", "2u", "2v" ],
+        componentGroups: [ "Star tile 1", "Star tile 1", "Star tile 2", "Start tile 3" ],
         visible: 1,
         widget: WidgetType.MIXED
     }
@@ -41,7 +42,7 @@ const AlphaBlend2 = {
     name: "AlphaBlend2",
     value: [ 0, 0.004999999888241291, 0.05000000074505806, 1 ],
     ui: {
-        group: "Stars",
+        group: "Star tile 3",
         components: [ "3u", "3v" ],
         visible: 1,
         widget: WidgetType.MIXED
@@ -284,12 +285,12 @@ export const test_background = {
                         
                          vec4 cube=textureCube(s1,v0.xyz);
                          vec4 refl=textureCube(s2, v0.xyz);
+                         
+                         gl_FragData[0].w = 1.0;
                          gl_FragData[0].xyz = cube.xyz;
                          gl_FragData[0].xyz += max(result * (.6-refl.x), vec3(0.0));
-                         if (refl.x < 0.25)
-                         {
-                            gl_FragData[0].xyz += result;
-                         }
+                         
+                         if (refl.x < 0.25) gl_FragData[0].xyz += result;
                         
                         #ifdef PS
                         float av=floor(clamp(gl_FragData[0].a,0.0,1.0)*255.0+0.5);
