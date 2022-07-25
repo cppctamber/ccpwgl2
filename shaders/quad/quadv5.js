@@ -3,8 +3,8 @@ import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./quadEmissiveV5";
 import { quadExtendedPickerPattern } from "./extended/picking";
+
 
 export const quadV5 = {
     name: "quadV5",
