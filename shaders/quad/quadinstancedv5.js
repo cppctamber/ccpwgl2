@@ -19,6 +19,7 @@ export const quadInstancedV5 = {
             vs: vs.quadInstancedV5_PosTexTexTexTex,
             ps: quadPickingV5.techniques.Main.ps
         },
+
         Main: {
             vs: vs.quadInstancedV5_PosTexTanTexTexTexTex,
             ps: {

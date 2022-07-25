@@ -3,7 +3,8 @@ import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-
+import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./quadEmissiveV5";
+import { quadExtendedPickerPattern } from "./extended/picking";
 
 export const quadV5 = {
     name: "quadV5",
@@ -13,6 +14,50 @@ export const quadV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
+        Emissive: {
+            vs: vs.quadV5_PosTexTanTex,
+            ps: {
+                constants: [
+                    constant.GeneralData,
+                    constant.GeneralGlowColor
+                ],
+                textures: [
+                    texture.GlowMap
+                ],
+                shader: `
+                
+                    ${ps.header} // reduce this to only what is required
+                    
+                    varying vec4 texcoord;
+                    varying vec4 texcoord5;
+                    
+                    uniform sampler2D s0; // GlowMap
+                    
+                    uniform vec4 cb4[3];
+                    uniform vec4 cb7[2];
+        
+                    void main()
+                    {
+                        vec2 uv=texcoord.xy;
+                        vec4 v1=texcoord5;                 
+                        vec4 r0;
+                        
+                        r0.xyz=(-cb4[1].xyz)+v1.xyz;
+                        r0.x=dot(r0.xyz,r0.xyz);
+                        r0.w=cb4[1].w;
+                        r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
+                        if(any(lessThan(r0,vec4(0.0))))discard;
+                        gl_FragData[0].w=(-r0.x)+1.0;
+                        
+                        // GlowMap     
+                        r0.w=texture2D(s0,uv).x; 
+                        if (r0.w==0.0)discard;    
+                        
+                        gl_FragData[0].xyz=cb7[1].xyz * r0.w;
+                    }
+               `
+            }
+        },
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -503,7 +548,7 @@ export const quadV5 = {
                         }
                         
                         // Dirt test
-                        gl_FragData[0].xyz = mix(gl_FragData[0].xyz, dirt * cb4[0].z, -dirt);
+                        gl_FragData[0].xyz = mix(gl_FragData[0].xyz, dirt * cb4[0].z, dirt / 5.0);
                         
                         ${ps.shadowFooter}
                     }
@@ -514,6 +559,7 @@ export const quadV5 = {
 };
 
 
+
 export const skinnedQuadV5 = {
     name: "skinned_quadV5",
     replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadV5",
@@ -522,9 +568,21 @@ export const skinnedQuadV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
+        Emissive: skinnedQuadEmissiveV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadV5.techniques.Main.ps
         }
     }
+};
+
+
+quadV5.techniques.ExtendedPicking = {
+    vs: quadV5.techniques.Main.vs,
+    ps: quadExtendedPickerPattern
+};
+
+skinnedQuadV5.techniques.ExtendedPicking= {
+    vs: skinnedQuadV5.techniques.Main.vs,
+    ps: quadExtendedPickerPattern
 };

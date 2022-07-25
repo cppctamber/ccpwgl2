@@ -13,6 +13,7 @@ export const quadHeatV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
+
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -539,6 +540,7 @@ export const skinnedQuadHeatV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
+
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadHeatV5.techniques.Main.ps

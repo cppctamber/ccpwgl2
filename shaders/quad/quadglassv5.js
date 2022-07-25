@@ -2,6 +2,7 @@ import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
+import { quadV5, skinnedQuadV5 } from "./quadv5";
 import { CULL_CCW, RS_CULLMODE } from "constant";
 
 
@@ -13,6 +14,7 @@ export const quadGlassV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
+        Emissive: quadV5.techniques.Emissive,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -339,6 +341,7 @@ export const skinnedQuadGlassV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
+        Emissive: skinnedQuadV5.techniques.Emissive,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadGlassV5.techniques.Main.ps

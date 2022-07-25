@@ -2,6 +2,7 @@ import { vs, ps, constant, texture } from "./shared";
 import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
+import { quadV5, skinnedQuadV5 } from "./quadv5";
 
 
 export const quadOilV5 = {
@@ -12,6 +13,7 @@ export const quadOilV5 = {
     techniques: {
         Picking: quadPickingV5.techniques.Main,
         Depth: quadDepthV5.techniques.Main,
+        Emissive: quadV5.techniques.Emissive,
         Main: {
             vs: vs.quadOilV5_PosTexTanTex,
             ps: {
@@ -374,6 +376,7 @@ export const skinnedQuadOilV5 = {
     techniques: {
         Picking: skinnedQuadDepthV5.techniques.Main,
         Depth: skinnedQuadPickingV5.techniques.Main,
+        Emissive: skinnedQuadV5.techniques.Emissive,
         Main: {
             vs: vs.skinnedQuadOilV5_PosBwtTexTanTex,
             ps: quadOilV5.techniques.Main.ps
