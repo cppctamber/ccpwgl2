@@ -35,8 +35,6 @@ export class Tw2RayCaster
     nearSquared = 0;
     farSquared = Infinity;
 
-    _mousePosition = vec2.create();
-    _cssPosition =vec2.create();
     _pixelPosition = vec2.create();
     _viewport = vec4.create();
 
@@ -52,26 +50,23 @@ export class Tw2RayCaster
 
     /**
      * Updates the ray caster from an event
-     * TODO: Remove element and use the event src
-     * @param {HTMLElement} element
-     * @param {event} event
+     * @param {MouseEvent} event
+     * @param {HTMLElement} [element=event.target]
      */
-    UpdateFromEvent(element, event)
+    UpdateFromEvent(event, element=event.target)
     {
-        const { clientX, clientY } = event;
-        const rect = element.getBoundingClientRect();
+        vec2.pixelPositionFromEvent(this._pixelPosition, event, element);
+        vec4.set(this._viewport, 0,0, device.viewportWidth, device.viewportHeight);
+        this.Unproject(this._pixelPosition, this._viewport);
+    }
 
-        vec2.set(this._mousePosition, clientX, clientY);
-
-        vec2.set(this._cssPosition,
-            this._mousePosition[0] - rect.left,
-            this._mousePosition[1] - rect.top);
-
-        vec2.set(this._pixelPosition,
-            this._cssPosition[0] * element.width / element.clientWidth,
-            element.height - this._cssPosition[1] * element.height / element.clientHeight - 1
-        );
-
+    /**
+     * Updates the ray caster from pixel coordinates
+     * @param {vec2|Array} pixelPosition
+     */
+    UpdateFromCoordinates(pixelPosition)
+    {
+        vec2.copy(this._pixelPosition, pixelPosition);
         vec4.set(this._viewport, 0,0, device.viewportWidth, device.viewportHeight);
         this.Unproject(this._pixelPosition, this._viewport);
     }
