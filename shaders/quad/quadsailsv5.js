@@ -3,7 +3,7 @@ import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { RS_ZWRITEENABLE } from "constant";
-import { quadV5 } from "./quadv5";
+import { quadV5, skinnedQuadV5 } from "./quadv5";
 
 
 export const quadSailsV5 = {
@@ -365,10 +365,7 @@ export const skinnedQuadSailsV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-        Emissive: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
-            ps: quadSailsV5.techniques.Emissive.ps
-        },
+        Emissive: skinnedQuadV5.techniques.Emissive,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadSailsV5.techniques.Main.ps

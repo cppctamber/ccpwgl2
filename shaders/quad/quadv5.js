@@ -568,7 +568,10 @@ export const skinnedQuadV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-        Emissive: skinnedQuadEmissiveV5.techniques.Main,
+        Emissive: {
+            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+            ps: quadV5.techniques.Emissive.ps
+        },
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadV5.techniques.Main.ps
