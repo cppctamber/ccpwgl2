@@ -1,4 +1,4 @@
-import { vec2, vec3 } from "gl-matrix";
+import { vec2 } from "gl-matrix";
 
 export { vec2 };
 
@@ -97,5 +97,52 @@ vec2.fromArray = function(out, array, offset=0)
 {
     out[0] = array[offset];
     out[1] = array[offset + 1];
+    return out;
+};
+
+/**
+ * Gets mouse position from a mouse event
+ * @param {vec2} out
+ * @param {MouseEvent} event
+ * @returns {vec2} out - mouse coordinates
+ */
+vec2.mousePositionFromEvent = function(out, event)
+{
+    out[0] = event.clientX;
+    out[1] = event.clientY;
+    return out;
+};
+
+/**
+ * Gets CSS position from an event
+ * @param {vec2} out
+ * @param {MouseEvent} event
+ * @param {HTMLElement} [element=element.target]
+ * @returns {vec2} out - css coordinates
+ */
+vec2.cssPositionFromEvent = function(out, event, element=event.target)
+{
+    const rect = element.getBoundingClientRect();
+    out[0] = event.clientX - rect.left;
+    out[1] = event.clientY - rect.top;
+    return out;
+};
+
+/**
+ * Gets the pixel coordinates from an element event
+ * @param {vec2} out
+ * @param {MouseEvent} event
+ * @param {HTMLElement} [element=element.target]
+ * @returns {vec2} out - the pixel coordinates
+ */
+vec2.pixelPositionFromEvent = function(out, event, element=event.target)
+{
+    const
+        rect = element.getBoundingClientRect(),
+        cssX = event.clientX - rect.left,
+        cssY = event.clientY - rect.top;
+
+    out[0] = cssX * element.width / element.clientWidth;
+    out[1] = element.height - cssY * element.height / element.clientHeight - 1;
     return out;
 };
