@@ -1,9 +1,10 @@
-import { meta, assignIfExists, getPathExtension, isPlain } from "utils";
+import { meta, assignIfExists, getPathExtension, isPlain, isString } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2Resource } from "core/resource";
+import { getOverriddenShaderPath } from "../../../shaders";
 
 
 class Tw2ConstantParameter
@@ -102,6 +103,9 @@ export class Tw2Effect extends meta.Model
     @meta.boolean
     autoParameter = false;
 
+    @meta.string
+    defaultTechnique = "Main";
+
     _isAttached = false;
 
     //resources
@@ -154,6 +158,16 @@ export class Tw2Effect extends meta.Model
     GetValue()
     {
         return this._isAttached ? null : this.effectFilePath;
+    }
+
+    /**
+     * Checks if the effect has a technique
+     * @param {String} name
+     * @returns {boolean}
+     */
+    HasTechnique(name)
+    {
+        return this.IsGood() && name in this.techniques;
     }
 
     /**
@@ -213,7 +227,7 @@ export class Tw2Effect extends meta.Model
      */
     OnValueChanged(opt)
     {
-        let res;
+        let res = null;
 
         if (this.isAttached)
         {
@@ -222,12 +236,15 @@ export class Tw2Effect extends meta.Model
         else
         {
             this.effectFilePath = this.effectFilePath ? this.effectFilePath.toLowerCase() : "";
+            if (this.effectFilePath)
+            {
+                // Auto shader replacement
+                if (getPathExtension(this.effectFilePath) !== "sm_json") this.effectFilePath = Tw2Effect.getOverriddenShaderPath(this.effectFilePath);
+                // Auto fx quality
+                if (getPathExtension(this.effectFilePath) === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
 
-            // Auto fx quality
-            const extension = getPathExtension(this.effectFilePath);
-            if (extension === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
-
-            res = this.effectFilePath ? tw2.GetResource(this.effectFilePath) : null;
+                res = tw2.GetResource(this.effectFilePath);
+            }
         }
 
         if (this._SetEffectRes(res))
@@ -235,6 +252,22 @@ export class Tw2Effect extends meta.Model
             this.BindParameters(opt);
         }
     }
+
+    /**
+     * Temporary handler for unpacked textures
+     * @param {String} path
+     * @returns {String}
+     */
+    static getOverriddenShaderPath(path)
+    {
+        return this.UNPACKED_TEXTURES ? getOverriddenShaderPath(path) : path;
+    }
+
+    /**
+     * Toggles using overridden effects
+     * @param {Boolean} bool
+     */
+    static UNPACKED_TEXTURES = false;
 
     /**
      * Finds an effect parameter by it's name
@@ -370,9 +403,10 @@ export class Tw2Effect extends meta.Model
 
     /**
      * Unbinds parameters
+     * @param {Object} [opt]
      * @returns {Boolean}
      */
-    UnBindParameters()
+    UnBindParameters(opt)
     {
         for (let t in this.techniques)
         {
@@ -396,6 +430,9 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        // TODO: Replace this with a method it won't work if a parameter is
+        // shared between effects and one doesn't use it
+
         for (const param in this.parameters)
         {
             if (this.parameters.hasOwnProperty(param))
@@ -414,6 +451,11 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        if (!opt || !opt.skipEvents)
+        {
+            this.EmitEvent("unbound", this, opt);
+        }
+
     }
 
     /**
@@ -423,8 +465,14 @@ export class Tw2Effect extends meta.Model
      */
     BindParameters(opt)
     {
-        this.UnBindParameters();
-        if (!this.IsGood()) return false;
+
+        if (!this.IsGood())
+        {
+            this.UnBindParameters();
+            return false;
+        }
+
+        this.UnBindParameters({ skipEvents: true });
 
         let samplerOverrideNames = [];
 
@@ -466,13 +514,20 @@ export class Tw2Effect extends meta.Model
                             if (name in this.parameters)
                             {
                                 parameter = this.parameters[name];
-                                if (parameter.Bind(constantBuffer, offset, size))
+                                try
                                 {
-                                    stage.reroutedParameters.push(parameter);
+                                    if (parameter.Bind(constantBuffer, offset, size))
+                                    {
+                                        stage.reroutedParameters.push(parameter);
+                                    }
+                                    else
+                                    {
+                                        stage.parameters.push({ parameter, constantBuffer, offset, size });
+                                    }
                                 }
-                                else
+                                catch(err)
                                 {
-                                    stage.parameters.push({ parameter, constantBuffer, offset, size });
+                                    console.dir({ effect: this, parameter });
                                 }
                             }
                             else if (tw2.HasVariable(name))
@@ -615,7 +670,7 @@ export class Tw2Effect extends meta.Model
             // CCP picking
             if (this.parameters["objectId"]) this.parameters["objectId"].x = this._id;
             // CPPC picking
-            if (this.parameters["Override"]) this.parameters["Override"].y = this._id;
+            if (this.parameters["PickSettings"]) this.parameters["PickSettings"].x = this._id;
 
             // Remove unnecessary parameters and textures
             for (const key in this.parameters)
@@ -657,14 +712,17 @@ export class Tw2Effect extends meta.Model
             }
         }
 
-        this.EmitEvent("modified", this);
+        if (!opt || !opt.skipEvents)
+        {
+            this.EmitEvent("modified", this, opt);
+            // TODO: Shouldn't this just be "rebuilt" ?
+            this.EmitEvent("rebuilt", this, opt);
+        }
 
         if (device["effectObserver"])
         {
             device["effectObserver"]["OnEffectChanged"](this);
         }
-
-        //this.autoParameter = false;
 
         return true;
     }
@@ -736,8 +794,7 @@ export class Tw2Effect extends meta.Model
      */
     GetPassCount(technique)
     {
-        if (this.shader === null || !(technique in this.techniques)) return 0;
-        return this.techniques[technique].length;
+        return !this.HasTechnique(technique) ? 0 : this.techniques[technique].length;
     }
 
     /**
@@ -748,7 +805,7 @@ export class Tw2Effect extends meta.Model
      */
     GetPassInput(technique, pass)
     {
-        if (this.shader === null || !(technique in this.techniques) || pass >= this.techniques[technique].length)
+        if (!this.HasTechnique(technique) || pass >= this.techniques[technique].length)
         {
             return null;
         }
@@ -768,7 +825,7 @@ export class Tw2Effect extends meta.Model
      * @param {function} cb - callback
      * @param {String} [technique]
      */
-    Render(cb, technique = "Main")
+    Render(cb, technique)
     {
         const count = this.GetPassCount(technique);
         for (let i = 0; i < count; ++i)
@@ -892,6 +949,12 @@ export class Tw2Effect extends meta.Model
      */
     static onListener(effect, eventName, listener, context)
     {
+        if (eventName === "rebuilt" && effect.IsGood())
+        {
+            listener.call(context, effect, effect.effectRes);
+            return true;
+        }
+
         return Tw2Resource.parentOnListener(effect, "effectRes", eventName, listener, context);
     }
 
@@ -940,6 +1003,22 @@ export class Tw2Effect extends meta.Model
         }
 
         return updated;
+    }
+
+    /**
+     * Creates an effect from values
+     * @param {Object|String} values
+     * @param {Object} [opt]
+     * @returns {*}
+     */
+    static from(values, opt)
+    {
+        if (isString(values))
+        {
+            values = { effectFilePath: values, autoParameter: true };
+        }
+
+        return super.from(values, opt);
     }
 
     /**

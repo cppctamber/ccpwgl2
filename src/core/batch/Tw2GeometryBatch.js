@@ -29,8 +29,18 @@ export class Tw2GeometryBatch extends Tw2RenderBatch
     {
         if (this.geometryRes && this.effect)
         {
-            this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, technique);
+            this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
         }
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.effect && this.effect.HasTechnique(technique);
     }
 
 }

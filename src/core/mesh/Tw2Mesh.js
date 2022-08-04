@@ -342,13 +342,15 @@ export class Tw2Mesh extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @param {String} [techniqueOverride]
      */
-    GetBatches(mode, accumulator, perObjectData)
+    GetBatches(mode, accumulator, perObjectData, techniqueOverride)
     {
         if (!this.IsGood() || !this.display) return false;
 
         const getBatches = this.constructor.GetAreaBatches;
         let area;
+
         switch (mode)
         {
             case RM_ADDITIVE:
@@ -359,10 +361,6 @@ export class Tw2Mesh extends meta.Model
                 if (this.visible.decalAreas) area = this.decalAreas;
                 break;
 
-            case RM_DEPTH:
-                if (this.visible.depthAreas) area = this.depthAreas;
-                break;
-
             case RM_DISTORTION:
                 if (this.visible.distortionAreas) area = this.distortionAreas;
                 break;
@@ -371,19 +369,38 @@ export class Tw2Mesh extends meta.Model
                 if (this.visible.opaqueAreas) area = this.opaqueAreas;
                 break;
 
-            case RM_PICKABLE:
-                if (this.visible.pickableAreas) area = this.pickableAreas;
-                break;
-
             case RM_TRANSPARENT:
                 if (this.visible.transparentAreas) area = this.transparentAreas;
+                break;
+
+            case RM_DEPTH:
+                if (!this.visible.depthAreas) return;
+                area = this.depthAreas;
+                // Handle shaders with in-built depth techniques
+                getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData, "Depth");
+                getBatches(this, this.additiveAreas, mode, accumulator, perObjectData, "Depth");
+                getBatches(this, this.transparentAreas, mode, accumulator, perObjectData, "Depth");
+                getBatches(this, this.decalAreas, mode, accumulator, perObjectData, "Depth");
+                getBatches(this, this.distortionAreas, mode, accumulator, perObjectData, "Depth");
+                break;
+
+            case RM_PICKABLE:
+                if (!this.visible.pickableAreas) return;
+                area = this.pickableAreas;
+                // Handle shaders with in-built picking techniques
+                getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData, "Picking");
+                getBatches(this, this.additiveAreas, mode, accumulator, perObjectData, "Picking");
+                getBatches(this, this.transparentAreas, mode, accumulator, perObjectData, "Picking");
+                getBatches(this, this.decalAreas, mode, accumulator, perObjectData, "Picking");
+                getBatches(this, this.distortionAreas, mode, accumulator, perObjectData, "Picking");
                 break;
         }
 
         if (area)
         {
-            getBatches(this, area, mode, accumulator, perObjectData);
+            getBatches(this, area, mode, accumulator, perObjectData, techniqueOverride);
         }
+
     }
 
     /**
@@ -475,24 +492,28 @@ export class Tw2Mesh extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @param {String} [techniqueOverride]
      */
-    static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData)
+    static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData, techniqueOverride)
     {
         for (let i = 0; i < areas.length; ++i)
         {
             const area = areas[i];
-            if (area.effect && area.display)
+            if (!area.effect || !area.display || techniqueOverride && !area.effect.HasTechnique(techniqueOverride))
             {
-                const batch = new area.constructor.batchType();
-                batch.renderMode = mode;
-                batch.perObjectData = perObjectData;
-                batch.geometryRes = mesh.geometryResource;
-                batch.meshIx = mesh.meshIndex;              //area.meshIndex;
-                batch.start = area.index;
-                batch.count = area.count;
-                batch.effect = area.effect;
-                accumulator.Commit(batch);
+                continue;
             }
+
+            const batch = new area.constructor.batchType();
+            batch.renderMode = mode;
+            batch.perObjectData = perObjectData;
+            batch.geometryRes = mesh.geometryResource;
+            batch.meshIx = mesh.meshIndex;              //area.meshIndex;
+            batch.start = area.index;
+            batch.count = area.count;
+            batch.effect = area.effect;
+            if (techniqueOverride) batch.techniqueOverride = techniqueOverride;
+            accumulator.Commit(batch);
         }
     }
 

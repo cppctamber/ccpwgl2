@@ -69,7 +69,7 @@ export class Tw2BatchAccumulator
      * Renders the accumulated render batches
      * @param {String} [technique] - technique name
      */
-    Render(technique = "Main")
+    Render(technique)
     {
         if (this._sortMethod)
         {

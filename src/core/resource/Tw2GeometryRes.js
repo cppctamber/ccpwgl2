@@ -377,11 +377,11 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Number} instanceCount
      * @returns {Boolean}
      */
-    RenderAreasInstanced(meshIx, start, count, effect, technique, instanceVB, instanceDecl, instanceStride, instanceCount)
+    RenderAreasInstanced(meshIx, start, count, effect, technique=effect.defaultTechnique, instanceVB, instanceDecl, instanceStride, instanceCount)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
-        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        if (!passCount || !this.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
@@ -446,11 +446,11 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {String} technique
      * @returns {Boolean}
      */
-    RenderAreas(meshIx, start, count, effect, technique)
+    RenderAreas(meshIx, start, count, effect, technique=effect.defaultTechnique)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
-        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        if (!passCount || !this.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
@@ -518,11 +518,11 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {String} technique
      * @returns {Boolean}
      */
-    RenderLines(meshIx, start, count, effect, technique)
+    RenderLines(meshIx, start, count, effect, technique=effect.defaultTechnique)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
-        if (!passCount || !this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
+        if (!passCount || !this.IsGood() || meshIx >= this.meshes.length) return false;
 
         const
             d = device,
