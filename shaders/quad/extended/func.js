@@ -71,3 +71,23 @@ export const getPatternLayer = `
      
 `;
 
+export const pulse = `
+
+    // Todo: Replace with proper method
+    vec4 pulse(float modifier, float time, vec3 base, vec4 color)
+    {
+        vec4 result;
+        result.w=color.w;
+        if(any(greaterThan(color.xyz,vec3(0.0)))){
+            if (modifier>0.0){
+                result.x=fract(time);
+                if(result.x>0.5)result.x=1.0-result.x;
+                result.x=min(1.0,time*modifier);
+            }
+            else result.x=1.0;
+            result.xyz=base*color.xyz*result.x;
+        }
+        return result;
+    }
+
+`;

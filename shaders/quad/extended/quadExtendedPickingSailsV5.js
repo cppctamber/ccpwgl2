@@ -43,19 +43,18 @@ export const quadExtendedPickingSailsV5 = {
                     uniform vec4 cb4[15];
                     uniform vec4 cb7[3];
             
-                    void main()
-                    {
+                    void main(){
+                    
                         vec4 v0;
                         vec4 v5;        
                         vec4 r0;
                         
                         int i0=0;
                         float c0=0.00392156886;
-
+                        
                         v0=texcoord;
                         v5=texcoord5;
                         
-                        // Cull
                         r0.xyz=(-cb4[1].xyz)+v5.xyz;
                         r0.x=dot(r0.xyz,r0.xyz);
                         r0.w=cb4[1].w;
@@ -64,12 +63,9 @@ export const quadExtendedPickingSailsV5 = {
                         if(texture2D(s0,v0.xy).x>0.0)discard;
                         
                         if(texture2D(s2,v0.xy).x>0.0)i0=${PickingBlueChannel.GLOW};
-                        else
-                        {
+                        else{
                             r0=getMaterialMask(s1,v0.xy);
                             if (r0.x>0.0) {
-                            
-                                // Sails UV, todo: Clean up
                                 vec4 c16=vec4(0.159154937,0.5,6.28318548,-3.14159274);
                                 vec4 c25=vec4(-1,-0,2,0);
                                 vec4 c26=vec4(1,-1,0.5,-0.5);
@@ -86,16 +82,12 @@ export const quadExtendedPickingSailsV5 = {
                                 r4.y=dot(r3.yx,r1.yz)+c25.w;
                                 r2.xz=r3.xy*c26.xy;
                                 r4.x=dot(r2.xz,r1.yz)+c25.w;
-                                
-                                // SailsDetailMap
                                 r3.x=texture2D(s3,r4.xy).x;
-                                
                                 if (r3.x>0.9)i0=${PickingBlueChannel.MATERIAL_4};
                                 else i0=${PickingBlueChannel.MATERIAL_3};
                             }
                             else if(r0.y>0.0)i0=${PickingBlueChannel.MATERIAL_2};
                         }
-                        
                         gl_FragData[0].xy=getVec2FromID(cb7[0].x);
                         gl_FragData[0].z=float(i0)*c0;
                         gl_FragData[0].w=1.0;

@@ -2,8 +2,8 @@ import { clampToBorder } from "../../shared/func";
 import { quadV5_PosTexTanTex, skinnedQuadV5_PosBwtTexTanTex } from "../shared/vs";
 import { constant, ps, texture } from "../shared";
 import { DustNoiseMap } from "../../shared/texture";
-import { getMaterialMask } from "./func";
-import { SelectorColor, SelectorMode, Selected } from "./constant";
+import { getMaterialMask, pulse } from "./func";
+import { SelectorColor, SelectorMode, Mode } from "./constant";
 import { Time } from "../../shared/constant";
 import { SailsDetailData } from "../shared/constant";
 
@@ -40,6 +40,7 @@ export const quadUtilitySailsV5 = {
                     ${ps.headerNoShadow}
                     ${clampToBorder}
                     ${getMaterialMask}
+                    ${pulse}
 
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -69,7 +70,7 @@ export const quadUtilitySailsV5 = {
                         vec4 v3;
                         vec4 v5;
                         vec4 r0;
-
+                        
                         v0=texcoord;
                         v1=texcoord1;
                         v2=texcoord2;
@@ -82,31 +83,28 @@ export const quadUtilitySailsV5 = {
                         r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
-                        int mode = int(cb7[2].x);
+                        int mode=int(cb7[2].x);
                         r0.x=texture2D(s4,v0.xy).x;
-                        if (mode!=${Selected.PAINT_MASK}&&r0.x>0.0) discard;
-                        
+                        if (mode!=${Mode.PAINT_MASK}&&r0.x>0.0) discard;
                         vec3 color;
-                        if (mode==${Selected.PAINT_MASK})color=r0.xxx;
-                        else if (mode==${Selected.NORMALS})color=v1.xyz;
-                        else if (mode==${Selected.BI_TANGENTS})color=v2.xyz;
-                        else if (mode==${Selected.TANGENTS})color=v3.xyz;
-                        else if (mode==${Selected.ALBEDO_MAP})color=texture2D(s0,v0.xy).xyz;                
-                        else if (mode==${Selected.ROUGHNESS_MAP})color=texture2D(s1,v0.xy).xxx; 
-                        else if (mode==${Selected.NORMAL_MAP})color.xyz=texture2D(s2,v0.xy).xyz;
-                        else if (mode==${Selected.NORMAL_MAP_POSITIVE})color.xyz=texture2D(s2,v0.xy).xxx;
-                        else if (mode==${Selected.NORMAL_MAP_NEGATIVE})color.xyz=texture2D(s2,v0.xy).yyy;
-                        else if (mode==${Selected.AMBIENT_OCCLUSION_MAP})color=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;
-                        else if (mode==${Selected.MATERIAL_MAP})color=texture2D(s5,v0.xy).xxx;
-                        else if (mode==${Selected.DIRT_MASK})color=texture2D(s6,v0.xy).xxx;
-                        else if (mode==${Selected.GLOW_MASK})color=texture2D(s7, v0.xy).xxx;
-                        else if (mode==${Selected.MATERIAL_2_MASK})color==getMaterialMask(s5,v0.xy).yyy;
-                        else if (mode==${Selected.SAILS_MAP}||mode==${Selected.SAILS_MAP_PATTERN}||mode==${Selected.SAILS_MAP_BACKGROUND})
-                        {
+                        if(mode==${Mode.PAINT_MASK})color=r0.xxx;
+                        else if(mode==${Mode.NORMALS})color=v1.xyz;
+                        else if(mode==${Mode.BI_TANGENTS})color=v2.xyz;
+                        else if(mode==${Mode.TANGENTS})color=v3.xyz;
+                        else if(mode==${Mode.ALBEDO_MAP})color=texture2D(s0,v0.xy).xyz;                
+                        else if(mode==${Mode.ROUGHNESS_MAP})color=texture2D(s1,v0.xy).xxx; 
+                        else if(mode==${Mode.NORMAL_MAP})color.xyz=texture2D(s2,v0.xy).xyz;
+                        else if(mode==${Mode.NORMAL_MAP_POSITIVE})color=texture2D(s2,v0.xy).xxx;
+                        else if(mode==${Mode.NORMAL_MAP_NEGATIVE})color=texture2D(s2,v0.xy).yyy;
+                        else if(mode==${Mode.AMBIENT_OCCLUSION_MAP})color=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;
+                        else if(mode==${Mode.MATERIAL_MAP})color=texture2D(s5,v0.xy).xxx;
+                        else if(mode==${Mode.DIRT_MASK})color=texture2D(s6,v0.xy).xxx;
+                        else if(mode==${Mode.GLOW_MASK})color=texture2D(s7, v0.xy).xxx;
+                        else if(mode==${Mode.MATERIAL_2_MASK})color==getMaterialMask(s5,v0.xy).yyy;
+                        else if(mode==${Mode.SAILS_MAP}||mode==${Mode.SAILS_MAP_PATTERN}||mode==${Mode.SAILS_MAP_BACKGROUND})
+                        else{
                             r0.x=getMaterialMask(s5,v0.xy).x;
-                            if (r0.x!=0.0)
-                            {
-                                // Sails UV, todo: Clean up
+                            if (r0.x!=0.0){
                                 vec4 c16=vec4(0.159154937,0.5,6.28318548,-3.14159274);
                                 vec4 c25=vec4(-1,-0,2,0);
                                 vec4 c26=vec4(1,-1,0.5,-0.5);
@@ -123,36 +121,17 @@ export const quadUtilitySailsV5 = {
                                 r4.y=dot(r3.yx,r1.yz)+c25.w;
                                 r2.xz=r3.xy*c26.xy;
                                 r4.x=dot(r2.xz,r1.yz)+c25.w;
-                                
-                                // SailsDetailMap
                                 r3.x=texture2D(s8,r4.xy).x;
-                                
-                                if (mode==${Selected.SAILS_MAP}) color=c26.xxx; 
-                                else if(mode==${Selected.SAILS_MAP_BACKGROUND}&&r3.x>0.9)color=c26.xxx; 
-                                else if(mode==${Selected.SAILS_MAP_PATTERN}&&r3.x<=0.9)color=c26.xxx;
+                                if (mode==${Mode.SAILS_MAP}) color=c26.xxx; 
+                                else if(mode==${Mode.SAILS_MAP_BACKGROUND}&&r3.x>0.9)color=c26.xxx; 
+                                else if(mode==${Mode.SAILS_MAP_PATTERN}&&r3.x<=0.9)color=c26.xxx;
                             }
                         }
-                        else if (mode==${Selected.DUST_NOISE_MAP})
-                        {
+                        else if (mode==${Mode.DUST_NOISE_MAP}){
                             
                         }
-
-                        // Replace with a pulse                        
-                        r0.x=cb7[3].w;
-                        r0.y=cb7[2].z;
-                        if (r0.y>0.0)
-                        {
-                            r0.y=fract(cb7[1].y);
-                            if (r0.y>.5)r0.y = 1.0-r0.y;
-                            r0.y=min(1.0, r0.y*cb7[2].z);
-                        }
-                        else
-                        {
-                            r0.y=1.0;   
-                        }
-    
-                        gl_FragData[0].xyz=color*cb7[3].xyz*r0.y;
-                        gl_FragData[0].w=cb7[3].w;
+                        
+                        gl_FragData[0]=pulse(cb7[2].z,cb7[1].y,color,cb7[3]);
                     }
                 `
             }

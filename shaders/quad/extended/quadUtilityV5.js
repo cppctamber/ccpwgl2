@@ -2,8 +2,8 @@ import { clampToBorder } from "../../shared/func";
 import { quadV5_PosTexTanTex, skinnedQuadV5_PosBwtTexTanTex } from "../shared/vs";
 import { constant, ps, texture } from "../shared";
 import { DustNoiseMap } from "../../shared/texture";
-import { getMaterialMask } from "./func";
-import { SelectorColor, SelectorMode, Selected } from "./constant";
+import { getMaterialMask, pulse } from "./func";
+import { SelectorColor, SelectorMode, Mode } from "./constant";
 import { Time } from "../../shared/constant";
 
 
@@ -39,6 +39,7 @@ export const quadUtilityV5 = {
                     ${ps.headerNoShadow}
                     ${clampToBorder}
                     ${getMaterialMask}
+                    ${pulse}
 
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -90,24 +91,24 @@ export const quadUtilityV5 = {
                         
                         int mode = int(cb7[2].x);
                         vec3 color;
-                        if (mode==${Selected.NORMALS})color=v1.xyz;
-                        else if(mode==${Selected.BI_TANGENTS})color=v2.xyz;                       
-                        else if(mode==${Selected.TANGENTS})color=v3.xyz;
-                        else if(mode==${Selected.ALBEDO_MAP})color=texture2D(s0,v0.xy).xyz;                   
-                        else if(mode==${Selected.ROUGHNESS_MAP})color=texture2D(s1,v0.xy).xxx;
-                        else if(mode==${Selected.NORMAL_MAP})color=texture2D(s2,v0.xy).xyz;
-                        else if(mode==${Selected.NORMAL_MAP_POSITIVE})color.xyz = texture2D(s2,v0.xy).xxx;
-                        else if(mode==${Selected.NORMAL_MAP_NEGATIVE})color.xyz=texture2D(s2,v0.xy).yyy;
-                        else if(mode==${Selected.AMBIENT_OCCLUSION_MAP})color=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;                            
-                        else if(mode==${Selected.PAINT_MASK})color=texture2D(s4,v0.xy).xxx;
-                        else if(mode==${Selected.MATERIAL_MAP})color=texture2D(s5,v0.xy).xxx;
-                        else if(mode==${Selected.MATERIAL_1_MASK})color=getMaterialMask(s5,v0.xy).xxx;
-                        else if(mode==${Selected.MATERIAL_2_MASK})color=getMaterialMask(s5,v0.xy).yyy;
-                        else if(mode==${Selected.MATERIAL_3_MASK})color=getMaterialMask(s5,v0.xy).zzz;
-                        else if(mode==${Selected.MATERIAL_4_MASK})color=getMaterialMask(s5,v0.xy).www;                
-                        else if(mode==${Selected.DIRT_MASK})color=texture2D(s6,v0.xy).xxx;
-                        else if(mode==${Selected.GLOW_MASK})color=texture2D(s7, v0.xy).xxx;
-                        else if(mode==${Selected.PATTERN_1_MASK})
+                        if (mode==${Mode.NORMALS})color=v1.xyz;
+                        else if(mode==${Mode.BI_TANGENTS})color=v2.xyz;                       
+                        else if(mode==${Mode.TANGENTS})color=v3.xyz;
+                        else if(mode==${Mode.ALBEDO_MAP})color=texture2D(s0,v0.xy).xyz;                   
+                        else if(mode==${Mode.ROUGHNESS_MAP})color=texture2D(s1,v0.xy).xxx;
+                        else if(mode==${Mode.NORMAL_MAP})color=texture2D(s2,v0.xy).xyz;
+                        else if(mode==${Mode.NORMAL_MAP_POSITIVE})color=texture2D(s2,v0.xy).xxx;
+                        else if(mode==${Mode.NORMAL_MAP_NEGATIVE})color=texture2D(s2,v0.xy).yyy;
+                        else if(mode==${Mode.AMBIENT_OCCLUSION_MAP})color=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;                            
+                        else if(mode==${Mode.PAINT_MASK})color=texture2D(s4,v0.xy).xxx;
+                        else if(mode==${Mode.MATERIAL_MAP})color=texture2D(s5,v0.xy).xxx;
+                        else if(mode==${Mode.MATERIAL_1_MASK})color=getMaterialMask(s5,v0.xy).xxx;
+                        else if(mode==${Mode.MATERIAL_2_MASK})color=getMaterialMask(s5,v0.xy).yyy;
+                        else if(mode==${Mode.MATERIAL_3_MASK})color=getMaterialMask(s5,v0.xy).zzz;
+                        else if(mode==${Mode.MATERIAL_4_MASK})color=getMaterialMask(s5,v0.xy).www;                
+                        else if(mode==${Mode.DIRT_MASK})color=texture2D(s6,v0.xy).xxx;
+                        else if(mode==${Mode.GLOW_MASK})color=texture2D(s7,v0.xy).xxx;
+                        else if(mode==${Mode.PATTERN_1_MASK})
                         {
                             r0=getMaterialMask(s5,v0.xy);
                             r0=cb4[12]*r0;
@@ -116,7 +117,7 @@ export const quadUtilityV5 = {
                                 color=clampToBorder(s8,v6.xy,cb4[10].yz).xxx;                          
                             }
                         }
-                        else if (mode == ${Selected.PATTERN_2_MASK})
+                        else if (mode == ${Mode.PATTERN_2_MASK})
                         {
                             r0=getMaterialMask(s5,v0.xy);
                             r0=cb4[13]*r0;   
@@ -125,27 +126,12 @@ export const quadUtilityV5 = {
                                color=clampToBorder(s9,v6.zw,cb4[11].yz).xxx;                          
                             }
                         }
-                        else if (mode == ${Selected.DUST_NOISE_MAP})
+                        else if (mode == ${Mode.DUST_NOISE_MAP})
                         {
                             
                         }
-
-                        // Replace with a pulse                        
-                        r0.x=cb7[3].w;
-                        r0.y=cb7[2].z;
-                        if (r0.y>0.0)
-                        {
-                            r0.y=fract(cb7[1].y);
-                            if (r0.y>.5)r0.y = 1.0-r0.y;
-                            r0.y=min(1.0, r0.y*cb7[2].z);
-                        }
-                        else
-                        {
-                            r0.y=1.0;   
-                        }
-    
-                        gl_FragData[0].xyz = color * cb7[3].xyz * r0.y;
-                        gl_FragData[0].w = cb7[3].w;
+                        
+                        gl_FragData[0]=pulse(cb7[2].z,cb7[1].y,color,cb7[3]);
                     }
                 `
             }

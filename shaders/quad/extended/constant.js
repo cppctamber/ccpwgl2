@@ -1,11 +1,6 @@
 import { createLinearColor, WidgetType } from "../../shared/util";
 
 
-export const Mode = {
-    SPECIFIC: 0,
-    AREA: 1
-};
-
 export const Outline = {
     name: "Outline",
     value: [ 1, 0, 0, 10 ],
@@ -23,7 +18,7 @@ export const Outline = {
 };
 
 
-export const Selected = {
+export const Mode = {
     NORMALS: 1,
     BI_TANGENTS: 2,
     TANGENTS: 3,
@@ -45,17 +40,13 @@ export const Selected = {
     PATTERN_2_MASK : 19,
     DUST_NOISE_MAP: 20,
     HEAT: 21,
-    HEAT_MATERIAL_1: 22,
-    HEAT_MATERIAL_2: 23,
-    HEAT_MATERIAL_3: 24,
-    HEAT_MATERIAL_4: 25,
-    GLASS: 26,
-    SAILS_MAP: 27,
-    SAILS_MAP_PATTERN: 28,
-    SAILS_MAP_BACKGROUND: 29,
-    DETAIL_1_MAP: 30,
-    DETAIL_2_MAP: 31,
-    DETAIL_3_MAP: 32
+    GLASS: 22,
+    SAILS_MAP: 23,
+    SAILS_MAP_PATTERN: 24,
+    SAILS_MAP_BACKGROUND: 25,
+    DETAIL_1_MAP: 26,
+    DETAIL_2_MAP: 27,
+    DETAIL_3_MAP: 28
 };
 
 
