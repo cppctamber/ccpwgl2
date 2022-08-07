@@ -5,7 +5,7 @@ import { meta } from "utils";
 export class EveSOFDataDecalIndexBuffer extends meta.Model
 {
 
-    @meta.uint16Array
+    @meta.uint32Array
     indexBuffer = null;
 
     // Black handler
@@ -14,7 +14,7 @@ export class EveSOFDataDecalIndexBuffer extends meta.Model
         {
             const
                 count = r.ReadU32() / 4,
-                indexBuffer = new Uint16Array(count);
+                indexBuffer = new Uint32Array(count);
 
             for (let i = 0; i < count; i++) indexBuffer[i] = r.ReadU32();
             return indexBuffer;
