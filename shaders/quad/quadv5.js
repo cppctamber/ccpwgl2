@@ -3,7 +3,10 @@ import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { quadExtendedPickerPattern } from "./extended/picking";
+import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
+import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
+import { quadExtendedPickingV5, skinnedQuadExtendedPickingV5 } from "./extended/quadExtendedPickingV5";
+import { quadUtilityV5, skinnedQuadUtilityV5 } from "./extended/quadUtilityV5";
 
 
 export const quadV5 = {
@@ -14,50 +17,10 @@ export const quadV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
-        Emissive: {
-            vs: vs.quadV5_PosTexTanTex,
-            ps: {
-                constants: [
-                    constant.GeneralData,
-                    constant.GeneralGlowColor
-                ],
-                textures: [
-                    texture.GlowMap
-                ],
-                shader: `
-                
-                    ${ps.header} // reduce this to only what is required
-                    
-                    varying vec4 texcoord;
-                    varying vec4 texcoord5;
-                    
-                    uniform sampler2D s0; // GlowMap
-                    
-                    uniform vec4 cb4[3];
-                    uniform vec4 cb7[2];
-        
-                    void main()
-                    {
-                        vec2 uv=texcoord.xy;
-                        vec4 v1=texcoord5;                 
-                        vec4 r0;
-                        
-                        r0.xyz=(-cb4[1].xyz)+v1.xyz;
-                        r0.x=dot(r0.xyz,r0.xyz);
-                        r0.w=cb4[1].w;
-                        r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
-                        if(any(lessThan(r0,vec4(0.0))))discard;
-                        gl_FragData[0].w=(-r0.x)+1.0;
-                        
-                        // GlowMap     
-                        r0.w=texture2D(s0,uv).x; 
-                        if (r0.w==0.0)discard;    
-                        
-                        gl_FragData[0].xyz=cb7[1].xyz * r0.w;
-                    }
-               `
-            }
-        },
+        Outline: quadOutlineV5.techniques.Main,
+        Emissive: quadEmissiveV5.techniques.Main,
+        ExtendedPicking: quadExtendedPickingV5.techniques.Main,
+        Utility: quadUtilityV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -199,7 +162,7 @@ export const quadV5 = {
                         // MaterialMap
                         r0.y=texture2D(s7,v0.xy).x;    
                         
-                        // DirtMap (Not required here) <----------------------------------------------------------------    
+                        // DirtMap (Not required here)     
                         r0.z=texture2D(s8,v0.xy).x;   
                         
                         // GlowMap     
@@ -266,10 +229,10 @@ export const quadV5 = {
                         // Webgl doesn't support CLAMP_TO_BORDER
                         
                         // PatternMask1Map
-                        r7=clampToBorder(s10,v6.xy, cb4[10].yz, c21.wwww);
+                        r7=clampToBorder(s10,v6.xy,cb4[10].yz,c21.wwww);
                          
                         // PatternMask2Map
-                        r8=clampToBorder(s11,v6.zw, cb4[11].yz, c21.wwww); 
+                        r8=clampToBorder(s11,v6.zw,cb4[11].yz,c21.wwww); 
                         
                         r7=r7.xxxx*cb4[12];
                         r3.w=mix(cb7[11].x,r2.z,r7.y);
@@ -559,7 +522,6 @@ export const quadV5 = {
 };
 
 
-
 export const skinnedQuadV5 = {
     name: "skinned_quadV5",
     replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadV5",
@@ -568,10 +530,10 @@ export const skinnedQuadV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-        Emissive: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
-            ps: quadV5.techniques.Emissive.ps
-        },
+        Outline: skinnedQuadOutlineV5.techniques.Main,
+        Emissive: skinnedQuadEmissiveV5.techniques.Main,
+        ExtendedPicking: skinnedQuadExtendedPickingV5.techniques.Main,
+        Utility: skinnedQuadUtilityV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadV5.techniques.Main.ps
@@ -579,13 +541,3 @@ export const skinnedQuadV5 = {
     }
 };
 
-
-quadV5.techniques.ExtendedPicking = {
-    vs: quadV5.techniques.Main.vs,
-    ps: quadExtendedPickerPattern
-};
-
-skinnedQuadV5.techniques.ExtendedPicking= {
-    vs: skinnedQuadV5.techniques.Main.vs,
-    ps: quadExtendedPickerPattern
-};

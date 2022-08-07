@@ -10,7 +10,7 @@ export const quadDepthV5 = {
             ps: {
                 shader: `
 
-                    ${ps.header}
+                    ${ps.headerNoShadow}
                     
                     varying vec4 texcoord;
                     uniform vec4 cb4[3];
@@ -27,8 +27,6 @@ export const quadDepthV5 = {
                         r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         gl_FragData[0]=c0.xxxy;
-                        
-                        ${ps.shadowFooter}
                     }
                     
                 `

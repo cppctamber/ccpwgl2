@@ -3,12 +3,18 @@ import { shadowHeader, shadowFooter } from "../../shared/ps";
 export { shadowFooter };
 
 
-export const header = `
+export const headerNoShadow = `
 
     ${texture2DLod}
     ${precision}
     ${texture2DLodPolyfill}
     ${saturate}
+
+`;
+
+export const header = `
+
+    ${headerNoShadow}
     ${shadowHeader}
     
 `;

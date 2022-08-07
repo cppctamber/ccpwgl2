@@ -9,9 +9,13 @@ export const quadPickingV5 = {
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
+                constants: [
+                    constant.ObjectID,
+                    constant.AreaID
+                ],
                 shader: `
                 
-                    ${ps.header}
+                    ${ps.headerNoShadow}
                     
                     varying vec4 texcoord;
                     uniform vec4 cb4[3];
@@ -44,14 +48,8 @@ export const quadPickingV5 = {
                         r0.y=fract(abs(r0.y));
                         r0.x=r0.x>=0.0?r0.y:(-r0.y);
                         gl_FragData[0].zw=r0.zx*c2.zw;
-                    
-                        ${ps.shadowFooter}
                     }
-                `,
-                constants: [
-                    constant.ObjectID,
-                    constant.AreaID
-                ]
+                `
             }
         }
     }

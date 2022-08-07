@@ -3,7 +3,8 @@ import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { vs, ps, texture, constant } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
-import { quadV5, skinnedQuadV5 } from "./quadv5";
+import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
+import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 
 
 export const quadDetailV5 = {
@@ -14,7 +15,8 @@ export const quadDetailV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
-        Emissive: quadV5.techniques.Emissive,
+        Emissive: quadEmissiveV5.techniques.Main,
+        Outline: quadOutlineV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -476,7 +478,8 @@ export const skinnedQuadDetailV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-        Emissive: skinnedQuadV5.techniques.Emissive,
+        Emissive: skinnedQuadEmissiveV5.techniques.Main,
+        Outline: skinnedQuadOutlineV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadDetailV5.techniques.Main.ps

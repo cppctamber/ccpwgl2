@@ -3,7 +3,9 @@ import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../sh
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { clampToBorder } from "../shared/func";
-
+import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
+import { quadExtendedPickingHeatV5, skinnedQuadExtendedPickingHeatV5 } from "./extended/quadExtendedPickingHeatV5";
+import { quadUtilityHeatV5, skinnedQuadUtilityHeatV5 } from "./extended/quadUtilityHeatV5";
 
 export const quadHeatV5 = {
     name: "quadHeatV5",
@@ -13,7 +15,9 @@ export const quadHeatV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
-
+        Outline: quadOutlineV5.techniques.Main,
+        ExtendedPicking: quadExtendedPickingHeatV5.techniques.Main,
+        Utility: quadUtilityHeatV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -469,10 +473,14 @@ export const quadHeatV5 = {
                         r1=r2.wwww*cb7[22]+r1;
                         r2.xy=r1.yy*cb2[21].xx+v0.xy;
                         r2.xy=r1.zz*r2.xy;
+                        
+                        // HeatGlowMap
                         r2=texture2D(s12,r2.xy);
+                        
                         r2.zw=r1.yy*(-cb2[21].xx)+v0.xy;
                         r1.yz=r1.zz*r2.zw;
                         
+                        // HeatGlowMap
                         r3=texture2D(s12,r1.yz);
                         
                         r1.yz=r2.xy*r3.xy+c26.ww;
@@ -484,7 +492,6 @@ export const quadHeatV5 = {
                         r1.x=r1.w*r0.w;
                         r1.xy=r1.xx*r1.yz+v0.xy;
                         
-                        // Use r5 to temp store uvs <-------------------------------------------------------------------
                         r5.xy = r1.xy;
                         
                         // PaintMaskMap
@@ -540,7 +547,9 @@ export const skinnedQuadHeatV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-
+        Outline: skinnedQuadOutlineV5.techniques.Main,
+        ExtendedPicking: skinnedQuadExtendedPickingHeatV5.techniques.Main,
+        Utility: skinnedQuadUtilityHeatV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadHeatV5.techniques.Main.ps

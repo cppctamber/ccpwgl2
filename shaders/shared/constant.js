@@ -1,8 +1,23 @@
 import { WidgetType } from "./util";
 
 
-/*------------------------------------------------------------------------------------------------- global ----------*/
+export const Time = {
+    name: "Time",
+    value: [ 0, 0, 0, 0 ],
+    ui: {
+        group: "Global",
+        components: [
+            "current time",
+            "current time fract",
+            "frame",
+            "previous time"
+        ],
+        widget: WidgetType.MIXED,
+        display: 0
+    }
+};
 
+/*------------------------------------------------------------------------------------------------- global ----------*/
 
 export const G_TEXEL_SIZE = {
     name: "g_texel_size",
@@ -96,7 +111,7 @@ export const ZOffset = {
 
 
 export const ObjectID = {
-    name: "objectID",
+    name: "objectId",
     value: [ 0, 0, 0, 0 ],
     ui: {
         display: 0
@@ -104,7 +119,7 @@ export const ObjectID = {
 };
 
 export const AreaID = {
-    name: "areaID",
+    name: "areaId",
     value: [ 0, 0, 0, 0 ],
     ui: {
         display: 0

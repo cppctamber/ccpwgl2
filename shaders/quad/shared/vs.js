@@ -1,5 +1,5 @@
 import { shadowHeader, shadowFooter } from "../../shared/vs";
-import { input } from "../../shared";
+import * as input from "../../shared/input";
 export { shadowHeader, shadowFooter };
 
 

@@ -1,9 +1,14 @@
+import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
+import { vs, ps, constant, texture } from "./shared";
+import { RS_ZWRITEENABLE } from "constant";
+
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { vs, ps, constant, texture } from "./shared";
-import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
-import { RS_ZWRITEENABLE } from "constant";
-import { quadV5, skinnedQuadV5 } from "./quadv5";
+import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
+import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
+import { quadUtilitySailsV5, skinnedQuadUtilitySailsV5 } from "./extended/quadUtilitySailsV5";
+import { quadExtendedPickingSailsV5, skinnedQuadExtendedPickingSailsV5 } from "./extended/quadExtendedPickingSailsV5";
+
 
 
 export const quadSailsV5 = {
@@ -14,7 +19,10 @@ export const quadSailsV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
-        Emissive: quadV5.techniques.Emissive,
+        Emissive: quadEmissiveV5.techniques.Main,
+        Outline: quadOutlineV5.techniques.Main,
+        Utility: quadUtilitySailsV5.techniques.Main,
+        ExtendedPicking: quadExtendedPickingSailsV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -154,12 +162,14 @@ export const quadSailsV5 = {
                             r2=vec4(tmp.x?c25.x:c25.y,tmp.y?c25.x:c25.y,tmp.z?c25.x:c25.y,tmp.w?c25.x:c25.y);
                         }
                         if(any(lessThan(r2,vec4(0.0))))discard;
+                        
+                        // Sails UV
                         r2.xy=c16.xy;
-                        r0.x=cb7[14].y*r2.x+r2.y;
+                        r0.x=cb7[14].y*r2.x+r2.y;           // rotation
                         r0.x=fract(r0.x);
                         r0.x=r0.x*c16.z+c16.w;
-                        r3.xy=vec2(cos(r0.x), sin(r0.x));
-                        r1.yz=cb7[14].xx*v0.xy;
+                        r3.xy=vec2(cos(r0.x),sin(r0.x));
+                        r1.yz=cb7[14].xx*v0.xy;             // scaling
                         r4.y=dot(r3.yx,r1.yz)+c25.w;
                         r2.xz=r3.xy*c26.xy;
                         r4.x=dot(r2.xz,r1.yz)+c25.w;
@@ -365,7 +375,10 @@ export const skinnedQuadSailsV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
-        Emissive: skinnedQuadV5.techniques.Emissive,
+        Emissive: skinnedQuadEmissiveV5.techniques.Main,
+        Outline: skinnedQuadOutlineV5.techniques.Main,
+        Utility: skinnedQuadUtilitySailsV5.techniques.Main,
+        ExtendedPicking: skinnedQuadExtendedPickingSailsV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: quadSailsV5.techniques.Main.ps

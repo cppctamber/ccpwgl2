@@ -106,6 +106,17 @@ export function getOverriddenShaderPath(shaderPath)
     const ext = shaderPath.substring(shaderPath.lastIndexOf("."));
     switch(ext)
     {
+        case ".sm_json":
+            if (shaderPath.indexOf("manual:/") === 0)
+            {
+                const found = shaders.find(x => x.name === shaderPath.split(":/")[1].replace(ext, "").toLowerCase());
+                if (found && !tw2.resMan.motherLode.Has(shaderPath))
+                {
+                    Tw2EffectRes.fromJSON(found);    // Load as a manual resource
+                }
+            }
+            break;
+
         case ".fx":
         case ".sm_hi":
         case ".sm_lo":
