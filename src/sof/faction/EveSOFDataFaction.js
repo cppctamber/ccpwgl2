@@ -144,18 +144,16 @@ export class EveSOFDataFaction extends meta.Model
     /**
      * Assigns an area type
      * @param {Number} type
-     * @param {Object} out
-     * @param {Number}[fallback]
+     * @param {Object} [out={}]
+     * @param {Boolean} [inheritFromPrimary]
      * @returns {Object} out
      */
-    AssignAreaType(type, out, fallback)
+    AssignAreaType(type, out = {}, inheritFromPrimary)
     {
-        const areaType = this.GetAreaType(type, fallback);
-        if (areaType)
-        {
-            areaType.Assign(out);
-            return out;
-        }
+        if (type !== 0 && !inheritFromPrimary) this.AssignAreaType(0, out, false);
+        const areaType = this.GetAreaType(type);
+        if (areaType) areaType.Assign(out);
+        return out;
     }
 
     /**

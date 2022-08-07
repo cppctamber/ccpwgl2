@@ -89,7 +89,7 @@ export class EveSOFDataArea extends meta.Model
         const name = this._typesByIndex[type];
         return this.hasOwnProperty(name) ? this[name] : null;
     }
-    
+
     /**
      * Checks if a data area exists by type
      * @param {Number} type

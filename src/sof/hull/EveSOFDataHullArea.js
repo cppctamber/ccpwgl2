@@ -12,6 +12,7 @@ export class EveSOFDataHullArea extends meta.Model
     areaType = 0;
 
     @meta.uint
+    @meta.todo("Figure out what this is for")
     blockedMaterials = 0;
 
     @meta.uint

@@ -915,7 +915,7 @@ export function EveSOF()
     {
         function onChildLoaded(child)
         {
-            return function(obj)
+            return function (obj)
             {
                 if (obj.constructor.__isEffectChild)
                 {
@@ -1085,14 +1085,14 @@ export function EveSOF()
         }
     }
 
-    this.SetupTurretMaterial = function(turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
+    this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
     {
         return this.FetchTurretMaterial(turretSet, parentFactionName, turretFactionName)
             .then(onResolved)
             .catch(onRejected);
     };
 
-    this.FetchTurretMaterial = async function(turretSet, parentFactionName, turretFactionName)
+    this.FetchTurretMaterial = async function (turretSet, parentFactionName, turretFactionName)
     {
         await this.FetchSOF();
         SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
@@ -1102,7 +1102,7 @@ export function EveSOF()
     /**
      * Fetches sof data
      */
-    this.FetchSOF = (function()
+    this.FetchSOF = (function ()
     {
         let sofPromise = null;
 
@@ -1110,7 +1110,7 @@ export function EveSOF()
          * Gets sof data asynchronously
          * @returns {Promise}
          */
-        return async function()
+        return async function ()
         {
             if (!sofPromise)
             {

@@ -19,6 +19,6 @@ export class EveSOFDataDecalIndexBuffer extends meta.Model
             for (let i = 0; i < count; i++) indexBuffer[i] = r.ReadU32();
             return indexBuffer;
         }
-    }
+    };
 
 }
