@@ -340,11 +340,11 @@ export class EveChildQuad extends EveChild
     /**
      * Renders the object
      * @param {String} technique
-     * @return {boolean}
+     * @return {boolean} true if rendered
      */
     Render(technique)
     {
-        if (!this.IsGood()) return false;
+        if (!this.display || !this.IsGood()) return false;
 
         const
             d = device,

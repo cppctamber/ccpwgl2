@@ -14,6 +14,7 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
     /**
      * Commits the spotlight set for rendering
      * @param {String} [technique] - technique name
+     * @returns {Boolean} true if something was rendered
      */
     Commit(technique)
     {
@@ -23,8 +24,10 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
             this.spotlightSet.RebuildVertexBuffers(this.world, this.perObjectData);
         }
 
-        this.spotlightSet.RenderCones(technique);
-        this.spotlightSet.RenderGlow(technique);
+        let didRender = false;
+        if (this.spotlightSet.RenderCones(technique)) didRender = true;
+        if (this.spotlightSet.RenderGlow(technique)) didRender = true;
+        return didRender;
     }
 
     /**

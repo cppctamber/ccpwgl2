@@ -14,10 +14,11 @@ export class EveHazeSetBatch extends Tw2RenderBatch
     /**
      * Commits the haze set for rendering
      * @param {String} [technique] - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
-        this.hazeSet.Render(technique);
+        return this.hazeSet.Render(technique);
     }
 
     /**
@@ -37,6 +38,9 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 @meta.type("EveHazeSetItem")
 export class EveHazeSetItem extends EveObjectSetItem
 {
+
+    @meta.boolean
+    display = true;
 
     @meta.boolean
     boosterGainInfluence = false;
@@ -82,6 +86,10 @@ export class EveHazeSetItem extends EveObjectSetItem
 export class EveHazeSet extends EveObjectSet
 {
 
+    @meta.boolean
+    display = true;
+
+    @meta.struct()
     effect = Tw2Effect.from({
         effectFilePath: "cdn:/graphics/effect.gles2/managed/space/spaceobject/fx/hazespherical.fx"
     });
@@ -122,9 +130,9 @@ export class EveHazeSet extends EveObjectSet
 
     /**
      * Unloads the haze set
-     * @param {Boolean} skipEvent
+     * @param {Object} [opt]]
      */
-    Unload(skipEvent)
+    Unload(opt)
     {
         if (this._vertexBuffer)
         {
@@ -138,7 +146,7 @@ export class EveHazeSet extends EveObjectSet
             this._indexBuffer = null;
         }
 
-        super.Unload(skipEvent);
+        super.Unload(opt);
     }
 
 
@@ -151,7 +159,7 @@ export class EveHazeSet extends EveObjectSet
      * @param {Number} e
      * @param {Number} f
      */
-    SetIndexOrder(a, b,  c, d, e, f)
+    SetIndexOrder(a, b, c, d, e, f)
     {
         this._indexOrder[0] = a;
         this._indexOrder[1] = b;
@@ -162,7 +170,7 @@ export class EveHazeSet extends EveObjectSet
         this._dirty = true;
     }
 
-    Rebuild()
+    Rebuild(opt)
     {
         this.Unload(true);
         this.RebuildItems();
@@ -171,7 +179,7 @@ export class EveHazeSet extends EveObjectSet
         const itemCount = this._visibleItems.length;
         if (!itemCount)
         {
-            super.Rebuild();
+            super.Rebuild(opt);
             return;
         }
 
@@ -276,7 +284,7 @@ export class EveHazeSet extends EveObjectSet
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount * 6;
 
-        super.Rebuild();
+        super.Rebuild(opt);
     }
 
     /**
@@ -307,7 +315,7 @@ export class EveHazeSet extends EveObjectSet
      */
     Render(technique)
     {
-        if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer)
+        if (!this.display || !this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer)
         {
             return false;
         }

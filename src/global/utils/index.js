@@ -7,8 +7,6 @@ export * from "./uuid";
 export * from "./url";
 export * from "./reflect";
 
-//export { api } from "../../../_dev/srcClient/api";
-
 import * as meta from "../meta";
 
 export { meta };

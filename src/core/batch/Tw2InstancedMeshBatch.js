@@ -14,13 +14,15 @@ export class Tw2InstancedMeshBatch extends Tw2GeometryBatch
     /**
      * Commits the instanced mesh for rendering
      * @param {String} technique - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
         if (this.instanceMesh && this.effect)
         {
-            this.instanceMesh.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
+            return this.instanceMesh.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
         }
+        return false;
     }
 
 }

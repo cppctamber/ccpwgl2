@@ -15,13 +15,15 @@ export class Tw2ForwardingRenderBatch extends Tw2RenderBatch
     /**
      * Commits the batch for rendering
      * @param {String} technique - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
         if (this.geometryProvider)
         {
-            this.geometryProvider.Render(this, this.techniqueOverride || technique);
+            return this.geometryProvider.Render(this, this.techniqueOverride || technique);
         }
+        return false;
     }
 
     /**

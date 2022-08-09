@@ -20,17 +20,16 @@ class EveSpriteSetBatch extends Tw2RenderBatch
     /**
      * Commits the sprite set
      * @param {String} [technique] - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
         if (this.boosterGlow)
         {
-            this.spriteSet.RenderBoosterGlow(technique, this.world, this.boosterGain, this.warpIntensity);
+            return this.spriteSet.RenderBoosterGlow(technique, this.world, this.boosterGain, this.warpIntensity);
         }
-        else
-        {
-            this.spriteSet.Render(technique, this.world, this.perObjectData);
-        }
+
+        return this.spriteSet.Render(technique, this.world, this.perObjectData);
     }
 
     /**

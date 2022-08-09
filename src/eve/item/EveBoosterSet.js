@@ -28,8 +28,9 @@ export class EveBoosterBatch extends Tw2RenderBatch
             originalValue = shipData[2];
 
         shipData[2] = 0;
-        this.boosters.Render(technique);
+        let rv = this.boosters.Render(technique);
         shipData[2] = originalValue;
+        return rv;
     }
 
     /**

@@ -10,14 +10,14 @@ class EvePlaneSetBatch extends Tw2RenderBatch
 
     planeSet = null;
 
-
     /**
      * Commits the plan set
      * @param {String} [technique] - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
-        this.planeSet.Render(technique);
+        return this.planeSet.Render(technique);
     }
 
     /**

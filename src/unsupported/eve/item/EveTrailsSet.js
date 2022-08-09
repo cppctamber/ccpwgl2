@@ -12,10 +12,11 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
     /**
      * Commits the batch
      * @param {String} [technique] - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
-        this.trailsSet.Render(technique);
+        return this.trailsSet.Render(technique);
     }
 
     /**

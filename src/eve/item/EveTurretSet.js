@@ -834,7 +834,7 @@ export class EveTurretSet extends EveObjectSet
      * Renders the turret set
      * @param batch
      * @param {String} [technique] - technique name
-     * @returns {Boolean}
+     * @returns {Boolean} true if rendered
      */
     Render(batch, technique)
     {
@@ -874,12 +874,13 @@ export class EveTurretSet extends EveObjectSet
                 const isActive = this._state === EveTurretSet.State.FIRING && index === this._activeTurret;
                 if (batch.renderActive === isActive)
                 {
-                    this.geometryResource.RenderAreas(0, 0, 1, this.turretEffect, technique);
-                    rendered++;
+                    if (this.geometryResource.RenderAreas(0, 0, 1, this.turretEffect, technique))
+                    {
+                        rendered++;
+                    }
                 }
             }
         }
-
         return !!rendered;
     }
 

@@ -17,10 +17,11 @@ export class Tw2RenderBatch
     /**
      * Commits the batch
      * @param {String} [technique] - technique name
+     * @returns {boolean} true if rendered
      */
     Commit(technique)
     {
-
+        return false;
     }
 
     /**

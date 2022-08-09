@@ -1,4 +1,5 @@
 export * from "./Tw2BatchAccumulator";
+export * from "./Tw2BatchAccumulator2";
 export * from "./Tw2ForwardingRenderBatch";
 export * from "./Tw2GeometryBatch";
 export * from "./Tw2GeometryLineBatch";

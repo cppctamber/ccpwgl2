@@ -16,7 +16,7 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
      */
     Commit(technique)
     {
-        this.boosterSet.Render(technique);
+        return this.boosterSet.Render(technique);
     }
 
     /**

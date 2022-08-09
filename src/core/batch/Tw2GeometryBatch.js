@@ -24,13 +24,15 @@ export class Tw2GeometryBatch extends Tw2RenderBatch
     /**
      * Commits the geometry batch for rendering
      * @param {String} technique - technique name
+     * @returns {Boolean} true if rendered
      */
     Commit(technique)
     {
         if (this.geometryRes && this.effect)
         {
-            this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
+            return this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
         }
+        return false;
     }
 
     /**
