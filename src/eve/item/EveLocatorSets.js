@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, quat, vec4 } from "math";
+import { vec3, quat, vec4, mat4 } from "math";
 
 
 @meta.type("EveLocatorSetItem")
@@ -20,6 +20,16 @@ export class EveLocatorSetItem extends meta.Model
     scaling = vec3.fromValues(1,1,1);
 
     /**
+     * Gets the locator's local transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
+    }
+
+    /**
      * Black reader
      * @param {Tw2BlackBinaryReader} r
      */
@@ -34,6 +44,7 @@ export class EveLocatorSetItem extends meta.Model
     }
 
 }
+
 
 
 @meta.type("EveLocatorSets", true)

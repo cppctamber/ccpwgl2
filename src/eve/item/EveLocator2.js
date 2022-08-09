@@ -36,6 +36,16 @@ export class EveLocator2 extends meta.Model
     }
 
     /**
+     * Gets the locator's local transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.copy(m, this.transform);
+    }
+
+    /**
      * Gets a bounding box for the locator
      * @param {box3} out
      */
@@ -151,11 +161,12 @@ export class EveLocator2 extends meta.Model
     /**
      * Gets the locator's bone from an animation controller
      * @param {Tw2AnimationController} animationController
+     * @param {Number} [meshIndex=0]
      * @returns {null|Tw2Bone}
      */
-    FindBone(animationController)
+    FindBone(animationController, meshIndex=0)
     {
-        this.bone = animationController.FindBoneForMesh(this.name, 0);
+        this.bone = animationController.FindBoneForMesh(this.name, meshIndex);
         return this.bone;
     }
 

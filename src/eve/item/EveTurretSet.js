@@ -29,7 +29,7 @@ export class EveTurretSetItem extends EveObjectSetItem
     @meta.quaternion
     rotation = quat.create();
 
-
+    _isClosest = false;
     _bone = null;
     _localTransform = mat4.create();
     _localRotation = quat.create();
@@ -52,22 +52,30 @@ export class EveTurretSetItem extends EveObjectSetItem
         this.UpdateTransforms();
     }
 
+
     /**
      * Updates the turret's transforms
      */
     UpdateTransforms()
     {
-        mat4.fromRotationTranslation(this._localTransform, this.rotation, this.position);
-
         if (this._bone)
         {
-            mat4.multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
-            mat4.getRotation(this._localRotation, this._localTransform);
+            mat4.getRotation(this.rotation, this._bone.worldTransform);
+            mat4.getTranslation(this.position, this._bone.worldTransform);
         }
-        else
-        {
-            quat.copy(this._localRotation, this.rotation);
-        }
+
+        mat4.fromRotationTranslation(this._localTransform, this.rotation, this.position);
+        quat.copy(this._localRotation, this.rotation);
+    }
+
+    /**
+     * Gets the item's local transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.copy(m, this._localTransform);
     }
 
 }
@@ -323,6 +331,11 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
+        for (let i = 0; i < this.items.length; i++)
+        {
+            this.items[i]._isClosest = this.items[i] === closestTurret;
+        }
+
         return closestTurret;
     }
 
@@ -335,19 +348,35 @@ export class EveTurretSet extends EveObjectSet
 
         if (this.turretEffect)
         {
+            let percent = 0;
+
+            if (this._state === EveTurretSet.State.UNPACKING)
+            {
+                const deployAnimation = this._activeAnimation.GetAnimation("Deploy");
+                percent = deployAnimation.percent;
+            }
+
             this._activeAnimation.StopAllAnimations();
             this._inactiveAnimation.StopAllAnimations();
 
-            this._activeAnimation.PlayAnimation("Pack", false, () =>
-            {
-                this._state = EveTurretSet.State.INACTIVE;
-                this._activeAnimation.PlayAnimation("Inactive", true);
+            this._activeAnimation.PlayAnimation("Pack", {
+                cycle: false,
+                percent,
+                callback: () =>
+                {
+                    this._state = EveTurretSet.State.INACTIVE;
+                    this._activeAnimation.PlayAnimation("Inactive", { cycle: true });
+                }
             });
 
-            this._inactiveAnimation.PlayAnimation("Pack", false, () =>
-            {
-                this._state = EveTurretSet.State.INACTIVE;
-                this._inactiveAnimation.PlayAnimation("Inactive", true);
+            this._inactiveAnimation.PlayAnimation("Pack", {
+                cycle: false,
+                percent,
+                callback: () =>
+                {
+                    this._state = EveTurretSet.State.INACTIVE;
+                    this._inactiveAnimation.PlayAnimation("Inactive", { cycle: true });
+                }
             });
 
             this._state = EveTurretSet.State.PACKING;
@@ -370,30 +399,49 @@ export class EveTurretSet extends EveObjectSet
 
         if (this.turretEffect)
         {
+            let percent = 0;
+
+            if (this._state === EveTurretSet.State.PACKING)
+            {
+                const packAnimation = this._activeAnimation.GetAnimation("Pack");
+                percent = packAnimation.percent;
+            }
+
             this._activeAnimation.StopAllAnimations();
             this._inactiveAnimation.StopAllAnimations();
 
             if (this._state === EveTurretSet.State.FIRING)
             {
-                this._activeAnimation.PlayAnimation("Active", true);
-                this._inactiveAnimation.PlayAnimation("Active", true);
+                this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
+                this._state = EveTurretSet.State.IDLE;
             }
             else
             {
-                this._activeAnimation.PlayAnimation("Deploy", false, () =>
-                {
-                    this._state = EveTurretSet.State.IDLE;
-                    this._activeAnimation.PlayAnimation("Active", true);
+                this._activeAnimation.PlayAnimation("Deploy", {
+                    cycle: false,
+                    percent,
+                    callback: () =>
+                    {
+                        console.log("Active turret active...");
+                        this._state = EveTurretSet.State.IDLE;
+                        this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                    }
                 });
 
-                this._inactiveAnimation.PlayAnimation("Deploy", false, () =>
-                {
-                    this._state = EveTurretSet.State.IDLE;
-                    this._inactiveAnimation.PlayAnimation("Active", true);
+                this._inactiveAnimation.PlayAnimation("Deploy", {
+                    cycle: false,
+                    percent,
+                    callback: () =>
+                    {
+                        console.log("Inactive turret active...");
+                        this._state = EveTurretSet.State.IDLE;
+                        this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
+                    }
                 });
+
+                this._state = EveTurretSet.State.UNPACKING;
             }
-
-            this._state = EveTurretSet.State.UNPACKING;
         }
         else
         {
@@ -414,9 +462,12 @@ export class EveTurretSet extends EveObjectSet
             this.DoStartFiring();
             if (this.turretEffect)
             {
-                this._activeAnimation.PlayAnimation("Fire", false, () =>
-                {
-                    this._activeAnimation.PlayAnimation("Active", true);
+                this._activeAnimation.PlayAnimation("Fire", {
+                    cycle: false,
+                    callback: () =>
+                    {
+                        this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                    }
                 });
             }
             return;
@@ -426,30 +477,42 @@ export class EveTurretSet extends EveObjectSet
         this._inactiveAnimation.StopAllAnimations();
         if (this._state === EveTurretSet.State.INACTIVE)
         {
-            this._activeAnimation.PlayAnimation("Deploy", false, () =>
-            {
-                this.DoStartFiring();
-                this._activeAnimation.PlayAnimation("Fire", false, () =>
+            this._activeAnimation.PlayAnimation("Deploy", {
+                cycle: false,
+                callback: () =>
                 {
-                    this._activeAnimation.PlayAnimation("Active", true);
-                });
+                    this.DoStartFiring();
+                    this._activeAnimation.PlayAnimation("Fire", {
+                        cycle: false,
+                        callback: () =>
+                        {
+                            this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                        }
+                    });
+                }
             });
 
-            this._inactiveAnimation.PlayAnimation("Deploy", false, () =>
-            {
-                this._inactiveAnimation.PlayAnimation("Active", true);
+            this._inactiveAnimation.PlayAnimation("Deploy", {
+                cycle: false,
+                callback: () =>
+                {
+                    this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
+                }
             });
             this._state = EveTurretSet.State.UNPACKING;
         }
         else
         {
             this.DoStartFiring();
-            this._activeAnimation.PlayAnimation("Fire", false, () =>
-            {
-                this._activeAnimation.PlayAnimation("Active", true);
+            this._activeAnimation.PlayAnimation("Fire", {
+                cycle: false,
+                callback: () =>
+                {
+                    this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                }
             });
 
-            this._inactiveAnimation.PlayAnimation("Active", true);
+            this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
         }
     }
 
@@ -479,18 +542,24 @@ export class EveTurretSet extends EveObjectSet
         switch (this._state)
         {
             case EveTurretSet.State.INACTIVE:
-                active.PlayAnimation("Inactive", true);
-                inactive.PlayAnimation("Inactive", true);
+                active.PlayAnimation("Inactive", { cycle: true });
+                inactive.PlayAnimation("Inactive", { cycle: true });
                 break;
 
             case EveTurretSet.State.IDLE:
-                active.PlayAnimation("Active", true);
-                inactive.PlayAnimation("Active", true);
+                active.PlayAnimation("Active", { cycle: true });
+                inactive.PlayAnimation("Active", { cycle: true });
                 break;
 
             case EveTurretSet.State.FIRING:
-                active.PlayAnimation("Fire", false, () => active.PlayAnimation("Active", true));
-                inactive.PlayAnimation("Active", true);
+                active.PlayAnimation("Fire", {
+                    cycle: false,
+                    callback: () =>
+                    {
+                        active.PlayAnimation("Active", { cycle: true });
+                    }
+                });
+                inactive.PlayAnimation("Active", { cycle: true });
                 break;
 
             case EveTurretSet.State.PACKING:
@@ -693,10 +762,13 @@ export class EveTurretSet extends EveObjectSet
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Boolean} [showFiringEffect]
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData, showFiringEffect)
     {
-        if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return;
+        if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return false;
+
+        const c = accumulator.length;
 
         if (mode === device.RM_OPAQUE && this.visible.turrets)
         {
@@ -711,6 +783,7 @@ export class EveTurretSet extends EveObjectSet
                 batch.renderActive = false;
                 batch.perObjectData = this._perObjectDataInactive;
                 batch.geometryProvider = this;
+                batch.effect = this.turretEffect;
                 accumulator.Commit(batch);
 
                 if (this._state === EveTurretSet.State.FIRING)
@@ -725,6 +798,7 @@ export class EveTurretSet extends EveObjectSet
                         batch.renderActive = true;
                         batch.perObjectData = this._perObjectDataActive;
                         batch.geometryProvider = this;
+                        batch.effect = this.turretEffect;
                         accumulator.Commit(batch);
                     }
                 }
@@ -735,6 +809,8 @@ export class EveTurretSet extends EveObjectSet
         {
             this.firingEffect.GetBatches(mode, accumulator, perObjectData);
         }
+
+        return accumulator.length !== c;
     }
 
     /**
@@ -742,19 +818,22 @@ export class EveTurretSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetFiringEffectBatches(mode, accumulator, perObjectData)
     {
         if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects)
         {
             this.firingEffect.GetBatches(mode, accumulator, perObjectData);
+            return true;
         }
+        return false;
     }
 
     /**
      * Renders the turret set
      * @param batch
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      * @returns {Boolean}
      */
     Render(batch, technique)
@@ -782,7 +861,7 @@ export class EveTurretSet extends EveObjectSet
             {
                 tw2.Debug({
                     name: "EveTurretSet",
-                    message: `Could not find usage TEXCOORD usage 1`
+                    message: "Could not find usage TEXCOORD usage 1"
                 });
             }
         }
@@ -899,7 +978,7 @@ export class EveTurretSet extends EveObjectSet
         INACTIVE: 0,
         IDLE: 1,
         FIRING: 2,
-        PACKING: 2,
+        PACKING: 3,
         UNPACKING: 4
     };
 

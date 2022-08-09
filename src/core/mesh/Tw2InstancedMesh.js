@@ -329,9 +329,9 @@ export class Tw2InstancedMesh extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {String} [techniqueOverride]
+     * @param {Boolean} true if a batch was accumulated
      */
-    GetBatches(mode, accumulator, perObjectData, techniqueOverride)
+    GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.IsGood() || !this.display) return false;
 
@@ -361,30 +361,15 @@ export class Tw2InstancedMesh extends meta.Model
                 break;
 
             case RM_PICKABLE:
-                if (!this.visible.pickableAreas) return;
-                area = this.pickableAreas;
-                getBatches(this, this.additiveAreas, mode, accumulator, perObjectData, "Picking");
-                getBatches(this, this.decalAreas, mode, accumulator, perObjectData, "Picking");
-                getBatches(this, this.distortionAreas, mode, accumulator, perObjectData, "Picking");
-                getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData, "Picking");
-                getBatches(this, this.transparentAreas, mode, accumulator, perObjectData, "Picking");
+                if (this.visible.pickableAreas) area = this.pickableAreas;
                 break;
 
             case RM_DEPTH:
-                if (!this.visible.depthAreas) return;
-                area = this.depthAreas;
-                getBatches(this, this.additiveAreas, mode, accumulator, perObjectData, "Depth");
-                getBatches(this, this.decalAreas, mode, accumulator, perObjectData, "Depth");
-                getBatches(this, this.distortionAreas, mode, accumulator, perObjectData, "Depth");
-                getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData, "Depth");
-                getBatches(this, this.transparentAreas, mode, accumulator, perObjectData, "Depth");
+                if (this.visible.depthAreas) area = this.depthAreas;
                 break;
         }
 
-        if (area)
-        {
-            getBatches(this, area, mode, accumulator, perObjectData, techniqueOverride);
-        }
+        return area ? getBatches(this, area, mode, accumulator, perObjectData) : false;
     }
 
     /**
@@ -467,17 +452,15 @@ export class Tw2InstancedMesh extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {String} [techniqueOverride]
+     * @returns {Boolean} true if batches accumulated
      */
-    static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData, techniqueOverride)
+    static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData)
     {
+        const c = accumulator.length;
         for (let i = 0; i < areas.length; ++i)
         {
             const area = areas[i];
-            if (!area.effect || !area.display || techniqueOverride && !area.effect.hasTechnique(techniqueOverride))
-            {
-                continue;
-            }
+            if (!area.effect || !area.display || !area.effect.IsGood()) continue;
 
             const batch = new Tw2InstancedMeshBatch();
             batch.renderMode = mode;
@@ -487,9 +470,9 @@ export class Tw2InstancedMesh extends meta.Model
             batch.start = area.index;
             batch.count = area.count;
             batch.effect = area.effect;
-            if (techniqueOverride) batch.techniqueOverride = techniqueOverride;
             accumulator.Commit(batch);
         }
+        return accumulator.length !== c;
     }
 
 }

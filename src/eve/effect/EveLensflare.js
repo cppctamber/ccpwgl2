@@ -200,23 +200,26 @@ export class EveLensflare extends meta.Model
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (this.display)
+        if (!this.display) return false;
+
+        const viewDir = vec4.set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
+
+        vec4.transformMat4(viewDir, viewDir, device.viewInverse);
+        if (vec3.dot(viewDir, this._direction) < 0) return;
+
+        const c = accumulator.length;
+
+        for (let i = 0; i < this.flares.length; ++i)
         {
-            const viewDir = vec4.set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
-
-            vec4.transformMat4(viewDir, viewDir, device.viewInverse);
-            if (vec3.dot(viewDir, this._direction) < 0) return;
-
-            for (let i = 0; i < this.flares.length; ++i)
-            {
-                this.flares[i].GetBatches(mode, accumulator, perObjectData);
-            }
-
-            if (this.mesh)
-            {
-                this.mesh.GetBatches(mode, accumulator, perObjectData);
-            }
+            this.flares[i].GetBatches(mode, accumulator, perObjectData);
         }
+
+        if (this.mesh)
+        {
+            this.mesh.GetBatches(mode, accumulator, perObjectData);
+        }
+
+        return accumulator.length !== c;
     }
 
     /**

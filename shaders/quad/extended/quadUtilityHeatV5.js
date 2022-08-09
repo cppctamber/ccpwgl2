@@ -7,7 +7,6 @@ import { SelectorColor, SelectorMode, Mode } from "./constant";
 import { Time } from "../../shared/constant";
 
 
-
 export const quadUtilityHeatV5 = {
     name: "quadUtilityHeatV5",
     description: "quad heat utility shader",

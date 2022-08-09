@@ -84,10 +84,22 @@ export class Tw2RayCaster
         {
             if (key in this.options[type])
             {
-                return this.options[type];
+                return this.options[type][key];
             }
         }
         return defaultValue;
+    }
+
+    /**
+     * Sets an option
+     * @param {String} type
+     * @param {String} key
+     * @param {*} value
+     */
+    SetOption(type, key, value)
+    {
+        if (!this.options[type]) this.options[type] = {};
+        this.options[type][key] = value;
     }
 
     /**
@@ -96,7 +108,7 @@ export class Tw2RayCaster
      */
     DoFaceIntersection()
     {
-        return !this.options.faces.skip || this.DoFindClosestEdge() || this.DoFindClosestVertex();
+        return !this.GetOption("faces", "skip", false);
     }
 
     /**

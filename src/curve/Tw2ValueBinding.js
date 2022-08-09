@@ -105,24 +105,24 @@ export class Tw2ValueBinding extends meta.Model
         // Targets must be defined
         if (src === undefined)
         {
-            console.dir(this);
-            throw new ErrBindingValueUndefined({
+            console.dir(new ErrBindingValueUndefined({
                 name: this.name,
                 objectType: "source",
                 property: this.sourceAttribute,
                 object: this.sourceObject
-            });
+            }));
+            return;
         }
 
         if (dest === undefined)
         {
-            console.dir(this);
-            throw new ErrBindingValueUndefined({
+            console.dir(new ErrBindingValueUndefined({
                 name: this.name,
                 objectType: "destination",
                 property: this.destinationAttribute,
                 object: this.destinationObject
-            });
+            }));
+            return;
         }
 
         const
@@ -417,6 +417,7 @@ export class Tw2ValueBinding extends meta.Model
      */
     static FromAttribute(attr)
     {
+
         const { Vector4Swizzle, CharacterSwizzle } = Tw2ValueBinding;
 
         let str = attr.split(".")[1];

@@ -317,13 +317,16 @@ export class EveStretch extends meta.Model
 
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display) return;
+        if (!this.display) return false;
+
+        const c = accumulator.length;
 
         if (this.sourceObject && this._displaySourceObject)
         {
@@ -339,6 +342,8 @@ export class EveStretch extends meta.Model
         {
             this.stretchObject.GetBatches(mode, accumulator, perObjectData);
         }
+
+        return accumulator.length !== c;
     }
 
     /**

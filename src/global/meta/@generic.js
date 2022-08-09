@@ -94,6 +94,15 @@ export const todo = createDecorator({
     }
 });
 
+export const noLongerSupported = createDecorator({
+    noArgs: true,
+    handler({ target, property })
+    {
+        defineMetadata("todo", "No longer supported", target, property);
+        defineMetadata("stage", 3, target, property);
+    }
+});
+
 export const partialImplementation = createDecorator({
     noArgs: true,
     handler({ target, property })

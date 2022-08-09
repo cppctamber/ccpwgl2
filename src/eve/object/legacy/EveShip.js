@@ -168,39 +168,43 @@ export class EveShip extends EveSpaceObject
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this._lod > 0)
+        if (!this.display || !this._lod) return false;
+
+        const c = accumulator.length;
+
+        super.GetBatches(mode, accumulator);
+
+        this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
+        this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
+
+        if (this.boosters && this.visible.boosters)
         {
-            super.GetBatches(mode, accumulator);
+            this.boosters.GetBatches(mode, accumulator, this._perObjectData);
+        }
 
-            this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
-            this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
-
-            if (this.boosters && this.visible.boosters)
+        if (this.visible.turretSets)
+        {
+            if (this._lod > 1)
             {
-                this.boosters.GetBatches(mode, accumulator, this._perObjectData);
-            }
-
-            if (this.visible.turretSets)
-            {
-                if (this._lod > 1)
+                for (let i = 0; i < this.turretSets.length; ++i)
                 {
-                    for (let i = 0; i < this.turretSets.length; ++i)
-                    {
-                        this.turretSets[i].GetBatches(mode, accumulator, this._perObjectData, this.visible.firingEffects);
-                    }
+                    this.turretSets[i].GetBatches(mode, accumulator, this._perObjectData, this.visible.firingEffects);
                 }
-                else if (this.visible.firingEffects)
+            }
+            else if (this.visible.firingEffects)
+            {
+                for (let i = 0; i < this.turretSets.length; ++i)
                 {
-                    for (let i = 0; i < this.turretSets.length; ++i)
-                    {
-                        this.turretSets[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
-                    }
+                    this.turretSets[i].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
                 }
             }
         }
+
+        return accumulator.length !== c;
     }
 
 }

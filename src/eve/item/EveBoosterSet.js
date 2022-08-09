@@ -16,14 +16,30 @@ export class EveBoosterBatch extends Tw2RenderBatch
 
     boosters = null;
 
-
     /**
      * Commits the batch
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
+        // ship data 2 is shared so return the value to what it was
+        const
+            shipData = this.perObjectData.ps.Get("Shipdata"),
+            originalValue = shipData[2];
+
+        shipData[2] = 0;
         this.boosters.Render(technique);
+        shipData[2] = originalValue;
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.boosters && this.boosters.effect && this.boosters.effect.HasTechnique(technique);
     }
 
 }
@@ -41,9 +57,6 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
     @meta.uint
     atlas1 = 0;
-
-    @meta.plain
-    customValues = null;
 
     @meta.string
     locatorName = null;
@@ -68,6 +81,16 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
     @meta.float
     wavePhase = Math.random();
+
+    /**
+     * Gets the item's local matrix
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.copy(m, this.transform);
+    }
 
     /**
      * Gets the item's position
@@ -186,6 +209,31 @@ export class EveBoosterSet extends EveObjectSet
     {
         if (this.effect) this.effect.GetResources(out);
         return out;
+    }
+
+    /**
+     * Checks if any child bounds are dirty
+     * @return {boolean}
+     */
+    AreItemBoundsDirty()
+    {
+        for (let i = 0; i < this.items.length; i++)
+        {
+            if (this.items[i]._boundsDirty)
+            {
+                return true;
+            }
+        }
+
+        return this.glows ? this.glows._dirty : false;
+    }
+
+    /**
+     * Rebuilds the item's bounds
+     */
+    OnRebuildBounds()
+    {
+
     }
 
     /**
@@ -361,20 +409,22 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
+     * Per frame upadte
+     * @param parentTransform
+     */
+    UpdateViewDependentData(parentTransform)
+    {
+        mat4.copy(this._parentTransform, parentTransform);
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt - DeltaTime
-     * @param {mat4} parentMatrix
      */
-    Update(dt, parentMatrix)
+    Update(dt)
     {
-        mat4.copy(this._parentTransform, parentMatrix);
-
         super.Update(dt);
-
-        if (this.glows)
-        {
-            this.glows.Update(dt);
-        }
+        if (this.glows) this.glows.Update(dt);
     }
 
     /**
@@ -459,10 +509,16 @@ export class EveBoosterSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || mode !== device.RM_ADDITIVE || !this._positions || !this._visibleItems.length) return;
+        if (!this.display || mode !== device.RM_ADDITIVE || !this._positions || !this._visibleItems.length)
+        {
+            return false;
+        }
+
+        const c = accumulator.length;
 
         if (this.effect)
         {
@@ -473,6 +529,7 @@ export class EveBoosterSet extends EveObjectSet
             batch.perObjectData = this._perObjectData;
             batch.boosters = this;
             batch.renderMode = device.RM_ADDITIVE;
+            batch.effect = this.effect;
             accumulator.Commit(batch);
         }
 
@@ -487,6 +544,8 @@ export class EveBoosterSet extends EveObjectSet
                 0
             );
         }
+
+        return accumulator.length !== c;
     }
 
     /**

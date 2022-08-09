@@ -1,4 +1,3 @@
-export * from "./Tr2PostProcess";
 export * from "./Tr2PostProcess2";
 export * from "./Tr2PPBloomEffect";
 export * from "./Tr2PPDesaturateEffect";

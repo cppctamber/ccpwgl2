@@ -29,6 +29,7 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
 
 
 @meta.type("Tw2QuaternionCurve")
+// TODO: Add support for tangents
 export class Tw2QuaternionCurve extends Tw2Curve
 {
 

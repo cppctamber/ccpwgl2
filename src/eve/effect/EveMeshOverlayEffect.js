@@ -69,10 +69,11 @@ export class EveMeshOverlayEffect extends meta.Model
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Tw2Mesh} mesh
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData, mesh)
     {
-        if (!this.display || !mesh || !mesh.IsGood()) return;
+        if (!this.display || !mesh || !mesh.IsGood()) return false;
 
         const effects = this.GetEffects(mode);
         for (let i = 0; i < effects.length; i++)
@@ -87,6 +88,7 @@ export class EveMeshOverlayEffect extends meta.Model
             batch.effect = effects[i];
             accumulator.Commit(batch);
         }
+        return effects.length > 0;
     }
 
     /**

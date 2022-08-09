@@ -2,20 +2,24 @@ import { generateID } from "../utils/uuid";
 import { getMetadata, hasMetadata } from "../utils/reflect";
 import { isArray, isFunction, isObjectObject } from "../utils/type";
 import { propTypes } from "./ModelPropertyTypes";
-import { readOnly } from "./@generic";
 import { tw2 } from "global/tw2";
 
 
 // TODO: Identify why Model can't extend * without webpack having a fit
 
 const PRIVATE = new WeakMap();
-
+const id = Symbol("id");
 
 export class Model
 {
 
-    @readOnly
-    _id = generateID();
+    get _id()
+    {
+        if (!this[id]) this[id] = generateID();
+        return this[id];
+    }
+
+    [id] = null;
 
     /**
      * Emits an event
@@ -30,7 +34,7 @@ export class Model
 
         eventName = eventName.toLowerCase();
 
-        if (eventName in events)
+        if (events[eventName])
         {
             events[eventName].forEach((value, key) =>
             {
@@ -38,7 +42,7 @@ export class Model
                 if (value.once) events[eventName].delete(key);
             });
 
-            if (events[eventName].size === 0)
+            if (events[eventName] && events[eventName].size === 0)
             {
                 Reflect.deleteProperty(events, eventName);
             }

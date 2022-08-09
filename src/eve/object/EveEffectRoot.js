@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3, quat, mat4, sph3, box3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
-import { EveSpaceObject } from "./EveSpaceObject";
 
 
 @meta.type("EveEffectRoot")
@@ -28,9 +27,21 @@ export class EveEffectRoot extends EveObject
     @meta.vector3
     translation = vec3.create();
 
+    /**
+     * Alias for _localTransform
+     * @returns {mat4}
+     */
     @meta.matrix4
     @meta.isPrivate
-    localTransform = mat4.create();
+    get localTransform()
+    {
+        return this._localTransform;
+    }
+
+    set localTransform(m)
+    {
+        mat4.copy(this._localTransform, m);
+    }
 
     @meta.vector3
     @meta.isPrivate
@@ -41,43 +52,43 @@ export class EveEffectRoot extends EveObject
     boundingSphereRadius = 0;
 
 
-    _worldTransform = mat4.create();
-    _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
-    _boundsDirty = true;
-    _boundingSphere = null;
-    _boundingBox = null;
+    _parentTransform = mat4.create();
+    _perObjectData = Tw2PerObjectData.from(this.constructor.perObjectData);
+
 
     /**
-     * Rebuild bounds
-     * TODO: Recalculate bounds from children
-     * @param {boolean} force
+     * Fires when bounds need to be rebuilt
      */
-    RebuildBounds(force)
+    OnRebuildBounds()
     {
-        super.RebuildBounds(force);
+        const { box3_0, sph3_0 } = EveObject.global;
 
-        if (force || this._boundsDirty)
-        {
-            // TODO: Recalculate from children
-            sph3.fromPositionRadius(this._boundingSphere, this.boundingSphereCenter, this.boundingSphereRadius);
-            box3.fromSph3(this._boundingBox, this._boundingSphere);
-            this._boundsDirty = false;
-        }
-    }
-
-    /**
-     * Sets children lod
-     * @param {Number} lod
-     */
-    SetChildrenLod(lod)
-    {
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            if (this.effectChildren[i].SetLod)
+            let bounds;
+            if (this.effectChildren[i].GetBoundingBox)
             {
-                this.effectChildren[i].SetLod(lod);
+                this.effectChildren[i].GetBoundingBox(box3_0);
+                sph3.fromBox3(sph3_0, box3_0);
+                bounds = true;
+            }
+            else if (this.effectChildren[i].GetBoundingSphere)
+            {
+                this.effectChildren[i].GetBoundingSphere(sph3_0);
+                bounds = true;
+            }
+
+            if (bounds)
+            {
+                sph3.union(this._boundingSphere, this._boundingSphere, sph3_0);
             }
         }
+
+        // Union the local bounds data for now...
+        sph3.unionPositionRadius(this._boundingSphere, this._boundingSphere, this.boundingSphereCenter,this.boundingSphereRadius);
+
+        box3.fromSph3(this._boundingBox, this._boundingSphere);
+        this._boundsDirty = false;
     }
 
     /**
@@ -89,9 +100,9 @@ export class EveEffectRoot extends EveObject
 
         for (let i = 0; i < this.children.length; i++)
         {
-            if (this.children[i].ResetLod)
+            if (this.effectChildren[i].ResetLod)
             {
-                this.children[i].ResetLod();
+                this.effectChildren[i].ResetLod();
             }
         }
     }
@@ -106,42 +117,11 @@ export class EveEffectRoot extends EveObject
 
         for (let i = 0; i < this.children.length; i++)
         {
-            if (this.children[i].UpdateLod)
+            if (this.effectChildren[i].UpdateLod)
             {
-                this.children[i].UpdateLod(frustum, this._lod);
+                this.effectChildren[i].UpdateLod(frustum, this._lod);
             }
         }
-    }
-
-    /**
-     * Sets the object's local transform
-     * @param {mat4} m
-     */
-    SetTransform(m)
-    {
-        mat4.getRotation(this.rotation, m);
-        mat4.getScaling(this.scaling, m);
-        mat4.getTranslation(this.translation, m);
-    }
-
-    /**
-     * Gets the object's transform
-     * @param {mat4} out
-     * @returns {mat4} out
-     */
-    GetTransform(out)
-    {
-        return mat4.copy(out, this.localTransform);
-    }
-
-    /**
-     * Gets the object's world transform
-     * @param {mat4} out
-     * @returns {mat4} out
-     */
-    GetWorldTransform(out)
-    {
-        return mat4.copy(out, this._worldTransform);
     }
 
     /**
@@ -186,16 +166,8 @@ export class EveEffectRoot extends EveObject
      */
     UpdateViewDependentData(parentTransform)
     {
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
-
-        if (parentTransform)
-        {
-            mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
-        }
-        else
-        {
-            mat4.copy(this._worldTransform, this.localTransform);
-        }
+        mat4.copy(this._parentTransform, parentTransform);
+        this.RebuildTransforms({ force: true, skipUpdate: true });
     }
 
     /**
@@ -212,6 +184,7 @@ export class EveEffectRoot extends EveObject
         for (let i = 0; i < this.effectChildren.length; ++i)
         {
             this.effectChildren[i].Update(dt, this._worldTransform);
+            if (this.effectChildren[i]._boundsDirty) this._boundsDirty = true;
         }
     }
 
@@ -219,15 +192,48 @@ export class EveEffectRoot extends EveObject
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display) return;
+        if (!this.display) return false;
 
+        const c = accumulator.length;
         for (let i = 0; i < this.effectChildren.length; ++i)
         {
             this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
         }
+        return accumulator.length !== c;
     }
+
+    /**
+     * Per object data
+     * @type {{vs: *[], ps: *[]}}
+     */
+    static perObjectData = {
+        vs: [
+            [ "WorldMat", 16 ],
+            [ "WorldMatLast", 16 ],
+            [ "Shipdata", [ 0, 1, 0, -10 ] ],
+            [ "Clipdata1", 4 ],
+            [ "EllipsoidRadii", 4 ],
+            [ "EllipsoidCenter", 4 ],
+            [ "CustomMaskMatrix0", mat4.identity([]) ],
+            [ "CustomMaskMatrix1", mat4.identity([]) ],
+            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ],
+            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ],
+            [ "JointMat", 696 ]
+        ],
+        ps: [
+            [ "Shipdata", [ 0, 1, 0, 1 ] ],
+            [ "Clipdata1", 4 ],
+            [ "Clipdata2", 4 ],
+            [ "ShLighting", 4 * 7 ],
+            [ "CustomMaskMaterialID0", 4 ],
+            [ "CustomMaskMaterialID1", 4 ],
+            [ "CustomMaskTarget0", 4 ],
+            [ "CustomMaskTarget1", 4 ]
+        ]
+    };
 
 }

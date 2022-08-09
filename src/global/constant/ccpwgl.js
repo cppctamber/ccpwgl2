@@ -38,3 +38,35 @@ export const Touch = {
     DOLLY_PAN: 2,
     DOLLY_ROTATE: 3
 };
+
+
+export const PickingBlueChannel = {
+    UNKNOWN: 0,
+
+    MATERIAL_1: 1,
+    MATERIAL_2: 2,
+    MATERIAL_3: 3,
+    MATERIAL_4: 4,
+    MATERIAL_5: 5,
+    MATERIAL_6: 6,
+
+    GLOW: 10,
+    PAINT: 11,
+    HEAT: 12,
+    GLASS: 13,
+    SAIL: 14,
+    DETAIL: 15,
+
+    DECAL: 20,
+    BOOSTER: 21,
+    PLANE_SET: 22,
+    SPOTLIGHT_SET: 23,
+    SPRITE_SET: 24,
+    SPRITE_LINE_SET: 25,
+    LINE_SET: 26,
+    HAZE_SET: 27,
+    BANNER: 28,
+
+    // AREA: 100, area from 100 to 255 (100 + area number)
+    // ALPHA: If alpha is working then can just use the alpha channel
+};

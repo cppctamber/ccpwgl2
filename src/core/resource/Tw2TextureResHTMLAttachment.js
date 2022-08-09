@@ -1,4 +1,4 @@
-import { isString, meta } from "utils/index";
+import { meta } from "utils/index";
 import { Model } from "global/meta";
 import { device } from "global/tw2";
 import { ErrResourceFormatNotImplemented } from "./Tw2Resource";
@@ -23,7 +23,6 @@ export class Tw2TextureResHTMLAttachment extends Model
     enableMipMaps = false;
 
     _element = null;
-    _res = null;
     _dirty = true;
     _lastActiveFrame = 0;
 
@@ -40,26 +39,25 @@ export class Tw2TextureResHTMLAttachment extends Model
      * @param value
      * @param opt
      */
-    SetValue(value=null, opt)
+    SetValue(value, opt)
     {
-        if (value === null || isString(value))
+        if (!value || typeof value === "string")
         {
             if (this.id !== value)
             {
                 this.id = value;
-                this._element = null;
+                if (!value) this._element = null;
                 this.UpdateValues(opt);
                 return true;
             }
         }
         else if (this._element !== value)
         {
-            this._id = value.id || null;
+            this._id = null;
             this._element = value;
             this.UpdateValues(opt);
             return true;
         }
-
         return false;
     }
 
@@ -70,16 +68,6 @@ export class Tw2TextureResHTMLAttachment extends Model
     {
         if (this.id) this._element = document.getElementById(this.id);
         this._dirty = true;
-    }
-
-    /**
-     * Checks if the attachment is good
-     * @returns {Boolean}
-     */
-    IsGood()
-    {
-        // TODO: Check for the correct type of element
-        return !!(this._element && this._element.width && this._element.height);
     }
 
     /**
@@ -94,8 +82,10 @@ export class Tw2TextureResHTMLAttachment extends Model
             return;
         }
 
+        this._lastActiveFrame = res.activeFrame;
+
         // Only update if we have a visible element or an update is required
-        if (!this.IsGood() || res.texture && !this.update && !this.dirty)
+        if (!this._element || !this._element.width || !this._element.height || res.texture && !this.update && !this.dirty)
         {
             return;
         }
@@ -129,10 +119,10 @@ export class Tw2TextureResHTMLAttachment extends Model
                     throw new ErrResourceFormatNotImplemented({ format: "HTML->CubeMap" });
 
                     /*
-            case TEX_3D:
-                res._target = gl.TEXTURE_3D;
-                break;
-                 */
+        case TEX_3D:
+            res._target = gl.TEXTURE_3D;
+            break;
+             */
 
                 default:
                     throw new ReferenceError(`Invalid texture format ${this.target}`);
@@ -196,6 +186,13 @@ export class Tw2TextureResHTMLAttachment extends Model
         gl.bindTexture(res._target, null);
 
         this._lastActiveFrame = res.activeFrame;
+    }
+
+    static CreateRes(id, update=true)
+    {
+        const res = new Tw2TextureRes();
+        res.attachment = Tw2TextureResHTMLAttachment.from({ id, update });
+        return res;
     }
 
 }

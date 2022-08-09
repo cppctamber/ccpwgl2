@@ -55,6 +55,10 @@ export class EveChildMesh extends EveChild
     @meta.boolean
     useSpaceObjectData = true;
 
+    @meta.uint
+    @meta.notImplemented
+    reflectionMode = -1;
+
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
@@ -110,10 +114,11 @@ export class EveChildMesh extends EveChild
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.mesh || this._lod < this.lowestLodVisible) return;
+        if (!this.display || !this.mesh || this._lod < this.lowestLodVisible) return false;
 
         if (this.useSpaceObjectData)
         {
@@ -149,7 +154,7 @@ export class EveChildMesh extends EveChild
             mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
         }
 
-        this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+        return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
 
 }

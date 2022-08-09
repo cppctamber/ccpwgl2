@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device } from "global";
-import { num, vec3, vec4 } from "math";
+import { mat4, num, vec3, vec4 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "utils";
@@ -19,7 +19,7 @@ class EveSpriteSetBatch extends Tw2RenderBatch
 
     /**
      * Commits the sprite set
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
@@ -31,6 +31,16 @@ class EveSpriteSetBatch extends Tw2RenderBatch
         {
             this.spriteSet.Render(technique, this.world, this.perObjectData);
         }
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.spriteSet && this.spriteSet.effect && this.spriteSet.effect.HasTechnique(technique);
     }
 
 }
@@ -76,6 +86,25 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.uint
     groupIndex = -1;
 
+    // Testing
+
+    @meta.uint
+    colorType = -1;
+
+    /**
+     * Gets the item's local matrix
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        mat4.identity(m);
+        m[12] = this.position[0];
+        m[13] = this.position[1];
+        m[14] = this.position[2];
+        return m;
+    }
+
 }
 
 
@@ -103,7 +132,7 @@ export class EveSpriteSet extends EveObjectSet
     _decl = null;
     _vdecl = Tw2VertexDeclaration.from([ { usage: "TEXCOORD", usageType: 5, elements: 1 } ]);
     _worldSpriteScale = 1;
-
+    _randomness =  num.randomFloat(0, 0.2);
 
     /**
      * Alias for this.items
@@ -129,17 +158,16 @@ export class EveSpriteSet extends EveObjectSet
      */
     Initialize()
     {
-        // Randomize blinking a little
-        const blinkRateAdjustment = num.randomFloat(0, 0.2);
-
-        for (let i = 0; i < this.items.length; i++)
-        {
-            const { blinkRate } = this.items[i];
-            if (blinkRate) this.items[i].blinkRate += blinkRateAdjustment;
-        }
-
         this.UseQuads(!!this.useQuads);
         this.Rebuild();
+    }
+
+    /**
+     * Fires when bounds need to be rebuilt
+     */
+    OnRebuildBounds()
+    {
+
     }
 
     /**
@@ -271,7 +299,7 @@ export class EveSpriteSet extends EveObjectSet
                 array[vtxOffset + 6] = item.color[1] * item.intensity;
                 array[vtxOffset + 7] = item.color[2] * item.intensity;
                 array[vtxOffset + 8] = item.blinkPhase;
-                array[vtxOffset + 9] = item.blinkRate;
+                array[vtxOffset + 9] = item.blinkRate + this._randomness;
                 array[vtxOffset + 10] = item.minScale * this._worldSpriteScale;
                 array[vtxOffset + 11] = item.maxScale * this._worldSpriteScale;
                 array[vtxOffset + 12] = item.falloff;
@@ -313,6 +341,7 @@ export class EveSpriteSet extends EveObjectSet
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {mat4} world
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData, world)
     {
@@ -323,8 +352,11 @@ export class EveSpriteSet extends EveObjectSet
             batch.renderMode = device.RM_ADDITIVE;
             batch.spriteSet = this;
             batch.perObjectData = perObjectData;
+            batch.mode = device.RM_ADDITIVE;
             accumulator.Commit(batch);
+            return true;
         }
+        return false;
     }
 
     /**

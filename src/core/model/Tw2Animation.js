@@ -91,6 +91,7 @@ export class Tw2Animation extends meta.Model
                 callback = this._callback,
                 remove = callback(this, this._controller);
 
+            // Only remove if it is still the same callback stored
             if (remove && this._callback === callback)
             {
                 this._callback = null;
@@ -148,6 +149,7 @@ export class Tw2Animation extends meta.Model
              * @property {Tw2AnimationController} controller
              */
             this.EmitEvent("unpause", { animation: this, controller: this._controller });
+            this._controller.EmitEvent("unpause", this._controller, this);
         }
         else
         {
@@ -159,6 +161,7 @@ export class Tw2Animation extends meta.Model
              * @property {Tw2AnimationController} controller
              */
             this.EmitEvent("play", { animation: this, controller: this._controller });
+            this._controller.EmitEvent("play", this._controller, this);
         }
     }
 
@@ -178,6 +181,7 @@ export class Tw2Animation extends meta.Model
              * @property {Tw2AnimationController} controller
              */
             this.EmitEvent("pause", { animation: this, controller: this._controller });
+            this._controller.EmitEvent("pause", this._controller, this);
         }
     }
 
@@ -199,7 +203,7 @@ export class Tw2Animation extends meta.Model
              * @property {Tw2AnimationController} controller
              */
             this.EmitEvent("end", { animation: this, controller: this._controller });
-
+            this._controller.EmitEvent("end", this._controller, this);
             this.UpdateCallback();
         }
     }
@@ -269,17 +273,18 @@ export class Tw2Animation extends meta.Model
                  * @property {Tw2AnimationController} controller
                  */
                 this.EmitEvent("cycle", { animation: this, controller: this._controller });
-
+                this._controller.EmitEvent("cycle", this._controller, this);
                 this.UpdateCallback();
             }
             else
             {
                 this.Stop();
+                return false;
             }
         }
 
         this.EmitEvent("playing", { animation: this, controller: this._controller });
-
+        this._controller.EmitEvent("playing", this._controller, this);
         return true;
     }
 

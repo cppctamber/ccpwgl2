@@ -58,11 +58,12 @@ export class EveChild extends meta.Model
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @param {Boolean} Returns true if batches accumulated
      */
     //@meta.abstract
     GetBatches(mode, accumulator, perObjectData)
     {
-
+        return false;
     }
 
     /**

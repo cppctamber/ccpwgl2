@@ -8,11 +8,10 @@ import {
     isArray,
     get,
     findElementByPropertyValue,
-    isObjectObject, isNoU
+    isObjectObject
 } from "utils";
 
 import {
-    //ErrFeatureNotImplemented,
     Tw2Error,
     Tw2Effect,
     Tw2Mesh,
@@ -21,11 +20,7 @@ import {
     Tw2GeometryRes,
     Tw2GeometryMesh,
     Tw2VertexDeclaration,
-    //Tw2Vector4Parameter,
-    //Tw2AnimationController
 } from "core";
-
-//import { Tw2ValueBinding } from "curve/Tw2ValueBinding";
 
 import {
     EveBoosterSet,
@@ -44,7 +39,6 @@ import {
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
-//import { EveHazeSet, EveHazeSetItem } from "unsupported/eve";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 
 
@@ -526,7 +520,8 @@ export class EveSOFData extends meta.Model
             {
                 const subParts = parts[i].split("?");
                 commands[subParts[0].toUpperCase()] = subParts[1].split(";");
-            } catch (err)
+            }
+            catch (err)
             {
                 throw new ErrSOFDNAFormatInvalid({ dna });
             }
@@ -795,7 +790,8 @@ export class EveSOFData extends meta.Model
             {
                 const response = await fetch(resMan.BuildUrl(options.billboardsURL));
                 options.billboards = await response.json();
-            } catch (err)
+            }
+            catch (err)
             {
                 //Fall back to defaults
             }

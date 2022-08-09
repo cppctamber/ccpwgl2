@@ -187,18 +187,21 @@ export class EveMissileWarhead extends meta.Model
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this.mesh && this._state !== EveMissileWarhead.State.DEAD)
-        {
-            if (this.mesh)
-            {
-                this.mesh.GetBatches(mode, accumulator, this._perObjectData);
-            }
+        if (!this.display || !this.mesh || this._state === EveMissileWarhead.State.DEAD) return false;
 
-            if (this.spriteSet)
-            {
-                this.spriteSet.GetBatches(mode, accumulator, this._perObjectData, this._transform);
-            }
+        const c = accumulator.length;
+
+        if (this.mesh)
+        {
+            this.mesh.GetBatches(mode, accumulator, this._perObjectData);
         }
+
+        if (this.spriteSet)
+        {
+            this.spriteSet.GetBatches(mode, accumulator, this._perObjectData, this._transform);
+        }
+
+        return accumulator.length !== c;
     }
 
     /**
@@ -399,17 +402,22 @@ export class EveMissile extends meta.Model
 
     /**
      * Accumulates render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display) return;
+        if (!this.display) return false;
+
+        const c = accumulator.length;
 
         for (let i = 0; i < this.warheads.length; ++i)
         {
             this.warheads[i].GetBatches(mode, accumulator);
         }
+
+        return accumulator.length !== c;
     }
 
     /**

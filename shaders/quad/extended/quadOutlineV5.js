@@ -15,6 +15,8 @@ export const quadOutlineV5 = {
                 ],
                 shader: `
     
+                    varying vec4 texcoord;
+    
                     attribute vec4 attr0;
                     attribute vec4 attr1;
                     attribute vec4 attr2;
@@ -36,9 +38,7 @@ export const quadOutlineV5 = {
                         vec4 r3;
                         vec4 r4;
                         vec4 r5;
-                        vec4 position;
-                        vec4 normal;
-                         
+                      
                         vec4 c0=vec4(6.28318548,-3.14159274,0.159154937,0.5);
                         vec4 c1=vec4(0,1,0,0);
                         
@@ -46,6 +46,9 @@ export const quadOutlineV5 = {
                         v1=attr1;
                         v2=attr2;
                         v3=attr3;
+                        
+                        texcoord.xy=v2.xy;
+                        texcoord.zw=v3.xy;
                 
                         r0=v2*c0.xxxx+c0.yyyy;
                         {
@@ -68,12 +71,12 @@ export const quadOutlineV5 = {
                         r2.yzw=r0.yzx*r3.zxy;
                         r2.yzw=r3.yzx*r0.zxy+(-r2.yzw);
                         r4.xyz=mix((-r2.yzw),r2.yzw,r2.xxx);
-                        normal.x=dot(r4.xyz,cb3[0].xyz);
-                        normal.y=dot(r4.xyz,cb3[1].xyz);
-                        normal.z=dot(r4.xyz,cb3[2].xyz);
+                        r2.x=dot(r4.xyz,cb3[0].xyz);
+                        r2.y=dot(r4.xyz,cb3[1].xyz);
+                        r2.z=dot(r4.xyz,cb3[2].xyz);
                         
-                        position.xyz = v0.xyz + normal.xyz * cb0[0].w;
-                        r0=position.xyzx*c1.yyyx+c1.xxxy;
+                        r0.xyz=v0.xyz+r2.xyz*cb0[0].w;
+                        r0=r0.xyzx*c1.yyyx+c1.xxxy;
                         r1.x=dot(r0,cb3[0]);
                         r1.y=dot(r0,cb3[1]);
                         r1.z=dot(r0,cb3[2]);
@@ -121,6 +124,8 @@ export const skinnedQuadOutlineV5 = {
                 ],
                 shader: `
     
+                    varying vec4 texcoord;
+    
                     attribute vec4 attr0;
                     attribute vec4 attr1;
                     attribute vec4 attr2;
@@ -147,11 +152,15 @@ export const skinnedQuadOutlineV5 = {
                         vec4 r6;
                         vec4 r7;
                         vec4 r8;
+                        vec4 r9;
                         
                         vec4 position;
                         vec4 normal;
                         
                         ivec4 a0;
+                        
+                        texcoord.xy=v2.xy;
+                        texcoord.zw=v4.xy;
                         
                         vec4 c0=vec4(3,0,1,0.5);
                         vec4 c1=vec4(6.28318548,-3.14159274,0.159154937,0.5);
@@ -165,6 +174,9 @@ export const skinnedQuadOutlineV5 = {
                         r0.x=c0.x*v1.x;         
                         a0.x=int(r0.x+0.5);      
                         r0=cb3[27+a0.x];
+                        
+                        r5=v0.xyzx*c0.zzzy+c0.yyyz;
+                        
                         r1=r0*cb3[3].yyyy;
                         r2=cb3[26+a0.x];
                         r1=r2*cb3[3].xxxx+r1;
@@ -172,26 +184,22 @@ export const skinnedQuadOutlineV5 = {
                         r1=r3*cb3[3].zzzz+r1;
                         r4.yz=c0.yz;
                         r1=cb3[3].wwww*r4.yyyz+r1;
-                        r5=v0.xyzx*c0.zzzy+c0.yyyz;
-                        r1.w=dot(r5,r1);
+                        
                         r6=r0*cb3[0].yyyy;
                         r6=r2*cb3[0].xxxx+r6;
                         r6=r3*cb3[0].zzzz+r6;
                         r6=cb3[0].wwww*r4.yyyz+r6;
-                        r1.x=dot(r5,r6);
+                        
                         r7=r0*cb3[1].yyyy;
                         r7=r2*cb3[1].xxxx+r7;
                         r7=r3*cb3[1].zzzz+r7;
                         r7=cb3[1].wwww*r4.yyyz+r7;
-                        r1.y=dot(r5,r7);
-                        r0=r0*cb3[2].yyyy;
-                        r0=r2*cb3[2].xxxx+r0;
-                        r0=r3*cb3[2].zzzz+r0;
-                        r0=cb3[2].wwww*r4.yyyz+r0;
-                        r1.z=dot(r5,r0);
                         
-                        position = r1;
-
+                        r9=r0*cb3[2].yyyy;
+                        r9=r2*cb3[2].xxxx+r9;
+                        r9=r3*cb3[2].zzzz+r9;
+                        r9=cb3[2].wwww*r4.yyyz+r9;
+                        
                         r2=v3*c1.xxxx+c1.yyyy;
                         {
                             bvec4 tmp=lessThan(c0.yyyy,r2.ywzw);
@@ -212,15 +220,19 @@ export const skinnedQuadOutlineV5 = {
                         r4.xyz=r2.yzx*r3.zxy;
                         r4.xyz=r3.yzx*r2.zxy+(-r4.xyz);
                         r8.xyz=mix((-r4.xyz),r4.xyz,r0.www);
-                        normal.x=dot(r8.xyz,r6.xyz);
-                        normal.y=dot(r8.xyz,r7.xyz);
-                        normal.z=dot(r8.xyz,r0.xyz);
-
-                        position.xyz += normal.xyz * cb0[0].w;
-                        gl_Position.x=dot(position,cb1[4]);
-                        gl_Position.y=dot(position,cb1[5]);
-                        gl_Position.z=dot(position,cb1[6]);
-                        gl_Position.w=dot(position,cb1[7]);
+                        r2.x=dot(r8.xyz,r6.xyz);
+                        r2.y=dot(r8.xyz,r7.xyz);
+                        r2.z=dot(r8.xyz,r9.xyz);
+                        
+                        r5.xyz=r5.xyz+r2.xyz*cb0[0].w;
+                        r2.x=dot(r5,r6);
+                        r2.y=dot(r5,r7);
+                        r2.z=dot(r5,r9);
+                        r2.w=dot(r5,r1);
+                        gl_Position.x=dot(r2,cb1[4]);
+                        gl_Position.y=dot(r2,cb1[5]);
+                        gl_Position.z=dot(r2,cb1[6]);
+                        gl_Position.w=dot(r2,cb1[7]);
                     }
                 `
             },

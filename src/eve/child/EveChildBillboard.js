@@ -94,17 +94,18 @@ export class EveChildBillboard extends EveChild
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
         if (!this.display || !this.mesh || !this.mesh.IsGood() || this._lod < this.lowestLodVisible)
         {
-            return;
+            return false;
         }
 
         mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
         mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
-        this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+        return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
 
 }

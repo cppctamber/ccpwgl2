@@ -185,23 +185,27 @@ export class EveChildContainer extends EveChild
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} Returns true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (this.display)
-        {
-            for (let i = 0; i < this.objects.length; i++)
-            {
-                this.objects[i].GetBatches(mode, accumulator, perObjectData);
-            }
+        if (!this.display) return false;
 
-            /*
-            for (let i = 0; i < this.lights.length; i++)
-            {
-                this.lights[i].GetBatches(mode, accumulator, perObjectData);
-            }
-            */
+        const c = accumulator.length;
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].GetBatches(mode, accumulator, perObjectData);
         }
+
+        /*
+        for (let i = 0; i < this.lights.length; i++)
+        {
+            this.lights[i].GetBatches(mode, accumulator, perObjectData);
+        }
+        */
+
+        return accumulator.length !== c;
     }
 
 }

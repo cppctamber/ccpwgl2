@@ -144,6 +144,7 @@ export class Tr2MeshLod extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
@@ -183,7 +184,7 @@ export class Tr2MeshLod extends meta.Model
                 break;
         }
 
-        if (area) getBatches(this, area, mode, accumulator, perObjectData);
+        return area ? getBatches(this, area, mode, accumulator, perObjectData) : false;
     }
 
     /**
@@ -210,6 +211,7 @@ export class Tr2MeshLod extends meta.Model
      */
     static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData)
     {
+        const c = accumulator.length;
         for (let i = 0; i < areas.length; ++i)
         {
             const area = areas[i];
@@ -226,6 +228,7 @@ export class Tr2MeshLod extends meta.Model
                 accumulator.Commit(batch);
             }
         }
+        return accumulator.length !== c;
     }
 
 }

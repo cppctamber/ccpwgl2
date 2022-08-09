@@ -13,11 +13,21 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 
     /**
      * Commits the haze set for rendering
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
         this.hazeSet.Render(technique);
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.hazeSet && this.hazeSet.effect && this.hazeSet.effect.HasTechnique(technique);
     }
 
 }
@@ -274,6 +284,7 @@ export class EveHazeSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator}  accumulator
      * @param {Tw2PerObjectData}  perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
@@ -284,7 +295,9 @@ export class EveHazeSet extends EveObjectSet
             batch.hazeSet = this;
             batch.perObjectData = perObjectData;
             accumulator.Commit(batch);
+            return true;
         }
+        return false;
     }
 
     /**

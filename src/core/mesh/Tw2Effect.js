@@ -474,6 +474,16 @@ export class Tw2Effect extends meta.Model
 
         this.UnBindParameters({ skipEvents: true });
 
+        // Add object id for picking
+        if (this.shader.HasConstant("objectId"))
+        {
+            if (!this.parameters.objectId)
+            {
+                this.parameters.objectId = new Tw2Vector4Parameter("objectId");
+            }
+            this.parameters.objectId.x = this._id;
+        }
+
         let samplerOverrideNames = [];
 
         for (let techniqueName in this.shader.techniques)
@@ -664,14 +674,6 @@ export class Tw2Effect extends meta.Model
         // Automatically removes unused parameters
         if (this.autoParameter)
         {
-            // Automatically add unique ids for any picking shaders
-            // - CCP picking shaders expect an objectID and an areaID but it uses
-            // - the alpha channel which is not guaranteed to be enabled
-            // CCP picking
-            if (this.parameters["objectId"]) this.parameters["objectId"].x = this._id;
-            // CPPC picking
-            if (this.parameters["PickSettings"]) this.parameters["PickSettings"].x = this._id;
-
             // Remove unnecessary parameters and textures
             for (const key in this.parameters)
             {
@@ -685,7 +687,6 @@ export class Tw2Effect extends meta.Model
                     else if (!param.usedByCurrentEffect)
                     {
                         Reflect.deleteProperty(this.parameters, key);
-                        //param.EmitEvent("removed", param, this);
                     }
                 }
             }
@@ -706,7 +707,6 @@ export class Tw2Effect extends meta.Model
                     else if (!override.usedByCurrentEffect)
                     {
                         Reflect.deleteProperty(this.samplerOverrides, key);
-                        //override.EmitEvent("removed", override, this);
                     }
                 }
             }

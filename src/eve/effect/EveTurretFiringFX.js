@@ -353,10 +353,13 @@ export class EveTurretFiringFX extends meta.Model
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this._isFiring) return;
+        if (!this.display || !this._isFiring) return false;
+
+        let c = accumulator.length;
 
         for (let i = 0; i < this.stretch.length; ++i)
         {
@@ -365,6 +368,8 @@ export class EveTurretFiringFX extends meta.Model
                 this.stretch[i].GetBatches(mode, accumulator, perObjectData);
             }
         }
+
+        return accumulator.length !== c;
     }
 
 }

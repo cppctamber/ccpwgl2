@@ -1,5 +1,5 @@
-import { meta, generateID } from "utils";
-import { device, tw2 } from "global";
+import { meta } from "utils";
+import { tw2 } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
@@ -19,7 +19,6 @@ export class Tw2RenderTarget
     @meta.boolean
     hasDepth = false;
 
-    _id = generateID();
     _frameBuffer = null;
     _renderBuffer = null;
     _texture = null;
@@ -42,7 +41,7 @@ export class Tw2RenderTarget
     {
         return this._texture ? this._texture.texture : null;
     }
-    
+
     /**
      * Constructor
      * @param {String} [name=""]
@@ -69,7 +68,7 @@ export class Tw2RenderTarget
             this.Create(this.width, this.height, this.hasDepth);
         }
     }
-    
+
     /**
      * Checks if the render target is good
      * @returns {Boolean}
@@ -84,7 +83,7 @@ export class Tw2RenderTarget
      */
     Destroy()
     {
-        const { gl } = device;
+        const { gl } = tw2;
 
         if (this._texture)
         {
@@ -110,6 +109,23 @@ export class Tw2RenderTarget
     }
 
     /**
+     * Updates the render target
+     * @param {Number} targetWidth
+     * @param {Number} targetHeight
+     * @param {Boolean} [hasDepth=this.hasDepth]
+     * @returns {boolean} true if updated
+     */
+    Update(targetWidth, targetHeight, hasDepth=this.hasDepth)
+    {
+        if (this.width !== targetWidth || this.height !== targetHeight || hasDepth !== this.hasDepth)
+        {
+            this.Create(targetWidth, targetHeight, hasDepth);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Creates the render target's texture
      * @param {Number} width     - The resulting texture's width
      * @param {Number} height    - The resulting texture's height
@@ -117,7 +133,7 @@ export class Tw2RenderTarget
      */
     Create(width, height, hasDepth)
     {
-        const { gl } = device;
+        const { gl } = tw2;
 
         this.Destroy();
 
@@ -125,8 +141,6 @@ export class Tw2RenderTarget
         this._texture.Attach(gl.createTexture());
 
         const res = this._texture;
-        
-        // Keep track of meta
         res._target = gl.TEXTURE_2D;
         res._format = gl.RGBA;
         res._type = gl.UNSIGNED_BYTE;
@@ -139,8 +153,8 @@ export class Tw2RenderTarget
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.bindTexture(gl.TEXTURE_2D, res.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -172,7 +186,7 @@ export class Tw2RenderTarget
      * @param {boolean} [color=true]
      * @param {Boolean} [depth=true]
      * @param {Boolean} [stencil=true]
-     * @param {vec4} [clearColor]
+     * @param {vec4} [clearColor=]
      */
     Clear(color=true, depth=true, stencil=true, clearColor)
     {
@@ -188,13 +202,20 @@ export class Tw2RenderTarget
 
     /**
      * Sets the render target as the current frame buffer
+     * @param {Object} [clearOptions]
      */
-    Set()
+    Set(clearOptions)
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
-        const { gl } = device;
+        const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
+
+        if (clearOptions)
+        {
+            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
+            if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
+        }
     }
 
     /**
@@ -203,9 +224,47 @@ export class Tw2RenderTarget
     Unset()
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
-        const { gl, viewportWidth, viewportHeight } = device;
+        tw2.gl.bindFramebuffer(tw2.gl.FRAMEBUFFER, null);
+        tw2.gl.viewport(0, 0, tw2.width, tw2.height);
+    }
+
+    /**
+     * Reads pixels
+     * @param {Uint8Array} uint8array
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} [width=1]
+     * @param {Number} [height=1]
+     * @returns {null|}
+     */
+    ReadPixels(uint8array, x, y, width=1, height=1)
+    {
+        // Clear receiving array
+        const len = width * height * 4;
+        for (let i = 0; i < len; i++) uint8array[i] = 0;
+        if (!this.IsGood()) return null;
+
+        const { gl } = tw2;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            return null;
+        }
+
+        gl.readPixels(
+            Math.floor(x),
+            Math.floor(y),
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            uint8array
+        );
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, viewportWidth, viewportHeight);
+        return uint8array;
     }
 
 }

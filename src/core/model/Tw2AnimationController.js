@@ -1,5 +1,5 @@
 import { meta, toArray } from "utils";
-import { vec3, quat, mat3, mat4, curve } from "math";
+import { vec3, quat, mat3, mat4, box3, curve } from "math";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";
@@ -175,6 +175,7 @@ export class Tw2AnimationController extends meta.Model
                 "func": this.PlayAnimation,
                 "args": [ name, options ]
             });
+            console.log("Pending command added...");
             return;
         }
 
@@ -306,7 +307,7 @@ export class Tw2AnimationController extends meta.Model
              * @property {Tw2AnimationController} controller
              */
             this.EmitEvent("removed", { animation, controller: this });
-            animation.OnDestroy();
+            animation.Destroy();
         }
 
         this.meshBindings.splice(0);
@@ -819,7 +820,7 @@ export class Tw2AnimationController extends meta.Model
         {
             for (let i = 0; i < resource.models.length; ++i)
             {
-                Tw2AnimationController.AddModel(controller, resource.models[i]);
+                this.AddModel(controller, resource.models[i]);
             }
         }
 
@@ -916,6 +917,8 @@ export class Tw2AnimationController extends meta.Model
                     }
                     else
                     {
+                        console.log("Executing command with args");
+                        console.dir(controller._pendingCommands[i].args);
                         controller._pendingCommands[i].func.apply(controller, controller._pendingCommands[i].args);
                     }
                 }
@@ -931,16 +934,8 @@ export class Tw2AnimationController extends meta.Model
         vec3_0: vec3.create(),
         quat_0: quat.create(),
         mat3_0: mat3.create(),
-        mat4_0: mat4.create()
-    };
-
-    /**
-     * Editable class keys
-     * @type {{primary: [string]}}
-     * @private
-     */
-    static keys = {
-        primary: [ "update" ]
+        mat4_0: mat4.create(),
+        box3_0: box3.create()
     };
 
 }

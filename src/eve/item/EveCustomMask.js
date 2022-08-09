@@ -1,6 +1,7 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
 import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform, Tw2Effect } from "core";
+import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
 
 
 @meta.type("EveCustomMask")
@@ -33,7 +34,7 @@ export class EveCustomMask extends Tw2Transform
     @meta.todo("Move to direct class properties")
     @meta.isPrivate
     parameters = {
-        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap", "res:/texture/global/black.dds.0.png"),
+        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap", "cdn:/texture/global/black.png"),
         DiffuseColor: new Tw2Vector4Parameter("DiffuseColor", [ 0, 0, 0, 1 ]),
         DustDiffuseColor: new Tw2Vector4Parameter("DustDiffuseColor", [ 0, 0, 0, 1 ]),
         FresnelColor: new Tw2Vector4Parameter("FresnelColor", [ 0, 0, 0, 1 ]),
@@ -114,6 +115,7 @@ export class EveCustomMask extends Tw2Transform
         return updated;
     }
 
+
     /**
      * Serializes a custom mask
      * @param {EveCustomMask} a
@@ -170,6 +172,16 @@ export class EveCustomMask extends Tw2Transform
         }
 
         return updated;
+    }
+
+    /**
+     * Binds a target effect's pattern parameters to this custom mask
+     * @param {Tw2Effect} effect
+     * @param {Number} index
+     */
+    BindEffectPatternParameters(effect, index)
+    {
+        this.constructor.ApplyMaterials(effect, this, index);
     }
 
     /**

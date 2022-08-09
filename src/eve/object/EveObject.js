@@ -1,9 +1,12 @@
 /* eslint no-unused-vars:0 */
-import { isArray, meta } from "utils";
+import { meta } from "utils";
 import { mat4, vec3, sph3, box3 } from "math";
+import { Tw2Transform } from "core/Tw2Transform";
+import { EvePlaneSet } from "eve";
+import { Tw2TextureParameter, Tw2VideoRes } from "core";
 
 
-export class EveObject extends meta.Model
+export class EveObject extends Tw2Transform
 {
 
     @meta.string
@@ -13,114 +16,6 @@ export class EveObject extends meta.Model
     display = true;
 
     _lod = 3;
-    _boundsDirty = false;   // Don't build unless asked for
-    _boundingBox = null;
-    _boundingSphere = null;
-
-    /**
-     * Sets the local transform
-     * @param {mat4} m
-     */
-    @meta.abstract
-    SetTransform(m)
-    {
-
-    }
-
-    /**
-     * Gets the local transform
-     * @param {mat4} out
-     */
-    @meta.abstract
-    GetTransform(out)
-    {
-
-    }
-
-    /**
-     * Gets the world transform
-     * @param {mat4}  out
-     */
-    @meta.abstract
-    GetWorldTransform(out)
-    {
-
-    }
-
-    /**
-     * Rebuilds bounds
-     * @param {Boolean} [force]
-     **/
-    RebuildBounds(force)
-    {
-        // Don't use the built in bounding sphere as it isn't geometrically correct
-        if (!this._boundingSphere || !this._boundingBox)
-        {
-            this._boundsDirty = true;
-            this._boundingSphere = sph3.create();
-            this._boundingBox = box3.create();
-        }
-    }
-
-    /**
-     * Gets bounding box
-     * @param {box3} out
-     * @param {Boolean} [force]
-     * @return {boolean}
-     */
-    GetBoundingBox(out, force)
-    {
-        this.RebuildBounds(force);
-        box3.copy(out, this._boundingBox);
-        return this._boundsDirty ? null : out;
-    }
-
-    /**
-     * Gets bounding sphere
-     * @param {sph3} out
-     * @param {Boolean} [force]
-     * @return {boolean}
-     */
-    GetBoundingSphere(out, force)
-    {
-        this.RebuildBounds(force);
-        sph3.copy(out, this._boundingSphere);
-        return this._boundsDirty ? null : out;
-    }
-
-    /**
-     * Gets world bounding box
-     * @param {box3} out
-     * @return {box3|null}
-     */
-    GetWorldBoundingBox(out)
-    {
-        if (this.GetBoundingBox(out))
-        {
-            const world = this.GetWorldTransform(EveObject.global.mat4_0);
-            box3.transformMat4(out, out, world);
-            return out;
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets world bounding sphere
-     * @param {sph3} out
-     * @return {sph3|null}
-     */
-    GetWorldBoundingSphere(out)
-    {
-        if (this.GetBoundingSphere(out))
-        {
-            const world = this.GetWorldTransform(EveObject.global.mat4_0);
-            sph3.transformMat4(out, out, world);
-            return out;
-        }
-
-        return null;
-    }
 
     /**
      * Resets LOD
@@ -164,11 +59,59 @@ export class EveObject extends meta.Model
      * Accumulates batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     @meta.abstract
     GetBatches(mode, accumulator)
     {
+        return false;
+    }
 
+    /**
+     * Finds planeSets with names that include billboard
+     * @param out
+     * @returns {*[]}
+     * @constructor
+     */
+    FindPlaneSetsWithVideos(out=[])
+    {
+        let arr = "attachments" in this ? this.attachments : this.planeSets;
+        if (arr)
+        {
+            for (let i = 0; i < arr.length; i++)
+            {
+                if (arr[i] instanceof EvePlaneSet && arr[i].effect)
+                {
+                    const { parameters } = arr[i].effect;
+                    for (const key in parameters)
+                    {
+                        if (
+                            parameters.hasOwnProperty(key) &&
+                            parameters[key] instanceof Tw2TextureParameter &&
+                            parameters[key].textureRes instanceof Tw2VideoRes &&
+                            !out.includes(parameters[key])
+                        )
+                        {
+                            out.push(arr[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ("children" in this)
+        {
+            for (let i = 0; i < this.children.length; i++)
+            {
+                if ("FindPlaneSetsWithVideos" in this.children[i])
+                {
+                    this.children[i].FindPlaneSetsWithVideos(out);
+                }
+            }
+        }
+
+        return out;
     }
 
     /**

@@ -93,7 +93,7 @@ export const quadUtilitySailsV5 = {
                         else if(mode==${Mode.TANGENTS})color=v3.xyz;
                         else if(mode==${Mode.ALBEDO_MAP})color=texture2D(s0,v0.xy).xyz;                
                         else if(mode==${Mode.ROUGHNESS_MAP})color=texture2D(s1,v0.xy).xxx; 
-                        else if(mode==${Mode.NORMAL_MAP})color.xyz=texture2D(s2,v0.xy).xyz;
+                        else if(mode==${Mode.NORMAL_MAP})color=texture2D(s2,v0.xy).xyz;
                         else if(mode==${Mode.NORMAL_MAP_POSITIVE})color=texture2D(s2,v0.xy).xxx;
                         else if(mode==${Mode.NORMAL_MAP_NEGATIVE})color=texture2D(s2,v0.xy).yyy;
                         else if(mode==${Mode.AMBIENT_OCCLUSION_MAP})color=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;
@@ -101,8 +101,7 @@ export const quadUtilitySailsV5 = {
                         else if(mode==${Mode.DIRT_MASK})color=texture2D(s6,v0.xy).xxx;
                         else if(mode==${Mode.GLOW_MASK})color=texture2D(s7, v0.xy).xxx;
                         else if(mode==${Mode.MATERIAL_2_MASK})color==getMaterialMask(s5,v0.xy).yyy;
-                        else if(mode==${Mode.SAILS_MAP}||mode==${Mode.SAILS_MAP_PATTERN}||mode==${Mode.SAILS_MAP_BACKGROUND})
-                        else{
+                        else if(mode==${Mode.SAILS_MAP}||mode==${Mode.SAILS_MAP_PATTERN}||mode==${Mode.SAILS_MAP_BACKGROUND}){
                             r0.x=getMaterialMask(s5,v0.xy).x;
                             if (r0.x!=0.0){
                                 vec4 c16=vec4(0.159154937,0.5,6.28318548,-3.14159274);

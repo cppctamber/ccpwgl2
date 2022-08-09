@@ -1,13 +1,14 @@
 import { meta } from "utils";
-import { vec3, mat4, sph3, box3 } from "math";
+import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
-import { EveHazeSet } from "unsupported/eve/item/EveHazeSet";
-import { Tw2GeometryBatch } from "core/batch";
+import { EveHazeSet, EveBanner, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
+import { RM_OPAQUE } from "constant";
+
 
 @meta.type("EveShip2")
 @meta.stage(2)
@@ -25,9 +26,11 @@ export class EveShip2 extends EveObject
     boosters = null;
 
     @meta.vector3
+    @meta.isPrivate
     boundingSphereCenter = vec3.create();
 
     @meta.float
+    @meta.isPrivate
     boundingSphereRadius = 0;
 
     @meta.list("EveObject")
@@ -52,19 +55,26 @@ export class EveShip2 extends EveObject
     mesh = null;
 
     @meta.struct("EveCurve") // Tr2RotationAdapter
+    @meta.isPrivate
     rotationCurve = null;
 
     @meta.struct("Tw2Effect")
     shadowEffect = null;
 
     @meta.vector3
+    @meta.isPrivate
     shapeEllipsoidCenter = vec3.create();
 
     @meta.vector3
+    @meta.isPrivate
     shapeEllipsoidRadius = vec3.create();
 
     @meta.struct("EveCurve") // Tr2TranslationAdapter
+    @meta.isPrivate
     translationCurve = null;
+
+    @meta.uint
+    meshIndex = 0;
 
     /*
 
@@ -100,13 +110,16 @@ export class EveShip2 extends EveObject
         shadows: true
     };
 
+    @meta.float
+    weeksSinceCleaned = 0;
+
     // Testing...
     _enableCurves = false;
     _pixelSizeAcross = 0;
+    _effectScale = 1;
 
-    _worldSpriteScale = 1;
-    _localTransform = mat4.create();
-    _worldTransform = mat4.create();
+    _spriteScale = 1;
+    _parentTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveShip2.perObjectData);
 
     /**
@@ -115,36 +128,159 @@ export class EveShip2 extends EveObject
     Initialize()
     {
         this.RebuildBoosterSet();
+        super.Initialize();
     }
 
     /**
-     * Rebuilds bounds
-     * Todo: Handle animations
-     * @param force
+     * Intersection test
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {Object} [cache]
+     * @returns {*}
      */
-    RebuildBounds(force)
+    Intersect(ray, intersects, cache= {})
     {
-        if (this.animation && this.animation.animations.length)
+        this.RebuildBounds();
+
+        if (!this.display || this._lod < 1 || this._boundsDirty) return;
+
+        const intersect = ray.IntersectBox3(this._boundingBox, this._worldTransform);
+        if (!intersect) return false;
+
+        const { root = this } = cache;
+        let args = [ ray, intersects, this._worldTransform, cache ];
+
+        if ("Intersect" in this.mesh && !ray.GetOption("mesh", "skip"))
         {
-            throw new Error("Rebuilding bounds on animated meshes not yet supported");
+            this.mesh.Intersect(...args).forEach(intersect => intersect.root = root);
         }
 
-        super.RebuildBounds(force);
+        if (this._lod > 1)
+        {
+            for (let i = 0; i < this.attachments.length; i++)
+            {
+                let item = this.attachments[i],
+                    itemIntersect;
+
+                if (!item.Intersect) continue;
+
+                let type;
+                switch (item.constructor)
+                {
+                    case EveHazeSet:
+                        type = "hazeSets";
+                        break;
+
+                    case EveBanner:
+                        type = "banners";
+                        break;
+
+                    case EveTurretSet:
+                        type = "turretSets";
+                        break;
+
+                    case EveSpotlightSet:
+                        type = "spotlightSets";
+                        break;
+
+                    case EveSpriteSet:
+                        type = "spriteSets";
+                        break;
+
+                    case EvePlaneSet:
+                        type = "planeSets";
+                        break;
+
+                    case EveSpriteLineSet:
+                        type = "spriteLineSets";
+                        break;
+
+                    case  EveCurveLineSet:
+                        type = "lineSets";
+                        break;
+
+                    case EveMeshOverlayEffect:
+                        type = "overlayEffects";
+                        break;
+
+                }
+
+                if (type && this.visible[type] && !ray.GetOption(type, "skip"))
+                {
+                    itemIntersect = item.Intersect(...args);
+                }
+
+                if (itemIntersect)
+                {
+                    itemIntersect.root = root;
+                }
+            }
+        }
+
+        /*
+        if (this.visible.decals)
+        {
+            for (let i = 0; i < this.decals.length; i++)
+            {
+                const itemIntersect = this.decals[i].Intersect(...args);
+                if (itemIntersect) itemIntersect.root = this;
+            }
+        }
+         */
+
+        if (!ray.GetOption("locators", "skip"))
+        {
+            for (let i = 0; i < this.locators.length; i++)
+            {
+                const itemIntersect = this.locators[i].Intersect(...args);
+                if (itemIntersect) itemIntersect.root = root;
+            }
+        }
+
+        if (this.visible.effectChildren && !ray.GetOption("effectChildren", "skip"))
+        {
+            for (let i = 0; i < this.effectChildren.length; i++)
+            {
+                if (this.effectChildren[i].Intersect)
+                {
+                    const itemIntersect = this.effectChildren[i].Intersect(...args);
+                    if (itemIntersect) itemIntersect.root = root;
+                }
+            }
+        }
+
+        if (this.visible.children && !ray.GetOption("children", "skip"))
+        {
+            for (let i = 0; i < this.children.length; i++)
+            {
+                if (this.children[i].Intersect)
+                {
+                    const itemIntersect = this.children[i].Intersect(...args);
+                    if (itemIntersect) itemIntersect.root = root;
+                }
+            }
+        }
+
+        // Todo: get most specific item
+        return intersect;
+    }
+
+    /**
+     * Fires when bounds need rebuilding
+     */
+    OnRebuildBounds()
+    {
+
+        if (this.animation && this.animation.animations.length)
+        {
+            console.warn("Rebuilding bounds on animated meshes not yet supported");
+        }
 
         if (!this.mesh || !this.mesh.IsGood())
         {
-            box3.empty(this._boundingBox);
-            sph3.empty(this._boundingSphere);
             this._boundsDirty = true;
-            return false;
-        }
-
-        if (!force && !this._boundsDirty)
-        {
             return;
         }
-
-        box3.empty(this._boundingBox);
 
         // TODO: Get from mesh and handle instanced mesh
         this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
@@ -156,15 +292,22 @@ export class EveShip2 extends EveObject
         {
             for (let i = 0; i < array.length; i++)
             {
+                let bounds = false;
                 if ("GetBoundingBox" in array[i])
                 {
-                    array[i].GetBoundingBox(box3_0, force);
-                    box3.union(this._boundingBox, this._boundingBox, box3_0);
+                    array[i].GetBoundingBox(box3_0);
+                    bounds = true;
+
                 }
                 else if ("GetBoundingSphere" in array[i])
                 {
-                    array[i].GetBoundingSphere(sph3_0, force);
+                    array[i].GetBoundingSphere(sph3_0);
                     box3.fromSph3(box3_0, sph3_0);
+                    bounds = true;
+                }
+
+                if (bounds)
+                {
                     box3.union(this._boundingBox, this._boundingBox, box3_0);
                 }
             }
@@ -279,7 +422,7 @@ export class EveShip2 extends EveObject
      */
     FindLocatorBoneByName(name)
     {
-        return this.animation ? this.animation.FindBoneForMesh(name, 0) : null;
+        return this.animation ? this.animation.FindBoneForMesh(name, this.meshIndex) : null;
     }
 
     /**
@@ -329,7 +472,11 @@ export class EveShip2 extends EveObject
         {
             this._pixelSizeAcross = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
 
-            if (this._pixelSizeAcross < LodLevelPixels.ONE)
+            if (this._pixelSizeAcross < LodLevelPixels.ZERO)
+            {
+                this._lod = 0;
+            }
+            else if (this._pixelSizeAcross < LodLevelPixels.ONE)
             {
                 this._lod = 1;
             }
@@ -384,35 +531,6 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     * Sets the local transform
-     * @param {mat4} local
-     */
-    SetTransform(local)
-    {
-        mat4.copy(this._localTransform, local);
-    }
-
-    /**
-     * Gets the local transform
-     * @param {mat4} out
-     * @returns {mat4}
-     */
-    GetTransform(out)
-    {
-        return mat4.copy(out, this._localTransform);
-    }
-
-    /**
-     * Gets the world transform
-     * @param {mat4} out
-     * @return {mat4}
-     */
-    GetWorldTransform(out)
-    {
-        return mat4.copy(out, this._worldTransform);
-    }
-
-    /**
      * Gets resources
      * @param {Array} [out=[]]
      * @returns {Array}
@@ -450,15 +568,7 @@ export class EveShip2 extends EveObject
      */
     GetTurretSetByLocatorName(locatorName)
     {
-        for (let i = 0; i < this.attachments.length; i++)
-        {
-            if (this.attachments[i] instanceof EveTurretSet && this.attachments[i].locatorName === locatorName)
-            {
-                return this.attachments[i];
-            }
-        }
-
-        return null;
+        return this.attachments.find(x => x instanceof EveTurretSet && x.locatorName === locatorName) || null;
     }
 
     /**
@@ -570,6 +680,11 @@ export class EveShip2 extends EveObject
             }
 
             this.boosters.Update(dt, this._worldTransform);
+
+            if (this.boosters._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
         }
 
         for (let i = 0; i < this.attachments.length; i++)
@@ -581,86 +696,129 @@ export class EveShip2 extends EveObject
             }
 
             this.attachments[i].Update(dt, this);
+
+            if (this.attachments[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
         }
 
         for (let i = 0; i < this.children.length; i++)
         {
             this.children[i].Update(dt, this._worldTransform);
+
+            if (this.children[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
         }
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform);
+            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData);
+
+            if (this.effectChildren[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
         }
 
         if (this.animation)
         {
             this.animation.Update(dt);
+
+            // Handle bounds
         }
+
     }
 
     /**
      * Gets a shadow batch
-     * @param mode
      * @param accumulator
      * @return {boolean}
      */
-    GetShadowBatch(mode, accumulator)
+    GetShadowBatch(accumulator)
     {
-        if (!this._lod < 1 || !this.display || !this.visible.shadows)
+        if (
+            !this.display ||
+            !this.visible.shadows ||
+            !this.mesh ||
+            !this.mesh.IsGood() ||
+            !this.shadowEffect ||
+            !this.shadowEffect.IsGood()
+        ) return false;
+
+        const { mesh } = this;
+
+        for (let i = 0; i < mesh.opaqueAreas.length; i++)
         {
-            return false;
+            const area = mesh.opaqueAreas[i];
+            if (!area.display) continue;
+
+            const batch = new area.constructor.batchType();
+            batch.renderMode = RM_OPAQUE;
+            batch.perObjectData = this._perObjectData;
+            batch.geometryRes = mesh.geometryResource;
+            batch.meshIx = mesh.meshIndex; //area.meshIndex;
+            batch.start = area.index;
+            batch.count = area.count;
+            batch.effect = this.shadowEffect;
+            accumulator.Commit(batch);
         }
-
-        if (!this.mesh || !this.mesh.IsGood() || !this.shadowEffect || !this.shadowEffect.IsGood())
-        {
-            return false;
-        }
-
-        const { geometryResource, meshIndex } = this.mesh;
-
-        const batch = new Tw2GeometryBatch();
-        batch.renderMode = mode;
-        batch.perObjectData = this._perObjectData;
-        batch.geometryRes = geometryResource;
-        batch.meshIx = meshIndex;
-        batch.start = 0;
-        batch.count = geometryResource.meshes[meshIndex].areas.length;
-        batch.effect = this.shadowEffect;
-        accumulator.Commit(batch);
 
         return true;
     }
 
+    dirtMultiplier = 10;
 
     /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || this._lod < 1) return;
+        if (!this.display || this._lod < 1) return false;
 
         const
+            c = accumulator.length,
             show = this.visible,
             res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
 
-        if (show.mesh && res)
+        const shipData = this._perObjectData.ps.Get("Shipdata");
+        shipData[0] = this.boosterGain;
+        shipData[2] = 0;
+        if (this.weeksSinceCleaned> 0)
         {
-            this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+            shipData[2] = -(0.7 - 1.0 / (Math.pow(this.weeksSinceCleaned, 0.65) + (1.0 / 2.7))) * this.dirtMultiplier;
+        }
+
+        if (show.boosters && this.boosters)
+        {
+            this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
+            this.boosters.GetBatches(mode, accumulator, this._perObjectData);
+        }
+
+        if (res)
+        {
+            // Should this just throw an error?
+            if (this.meshIndex > res.meshes.length)
+            {
+                this.meshIndex = res.meshes.length - 1;
+            }
+            this.mesh.SetMeshIndex(this.meshIndex);
+
+            if (show.mesh)
+            {
+                this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+            }
         }
 
         let doFiringEffects = show.firingEffect;
 
         if (this._lod > 1)
         {
-            if (show.boosters && this.boosters)
-            {
-                this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
-                this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
-                this.boosters.GetBatches(mode, accumulator, this._perObjectData);
-            }
 
             // TODO: normalize GetBatches for all attachments
             for (let i = 0; i < this.attachments.length; i++)
@@ -697,6 +855,13 @@ export class EveShip2 extends EveObject
                         }
                         break;
 
+                    case EveSpriteLineSet:
+                        if (show.spriteLineSets)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                        }
+                        break;
+
                     case EveCurveLineSet:
                         if (show.lineSets)
                         {
@@ -718,8 +883,22 @@ export class EveShip2 extends EveObject
                         }
                         break;
 
+                    case EveBanner:
+                        if (show.banners)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
                     default:
-                        console.log("Attachment not supported");
+                        if (item.GetBatches)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        else
+                        {
+                            console.log("Attachment not supported");
+                        }
                         break;
                 }
             }
@@ -731,7 +910,7 @@ export class EveShip2 extends EveObject
                     const killMarks = show.killmarks && this._lod > 2 ? this.killCount : 0;
                     for (let i = 0; i < this.decals.length; i++)
                     {
-                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, killMarks);
+                        this.decals[i].GetBatches(mode, accumulator, this._perObjectData, res, killMarks, this.mesh.GetMeshIndex());
                     }
                 }
             }
@@ -763,77 +942,84 @@ export class EveShip2 extends EveObject
                 this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
             }
         }
+
+        return accumulator.length !== c;
     }
 
     /**
      * Per frame update
      * @param {mat4} parentTransform
      * @param {Number} dt
-     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
+    UpdateViewDependentData(parentTransform, dt)
     {
+        mat4.copy(this._parentTransform, parentTransform);
         mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
+        this._perObjectData.vs.SetIndex("Unknown0", 3, this._effectScale);
+
+        // Enabling curves overrides rotation and translation
         if (this._enableCurves && this.rotationCurve || this.translationCurve)
         {
-            const
-                rotation = EveObject.global.quat_0,
-                translation = EveObject.global.vec3_0,
-                scaling = mat4.getScaling(EveObject.global.vec3_0, this._localTransform);
-
             if (this.rotationCurve)
             {
-                this.rotationCurve.GetValueAt(dt, rotation);
+                this.rotationCurve.GetValueAt(dt, this.rotation);
             }
 
             if (this.translationCurve)
             {
-                this.translationCurve.GetValueAt(dt, translation);
+                this.translationCurve.GetValueAt(dt, this.translation);
             }
-
-            mat4.fromRotationTranslationScale(this._localTransform, rotation, translation, scaling);
         }
 
-        if (parentTransform)
-        {
-            mat4.multiply(this._worldTransform, parentTransform, this._localTransform);
-        }
-        else
-        {
-            mat4.copy(this._worldTransform, this._localTransform);
-        }
+        this.RebuildTransforms({ force: true, skipUpdate: true });
+
 
         const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
 
-        if (res && this.animation)
-        {
-            if (!this.animation.HasGeometryResource(res))
-            {
-                this.animation.SetGeometryResource(res);
-            }
 
-            if (this.animation.animations.length)
+        if (res)
+        {
+            // Should this just throw an error?
+            if (this.meshIndex > res.meshes.length)
             {
-                this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
+                this.meshIndex = res.meshes.length - 1;
+            }
+            this.mesh.SetMeshIndex(this.meshIndex);
+
+            if (this.animation)
+            {
+                if (!this.animation.HasGeometryResource(res))
+                {
+                    this.animation.SetGeometryResource(res);
+                    this.animation.OnResPrepared(res);
+                }
+
+                if (this.animation.animations.length)
+                {
+                    this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(this.meshIndex));
+                }
+
+                // Todo: Do bounds check on animations
             }
         }
 
         // TODO: Replace in Update or ViewDependantUpdate
-        if (worldSpriteScale !== this._worldSpriteScale)
+        const worldScale =  mat4.maxScaleOnAxis(this._worldTransform);
+        if (this._spriteScale !== worldScale)
         {
-            this._worldSpriteScale = worldSpriteScale;
+            this._spriteScale = worldScale;
 
             if (this.boosters)
             {
-                this.boosters.SetWorldSpriteScale(worldSpriteScale);
+                this.boosters.SetWorldSpriteScale(this._spriteScale);
             }
 
             for (let i = 0; i < this.attachments.length; i++)
             {
                 if ("SetWorldSpriteScale" in this.attachments[i])
                 {
-                    this.attachments[i].SetWorldSpriteScale(worldSpriteScale);
+                    this.attachments[i].SetWorldSpriteScale(this._spriteScale);
                 }
             }
         }
@@ -867,7 +1053,11 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        // Is this correct?
         const id = mat4.identity(EveObject.global.mat4_0);
+        id[12] = 0;
+        id[13] = 0;
+        id[14] = 0;
 
         for (let i = 0; i < this.customMasks.length; ++i)
         {
@@ -878,10 +1068,16 @@ export class EveShip2 extends EveObject
         {
             if ("UpdateViewDependentData" in this.attachments[i])
             {
-                this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, worldSpriteScale);
+                this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, this._spriteScale);
             }
         }
+
+        if (this.boosters)
+        {
+            this.boosters.UpdateViewDependentData(this._worldTransform);
+        }
     }
+
 
     /**
      * Per object data
@@ -892,15 +1088,15 @@ export class EveShip2 extends EveObject
             [ "WorldMat", 16 ],
             [ "WorldMatLast", 16 ],
             [ "Shipdata", [ 0, 1, 0, -10 ] ],
-            [ "Clipdata1", 4 ],
-            [ "OldEllipsoidRadii", 4 ],
-            [ "OldEllipsoidCenter", 4 ],
+            [ "Clipdata1", 4 ],                 // Still clip data?
+            [ "Unknown_WasEllipsoidRadii", 4 ],
+            [ "Unknown_WasEllipsoidCenter", 4 ],
             [ "Unknown0", [
                 0,
                 1,     // glow brightness
                 0,
                 1      // effect scale?
-            ] ], //  1: Used to be shipdata 1 ??
+            ] ],
             [ "Unknown1", 4 ],
             [ "EllipsoidRadii", 4 ],
             [ "EllipsoidCenter", 4 ],

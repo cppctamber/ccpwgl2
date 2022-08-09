@@ -13,11 +13,21 @@ class EvePlaneSetBatch extends Tw2RenderBatch
 
     /**
      * Commits the plan set
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
         this.planeSet.Render(technique);
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.planeSet && this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
     }
 
 }
@@ -78,11 +88,16 @@ export class EvePlaneSetItem extends EveObjectSetItem
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
-    boneIndex = -1;
+    boneIndex = 0;
 
     @meta.uint
     @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
     groupIndex = -1;
+
+    // Testing
+
+    @meta.uint
+    colorType = -1;
 
 
     /**
@@ -102,6 +117,16 @@ export class EvePlaneSetItem extends EveObjectSetItem
     set maskMapAtlasIndex(value)
     {
         this.maskAtlasID = value;
+    }
+
+    /**
+     * Gets the object's transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
     }
 
     /**
@@ -326,17 +351,21 @@ export class EvePlaneSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length)
+        if (this.display && mode === device.RM_ADDITIVE && this.effect && this.effect.IsGood() && this._indexBuffer && this._vertexBuffer && this._visibleItems.length)
         {
             const batch = new EvePlaneSetBatch();
             batch.renderMode = device.RM_ADDITIVE;
             batch.planeSet = this;
             batch.perObjectData = perObjectData;
+            batch.effect = this.effect;
             accumulator.Commit(batch);
+            return true;
         }
+        return false;
     }
 
     /**

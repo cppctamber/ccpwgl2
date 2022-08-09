@@ -1,15 +1,20 @@
 import { getPathExtension, meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, mat4,  quat, box3, sph3 } from "math";
-import { Tw2Effect, Tw2RenderTarget, Tw2Resource } from "core";
+import { vec3, mat4, box3, sph3 } from "math";
+import { Tw2Effect, Tw2PerObjectData, Tw2RenderTarget, Tw2Resource } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
+import { EveShip2 } from "eve";
 
 // TODO: Add "OnValueChanged" handler
+// TODO: Handle height map resolution size
 
 @meta.type("EvePlanet")
 export class EvePlanet extends EveObject
 {
+
+    @meta.list("Tw2CurveSet")
+    curveSets = [];
 
     @meta.struct("EveTransform")
     highDetail = new EveTransform();
@@ -22,6 +27,9 @@ export class EvePlanet extends EveObject
 
     @meta.struct("EveTransform")
     zOnlyModel = null;
+
+    @meta.uint
+    resolution=EvePlanet.DEFAULT_HEIGHT_MAP_RESOLUTION;
 
     @meta.uint
     @meta.isPrivate
@@ -43,80 +51,68 @@ export class EvePlanet extends EveObject
     radius = 0;
 
     @meta.uint
+    @meta.notImplemented
     minScreenSize = 0;
 
     @meta.uint
+    @meta.notImplemented
     estimatedPixelDiameter = 0;
 
-    @meta.vector3
-    scaling = vec3.fromValues(1,1,1);
-
-    @meta.vector3
-    translation = vec3.fromValues(1,1,1);
-
-    @meta.quaternion
-    rotation  = quat.create();
-
-
-    _worldTransform = mat4.create();
-    _localTransform = mat4.create();
-
+    _parentTransform = mat4.create();
     _pendingLoad = null;
     _atmosphere = null;
     _planet = null;
 
-    /**
-     * Sets the object's local transform
-     * @param {mat4} m
-     */
-    SetTransform(m)
-    {
-        mat4.getRotation(this.rotation, m);
-        mat4.getScaling(this.scaling, m);
-        mat4.getTranslation(this.translation, m);
+    _perObjectData = Tw2PerObjectData.from(EveShip2.perObjectData);
 
-        const radius = mat4.maxScaleOnAxis(m);
-        if (Math.round(this.radius) !== Math.round(radius))
+    /**
+     * Intersection test
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     */
+    Intersect(ray, intersects)
+    {
+        if (!this.display || this._lod < 1 || ray.IsMasked(this)) return;
+
+        this.RebuildBounds();
+        const intersect = ray.IntersectSph3(this._boundingSphere, this._worldTransform);
+        if (intersect)
         {
-            this.radius = radius;
-            this._boundsDirty = true;
+            intersect.name = this.name;
+            intersect.item = this;
+            intersects.push(intersect);
+            return intersect;
         }
     }
 
     /**
-     * Gets the object's transform
-     * @param {mat4} out
-     * @returns {mat4} out
+     * Rebuilds transforms
+     * @param opt
+     * @return {boolean}
      */
-    GetTransform(out)
+    RebuildTransforms(opt)
     {
-        return mat4.copy(out, this._localTransform);
-    }
-
-    /**
-     * Gets the object's world transform
-     * @param {mat4} out
-     * @returns {mat4} out
-     */
-    GetWorldTransform(out)
-    {
-        return mat4.copy(out, this._worldTransform);
-    }
-
-    /**
-     * Rebuilds bounds
-     * @param {Boolean} [force]
-     */
-    RebuildBounds(force)
-    {
-        super.RebuildBounds(force);
-
-        if (force || this._boundsDirty)
+        if (super.RebuildTransforms(opt))
         {
-            sph3.fromMat4(this._boundingSphere, this._localTransform);
-            box3.fromSph3(this._boundingBox, this._boundingSphere);
-            this._boundsDirty = false;
+            const radius = (this.scaling[0] + this.scaling[1] + this.scaling[2]) / 6;
+            if (Math.round(this.radius) !== Math.round(radius))
+            {
+                this.radius = radius;
+                this._boundsDirty = true;
+            }
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Fires when rebuilding bounds
+     */
+    OnRebuildBounds()
+    {
+        sph3.fromMat4(this._boundingSphere, this._localTransform);
+        box3.fromSph3(this._boundingBox, this._boundingSphere);
+        this._boundsDirty = false;
     }
 
     /**
@@ -155,12 +151,6 @@ export class EvePlanet extends EveObject
     }
 
     /**
-     * Planet z only model
-     * @type {string}
-     */
-    static zOnlyModelPath = "res:/dx9/model/worldObject/planet/planetZOnly.red";
-
-    /**
      * Sync alias for Fetch
      * @param {Object} options
      * @param {Function} [onLoaded]
@@ -172,11 +162,12 @@ export class EvePlanet extends EveObject
 
     /**
      * Updates LOD
+     * TODO: Implement LOD
      * @param {Tw2Frustum}frustum
      */
     UpdateLod(frustum)
     {
-        this._lod = !frustum.IsSphereVisible(this.translation, this.radius) ? 0 : 3;
+        this._lod = 3; //!frustum.IsSphereVisible(this.translation, this.radius) ? 0 : 3;
     }
 
     /**
@@ -197,8 +188,14 @@ export class EvePlanet extends EveObject
      */
     UpdateViewDependentData(parentTransform)
     {
-        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
-        mat4.multiply(this._worldTransform, parentTransform, this._localTransform);
+        mat4.copy(this._parentTransform, parentTransform);
+
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
+        this.RebuildTransforms({ force: true, skipUpdate: true });
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+
+        // vs.EllipsoidCenter
+        // vs.EllipsoidRadii
 
         this.highDetail.SetTransform(this._localTransform);
         this.highDetail.UpdateViewDependentData(parentTransform);
@@ -217,36 +214,59 @@ export class EvePlanet extends EveObject
      */
     Update(dt)
     {
-        if (this.display)
+        if (!this.display) return;
+
+        this.highDetail.Update(dt);
+
+        for (let i = 0; i < this.curveSets.length; i++)
         {
-            this.highDetail.Update(dt);
+            this.curveSets[i].Update(dt);
         }
+
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData);
+
+            if (this.effectChildren[i]._boundsDirty)
+            {
+                this._boundsDirty = true;
+            }
+        }
+
     }
 
     /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this._lod && this._planet)
+        if (!this.display || !this._lod || !this._planet) return false;
+
+        const c = accumulator.length;
+
+        this.highDetail.GetBatches(mode, accumulator);
+
+        for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.highDetail.GetBatches(mode, accumulator);
+            this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
         }
+
+        return accumulator.length !== c;
     }
 
     /**
      * Gets z buffer only batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @param {Boolean} true if has batches
      */
     GetZOnlyBatches(mode, accumulator)
     {
-        if (this.display && this._lod && this.zOnlyModel)
-        {
-            this.zOnlyModel.GetBatches(mode, accumulator);
-        }
+        if (!this.display || !this._lod || !this.zOnlyModel) return false;
+        return this.zOnlyModel.GetBatches(mode, accumulator);
     }
 
     /**
@@ -278,7 +298,7 @@ export class EvePlanet extends EveObject
         }
 
         let originalEffect = getMainEffect(this.highDetail.children[0]),
-            resPath = "res:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
+            resPath = "cdn:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
 
         if (originalEffect)
         {
@@ -294,7 +314,7 @@ export class EvePlanet extends EveObject
 
         effectHeight.SetParameters({
             Random: this.itemID % 100,
-            TargetTextureHeight: 1048,
+            TargetTextureHeight: this.resolution,
             NormalHeight1: this.heightMapResPath1,
             NormalHeight2: this.heightMapResPath2
         });
@@ -311,9 +331,9 @@ export class EvePlanet extends EveObject
         }
 
         // Wait until everything is loaded
-        return this._pendingLoad = tw2.Watch(this, res => console.dir(res)).then(() =>
+        return this._pendingLoad = tw2.Watch(this).then(() =>
         {
-            this.heightMap.Create(2048, 1024, false);
+            this.heightMap.Create(this.resolution * 2, this.resolution, false);
             this.heightMap.Set();
             device.SetStandardStates(device.RM_FULLSCREEN);
             device.gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -328,9 +348,21 @@ export class EvePlanet extends EveObject
             }
 
             this._pendingLoad = null;
+            this.EmitEvent("rebuilt", this);
             return this;
         });
 
     }
+
+    /**
+     * Planet z only model
+     * @type {string}
+     */
+    static zOnlyModelPath = "cdn:/dx9/model/worldObject/planet/planetZOnly.black";
+
+    /**
+     * The generated height map's resolution
+     */
+    static DEFAULT_HEIGHT_MAP_RESOLUTION = 1024 * 4;
 
 }

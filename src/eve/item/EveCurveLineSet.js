@@ -3,6 +3,7 @@ import { meta } from "utils";
 import { vec3, vec4, quat, box3, mat4, ray3, sph3 } from "math";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { RM_PICKABLE, RS_ZENABLE } from "constant/d3d";
 
 
 const LineType = {
@@ -252,10 +253,10 @@ export class EveCurveLineSet extends EveObjectSet
 
     @meta.struct("Tw2Effect")
     lineEffect = Tw2Effect.from({
-        effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
+        effectFilePath: "cdn:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
         textures: {
-            "TexMap": "res:/texture/global/white.dds.0.png",
-            "OverlayTexMap": "res:/texture/global/white.dds.0.png"
+            "TexMap": "cdn:/texture/global/white.png",
+            "OverlayTexMap": "cdn:/texture/global/white.png"
         }
     });
 
@@ -290,6 +291,11 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.matrix4
     transform = mat4.create();
 
+    @meta.boolean
+    lookAtCamera = false;
+
+    @meta.boolean
+    enableDepth = true;
 
     _worldTransform = mat4.create();
     _vertexSize = 26;
@@ -361,6 +367,201 @@ export class EveCurveLineSet extends EveObjectSet
     {
         if (this.lineEffect) this.lineEffect.GetResources(out);
         return out;
+    }
+
+    /**
+     * Changes all item colors
+     * @param {vec3|Array} color1
+     * @param {vec3|Array} color2
+     */
+    ChangeAllItemColors(color1, color2 = color1)
+    {
+        for (let i = 0; i < this.items.length; i++)
+        {
+            this.items[i].ChangeColor(color1, color2);
+        }
+    }
+
+    /**
+     * Changes all item widths
+     * @param {Number} width
+     */
+    ChangeAllItemWidths(width)
+    {
+        for (let i = 0; i < this.items.length; i++)
+        {
+            this.items[i].ChangeWidth(width);
+        }
+    }
+
+    /**
+     * * TODO: Replace this with curved or spherical lines
+     * @param options
+     * @return {*}
+     */
+    static createCircle(options = {})
+    {
+        const line = this.from(options);
+
+        const {
+            center = [ 0, 0, 0 ],
+            radius = 1,
+            dots = 100,
+            width = 1,
+            color = [ 1, 1, 1, 1 ],
+            startColor = color,
+            endColor = color,
+            direction = 0,
+            directionThickness = width,
+            xHeight = 0,
+            xWidth = 0,
+        } = options;
+
+        const
+            points = [],
+            points2 = [],
+            stepSize = ((2 * Math.PI) / dots);
+
+        for (let d = 0; d <= (2 * Math.PI) - stepSize; d += stepSize)
+        {
+            points.push([ (Math.sin(d) * radius) + center[0], (Math.cos(d) * radius) + center[1], center[2] ]);
+            points2.push([ (Math.sin(d) * (radius + xHeight)) + center[0], (Math.cos(d) * (radius + xHeight)) + center[1], center[2] ]);
+        }
+
+        for (let i = 0; i < points.length; i++)
+        {
+            if (xHeight)
+            {
+                line.AddStraightLine(points[i], points2[i], width, startColor, endColor);
+            }
+            else if (xWidth)
+            {
+                let start = Array.from(points[i]);
+                let end = Array.from(points[i]);
+                start[2] -= xWidth / 2;
+                end[2] += xWidth / 2;
+                line.AddStraightLine(start, end, width, startColor, endColor);
+            }
+            else
+            {
+                line.AddStraightLine(points[i], points[i + 1] || points[0], width, startColor, endColor);
+            }
+        }
+
+        if (direction)
+        {
+            line.AddStraightLine(
+                points[0],
+                [
+                    points[0][0],
+                    points[0][1] + direction,
+                    points[0][2]
+                ],
+                directionThickness,
+                startColor,
+                endColor
+            );
+        }
+
+        return line;
+    }
+
+    static createBox(options = {})
+    {
+        const line = this.from(options);
+
+        let {
+            width = 1,
+            color = [ 1, 1, 1, 1 ],
+            minBounds = [ -1, -1, -1 ],
+            maxBounds = [ 1, 1, 1 ],
+
+            // Optional
+            startColor = color,
+            endColor = color,
+
+            // Alternatives
+            box,
+            sphere,
+            center,
+            radius,
+            object
+
+        } = options;
+
+        if (object)
+        {
+            if (object.GetBoundingBox)
+            {
+                box = object.GetBoundingBox([]);
+            }
+            else if (object.GetBoundingSphere)
+            {
+                sphere = object.GetBoundingSphere([]);
+            }
+            else if (object.minBounds)
+            {
+                minBounds = object.minBounds;
+                maxBounds = object.maxBounds;
+            }
+            else if (object.boundingSphereCenter)
+            {
+                center = object.boundingSphereCenter;
+                radius = object.boundingSphereRadius;
+            }
+            else
+            {
+                throw new ReferenceError("Could not find box bounds from object");
+            }
+        }
+
+        if (box)
+        {
+            box3.toBounds(box, minBounds, maxBounds);
+        }
+        else if (sphere)
+        {
+            sph3.toBounds(sphere, minBounds, maxBounds);
+        }
+        else if (center)
+        {
+            box3.fromPositionRadius(center, radius);
+        }
+
+        let
+            nx = minBounds[0],
+            ny = minBounds[1],
+            nz = minBounds[2],
+            xx = maxBounds[0],
+            xy = maxBounds[1],
+            xz = maxBounds[2];
+
+        let a1 = [ nx, ny, nz ],
+            a2 = [ nx, ny, xz ],
+            a3 = [ xx, ny, xz ],
+            a4 = [ xx, ny, nz ],
+            b1 = [ nx, xy, nz ],
+            b2 = [ nx, xy, xz ],
+            b3 = [ xx, xy, xz ],
+            b4 = [ xx, xy, nz ];
+
+        // Bottom
+        line.AddStraightLine(a1, a2, width, startColor, endColor);
+        line.AddStraightLine(a2, a3, width, startColor, endColor);
+        line.AddStraightLine(a3, a4, width, startColor, endColor);
+        line.AddStraightLine(a4, a1, width, startColor, endColor);
+        // Top
+        line.AddStraightLine(b1, b2, width, startColor, endColor);
+        line.AddStraightLine(b2, b3, width, startColor, endColor);
+        line.AddStraightLine(b3, b4, width, startColor, endColor);
+        line.AddStraightLine(b4, b1, width, startColor, endColor);
+        // Sides
+        line.AddStraightLine(a1, b1, width, startColor, endColor);
+        line.AddStraightLine(a2, b2, width, startColor, endColor);
+        line.AddStraightLine(a3, b3, width, startColor, endColor);
+        line.AddStraightLine(a4, b4, width, startColor, endColor);
+
+        return line;
     }
 
     /**
@@ -518,11 +719,11 @@ export class EveCurveLineSet extends EveObjectSet
 
     /**
      * Creates a straight line
-     * @param {vec3} start
-     * @param {vec3} end
+     * @param {Array|vec3} start
+     * @param {Array|vec3} end
      * @param {Number} [width]
-     * @param {vec4} [startColor]
-     * @param {vec4} [endColor]
+     * @param {Array|vec4} [startColor]
+     * @param {Array|vec4} [endColor]
      * @returns {EveCurveLineSetItem}
      */
     AddStraightLine(start, end, width, startColor, endColor)
@@ -660,6 +861,34 @@ export class EveCurveLineSet extends EveObjectSet
         {
             mat4.copy(this._worldTransform, this.transform);
         }
+
+        if (this.lookAtCamera)
+        {
+            const
+                { mat4_0, vec3_0 } = EveObjectSet.global,
+                finalScale = vec3.set(vec3_0, 1, 1, 1),
+                { viewInverse } = device;
+
+            const lookAt = mat4.lookAt(mat4_0, viewInverse.subarray(12), this._worldTransform.subarray(12), [ 0, 1, 0 ]);
+            mat4.transpose(lookAt, lookAt);
+
+            if (parentTransform)
+            {
+                mat4.getScaling(finalScale, parentTransform);
+                vec3.multiply(finalScale, this.scaling, vec3_0);
+            }
+
+            this._worldTransform[0] = lookAt[0] * finalScale[0];
+            this._worldTransform[1] = lookAt[1] * finalScale[0];
+            this._worldTransform[2] = lookAt[2] * finalScale[0];
+            this._worldTransform[4] = lookAt[4] * finalScale[1];
+            this._worldTransform[5] = lookAt[5] * finalScale[1];
+            this._worldTransform[6] = lookAt[6] * finalScale[1];
+            this._worldTransform[8] = lookAt[8] * finalScale[2];
+            this._worldTransform[9] = lookAt[9] * finalScale[2];
+            this._worldTransform[10] = lookAt[10] * finalScale[2];
+        }
+
     }
 
     /**
@@ -805,27 +1034,38 @@ export class EveCurveLineSet extends EveObjectSet
      * Gets render batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator)
+    GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this._vb) return;
+        if (!this.display || !this._vb) return false;
 
         let effect;
         switch (mode)
         {
             case device.RM_TRANSPARENT:
-                if (this.additive || !this.lineEffect) return;
+                if (this.additive || !this.lineEffect) return false;
                 effect = this.lineEffect;
                 break;
 
             case device.RM_ADDITIVE:
-                if (!this.additive || !this.lineEffect) return;
+                if (!this.additive || !this.lineEffect) return false;
                 effect = this.lineEffect;
                 break;
 
             case device.RM_PICKABLE:
-                if (!this.pickable || !this.pickEffect) return;
+                if (!this.pickable || !this.pickEffect) return false;
                 effect = this.pickEffect;
+                break;
+
+            default:
+                return false;
+        }
+
+        if (!effect || !effect.IsGood())
+        {
+            return false;
         }
 
         const
@@ -839,6 +1079,7 @@ export class EveCurveLineSet extends EveObjectSet
         batch.renderMode = mode;
         batch.effect = effect;
         accumulator.Commit(batch);
+        return true;
     }
 
     /**
@@ -850,6 +1091,7 @@ export class EveCurveLineSet extends EveObjectSet
     Render(batch, technique)
     {
         if (!batch.effect || !batch.effect.IsGood() || !this._vb) return false;
+        if (!technique) technique = batch.effect.defaultTechnique;
 
         const
             d = device,
@@ -860,6 +1102,10 @@ export class EveCurveLineSet extends EveObjectSet
         let passCount = batch.effect.GetPassCount(technique);
         for (let pass = 0; pass < passCount; ++pass)
         {
+            if (batch.renderMode !== RM_PICKABLE)
+            {
+                batch.effect.SetTechniquePassStateOverride(technique, pass, RS_ZENABLE, this.enableDepth);
+            }
             batch.effect.ApplyPass(technique, pass);
             let passInput = batch.effect.GetPassInput(technique, pass);
             if (!this._decl.SetDeclaration(d, passInput, this._decl.stride)) return false;
@@ -867,6 +1113,43 @@ export class EveCurveLineSet extends EveObjectSet
             gl.drawArrays(gl.TRIANGLES, 0, this._vbSize * 6);
         }
         return true;
+    }
+
+    /**
+     * Creates a line set from a transform
+     * @param m
+     * @param width
+     * @param scale
+     * @param xColor
+     * @param yColor
+     * @param zColor
+     * @return {EveCurveLineSet}
+     */
+    static fromTransform(m, width = 1, scale = 3, xColor = [ 1, 0, 0, 1 ], yColor = [ 0, 1, 0, 1 ], zColor = [ 0, 0, 1, 1 ])
+    {
+        const set = new this();
+
+        mat4.getRotation(set.rotation, m);
+        mat4.getTranslation(set.translation, m);
+        mat4.getScaling(set.scaling, m);
+
+        this.init();
+        const { vec3_0, vec3_1, vec3_2, vec3_3 } = this.global;
+        vec3.set(vec3_0, 0, 0, 0);
+        vec3.set(vec3_1, scale, 0, 0);
+        vec3.set(vec3_2, 0, scale, 0);
+        vec3.set(vec3_3, 0, 0, scale);
+
+        let item = set.AddStraightLine(vec3_0, vec3_1, width, xColor, xColor);
+        item.name = "x axis";
+
+        item = set.AddStraightLine(vec3_0, vec3_2, width, yColor, yColor);
+        item.name = "y axis";
+
+        item = set.AddStraightLine(vec3_0, vec3_3, width, zColor, zColor);
+        item.name = "z axis";
+
+        return set;
     }
 
     /**

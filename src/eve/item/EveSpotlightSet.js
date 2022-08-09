@@ -9,15 +9,44 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
 {
 
     spotlightSet = null;
+    world = null;
 
     /**
      * Commits the spotlight set for rendering
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
+        // Todo: Set partial declaration instead of this
+        if (this.spotlightSet.useQuads)
+        {
+            this.spotlightSet.RebuildVertexBuffers(this.world, this.perObjectData);
+        }
+
         this.spotlightSet.RenderCones(technique);
         this.spotlightSet.RenderGlow(technique);
+    }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        if (this.spotlightSet)
+        {
+            if (this.spotlightSet.coneEffect && this.spotlightSet.coneEffect.HasTechnique(technique))
+            {
+                return true;
+            }
+
+            if (this.spotlightSet.glowEffect && this.spotlightSet.glowEffect.HasTechnique(technique))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
@@ -26,6 +55,9 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
 @meta.type("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
+
+    _bone = null;// Testing
+
 
     @meta.string
     name = "";
@@ -67,7 +99,18 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     transform = mat4.create();
 
     @meta.uint
-    colorType = 0;
+    colorType = -1;
+
+
+    /**
+     * Gets the item's local transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.copy(m, this.transform);
+    }
 
 }
 
@@ -88,6 +131,11 @@ export class EveSpotlightSet extends EveObjectSet
     @meta.float
     intensity = 1;
 
+    @meta.boolean
+    useQuads = false;
+
+    @meta.boolean
+    skinned = false;
 
     _coneVertexBuffer = null;
     _decl = Tw2VertexDeclaration.from(EveSpotlightSet.vertexDeclarations);
@@ -193,30 +241,61 @@ export class EveSpotlightSet extends EveObjectSet
      */
     static alphaMultiplier = 1;
 
+
+    static global = {
+        mat4_0 : mat4.create(),
+        quadScratch: []
+    };
+
     /**
-     * Rebuilds the spotlight set's buffers
-     * @param {Object} [opt]
+     * Rebuilds vertex buffers
+     * TODO: Do this properly
+     * @param {mat4} [world]
+     * @param {Tw2PerObjectData} [perObjectData]
      */
-    Rebuild(opt)
+    RebuildVertexBuffers(world, perObjectData)
     {
-        //this.Unload({ skipEvents: true });
-        this.RebuildItems(opt);
-        this._dirty = false;
-        const itemCount = this._visibleItems.length;
-        if (!itemCount)
-        {
-            super.Rebuild(opt);
-            return;
-        }
 
         const
+            itemCount = this._visibleItems.length,
             d = device,
             vertCount = 4,
             coneQuadCount = 4,
             coneVertexCount = itemCount * coneQuadCount * vertCount,
             vertexSize = 22,
             coneIndices = [ 1, 0, 2, 3 ],
-            coneArray = new Float32Array(coneVertexCount * vertexSize);
+            coneArray = new Float32Array(coneVertexCount * vertexSize),
+            { quadScratch, mat4_0 } = EveSpotlightSet.global,
+            bones = perObjectData ? perObjectData.vs.Get("JointMat") : null;
+
+        let transforms = [];
+        for (let i = 0; i < itemCount; i++)
+        {
+            const item = this._visibleItems[i];
+
+            if (this.useQuads && world)
+            {
+                if (!quadScratch[i]) quadScratch[i] = mat4.create();
+                const s = quadScratch[i];
+
+                if (this.skinned && item.boneIndex >= 0)
+                {
+                    mat4.fromJointMatIndex(mat4_0, bones, item.boneIndex);
+                    mat4.multiply(s, mat4_0, item.transform);
+                    mat4.multiply(s, world, s);
+                }
+                else
+                {
+                    mat4.multiply(s, world, item.transform);
+                }
+
+                transforms.push(s);
+            }
+            else
+            {
+                transforms.push(item.transform);
+            }
+        }
 
         for (let i = 0; i < itemCount; ++i)
         {
@@ -231,20 +310,20 @@ export class EveSpotlightSet extends EveObjectSet
                     coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity * this.intensity;
                     coneArray[offset + 3] = item.coneColor[3] * EveSpotlightSet.alphaMultiplier;
 
-                    coneArray[offset + 4] = item.transform[0];
-                    coneArray[offset + 5] = item.transform[4];
-                    coneArray[offset + 6] = item.transform[8];
-                    coneArray[offset + 7] = item.transform[12];
+                    coneArray[offset + 4] = transforms[i][0];
+                    coneArray[offset + 5] = transforms[i][4];
+                    coneArray[offset + 6] = transforms[i][8];
+                    coneArray[offset + 7] = transforms[i][12];
 
-                    coneArray[offset + 8] = item.transform[1];
-                    coneArray[offset + 9] = item.transform[5];
-                    coneArray[offset + 10] = item.transform[9];
-                    coneArray[offset + 11] = item.transform[13];
+                    coneArray[offset + 8] = transforms[i][1];
+                    coneArray[offset + 9] = transforms[i][5];
+                    coneArray[offset + 10] = transforms[i][9];
+                    coneArray[offset + 11] = transforms[i][13];
 
-                    coneArray[offset + 12] = item.transform[2];
-                    coneArray[offset + 13] = item.transform[6];
-                    coneArray[offset + 14] = item.transform[10];
-                    coneArray[offset + 15] = item.transform[14];
+                    coneArray[offset + 12] = transforms[i][2];
+                    coneArray[offset + 13] = transforms[i][6];
+                    coneArray[offset + 14] = transforms[i][10];
+                    coneArray[offset + 15] = transforms[i][14];
 
                     coneArray[offset + 16] = 1;
                     coneArray[offset + 17] = 1;
@@ -299,20 +378,20 @@ export class EveSpotlightSet extends EveObjectSet
                         spriteArray[offset + 18] = item.spriteScale[2] * this._worldSpriteScale;
                     }
 
-                    spriteArray[offset + 4] = item.transform[0];
-                    spriteArray[offset + 5] = item.transform[4];
-                    spriteArray[offset + 6] = item.transform[8];
-                    spriteArray[offset + 7] = item.transform[12];
+                    spriteArray[offset + 4] = transforms[i][0];
+                    spriteArray[offset + 5] = transforms[i][4];
+                    spriteArray[offset + 6] = transforms[i][8];
+                    spriteArray[offset + 7] = transforms[i][12];
 
-                    spriteArray[offset + 8] = item.transform[1];
-                    spriteArray[offset + 9] = item.transform[5];
-                    spriteArray[offset + 10] = item.transform[9];
-                    spriteArray[offset + 11] = item.transform[13];
+                    spriteArray[offset + 8] = transforms[i][1];
+                    spriteArray[offset + 9] = transforms[i][5];
+                    spriteArray[offset + 10] = transforms[i][9];
+                    spriteArray[offset + 11] = transforms[i][13];
 
-                    spriteArray[offset + 12] = item.transform[2];
-                    spriteArray[offset + 13] = item.transform[6];
-                    spriteArray[offset + 14] = item.transform[10];
-                    spriteArray[offset + 15] = item.transform[14];
+                    spriteArray[offset + 12] = transforms[i][2];
+                    spriteArray[offset + 13] = transforms[i][6];
+                    spriteArray[offset + 14] = transforms[i][10];
+                    spriteArray[offset + 15] = transforms[i][14];
 
                     spriteArray[offset + 19] = q * vertCount + spriteIndexes[v];
                     spriteArray[offset + 20] = item.boneIndex;
@@ -321,13 +400,36 @@ export class EveSpotlightSet extends EveObjectSet
             }
         }
 
-        const order = this._indexOrder;
-
         this._spriteVertexBuffer = d.gl.createBuffer();
         d.gl.bindBuffer(d.gl.ARRAY_BUFFER, this._spriteVertexBuffer);
         d.gl.bufferData(d.gl.ARRAY_BUFFER, spriteArray, d.gl.STATIC_DRAW);
         this._spriteVertexBuffer.count = itemCount * spriteQuadCount * 6;
+    }
 
+    /**
+     * Rebuilds the spotlight set's buffers
+     * @param {Object} [opt]
+     */
+    Rebuild(opt)
+    {
+        //this.Unload({ skipEvents: true });
+        this.RebuildItems(opt);
+        this._dirty = false;
+        const itemCount = this._visibleItems.length;
+        if (!itemCount)
+        {
+            super.Rebuild(opt);
+            return;
+        }
+
+        const
+            { gl } = device,
+            coneQuadCount = 4;
+
+        // Pool uses different order
+        this._indexOrder[5] = this.useQuads ? 1 : 0;
+
+        const order = this._indexOrder;
         const indexes = new Uint16Array(itemCount * coneQuadCount * 6);
         for (let i = 0; i < itemCount * coneQuadCount; ++i)
         {
@@ -340,15 +442,20 @@ export class EveSpotlightSet extends EveObjectSet
             indexes[offset + 2] = vtxOffset + order[2]; //2;
             indexes[offset + 3] = vtxOffset + order[3]; //2;
             indexes[offset + 4] = vtxOffset + order[4]; //3;
-            indexes[offset + 5] = vtxOffset + order[5]; //0
+            indexes[offset + 5] = vtxOffset + order[5]; //0 or 1
         }
 
-        this._indexBuffer = d.gl.createBuffer();
-        d.gl.bindBuffer(d.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        d.gl.bufferData(d.gl.ELEMENT_ARRAY_BUFFER, indexes, d.gl.STATIC_DRAW);
-        d.gl.bindBuffer(d.gl.ELEMENT_ARRAY_BUFFER, null);
+        this._indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount;
 
+        if (!this.useQuads)
+        {
+            this.RebuildVertexBuffers();
+        }
+        
         super.Rebuild(opt);
     }
 
@@ -357,17 +464,23 @@ export class EveSpotlightSet extends EveObjectSet
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @param {mat4} world
+     * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator, perObjectData)
+    GetBatches(mode, accumulator, perObjectData, world)
     {
-        if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count)
+        if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count && this._visibleItems.length)
         {
             const batch = new EveSpotlightSetBatch();
             batch.renderMode = device.RM_ADDITIVE;
             batch.spotlightSet = this;
             batch.perObjectData = perObjectData;
+            batch.world = world;
+            batch.mode = device.RM_ADDITIVE;
             accumulator.Commit(batch);
+            return true;
         }
+        return false;
     }
 
     /**

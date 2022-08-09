@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
 import { meta } from "utils";
-import { vec3, vec4, mat4 } from "math";
+import { vec3, vec4, mat4, sph3, box3 } from "math";
 
 
 export class EveObjectSetItem extends meta.Model
@@ -10,6 +10,7 @@ export class EveObjectSetItem extends meta.Model
     display = true;
 
     _dirty = true;
+    _boundsDirty = true;
 
     /**
      * Fire on value changes
@@ -17,6 +18,7 @@ export class EveObjectSetItem extends meta.Model
     OnValueChanged()
     {
         this._dirty = true;
+        this._boundsDirty = true;
     }
 
 }
@@ -34,10 +36,11 @@ export class EveObjectSet extends meta.Model
     @meta.list()
     items = [];
 
-
     _dirty = true;
     _visibleItems = [];
-
+    _boundsDirty = true;
+    _boundingBox = null;
+    _boundingSphere = null;
 
     /**
      * Initializes the set
@@ -48,11 +51,76 @@ export class EveObjectSet extends meta.Model
     }
 
     /**
+     * Rebuilds the item's bounds
+     * @param {Boolean} [force]
+     * @return {boolean}
+     */
+    RebuildBounds(force)
+    {
+        if (!this._boundingBox)
+        {
+            this._boundingBox = box3.create();
+            this._boundingSphere = sph3.create();
+            this._boundsDirty = true;
+        }
+
+        if (!force || !this._boundsDirty)
+        {
+            this._boundsDirty = this.AreItemBoundsDirty();
+        }
+
+        if (force || this._boundsDirty)
+        {
+            box3.empty(this._boundingBox);
+            sph3.empty(this._boundingSphere);
+            this.OnRebuildBounds();
+        }
+
+        return false;
+    }
+
+    /**
+     * Fires when bounds need to be rebuilt
+     */
+    OnRebuildBounds()
+    {
+        // Temporarily stop bounds from being rebuilt by the parent
+        this._boundsDirty = false;
+    }
+
+    /**
+     * Gets the set's bounding box
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @returns {null|box3}
+     */
+    GetBoundingBox(out, force)
+    {
+        this.RebuildBounds(force);
+        box3.copy(this._boundingBox, this._boundingBox);
+        return this._boundsDirty ? null : out;
+    }
+
+    /**
+     * Gets the set's bounding sphere
+     * @param {sph3} out
+     * @param {Boolean} [force]
+     * @return {null|sph3}
+     */
+    GetBoundingSphere(out, force)
+    {
+        this.RebuildBounds(force);
+        sph3.copy(this._boundingSphere, this._boundingSphere);
+        return this._boundsDirty ? null : out;
+    }
+
+    /**
      * Fires on value changes
      */
     OnValueChanged()
     {
         this._dirty = true;
+        this._boundsDirty = true;
     }
 
     /**
@@ -74,6 +142,8 @@ export class EveObjectSet extends meta.Model
             if (!skipEvents) this.EmitEvent("item_removed", item, opt);
             item.OffEvent("modified", this.OnItemModified);
         }
+
+        this._boundsDirty = true;
     }
 
     /**
@@ -87,6 +157,7 @@ export class EveObjectSet extends meta.Model
         const item = this.constructor.Item.from(values);
         this.items.push(item);
         this._dirty = true;
+        this._boundsDirty = true;
         item.OnEvent("modified", this.OnItemModified, this);
         if (!opt || !opt.skipEvents) this.EmitEvent("item_created", item, opt);
         if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
@@ -104,6 +175,7 @@ export class EveObjectSet extends meta.Model
         {
             this.items.push(item);
             this._dirty = true;
+            this._boundsDirty = true;
             item.OnEvent("modified", this.OnItemModified, this);
             if (!opt || !opt.skipEvents) this.EmitEvent("item_added", item, opt);
             if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
@@ -125,6 +197,7 @@ export class EveObjectSet extends meta.Model
         {
             this.items.splice(index, 1);
             this._dirty = true;
+            this._boundsDirty = true;
             item.OffEvent("modified", this.OnItemModified);
             if (!opt || !opt.skipEvents) this.EmitEvent("item_removed", item, opt);
             if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
@@ -173,10 +246,18 @@ export class EveObjectSet extends meta.Model
     RebuildItems(opt)
     {
         this._visibleItems.splice(0);
+
+        if (!this.display)
+        {
+            this._dirty = true;
+            return;
+        }
+
         for (let i = 0; i < this.items.length; i++)
         {
-            const item = this.items[i];
-            const skipEvents = opt && opt.skipEvents;
+            const
+                item = this.items[i],
+                skipEvents = opt && opt.skipEvents;
 
             if (!item.HasEvent("modified", this.OnItemModified))
             {
@@ -217,11 +298,29 @@ export class EveObjectSet extends meta.Model
     }
 
     /**
+     * Checks if any child bounds are dirty
+     * @return {boolean}
+     */
+    AreItemBoundsDirty()
+    {
+        for (let i = 0; i < this.items.length; i++)
+        {
+            if (this.items[i]._boundsDirty)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      */
     Update(dt)
     {
+        if (!this.display) return;
+
         if (!this._dirty && this.autoRebuild && this.AreItemsDirty())
         {
             this._dirty = true;
@@ -262,11 +361,12 @@ export class EveObjectSet extends meta.Model
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
      */
     @meta.abstract
     GetBatches(mode, accumulator, perObjectData)
     {
-
+        return false;
     }
 
     /**

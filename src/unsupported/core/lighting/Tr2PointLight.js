@@ -17,6 +17,17 @@ export class EvePointLightBatch extends Tw2RenderBatch
     {
         this.light.Render(technique);
     }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.light && this.light._effect && this.light._effect.HasTechnique(technique);
+    }
+
 }
 
 
@@ -100,7 +111,10 @@ export class Tr2PointLight extends meta.Model
             batch.light = this;
             batch.perObjectData = perObjectData;
             accumulator.Commit(batch);
+            return true;
         }
+
+        return false;
     }
 
     Render(technique)

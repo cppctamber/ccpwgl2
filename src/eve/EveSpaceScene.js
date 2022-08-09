@@ -1,16 +1,14 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
-import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
+import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2DepthRenderTarget, Tw2Picker, Tw2RenderTarget } from "core";
+import { RM_OPAQUE } from "constant";
 
 
 @meta.type("EveSpaceScene")
 export class EveSpaceScene extends meta.Model
 {
-
-    @meta.color
-    ambientColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
-
+    
     @meta.struct("Tw2Effect")
     backgroundEffect = null;
 
@@ -18,10 +16,8 @@ export class EveSpaceScene extends meta.Model
     backgroundObjects = [];
 
     @meta.boolean
+    @meta.isPrivate
     backgroundRenderingEnabled = true;
-
-    @meta.list("Tw2CurveSet")
-    curveSets = [];
 
     @meta.notImplemented
     @meta.boolean
@@ -45,37 +41,10 @@ export class EveSpaceScene extends meta.Model
 
     @meta.color
     fogColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
-
-    //  ------------------[ Not supported by latest environment shader ]--------------------
-
-    @meta.float
-    fogEnd = 0;
-
-    @meta.float
-    fogMax = 0;
-
-    @meta.float
-    fogStart = 0;
-
-    @meta.uint
-    fogBlur = 0;
-
-    @meta.uint
-    fogType = 0;
-
-    //  ------------------------------------------------------------------------------------
-
+    
     @meta.float
     contrast = 1;
-
-    @meta.notImplemented
-    @meta.path
-    lowQualityNebulaMixResPath = "";
-
-    @meta.notImplemented
-    @meta.path
-    lowQualityNebulaResPath = "";
-
+    
     @meta.float
     nebulaIntensity = 1;
 
@@ -89,6 +58,75 @@ export class EveSpaceScene extends meta.Model
     @meta.notImplemented
     @meta.struct()
     postprocess = null;
+    
+    @meta.color
+    sunDiffuseColor = vec4.fromValues(1, 1, 1, 1);
+    
+    @meta.vector3
+    sunDirection = vec3.fromValues(1, -1, 1);
+    
+    @meta.boolean
+    display = true;
+
+    @meta.vector3
+    envMapScaling = vec3.fromValues(1, 1, 1); // Should this come from the background effect?
+
+    @meta.list("EveLensflare")
+    lensflares = [];
+
+    @meta.list("EvePlanet")
+    planets = [];
+
+    @meta.color
+    clearColor = vec4.fromValues(0, 0, 0, 1);
+    
+    @meta.notImplemented
+    @meta.struct("Tr2PostProcess")
+    postProcess = null;
+
+    @meta.notImplemented
+    @meta.struct("Tw2Effect")
+    shadowEffect = null;
+
+    //  ------------------[ unsupported ]--------------------
+
+    @meta.color
+    @meta.noLongerSupported
+    ambientColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
+    
+    @meta.float
+    @meta.noLongerSupported
+    fogEnd = 0;
+
+    @meta.float
+    @meta.noLongerSupported
+    fogMax = 0;
+
+    @meta.float
+    @meta.noLongerSupported
+    fogStart = 0;
+
+    @meta.uint
+    @meta.noLongerSupported
+    fogBlur = 0;
+
+    @meta.uint
+    @meta.noLongerSupported
+    fogType = 0;
+
+    @meta.notImplemented
+    @meta.path
+    @meta.isPrivate
+    lowQualityNebulaMixResPath = "";
+
+    @meta.notImplemented
+    @meta.path
+    @meta.isPrivate
+    lowQualityNebulaResPath = "";
+
+    @meta.notImplemented
+    @meta.float
+    reflectionIntensity = 1;
 
     @meta.notImplemented
     @meta.boolean
@@ -112,45 +150,21 @@ export class EveSpaceScene extends meta.Model
     @meta.struct("EveStarField")
     starfield = null;
 
-    @meta.color
-    sunDiffuseColor = vec4.fromValues(1, 1, 1, 1);
-
     @meta.notImplemented
     @meta.color
     sunDiffuseColorWithDynamicLights = vec4.fromValues(1, 1, 1, 1);
 
-    @meta.vector3
-    sunDirection = vec3.fromValues(1, -1, 1);
-
     @meta.notImplemented
     @meta.boolean
     useSunDiffuseColorWithDynamicLights = false;
-
-    @meta.color
-    clearColor = vec4.fromValues(0, 0, 0, 1);
+    
+    //  ------------------[ ccpwgl ]--------------------
 
     @meta.boolean
-    display = true;
-
-    @meta.vector3
-    envMapScaling = vec3.fromValues(1, 1, 1); // Should this come from the background effect?
-
-    @meta.list("EveLensflare")
-    lensflares = [];
-
-    @meta.list("EvePlanet")
-    planets = [];
+    useNebulaAsReflection = true;
 
     @meta.list("EveCurveLineSet")
     lineSets = [];
-
-    @meta.notImplemented
-    @meta.struct("Tr2PostProcess")
-    postProcess = null;
-
-    @meta.notImplemented
-    @meta.struct("Tw2Effect")
-    shadowEffect = null;
 
     @meta.plain
     visible = {
@@ -168,24 +182,25 @@ export class EveSpaceScene extends meta.Model
         planets: true,
         post: true,
         //shadow: true,
-        starField: true
+        //starField: true
     };
-
+    
+    _shadowView = mat4.create();
+    _shadowProjection = mat4.create();
+    _shadowViewProjection = mat4.create();
     _shadowCameraRange = vec4.fromValues(1,0,0,0);
     _shadowMapSettings = vec4.fromValues(1,1,0,0);
-    _shadowView = mat4.create();
-    _shadowViewProjection = mat4.create();
-    _shadowViewTranspose = mat4.create();
-    _shadowViewProjectionTranspose = mat4.create();
+    _shadowMapRes = null;
 
     _localTransform = mat4.create();
-    _debugHelper = null;
-    _batches = new Tw2BatchAccumulator();
+    _accumulator = new Tw2BatchAccumulator();
     _emptyTexture = null;
     _frustum = new Tw2Frustum();
     _lodEnabled = false;
+
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
+
     _envMapRes = null;
     _envMap1Res = null;
     _envMap2Res = null;
@@ -200,15 +215,30 @@ export class EveSpaceScene extends meta.Model
 
         Object.defineProperty(this.visible, "environment", {
             get: () => this.backgroundRenderingEnabled,
-            set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0
+            set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0,
+            enumerable: true
         });
 
         Object.defineProperty(this.visible, "shadow", {
             get: () => this.enableShadows,
-            set: bool => this.enableShadows = bool ? 1 : 0
+            set: bool => this.enableShadows = bool ? 1 : 0,
+            enumerable: true
         });
 
-        EveSpaceScene.init();
+    }
+
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        if (this._distortionEffect)
+        {
+            this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
+        }
+
+        // Todo: Handle changes to post
+        // Todo: Handle changes to environment paths
     }
 
     /**
@@ -216,10 +246,14 @@ export class EveSpaceScene extends meta.Model
      */
     Initialize()
     {
-        this.SetEnvMapReflection(this.envMapPath);
-        this.SetEnvMapDiffuse(this.envMap1ResPath);
-        this.SetEnvMapBlur(this.envMap2ResPath);
-        this.FetchPostProcess(this.postProcessPath).then();
+
+        Promise.all([
+            this.SetEnvMapReflection(this.envMapResPath),
+            this.SetEnvMapDiffuse(this.envMap1ResPath),
+            this.SetEnvMapBlur(this.envMap2ResPath),
+            this.SetPostProcess(this.postProcessPath),
+            //this.SetLensflares(this.lensflarePath)
+        ]).then();
 
         // Shift own objects to the background objects array
         // This is to stop wrapped scenes from accidentally purging the scene's own objects
@@ -275,76 +309,45 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
-     * Sets the post processing path
+     * Sets the post-processing path
      * @param {String} path
+     * @param {Boolean} [awaitCompleted] waits until the resource is completed loaded
+     * @returns {Promise<null|Tw2PostEffect>}
      */
-    async FetchPostProcess(path = "")
+    async SetPostProcess(path = "", awaitCompleted)
     {
-        if (!path)
-        {
-            this.postProcessPath = "";
-            this.postProcess = null;
-        }
-        else
-        {
-            this.postProcessPath = path.toLowerCase();
-            this.postProcess = await tw2.Fetch(path);
-        }
-
-        return this.postProcess;
+        return EveSpaceScene.HandleResource(this, path, "postProcessPath", "postProcess", awaitCompleted);
     }
 
     /**
      * Sets the environment's reflection map
      * @param {String} path
+     * @param {Boolean} [awaitCompleted] waits until the resource is completed loaded
+     * @returns {Promise<null|Tw2Resource>}
      */
-    SetEnvMapReflection(path = "")
+    async SetEnvMapReflection(path = "", awaitCompleted)
     {
-        if (!path)
-        {
-            this.envMapPath = "";
-            this._envMapRes = null;
-        }
-        else
-        {
-            this.envMapResPath = path;
-            this._envMapRes = tw2.GetResource(path);
-        }
+        return EveSpaceScene.HandleResource(this, path, "envMapResPath", "_envMapRes", awaitCompleted);
     }
 
     /**
      * Sets the environment's diffuse map
      * @param {String} path
+     * @param {Boolean} [awaitCompleted] waits until the resource is completed loaded
+     * @returns {Promise<null|Tw2Resource>}
      */
-    SetEnvMapDiffuse(path = "")
+    async SetEnvMapDiffuse(path = "", awaitCompleted)
     {
-        if (!path)
-        {
-            this.envMap1ResPath = "";
-            this._envMap1Res = null;
-        }
-        else
-        {
-            this.envMap1ResPath = path.toLowerCase();
-            this._envMap1Res = tw2.GetResource(path);
-        }
+        return EveSpaceScene.HandleResource(this, path, "envMap1ResPath", "_envMap1Res", awaitCompleted);
     }
 
     /**
      * Sets the environment's blur map (used for fog)
      * @param {String} path
      */
-    SetEnvMapBlur(path = "")
+    async SetEnvMapBlur(path = "", awaitCompleted)
     {
-        if (!path)
-        {
-            this.envMap2ResPath = "";
-            this._envMap1Res = null;
-            return;
-        }
-
-        this.envMap2ResPath = path.toLowerCase();
-        this._envMap2Res = tw2.GetResource(path);
+        return EveSpaceScene.HandleResource(this, path, "envMap2ResPath", "_envMap2Res", awaitCompleted);
     }
 
     /**
@@ -453,7 +456,7 @@ export class EveSpaceScene extends meta.Model
     {
         if (!this._emptyTexture)
         {
-            this._emptyTexture = tw2.GetResource("res:/texture/global/black.dds.0.png");
+            this._emptyTexture = tw2.GetResource("cdn:/texture/global/black.png");
         }
 
         return this._emptyTexture;
@@ -466,10 +469,6 @@ export class EveSpaceScene extends meta.Model
      */
     Update(dt)
     {
-        for (let i = 0; i < this.curveSets.length; i++)
-        {
-            this.curveSets[i].Update(dt);
-        }
 
         if (this.starField)
         {
@@ -483,9 +482,9 @@ export class EveSpaceScene extends meta.Model
      * Gets batches for rendering
      * @param {number} mode
      * @param {Array.<EveObject>} objectArray
-     * @param {Tw2BatchAccumulator} [accumulator=this._batches]
+     * @param {Tw2BatchAccumulator} [accumulator=this._accumulator]
      */
-    GetRenderBatches(mode, objectArray, accumulator = this._batches)
+    GetRenderBatches(mode, objectArray, accumulator = this._accumulator)
     {
         for (let i = 0; i < objectArray.length; ++i)
         {
@@ -498,9 +497,9 @@ export class EveSpaceScene extends meta.Model
 
     /**
      * Renders the background effect
-     * @param {Boolean} [force=this.visible.environment]
+     * @param {Boolean} [force=this.backgroundRenderingEnabled]
      */
-    RenderBackgroundEffect(force = this.visible.environment)
+    RenderBackgroundEffect(force = this.backgroundRenderingEnabled)
     {
         if (this.backgroundEffect)
         {
@@ -517,59 +516,70 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Renders planets
+     * @param {Number} dt
+     * @param {Tw2BatchAccumulator} [accumulator=this._accumulator]
+     */
+    RenderPlanets(dt, accumulator=this._accumulator)
+    {
+        if (!this.planets.length) return;
+
+        const
+            g = EveSpaceScene.global,
+            tempProj = mat4.copy(g.mat4_0, device.projection),
+            newProj = mat4.copy(g.mat4_1, device.projection),
+            zn = 10000,
+            zf = 1e11;
+
+        newProj[10] = zf / (zn - zf);
+        newProj[14] = (zf * zn) / (zn - zf);
+        device.SetProjection(newProj, true);
+        this.UpdateViewProjectionFrameData();
+        device.gl.depthRange(0.9, 1);
+
+        for (let i = 0; i < this.planets.length; ++i)
+        {
+            if (this.planets[i].UpdateViewDependentData)
+            {
+                this.planets[i].UpdateViewDependentData(this._localTransform, dt);
+                this.planets[i].GetBatches(device.RM_OPAQUE, accumulator);
+                this.planets[i].GetBatches(device.RM_DECAL, accumulator);
+                this.planets[i].GetBatches(device.RM_TRANSPARENT, accumulator);
+                this.planets[i].GetBatches(device.RM_ADDITIVE, accumulator);
+            }
+        }
+
+        this._accumulator.Render();
+        device.SetProjection(tempProj, true);
+        this.UpdateViewProjectionFrameData();
+        device.gl.depthRange(0, 0.9);
+    }
+
+    /**
      * Updates children's view dependent data and renders them
      * @param {Number} dt - deltaTime
      */
     Render(dt)
     {
-        this.ApplyPerFrameData();
-
         const
             d = device,
-            g = EveSpaceScene.global,
-            tr = this._localTransform,
-            show = this.visible,
-            worldSpriteScale = mat4.maxScaleOnAxis(this._localTransform);
-
-        this.RenderBackgroundEffect();
-
-        if (show.planets && this.planets.length)
-        {
-            const
-                tempProj = mat4.copy(g.mat4_0, d.projection),
-                newProj = mat4.copy(g.mat4_1, d.projection),
-                zn = 10000,
-                zf = 1e11;
-
-            newProj[10] = zf / (zn - zf);
-            newProj[14] = (zf * zn) / (zn - zf);
-            d.SetProjection(newProj, true);
-            this.UpdateViewProjectionFrameData();
-
-            for (let i = 0; i < this.planets.length; ++i)
-            {
-                if (this.planets[i].UpdateViewDependentData)
-                {
-                    this.planets[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
-                }
-            }
-
-            this._batches.Clear();
-            d.gl.depthRange(0.9, 1);
-            this.GetRenderBatches(d.RM_OPAQUE, this.planets);
-            this.GetRenderBatches(d.RM_DECAL, this.planets);
-            this.GetRenderBatches(d.RM_TRANSPARENT, this.planets);
-            this.GetRenderBatches(d.RM_ADDITIVE, this.planets);
-            this._batches.Render();
-            d.SetProjection(tempProj, true);
-            this.UpdateViewProjectionFrameData();
-            d.gl.depthRange(0, 0.9);
-        }
+            show = this.visible;
 
         if (this._lodEnabled)
         {
             this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
             this.PerChildObject("UpdateLod", this._frustum);
+        }
+
+        this._accumulator.Clear();
+
+        this.ApplyPerFrameData();
+        this.RenderBackgroundEffect(this.backgroundRenderingEnabled);
+
+        if (show.planets)
+        {
+            this.RenderPlanets(dt);
+            this._accumulator.Clear();
         }
 
         if (show.backgroundObjects)
@@ -578,7 +588,17 @@ export class EveSpaceScene extends meta.Model
             {
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
-                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
+                    this.backgroundObjects[i].UpdateViewDependentData(this._localTransform, dt);
+                }
+
+                this.backgroundObjects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
+                this.backgroundObjects[i].GetBatches(d.RM_DECAL, this._accumulator);
+                this.backgroundObjects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
+                this.backgroundObjects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+
+                if (show.distortionPreview)
+                {
+                    this.backgroundObjects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
                 }
             }
         }
@@ -589,8 +609,14 @@ export class EveSpaceScene extends meta.Model
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
-                    this.objects[i].UpdateViewDependentData(tr, dt, worldSpriteScale);
+                    this.objects[i].UpdateViewDependentData(this._localTransform, dt);
                 }
+
+                this.objects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
+                this.objects[i].GetBatches(d.RM_DECAL, this._accumulator);
+                this.objects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
+                this.objects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+                if (show.distortionPreview) this.objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
             }
         }
 
@@ -598,69 +624,35 @@ export class EveSpaceScene extends meta.Model
         {
             for (let i = 0; i < this.lineSets.length; i++)
             {
-                this.lineSets[i].UpdateViewDependentData(tr, dt);
+                this.lineSets[i].UpdateViewDependentData(this._localTransform, dt);
+                this.lineSets[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
+                this.lineSets[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
             }
         }
-
-        if (show.lensflares)
-        {
-            for (let i = 0; i < this.lensflares.length; ++i)
-            {
-                this.lensflares[i].PrepareRender();
-            }
-        }
-
-        this._batches.Clear();
 
         if (show.planets)
         {
             for (let i = 0; i < this.planets.length; ++i)
             {
-                this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, this._batches);
+                this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, this._accumulator);
             }
         }
-
-        if (show.backgroundObjects)
-        {
-            this.GetRenderBatches(d.RM_OPAQUE, this.backgroundObjects);
-            this.GetRenderBatches(d.RM_DECAL, this.backgroundObjects);
-            this.GetRenderBatches(d.RM_TRANSPARENT, this.backgroundObjects);
-            this.GetRenderBatches(d.RM_ADDITIVE, this.backgroundObjects);
-            //this.GetRenderBatched(d.RM_DISTORTION, this.backgroundObjects);
-        }
-
-        if (show.objects)
-        {
-            this.GetRenderBatches(d.RM_OPAQUE, this.objects);
-            this.GetRenderBatches(d.RM_DECAL, this.objects);
-            this.GetRenderBatches(d.RM_TRANSPARENT, this.objects);
-            this.GetRenderBatches(d.RM_ADDITIVE, this.objects);
-            //this.GetRenderBatches(d.RM_DISTORTION, this.objects);
-        }
-
-
-        if (show.lineSets)
-        {
-            this.GetRenderBatches(d.RM_TRANSPARENT, this.lineSets);
-            this.GetRenderBatches(d.RM_ADDITIVE, this.lineSets);
-        }
-
-        this._batches.Render();
-
 
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
             {
-                this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._batches);
+                this.lensflares[i].PrepareRender(this.sunDirection);
+                this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
             }
         }
+
+        this._accumulator.Render();
 
         if (this.starfield)
         {
             // TODO: Implement starfield
         }
-
 
         if (this.shadowEffect)
         {
@@ -672,9 +664,6 @@ export class EveSpaceScene extends meta.Model
             // TODO: Implement post processing
         }
 
-        this._batches.Render();
-
-
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
@@ -683,20 +672,6 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
-
-        if (show.debug)
-        {
-            if (EveSpaceScene.DebugRenderer)
-            {
-                if (!this._debugHelper)
-                {
-                    this._debugHelper = new EveSpaceScene.DebugRenderer();
-                }
-
-                this.PerChildObject("RenderDebugInfo", this._debugHelper);
-                this._debugHelper.Render();
-            }
-        }
     }
 
     /**
@@ -704,25 +679,30 @@ export class EveSpaceScene extends meta.Model
      */
     UpdateViewProjectionFrameData()
     {
-        mat4.transpose(this._shadowViewTranspose, this._shadowView);
-        mat4.transpose(this._shadowViewProjectionTranspose, this._shadowViewProjection);
+        device.UpdateViewProjection();
 
         const
             d = device,
+            sunDir = EveSpaceScene.global.vec3_0,
             vs = this._perFrameVS,
             ps = this._perFramePS;
 
         d.perFrameVSData = vs;
         d.perFramePSData = ps;
 
+        // Sun direction
+        vec3.transformMat4(sunDir, this.sunDirection, this._localTransform);
+        vec3.negate(sunDir, sunDir);
+        vec3.normalize(sunDir, sunDir);
+
+        vs.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         vs.Set("TargetResolution", d.targetResolution);
         vs.Set("ViewInverseTransposeMat", d.viewInverse);
         vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
         vs.Set("ViewMat", d.viewTranspose);
         vs.Set("ProjectionMat", d.projectionTranspose);
-        vs.Set("ShadowViewMat", this._shadowViewTranspose);
-        vs.Set("ShadowViewProjectionMat", this._shadowViewProjectionTranspose);
 
+        ps.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         ps.Set("TargetResolution", d.targetResolution);
         ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.Set("ViewInverseTransposeMat", d.viewInverse);
@@ -742,10 +722,7 @@ export class EveSpaceScene extends meta.Model
             d = device,
             g = EveSpaceScene.global,
             world = this._localTransform,
-            //shadowViewTranspose = g.mat4_0,
-            //shadowViewProjectionTranspose = g.mat4_1,
             envMapTransform = g.mat4_2,
-            sunDir = g.vec3_0,
             show = this.visible;
 
         // Environment
@@ -756,11 +733,6 @@ export class EveSpaceScene extends meta.Model
         envMapTransform[13] = 0;
         envMapTransform[14] = 0;
         mat4.transpose(envMapTransform, envMapTransform);
-
-        // Sun direction
-        vec3.transformMat4(sunDir, this.sunDirection, world);
-        vec3.negate(sunDir, sunDir);
-        vec3.normalize(sunDir, sunDir);
 
         const
             vs = this._perFrameVS,
@@ -777,7 +749,12 @@ export class EveSpaceScene extends meta.Model
 
             vs.Set("FogFactors", [ this.fogEnd * f, f, this.fogMax, 1 ]);
             ps.Set("SceneData.FogColor", this.fogColor);
-            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, this.contrast ]);
+            ps.Set("MiscSettings", [
+                d.currentTime,
+                this.fogType,
+                this.fogBlur,
+                this.contrast
+            ]);
         }
         else
         {
@@ -788,40 +765,42 @@ export class EveSpaceScene extends meta.Model
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
-        vs.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         vs.Set("EnvMapRotationMat", envMapTransform);
-        //vs.Set("TargetResolution", d.targetResolution);
-        //vs.Set("ViewInverseTransposeMat", d.viewInverse);
-        //vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
-        //vs.Set("ViewMat", d.viewTranspose);
-        //vs.Set("ProjectionMat", d.projectionTranspose);
-        //mat4.transpose(shadowViewTranspose, this._shadowView);
-        //mat4.transpose(shadowViewProjectionTranspose, this._shadowViewProjection);
-        //vs.Set("ShadowViewMat", shadowViewTranspose);
-        //vs.Set("ShadowViewProjectionMat", shadowViewProjectionTranspose);
+
+        // Shadows
+        if (this.enableShadows)
+        {
+            mat4.multiply(this._shadowViewProjection, this._shadowProjection, this._shadowView);
+            vs.Set("ShadowViewMat", mat4.transpose(g.mat4_0, this._shadowView));
+            vs.Set("ShadowViewProjectionMat", mat4.transpose(g.mat4_1, this._shadowViewProjection));
+        }
+
+        ps.Set("ShadowMapSettings", this._shadowMapSettings); // TODO: Identify source of this information
+        ps.Set("ShadowCameraRange", this._shadowCameraRange); // TODO: Identify source of this information
 
         ps.Set("EnvMapRotationMat", envMapTransform);
-        ps.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-        ps.Set("ShadowMapSettings", this._shadowMapSettings);
-        ps.Set("ShadowCameraRange",  this._shadowCameraRange);
-        //ps.SetIndex("ShadowCameraRange", 0, 1);
         ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
-        //ps.Set("TargetResolution", d.targetResolution);
-        //ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
-        //ps.Set("ViewInverseTransposeMat", d.viewInverse);
-        //ps.Set("ViewMat", d.viewTranspose);
-        //ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
-        //ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
 
-        const
-            envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
+        let envMap = this.GetEmptyTexture(),
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
+
+        if (show.environmentReflection)
+        {
+            if (this.useNebulaAsReflection && this.backgroundEffect && this.backgroundEffect.parameters.NebulaMap)
+            {
+                envMap = this.backgroundEffect.parameters.NebulaMap.res || this._envMapRes;
+            }
+            else
+            {
+                envMap = this._envMapRes;
+            }
+        }
 
         tw2.GetVariable("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
         tw2.GetVariable("EnvMap1").AttachTextureRes(envMap1);
@@ -829,21 +808,37 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
-     * Initializes class global and scratch variables
+     * Handles resource paths and loading
+     * @param {EveSpaceScene} scene
+     * @param {String|Null} path
+     * @param {String} pathProperty
+     * @param {String} targetObjectProperty
+     * @param {Boolean} [awaitCompleted]
+     * @returns {Promise<Boolean>} True if the path was set
      */
-    static init()
+    static async HandleResource(scene, path, pathProperty, targetObjectProperty, awaitCompleted)
     {
-        if (!EveSpaceScene.global)
+        path = path ? path.toLowerCase() : null;
+
+        // Clear the resource and value
+        if (!path)
         {
-            EveSpaceScene.global = {
-                vec3_ZERO: vec3.create(),
-                vec3_0: vec3.create(),
-                vec4_0: vec4.create(),
-                mat4_0: mat4.create(),
-                mat4_1: mat4.create(),
-                mat4_2: mat4.create()
-            };
+            scene[pathProperty] = "";
+            scene[pathProperty] = null;
+            return true;
         }
+
+        scene[pathProperty] = path;
+        const result = await tw2.Fetch(path, awaitCompleted);
+
+        // Only load if it hasn't already been replaced
+        if (scene[pathProperty] === path)
+        {
+            scene[targetObjectProperty] = result;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -891,12 +886,14 @@ export class EveSpaceScene extends meta.Model
      * Class global and scratch variables
      * @type {?*}
      */
-    static global = null;
+    static global = {
+        vec3_ZERO: vec3.create(),
+        vec3_0: vec3.create(),
+        vec4_0: vec4.create(),
+        mat4_0: mat4.create(),
+        mat4_1: mat4.create(),
+        mat4_2: mat4.create()
+    };
 
-    /**
-     * Debug renderer
-     * @type {?Function}
-     */
-    static DebugRenderer = window["Tw2DebugRenderer"] || null;
 
 }

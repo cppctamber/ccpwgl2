@@ -48,7 +48,8 @@ import {
     DDS_MAGIC_SIZE,
     DDS_HEADER_SIZE,
     DDS_HEADER_DX10_SIZE,
-    DDS_DX10_FIELDS, DXGI_FORMATS
+    DDS_DX10_FIELDS,
+    DXGI_FORMAT
 } from "constant";
 
 
@@ -768,8 +769,6 @@ export class Tw2TextureRes extends Tw2Resource
                     break;
                 }
 
-
-
                 const code = Tw2TextureRes.Int32ToFourCC(info.fourCC);
 
                 // Log dx10 dds details for now
@@ -787,7 +786,7 @@ export class Tw2TextureRes extends Tw2Resource
                     info.resourceDimension = dx10Header[DDS_DX10_FIELDS.RESOURCE_DIMENSION];
                     info.miscFlag = dx10Header[DDS_DX10_FIELDS.MISC_FLAG];
                     info.arraySize = dx10Header[DDS_DX10_FIELDS.ARRAY_SIZE];
-                    info.dxgiFormatName = DXGI_FORMATS[info.dxgiFormat];
+                    info.dxgiFormatName = DXGI_FORMAT[info.dxgiFormat];
                 }
 
                 console.dir(info);

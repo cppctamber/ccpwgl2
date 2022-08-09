@@ -92,6 +92,7 @@ export class Tw2Device extends Tw2EventEmitter
     viewProjection = mat4.create();
     viewProjectionTranspose = mat4.create();
     viewProjectionInverse = mat4.create();
+    _viewProjectionDirty = true;
 
     viewportWidth = 0;
     viewportHeight = 0;
@@ -115,6 +116,8 @@ export class Tw2Device extends Tw2EventEmitter
     perFramePSData = null;
     perFrameCustomVSData = null;
     perFrameCustomPSData = null;
+
+    pickDepth = 16;
 
     _extensions = {};
     _alphaBlendState = null;
@@ -567,7 +570,7 @@ export class Tw2Device extends Tw2EventEmitter
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
-            previousTime
+            previousTime * 0.001
         ]);
 
         this._fpsFrameCount++;
@@ -603,6 +606,7 @@ export class Tw2Device extends Tw2EventEmitter
      */
     SetView(matrix, forceUpdateViewProjection)
     {
+        this._viewProjectionDirty = true;
         mat4.copy(this.view, matrix);
         mat4.invert(this.viewInverse, this.view);
         mat4.transpose(this.viewTranspose, this.view);
@@ -617,6 +621,7 @@ export class Tw2Device extends Tw2EventEmitter
      */
     SetProjection(matrix, forceUpdateViewProjection)
     {
+        this._viewProjectionDirty = true;
         mat4.copy(this.projection, matrix);
         mat4.transpose(this.projectionTranspose, this.projection);
         mat4.invert(this.projectionInverse, this.projection);
@@ -627,12 +632,16 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Updates view projection matrices
      */
-    UpdateViewProjection()
+    UpdateViewProjection(force)
     {
-        mat4.multiply(this.viewProjection, this.projection, this.view);
-        mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        mat4.invert(this.viewProjectionInverse, this.viewProjection);
-        this.tw2.variables.SetValue("ViewProjectionMat", this.viewProjection);
+        if (this._viewProjectionDirty || force)
+        {
+            mat4.multiply(this.viewProjection, this.projection, this.view);
+            mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
+            mat4.invert(this.viewProjectionInverse, this.viewProjection);
+            this.tw2.variables.SetValue("ViewProjectionMat", this.viewProjection);
+            this._viewProjectionDirty = false;
+        }
     }
 
     /**
@@ -784,7 +793,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {String} technique - Technique name
      * @returns {Boolean}
      */
-    RenderFullScreenQuad(effect, technique = "Main")
+    RenderFullScreenQuad(effect, technique = effect.defaultTechnique)
     {
         if (!effect || !effect.IsGood()) return false;
 
@@ -827,7 +836,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {String} technique - Technique name
      * @returns {Boolean}
      */
-    RenderCameraSpaceQuad(effect, technique = "Main")
+    RenderCameraSpaceQuad(effect, technique = effect.defaultTechnique)
     {
         if (!effect || !effect.IsGood()) return false;
 

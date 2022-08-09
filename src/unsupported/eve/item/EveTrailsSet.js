@@ -11,12 +11,23 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 
     /**
      * Commits the batch
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
-        this.boosters.Render(technique);
+        this.trailsSet.Render(technique);
     }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.trailsSet && this.trailsSet.effect && this.trailsSet.effect.HasTechnique(technique);
+    }
+
 }
 
 

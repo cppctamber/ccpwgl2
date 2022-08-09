@@ -21,7 +21,7 @@ export const propTypes = new Map();
 const getArray = (a, key) => Array.from(a[key]);
 const getPrimary = (a, key) => a[key];
 const setPrimary = (a, key, value) => a[key] = value;
-const equalsPrimary = (a, b) => a === b;
+const exactEquals = (a, b) => a === b;
 const returnFalse = () => false;
 const notImplemented = () => { throw new ReferenceError("Not implemented"); };
 
@@ -29,7 +29,7 @@ const notImplemented = () => { throw new ReferenceError("Not implemented"); };
 // Boolean
 propTypes.set(Type.PT_BOOLEAN, {
     is: isBoolean,
-    equals: equalsPrimary,
+    equals: exactEquals,
     get: getPrimary,
     set: setPrimary,
     type: Type.PT_BOOLEAN
@@ -57,7 +57,7 @@ function setString(type)
 {
     propTypes.set(type, {
         is: isString,
-        equals: equalsPrimary,
+        equals: exactEquals,
         get: getPrimary,
         set: setPrimary,
         type
@@ -85,6 +85,7 @@ function setVector(type, Constructor, length)
                 a[key].set(value);
             }
         },
+        length,
         type
     });
 }
@@ -99,6 +100,14 @@ setVector(Type.PT_UINT16_ARRAY, Uint16Array);
 setVector(Type.PT_UINT32_ARRAY, Uint32Array);
 setVector(Type.PT_FLOAT32_ARRAY, Float32Array);
 setVector(Type.PT_FLOAT64_ARRAY, Float64Array);
+
+//setVector(Type.PT_MATRIX3, Float32Array, 9);
+//setVector(Type.PT_MATRIX4, Float32Array, 16);
+//setVector(Type.PT_VECTOR2, Float32Array, 2);
+//setVector(Type.PT_VECTOR3, Float32Array, 3);
+//setVector(Type.PT_VECTOR4, Float32Array, 3);
+//setVector(Type.PT_COLOR, Float32Array, 4);
+//setVector(Type.PT_QUATERNION, Float32Array, 4);
 
 propTypes.set(Type.PT_MATRIX3, {
     is: isMatrix3,
@@ -164,7 +173,7 @@ function setStruct(type)
             // TODO:  Handle struct type checking...
             return true;
         },
-        equals: returnFalse,
+        equals: exactEquals,
         get(a, key, options)
         {
             return a[key] === null ? null : a[key].GetValues({}, options);
@@ -177,7 +186,7 @@ function setStruct(type)
             if (value === null)
             {
                 if (!a[key]) return false;
-                a[key].Destructor(opt);
+                a[key].Destroy(opt);
                 a[key] = null;
                 return true;
             }
@@ -209,7 +218,7 @@ propTypes.set(Type.PT_STRUCT_LIST, {
         // TODO: Handle struct type checking...
         return true;
     },
-    equals: returnFalse,
+    equals: exactEquals,
     get(a, key, options)
     {
         const len = a[key].length;
@@ -238,7 +247,7 @@ propTypes.set(Type.PT_STRUCT_LIST, {
             if (!a[key].length) return false;
             for (let i = 0; i < a[key].length; i++)
             {
-                a[key].Destructor(options);
+                a[key].Destroy(options);
             }
             a[key].splice(0);
             return true;

@@ -1,6 +1,7 @@
 import { Tw2TextureRes } from "core/resource";
 import { tw2 } from "global";
-import { meta, generateID } from "utils";
+import { meta } from "utils";
+import { Tw2TextureParameter } from "./parameter";
 
 
 @meta.type("Tw2DepthRenderTarget")
@@ -19,10 +20,20 @@ export class Tw2DepthRenderTarget
     @meta.uint
     precision = 16;
 
-
-    _texture = null;
+    _attached = false;
+    _internalFormat = null;
+    _depthTexture = null;
+    _colorTexture = null;
     _frameBuffer = null;
-    _id = generateID();
+
+    /**
+     * Identifies if the depth texture is an attachment
+     * @returns {boolean}
+     */
+    get isAttached()
+    {
+        return this._attached;
+    }
 
     /**
      * Identifies that the render target has depth
@@ -34,25 +45,40 @@ export class Tw2DepthRenderTarget
     }
 
     /**
-     * Gets the render target's texture res
-     * Todo: Refactor all uses to "textureRes"
+     * Gets the render target's depth texture res
+     * @returns {null|Tw2TextureRes}
+     */
+    get depthTexture()
+    {
+        return this._depthTexture;
+    }
+
+    /**
+     * Gets the render target's depth gl texture
+     * @returns {null|WebGLTexture}
+     */
+    get depthTextureGL()
+    {
+        return this._depthTexture ? this._depthTexture.texture : null;
+    }
+
+    /**
+     * Gets the render target's colour texture
      * @returns {null|Tw2TextureRes}
      */
     get texture()
     {
-        return this._texture;
+        return this._colorTexture;
     }
 
     /**
-     * Gets the render target's gl texture
+     * Gets the render target's colour gl texture
      * @returns {null|WebGLTexture}
      */
-    get glTexture()
+    get textureGL()
     {
-        return this._texture ? this._texture.texture : null;
+        return this._colorTexture ? this._colorTexture.texture : null;
     }
-
-    _colorAttachment = null;
 
     /**
      * Constructor
@@ -60,14 +86,78 @@ export class Tw2DepthRenderTarget
      * @param {Number} [width]
      * @param {Number} [height]
      * @param {Number} [precision]
+     * @param {null|Tw2TextureParameter|Tw2TextureRes} [depthTexture]
      */
-    constructor(name = "", width, height, precision)
+    constructor(name = "", width=0, height=0, precision=16, depthTexture)
     {
         this.name = name;
-        if (height) this.height = height;
-        if (width) this.width = width;
-        if (precision) this.precision = precision;
-        if (this.height && this.width) this.Create(this.height, this.width, this.precision);
+        this.height = height;
+        this.width = width;
+        this.precision = precision;
+        this.AttachDepthTexture(depthTexture, width == 0 && height ==0);
+    }
+
+    /**
+     * Attaches a depth texture
+     * @param {null|Tw2TextureRes|Tw2TextureParameter} attachment
+     * @param {Boolean} [skipCreate]
+     * @returns {Boolean} true if attached
+     */
+    AttachDepthTexture(attachment, skipCreate)
+    {
+        if (!attachment)
+        {
+            let didUpdate = false;
+            this._attached = false;
+            if (this._depthTexture)
+            {
+                this._depthTexture = null;
+                didUpdate = true;
+            }
+            if (!skipCreate) this.Create(this.width, this.height, this.precision);
+            return didUpdate;
+        }
+
+        this._attached = true;
+
+        if (attachment instanceof Tw2TextureParameter)
+        {
+            if (attachment.textureRes && attachment.textureRes === this._depthTexture)
+            {
+                return false;
+            }
+
+            attachment.AttachTextureRes(new Tw2TextureRes());
+            this._depthTexture = attachment.textureRes;
+            if (!skipCreate) this.Create(this.width, this.height, this.precision);
+            return true;
+        }
+
+        if (this._depthTexture !== attachment)
+        {
+            this._depthTexture = attachment;
+            if (!skipCreate) this.Create(this.width, this.height, this.precision);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Updates the render target
+     * @param {Number} targetWidth
+     * @param {Number} targetHeight
+     * @param {Number} precision
+     * @returns {boolean} true if updated
+     */
+    Update(targetWidth, targetHeight, precision=this.precision)
+    {
+        if (this.width !== targetWidth || this.height !== targetHeight || this.precision !== precision)
+        {
+            this.Create(targetWidth, targetHeight);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -75,7 +165,7 @@ export class Tw2DepthRenderTarget
      */
     Initialize()
     {
-        if (!this._frameBuffer && this.width && this.height)
+        if (this.width && this.height)
         {
             this.Create(this.width, this.height, this.precision);
         }
@@ -87,7 +177,11 @@ export class Tw2DepthRenderTarget
      */
     IsGood()
     {
-        return !!(this._frameBuffer && this._texture && this._texture.IsGood());
+        return !!(
+            this._frameBuffer &&
+            this._depthTexture &&
+            this._depthTexture.IsGood()
+        );
     }
 
     /**
@@ -95,7 +189,8 @@ export class Tw2DepthRenderTarget
      */
     KeepAlive()
     {
-        if (this._texture) this._texture.KeepAlive();
+        if (this._depthTexture) this._depthTexture.KeepAlive();
+        if (this._colorTexture) this._colorTexture.KeepAlive();
     }
 
     /**
@@ -105,16 +200,14 @@ export class Tw2DepthRenderTarget
     {
         const { gl } = tw2;
 
-        if (this._texture)
+        if (this._depthTexture)
         {
-            gl.deleteTexture(this._texture.texture);
-            this._texture.texture = null;
+            this._depthTexture.DeleteGL();
         }
-
-        if (this._colorAttachment)
+        
+        if (this._colorTexture)
         {
-            gl.deleteTexture(this._colorAttachment);
-            this._colorAttachment = null;
+            this._colorTexture.DeleteGL();
         }
 
         if (this._frameBuffer)
@@ -122,6 +215,8 @@ export class Tw2DepthRenderTarget
             gl.deleteFramebuffer(this._frameBuffer);
             this._frameBuffer = null;
         }
+
+        this._internalFormat = null;
     }
 
     /**
@@ -141,12 +236,13 @@ export class Tw2DepthRenderTarget
         {
             const ext = tw2.device.GetExtension("WEBGL_depth_texture");
             if (!ext) throw new ReferenceError("Depth textures not supported by device");
+
             internalFormat = gl.DEPTH_COMPONENT;
             type = gl.UNSIGNED_SHORT;
             if (precision !== undefined && precision !== 16)
             {
                 tw2.Warning({
-                    title: "Depth precision",
+                    name: "Depth precision",
                     description: "Invalid depth for device, falling back to 16BIT"
                 });
                 precision = 16;
@@ -170,7 +266,7 @@ export class Tw2DepthRenderTarget
                     if (precision !== 16)
                     {
                         tw2.Warning({
-                            title: "Depth precision",
+                            name: "Depth precision",
                             description: "Invalid depth for device, falling back to 16BIT"
                         });
                     }
@@ -181,12 +277,22 @@ export class Tw2DepthRenderTarget
         }
 
         this.precision = precision;
-        this._texture = this.texture || new Tw2TextureRes();
-        this._texture.Attach(gl.createTexture());
+
+        if (this._attached && !this._depthTexture)
+        {
+            throw new ReferenceError("Missing depth texture attachment");
+        }
+        else if (!this._attached && !this._depthTexture)
+        {
+            this._depthTexture = new Tw2TextureRes();
+        }
+
+        this._depthTexture.Attach(gl.createTexture());
+        this._internalFormat = internalFormat;
 
         const
-            res = this._texture,
-            texture = res.texture;
+            res = this._depthTexture,
+            depthTexture = res.texture;
 
         res._hasMipMaps = false;
         res._forceMipMaps = false;
@@ -196,16 +302,16 @@ export class Tw2DepthRenderTarget
         res._height = this.height = height;
         res._type = type;
 
-        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.bindTexture(gl.TEXTURE_2D, depthTexture);
         gl.texImage2D(
-            gl.TEXTURE_2D,
+            res._target,
             0,
-            internalFormat,
-            width,
-            height,
+            res._internalFormat,
+            res._width,
+            res._height,
             0,
             gl.DEPTH_COMPONENT,
-            type,
+            res._type,
             null
         );
 
@@ -217,33 +323,47 @@ export class Tw2DepthRenderTarget
 
         this._frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, texture, 0);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
 
-        this._internalFormat = internalFormat;
 
-        this._colorAttachment = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this._colorAttachment);
+        if (!this._colorTexture) this._colorTexture = new Tw2TextureRes();
+        this._colorTexture.Attach(gl.createTexture());
+
+        const
+            col = this._colorTexture,
+            colorTexture = this._colorTexture.texture;
+
+        col._hasMipMaps = false;
+        col._forceMipMaps = false;
+        col._target = gl.TEXTURE_2D;
+        col._internalFormat = gl.RGBA;
+        col._width = width;
+        col._height = height;
+        col._type = gl.UNSIGNED_BYTE;
+
+        gl.bindTexture(gl.TEXTURE_2D, colorTexture);
         gl.texImage2D(
-            gl.TEXTURE_2D,
+            col._target,
+            0,
+            col._internalFormat,
+            col._width,
+            col._height,
             0,
             gl.RGBA,
-            width,
-            height,
-            0,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
+            col._type,
             null,
         );
 
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.bindTexture(gl.TEXTURE_2D, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._colorAttachment, 0);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
+
 
     /**
      * Clears the render target texture
@@ -252,7 +372,7 @@ export class Tw2DepthRenderTarget
      * @param {Boolean} [stencil=true]
      * @param {vec4} [clearColor]
      */
-    Clear(color, depth, stencil, clearColor)
+    Clear(color=true, depth=true, stencil=true, clearColor)
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
         const { gl } = tw2;
@@ -267,13 +387,20 @@ export class Tw2DepthRenderTarget
 
     /**
      * Sets the render target
+     * @param {Object} [clearOptions]
      */
-    Set()
+    Set(clearOptions)
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
         const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
+
+        if (clearOptions)
+        {
+            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
+            if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
+        }
     }
 
     /**
@@ -287,5 +414,43 @@ export class Tw2DepthRenderTarget
         gl.viewport(0, 0, width, height);
     }
 
+    /**
+     * Reads pixels
+     * @param {Uint8Array} uint8array
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} [width=1]
+     * @param {Number} [height=1]
+     * @returns {null|}
+     */
+    ReadPixels(uint8array, x, y, width=1, height=1)
+    {
+        // Clear receiving array
+        const len = width * height * 4;
+        for (let i = 0; i < len; i++) uint8array[i] = 0;
+        if (!this.IsGood()) return null;
+
+        const { gl } = tw2;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            return null;
+        }
+
+        gl.readPixels(
+            Math.floor(x),
+            Math.floor(y),
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            uint8array
+        );
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        return uint8array;
+    }
 
 }

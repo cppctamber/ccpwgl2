@@ -540,12 +540,14 @@ export class EveSpaceObject extends EveObject
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @returns {Boolean} true if batches accumulated
      */
     GetBatches(mode, accumulator)
     {
-        if (!this.display || this._lod < 1) return;
+        if (!this.display || this._lod < 1) return false;
 
         const
+            c = accumulator.length,
             show = this.visible,
             res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
 
@@ -624,6 +626,8 @@ export class EveSpaceObject extends EveObject
                 this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
             }
         }
+
+        return accumulator.length !== c;
     }
 
     /**

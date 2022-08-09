@@ -20,8 +20,8 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.uint
     groupIndex = -1;
 
-    @meta.uint16Array
-    indexBuffer = [];
+    //@meta.uint16Array
+    //indexBuffer = [];
 
     @meta.uint
     parentBoneIndex = -1;
@@ -46,7 +46,26 @@ export class EveSpaceObjectDecal extends meta.Model
     _localTransform = mat4.create();
     _localTransformInverse = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
+    _parentMeshIndex = 0;
+    _rawIndexBuffers = [];
 
+    /**
+     * Alias for decalEffect
+     * @returns {null|Tw2Effect}
+     */
+    get effect()
+    {
+        return this.decalEffect;
+    }
+
+    /**
+     * Alias for decalEffect
+     * @param {null|Tw2Effect} effect
+     */
+    set effect(effect)
+    {
+        this.decalEffect = effect;
+    }
 
     /**
      * Initializes the decal
@@ -55,6 +74,16 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         //this.Rebuild();
         this.UpdateValues();
+    }
+
+    /**
+     * Gets the item's local transform
+     * @param {mat4} m
+     * @returns {mat4} m
+     */
+    GetTransform(m)
+    {
+        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
     }
 
     /**
@@ -79,6 +108,17 @@ export class EveSpaceObjectDecal extends meta.Model
     }
 
     /**
+     * Sets the index buffer
+     * @param {Array} arr
+     * @param {Number} [index=0]
+     */
+    SetIndexBuffer(arr, index = 0)
+    {
+        this._rawIndexBuffers[index] = arr ? Array.from(arr) : [];
+        this._dirty = true;
+    }
+
+    /**
      * Unloads the decal's buffers
      * @param {object} [opt]
      */
@@ -90,34 +130,48 @@ export class EveSpaceObjectDecal extends meta.Model
             this._indexBuffer = null;
         }
 
-        if  (!opt || !opt.skipEvents)
+        if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("unloaded", this, opt);
         }
     }
 
     /**
+     * Gets the current index buffer
+     * @returns {Array|null}
+     */
+    GetCurrentIndexBuffer()
+    {
+        if (this._rawIndexBuffers[this._parentMeshIndex])
+        {
+            return this._rawIndexBuffers[this._parentMeshIndex];
+        }
+        return null;
+    }
+
+    /**
      * Rebuilds the object's buffers
+     * TODO: Handle empty index buffers?
      * @param  {object} [opt]
      */
     Rebuild(opt)
     {
         this.Unload({ skipEvents: true });
 
-        if (this.indexBuffer)
-        {
-            const
-                gl = device.gl,
-                indexes = new Uint16Array(this.indexBuffer);
+        const
+            gl = device.gl,
+            indexes = this.GetCurrentIndexBuffer();
 
+        if (indexes)
+        {
             this._indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-
-            this._dirty = false;
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
         }
 
-        if  (!opt || !opt.skipEvents)
+        this._dirty = false;
+
+        if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("rebuilt", this, opt);
         }
@@ -130,14 +184,26 @@ export class EveSpaceObjectDecal extends meta.Model
      * @param {Tw2PerObjectData} perObjectData
      * @param {Tw2GeometryRes} geometryRes
      * @param {Number} [counter=0]
+     * @param {Number} [meshIndex=0]
+     * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0)
+    GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0, meshIndex = 0)
     {
+        if (!this.display || !geometryRes || !geometryRes.IsGood()) return false;
 
-        if (!this.display || !geometryRes || !geometryRes.IsGood())
+        // Handle mesh index changes
+        if (this._parentMeshIndex !== meshIndex)
         {
-            return;
+            this._parentMeshIndex = meshIndex;
+            this._dirty = true;
         }
+
+        if (this._dirty)
+        {
+            this.Rebuild();
+        }
+
+        if (!this._indexBuffer) return false;
 
         let effect;
         switch (mode)
@@ -151,16 +217,7 @@ export class EveSpaceObjectDecal extends meta.Model
                 break;
         }
 
-        if (!effect || !effect.IsGood())
-        {
-            return;
-        }
-
-        if (this._dirty)
-        {
-            this.Rebuild();
-            if (!this._dirty) return;
-        }
+        if (!effect || !effect.IsGood()) return false;
 
         const batch = new Tw2ForwardingRenderBatch();
         this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
@@ -173,22 +230,7 @@ export class EveSpaceObjectDecal extends meta.Model
             if (bones[offset] || bones[offset + 4] || bones[offset + 8])
             {
                 const bone = this._perObjectData.vs.Get("parentBoneMatrix");
-                bone[0] = bones[offset];
-                bone[1] = bones[offset + 4];
-                bone[2] = bones[offset + 8];
-                bone[3] = 0;
-                bone[4] = bones[offset + 1];
-                bone[5] = bones[offset + 5];
-                bone[6] = bones[offset + 9];
-                bone[7] = 0;
-                bone[8] = bones[offset + 2];
-                bone[9] = bones[offset + 6];
-                bone[10] = bones[offset + 10];
-                bone[11] = 0;
-                bone[12] = bones[offset + 3];
-                bone[13] = bones[offset + 7];
-                bone[14] = bones[offset + 11];
-                bone[15] = 1;
+                mat4.fromJointMatIndex(bone, bones, this.parentBoneIndex);
                 mat4.transpose(bone, bone);
             }
         }
@@ -203,9 +245,11 @@ export class EveSpaceObjectDecal extends meta.Model
         batch._geometryRes = geometryRes;
         batch.perObjectData = this._perObjectData;
         batch.geometryProvider = this;
+        batch.meshIx = meshIndex;
         batch.renderMode = mode;
         batch.effect = effect;
         accumulator.Commit(batch);
+        return true;
     }
 
     /**
@@ -216,7 +260,7 @@ export class EveSpaceObjectDecal extends meta.Model
     Render(batch, technique)
     {
         const
-            mesh = batch._geometryRes.meshes[0],
+            mesh = batch._geometryRes.meshes[batch.meshIx],
             bkIB = mesh.indexes,
             bkStart = mesh.areas[0].start,
             bkCount = mesh.areas[0].count,
@@ -227,7 +271,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;
-        mesh.areas[0].count = this.indexBuffer.length;
+        mesh.areas[0].count = this.GetCurrentIndexBuffer().length;
         mesh.indexType = device.gl.UNSIGNED_SHORT;
 
         batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);
@@ -239,46 +283,77 @@ export class EveSpaceObjectDecal extends meta.Model
     }
 
     /**
-     * Creates a decal from a plain object
-     * @param {*} [values]
-     * @param {*} [options]
-     * @returns {EveSpaceObjectDecal}
+     * Sets the item from a plain object
+     * @param item
+     * @param values
+     * @param opt
+     * @returns {boolean} true if updated
      */
-    static from(values, options)
+    static set(item, values, opt)
     {
-        const item = new EveSpaceObjectDecal();
+        let updated = super.set(item, values, opt);
 
-        if (values)
+        // If index buffers are provided, assume it is for all of them for now
+        let indexBuffers = values.indexBuffer ? [ values.indexBuffer ] : values.indexBuffers;
+        if (indexBuffers)
         {
-            assignIfExists(item, values, [
-                "name", "display", "pickable",
-                "position", "rotation", "scaling",
-                "groupIndex", "parentBoneIndex"
-            ]);
+            item._rawIndexBuffers.splice(0);
 
-            if (values.indexBuffer)
+            for (let i = 0; i < indexBuffers.length; i++)
             {
-                item.indexBuffer = new Uint16Array(values.indexBuffer);
+                item.SetIndexBuffer(indexBuffers[i], i);
             }
 
-            if (values.pickEffect)
+            updated = true;
+        }
+
+        if (values.decalEffect)
+        {
+            if (!item.decalEffect)
+            {
+                item.decalEffect = Tw2Effect.from(values.decalEffect);
+                updated = true;
+            }
+            else
+            {
+                if (item.decalEffect.SetValues(values.decalEffect)) updated = true;
+            }
+        }
+
+        if (values.pickEffect)
+        {
+            if (!item.pickEffect)
             {
                 item.pickEffect = Tw2Effect.from(values.pickEffect);
+                updated = true;
             }
-
-            const decalEffect = values.decalEffect || values.effect;
-            if (decalEffect)
+            else
             {
-                item.decalEffect = Tw2Effect.from(decalEffect);
+                if (item.pickEffect.SetValues(values.pickEffect)) updated = true;
             }
         }
 
-        if (!options || !options.skipUpdate)
+        return updated;
+    }
+
+    /**
+     * Gets the item as a plain object
+     * @param item
+     * @param out
+     * @param opt
+     * @returns {{}}
+     */
+    static get(item, out = {}, opt = {})
+    {
+        super.get(item, out, opt);
+
+        out.indexBuffers = [];
+        for (let i = 0; i < item._rawIndexBuffers.length; i++)
         {
-            item.Initialize();
+            out.indexBuffers.push(Array.from(item._rawIndexBuffers[i]));
         }
 
-        return item;
+        return out;
     }
 
     /**

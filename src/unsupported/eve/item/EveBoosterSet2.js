@@ -12,12 +12,23 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
 
     /**
      * Commits the batch
-     * @param {String} technique - technique name
+     * @param {String} [technique] - technique name
      */
     Commit(technique)
     {
         this.boosterSet.Render(technique);
     }
+
+    /**
+     * Checks if the render batch supports a technique
+     * @param {String} technique
+     * @returns {boolean}
+     */
+    HasTechnique(technique)
+    {
+        return this.boosterSet && this.boosterSet.effect && this.boosterSet.effect.HasTechnique(technique);
+    }
+
 }
 
 
