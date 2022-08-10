@@ -39,12 +39,12 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
     {
         if (this.spotlightSet)
         {
-            if (this.spotlightSet.coneEffect && this.spotlightSet.coneEffect.HasTechnique(technique))
+            if (this.spotlightSet.coneEffect.HasTechnique(technique))
             {
                 return true;
             }
 
-            if (this.spotlightSet.glowEffect && this.spotlightSet.glowEffect.HasTechnique(technique))
+            if (this.spotlightSet.glowEffect.HasTechnique(technique))
             {
                 return true;
             }

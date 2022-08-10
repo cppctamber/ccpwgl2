@@ -20,7 +20,7 @@ export class Tw2InstancedMeshBatch extends Tw2GeometryBatch
     {
         if (this.instanceMesh && this.effect)
         {
-            return this.instanceMesh.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
+            return this.instanceMesh.RenderAreas(this.meshIx, this.start, this.count, this.effect, technique);
         }
         return false;
     }

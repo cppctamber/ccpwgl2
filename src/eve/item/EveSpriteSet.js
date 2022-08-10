@@ -39,7 +39,7 @@ class EveSpriteSetBatch extends Tw2RenderBatch
      */
     HasTechnique(technique)
     {
-        return this.spriteSet && this.spriteSet.effect && this.spriteSet.effect.HasTechnique(technique);
+        return this.spriteSet.effect && this.spriteSet.effect.HasTechnique(technique);
     }
 
 }

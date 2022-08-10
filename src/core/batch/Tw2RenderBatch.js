@@ -5,14 +5,14 @@ import { RM_ANY } from "constant";
  * Tw2RenderBatch base class
  * @property {Number} renderMode
  * @property {Tw2PerObjectData} perObjectData
- * @property {String} techniqueOverride
+ * @property {String} _techniqueOverride
  */
 export class Tw2RenderBatch
 {
 
     renderMode = RM_ANY;
     perObjectData = null;
-    techniqueOverride = null;
+    _techniqueOverride = null;
 
     /**
      * Commits the batch

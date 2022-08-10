@@ -50,7 +50,7 @@ export class Tw2BatchAccumulator2
      * @param {Array<*>}arr
      * @param {Number} mode
      * @param {String} [techniqueOverride]
-     * @returns {boolean}
+     * @returns {boolean} true if batches accumulated
      */
     GetObjectArrayBatches(arr, mode, techniqueOverride)
     {
@@ -86,7 +86,6 @@ export class Tw2BatchAccumulator2
             for (let i = 0; i < this._reroutedBatches.length; i++)
             {
                 const batch = this._reroutedBatches[i];
-                techniqueOverride = techniqueOverride || batch.techniqueOverride;
                 if (techniqueOverride)
                 {
                     if (!batch.HasTechnique(techniqueOverride))
@@ -95,7 +94,7 @@ export class Tw2BatchAccumulator2
                         i--;
                         continue;
                     }
-                    this._reroutedBatches[i].techniqueOverride = techniqueOverride;
+                    this._reroutedBatches[i]._techniqueOverride = techniqueOverride;
                 }
                 batch.root = object;
                 this.batches.push(batch);
@@ -117,11 +116,11 @@ export class Tw2BatchAccumulator2
 
     /**
      * Renders the accumulated render batches
-     * @param {String} [technique] - technique name
      * @param {Array<*>} [hasRenderedBatches=[]]
+     * @param {String} [technique] - technique name
      * @returns {Array<*>} an array of objects that has rendered batches
      */
-    Render(technique, hasRenderedBatches=[])
+    Render(hasRenderedBatches=[], technique)
     {
         if (this._sortMethod)
         {
@@ -131,6 +130,7 @@ export class Tw2BatchAccumulator2
         for (let i = 0; i < this.batches.length; ++i)
         {
             const batch = this.batches[i];
+
             if (batch.renderMode !== device.RM_ANY)
             {
                 device.SetStandardStates(batch.renderMode);
@@ -138,7 +138,7 @@ export class Tw2BatchAccumulator2
 
             device.perObjectData = batch.perObjectData;
 
-            if (batch.Commit(technique) && batch.root)
+            if (batch.Commit(batch._techniqueOverride || technique))
             {
                 if (hasRenderedBatches.indexOf(batch.root) === -1)
                 {

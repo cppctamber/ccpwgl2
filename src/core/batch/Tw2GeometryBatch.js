@@ -30,7 +30,7 @@ export class Tw2GeometryBatch extends Tw2RenderBatch
     {
         if (this.geometryRes && this.effect)
         {
-            return this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
+            return this.geometryRes.RenderAreas(this.meshIx, this.start, this.count, this.effect, technique);
         }
         return false;
     }

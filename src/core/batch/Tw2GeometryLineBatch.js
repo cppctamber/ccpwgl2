@@ -17,7 +17,7 @@ export class Tw2GeometryLineBatch extends Tw2GeometryBatch
     {
         if (this.geometryRes && this.effect)
         {
-            return this.geometryRes.RenderLines(this.meshIx, this.start, this.count, this.effect, this.techniqueOverride || technique);
+            return this.geometryRes.RenderLines(this.meshIx, this.start, this.count, this.effect, technique);
         }
         return false;
     }

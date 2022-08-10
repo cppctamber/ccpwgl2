@@ -21,7 +21,7 @@ export class Tw2ForwardingRenderBatch extends Tw2RenderBatch
     {
         if (this.geometryProvider)
         {
-            return this.geometryProvider.Render(this, this.techniqueOverride || technique);
+            return this.geometryProvider.Render(this, technique);
         }
         return false;
     }

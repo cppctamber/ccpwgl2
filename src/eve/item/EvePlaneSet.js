@@ -27,7 +27,7 @@ class EvePlaneSetBatch extends Tw2RenderBatch
      */
     HasTechnique(technique)
     {
-        return this.planeSet && this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
+        return this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
     }
 
 }
