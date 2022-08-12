@@ -5,7 +5,8 @@ import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { RS_CULLMODE } from "constant";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
-import { quadExtendedPickingNoPatternV5, skinnedQuadExtendedPickingNoPatternV5 } from "./extended/quadExtendedPickingNoPatternV5";
+import { quadUtilityGlassV5, skinnedQuadUtilityGlassV5 } from "./extended/quatUtilityGlassV5";
+import { quadExtendedPickingGlassV5, skinnedQuadExtendedPickingGlassV5 } from "./extended/quadExtendedPickingGlassV5";
 
 
 const shared = {
@@ -184,12 +185,12 @@ const shared = {
                 r1.x=r1.y*r1.x;
                 
                 // PaintMaskMap
-                r5.x=texture2D(s6,v0.xy).x * ${texture.PaintMaskMap.multiplier};
+                r5.x=texture2D(s6,v0.xy).x;
                 
                 // MaterialMap
                 r5.y=texture2D(s7,v0.xy).x;    
                 
-                // DirtMap (Not required here) <----------------------------------------------------------------
+                // DirtMap (Not required here)
                 r5.z=texture2D(s8,v0.xy).x;   
                 
                 // GlowMap     
@@ -329,8 +330,9 @@ export const quadGlassV5 = {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
         Emissive: quadEmissiveV5.techniques.Main,
-        ExtendedPicking: quadExtendedPickingNoPatternV5.techniques.Main,
+        ExtendedPicking: quadExtendedPickingGlassV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
+        Utility: quadUtilityGlassV5.techniques.Main,
         Main: [
             {
                 vs: shared.vs,
@@ -360,8 +362,9 @@ export const skinnedQuadGlassV5 = {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
-        ExtendedPicking: skinnedQuadExtendedPickingNoPatternV5.techniques.Main,
+        ExtendedPicking: skinnedQuadExtendedPickingGlassV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
+        Utility: skinnedQuadUtilityGlassV5.techniques.Main,
         Main: [
             {
                 vs: vs.skinnedQuadV5_PosBwtTexTanTex,

@@ -138,12 +138,12 @@ export const quadEnvironmentV5 = {
                         r0=cb7[14].xxyy*v0.xyxy;
                         
                          // PaintMaskMap
-                        r1.x=texture2D(s6,r0.zw).x * ${texture.PaintMaskMap.multiplier};
+                        r1.x=texture2D(s6,r0.zw).x;
                         
                         // MaterialMap
                         r1.y=texture2D(s7,r0.zw).x;    
                         
-                        // DirtMap (Not required here) <----------------------------------------------------------------
+                        // DirtMap (Not required here)
                         r1.z=texture2D(s8,r0.zw).x;   
                         
                         // GlowMap     

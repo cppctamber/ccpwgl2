@@ -161,18 +161,20 @@ export const quadHeatV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x * ${texture.PaintMaskMap.multiplier};   
+                        r0.x=texture2D(s6,v0.xy).x;
                          
                         // MaterialMap
                         r0.y=texture2D(s7,v0.xy).x;    
                         
-                        // DirtMap (Not required here) <----------------------------------------------------------------
+                        // DirtMap (Not required here)
                         r0.z=texture2D(s8,v0.xy).x;   
                         
                         // GlowMap     
                         r0.w=texture2D(s9,v0.xy).x; 
                         
-                        gl_FragData[0].w=(-r0.x)+c34.x;
+                        //gl_FragData[0].w=(-r0.x)+c34.x;
+                        gl_FragData[0].w=c34.x;
+                        
                         r0.z=(-cb2[19].x)+cb2[19].y;
                         r0.z=1.0/r0.z;
                         r0.w=(-cb2[19].x)+v7.z;

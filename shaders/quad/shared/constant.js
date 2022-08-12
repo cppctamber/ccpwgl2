@@ -7,7 +7,7 @@ export const GeneralData = {
     ui: {
         group: "General",
         widget: WidgetType.MIXED,
-        components: [ "paint mask influence", "uv selector" ],
+        components: [ "paint mask influence", "uv selector", "selector mode" ],
         description: "general controls for the material",
         display: 1
     }

@@ -55,11 +55,7 @@ export const SelectorMode = {
     value: [ 0, 0, 0, 0 ],
     ui: {
         group: "Selector",
-        components: [
-            "mode",
-            "threshold",
-            "pulse rate",
-        ],
+        components: [ "mode" ],
         widget: WidgetType.MIXED,
         display: 1
     }
@@ -67,6 +63,7 @@ export const SelectorMode = {
 
 export const SelectorColor = createLinearColor({
     name: "SelectorColor",
+    value: [ 0.5, 0.25, 0.0, 1.0 ],
     ui: {
         group: "Selector",
         display: 1

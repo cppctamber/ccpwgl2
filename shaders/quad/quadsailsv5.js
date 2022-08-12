@@ -4,7 +4,6 @@ import { RS_ZWRITEENABLE } from "constant";
 
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
 import { quadUtilitySailsV5, skinnedQuadUtilitySailsV5 } from "./extended/quadUtilitySailsV5";
 import { quadExtendedPickingSailsV5, skinnedQuadExtendedPickingSailsV5 } from "./extended/quadExtendedPickingSailsV5";
@@ -142,12 +141,12 @@ export const quadSailsV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x * ${texture.PaintMaskMap.multiplier};  
+                        r0.x=texture2D(s6,v0.xy).x;  
                         
                         // MaterialMap
                         r0.y=texture2D(s7,v0.xy).x;    
                         
-                        // DirtMap (Not required here) <----------------------------------------------------------------    
+                        // DirtMap (Not required here)
                         r0.z=texture2D(s8,v0.xy).x;   
                         
                         // GlowMap     
