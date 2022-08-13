@@ -189,3 +189,23 @@ export const getID = `
     }
     
 `;
+
+export const ldexp = `
+
+    float ldexp (float mantissa, float exponent)
+    {
+        return exp2(exponent) * mantissa;
+    }
+
+`;
+
+export const frexp = `
+
+    float frexp (float f, out float exponent)
+    {
+        exponent = ceil(log2(f));
+        float mantissa = exp2(-exponent) * f;
+        return mantissa;
+    }
+    
+`;

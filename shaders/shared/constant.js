@@ -28,7 +28,9 @@ export const G_TEXEL_SIZE = {
         description: "Texel size : 1/width, 1/height",
         components: [
             "texel width",
-            "texel height"
+            "texel height",
+            "width",
+            "height"
         ],
         widget: WidgetType.MIXED,
         display: 0

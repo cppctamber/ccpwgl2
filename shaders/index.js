@@ -94,6 +94,11 @@ addShaders(specialFX);
 addShaders(postProcess);
 
 
+export function getShaderByName(name)
+{
+    return shaders.find(x=>x.name === name);
+}
+
 /**
  * Gets an overridden shader path
  * @param {String} shaderPath
