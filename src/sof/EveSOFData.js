@@ -1774,7 +1774,7 @@ export class EveSOFData extends meta.Model
             glows: {
                 useQuads: true,
                 effect: {
-                    effectFilePath: options.boosterGlow.boosterGlow,
+                    effectFilePath: options.effectPath.boosterGlow,
                     textures: {
                         DiffuseMap: options.texturePath.whiteSharp,
                         NoiseMap: options.texturePath.noise
