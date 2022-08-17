@@ -1,7 +1,8 @@
-import { meta, assignIfExists } from "utils";
+import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, quat, mat4 } from "math";
-import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
+import { vec3, quat, mat4, tri3 } from "math";
+import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect, Tw2GeometryMesh } from "core";
+import { RM_DECAL } from "constant";
 
 
 @meta.type("EveSpaceObjectDecal", true)
@@ -47,6 +48,7 @@ export class EveSpaceObjectDecal extends meta.Model
     _localTransformInverse = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
     _parentMeshIndex = 0;
+    _parentGeometryRes = null;
     _rawIndexBuffers = [];
 
     /**
@@ -74,6 +76,18 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         //this.Rebuild();
         this.UpdateValues();
+    }
+
+    /**
+     * Gets the decals edges
+     * @param {Number} [meshIndex=0]
+     * @returns {null|Array}
+     */
+    GetEdges(meshIndex=0)
+    {
+        return this._parentGeometryRes
+            ? EveSpaceObjectDecal.getEdges(this.GetIndexBuffer(meshIndex), this._parentGeometryRes, meshIndex)
+            : null;
     }
 
     /**
@@ -137,16 +151,22 @@ export class EveSpaceObjectDecal extends meta.Model
     }
 
     /**
+     * Gets an index buffer by mesh index
+     * @param {Number} meshIndex
+     * @returns {*|null}
+     */
+    GetIndexBuffer(meshIndex)
+    {
+        return this._rawIndexBuffers[meshIndex] ? this._rawIndexBuffers[meshIndex] : null;
+    }
+
+    /**
      * Gets the current index buffer
      * @returns {Array|null}
      */
     GetCurrentIndexBuffer()
     {
-        if (this._rawIndexBuffers[this._parentMeshIndex])
-        {
-            return this._rawIndexBuffers[this._parentMeshIndex];
-        }
-        return null;
+        return this.GetIndexBuffer(this._parentMeshIndex);
     }
 
     /**
@@ -177,6 +197,8 @@ export class EveSpaceObjectDecal extends meta.Model
         }
     }
 
+    static decalRenderMode = RM_DECAL;
+
     /**
      * Gets batches for rendering
      * @param {Number} mode
@@ -190,6 +212,8 @@ export class EveSpaceObjectDecal extends meta.Model
     GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0, meshIndex = 0)
     {
         if (!this.display || !geometryRes || !geometryRes.IsGood()) return false;
+
+        this._parentGeometryRes = geometryRes;
 
         // Handle mesh index changes
         if (this._parentMeshIndex !== meshIndex)
@@ -208,7 +232,7 @@ export class EveSpaceObjectDecal extends meta.Model
         let effect;
         switch (mode)
         {
-            case device.RM_DECAL:
+            case this.constructor.decalRenderMode: //device.RM_DECAL:
                 effect = this.decalEffect;
                 break;
 
@@ -274,12 +298,14 @@ export class EveSpaceObjectDecal extends meta.Model
         mesh.areas[0].count = this.GetCurrentIndexBuffer().length;
         mesh.indexType = device.gl.UNSIGNED_SHORT;
 
-        batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);
+        let rendered = batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);
 
         mesh.indexes = bkIB;
         mesh.areas[0].start = bkStart;
         mesh.areas[0].count = bkCount;
         mesh.indexType = bkIndexType;
+
+        return rendered;
     }
 
     /**
@@ -376,3 +402,67 @@ export class EveSpaceObjectDecal extends meta.Model
     };
 
 }
+
+EveSpaceObjectDecal.getEdges = (function()
+{
+    function isEqualEdge(a1, a2, b1, b2)
+    {
+        return vec3.equals(a1, b1) && vec3.equals(a2, b2) || vec3.equals(a1, b2) && vec3.equals(a2, b1);
+    }
+
+    let v1, v2, v3;
+
+    return function getEdges(indices, geometryRes, meshIndex)
+    {
+        if (!v1)
+        {
+            v1 = vec3.create();
+            v2 = vec3.create();
+            v3 = vec3.create();
+        }
+
+        const
+            edges = [],
+            { declaration, bufferData } = geometryRes.meshes[meshIndex],
+            { offset } = declaration.FindUsage(0, 0),
+            stride = declaration.stride / 4;
+
+        for (let i = 0; i < indices.length; i += 3)
+        {
+            Tw2GeometryMesh.GetVertexElement(v1, indices[i + 0], stride, offset, 3, bufferData);
+            Tw2GeometryMesh.GetVertexElement(v2, indices[i + 1], stride, offset, 3, bufferData);
+            Tw2GeometryMesh.GetVertexElement(v3, indices[i + 2], stride, offset, 3, bufferData);
+
+            const edgeList = [ [ v1, v2 ], [ v2, v3 ], [ v3, v1 ] ];
+
+            for (let x = 0; x < 3; x++)
+            {
+                const
+                    start = edgeList[x][0],
+                    end = edgeList[x][1];
+
+                const found = edges.find(x => isEqualEdge(x.start, x.end, start, end));
+                if (found)
+                {
+                    found.faces.push(indices[i]);
+                }
+                else
+                {
+                    edges.push({
+                        start: vec3.clone(start),
+                        end: vec3.clone(end),
+                        faces: [ indices[i] ]
+                    });
+                }
+            }
+        }
+
+        return edges
+            .filter(x => x.faces.length === 1)
+            .map(x =>
+            {
+                return { start: x.start, end: x.end, faceIndex: x.faces[0] };
+            });
+    };
+
+})();
