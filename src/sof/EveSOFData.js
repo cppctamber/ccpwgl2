@@ -1774,7 +1774,7 @@ export class EveSOFData extends meta.Model
             glows: {
                 useQuads: true,
                 effect: {
-                    effectFilePath: options.texturePath.boosterGlow,
+                    effectFilePath: options.boosterGlow.boosterGlow,
                     textures: {
                         DiffuseMap: options.texturePath.whiteSharp,
                         NoiseMap: options.texturePath.noise
@@ -1782,6 +1782,7 @@ export class EveSOFData extends meta.Model
                 }
             }
         });
+
     }
 
     /**
