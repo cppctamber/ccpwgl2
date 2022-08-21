@@ -201,7 +201,7 @@ export class Tw2Mesh extends meta.Model
         if (this.display && this.IsGood() && !ray.IsMasked(this))
         {
             //console.log("Intersecting mesh " + this.name);
-            return this.geometryResource.Intersect(ray, intersects, worldTransform, cache);
+            return this.geometryResource.Intersect(ray, intersects, worldTransform, cache, this.meshIndex);
         }
     }
 

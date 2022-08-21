@@ -23,10 +23,10 @@ import {
 
 // Todo: Change to registration process
 const readers = {
-    [OBJReader.extension.toLowerCase()] : OBJReader,
-    [CAKEReader.extension.toLowerCase()] : CAKEReader,
-    [GR2JsonReader.extension.toLowerCase()] : GR2JsonReader,
-    [WBGReader.extension.toLowerCase()] : WBGReader
+    [OBJReader.extension.toLowerCase()]: OBJReader,
+    [CAKEReader.extension.toLowerCase()]: CAKEReader,
+    [GR2JsonReader.extension.toLowerCase()]: GR2JsonReader,
+    [WBGReader.extension.toLowerCase()]: WBGReader
 };
 
 /**
@@ -89,15 +89,16 @@ export class Tw2GeometryRes extends Tw2Resource
 
     /**
      *
-     * @param ray
-     * @param intersects
-     * @param worldTransform
-     * @param [cache={}]
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache={}]
+     * @param {Number} MeshIndex
      * @returns {Array}
      */
-    Intersect(ray, intersects, worldTransform, cache = {})
+    Intersect(ray, intersects, worldTransform, cache = {}, meshIndex = 0)
     {
-        console.log("Intersecting geometry resource: " + this.path);
+        //console.log("Intersecting geometry resource: " + this.path);
 
         this.RebuildBounds();
         const intersect = ray.IntersectBounds(this.minBounds, this.maxBounds, worldTransform);
@@ -105,19 +106,16 @@ export class Tw2GeometryRes extends Tw2Resource
 
         const internalIntersects = [];
 
-        if (this.meshes.length)
+        const mesh = this.meshes[meshIndex];
+        if (mesh)
         {
-            for (let i = 0; i < this.meshes.length; i++)
-            {
-                this.meshes[i]
-                    .Intersect(ray, intersects, worldTransform, cache)
-                    .forEach(intersect =>
-                    {
-                        intersect.geometryResource = this;
-                        intersect.meshIndex = i;
-                        internalIntersects.push(intersect);
-                    });
-            }
+            mesh.Intersect(ray, intersects, worldTransform, cache)
+                .forEach(intersect =>
+                {
+                    intersect.geometryResource = this;
+                    intersect.meshIndex = meshIndex;
+                    internalIntersects.push(intersect);
+                });
         }
 
         return internalIntersects.sort(ray._sortFunction);
@@ -377,7 +375,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Number} instanceCount
      * @returns {Boolean}
      */
-    RenderAreasInstanced(meshIx, start, count, effect, technique=effect.defaultTechnique, instanceVB, instanceDecl, instanceStride, instanceCount)
+    RenderAreasInstanced(meshIx, start, count, effect, technique = effect.defaultTechnique, instanceVB, instanceDecl, instanceStride, instanceCount)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
@@ -446,7 +444,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {String} technique
      * @returns {Boolean}
      */
-    RenderAreas(meshIx, start, count, effect, technique=effect.defaultTechnique)
+    RenderAreas(meshIx, start, count, effect, technique = effect.defaultTechnique)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
@@ -518,7 +516,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {String} technique
      * @returns {Boolean}
      */
-    RenderLines(meshIx, start, count, effect, technique=effect.defaultTechnique)
+    RenderLines(meshIx, start, count, effect, technique = effect.defaultTechnique)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
