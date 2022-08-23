@@ -441,6 +441,15 @@ vec3.exponentialDecay = function(out, omega0, torque, I, drag, time)
 };
 
 /**
+ * Creates a spherical
+ * @returns {vec3}
+ */
+vec3.createSpherical = function()
+{
+    return vec3.fromValues(0,0,1);
+};
+
+/**
  * Sets a vec3 with cartesian coordinates from spherical coordinates and an optional center point
  * @param {vec3} out       - receiving vec3
  * @param {vec3} spherical - source vec3 with spherical coordinates (phi, theta, radius)
@@ -482,7 +491,7 @@ vec3.getSpherical = function(out, a)
 
     if (radius !== 0)
     {
-        phi = Math.acos(Math.max(a[1] / radius, Math.min(-1, 1)));
+        phi = Math.acos(num.clamp(a[1]/radius,-1, 1));
         theta = Math.atan2(a[0], a[2]);
     }
 
@@ -857,3 +866,5 @@ vec3.fromMat3Column = function(out, m, index)
 {
     return vec3.fromArray(out, m, index * 3);
 };
+
+
