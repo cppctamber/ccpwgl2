@@ -69,12 +69,15 @@ export class Tw2BatchAccumulator
      * Renders the accumulated render batches
      * @param {String} [technique] - technique name
      */
-    Render(technique)
+    Render(technique="Main")
     {
         if (this._sortMethod)
         {
             this.batches.sort(this._sortMethod);
         }
+
+        this.committed = this.committed || [];
+        this.committed.splice(0);
 
         for (let i = 0; i < this.batches.length; ++i)
         {
@@ -90,7 +93,7 @@ export class Tw2BatchAccumulator
                 }
 
                 device.perObjectData = this.batches[i].perObjectData;
-                this.batches[i].Commit(technique);
+                this.committed.push([ this.batches[i], this.batches[i].Commit(technique) ]);
             }
         }
     }

@@ -415,6 +415,24 @@ export class Tw2DepthRenderTarget
     }
 
     /**
+     * Sets the render target, calls a method, then unsets the render target
+     * @param {Function} func
+     * @param {Boolean}
+     */
+    SetCallUnset(func)
+    {
+        if (!this.IsGood()) return false;
+
+        const { gl, width, height } = tw2;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+        gl.viewport(0, 0, this.width, this.height);
+        func(this);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, width, height);
+        return true;
+    }
+
+    /**
      * Reads pixels
      * @param {Uint8Array} uint8array
      * @param {Number} x
@@ -432,13 +450,6 @@ export class Tw2DepthRenderTarget
 
         const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
-
-        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
-        {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            return null;
-        }
-
         gl.readPixels(
             Math.floor(x),
             Math.floor(y),

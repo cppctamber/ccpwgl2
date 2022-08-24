@@ -1,8 +1,16 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
-import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2DepthRenderTarget, Tw2Picker, Tw2RenderTarget } from "core";
-import { RM_OPAQUE } from "constant";
+import {
+    Tw2BatchAccumulator,
+    Tw2RawData,
+    Tw2Frustum,
+    Tw2BatchAccumulator2,
+    Tw2DepthRenderTarget,
+    Tw2Effect,
+    Tw2PostProcess
+} from "core";
+import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
 
 
 @meta.type("EveSpaceScene")
@@ -24,12 +32,15 @@ export class EveSpaceScene extends meta.Model
     enableShadows = false;
 
     @meta.path
+    @meta.isPrivate
     envMap1ResPath = "";
 
     @meta.path
+    @meta.isPrivate
     envMap2ResPath = "";
 
     @meta.path
+    @meta.isPrivate
     envMapResPath = "";
 
     @meta.quaternion
@@ -51,14 +62,13 @@ export class EveSpaceScene extends meta.Model
     @meta.list("EveObject")
     objects = [];
 
-    @meta.notImplemented
     @meta.path
+    @meta.isPrivate
     postProcessPath = "";
 
-    @meta.notImplemented
-    @meta.struct()
-    postprocess = null;
-    
+    @meta.struct("Tw2PostProcess")
+    postProcess = null;
+
     @meta.color
     sunDiffuseColor = vec4.fromValues(1, 1, 1, 1);
     
@@ -69,6 +79,7 @@ export class EveSpaceScene extends meta.Model
     display = true;
 
     @meta.vector3
+    @meta.isPrivate
     envMapScaling = vec3.fromValues(1, 1, 1); // Should this come from the background effect?
 
     @meta.list("EveLensflare")
@@ -79,10 +90,6 @@ export class EveSpaceScene extends meta.Model
 
     @meta.color
     clearColor = vec4.fromValues(0, 0, 0, 1);
-    
-    @meta.notImplemented
-    @meta.struct("Tr2PostProcess")
-    postProcess = null;
 
     @meta.notImplemented
     @meta.struct("Tw2Effect")
@@ -160,6 +167,15 @@ export class EveSpaceScene extends meta.Model
     
     //  ------------------[ ccpwgl ]--------------------
 
+    @meta.uint
+    depthPrecision = 16;
+
+    @meta.boolean
+    depthCalculation = false;
+
+    @meta.float
+    distortionOffset = 1.28;
+
     @meta.boolean
     useNebulaAsReflection = true;
 
@@ -171,7 +187,9 @@ export class EveSpaceScene extends meta.Model
         backgroundObjects: true,
         clearColor: true,
         debug: false,
-        //environment: true,
+        distortion: true,
+        distortionPreview: false,
+        environment: true,
         environmentReflection: true,
         environmentDiffuse: true,
         environmentBlur: true,
@@ -181,10 +199,12 @@ export class EveSpaceScene extends meta.Model
         objects: true,
         planets: true,
         post: true,
-        //shadow: true,
-        //starField: true
+        shadow: true,
     };
-    
+
+    @meta.color
+    selectorColor=vec4.fromValues(0.5,0.3,0.0,1.0);
+
     _shadowView = mat4.create();
     _shadowProjection = mat4.create();
     _shadowViewProjection = mat4.create();
@@ -205,6 +225,13 @@ export class EveSpaceScene extends meta.Model
     _envMap1Res = null;
     _envMap2Res = null;
 
+    _internalEffect = null;
+    _internalRenderTarget = null;
+    _depthAccumulator = null;
+    _depthTexture = null;
+    _distortionAccumulator = null;
+    _distortionPostProcess = null;
+    _depthRendered = false;
 
     /**
      * Constructor
@@ -232,11 +259,7 @@ export class EveSpaceScene extends meta.Model
      */
     OnValueChanged()
     {
-        if (this._distortionEffect)
-        {
-            this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
-        }
-
+        tw2.SetVariableValue("SelectorColor", this.selectorColor);
         // Todo: Handle changes to post
         // Todo: Handle changes to environment paths
     }
@@ -476,6 +499,11 @@ export class EveSpaceScene extends meta.Model
         }
 
         this.PerChildObject("Update", dt);
+
+        if (this.postProcess)
+        {
+            this.postProcess.Update(dt, this);
+        }
     }
 
     /**
@@ -555,6 +583,8 @@ export class EveSpaceScene extends meta.Model
         device.gl.depthRange(0, 0.9);
     }
 
+    _customPass = null;
+
     /**
      * Updates children's view dependent data and renders them
      * @param {Number} dt - deltaTime
@@ -616,7 +646,11 @@ export class EveSpaceScene extends meta.Model
                 this.objects[i].GetBatches(d.RM_DECAL, this._accumulator);
                 this.objects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
                 this.objects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
-                if (show.distortionPreview) this.objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
+
+                if (show.distortionPreview)
+                {
+                    this.objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
+                }
             }
         }
 
@@ -659,11 +693,6 @@ export class EveSpaceScene extends meta.Model
             // TODO: Implement shadow effect
         }
 
-        if (this.postProcess)
-        {
-            // TODO: Implement post processing
-        }
-
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
@@ -672,6 +701,154 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
+        if (this._customPass)
+        {
+            this._customPass(dt, this);
+        }
+
+        if (this.postProcess)
+        {
+            this.postProcess.Render(dt);
+        }
+
+        this.RenderDepth();
+        this.RenderDistortion();
+    }
+
+    /**
+     * Renders depth
+     * @param {Number} dt
+     * @param {Boolean} [force]
+     * @returns {boolean} true if completed
+     */
+    RenderDepth(dt, force)
+    {
+        this._depthRendered = false;
+
+        if (!this.depthCalculation && !force)
+        {
+            return false;
+        }
+
+        if (!this._depthAccumulator)
+        {
+            this._depthAccumulator = new Tw2BatchAccumulator2();
+        }
+        else
+        {
+            this._depthAccumulator.Clear();
+        }
+
+        if (!this._internalRenderTarget)
+        {
+            if (!tw2.HasVariable("EveSpaceSceneDepthMap")) tw2.SetVariable("EveSpaceSceneDepthMap", "");
+            const DepthTexture = tw2.GetVariable("EveSpaceSceneDepthMap");
+            this._internalRenderTarget = new Tw2DepthRenderTarget("InternalPasses", tw2.width, tw2.height, this.depthPrecision, DepthTexture);
+        }
+        else
+        {
+            this._internalRenderTarget.Create(tw2.width, tw2.height, this.depthPrecision);
+        }
+
+        if (this.visible.objects)
+        {
+            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_DEPTH, "Main");
+            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
+        }
+
+        if (this.visible.backgroundObjects)
+        {
+            this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
+            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
+        }
+
+        this._internalRenderTarget.SetCallUnset(() =>
+        {
+            tw2.ClearBufferBits(true, true, true);
+            this._depthAccumulator.Render();
+        });
+
+        this._depthRendered = true;
+        return true;
+    }
+
+    /**
+     * Renders distortion
+     * @param {Number} dt
+     * @returns {boolean} true if completed
+     */
+    RenderDistortion(dt)
+    {
+        if (!this.visible.distortion) return false;
+
+        if (!this._distortionEffect || !this._distortionPostProcess || !this._internalRenderTarget)
+        {
+            if (!this._internalRenderTarget)
+            {
+                if (!tw2.HasVariable("EveSpaceSceneDepthMap")) tw2.SetVariable("EveSpaceSceneDepthMap", "");
+                const DepthTexture = tw2.GetVariable("EveSpaceSceneDepthMap");
+                this._internalRenderTarget = new Tw2DepthRenderTarget("InternalPasses", tw2.width, tw2.height, this.depthPrecision, DepthTexture);
+            }
+
+            this._distortionEffect = this._distortionEffect || Tw2Effect.from({
+                name: "Distortion",
+                effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.sm_hi",
+                parameters: {
+                    MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
+                },
+                textures: {
+                    TexDistortion: ""
+                }
+            });
+
+            this._distortionEffect.parameters.TexDistortion.AttachTextureRes(this._internalRenderTarget.texture);
+            this._distortionPostProcess = this._distortionPostProcess || new Tw2PostProcess("Distortion");
+            this._distortionPostProcess.stages[0] = this._distortionEffect;
+        }
+
+        if (!this._distortionEffect.IsGood())
+        {
+            return false;
+        }
+
+        this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
+
+        if (!this._distortionAccumulator)
+        {
+            this._distortionAccumulator = new Tw2BatchAccumulator2();
+        }
+        else
+        {
+            this._distortionAccumulator.Clear();
+        }
+
+        if (this.visible.objects)
+        {
+            this._distortionAccumulator.GetObjectArrayBatches(this.objects, RM_DISTORTION, "Main");
+        }
+
+        if (this.visible.backgroundObjects)
+        {
+            this._distortionAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DISTORTION, "Main");
+        }
+
+        if (!this._distortionAccumulator.length)
+        {
+            return true;
+        }
+
+        if (!this._depthRendered)
+        {
+            this.RenderDepth(dt, true);
+        }
+
+        this._internalRenderTarget.SetCallUnset(() =>
+        {
+            tw2.ClearBufferBits(true, false, true);
+            this._distortionAccumulator.Render();
+        });
+
+        this._distortionPostProcess.Render(dt);
     }
 
     /**

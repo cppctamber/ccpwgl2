@@ -70,18 +70,18 @@ export class Tw2BatchAccumulator2
      * @param {*} object
      * @param {Number} mode
      * @param {String} techniqueOverride
-     * @returns {boolean} true if the object has renderable batches
+     * @returns {Number} Amount of renderable batches (not correct unless overridden!)
      */
     GetObjectBatches(object, mode, techniqueOverride)
     {
-        let hasBatches = false;
+        let batchCount = 0;
         this._reroutedBatches.splice(0);
 
         if (object && object.GetBatches)
         {
-            this._rerouted = true;
+            this._reroute = true;
             object.GetBatches(mode, this);
-            this._rerouted = false;
+            this._reroute = false;
 
             for (let i = 0; i < this._reroutedBatches.length; i++)
             {
@@ -94,14 +94,14 @@ export class Tw2BatchAccumulator2
                         i--;
                         continue;
                     }
-                    this._reroutedBatches[i]._techniqueOverride = techniqueOverride;
+                    batch._techniqueOverride = techniqueOverride;
                 }
                 batch.root = object;
                 this.batches.push(batch);
-                hasBatches = true;
+                batchCount++;
             }
         }
-        return hasBatches;
+        return batchCount;
     }
 
     /**

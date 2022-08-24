@@ -374,6 +374,9 @@ export class Tw2PostProcess extends meta.Model
             tw2.device.RenderFullScreenQuad(this._visibleStages[i]);
         }
 
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, width, height);
+
         return true;
     }
 
