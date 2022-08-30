@@ -3,6 +3,7 @@ import { mat4, box3, sph3, tri3, vec3, ray3, lne3 } from "math";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 import { ErrIndexBounds, Tw2Error } from "core/Tw2Error";
+import { tw2 } from "global";
 
 
 @meta.type("Tw2GeometryMesh")
@@ -68,12 +69,54 @@ export class Tw2GeometryMesh
     _boundsDirty = true;
 
     /**
+     * Clears the mesh data
+     */
+    Clear()
+    {
+        this.declaration.Clear();
+        this.areas.splice(0);
+        this.boneBindings.splice(0);
+        this.boneBounds.splice(0);
+        this.blendShapes.splice(0);
+        vec3.set(this.minBounds, 0,0,0);
+        vec3.set(this.maxBounds, 0,0,0);
+        vec3.set(this.boundsSpherePosition, 0, 0, 0);
+        this.boundsSphereRadius = 0;
+
+        this.bufferLength = 0;
+        this.buffer = null;
+        this.indexData = null;
+
+        const { gl } = tw2;
+
+        if (this.bufferData)
+        {
+            gl.deleteBuffer(this.bufferData);
+            this.bufferData = null;
+        }
+
+        if (this.indexes)
+        {
+            gl.deleteBuffer(this.indexes);
+            this.indexes = null;
+        }
+
+        this._faces = 0;
+        this._vertices = 0;
+        this._areas = 0;
+        this._boundsDirty = true;
+    }
+
+    /**
      * Clears system mirror data
      */
     ClearSystemMirror()
     {
-        this.bufferData = null;
-        this.indexData = null;
+        if (!this.blendShapes.length)
+        {
+            this.bufferData = null;
+            this.indexData = null;
+        }
     }
 
     /**
@@ -156,7 +199,7 @@ export class Tw2GeometryMesh
         if (!pDecl) return [];
 
         const areaIndex = this.areas.indexOf(area);
-        console.log("Intersecting geometryArea " + areaIndex);
+        //console.log("Intersecting geometryArea " + areaIndex);
 
         this.RebuildBounds();
         const intersect = ray.IntersectBounds(area.minBounds, area.maxBounds, worldTransform);
@@ -187,7 +230,7 @@ export class Tw2GeometryMesh
 
         const { pointLocal, tri3_0, vec3_0, vec3_1, vec3_2, lne3_0 } = Tw2GeometryMesh.global;
 
-        console.log("Intersecting area faces...");
+        //console.log("Intersecting area faces...");
 
         const internalIntersects = [];
         for (let i = 0; i < count; i++)
@@ -222,6 +265,7 @@ export class Tw2GeometryMesh
                         item: this,
                         areaIndex,
                         faceIndex: index,
+                        positionIndices: this.GetFaceVertexIndices(index),
                         edgeStartIndex: debug.vertexIndices[debug.edgeStart],
                         edgeEndIndex: debug.vertexIndices[debug.edgeEnd],
                         vertexIndex: debug.vertexIndices[debug.closest],

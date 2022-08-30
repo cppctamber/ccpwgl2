@@ -114,6 +114,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 {
                     intersect.geometryResource = this;
                     intersect.meshIndex = meshIndex;
+                    intersect.mesh = mesh;
                     internalIntersects.push(intersect);
                 });
         }
@@ -240,13 +241,11 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
     /**
-     * Prepares the object
-     * TODO: Normalize geometry readers
-     * @param {*} data
+     * Clears the geometry data
      */
-    Prepare(data)
+    Clear()
     {
-        // Clear current geometry
+        for (let i = 0; i < this.meshes.length; i++) this.meshes[i].Clear();
         this.meshes.splice(0);
         this.models.splice(0);
         this.animations.splice(0);
@@ -254,6 +253,16 @@ export class Tw2GeometryRes extends Tw2Resource
         vec3.set(this.maxBounds, 0, 0, 0);
         vec3.set(this.boundsSpherePosition, 0, 0, 0);
         this.boundsSphereRadius = 0;
+    }
+
+    /**
+     * Prepares the object
+     * TODO: Normalize geometry readers
+     * @param {*} data
+     */
+    Prepare(data)
+    {
+        this.Clear();
 
         const Reader = readers[this._extension];
         if (!Reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
