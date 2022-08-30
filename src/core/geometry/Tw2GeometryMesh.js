@@ -19,14 +19,16 @@ export class Tw2GeometryMesh
     @meta.list("Tw2GeometryMeshArea")
     areas = [];
 
-    @meta.vector
+    @meta.struct("WebGLBuffer")
+    @meta.isPrivate
     buffer = null;
 
     @meta.uint
+    @meta.isPrivate
     bufferLength = 0;
 
-    @meta.struct("WebGLBuffer")
     @meta.isPrivate
+    @meta.vector
     bufferData = null;
 
     @meta.struct("WebGLBuffer")
@@ -34,9 +36,11 @@ export class Tw2GeometryMesh
     indexes = null;
 
     @meta.vector
+    @meta.isPrivate
     indexData = null;
 
     @meta.uint
+    @meta.isPrivate
     indexType = 0;
 
     @meta.vector3
@@ -84,15 +88,15 @@ export class Tw2GeometryMesh
         this.boundsSphereRadius = 0;
 
         this.bufferLength = 0;
-        this.buffer = null;
+        this.bufferData = null;
         this.indexData = null;
 
         const { gl } = tw2;
 
-        if (this.bufferData)
+        if (this.buffer)
         {
-            gl.deleteBuffer(this.bufferData);
-            this.bufferData = null;
+            gl.deleteBuffer(this.buffer);
+            this.buffer = null;
         }
 
         if (this.indexes)
