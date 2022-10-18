@@ -235,7 +235,7 @@ export class EveSOFDataFaction extends meta.Model
      */
     GetResPathInsert(hull, path, resPathInsert)
     {
-        if (!resPathInsert || resPathInsert.toUpperCase() === "NONE")
+        if (!resPathInsert || resPathInsert.toUpperCase() === "NONE" || resPathInsert.toUpperCase() === "BASE")
         {
             if (!this.resPathInsert)
             {
@@ -310,8 +310,8 @@ export class EveSOFDataFaction extends meta.Model
      */
     static IsValidResPathInsert(hull, resPathInsert)
     {
-        const insert = resPathInserts[resPathInsert];
-        return insert ? insert.includes(hull) : false;
+        const inserts = resPathInserts[hull];
+        return inserts ? inserts.includes(resPathInsert) : false;
     }
 
     /**
@@ -321,20 +321,7 @@ export class EveSOFDataFaction extends meta.Model
      */
     static GetHullResPathInserts(hull)
     {
-        if (!this.resPathInserts)
-        {
-            this.resPathInserts = Object.assign({}, resPathInserts);
-        }
-
-        const results = [];
-        for (const faction in this.resPathInserts)
-        {
-            if (this.resPathInserts.hasOwnProperty(faction) && this.resPathInserts[faction].includes(hull))
-            {
-                results.push(faction);
-            }
-        }
-        return results.sort();
+        return resPathInserts[hull] ? Array.from(resPathInserts[hull]) : [];
     }
 
     /**

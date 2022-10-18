@@ -154,6 +154,80 @@ export class EveSOFData extends meta.Model
     };
 
     /**
+     * Creates a triglavian ball child container
+     * @param {vec3|Array} translation
+     * @param {vec3|Array} scaling
+     * @returns {EveChildContainer}
+     */
+    static createTriglavianBall = function (translation, scaling)
+    {
+        const container = EveChildContainer.from({
+            name: "TempTrigSphereContainer",
+            translation,
+            scaling
+        });
+
+        const meshContainer = EveChildMesh.from({
+            name: "Sphere",
+            minScreenSize: 2,
+            rotation: [ 0.7069846391677856, 0, 0, 0.70722895860672 ],
+            scaling: [ 22.5, 22.5, 22.5 ],
+            useSpaceObjectData: false
+        });
+
+        meshContainer.mesh = Tw2Mesh.from({
+            name: "SphereMesh",
+            geometryResPath: "cdn:/graphics/generic/unitsphere/unitsphere_4k_01a.gr2_json",
+            additiveAreas: [
+                {
+                    name: "Additive effect",
+                    effect: {
+                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.sm_hi",
+                        parameters: {
+                            FresnelFactors: [ 2.5, 12, 0, 0 ],
+                            DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
+                            TextureScroll1: [ -0.10000000149011612, 0.30000001192092896, 0, 0 ],
+                            TextureScroll2: [ 0.10000000149011612, 0.20000000298023224, 0, 0 ],
+                            TextureTransform1: [ 0, 0, 1, 1 ],
+                            TextureTransform2: [ 0, 0, 1, 1.25 ]
+                        },
+                        textures: {
+                            DiffuseMap1: "cdn:/texture/fx/caustics/caustic_13.png",
+                            DiffuseMap2: "cdn:/texture/fx/caustics/caustic_16b.png",
+                            MaskMap: "cdn:/texture/fx/gradients/capmask_tight_01c.png"
+                        }
+                    }
+                }
+            ],
+            transparentAreas: [
+                {
+                    name: "Transparent effect",
+                    effect: {
+                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.sm_hi",
+                        parameters: {
+                            DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
+                            TextureScroll1: [ 0, 0, 0, 0 ],
+                            TextureScroll2: [ 0, 0, 0, 0 ],
+                            TextureTransform1: [ 0, 0, 1, 1 ],
+                            TextureTransform2: [ 0, 0, 1, 1 ],
+                            FresnelFactors: [ 4, 1, 0, 0 ]
+                        },
+                        textures: {
+                            DiffuseMap1: "cdn:/texture/global/white.png",
+                            DiffuseMap2: "cdn:/texture/global/white.png",
+                            MaskMap: "cdn:/texture/global/white.png"
+                        }
+                    }
+                }
+            ]
+        });
+
+        container.objects.push(meshContainer);
+        return container;
+    };
+
+
+    /**
      * Initializes the sof data
      * @param {Object}  options
      */
@@ -822,6 +896,51 @@ export class EveSOFData extends meta.Model
         this.SetupObservers(...args);
         await this.SetupChildren(...args);
         this.SetupControllers(...args);
+
+        // Temporarily add triglavian balls
+        if (sof.hull.name.indexOf("tg") === 0)
+        {
+            if (!obj.effectChildren.find(x=>x.name==="TempTrigSphereContainer"))
+            {
+                let trigBall;
+                switch (sof.hull.name)
+                {
+                    case "tgb01_t1":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -57.502, 151.432 ], [ 2.5, 2.5, 2.5 ]);
+                        break;
+
+                    case "tgbc01_t1":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, 0, -22.64 ], [ 1.5, 1.5, 1.5 ]);
+                        break;
+
+                    case "tgc01_t1":
+                    case "tgc01_t2":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -4.1, -0.278 ], [ .8, .8, .8 ]);
+                        break;
+
+                    case "tgc02_t1":
+                    case "tgc02_t2":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -17.35, 125.826 ],[ .8, .8, .8 ]);
+                        break;
+
+                    case "tgde01_t1":
+                    case "tgde01_t2":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, 1.85, 0 ], [ .4, .4, .4 ]);
+                        break;
+
+                    case "tgdn01_t1":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, 47.343, 421.454 ],[ 6, 6, 6 ]);
+                        break;
+
+                    case "tgf01_t1":
+                    case "tgf01_t2":
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -3.969, -0.633 ],[ .25, .25, .25 ]);
+                        break;
+                }
+                if (trigBall) obj.effectChildren.push(trigBall);
+            }
+        }
+
         return obj;
     }
 
@@ -964,12 +1083,6 @@ export class EveSOFData extends meta.Model
         }
          */
     }
-
-    /**
-     * Temporary
-     * @type {{}}
-     */
-    static knownGeometryResPath = {};
 
     /**
      *
@@ -1717,8 +1830,8 @@ export class EveSOFData extends meta.Model
             glowColor: src.glowColor,
             glowScale: src.glowScale * boosterGlowScale,
             haloColor: src.haloColor,
-            haloScaleX: src.haloScaleX * boosterHaloScale,
-            haloScaleY: src.haloScaleY * boosterHaloScale,
+            haloScaleX: 0, //src.haloScaleX * boosterHaloScale,
+            haloScaleY: 0, //src.haloScaleY * boosterHaloScale,
             // TODO: Add support for new booster parameters
             // lightColor vec4
             // lightFlickerAmplitude float

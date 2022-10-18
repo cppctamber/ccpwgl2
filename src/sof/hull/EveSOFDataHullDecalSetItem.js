@@ -14,7 +14,7 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     boneIndex = -1;
 
     @meta.list()
-    indexBuffers = null;
+    indexBuffers = [];
 
     @meta.uint
     glowColorType = 0;
