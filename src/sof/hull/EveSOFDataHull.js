@@ -30,6 +30,9 @@ export class EveSOFDataHull extends meta.Model
     @meta.uint
     buildClass = 0;
 
+    @meta.uint
+    buildFilter = -1;
+
     @meta.boolean
     castShadow = false;
 

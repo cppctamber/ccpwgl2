@@ -61,6 +61,15 @@ export class EveSOFDataGeneric extends meta.Model
     @meta.list("EveSOFDataVisibilityGroup")
     visibilityGroups = [];
 
+    get useUnpackedTextures()
+    {
+        return Tw2Effect.UNPACKED_TEXTURES;
+    }
+
+    set useUnpackedTextures(bool)
+    {
+        Tw2Effect.UNPACKED_TEXTURES = !!bool;
+    }
 
     /**
      * Initializer
@@ -74,7 +83,7 @@ export class EveSOFDataGeneric extends meta.Model
             // TODO: Figure out default parameters and textures for unpacked banner shader
         }
 
-        Tw2Effect.UNPACKED_TEXTURES = this.HasUnpackedTextures();
+        this.useUnpackedTextures = true;
     }
 
     /**

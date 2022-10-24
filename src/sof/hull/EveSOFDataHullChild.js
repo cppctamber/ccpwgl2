@@ -10,6 +10,9 @@ export class EveSOFDataHullChild extends meta.Model
     name = "";
 
     @meta.uint
+    buildFilter = -1;
+
+    @meta.uint
     groupIndex = -1;
 
     @meta.uint

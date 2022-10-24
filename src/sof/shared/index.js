@@ -10,4 +10,4 @@ export * from "./EveSOFDataMaterial";
 export * from "./EveSOFDataParameter";
 export * from "./EveSOFDataTexture";
 export * from "./EveSOFDataTransform";
-
+export * from "./EveSOFDNADescriptor";

@@ -9,6 +9,9 @@ export * from "./EveSOFDataHullChild";
 export * from "./EveSOFDataHullController";
 export * from "./EveSOFDataHullDecalSet";
 export * from "./EveSOFDataHullDecalSetItem";
+export * from "./EveSOFDataHullExtensionPlacementDistributionParentMatch";
+export * from "./EveSOFDataHullExtensionPlacementDistributionPlacement";
+export * from "./EveSOFDataHullExtensionPlacement";
 export * from "./EveSOFDataHullHazeSet";
 export * from "./EveSOFDataHullHazeSetItem";
 export * from "./EveSOFDataHullLightSet";
@@ -26,4 +29,6 @@ export * from "./EveSOFDataHullSpriteLineSet";
 export * from "./EveSOFDataHullSpriteLineSetItem";
 export * from "./EveSOFDataHullSpriteSet";
 export * from "./EveSOFDataHullSpriteSetItem";
+
+
 

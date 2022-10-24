@@ -55,6 +55,9 @@ export class EveSOFData extends meta.Model
     @meta.list("EveSOFDataHull")
     hull = [];
 
+    @meta.list("EveSOFDataLayout")
+    layout = [];
+
     @meta.list("EveSOFDataMaterial")
     material = [];
 
@@ -1261,6 +1264,14 @@ export class EveSOFData extends meta.Model
 
                 // Update effect
                 area.effect.SetValues(eff, { controller: this });
+
+                // TODO: Figure out why ambient occlusion textures aren't defined any more!
+                // Add ambient occlusion textures back in
+                if (area.effect.parameters.AlbedoMap)
+                {
+                    const str = area.effect.parameters.AlbedoMap.resourcePath;
+                    area.effect.SetParameters({ AOMap: str.replace("_a", "_o") });
+                }
 
                 //  Update from custom masks
                 for (let i = 0; i < obj.customMasks.length; i++)
