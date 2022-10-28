@@ -30,26 +30,30 @@ export class Tw2ResMan extends Tw2EventEmitter
     _systemMirror = false;
 
     /**
-     * Sets system mirror
-     * @param {Boolean} bool
+     * Temporary
      */
     set systemMirror(bool)
     {
+        this.tw2.Warning({
+            name: "System Mirror",
+            message: "resMan.systemMirror is deprecated, use resMan.SetSystemMirror instead "
+        });
+
         this._systemMirror = !!bool;
-        const geometries = this.motherLode.Filter((key, object) => object instanceof Tw2GeometryRes ? object : null);
-        for (let i = 0; i < geometries.length; i++)
-        {
-            geometries[i].systemMirror = this._systemMirror;
-        }
     }
 
     /**
-     * Gets system mirror status
-     * @returns {boolean}
+     * Temporary
+     * @returns {*|boolean}
      */
     get systemMirror()
     {
-        return this._systemMirror;
+        this.tw2.Warning({
+            name: "System Mirror",
+            message: "resMan.systemMirror is deprecated, use resMan.GetSystemMirror instead "
+        });
+
+        return this._systemMirror = false;
     }
 
     /**
@@ -82,7 +86,6 @@ export class Tw2ResMan extends Tw2EventEmitter
         if ("events" in opt) this.AddEvents(opt.events);
 
         assignIfExists(this, opt, [
-            "systemMirror",
             "maxPrepareTime",
             "autoPurgeResources",
             "purgeTime",
@@ -90,6 +93,49 @@ export class Tw2ResMan extends Tw2EventEmitter
             "maxWatchedCount",
             "maxWatchedUpdateTime"
         ]);
+
+        if (opt.systemMirror !== undefined)
+        {
+            this.SetSystemMirror(opt.systemMirror)
+                .catch(err =>
+                {
+                    throw err;
+                });
+        }
+    }
+
+    /**
+     * Sets system mirror
+     * @param {Boolean} bool
+     * @returns {Promise<void>}
+     */
+    async SetSystemMirror(bool)
+    {
+        this._systemMirror = !!bool;
+
+        const
+            geometries = this.motherLode.Filter((key, object) => object instanceof Tw2GeometryRes ? object : null),
+            data = [];
+
+        await Promise.all(geometries.map(x => x.SetSystemMirror(this._systemMirror).catch(err => data.push(err))));
+
+        if (data.length)
+        {
+            this.tw2.Error({
+                name: "System Mirror",
+                message: "Errors while setting system mirror",
+                data
+            });
+        }
+    }
+
+    /**
+     * Checks if system mirror is enabled
+     * @returns {Boolean}
+     */
+    IsSystemMirrorEnabled()
+    {
+        return this._systemMirror;
     }
 
     /**

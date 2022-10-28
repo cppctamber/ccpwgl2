@@ -38,17 +38,27 @@ const VertexTypes = {
  */
 export class GR2JsonReader
 {
+
+    static DEFAULT_OPTIONS = {
+        firstMeshOnly : true
+    }
+
     /**
      * Prepares a geometry resource
      * @param {Object} data
      * @param {Tw2GeometryRes} res
+     * @param {Object} [options]
+     * @param {Boolean} [options.firstMeshOnly]
      */
-    static Prepare(data, res)
+    static Prepare(data, res, options)
     {
         const { models = [], meshes = [], animations = [] } = data;
         const { gl } = device;
 
-        for (let iMesh = 0; iMesh < meshes.length; iMesh++)
+        options = Object.assign({}, GR2JsonReader.DEFAULT_OPTIONS, options);
+
+        const count = options && options.firstMeshOnly ? 1 : meshes.length;
+        for (let iMesh = 0; iMesh < count; iMesh++)
         {
             const
                 srcM = meshes[iMesh],
@@ -191,12 +201,9 @@ export class GR2JsonReader
             mesh._faces = indexData.length / 3;
             mesh._vertices = bufferData.length / vertexSize;
 
-            // Debugging
-            if (res.systemMirror || mesh.blendShapes.length)
-            {
-                mesh.bufferData = bufferData;
-                mesh.indexData = indexData;
-            }
+            // System mirror
+            mesh.bufferData = bufferData;
+            mesh.indexData = indexData;
 
             // Bounds
             if (boundsEmpty) mesh.RecalculateAreaBounds(bufferData, indexData);
@@ -337,9 +344,6 @@ export class GR2JsonReader
             }
             res.animations.push(animation);
         }
-
-        res.RebuildBounds();
-        res.OnPrepared();
     }
 
     /**

@@ -29,6 +29,7 @@ export class Tw2GeometryMesh
 
     @meta.isPrivate
     @meta.vector
+    @meta.todo("Make private")
     bufferData = null;
 
     @meta.struct("WebGLBuffer")
@@ -37,6 +38,7 @@ export class Tw2GeometryMesh
 
     @meta.vector
     @meta.isPrivate
+    @meta.todo("Make private")
     indexData = null;
 
     @meta.uint
@@ -67,6 +69,9 @@ export class Tw2GeometryMesh
     @meta.list("Tw2BlendShapeData")
     blendShapes = [];
 
+    @meta.boolean
+    requiresSystemMirror = false;
+
     _faces = 0;
     _vertices = 0;
     _areas = 0;
@@ -90,6 +95,7 @@ export class Tw2GeometryMesh
         this.bufferLength = 0;
         this.bufferData = null;
         this.indexData = null;
+        this.requiresSystemMirror = false;
 
         const { gl } = tw2;
 
@@ -112,21 +118,34 @@ export class Tw2GeometryMesh
     }
 
     /**
-     * Sets system mirror state and returns true if reloading the resource is required
-     * @param {Tw2GeometryMesh} mesh
-     * @param {Boolean} bool
+     * Checks if there is a system mirror of the buffer and index data
      * @returns {boolean}
      */
-    static SetSystemMirror(mesh, bool)
+    HasSystemMirror()
     {
-        if (bool || mesh.blendShapes.length)
-        {
-            return !mesh.bufferData || !mesh.indexData;
-        }
+        return !!(this.bufferData && this.indexData);
+    }
 
-        mesh.bufferData = null;
-        mesh.indexData = null;
-        return false;
+    /**
+     * Checks if the mesh requires system mirror
+     * @returns {boolean}
+     */
+    IsSystemMirrorRequired()
+    {
+        return this.requiresSystemMirror || !!this.blendShapes.length;
+    }
+
+    /**
+     * Clears system mirror if not required
+     * @returns {boolean}
+     */
+    ClearSystemMirrorIfNotRequired()
+    {
+        if (!this.IsSystemMirrorRequired())
+        {
+            this.bufferData = null;
+            this.indexData = null;
+        }
     }
 
     /**
@@ -290,8 +309,6 @@ export class Tw2GeometryMesh
 
         return internalIntersects.sort(ray._sortFunction);
     }
-
-
 
     /**
      * Gets a usage declaration

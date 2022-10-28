@@ -118,21 +118,6 @@ export class Tw2InstancedMesh extends meta.Model
     }
 
     /**
-     * Clears system mirror data
-     */
-    ClearSystemMirror()
-    {
-        if (this.IsGood())
-        {
-            this.geometryResource.ClearSystemMirror();
-            if (this.instanceGeometryResource && "ClearSystemMirror" in this.instanceGeometryResource)
-            {
-                this.instanceGeometryResource.ClearSystemMirror();
-            }
-        }
-    }
-
-    /**
      * Initializes the instanced mesh
      */
     Initialize()

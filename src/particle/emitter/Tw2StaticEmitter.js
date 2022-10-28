@@ -24,9 +24,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     @meta.isPrivate
     geometryResource = null;
 
-
     _spawned = false;
-
 
     /**
      * Alias for meshIndex
@@ -53,10 +51,10 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     {
         if (this.geometryResourcePath !== "")
         {
-            this.geometryResource = tw2.GetResource(this.geometryResourcePath, res =>
+            tw2.GetResource(this.geometryResourcePath, res =>
             {
-                res.systemMirror = true;
-                this.OnResPrepared(res);
+                this.geometryResource = res;
+                this.OnResPrepared();
             });
         }
         this._spawned = false;
@@ -70,10 +68,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     GetResources(out = [])
     {
         if (this.particleSystem) this.particleSystem.GetResources(out);
-        if (this.geometryResource && !out.includes(this.geometryResource))
-        {
-            out.push(this.geometryResource);
-        }
+        if (this.geometryResource && !out.includes(this.geometryResource)) out.push(this.geometryResource);
         return out;
     }
 
@@ -82,27 +77,25 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
      */
     OnResPrepared()
     {
-        if (this.geometryResource && this.geometryResource.meshes.length)
+        if (this.geometryResource)
         {
-            if (!this.geometryResource.meshes[0].bufferData)
-            {
-                this.geometryResource.systemMirror = true;
-                this.geometryResource.Reload();
-            }
+            this.geometryResource.requiresSystemMirror = true;
+            this.geometryResource.SetSystemMirror(true);
         }
     }
 
     /**
      * Per frame update
+     * @param {Number} dt
      */
-    Update()
+    Update(dt)
     {
         const res = this.geometryResource;
 
         if (!this._spawned &&
             this.particleSystem &&
             res &&
-            res.IsGood() && // TODO: Why does this need an isPrepared && isLoaded check??
+            res.IsGood() &&
             res.meshes.length > this.meshIndex &&
             res.meshes[this.meshIndex].bufferData)
         {

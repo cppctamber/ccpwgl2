@@ -1,6 +1,19 @@
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { assignIfExists, isError, isString } from "utils";
 
+/**
+ * EventLog
+ * @typedef {Object} eventLog
+ * @param {String} name
+ * @param {String} message
+ * @param {String} [_type]
+ * @param {Boolean} [hide]
+ * @param {String} [detail]
+ * @param {String} [path]
+ * @param {Number} [time]
+ * @param {*} [err]
+ * @param {*} [data]
+ */
 
 export class Tw2Logger extends Tw2EventEmitter
 {

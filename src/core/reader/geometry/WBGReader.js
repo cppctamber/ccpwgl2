@@ -105,12 +105,6 @@ export class WBGReader
             }
 
             const annotationSetCount = reader.ReadUInt16();
-            if (annotationSetCount || res.systemMirror)
-            {
-                mesh.bufferData = buffer;
-                mesh.indexData = indexes;
-            }
-
             if (annotationSetCount)
             {
                 mesh.blendShapes = [];
@@ -126,32 +120,13 @@ export class WBGReader
             mesh._areas = areaCount;
             mesh._faces = indexes.length / 3;
             mesh._vertices = buffer.length / (mesh.declaration.stride / 4);
-
-            /*
-
-            // Reduce memory footprint of vertices
-
-            const stride = mesh.declaration.stride / 4;
-            const vertCount = buffer.length / stride;
-            const position = mesh.declaration.FindUsage(0, 0);
-
-            mesh._vertices = new Float32Array(vertCount * 3);
-            for (let i = 0; i < mesh._vertices.length; i+=3)
-            {
-                const index = i * stride + position.offset;
-                for (let x = 0; x < 3; x ++)
-                {
-                    mesh._vertices[i + x] = buffer[index + x];
-                }
-            }
-
-            */
+            // System mirror
+            mesh.bufferData = buffer;
+            mesh.indexData = indexes;
 
             res.meshes[meshIx] = mesh;
         }
 
-        // Rebuilds all bounds
-        res.RebuildBounds();
 
         const modelCount = reader.ReadUInt8();
         for (let modelIx = 0; modelIx < modelCount; ++modelIx)
@@ -293,9 +268,6 @@ export class WBGReader
             }
             res.animations.push(animation);
         }
-
-        res.RebuildBounds();
-        res.OnPrepared();
     }
 
     /**

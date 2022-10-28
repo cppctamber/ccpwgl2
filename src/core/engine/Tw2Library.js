@@ -188,15 +188,6 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Alias for resMan.systemMirror
-     * @return {boolean}
-     */
-    get systemMirror()
-    {
-        return this.resMan.systemMirror;
-    }
-
-    /**
      * Constructor
      */
     constructor()
@@ -402,6 +393,24 @@ export class Tw2Library extends Tw2EventEmitter
 
         // Shortcut to device.glParams
         if (opt.glParams) this.device.Register({ glParams: opt.glParams });
+    }
+
+    /**
+     * Enables system mirror
+     * @returns {Promise<void>}
+     */
+    async SetSystemMirror(bool)
+    {
+        return this.resMan.SetSystemMirror(bool);
+    }
+
+    /**
+     * Checks if system mirror is enabled
+     * @returns {Boolean}
+     */
+    IsSystemMirrorEnabled()
+    {
+        return this.resMan.IsSystemMirrorEnabled();
     }
 
     /**

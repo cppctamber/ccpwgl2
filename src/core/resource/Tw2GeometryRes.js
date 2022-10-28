@@ -5,7 +5,8 @@ import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-//import * as geo from "geo-ambient-occlusion";
+// import * as geo from "geo-ambient-occlusion";
+
 
 import {
     Tw2GeometryAnimation,
@@ -26,7 +27,9 @@ const readers = {
 };
 
 /**
+ * Geometry resource
  *
+ * @inheritDoc {Tw2Resource}
  * @property {Array<Tw2GeometryMesh>} meshes
  * @property {vec3} minBounds
  * @property {vec3} maxBounds
@@ -34,7 +37,7 @@ const readers = {
  * @property {Number} boundsSphereRadius
  * @property {Array<Tw2GeometryModel>} models
  * @property {Array<Tw2GeometryAnimation>} animations
- * @property {Boolean} systemMirror
+ * @property {Boolean} _boundsDirty
  */
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
@@ -47,56 +50,60 @@ export class Tw2GeometryRes extends Tw2Resource
     boundsSphereRadius = 0;
     models = [];
     animations = [];
+    requiresSystemMirror = false;
 
-    _systemMirror = resMan.systemMirror;
     _requestResponseType = null;
     _extension = null;
     _boundsDirty = true;
 
     /**
-     * Gets the current system mirror status (whether vertex and face data is cached)
-     * @returns {boolean}
+     * Sets system mirror
+     * @param {Boolean} enable
+     * @returns {Promise<Tw2GeometryRes|Error>}
      */
-    get systemMirror()
+    async SetSystemMirror(enable)
     {
-        return this._systemMirror;
-    }
-
-    /**
-     * Sets the current system mirror status and clears any cached vertex or face data if false
-     * @param {boolean} value
-     */
-    set systemMirror(value)
-    {
-        this._systemMirror = !!value;
         let reloadRequired = false;
         for (let i = 0; i < this.meshes.length; i++)
         {
-            if (Tw2GeometryMesh.SetSystemMirror(this.meshes[i], this._systemMirror))
+            if (!this.meshes[i].HasSystemMirror() && enable || this.requiresSystemMirror || this.meshes[i].IsSystemMirrorRequired())
             {
                 reloadRequired = true;
                 break;
             }
         }
-        if (reloadRequired) this.Reload({ message: "Rebuilding system mirror" });
-        return this._systemMirror;
+
+        if (reloadRequired)
+        {
+            await new Promise((onResolved, onRejected) =>
+            {
+                this.RegisterCallbacks(onResolved, onRejected);
+                resMan.LoadResource(this, {
+                    name: "System Mirror",
+                    message: "Rebuilding system mirror"
+                });
+            });
+        }
+
+        if (!enable) this.ClearSystemMirrorIfNotRequired();
     }
 
     /**
-     * Clears system mirror data
+     * Clears system mirror if not required
      */
-    SetSystemMirror(bool)
+    ClearSystemMirrorIfNotRequired()
     {
-        this._systemMirror = bool;
-        for (let i = 0; i < this.meshes.length; i++)
+        if (!this.requiresSystemMirror)
         {
-            Tw2GeometryMesh.SetSystemMirror(this.meshes[i],);
-            this.meshes[i].ClearSystemMirror();
+            for (let i = 0; i < this.meshes.length; i++)
+            {
+                this.meshes[i].ClearSystemMirrorIfNotRequired();
+            }
         }
     }
 
     /**
-     *
+     * Does an intersection test on the geometry resource
      * @param {Tw2RayCaster} ray
      * @param {Array} intersects
      * @param {mat4} worldTransform
@@ -285,6 +292,9 @@ export class Tw2GeometryRes extends Tw2Resource
             Reader.Prepare(data, this);
         }
 
+        this.RebuildBounds();
+        if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
+        this.OnPrepared();
     }
 
     /**
@@ -330,19 +340,12 @@ export class Tw2GeometryRes extends Tw2Resource
             mesh._areas = areas.length;
             mesh._faces = indexData.length / 3;
             mesh._vertices = bufferData.length / (mesh.declaration.stride / 4);
-
-            if (this.systemMirror)
-            {
-                mesh.bufferData = bufferData;
-                mesh.indexData = indexData;
-            }
+            mesh.bufferData = bufferData;
+            mesh.indexData = indexData;
 
             // Temporary
             this.models[i] = new Tw2GeometryModel();
         }
-
-        this.RebuildBounds();
-        this.OnPrepared();
     }
 
     /**

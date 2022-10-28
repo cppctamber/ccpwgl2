@@ -120,17 +120,6 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
-     * Clears system mirror data
-     */
-    ClearSystemMirror()
-    {
-        if (this.IsGood())
-        {
-            this.geometryResource.ClearSystemMirror();
-        }
-    }
-
-    /**
      * Initializes the mesh
      */
     Initialize()
@@ -519,6 +508,7 @@ export class Tw2Mesh extends meta.Model
                         Constructor = tw2.GetClass(type);
 
                     // Why is index put in the object?
+                    // src[name][i].index = i;
                     dest[name].push(Constructor.from(src[name][i], { index: i }));
                 }
             }
