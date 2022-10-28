@@ -64,9 +64,10 @@ export class Tw2GeometryRes extends Tw2Resource
     async SetSystemMirror(enable)
     {
         let reloadRequired = false;
+
         for (let i = 0; i < this.meshes.length; i++)
         {
-            if (!this.meshes[i].HasSystemMirror() && enable || this.requiresSystemMirror || this.meshes[i].IsSystemMirrorRequired())
+            if (!this.meshes[i].HasSystemMirror() && enable || this.meshes[i].IsSystemMirrorRequired())
             {
                 reloadRequired = true;
                 break;

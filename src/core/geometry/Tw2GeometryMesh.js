@@ -69,9 +69,6 @@ export class Tw2GeometryMesh
     @meta.list("Tw2BlendShapeData")
     blendShapes = [];
 
-    @meta.boolean
-    requiresSystemMirror = false;
-
     _faces = 0;
     _vertices = 0;
     _areas = 0;
@@ -95,7 +92,6 @@ export class Tw2GeometryMesh
         this.bufferLength = 0;
         this.bufferData = null;
         this.indexData = null;
-        this.requiresSystemMirror = false;
 
         const { gl } = tw2;
 
@@ -132,7 +128,7 @@ export class Tw2GeometryMesh
      */
     IsSystemMirrorRequired()
     {
-        return this.requiresSystemMirror || !!this.blendShapes.length;
+        return !!this.blendShapes.length;
     }
 
     /**
