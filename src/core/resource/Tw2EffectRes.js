@@ -4,6 +4,7 @@ import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { tw2 } from "global";
+import { getShaderByName } from "../../../shaders";
 
 
 @meta.type("Tw2EffectRes")
@@ -290,6 +291,16 @@ export class Tw2EffectRes extends Tw2Resource
             default:
                 throw new ErrResourceFormatUnsupported({ format: this._extension });
         }
+    }
+
+    /**
+     * Creates an effect res from a manual shader's name
+     * @param name
+     * @returns {Tw2Resource}
+     */
+    static fromManual(name)
+    {
+        return this.fromJSON(getShaderByName(name));
     }
 
     /**
