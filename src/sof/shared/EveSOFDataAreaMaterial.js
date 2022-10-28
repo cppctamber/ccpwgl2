@@ -30,6 +30,7 @@ export class EveSOFDataAreaMaterial extends meta.Model
      */
     Assign(out = {})
     {
+        out.name = this.name;
         out.colorType = this.colorType;
         if (this.material1) out.material1 = this.material1;
         if (this.material2) out.material2 = this.material2;
