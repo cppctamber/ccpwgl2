@@ -5,7 +5,7 @@ import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-import * as geo from "geo-ambient-occlusion";
+//import * as geo from "geo-ambient-occlusion";
 
 import {
     Tw2GeometryAnimation,
@@ -14,11 +14,6 @@ import {
     Tw2GeometryMeshArea,
     Tw2GeometryMeshBinding,
     Tw2GeometryModel,
-    //Tw2BlendShapeData,
-    //Tw2GeometryBone,
-    //Tw2GeometrySkeleton,
-    //Tw2GeometryTrackGroup,
-    //Tw2GeometryTransformTrack
 } from "../geometry";
 
 
