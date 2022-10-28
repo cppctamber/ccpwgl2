@@ -84,10 +84,8 @@ export class EveChildMesh extends EveChild
      */
     Update(dt, parentTransform, perObjectData)
     {
-
         if (this.useSRT)
         {
-            quat.normalize(this.rotation, this.rotation);
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 
@@ -102,8 +100,6 @@ export class EveChildMesh extends EveChild
                 }
             }
         }
-
-
 
         mat4.copy(this._worldTransformLast, this._worldTransform);
         mat4.multiply(this._worldTransform, parentTransform, this.localTransform);

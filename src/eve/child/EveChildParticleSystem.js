@@ -52,7 +52,6 @@ export class EveChildParticleSystem extends EveChild
     useDynamicLod = false;
 
     @meta.boolean
-    @meta.todo("Deprecated?")
     useSRT = true;
 
 
