@@ -8,6 +8,25 @@ export class Tw2MotherLode
     }
 
     /**
+     * Filters loaded objects
+     * @param {Function} func
+     * @returns {Array}
+     */
+    Filter(func)
+    {
+        const out = [];
+        for (const key in this._loadedObjects)
+        {
+            if (this._loadedObjects.hasOwnProperty(key))
+            {
+                const rv = func(key, this._loadedObjects[key]);
+                if (rv) out.push(rv);
+            }
+        }
+        return out;
+    }
+
+    /**
      * Watches an object and resolves a promise when all resources have completed processing
      * @param {*} object
      * @param {Function} [onProgress]

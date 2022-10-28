@@ -1,15 +1,16 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
+import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, pick } from "utils";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "utils";
+
 
 
 export class Tw2ResMan extends Tw2EventEmitter
 {
 
     motherLode = new Tw2MotherLode();
-    systemMirror = false;
     maxPrepareTime = 0.05;
     autoPurgeResources = true;
     activeFrame = 0;
@@ -26,6 +27,30 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeFrameLimit = 1000;
     _pendingLoads = [];
     _noLoadFrames = 0;
+    _systemMirror = false;
+
+    /**
+     * Sets system mirror
+     * @param {Boolean} bool
+     */
+    set systemMirror(bool)
+    {
+        this._systemMirror = !!bool;
+        const geometries = this.motherLode.Filter((key, object) => object instanceof Tw2GeometryRes ? object : null);
+        for (let i = 0; i < geometries.length; i++)
+        {
+            geometries[i].systemMirror = this._systemMirror;
+        }
+    }
+
+    /**
+     * Gets system mirror status
+     * @returns {boolean}
+     */
+    get systemMirror()
+    {
+        return this._systemMirror;
+    }
 
     /**
      * Gets a count of pending loads

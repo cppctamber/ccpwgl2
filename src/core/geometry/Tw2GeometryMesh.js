@@ -112,15 +112,21 @@ export class Tw2GeometryMesh
     }
 
     /**
-     * Clears system mirror data
+     * Sets system mirror state and returns true if reloading the resource is required
+     * @param {Tw2GeometryMesh} mesh
+     * @param {Boolean} bool
+     * @returns {boolean}
      */
-    ClearSystemMirror()
+    static SetSystemMirror(mesh, bool)
     {
-        if (!this.blendShapes.length)
+        if (bool || mesh.blendShapes.length)
         {
-            this.bufferData = null;
-            this.indexData = null;
+            return !mesh.bufferData || !mesh.indexData;
         }
+
+        mesh.bufferData = null;
+        mesh.indexData = null;
+        return false;
     }
 
     /**

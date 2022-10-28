@@ -5,6 +5,7 @@ import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
+import * as geo from "geo-ambient-occlusion";
 
 import {
     Tw2GeometryAnimation,
@@ -73,16 +74,28 @@ export class Tw2GeometryRes extends Tw2Resource
     set systemMirror(value)
     {
         this._systemMirror = !!value;
-        if (!value) this.ClearSystemMirror();
+        let reloadRequired = false;
+        for (let i = 0; i < this.meshes.length; i++)
+        {
+            if (Tw2GeometryMesh.SetSystemMirror(this.meshes[i], this._systemMirror))
+            {
+                reloadRequired = true;
+                break;
+            }
+        }
+        if (reloadRequired) this.Reload({ message: "Rebuilding system mirror" });
+        return this._systemMirror;
     }
 
     /**
      * Clears system mirror data
      */
-    ClearSystemMirror()
+    SetSystemMirror(bool)
     {
+        this._systemMirror = bool;
         for (let i = 0; i < this.meshes.length; i++)
         {
+            Tw2GeometryMesh.SetSystemMirror(this.meshes[i],);
             this.meshes[i].ClearSystemMirror();
         }
     }
