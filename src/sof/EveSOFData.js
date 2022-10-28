@@ -1147,8 +1147,11 @@ export class EveSOFData extends meta.Model
                 const areaData = sof.faction.AssignAreaType(areaType);
 
                 // Temporarily keep track of the hull area nane
-                const { name: sofHullAreaName } = sof.faction.GetAreaType(areaType, 0);
-                area.sofHullAreaName = sofHullAreaName;
+                const { name: areaName, colorType } = sof.faction.GetAreaType(areaType, 0);
+                area._areaName = areaName;
+                area._colorType = colorType;
+
+                console.dir({ areaData, area: sof.area });
 
                 // Get custom values
                 Object.assign(areaData, sof.area);
@@ -1265,18 +1268,18 @@ export class EveSOFData extends meta.Model
                 // Update effect
                 area.effect.SetValues(eff, { controller: this });
 
-                // TODO: Figure out why ambient occlusion textures aren't defined any more!
-                // Add ambient occlusion textures back in
-                if (area.effect.parameters.AlbedoMap)
-                {
-                    const str = area.effect.parameters.AlbedoMap.resourcePath;
-                    area.effect.SetParameters({ AOMap: str.replace("_a", "_o") });
-                }
-
                 //  Update from custom masks
                 for (let i = 0; i < obj.customMasks.length; i++)
                 {
                     EveCustomMask.ApplyMaterials(area.effect, obj.customMasks[i], i);
+                }
+
+                // Add white ambient occlusion texture if an AO map doesn't exist and is required
+                const params = area.effect.GetTextures();
+                if (params.AlbedoMap)
+                {
+                    // Generate Albedo Map
+                    area.effect.SetTextures({ AoMap: params.AoMap || "cdn:/graphics/shared_texture/global/white.png" });
                 }
 
             });
