@@ -154,17 +154,17 @@ export class EveBoosterSet extends EveObjectSet
     haloColor = vec4.create();
 
     @meta.float
-    haloScaleX = 1.0;
+    haloScaleX = 0.0; // 1.0; (ugly)
 
     @meta.float
-    haloScaleY = 1.0;
+    haloScaleY = 0.0; // 1.0; (ugly)
 
     @meta.notImplemented
     @meta.float
     maxVel = 250;
 
     @meta.float
-    symHaloScale = 1.0;
+    symHaloScale = 0.0; // 1.0 (ugly)
 
     @meta.color
     trailColor = vec4.create();
@@ -185,7 +185,7 @@ export class EveBoosterSet extends EveObjectSet
     haloDistance = 3.01;
 
     @meta.float
-    symHaloDistance = 3;
+    symHaloDistance = 0; //3; (ugly)
 
     @meta.plain
     visible = {
