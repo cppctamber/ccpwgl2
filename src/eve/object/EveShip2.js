@@ -3,9 +3,9 @@ import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
-import { EveTurretSet, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
+import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
-import { EveHazeSet, EveBanner, EveSpriteLineSet } from "unsupported/eve/item";
+import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
 import { RM_OPAQUE } from "constant";
 
@@ -94,6 +94,7 @@ export class EveShip2 extends EveObject
     @meta.plain
     visible = {
         mesh: true,
+        banners: true,
         children: true,
         effectChildren: true,
         planeSets: true,
@@ -886,14 +887,14 @@ export class EveShip2 extends EveObject
                     case EveBanner:
                         if (show.banners)
                         {
-                            item.GetBatches(mode, accumulator, this._perObjectData);
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
                         }
                         break;
 
                     default:
                         if (item.GetBatches)
                         {
-                            item.GetBatches(mode, accumulator, this._perObjectData);
+                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
                         }
                         else
                         {
@@ -1068,7 +1069,7 @@ export class EveShip2 extends EveObject
         {
             if ("UpdateViewDependentData" in this.attachments[i])
             {
-                this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, this._spriteScale);
+                this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, this._spriteScale, this._perObjectData);
             }
         }
 

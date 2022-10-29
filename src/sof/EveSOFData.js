@@ -33,7 +33,7 @@ import {
     EveSpriteSetItem,
     EveShip2,
     EveChildMesh,
-    EveChildContainer
+    EveChildContainer, EveBanner
 } from "eve";
 
 import { EveStation2 } from "../unsupported/eve/object";
@@ -78,6 +78,8 @@ export class EveSOFData extends meta.Model
         useSpotlightPool: true,
 
         devColor: [ 0, 0, 0, 0 ],
+
+        bannerGeometryRes: null,
 
         wreckArea: {
             fallbackGeneralGlowColor: [ 67, 9, 0, 1 ],
@@ -881,6 +883,7 @@ export class EveSOFData extends meta.Model
         await this.SetupMesh(...args);
 
         // Supported
+        this.SetupBanners(...args);
         this.SetupSpotlightSets(...args);
         this.SetupPlaneSets(...args);
         this.SetupSpriteSets(...args);
@@ -903,7 +906,7 @@ export class EveSOFData extends meta.Model
         // Temporarily add triglavian balls
         if (sof.hull.name.indexOf("tg") === 0)
         {
-            if (!obj.effectChildren.find(x=>x.name==="TempTrigSphereContainer"))
+            if (!obj.effectChildren.find(x => x.name === "TempTrigSphereContainer"))
             {
                 let trigBall;
                 switch (sof.hull.name)
@@ -923,7 +926,7 @@ export class EveSOFData extends meta.Model
 
                     case "tgc02_t1":
                     case "tgc02_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -17.35, 125.826 ],[ .8, .8, .8 ]);
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -17.35, 125.826 ], [ .8, .8, .8 ]);
                         break;
 
                     case "tgde01_t1":
@@ -932,12 +935,12 @@ export class EveSOFData extends meta.Model
                         break;
 
                     case "tgdn01_t1":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, 47.343, 421.454 ],[ 6, 6, 6 ]);
+                        trigBall = EveSOFData.createTriglavianBall([ 0, 47.343, 421.454 ], [ 6, 6, 6 ]);
                         break;
 
                     case "tgf01_t1":
                     case "tgf01_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -3.969, -0.633 ],[ .25, .25, .25 ]);
+                        trigBall = EveSOFData.createTriglavianBall([ 0, -3.969, -0.633 ], [ .25, .25, .25 ]);
                         break;
                 }
                 if (trigBall) obj.effectChildren.push(trigBall);
@@ -946,7 +949,6 @@ export class EveSOFData extends meta.Model
 
         return obj;
     }
-
 
     /**
      * Sets up a custom mask (or empties it)
@@ -1314,6 +1316,59 @@ export class EveSOFData extends meta.Model
         const found = arr.filter(x => x.constructor === Ctor && x.name === name);
         if (found.length > 1) throw new ReferenceError(`Found ${found.length} attachments, expected 1`);
         return found[0] ? found[0] : null;
+    }
+
+    static SetupBanners(data, obj, sof, options)
+    {
+        const
+            { banners = [] } = sof.hull,
+            arr = obj.attachments,
+            toRemove = EveSOFData.FindObjectsByConstructor(arr, EveBanner);
+
+        banners.forEach(srcSet =>
+        {
+            let set = this.FindAttachmentByConstructorAndName(arr, EveBanner, srcSet.name);
+
+            if (set)
+            {
+                toRemove.splice(toRemove.indexOf(set), 1);
+            }
+            else
+            {
+                set = new EveBanner();
+                arr.push(set);
+            }
+
+            const { lightOverride, ...options } = srcSet;
+
+            set.SetValues(options);
+
+            if (lightOverride)
+            {
+                tw2.Debug({
+                    name: "Space object factor",
+                    message: "Banner light overrides not supported"
+                });
+            }
+
+            // Setup effect
+            const { bannerShader } = data.generic;
+            if (!set.effect) set.effect = Tw2Effect.from(bannerShader.shader);
+            set.effect.SetTextures(bannerShader.AssignTextures());
+            set.effect.SetParameters(bannerShader.AssignParameters());
+            set.effect.SetParameters({ BaseColor: [ 0,0,0,1 ] });
+
+            // Todo
+            set._geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
+
+        });
+
+        toRemove.forEach(set =>
+        {
+            set.Destroy();
+            arr.splice(arr.indexOf(set), 1);
+        });
+
     }
 
     /**
@@ -1698,6 +1753,9 @@ export class EveSOFData extends meta.Model
                 // How to tell what kind of effect to load??
                 const effect = data.generic.GetShaderConfig(options.decalUsage[usage], false, provided);
 
+                // Ensure there is always an ao map
+                if (!effect.parameters.AoMap) effect.parameters.AoMap = "cdn:/texture/global/white.png";
+
                 switch (usage)
                 {
                     case 1:
@@ -1732,6 +1790,8 @@ export class EveSOFData extends meta.Model
                 //  Temporary
                 decal.decalEffect = decal.decalEffect || new Tw2Effect();
                 decal.decalEffect.SetValues(effect);
+
+
 
                 // Keep track of the original logo type
                 decal._logoType = logoType;
