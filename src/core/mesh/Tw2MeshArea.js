@@ -82,7 +82,14 @@ export class Tw2MeshArea extends meta.Model
 
             if (values.effect)
             {
-                item.effect = Tw2Effect.from(values.effect);
+                if (values.effect instanceof Tw2Effect)
+                {
+                    item.effect = values.effect;
+                }
+                else
+                {
+                    item.effect = Tw2Effect.from(values.effect);
+                }
             }
         }
 
