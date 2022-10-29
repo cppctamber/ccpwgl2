@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, quat, mat4, tri3 } from "math";
+import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect, Tw2GeometryMesh } from "core";
 import { RM_DECAL } from "constant";
 

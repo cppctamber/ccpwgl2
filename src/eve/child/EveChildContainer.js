@@ -147,16 +147,24 @@ export class EveChildContainer extends EveChild
         // Not used
         //mat4.copy(this._worldTransformLast, this._worldTransform);
 
-        // Are there still bone indexes directly on the container??
+        let hasBone = false;
         if (this.boneIndex > -1)
         {
-            const { mat4_0 } = EveChild.global;
-            const bones = perObjectData.Get("JointMat");
-            mat4.fromJointMatIndex(mat4_0, bones, this.boneIndex);
-            mat4.multiply(mat4_0, mat4_0, this.localTransform);
-            mat4.multiply(this._worldTransform, parentTransform, mat4_0);
+            const
+                { mat4_0 } = EveChild.global,
+                bones = perObjectData.Get("JointMat"),
+                offset = this.boneIndex;
+
+            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
+            {
+                mat4.fromJointMatIndex(mat4_0, bones, offset);
+                mat4.multiply(mat4_0, mat4_0, this.localTransform);
+                mat4.multiply(this._worldTransform, parentTransform, mat4_0);
+                hasBone = true;
+            }
         }
-        else
+
+        if (!hasBone)
         {
             mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
         }
