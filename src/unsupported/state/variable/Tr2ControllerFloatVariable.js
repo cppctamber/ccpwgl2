@@ -18,6 +18,9 @@ export class Tr2ControllerFloatVariable
     @meta.uint
     variableType = 0;
 
+    @meta.float
+    value = 0;
+
     /**
      * Gets enums as a string
      * @returns {string}

@@ -52,6 +52,9 @@ export class EveChildEffectPropagator extends EveChild
     @meta.uint
     stopAfterNumTriggers = 0;
 
+    @meta.boolean
+    trigger = false;
+
     @meta.struct()
     triggerMethood = null;
 

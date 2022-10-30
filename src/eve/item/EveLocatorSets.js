@@ -31,23 +31,15 @@ export class EveLocatorSetItem extends meta.Model
 
     /**
      * Black reader
+     * TODO: Confirm if this is correct
      * @param {Tw2BlackBinaryReader} r
      */
     static blackStruct(r)
     {
-
         const item = new EveLocatorSetItem();
-        item._results = r.ReadF32Array(8);
-
         vec3.copy(item.position,r.ReadF32Array(3));
         vec4.copy(item.rotation, r.ReadF32Array(4));
-        item.boneIndex = r.ReadF32Array(1) * 255;
-
-        console.dir({
-            message: "Check this...",
-            item
-        });
-
+        item.boneIndex = r.ReadF32Array(1) * 255 - 1;
         return item;
     }
 
