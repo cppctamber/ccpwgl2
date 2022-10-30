@@ -35,11 +35,19 @@ export class EveLocatorSetItem extends meta.Model
      */
     static blackStruct(r)
     {
+
         const item = new EveLocatorSetItem();
+        item._results = r.ReadF32Array(8);
+
         vec3.copy(item.position,r.ReadF32Array(3));
-        item.boneIndex = r.ReadUint();
-        //item.scaling[0] = item.scaling[1] = item.scaling[2] = r.ReadF32();
         vec4.copy(item.rotation, r.ReadF32Array(4));
+        item.boneIndex = r.ReadF32Array(1) * 255;
+
+        console.dir({
+            message: "Check this...",
+            item
+        });
+
         return item;
     }
 

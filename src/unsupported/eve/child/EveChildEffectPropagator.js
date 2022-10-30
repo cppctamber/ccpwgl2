@@ -52,6 +52,9 @@ export class EveChildEffectPropagator extends EveChild
     @meta.uint
     stopAfterNumTriggers = 0;
 
+    @meta.struct()
+    triggerMethood = null;
+
     @meta.vector3
     triggerSphereOffset = vec3.create();
 
@@ -60,5 +63,23 @@ export class EveChildEffectPropagator extends EveChild
 
     @meta.float
     turbulenceAmplitude = 0;
+
+    /**
+     * Alias for binary spelling mistake
+     * @returns {*}
+     */
+    get triggerMethod()
+    {
+        return this.triggerMethood;
+    }
+
+    /**
+     * Alias for binary spelling mistake
+     * @param {*} struct
+     */
+    set triggerMethod(struct)
+    {
+        this.triggerMethod = struct;
+    }
 
 }
