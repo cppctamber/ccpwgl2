@@ -8,6 +8,9 @@ import { vec3, quat }  from "math";
 export class EveBezierCurve extends Tw2Curve
 {
 
+    @meta.string
+    name = "";
+
     @meta.boolean
     billboardObjects = false;
 

@@ -33,6 +33,10 @@ export class EveChildContainer extends EveChild
     displayFilter = null;
 
     @meta.notImplemented
+    @meta.list()
+    fxAttributes = [];
+
+    @meta.notImplemented
     @meta.boolean
     hideOnLowQuality = false;
 

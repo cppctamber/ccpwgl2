@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { EveChild } from "eve/child";
 import { Tw2CurveScalarKey } from "unsupported/curve";
-import { EveLocator2 } from "eve";
+import { vec3 } from "math";
 
 
 @meta.notImplemented
@@ -12,14 +12,47 @@ export class EveChildEffectPropagator extends EveChild
     @meta.string
     name = "";
 
+    @meta.float
+    durationPerEffect = 0;
+
     @meta.struct("Tw2Effect")
     effect = null;
+
+    @meta.vector3
+    effectScaling = vec3.create();
+
+    @meta.float
+    frequency = 0;
+
+    @meta.struct
+    localLocators = null;
+
+    @meta.string
+    locatorSetName = "";
 
     @meta.list(Tw2CurveScalarKey)
     keys = [];
 
     @meta.float
     maxLifeTime = 0;
+
+    @meta.uint
+    propagationType = 0;
+
+    @meta.float
+    randScaleMax = 0;
+
+    @meta.boolean
+    skipCleanup = false;
+
+    @meta.float
+    stopToClearDelay = 0;
+
+    @meta.uint
+    stopAfterNumTriggers = 0;
+
+    @meta.vector3
+    triggerSphereOffset = vec3.create();
 
     @meta.struct()
     triggerSphereRadiusCurve = null;

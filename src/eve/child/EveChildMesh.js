@@ -28,6 +28,10 @@ export class EveChildMesh extends EveChild
     @meta.float
     minScreenSize = 0;
 
+    @meta.notImplemented
+    @meta.uint
+    reflectionType = 0;
+
     @meta.quaternion
     rotation = quat.create();
 
