@@ -2,6 +2,7 @@ import { meta } from "utils";
 import { EveChild } from "eve/child";
 import { Tw2CurveScalarKey } from "unsupported/curve";
 import { vec3 } from "math";
+import { EveLocatorSets } from "eve/item/EveLocatorSets";
 
 
 @meta.notImplemented
@@ -24,7 +25,7 @@ export class EveChildEffectPropagator extends EveChild
     @meta.float
     frequency = 0;
 
-    @meta.struct
+    @meta.struct()
     localLocators = null;
 
     @meta.string

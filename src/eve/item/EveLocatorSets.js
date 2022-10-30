@@ -47,7 +47,7 @@ export class EveLocatorSetItem extends meta.Model
 
 
 
-@meta.type("EveLocatorSets", true)
+@meta.type("EveLocatorSets")
 export class EveLocatorSets extends meta.Model
 {
 

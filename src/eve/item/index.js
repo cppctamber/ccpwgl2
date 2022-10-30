@@ -3,6 +3,7 @@ export * from "./EveBoosterSet";
 export * from "./EveCurveLineSet";
 export * from "./EveCustomMask";
 export * from "./EveLocator2";
+export * from "./EveLocatorSets";
 export * from "./EveObjectSet";
 export * from "./EvePlaneSet";
 export * from "./EveSpaceObjectDecal";
