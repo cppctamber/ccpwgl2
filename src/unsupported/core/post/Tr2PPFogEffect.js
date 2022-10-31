@@ -11,6 +11,9 @@ export class Tr2PPFogEffect
     areaCenter = vec3.create();
 
     @meta.float
+    backgroundOcclusion = 0;
+
+    @meta.float
     blendAmount0 = 0;
 
     @meta.float
@@ -45,6 +48,9 @@ export class Tr2PPFogEffect
 
     @meta.float
     blendPower2 = 0;
+
+    @meta.float
+    brightnessAdjustmentAmount = 0;
 
     @meta.color
     color = vec4.create();

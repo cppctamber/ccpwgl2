@@ -5,4 +5,10 @@ import { meta } from "utils";
 export class Tr2PPFilmGrainEffect
 {
 
+    @meta.float
+    intensity = 0;
+
+    @meta.float
+    grainSize = 0;
+
 }

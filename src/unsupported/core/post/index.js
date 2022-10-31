@@ -1,5 +1,6 @@
 export * from "./Tr2PostProcess2";
 export * from "./Tr2PPBloomEffect";
+export * from "./Tr2PPDepthOfFieldEffect";
 export * from "./Tr2PPDesaturateEffect";
 export * from "./Tr2PPDynamicExposureEffect";
 export * from "./Tr2PPFadeEffect";

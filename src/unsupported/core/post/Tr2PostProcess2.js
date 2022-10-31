@@ -9,6 +9,9 @@ export class Tr2PostProcess2 extends meta.Model
     @meta.struct("Tr2PPBloomEffect")
     bloom = null;
 
+    @meta.struct("Tr2PPDepthOfField")
+    depthOfField = null;
+
     @meta.struct("Tr2DesaturateEffect")
     desaturate = null;
 
@@ -38,5 +41,24 @@ export class Tr2PostProcess2 extends meta.Model
 
     @meta.struct("Tr2PPVignetteEffect")
     vignette = null;
+
+    /**
+     * Per frame update
+     * @param {Number} dt
+     */
+    Update(dt)
+    {
+
+    }
+
+    /**
+     * Per frame render
+     * @param {Number} dt
+     * @param {EveSpaceScene} scene
+     */
+    Render(dt, scene)
+    {
+
+    }
 
 }
