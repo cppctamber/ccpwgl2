@@ -31,6 +31,9 @@ export class Tr2SpotLight extends meta.Model
     //@meta.float
     //noiseOctaves = 0;
 
+    @meta.path
+    lightProfilePath = "";
+
     @meta.float
     outerAngle = 0;
 

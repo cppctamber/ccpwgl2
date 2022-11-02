@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat4, vec3, vec4 } from "math";
+import { mat4, vec3, vec4, quat } from "math";
 import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
@@ -66,6 +66,9 @@ export class Tr2PointLight extends meta.Model
 
     @meta.float
     radius = 0;
+
+    @meta.quaternion
+    rotation = quat.create();
 
     /**
      * Light effect

@@ -8,15 +8,21 @@ export class Tr2CurveColorMixer extends Tw2ColorCurve
 {
 
     @meta.color
-    color1 = vec4.fromValues(0,0,0,1)
+    color1 = vec4.fromValues(0,0,0,1);
 
     @meta.color
-    color2 = vec4.fromValues(0,0,0,1)
+    color2 = vec4.fromValues(0,0,0,1);
 
     @meta.float
     brightness = 0;
 
     @meta.color
-    currentValue = vec4.fromValues(0,0,0,1)
+    currentValue = vec4.fromValues(0,0,0,1);
+
+    @meta.float
+    saturation = 0.0;
+
+    @meta.vector4
+    lerpValue = vec4.create();
 
 }
