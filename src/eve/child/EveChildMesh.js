@@ -14,6 +14,9 @@ export class EveChildMesh extends EveChild
     @meta.boolean
     display = true;
 
+    @meta.list()
+    lights = [];
+
     @meta.matrix4
     localTransform = mat4.create();
 
