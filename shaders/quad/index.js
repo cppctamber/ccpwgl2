@@ -11,3 +11,5 @@ export * from "./quadturretv5";
 export * from "./quadv5";
 export * from "./quadwreckv5";
 export * from "./quadenvironmentv5";
+
+export * from "./fxbannerv5";

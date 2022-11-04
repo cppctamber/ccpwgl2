@@ -80,14 +80,17 @@ export const quadUtilityV5 = {
                         v6=texcoord6;
                         v7=texcoord7;
                         
+                        vec4 c0 = vec4(0.0,1.0,10.0,20.0);
+                        
                         r0.xyz=(-cb4[1].xyz)+v5.xyz;
                         r0.x=dot(r0.xyz,r0.xyz);
                         r0.w=cb4[1].w;
                         r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
+                        r0=c0.xxxy;
                         int mode = int(cb7[1].x);
-                        r0=vec4(0.0,0.0,0.0,1.0);
+                        
                         if (mode==${Mode.NORMALS})r0.xyz=v1.xyz;
                         else if(mode==${Mode.BI_TANGENTS})r0.xyz=v2.xyz;                       
                         else if(mode==${Mode.TANGENTS})r0.xyz=v3.xyz;
@@ -97,38 +100,56 @@ export const quadUtilityV5 = {
                         else if(mode==${Mode.NORMAL_MAP_POSITIVE})r0.xyz=texture2D(s2,v0.xy).xxx;
                         else if(mode==${Mode.NORMAL_MAP_NEGATIVE})r0.xyz=texture2D(s2,v0.xy).yyy;
                         else if(mode==${Mode.AMBIENT_OCCLUSION_MAP})r0.xyz=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx;                            
-                        else if(mode==${Mode.PAINT_MASK})r0.xyz=texture2D(s4,v0.xy).xxx;
                         else if(mode==${Mode.MATERIAL_MAP})r0.xyz=texture2D(s5,v0.xy).xxx;
-                        else if(mode==${Mode.MATERIAL_1_MASK})r0.xyz=getMaterialMask(s5,v0.xy).xxx;
-                        else if(mode==${Mode.MATERIAL_2_MASK})r0.xyz=getMaterialMask(s5,v0.xy).yyy;
-                        else if(mode==${Mode.MATERIAL_3_MASK})r0.xyz=getMaterialMask(s5,v0.xy).zzz;
-                        else if(mode==${Mode.MATERIAL_4_MASK})r0.xyz=getMaterialMask(s5,v0.xy).www;                
+                        else if(mode==${Mode.PAINT_MASK})r0.xyz=texture2D(s4,v0.xy).xxx;
                         else if(mode==${Mode.DIRT_MASK})r0.xyz=texture2D(s6,v0.xy).xxx;
-                        else if(mode==${Mode.GLOW_MASK})r0.xyz=texture2D(s7,v0.xy).xxx;
-                        else if(mode==${Mode.PATTERN_1_MASK})
+                        else if(mode==${Mode.GLOW_MASK})r0.xyz=texture2D(s7,v0.xy).xxx*c0.z;
+                        else if(mode==${Mode.DUST_NOISE_MAP})r0.xyz=texture2D(s10,v0.xy*c0.w).xyz;
+                        else
                         {
-                            r1=getMaterialMask(s5,v0.xy);
-                            r1=cb4[12]*r1;
-                            if(any(greaterThan(r1,vec4(0.0))))
-                            {
-                                r0.xyz=clampToBorder(s8,v6.xy,cb4[10].yz).xxx;                          
-                            }
-                        }
-                        else if (mode == ${Mode.PATTERN_2_MASK})
-                        {
-                            r1=getMaterialMask(s5,v0.xy);
-                            r1=cb4[13]*r1;   
-                            if(any(greaterThan(r1,vec4(0.0))))
-                            {
-                               r0.xyz=clampToBorder(s9,v6.zw,cb4[11].yz).xxx;                          
-                            }
-                        }
-                        else if (mode == ${Mode.DUST_NOISE_MAP})
-                        {
+
+                            vec4 materialMask=getMaterialMask(s5,v0.xy);
+                            vec3 patternMask;
                             
+                            patternMask.z=texture2D(s7,v0.xy).x*c0.z;
+                            patternMask.z=patternMask.z+texture2D(s4,v0.xy).x;
+                            materialMask=max(materialMask-patternMask.zzzz,c0.xxxx);     
+                                 
+                            r1=cb4[13]*materialMask;
+                            if(any(greaterThan(materialMask,c0.xxxx))){
+                                patternMask.z=max(r1.w,max(r1.z,max(r1.x,r1.y)));
+                                patternMask.y=patternMask.z*clampToBorder(s9,v6.zw,cb4[11].yz).x;
+                                materialMask=max(materialMask-patternMask.yyyy,c0.xxxx);
+                            }
+                            
+                            r1=cb4[12]*materialMask;
+                            if(any(greaterThan(materialMask,c0.xxxx))){
+                                patternMask.z=max(r1.w,max(r1.z,max(r1.x,r1.y)));
+                                patternMask.x=patternMask.z*clampToBorder(s8,v6.xy,cb4[10].yz).x;
+                                materialMask=max(materialMask-patternMask.xxxx,c0.xxxx);
+                            }
+                            
+                            if   (mode==${Mode.PATTERN_1_MASK })r0.xyz=vec3(patternMask.x);
+                            else if(mode==${Mode.PATTERN_2_MASK })r0.xyz=vec3(patternMask.y);
+                            else if(mode==${Mode.MATERIAL_1_MASK})r0.xyz=materialMask.xxx;
+                            else if(mode==${Mode.MATERIAL_2_MASK})r0.xyz=materialMask.yyy;
+                            else if(mode==${Mode.MATERIAL_3_MASK})r0.xyz=materialMask.zzz;
+                            else if(mode==${Mode.MATERIAL_4_MASK})r0.xyz=materialMask.www;                   
+                        }
+                       
+                        
+                        r1=c0.yyyy;
+                        if(any(greaterThan(r0.xyz,c0.xxx)))
+                        {
+                            r1.xyz=texture2D(s3,mix(v0.xy,v0.zw,cb7[0].yy)).xxx*2.5;
+                        }
+                        else
+                        {
+                            if (cb7[1].y>0.0) discard;
                         }
                         
-                        gl_FragData[0]=r0*cb7[2];
+                        gl_FragData[0].xyz=r0.xyz*cb7[2].xyz*r1.xyz;
+                        gl_FragData[0].w=c0.y;
                     }
                 `
             }

@@ -23,10 +23,26 @@ export const quadV5_PosTexTanTex = {
         varying vec4 texcoord6;
         varying vec4 texcoord7;
         varying vec4 texcoord8;
-        
+
         uniform vec4 cb1[24];
         uniform vec4 cb3[26];
         uniform vec3 ssyf;
+        
+        // Temp lighting
+        varying vec4 lighting0;
+        varying vec4 lighting1;
+        varying vec4 lighting2;
+        varying vec4 lighting3;       
+        uniform vec4 cb8[4];
+        
+        vec4 getLightingSurfaceToLight(vec4 lightingData, vec4 worldData)
+        {
+            vec4 tmp = vec4(1.0);
+            if(lightingData.w<=0.0)return tmp;
+            tmp.xyz=lightingData.xyz-worldData.xyz;
+            tmp.w=lightingData.w;
+            return tmp;
+        }
         
         void main()
         {
@@ -54,6 +70,13 @@ export const quadV5_PosTexTanTex = {
             r1.y=dot(r0,cb3[1]);
             r1.z=dot(r0,cb3[2]);
             r1.w=dot(r0,cb3[3]);
+            
+            // Temp lighting world surface to light
+            lighting0 = getLightingSurfaceToLight(cb8[0], r1);
+            lighting1 = getLightingSurfaceToLight(cb8[1], r1);
+            lighting2 = getLightingSurfaceToLight(cb8[2], r1);
+            lighting3 = getLightingSurfaceToLight(cb8[3], r1);
+            
             gl_Position.x=dot(r1,cb1[4]);
             gl_Position.y=dot(r1,cb1[5]);
             gl_Position.z=dot(r1,cb1[6]);

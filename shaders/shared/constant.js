@@ -1,4 +1,4 @@
-import { WidgetType } from "./util";
+import { createLinearColor, overrideConstant, WidgetType } from "./util";
 
 
 export const Time = {
@@ -127,3 +127,55 @@ export const AreaID = {
         display: 0
     }
 };
+
+
+/*------------------------------------------------------------------------------------------------- fx ---------------*/
+
+export const BaseColor = createLinearColor({ name: "BaseColor", ui: { group: "FX" } });
+
+export const Layer1Scroll = {
+    name: "Layer1Scroll",
+    value: [ 1, 1, 0, 0 ],
+    ui: {
+        group: "Layer 1",
+        description: "Layer scroll speed and offset",
+        components: [
+            "scrollSpeedU",
+            "scrollSpeedV",
+            "scrollOffsetU",
+            "scrollOffsetV"
+        ],
+        widget: WidgetType.MIXED
+    }
+};
+
+export const Layer1Transform = {
+    name: "Layer1Transform",
+    value: [ 1, 1, 0, 0 ],
+    ui: {
+        group: "Layer 1",
+        description: "Layer scale and offset",
+        components: [
+            "scaleU",
+            "scaleV",
+            "offsetU",
+            "offsetV"
+        ],
+        widget: WidgetType.MIXED,
+    }
+};
+
+export const Layer2Scroll = overrideConstant(Layer1Scroll, {
+    name: "Layer2Scroll",
+    ui: {
+        group: "Layer 2"
+    }
+});
+
+export const Layer2Transform = overrideConstant(Layer1Transform, {
+    name: "Layer2Transform",
+    ui: {
+        group: "Layer 2"
+    }
+});
+

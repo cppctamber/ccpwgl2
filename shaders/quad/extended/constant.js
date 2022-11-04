@@ -55,7 +55,7 @@ export const SelectorMode = {
     value: [ 0, 0, 0, 0 ],
     ui: {
         group: "Selector",
-        components: [ "mode" ],
+        components: [ "mode", "discard black" ],
         widget: WidgetType.MIXED,
         display: 1
     }

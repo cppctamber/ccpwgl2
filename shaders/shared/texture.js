@@ -68,3 +68,39 @@ export const DustNoiseMap = createTex("DustNoiseMap", TEX_2D, {
 });
 
 
+/*------------------------------------------------------------------------------------------------- fx ---------------*/
+
+export const ImageMap = createTex("ImageMap", TEX_2D, {
+    ui: {
+        description: "Image map",
+        components: [ "red", "green", "blue", "alpha" ]
+    }
+});
+
+export const MaskMap = createTex("MaskMap", TEX_2D, {
+    ui: {
+        description: "Mask map",
+        components: [ "red" ],                              // ???
+    }
+});
+
+export const BorderMap = createTex("BorderMap", TEX_2D, {
+    ui: {
+        description: "Border map",
+        components: [ "red" ],                              // ???
+    }
+});
+
+export const Layer1Map = createTex("Layer1Map", TEX_2D, {
+    ui: {
+        description: "Layer map",
+        components: [ "red", "green", "blue", "alpha" ]     // alpha?
+    }
+});
+
+export const Layer2Map = createTex("Layer2Map", TEX_2D, {
+    ui: {
+        description: "Layer map",
+        components: [ "red", "green", "blue", "alpha" ]     // alpha?
+    }
+});

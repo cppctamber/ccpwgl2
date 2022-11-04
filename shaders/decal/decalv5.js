@@ -223,14 +223,16 @@ export const decalV5 = {
                         r2.x=r2.x*r2.x;
                         r1.z=r1.z*r2.x;
                         
+                        // DecalTransparencyMap
+                        r6.w = clampToBorder(s5,r1.xy).x;
+                        // Discard if not visible... 
+                        if(r6.w<0.01)discard;
+                        
                         // DecalFresnelMap
                         r2=clampToBorder(s6,r1.xy);
                         
                         // DecalAlbedoMap
                         r6.xyz=clampToBorder(s4,r1.xy).xyz;
-                        
-                        // DecalTransparencyMap
-                        r6.w = clampToBorder(s5,r1.xy).x;
                         
                         r7.xyz=r3.yyy*(-r2.xyz)+c2.xxx;
                         r2.xyz=r2.xyz*r3.yyy;

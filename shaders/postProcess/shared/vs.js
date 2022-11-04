@@ -7,7 +7,7 @@ export const post = {
         attribute vec4 attr0;
         attribute vec4 attr1;
         
-        varying vec2 uv;
+        varying vec2 texcoord;
     
         void main()
         {
@@ -16,7 +16,7 @@ export const post = {
             v0=attr0;
             v1=attr1;
             gl_Position=v0;
-            uv.xy=v1.xy;
+            texcoord.xy=v1.xy;
         }
     `
 };
