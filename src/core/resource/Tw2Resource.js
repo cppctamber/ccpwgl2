@@ -145,7 +145,10 @@ export class Tw2Resource extends Tw2Notifications
     {
         if (this.HasLoaded())
         {
-            this.Unload({ hide: true, detail: "reloading" });
+            this.Unload({
+                hide: true,
+                message: "reloading"
+            });
         }
 
         if (this.IsPurged() || this.IsUnloaded())
@@ -297,6 +300,16 @@ export class Tw2Resource extends Tw2Notifications
         this._SetState(Tw2Resource.State.PURGED);
         resMan.OnPathEvent(this.path, "purged", log);
         this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
+    }
+
+    /**
+     * Sets the resource to automatically reload
+     * @param {Number|null|undefined} value
+     * @returns {Boolean} true if auto reloading
+     */
+    AutoReload(seconds)
+    {
+        return resMan.SetAutoReload(this, seconds);
     }
 
     /**

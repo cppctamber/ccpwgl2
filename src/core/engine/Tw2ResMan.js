@@ -29,6 +29,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     _noLoadFrames = 0;
     _systemMirror = false;
 
+    _autoReload = [];
+    minimumAutoReloadSeconds = 1;
+
     /**
      * Temporary
      */
@@ -263,6 +266,40 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Sets a resource to auto reload
+     * @param {Tw2Resource} res
+     * @param {Number|null|undefined} seconds
+     * @returns {Boolean} true if auto reloading
+     */
+    SetAutoReload(res, seconds)
+    {
+        // Remove
+        if (!seconds)
+        {
+            this._autoReload.splice(this._autoReload.indexOf(res), 1);
+            return false;
+        }
+
+        const
+            ms = Math.max(this.minimumAutoReloadSeconds, seconds) * 1000,
+            found = this._autoReload.find(x => x.res === res);
+
+        // Update
+        if (found)
+        {
+            found.ms = ms;
+            found.last = 0;
+        }
+        // Add
+        else
+        {
+            this._autoReload.push({ res, ms, last: 0 });
+        }
+
+        return true;
+    }
+
+    /**
      * Internal update function. It is called every frame.
      * @returns {Boolean}
      */
@@ -299,6 +336,18 @@ export class Tw2ResMan extends Tw2EventEmitter
             {
                 this._prepareBudget = 0;
                 res.OnError(err);
+            }
+        }
+
+        for (let i = 0; i < this._autoReload.length; i++)
+        {
+            if (startTime - this._autoReload[i].last >= this._autoReload[i].ms)
+            {
+                this._autoReload[i].last = startTime;
+                this._autoReload[i].res.Reload({
+                    hide: true,
+                    message: "Auto reload"
+                });
             }
         }
 
