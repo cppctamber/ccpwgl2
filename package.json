@@ -33,6 +33,7 @@
     "terser-webpack-plugin": "^1.4.2",
     "webgl-obj-loader": "^2.0.8",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "geo-ambient-occlusion": "^3.0.4"
   }
 }

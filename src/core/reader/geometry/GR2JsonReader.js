@@ -5,6 +5,8 @@ import { vec3, quat, mat4, box3, mat3 } from "math";
 import { GL_FLOAT } from "constant/gl";
 import { device } from "global/tw2";
 
+import * as geo from "geo-ambient-occlusion";
+
 import {
     //Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -29,7 +31,10 @@ const VertexTypes = {
     TEXCOORD1: { elements: 2, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 1 },
     // BLEND INDICES & BLEND WEIGHT FLIPPED FOR SOME REASON
     BLENDWEIGHT: { elements: 4, usage: Tw2VertexElement.Type.BLENDINDICES, usageIndex: 0 },
-    BLENDINDICE: { elements: 4, usage: Tw2VertexElement.Type.BLENDWEIGHT, usageIndex: 0 }
+    BLENDINDICE: { elements: 4, usage: Tw2VertexElement.Type.BLENDWEIGHT, usageIndex: 0 },
+
+    // Temporary
+    AMBIENT_OCCLUSION: { elements: 1, usage: Tw2VertexElement.Type.TEXCOORD, usageIndex: 20 }
 };
 
 
@@ -40,7 +45,12 @@ export class GR2JsonReader
 {
 
     static DEFAULT_OPTIONS = {
-        firstMeshOnly : true
+        firstMeshOnly : true,
+        aoGenerate : true,
+        aoResolution: 2048,
+        aoBias: 0.001,
+        aoSamples: 2048,
+        aoIndexed: false
     }
 
     /**
@@ -48,7 +58,6 @@ export class GR2JsonReader
      * @param {Object} data
      * @param {Tw2GeometryRes} res
      * @param {Object} [options]
-     * @param {Boolean} [options.firstMeshOnly]
      */
     static Prepare(data, res, options)
     {
@@ -99,40 +108,6 @@ export class GR2JsonReader
                 }
             }
 
-            // Declarations
-            const declaration = new Tw2VertexDeclaration();
-            for (let iv = 0; iv < vertexElements.length; iv++)
-            {
-                declaration.elements.push(Tw2VertexElement.from(vertexElements[iv]));
-            }
-            declaration.RebuildHash();
-            declaration.stride = vertexSize * 4;
-            mesh.declaration = declaration;
-
-            // Buffer data
-            let bufferData = new Float32Array(vertexSize * vertexCount);
-            if (bufferData.length)
-            {
-                let index = 0;
-                for (let vs = 0; vs < vertexCount; vs++)
-                {
-                    for (let v = 0; v < vertexElements.length; v++)
-                    {
-                        const { elements, data } = vertexElements[v];
-                        for (let e = 0; e < elements; e++)
-                        {
-                            bufferData[index++] = data[vs * elements + e];
-                        }
-                    }
-                }
-            }
-
-            mesh.bufferLength = bufferData.length;
-            mesh.buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-
-
             // Index buffer
             let indexLength = 0;
 
@@ -172,6 +147,94 @@ export class GR2JsonReader
             mesh.indexType = indexData.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
+            let faces = [];
+            for (let i = 0; i < indexData.length; i+=3)
+            {
+                faces.push([ indexData[i], indexData[i+1], indexData[i+2] ]);
+            }
+
+            /*---- Calculate Ambient Occlusion ----*/
+
+            if (options["aoGenerate"])
+            {
+                const { aoBias=0.01, aoSamples=256, aoResolution=1024, aoIndexed=false } = options;
+
+                const
+                    positions = vertexElements.find(x=> x.usage === Tw2VertexElement.Type.POSITION && x.usageIndex === 0),
+                    normals = vertexElements.find(x => x.usage === Tw2VertexElement.Type.NORMAL && x.usageIndex === 0);
+
+                if (positions)
+                {
+                    //console.log("Calculating ambient occlusion for", mesh.name);
+
+                    const aoSampler = geo(positions.data, {
+                        cells: faces,
+                        bias: aoBias,
+                        resolution: aoResolution,
+                        normals: normals ? normals.data : undefined,
+                    });
+
+                    for (let i = 0; i < aoSamples; i++) aoSampler.sample();
+                    const data = aoSampler.report();
+
+                    // Flip colours
+                    for (let i = 0; i < data.length; i++)
+                    {
+                        data[i] = 1.0 - data[i];
+                    }
+
+                    vertexElements.push({
+                        usage: Tw2VertexElement.Type.TEXCOORD,
+                        usageIndex: 20,
+                        offset: vertexSize * 4,
+                        type: GL_FLOAT,
+                        elements: 1,
+                        data
+                    });
+
+                    aoSampler.dispose();
+                    vertexSize += 1;
+                }
+            }
+
+            /*---- Temporary Ambient Occlusion ----*/
+
+            // Declarations
+            const declaration = new Tw2VertexDeclaration();
+            for (let iv = 0; iv < vertexElements.length; iv++)
+            {
+                declaration.elements.push(Tw2VertexElement.from(vertexElements[iv]));
+            }
+            declaration.RebuildHash();
+            declaration.stride = vertexSize * 4;
+            mesh.declaration = declaration;
+
+            // Buffer data
+            let bufferData = new Float32Array(vertexSize * vertexCount);
+            if (bufferData.length)
+            {
+                let index = 0;
+                for (let vs = 0; vs < vertexCount; vs++)
+                {
+                    for (let v = 0; v < vertexElements.length; v++)
+                    {
+                        const { elements, data } = vertexElements[v];
+                        for (let e = 0; e < elements; e++)
+                        {
+                            bufferData[index++] = data[vs * elements + e];
+                        }
+                    }
+                }
+            }
+
+            mesh.bufferLength = bufferData.length;
+            mesh.buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+
+
+
 
             // Bone bindings
             const { boneBindings = [] } = srcM;
