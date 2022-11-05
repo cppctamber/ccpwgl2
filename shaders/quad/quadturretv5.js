@@ -2,12 +2,12 @@ import { vs, ps, constant, texture } from "./shared";
 import { precision } from "../shared/func";
 import { ObjectID, AreaID } from "../shared/constant";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
-import { PosBwtTexTanTex, PosBwtTex } from "../shared/input";
+import { PosBwtTexTanTexL01, PosBwtTexL01 } from "../shared/input";
 
 
-const quadTurretV5_PosBwtTex = {
+const quadTurretV5_PosBwtTexL01 = {
 
-    inputDefinitions: PosBwtTex,
+    inputDefinitions: PosBwtTexL01,
     shader: `
 
         ${vs.shadowHeader}
@@ -15,9 +15,11 @@ const quadTurretV5_PosBwtTex = {
         attribute vec4 attr0;
         attribute vec4 attr1;
         attribute vec4 attr2;
+        attribute vec4 attr3;
         
         varying vec4 texcoord;
         varying vec4 texcoord1;
+        varying vec4 lighting;
         
         uniform vec4 cb1[8];
         uniform vec4 cb3[198];
@@ -47,6 +49,9 @@ const quadTurretV5_PosBwtTex = {
             v0=attr0;
             v1=attr1;
             v2=attr2;
+            
+            // Ambient Occlusion
+            lighting.x=attr3.x;
         
             r0.x=v2.x;
             r0.x=cb3[1].x*r0.x+v1.x;
@@ -164,7 +169,7 @@ export const quadTurretV5 = {
     todo: "add dirt",
     techniques: {
         Picking: {
-            vs: quadTurretV5_PosBwtTex,
+            vs: quadTurretV5_PosBwtTexL01, // Doesn't need AO
             ps: {
                 constants: [
                     ObjectID,
@@ -211,7 +216,7 @@ export const quadTurretV5 = {
             }
         },
         Depth: {
-            vs: quadTurretV5_PosBwtTex,
+            vs: quadTurretV5_PosBwtTexL01, // Doesn't need AO
             ps: {
                 shader: `
                 
@@ -246,7 +251,7 @@ export const quadTurretV5 = {
         },
         Main: {
             vs: {
-                inputDefinitions: PosBwtTexTanTex,
+                inputDefinitions: PosBwtTexTanTexL01,
                 shader: `
 
                     ${vs.shadowHeader}
@@ -256,6 +261,7 @@ export const quadTurretV5 = {
                     attribute vec4 attr2;
                     attribute vec4 attr3;
                     attribute vec4 attr4;
+                    attribute vec4 attr5;
                     
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -266,6 +272,8 @@ export const quadTurretV5 = {
                     varying vec4 texcoord6;
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
+                    
+                    varying vec4 lighting;
                     
                     uniform vec4 cb1[24];
                     uniform vec4 cb3[198];
@@ -300,6 +308,9 @@ export const quadTurretV5 = {
                         v2=attr2;
                         v3=attr3;
                         v4=attr4;
+                        
+                        // Ambient Occlusion
+                        lighting.x=attr5.x;
                         
                         r0.x=v4.x;
                         r0.x=cb3[1].x*r0.x+v1.x;
@@ -459,7 +470,6 @@ export const quadTurretV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -499,17 +509,18 @@ export const quadTurretV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // DustNoiseMap
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;   // DustNoiseMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
@@ -566,16 +577,16 @@ export const quadTurretV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x ;  
+                        r0.x=texture2D(s5,v0.xy).x ;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here)   
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x;     
+                        r0.w=texture2D(s8,v0.xy).x;     
                         
                         //gl_FragData[0].w=(-r0.x)+c15.x;
                         gl_FragData[0].w=c15.x;
@@ -676,7 +687,7 @@ export const quadTurretV5 = {
                         r10.ywx=texture2D(s4,v0.xy).xyz; 
                         
                         // AoMap
-                        r10.z=texture2D(s5,v0.xy).x;  
+                        r10.z=lighting.x;  
                         
                         r10.xy=r10.yw*c15.yy+c15.zz;
                         r0.w=saturate(dot(r10.xy,r10.xy)+c15.w);

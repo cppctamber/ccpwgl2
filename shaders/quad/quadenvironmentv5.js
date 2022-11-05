@@ -16,7 +16,7 @@ export const quadEnvironmentV5 = {
         Emissive: quadEmissiveV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
         Main: {
-            vs: vs.quadV5_PosTexTanTex,
+            vs: vs.quadV5_PosTexTanTexL01,
             ps: {
                 constants: [
                     constant.GeneralData,
@@ -48,7 +48,6 @@ export const quadEnvironmentV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -69,18 +68,19 @@ export const quadEnvironmentV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;
                     uniform sampler2D s1;
                     uniform sampler2D s2;  // AlbedoMap,  
                     uniform sampler2D s3;  // RoughnessMap,   
                     uniform sampler2D s4;  // NormalMap,
-                    uniform sampler2D s5;  // AoMap,
-                    uniform sampler2D s6;  // PaintMaskMap,
-                    uniform sampler2D s7;  // MaterialMap,
-                    uniform sampler2D s8;  // DirtMap,
-                    uniform sampler2D s9;  // GlowMap,
-                    uniform sampler2D s10; // Detail1Map
-                    uniform sampler2D s11; // Detail2Map
+                    uniform sampler2D s5;  // PaintMaskMap,
+                    uniform sampler2D s6;  // MaterialMap,
+                    uniform sampler2D s7;  // DirtMap,
+                    uniform sampler2D s8;  // GlowMap,
+                    uniform sampler2D s9;  // Detail1Map
+                    uniform sampler2D s10; // Detail2Map
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
@@ -138,16 +138,16 @@ export const quadEnvironmentV5 = {
                         r0=cb7[14].xxyy*v0.xyxy;
                         
                          // PaintMaskMap
-                        r1.x=texture2D(s6,r0.zw).x;
+                        r1.x=texture2D(s5,r0.zw).x;
                         
                         // MaterialMap
-                        r1.y=texture2D(s7,r0.zw).x;    
+                        r1.y=texture2D(s6,r0.zw).x;    
                         
                         // DirtMap (Not required here)
-                        r1.z=texture2D(s8,r0.zw).x;   
+                        r1.z=texture2D(s7,r0.zw).x;   
                         
                         // GlowMap     
-                        r1.w=texture2D(s9,r0.zw).x;    
+                        r1.w=texture2D(s8,r0.zw).x;    
                         
                         gl_FragData[0].w=(-r1.x)+c24.x;
                         r1.y=(-cb2[19].x)+cb2[19].y;
@@ -194,22 +194,22 @@ export const quadEnvironmentV5 = {
                         r5=cb7[15].xxyy*v0.xyxy;
                         
                         // Detail1Map
-                        r6=texture2D(s10,r5.xy);
+                        r6=texture2D(s9,r5.xy);
                         
                         // Detail2Map
-                        r5=texture2D(s11,r5.zw);
+                        r5=texture2D(s10,r5.zw);
                         
                         // PaintMaskMap
-                        r7.x=texture2D(s6,r0.xy).x * ${texture.PaintMaskMap.multiplier};
+                        r7.x=texture2D(s5,r0.xy).x * ${texture.PaintMaskMap.multiplier};
                         
                         // MaterialMap
-                        r7.y=texture2D(s7,r0.xy).x;    
+                        r7.y=texture2D(s6,r0.xy).x;    
                         
                         // DirtMap (Not required here) <----------------------------------------------------------------
-                        r7.z=texture2D(s8,r0.xy).x;   
+                        r7.z=texture2D(s7,r0.xy).x;   
                         
                         // GlowMap     
-                        r7.w=texture2D(s9,r0.xy).x;   
+                        r7.w=texture2D(s8,r0.xy).x;   
                         
                         r7=r7.yyyy+c23;
                         r7=r7*c25.xxxx;
@@ -244,8 +244,8 @@ export const quadEnvironmentV5 = {
                         // NormalMap
                         r0.ywx=texture2D(s4,r0.zw).xyz;
                         
-                        // AoMap
-                        r0.z=texture2D(s5,r0.zw).x;
+                        // Ambient occlusion
+                        r0.z=lighting.x;
                         
                         r0.xy=r0.yw*c24.yy+c24.zz;
                         r9.xyz=r8.www*(-r6.xyz)+c24.xxx;
@@ -332,8 +332,8 @@ export const quadEnvironmentV5 = {
                         // NormalMap
                         r2.ywx=texture2D(s4,r1.yz).xyz;
                         
-                        // AoMap
-                        r2.z=texture2D(s5,r1.yz).x;
+                        // Ambient Occlusion
+                        r2.z=lighting.x;
                         
                         r0.xyz=r0.xyz*r2.zzz+(-cb2[15].xyz);
                         r0.w=cb2[15].w*v4.w;
@@ -384,7 +384,7 @@ export const skinnedQuadEnvironmentV5 = {
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+            vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
             ps: quadEnvironmentV5.techniques.Main.ps
         }
     }

@@ -24,15 +24,14 @@ export const quadSailsV5 = {
         Utility: quadUtilitySailsV5.techniques.Main,
         ExtendedPicking: quadExtendedPickingSailsV5.techniques.Main,
         Main: {
-            vs: vs.quadV5_PosTexTanTex,
+            vs: vs.quadV5_PosTexTanTexL01,
             ps: {
                 textures: [
                     EveSpaceSceneEnvMap,
                     EveSpaceSceneShadowMap,
                     texture.AlbedoMap,                  
                     texture.RoughnessMap,               
-                    texture.NormalMap,                  
-                    texture.AoMap,                      
+                    texture.NormalMap,                                       
                     texture.PaintMaskMap,               
                     texture.MaterialMap,                
                     texture.DirtMap,                    
@@ -74,18 +73,19 @@ export const quadSailsV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;
                     uniform sampler2D s1;
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // DustNoiseMap
-                    uniform sampler2D s11;  // SailsDetailMap
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;   // DustNoiseMap
+                    uniform sampler2D s10;  // SailsDetailMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
@@ -141,16 +141,16 @@ export const quadSailsV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x;  
+                        r0.x=texture2D(s5,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here)
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x;   
+                        r0.w=texture2D(s8,v0.xy).x;   
                         
                         r0.x=(-r0.x)+c18.x;
                         r0.z=r0.y*c18.y;
@@ -175,7 +175,7 @@ export const quadSailsV5 = {
                         r4.x=dot(r2.xz,r1.yz)+c25.w;
                         
                         // SailsDetailMap,
-                        r3=texture2D(s11,r4.xy);
+                        r3=texture2D(s10,r4.xy);
                         
                         r1.y=mix(r0.y,r3.x,r0.z);
                         r0.x=r0.w*r0.w;
@@ -190,8 +190,8 @@ export const quadSailsV5 = {
                         // NormalMap 
                         r4.ywx=texture2D(s4,v0.xy).xyz; 
                         
-                        // AoMap
-                        r4.z=texture2D(s5,v0.xy).x;    
+                        // Ambient Occlusion
+                        r4.z=lighting.x;    
                         
                         r0.zw=r4.yw*c25.zz+c25.xx;
                         r1.y=saturate(dot(r0.zw,r0.zw)+c25.w);
@@ -325,7 +325,7 @@ export const quadSailsV5 = {
                         r2.ywx=texture2D(s4,r1.zw).xyz;     
                         
                         // AoMap        
-                        r2.z=texture2D(s5,r1.zw).x;     
+                        r2.z=lighting.x;     
                         
                         r0.yzw=r0.yzw*r2.zzz+(-cb2[15].xyz);
                         r0.yzw=r1.yyy*r0.yzw+cb2[15].xyz;
@@ -380,7 +380,7 @@ export const skinnedQuadSailsV5 = {
         Utility: skinnedQuadUtilitySailsV5.techniques.Main,
         ExtendedPicking: skinnedQuadExtendedPickingSailsV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+            vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
             ps: quadSailsV5.techniques.Main.ps
         }
     }

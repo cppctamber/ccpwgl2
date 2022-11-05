@@ -19,7 +19,7 @@ export const quadHeatV5 = {
         ExtendedPicking: quadExtendedPickingHeatV5.techniques.Main,
         Utility: quadUtilityHeatV5.techniques.Main,
         Main: {
-            vs: vs.quadV5_PosTexTanTex,
+            vs: vs.quadV5_PosTexTanTexL01,
             ps: {
                 constants: [
                     constant.GeneralData,
@@ -56,8 +56,7 @@ export const quadHeatV5 = {
                     EveSpaceSceneShadowMap,
                     texture.AlbedoMap,                  
                     texture.RoughnessMap,               
-                    texture.NormalMap,                  
-                    texture.AoMap,                      
+                    texture.NormalMap,
                     texture.PaintMaskMap,               
                     texture.MaterialMap,                
                     texture.DirtMap,                    
@@ -82,20 +81,21 @@ export const quadHeatV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // PatternMask1Map;
-                    uniform sampler2D s11;  // PatternMask2Map;
-                    uniform sampler2D s12;  // HeatGlowNoiseMap;
-                    uniform sampler2D s13;  // DustNoiseMap
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;  // PatternMask1Map;
+                    uniform sampler2D s10;  // PatternMask2Map;
+                    uniform sampler2D s11;  // HeatGlowNoiseMap;
+                    uniform sampler2D s12;  // DustNoiseMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[14];
@@ -161,16 +161,16 @@ export const quadHeatV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x;
+                        r0.x=texture2D(s5,v0.xy).x;
                          
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here)
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x; 
+                        r0.w=texture2D(s8,v0.xy).x; 
                         
                         //gl_FragData[0].w=(-r0.x)+c34.x;
                         gl_FragData[0].w=c34.x;
@@ -238,10 +238,10 @@ export const quadHeatV5 = {
                         // Webgl doesn't support CLAMP_TO_BORDER
                         
                         // PatternMask1Map
-                        r7=clampToBorder(s10,v6.xy, cb4[10].yz, c34.wwww); 
+                        r7=clampToBorder(s9,v6.xy, cb4[10].yz, c34.wwww); 
                         
                         // PatternMask2Map
-                        r8=clampToBorder(s11,v6.zw, cb4[11].yz, c34.wwww); 
+                        r8=clampToBorder(s10,v6.zw, cb4[11].yz, c34.wwww); 
                         
                         r7=r7.xxxx*cb4[12];
                         r4.w=mix(cb7[9].x,r3.w,r7.x);
@@ -405,7 +405,7 @@ export const quadHeatV5 = {
                         r8.ywx=texture2D(s4,v0.xy).xyz; 
                         
                         // AoMap
-                        r8.z=texture2D(s5,v0.xy).x;  
+                        r8.z=lighting.x;  
                         
                         r8.xy=r8.yw*c34.yy+c34.zz;
                         r9.xyz=r8.yyy*v3.xyz;
@@ -462,7 +462,7 @@ export const quadHeatV5 = {
                         r1.ywx=texture2D(s4,r3.xy).xyz; 
                         
                         // AoMap
-                        r1.z=texture2D(s5,r3.xy).x;    
+                        r1.z=lighting.x;    
                         
                         r0.xyz=r0.xyz*r1.zzz+(-cb2[15].xyz);
                         r0.w=cb2[15].w*v4.w;
@@ -477,13 +477,13 @@ export const quadHeatV5 = {
                         r2.xy=r1.zz*r2.xy;
                         
                         // HeatGlowMap
-                        r2=texture2D(s12,r2.xy);
+                        r2=texture2D(s11,r2.xy);
                         
                         r2.zw=r1.yy*(-cb2[21].xx)+v0.xy;
                         r1.yz=r1.zz*r2.zw;
                         
                         // HeatGlowMap
-                        r3=texture2D(s12,r1.yz);
+                        r3=texture2D(s11,r1.yz);
                         
                         r1.yz=r2.xy*r3.xy+c26.ww;
                         r2.z=c31.z;
@@ -497,16 +497,16 @@ export const quadHeatV5 = {
                         r5.xy = r1.xy;
                         
                         // PaintMaskMap
-                        r1.x=texture2D(s6,r5.xy).x * ${texture.PaintMaskMap.multiplier};  
+                        r1.x=texture2D(s5,r5.xy).x * ${texture.PaintMaskMap.multiplier};  
                         
                         // MaterialMap
-                        r1.y=texture2D(s7,r5.xy).x;    
+                        r1.y=texture2D(s6,r5.xy).x;    
                         
                         // DirtMap (Not required here) <----------------------------------------------------------------    
-                        r1.z=texture2D(s8,r5.xy).x;   
+                        r1.z=texture2D(s7,r5.xy).x;   
                         
                         // GlowMap     
-                        r1.w=texture2D(s9,r5.xy).x;    
+                        r1.w=texture2D(s8,r5.xy).x;    
                         
                         r1.x=r1.w*r1.w;
                         r1.x=r1.x*cb4[0].y;
@@ -553,7 +553,7 @@ export const skinnedQuadHeatV5 = {
         ExtendedPicking: skinnedQuadExtendedPickingHeatV5.techniques.Main,
         Utility: skinnedQuadUtilityHeatV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+            vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
             ps: quadHeatV5.techniques.Main.ps
         }
     }

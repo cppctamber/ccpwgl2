@@ -11,13 +11,12 @@ export const decalV5 = {
     description: "decal shader",
     techniques: {
         Main: {
-            vs: vs.decal_PosTexTan,
+            vs: vs.decal_PosTexTanL01,
             ps: {
                 textures: [
                     EveSpaceSceneEnvMap,
                     EveSpaceSceneShadowMap,
                     NormalMap,
-                    AoMap,
                     texture.DecalAlbedoMap_SamplerBorder,
                     texture.DecalTransparencyMap_SamplerBorder,
                     texture.DecalFresnelMap_SamplerBorder,
@@ -40,15 +39,16 @@ export const decalV5 = {
                     varying vec4 texcoord9;
                     varying vec4 texcoord10;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;          // EveSpaceSceneEnvMap
                     uniform sampler2D s1;            // EveSpaceSceneShadowMap
                     uniform sampler2D s2;            // Normal map
-                    uniform sampler2D s3;            // Ambient Occlusion map
-                    uniform sampler2D s4;            // DecalAlbedoMap
-                    uniform sampler2D s5;            // DecalTransparencyMap
-                    uniform sampler2D s6;            // DecalFresnelMap
-                    uniform sampler2D s7;            // DecalNormalMap
-                    uniform sampler2D s8;            // DecalRoughnessMap
+                    uniform sampler2D s3;            // DecalAlbedoMap
+                    uniform sampler2D s4;            // DecalTransparencyMap
+                    uniform sampler2D s5;            // DecalFresnelMap
+                    uniform sampler2D s6;            // DecalNormalMap
+                    uniform sampler2D s7;            // DecalRoughnessMap
                    
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[4];
@@ -136,8 +136,8 @@ export const decalV5 = {
                         // NormalMap
                         r1.ywx=texture2D(s2,v0.xy).xyz;
                          
-                        // AoMap
-                        r1.z=texture2D(s3,v0.xy).x;
+                        // Ambient occlusion
+                        r1.z=lighting.x;
                         
                         r1.xy=r1.yw*c2.zz+c2.ww;
                         r2.xyz=r1.yyy*v3.xyz;
@@ -151,11 +151,11 @@ export const decalV5 = {
                         r1.xy=r1.xy*c2.yy;
                         
                         // DecalNormalMap
-                        r3.xzw=clampToBorder(s7,r1.xy).xyz;
+                        r3.xzw=clampToBorder(s6,r1.xy).xyz;
                         r3.w = 1.0 - r3.w;
                         
                         // DecalRoughnessMap
-                        r3.y=clampToBorder(s8, r1.xy).x;
+                        r3.y=clampToBorder(s7, r1.xy).x;
                         
                         r3.xzw=(-r3.yxz)+c2.xyy;
                         r1.zw=r3.wz*c3.yy+c3.zz;
@@ -224,15 +224,15 @@ export const decalV5 = {
                         r1.z=r1.z*r2.x;
                         
                         // DecalTransparencyMap
-                        r6.w = clampToBorder(s5,r1.xy).x;
+                        r6.w = clampToBorder(s4,r1.xy).x;
                         // Discard if not visible... 
                         if(r6.w<0.01)discard;
                         
                         // DecalFresnelMap
-                        r2=clampToBorder(s6,r1.xy);
+                        r2=clampToBorder(s5,r1.xy);
                         
                         // DecalAlbedoMap
-                        r6.xyz=clampToBorder(s4,r1.xy).xyz;
+                        r6.xyz=clampToBorder(s3,r1.xy).xyz;
                         
                         r7.xyz=r3.yyy*(-r2.xyz)+c2.xxx;
                         r2.xyz=r2.xyz*r3.yyy;

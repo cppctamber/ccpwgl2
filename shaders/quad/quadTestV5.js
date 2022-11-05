@@ -1,28 +1,14 @@
 import { constant, texture, vs, ps } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
-import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
-import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
-import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
-import { quadExtendedPickingV5, skinnedQuadExtendedPickingV5 } from "./extended/quadExtendedPickingV5";
-import { quadUtilityV5, skinnedQuadUtilityV5 } from "./extended/quadUtilityV5";
 
 
-export const quadV5 = {
-    name: "quadV5",
-    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadV5",
+export const quadTestV5 = {
+    name: "quadTestV5",
     description: "general quad shader",
-    todo: "Add dirt",
     techniques: {
-        Depth: quadDepthV5.techniques.Main,
-        Picking: quadPickingV5.techniques.Main,
-        Outline: quadOutlineV5.techniques.Main,
-        Emissive: quadEmissiveV5.techniques.Main,
-        ExtendedPicking: quadExtendedPickingV5.techniques.Main,
-        Utility: quadUtilityV5.techniques.Main,
         Main: {
-            vs: vs.quadV5_PosTexTanTexL01,
+            vs: vs.quadV5_PosTexTanTexCol,
             ps: {
                 constants: [
                     constant.GeneralData,
@@ -56,6 +42,7 @@ export const quadV5 = {
                     texture.AlbedoMap,                  // a
                     texture.RoughnessMap,               // r
                     texture.NormalMap,                  // n
+                    texture.AoMap,                      // a -> To remove
                     texture.PaintMaskMap,               // p3
                     texture.MaterialMap,                // m
                     texture.DirtMap,                    // d
@@ -78,21 +65,21 @@ export const quadV5 = {
                     varying vec4 texcoord6;
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
-                    
-                    varying vec4 lighting;
+                    varying vec4 lighting0;
                     
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // PaintMaskMap
-                    uniform sampler2D s6;   // MaterialMap
-                    uniform sampler2D s7;   // DirtMap
-                    uniform sampler2D s8;   // GlowMap
-                    uniform sampler2D s9;   // PatternMask1Map;
-                    uniform sampler2D s10;  // PatternMask2Map;
-                    uniform sampler2D s11;  // DustNoiseMap
+                    uniform sampler2D s5;   // AoMap
+                    uniform sampler2D s6;   // PaintMaskMap
+                    uniform sampler2D s7;   // MaterialMap
+                    uniform sampler2D s8;   // DirtMap
+                    uniform sampler2D s9;   // GlowMap
+                    uniform sampler2D s10;  // PatternMask1Map;
+                    uniform sampler2D s11;  // PatternMask2Map;
+                    uniform sampler2D s12;  // DustNoiseMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[14];
@@ -157,16 +144,16 @@ export const quadV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s5,v0.xy).x;  
+                        r0.x=texture2D(s6,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s6,v0.xy).x;    
+                        r0.y=texture2D(s7,v0.xy).x;    
                         
                         // DirtMap (Not required here)     
-                        r0.z=texture2D(s7,v0.xy).x;   
+                        r0.z=texture2D(s8,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s8,v0.xy).x;     
+                        r0.w=texture2D(s9,v0.xy).x;     
                         
                         //gl_FragData[0].w=(-r0.x)+c21.x;
                         gl_FragData[0].w=c21.x;
@@ -231,10 +218,10 @@ export const quadV5 = {
                         // Webgl doesn't support CLAMP_TO_BORDER
                         
                         // PatternMask1Map
-                        r7=clampToBorder(s9,v6.xy,cb4[10].yz,c21.wwww);
+                        r7=clampToBorder(s10,v6.xy,cb4[10].yz,c21.wwww);
                          
                         // PatternMask2Map
-                        r8=clampToBorder(s10,v6.zw,cb4[11].yz,c21.wwww); 
+                        r8=clampToBorder(s11,v6.zw,cb4[11].yz,c21.wwww); 
                         
                         r7=r7.xxxx*cb4[12];
                         r3.w=mix(cb7[11].x,r2.z,r7.y);
@@ -412,7 +399,8 @@ export const quadV5 = {
                         r9.ywx=texture2D(s4,v0.xy).xyz; 
                         
                         // AoMap
-                        r9.z=lighting.x;     
+                        //r9.z=texture2D(s5,v0.xy).x;   
+                        r9.z=lighting0.x;  
                         
                         r9.xy=r9.yw*c21.yy+c21.zz;
                         r10.xyz=r9.yyy*v3.xyz;
@@ -436,8 +424,8 @@ export const quadV5 = {
                         
                         // Dirt test
                         float unknown1 = r1.w; // Whatever this is? 
-                        vec4 dustDetailNoise = texture2D(s11, v0.xy);
-                        vec3 dirt = texture2D(s7,v0.xy).xxx; 
+                        vec4 dustDetailNoise = texture2D(s12, v0.xy);
+                        vec3 dirt = texture2D(s8,v0.xy).xxx; 
                         dustDetailNoise = dustDetailNoise += vec4(0.5);
                         float unknownShadowValue = 0.0;
                         float unknown0 = saturate(unknownShadowValue * (-dustDetailNoise.z) + 1.0);
@@ -480,8 +468,9 @@ export const quadV5 = {
                         r1.ywx=texture2D(s4,r2.xy).xyz;     
                         
                         // AoMap        
-                        r1.z=lighting.x;         
-                       
+                        // r1.z=texture2D(s5,r2.xy).x;         
+                        r1.z=lighting0.x;
+                        
                         r0.xzw=r0.xzw*r1.zzz+(-cb2[15].xyz);
                         r1.x=cb2[15].w*v4.w;
                         r1.x=r1.x*c28.y;
@@ -524,21 +513,14 @@ export const quadV5 = {
 };
 
 
-export const skinnedQuadV5 = {
-    name: "skinned_quadV5",
-    replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadV5",
-    description: `skinned ${quadV5.description}`,
-    todo: quadV5.todo,
+export const skinnedQuadTestV5 = {
+    name: "skinned_quadTestV5",
+    description: `skinned ${quadTestV5.description}`,
+    todo: quadTestV5.todo,
     techniques: {
-        Depth: skinnedQuadDepthV5.techniques.Main,
-        Picking: skinnedQuadPickingV5.techniques.Main,
-        Outline: skinnedQuadOutlineV5.techniques.Main,
-        Emissive: skinnedQuadEmissiveV5.techniques.Main,
-        ExtendedPicking: skinnedQuadExtendedPickingV5.techniques.Main,
-        Utility: skinnedQuadUtilityV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
-            ps: quadV5.techniques.Main.ps
+            vs: vs.skinnedQuadV5_PosBwtTexTanTexCol,
+            ps: quadTestV5.techniques.Main.ps
         }
     }
 };

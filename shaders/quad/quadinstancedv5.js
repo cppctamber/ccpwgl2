@@ -21,7 +21,7 @@ export const quadInstancedV5 = {
         },
 
         Main: {
-            vs: vs.quadInstancedV5_PosTexTanTexTexTexTex,
+            vs: vs.quadInstancedV5_PosTexTanTexTexTexTexL01,
             ps: {
                 textures : [
                     EveSpaceSceneEnvMap,
@@ -29,7 +29,6 @@ export const quadInstancedV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -78,19 +77,20 @@ export const quadInstancedV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;
                     uniform sampler2D s1;
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // PatternMask1Map;
-                    uniform sampler2D s11;  // PatternMask2Map;
-                    uniform sampler2D s12;  // DustNoiseMap
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;   // PatternMask1Map;
+                    uniform sampler2D s10;  // PatternMask2Map;
+                    uniform sampler2D s11;  // DustNoiseMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[14];
@@ -154,16 +154,16 @@ export const quadInstancedV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x;  
+                        r0.x=texture2D(s5,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here) 
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x; 
+                        r0.w=texture2D(s8,v0.xy).x; 
                         
                         //gl_FragData[0].w=(-r0.x)+c20.x;
                         gl_FragData[0].w=c20.x;
@@ -230,10 +230,10 @@ export const quadInstancedV5 = {
                         // Webgl doesn't support CLAMP_TO_EDGE
                         
                         // PatternMask1Map
-                        r8=clampToBorder(s10,v6.xy, cb4[10].yz, c20.wwww);
+                        r8=clampToBorder(s9,v6.xy, cb4[10].yz, c20.wwww);
                         
                         // PatternMask2Map
-                        r10=clampToBorder(s11,v6.zw, cb4[11].yz, c20.wwww);
+                        r10=clampToBorder(s10,v6.zw, cb4[11].yz, c20.wwww);
                         
                         r8=r8.xxxx*cb4[12];
                         r9.xyz=mix(cb7[6].xyz,r5.xyz,r8.yyy);
@@ -331,8 +331,8 @@ export const quadInstancedV5 = {
                         // NormalMap 
                         r9.ywx=texture2D(s4,v0.xy).xyz; 
                         
-                        // AoMap
-                        r9.z=texture2D(s5,v0.xy).x;   
+                        // Ambient occlusion
+                        r9.z=lighting.x;   
                         
                         r9.xy=r9.yw*c20.yy+c20.zz;
                         r10.xyz=r9.yyy*v3.xyz;

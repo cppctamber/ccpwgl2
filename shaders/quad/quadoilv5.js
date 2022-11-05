@@ -17,7 +17,7 @@ export const quadOilV5 = {
         Emissive: quadV5.techniques.Emissive,
         ExtendedPicking: quadExtendedPickingNoPatternV5.techniques.Main,
         Main: {
-            vs: vs.quadOilV5_PosTexTanTex,
+            vs: vs.quadOilV5_PosTexTanTexL01,
             ps: {
                 constants: [
                     constant.GeneralData,
@@ -45,7 +45,6 @@ export const quadOilV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -66,18 +65,19 @@ export const quadOilV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0; // EveSpaceSceneEnvMap
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // OilFilmLookupMap
-                    uniform sampler2D s11;  // DustNoiseMap
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;   // OilFilmLookupMap
+                    uniform sampler2D s10;  // DustNoiseMap
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
@@ -136,16 +136,16 @@ export const quadOilV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x;  
+                        r0.x=texture2D(s5,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here)    
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x;      
+                        r0.w=texture2D(s8,v0.xy).x;      
                         
                         //gl_FragData[0].w=(-r0.x)+c15.x;
                         gl_FragData[0].w=c15.x;
@@ -245,8 +245,8 @@ export const quadOilV5 = {
                         // NormalMap 
                         r10.ywx=texture2D(s4,v0.xy).xyz; 
                         
-                        // AoMap
-                        r10.z=texture2D(s5,v0.xy).x;  
+                        // Ambient Occlusion
+                        r10.z=lighting.x;  
                         
                         r10.xy=r10.yw*c15.yy+c15.zz;
                         r0.w=saturate(dot(r10.xy,r10.xy)+c15.w);
@@ -303,8 +303,8 @@ export const quadOilV5 = {
                         // NormalMap 
                         r3.ywx=texture2D(s4,r1.yz).xyz; 
                         
-                        // AoMap
-                        r3.z=texture2D(s5,r1.yz).x;  
+                        // Ambient occlusion
+                        r3.z=lighting.x;  
                         
                         r0.xzw=r0.xzw*r3.zzz+(-cb2[15].xyz);
                         r1.y=cb2[15].w*v4.w;
@@ -324,7 +324,7 @@ export const quadOilV5 = {
                         r1.z=r1.z*c23.z;
                         r4.x=r4.w*c26.w+r2.w;
                         r4.yz=c23.xy;
-                        r2=texture2DLod(s10,r4.xy,r4.w);
+                        r2=texture2DLod(s9,r4.xy,r4.w);
                         r2.xyz=r1.zzz*r2.xyz;
                         r3.w=c15.x;
                         r4.x=dot(r3,cb2[8]);
@@ -383,7 +383,7 @@ export const skinnedQuadOilV5 = {
         Emissive: skinnedQuadV5.techniques.Emissive,
         ExtendedPicking: skinnedQuadExtendedPickingNoPatternV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadOilV5_PosBwtTexTanTex,
+            vs: vs.skinnedQuadOilV5_PosBwtTexTanTexL01,
             ps: quadOilV5.techniques.Main.ps
         }
     }

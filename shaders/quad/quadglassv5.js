@@ -10,7 +10,7 @@ import { quadExtendedPickingGlassV5, skinnedQuadExtendedPickingGlassV5 } from ".
 
 
 const shared = {
-    vs: vs.quadV5_PosTexTanTex,
+    vs: vs.quadV5_PosTexTanTexL01,
     ps: {
         constants: [
             constant.GeneralData,
@@ -38,7 +38,6 @@ const shared = {
             texture.AlbedoMap,
             texture.RoughnessMap,
             texture.NormalMap,
-            texture.AoMap,
             texture.PaintMaskMap,
             texture.MaterialMap,
             texture.DirtMap,
@@ -58,17 +57,18 @@ const shared = {
             varying vec4 texcoord7;
             varying vec4 texcoord8;
             
+            varying vec4 lighting;
+            
             uniform samplerCube s0; // EveSpaceSceneEnvMap
             uniform sampler2D s1;   // EveSpaceSceneShadowMap
             uniform sampler2D s2;   // AlbedoMap
             uniform sampler2D s3;   // RoughnessMap
             uniform sampler2D s4;   // NormalMap
-            uniform sampler2D s5;   // AoMap
-            uniform sampler2D s6;   // PaintMaskMap
-            uniform sampler2D s7;   // MaterialMap
-            uniform sampler2D s8;   // DirtMap
-            uniform sampler2D s9;   // GlowMap
-            uniform sampler2D s10;  // DustNoiseMap
+            uniform sampler2D s5;   // PaintMaskMap
+            uniform sampler2D s6;   // MaterialMap
+            uniform sampler2D s7;   // DirtMap
+            uniform sampler2D s8;   // GlowMap
+            uniform sampler2D s9;   // DustNoiseMap
             
             uniform vec4 cb2[22];
             uniform vec4 cb4[3];
@@ -161,8 +161,8 @@ const shared = {
                 // NormalMap
                 r2.ywx=texture2D(s4,v0.xy).xyz;
                 
-                // AoMap
-                r2.z=texture2D(s5,v0.xy).x;
+                // Ambient occlusion
+                r2.z=lighting.x;
                 
                 r2.xy=r2.yw*c23.zz+c23.ww;
                 r3.xyz=r2.yyy*v3.xyz;
@@ -185,16 +185,16 @@ const shared = {
                 r1.x=r1.y*r1.x;
                 
                 // PaintMaskMap
-                r5.x=texture2D(s6,v0.xy).x;
+                r5.x=texture2D(s5,v0.xy).x;
                 
                 // MaterialMap
-                r5.y=texture2D(s7,v0.xy).x;    
+                r5.y=texture2D(s6,v0.xy).x;    
                 
                 // DirtMap (Not required here)
-                r5.z=texture2D(s8,v0.xy).x;   
+                r5.z=texture2D(s7,v0.xy).x;   
                 
                 // GlowMap     
-                r5.w=texture2D(s9,v0.xy).x;    
+                r5.w=texture2D(s8,v0.xy).x;    
                 
                 r6=r5.yyyy+c15;
                 r6=r6*c16.xxxx;
@@ -277,8 +277,8 @@ const shared = {
                 // NormalMap
                 r3.ywx=texture2D(s4,r1.xy).xyz;
                 
-                // AoMap
-                r3.z=texture2D(s5,r1.xy).x;
+                // Ambient occlusion
+                r3.z=lighting.x;
                 
                 r0.xyz=r0.xyz*r3.zzz+(-cb2[15].xyz);
                 r0.w=cb2[15].w*v4.w;
@@ -367,14 +367,14 @@ export const skinnedQuadGlassV5 = {
         Utility: skinnedQuadUtilityGlassV5.techniques.Main,
         Main: [
             {
-                vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+                vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
                 ps: shared.ps,
                 states: {
                     [RS_CULLMODE]: 3
                 }
             },
             {
-                vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+                vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
                 ps: shared.ps,
                 states: {
                     [RS_CULLMODE]: 2

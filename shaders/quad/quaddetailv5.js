@@ -18,7 +18,7 @@ export const quadDetailV5 = {
         Emissive: quadEmissiveV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
         Main: {
-            vs: vs.quadV5_PosTexTanTex,
+            vs: vs.quadV5_PosTexTanTexL01,
             ps: {
                 constants: [
                     constant.GeneralData,
@@ -58,7 +58,6 @@ export const quadDetailV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -85,22 +84,23 @@ export const quadDetailV5 = {
                     varying vec4 texcoord7;
                     varying vec4 texcoord8;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;
                     uniform sampler2D s1;
                     uniform sampler2D s2;   // AlbedoMap
                     uniform sampler2D s3;   // RoughnessMap
                     uniform sampler2D s4;   // NormalMap
-                    uniform sampler2D s5;   // AoMap
-                    uniform sampler2D s6;   // PaintMaskMap
-                    uniform sampler2D s7;   // MaterialMap
-                    uniform sampler2D s8;   // DirtMap
-                    uniform sampler2D s9;   // GlowMap
-                    uniform sampler2D s10;  // PatternMask1Map;
-                    uniform sampler2D s11;  // PatternMask2Map;
-                    uniform sampler2D s12;  // DustNoiseMap
-                    uniform sampler2D s13;  // Detail1Map
-                    uniform sampler2D s14;  // Detail2Map
-                    uniform sampler2D s15;  // Detail3Map
+                    uniform sampler2D s5;   // PaintMaskMap
+                    uniform sampler2D s6;   // MaterialMap
+                    uniform sampler2D s7;   // DirtMap
+                    uniform sampler2D s8;   // GlowMap
+                    uniform sampler2D s9;  // PatternMask1Map;
+                    uniform sampler2D s10;  // PatternMask2Map;
+                    uniform sampler2D s11;  // DustNoiseMap
+                    uniform sampler2D s12;  // Detail1Map
+                    uniform sampler2D s13;  // Detail2Map
+                    uniform sampler2D s14;  // Detail3Map
                     
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[14];
@@ -166,16 +166,16 @@ export const quadDetailV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s6,v0.xy).x;  
+                        r0.x=texture2D(s5,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s7,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x;    
                         
                         // DirtMap (Not required here) 
-                        r0.z=texture2D(s8,v0.xy).x;   
+                        r0.z=texture2D(s7,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s9,v0.xy).x; 
+                        r0.w=texture2D(s8,v0.xy).x; 
                         
                         //gl_FragData[0].w=(-r0.x)+c27.x;
                         gl_FragData[0].w=c27.x;
@@ -224,12 +224,12 @@ export const quadDetailV5 = {
                        
                         // Detail 2 map
                         r2.xy=cb7[21].xx*v0.xy+cb7[21].zw;
-                        r2=texture2D(s14,r2.xy);
+                        r2=texture2D(s13,r2.xy);
                         r1.w=r2.w*cb7[21].y;
                         
                         // Detail 1 map
                         r5.xy=cb7[20].xx*v0.xy+cb7[20].zw;
-                        r5=texture2D(s13,r5.xy);
+                        r5=texture2D(s12,r5.xy);
                         r1.w=cb7[20].y*r5.w+r1.w;
                         
                         r5.xyz=r5.xyz*c27.yyy+c27.zzz;
@@ -237,7 +237,7 @@ export const quadDetailV5 = {
                         
                         // Detail 3 map
                         r5.xy=cb7[22].xx*v0.xy+cb7[22].zw;
-                        r5=texture2D(s15,r5.xy);
+                        r5=texture2D(s14,r5.xy);
                         r1.w=saturate(cb7[22].y*r5.w+r1.w);
                         
                         r2.xyz=r5.xyz*c27.yyy+r2.xyz;
@@ -269,10 +269,10 @@ export const quadDetailV5 = {
                         // webgl doesn't support CLAMP_TO_BORDER
                         
                         // PatternMask1Map
-                        r10=clampToBorder(s10,v6.xy, cb4[10].yz, c27.wwww);
+                        r10=clampToBorder(s9,v6.xy, cb4[10].yz, c27.wwww);
                         
                         // PatternMask2Map
-                        r12=clampToBorder(s11,v6.zw, cb4[11].yz, c27.wwww);
+                        r12=clampToBorder(s10,v6.zw, cb4[11].yz, c27.wwww);
                         
                         r10=r10.xxxx*cb4[12];
                         r11.xyz=mix(cb7[6].xyz,r7.xyz,r10.xxx);
@@ -373,8 +373,8 @@ export const quadDetailV5 = {
                         // NormalMap 
                         r10.ywx=texture2D(s4,v0.xy).xyz; 
                         
-                        // AoMap
-                        r10.z=texture2D(s5,v0.xy).x;   
+                        // Ambient Occlusion
+                        r10.z=lighting.x;   
                         
                         r10.xy=r10.yw*c27.yy+c27.zz;
                         r1.w=saturate(dot(r10.xy,r10.xy)+c27.w);
@@ -432,8 +432,8 @@ export const quadDetailV5 = {
                         // NormalMap 
                         r1.ywx=texture2D(s4,r10.xy).xyz; 
                         
-                        // AoMap
-                        r1.z=texture2D(s5,r10.xy).x;   
+                        // Ambient Occlusion
+                        r1.z=lighting.x;   
                         
                         r0.xyz=r0.xyz*r1.zzz+(-cb2[15].xyz);
                         r1.x=cb2[15].w*v4.w;
@@ -483,7 +483,7 @@ export const skinnedQuadDetailV5 = {
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
         Main: {
-            vs: vs.skinnedQuadV5_PosBwtTexTanTex,
+            vs: vs.skinnedQuadV5_PosBwtTexTanTexL01,
             ps: quadDetailV5.techniques.Main.ps
         }
     }

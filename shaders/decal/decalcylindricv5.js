@@ -2,7 +2,7 @@ import * as d3d from "constant/d3d";
 import { texture, constant, vs, ps } from "./shared";
 import { clampToBorder } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
-import { NormalMap, AoMap } from "../quad/shared/texture";
+import { NormalMap } from "../quad/shared/texture";
 
 
 export const decalCylindricV5 = {
@@ -11,7 +11,7 @@ export const decalCylindricV5 = {
     description: "decal cylindric shader",
     techniques: {
         Main: {
-            vs: vs.decal_PosTexTan,
+            vs: vs.decal_PosTexTanL01,
             ps: {
                 constants: [
                     constant.DecalTextureScaling
@@ -20,7 +20,6 @@ export const decalCylindricV5 = {
                     EveSpaceSceneEnvMap,
                     EveSpaceSceneShadowMap,
                     NormalMap,
-                    AoMap,
                     texture.DecalAlbedoMap_SamplerBorder,
                     texture.DecalTransparencyMap_SamplerBorder,
                     texture.DecalFresnelMap_SamplerBorder,
@@ -43,15 +42,16 @@ export const decalCylindricV5 = {
                     varying vec4 texcoord9;
                     varying vec4 texcoord10;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0; // EveSpaceSceneEnvMap,
                     uniform sampler2D s1;   // EveSpaceSceneShadowMap,
                     uniform sampler2D s2;   // NormalMap,
-                    uniform sampler2D s3;   // AoMap,
-                    uniform sampler2D s4;   // DecalAlbedoMapSamplerBorder,
-                    uniform sampler2D s5;   // DecalTransparencyMapSamplerBorder,
-                    uniform sampler2D s6;   // DecalFresnelMapSamplerBorder,
-                    uniform sampler2D s7;   // DecalNormalMapSamplerBorder,
-                    uniform sampler2D s8;   // DecalRoughnessMapSamplerBorder
+                    uniform sampler2D s3;   // DecalAlbedoMapSamplerBorder,
+                    uniform sampler2D s4;   // DecalTransparencyMapSamplerBorder,
+                    uniform sampler2D s5;   // DecalFresnelMapSamplerBorder,
+                    uniform sampler2D s6;   // DecalNormalMapSamplerBorder,
+                    uniform sampler2D s7;   // DecalRoughnessMapSamplerBorder
                          
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[4];
@@ -187,20 +187,20 @@ export const decalCylindricV5 = {
                         r4.y=v8.w*c4.w+c4.w;
                         
                         // DecalAlbedoMapSamplerBorder
-                        r1.xyz=clampToBorder(s4,r4.xy).xyz;
+                        r1.xyz=clampToBorder(s3,r4.xy).xyz;
                        
                         // DecalTransparencyMapSamplerBorder
-                        r1.w=clampToBorder(s5,r4.xy).x;
+                        r1.w=clampToBorder(s4,r4.xy).x;
                         
                         // DecalFresnelMapSamplerBorder
-                        r2=clampToBorder(s6,r4.xy);
+                        r2=clampToBorder(s5,r4.xy);
                         
                         // DecalNormalMapSamplerBorder
-                        r3.xzw=clampToBorder(s7,r4.xy).xyz;
+                        r3.xzw=clampToBorder(s6,r4.xy).xyz;
                         r3.w = 1.0 - r3.w;
 
                         // DecalRoughnessMapSamplerBorder
-                        r3.y=clampToBorder(s8,r4.xy).x;
+                        r3.y=clampToBorder(s7,r4.xy).x;
                         
                         r4.xyz=r3.yyy*(-r2.xyz)+c3.zzz;
                         r2.xyz=r2.xyz*r3.yyy;
@@ -262,8 +262,8 @@ export const decalCylindricV5 = {
                         // NormalMap 
                         r17.ywx=texture2D(s2,v0.xy).xyz; 
                         
-                        // AoMap
-                        r17.z=texture2D(s3,v0.xy).x;  
+                        // Ambient occlusion
+                        r17.z=lighting.x;  
                         
                         r13.xw=r17.yw*c6.zz+c6.ww;
                         r17.xyz=r13.www*v3.xyz;

@@ -1,6 +1,7 @@
 import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { WidgetType } from "../shared/util";
+import { PosTexTanColTexL01 } from "../shared/input";
 
 
 const g_wreckShaderAdjustments = {
@@ -27,13 +28,7 @@ export const quadWreckV5 = {
     techniques : {
         Main: {
             vs: {
-                inputDefinitions: [
-                    { usage: "POSITION", usageIndex: 0 },
-                    { usage: "TEXCOORD", usageIndex: 0 },
-                    { usage: "TANGENT", usageIndex: 0 },
-                    { usage: "COLOR", usageIndex: 0 },
-                    { usage: "TEXCOORD", usageIndex: 1 }
-                ],
+                inputDefinitions: PosTexTanColTexL01,
                 shader: `
                 
                     ${vs.shadowHeader}
@@ -43,6 +38,7 @@ export const quadWreckV5 = {
                     attribute vec4 attr2;
                     attribute vec4 attr3;
                     attribute vec4 attr4;
+                    attribute vec4 attr5;
                     
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -55,6 +51,8 @@ export const quadWreckV5 = {
                     varying vec4 texcoord8;
                     
                     varying vec4 color;
+                    varying vec4 lighting;
+                    
                     uniform vec4 cb1[24];
                     uniform vec4 cb3[4];
                     uniform vec3 ssyf;
@@ -81,6 +79,8 @@ export const quadWreckV5 = {
                         v2=attr2;
                         v3=attr3;
                         v4=attr4;
+                        
+                        lighting.x=attr5.x;
                         
                         r0=v0.xyzx*c1.yyyx+c1.xxxy;
                         r1.w=dot(r0,cb3[3]);
@@ -170,7 +170,6 @@ export const quadWreckV5 = {
                     texture.AlbedoMap,
                     texture.RoughnessMap,
                     texture.NormalMap,
-                    texture.AoMap,
                     texture.PaintMaskMap,
                     texture.MaterialMap,
                     texture.DirtMap,
@@ -190,17 +189,18 @@ export const quadWreckV5 = {
                     varying vec4 texcoord8;
                     varying vec4 color;
                     
+                    varying vec4 lighting;
+                    
                     uniform samplerCube s0;
                     uniform sampler2D s1;
                     uniform sampler2D s2;  // AlphaThresholdMap
                     uniform sampler2D s3;  // AlbedoMap,
                     uniform sampler2D s4;  // RoughnessMap
                     uniform sampler2D s5;  // NormalMap,
-                    uniform sampler2D s6;  // AoMap,
-                    uniform sampler2D s7;  // PaintMaskMap
-                    uniform sampler2D s8;  // MaterialMap,
-                    uniform sampler2D s9;  // DirtMap,
-                    uniform sampler2D s10; // GlowMap
+                    uniform sampler2D s6;  // PaintMaskMap
+                    uniform sampler2D s7;  // MaterialMap,
+                    uniform sampler2D s8;  // DirtMap,
+                    uniform sampler2D s9;  // GlowMap
                    
                     uniform vec4 cb2[22];
                     uniform vec4 cb4[3];
@@ -259,16 +259,16 @@ export const quadWreckV5 = {
                         if(any(lessThan(r0,vec4(0.0))))discard;
                         
                         // PaintMaskMap
-                        r0.x=texture2D(s7,v0.xy).x;
+                        r0.x=texture2D(s6,v0.xy).x;
                         
                         // MaterialMap
-                        r0.y=texture2D(s8,v0.xy).x;    
+                        r0.y=texture2D(s7,v0.xy).x;    
                         
                         // DirtMap (Not required here)
-                        r0.z=texture2D(s9,v0.xy).x;   
+                        r0.z=texture2D(s8,v0.xy).x;   
                         
                         // GlowMap     
-                        r0.w=texture2D(s10,v0.xy).x;  
+                        r0.w=texture2D(s9,v0.xy).x;  
                         
                         //gl_FragData[0].w=(-r0.x)+c20.x;
                         gl_FragData[0].w=c20.x;
@@ -368,8 +368,8 @@ export const quadWreckV5 = {
                         // NormalMap
                         r10.ywx=texture2D(s5,v0.xy).xyz;
                         
-                        // AoMap
-                        r10.z=texture2D(s6,v0.xy).x;
+                        // Ambient Occlusion
+                        r10.z=lighting.x;
                         
                         r10.xy=r10.yw*c20.yy+c20.zz;
                         r11.xyz=r10.yyy*v3.xyz;
@@ -430,8 +430,8 @@ export const quadWreckV5 = {
                         }
                         else
                         {
-                            // AoMap
-                            r2.z=texture2D(s6,r1.xy).x;
+                            // Ambient Occlusion
+                            r2.z=lighting.x;
                         }
                         
                         r0.xzw=r0.xzw*r2.zzz+(-cb2[15].xyz);
@@ -450,7 +450,7 @@ export const quadWreckV5 = {
                         r1.zw=r2.xy*cb2[21].xx+r1.zw;
                         
                         // GlowMap     
-                        r2.w=texture2D(s10,r1.zw).x;  
+                        r2.w=texture2D(s9,r1.zw).x;  
                         
                         r1.z=r2.w*r2.w;
                         r1.z=sqrt(abs(r1.z));
