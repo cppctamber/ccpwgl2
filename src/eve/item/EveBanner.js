@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { quat, vec3, mat4 } from "math";
-import { Tw2PerObjectData, Tw2GeometryBatch } from "core";
-import { device } from "global";
+import { Tw2PerObjectData, Tw2GeometryBatch, Tw2Effect } from "core";
+import { device, resMan } from "global";
 
 
 
@@ -45,14 +45,46 @@ export class EveBanner extends meta.Model // Tw2Transform
     transform = mat4.create();
 
     @meta.struct()
-    effect = null;
+    effect = new Tw2Effect();
 
     _perObjectData = Tw2PerObjectData.from(EveBanner.perObjectData);
-
-    _geometryResource = null;
+    _geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
     _localTransform = mat4.create();
     _worldTransform = mat4.create();
 
+    // --------------------------------- testy mctest face  -------------------------//
+
+    get imageMapResPath()
+    {
+        return this.effect.parameters.ImageMap ? this.effect.parameters.ImageMap.GetValue() : "";
+    }
+
+    set imageMapResPath(resPath)
+    {
+        this.effect.SetParameters({ "ImageMap" : resPath });
+    }
+
+    get maskMapResPath()
+    {
+        return this.effect.parameters.MaskMap ? this.effect.parameters.MaskMap.GetValue() : "";
+    }
+
+    set maskMapResPath(resPath)
+    {
+        this.effect.SetParameters({ "MaskMap": resPath });
+    }
+
+    get borderMapResPath()
+    {
+        return this.effect.parameters.BorderMap ? this.effect.parameters.BorderMap.GetValue() : "";
+    }
+
+    set borderMapResPath(resPath)
+    {
+        this.effect.SetParameters({ "BorderMap" : resPath });
+    }
+
+    // --------------------------------- testy mctest face  -------------------------//
 
     /**
      * Gets the item's resources
@@ -87,13 +119,6 @@ export class EveBanner extends meta.Model // Tw2Transform
 
     }
 
-    /*
-    UpdateViewDependentData(parentTransform, dt, spriteScale, perObjectData)
-    {
-        // Do bone calculation here?
-    }
-     */
-
     /**
      * Gets render batches
      * @param {Number} mode
@@ -104,7 +129,7 @@ export class EveBanner extends meta.Model // Tw2Transform
      */
     GetBatches(mode, accumulator, perObjectData, parentTransform)
     {
-        if (!this.display || mode !== device.RM_ADDITIVE || !this.IsGood())
+        if (!this.display || mode !== EveBanner.RENDER_MODE || !this.IsGood())
         {
             return false;
         }
@@ -119,7 +144,8 @@ export class EveBanner extends meta.Model // Tw2Transform
 
             if (bones[offset] || bones[offset + 4] || bones[offset + 8])
             {
-                mat4.fromJointMatIndex(mat4_0, bones, offset);
+
+                mat4.fromJointMatIndex(mat4_0, bones, this.boneIndex);
                 mat4.multiply(mat4_0, mat4_0, this._localTransform);
                 mat4.multiply(this._worldTransform, parentTransform, mat4_0);
                 hasBone = true;
@@ -135,7 +161,7 @@ export class EveBanner extends meta.Model // Tw2Transform
         this._perObjectData.ps = perObjectData.ps;
 
         const batch = new Tw2GeometryBatch();
-        batch.renderMode = device.RM_ADDITIVE;
+        batch.renderMode = EveBanner.RENDER_MODE;
         batch.perObjectData = this._perObjectData;
         batch.geometryRes = this._geometryResource;
         batch.meshIx = 0;
@@ -147,6 +173,8 @@ export class EveBanner extends meta.Model // Tw2Transform
         return true;
     }
 
+    static RENDER_MODE = device.RM_ADDITIVE;
+
     /**
      * Fires on value changes
      */
@@ -155,10 +183,18 @@ export class EveBanner extends meta.Model // Tw2Transform
         mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
     }
 
+    /**
+     * Global scratch
+     * @type {{mat4_0: mat4}}
+     */
     static global = {
         mat4_0 : mat4.create()
     }
 
+    /**
+     * Per object data
+     * @type {{vs: [[string,number]]}}
+     */
     static perObjectData = {
         vs: [
             [ "WorldMat", 16 ]
