@@ -1,7 +1,30 @@
-import { vec3, vec4 } from "gl-matrix";
+import { vec4 } from "gl-matrix";
 import { num } from "./num";
+import { pool } from "math/pool";
 
-export { vec4 };
+/**
+ * Vector 4
+ * @typedef {Float32Array} vec4
+ */
+
+
+/**
+ * Allocates a pooled vec4
+ * @returns {Float32Array|vec4}
+ */
+vec4.alloc = function()
+{
+    return pool.allocF32(3);
+};
+
+/**
+ * Unallocates a pooled vec4
+ * @param {vec4|Float32Array} a
+ */
+vec4.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 vec4.ZERO = vec4.fromValues(0, 0, 0, 0);
 
@@ -225,3 +248,6 @@ vec4.fromArray = function(out, array, offset=0)
     out[3] = array[offset + 3];
     return out;
 };
+
+
+export { vec4 };

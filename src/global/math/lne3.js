@@ -1,5 +1,6 @@
 import { vec3 } from "./vec3";
 import { box3 } from "./box3";
+import { pool } from "./pool";
 
 /**
  * 3D Line
@@ -8,12 +9,33 @@ import { box3 } from "./box3";
 export const lne3 = {};
 
 /**
+ * Allocates a pooled lne3
+ * @returns {Float32Array|lne3}
+ */
+lne3.alloc = function()
+{
+    return pool.allocF32(6);
+};
+
+/**
+ * Unallocates a pooled lne3
+ * @param {Float32Array|lne3} a
+ */
+lne3.unalloc = function(a)
+{
+    pool.freeType(a);
+};
+
+/**
  * Line3 End methods
  *
  * @param {lne3} a
  * @returns {TypedArray}
  */
-lne3.$end = box3.$max;
+lne3.$end = function (a)
+{
+    return a.subarray(3, 6);
+};
 
 /**
  * Line3 start helper methods
@@ -21,7 +43,10 @@ lne3.$end = box3.$max;
  * @param {lne3} a
  * @returns {TypedArray}
  */
-lne3.$start = box3.$min;
+lne3.$start = function (a)
+{
+    return a.subarray(0, 3);
+};
 
 /**
  * Clones a lne3
@@ -29,7 +54,17 @@ lne3.$start = box3.$min;
  * @param {lne3} a
  * @returns {lne3}
  */
-lne3.clone = box3.clone;
+lne3.clone = function (a)
+{
+    let out = new Float32Array(6);
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
+    return out;
+};
 
 /**
  * Returns a point parameter based on the closest point as projected on the line segment.
@@ -41,37 +76,31 @@ lne3.clone = box3.clone;
  * @param {boolean} clampToLine - optional setting to clamp the result to the lne3
  * @returns {number}            - closest point parameter
  */
-lne3.closestPointToPointParameter = (function()
+lne3.closestPointToPointParameter = function(a, point, clampToLine)
 {
-    let vec3_0, vec3_1;
+    const
+        startP = vec3.alloc(),
+        startEnd = vec3.alloc();
 
-    return function(a, point, clampToLine)
-    {
-        if (!vec3_0)
-        {
-            vec3_0 = vec3.create();
-            vec3_1 = vec3.create();
-        }
+    startP[0] = point[0] - a[0];
+    startP[1] = point[1] - a[1];
+    startP[2] = point[2] - a[2];
 
-        let startP = vec3_0;
-        let startEnd = vec3_1;
+    startEnd[0] = a[3] - a[0];
+    startEnd[1] = a[4] - a[1];
+    startEnd[2] = a[5] - a[2];
 
-        startP[0] = point[0] - a[0];
-        startP[1] = point[1] - a[1];
-        startP[2] = point[2] - a[2];
+    let startEnd2 = startEnd[0] * startEnd[0] + startEnd[1] * startEnd[1] + startEnd[2] * startEnd[2],
+        startEnd_startP = startEnd[0] * startP[0] + startEnd[1] * startP[1] + startEnd[2] * startP[2],
+        t = startEnd_startP / startEnd2;
 
-        startEnd[0] = a[3] - a[0];
-        startEnd[1] = a[4] - a[1];
-        startEnd[2] = a[5] - a[2];
+    vec3.unalloc(startP);
+    vec3.unalloc(startEnd);
 
-        let startEnd2 = startEnd[0] * startEnd[0] + startEnd[1] * startEnd[1] + startEnd[2] * startEnd[2];
-        let startEnd_startP = startEnd[0] * startP[0] + startEnd[1] * startP[1] + startEnd[2] * startP[2];
-        let t = startEnd_startP / startEnd2;
+    if (clampToLine) t = Math.max(0, Math.min(1, t));
+    return t;
 
-        if (clampToLine) t = Math.max(0, Math.min(1, t));
-        return t;
-    };
-})();
+};
 
 /**
  * Copies the values from one lne3 into another
@@ -80,7 +109,16 @@ lne3.closestPointToPointParameter = (function()
  * @param {lne3} a
  * @returns {lne3} out
  */
-lne3.copy = box3.copy;
+lne3.copy = function (out, a)
+{
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
+    return out;
+};
 
 /**
  * Copies the start component from one lne3 into another
@@ -89,7 +127,13 @@ lne3.copy = box3.copy;
  * @param {lne3} a
  * @returns {lne3} out
  */
-lne3.copyStart = vec3.copy;
+lne3.copyStart = function (out, a)
+{
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    return out;
+};
 
 /**
  * Copies the end component from one lne3 into another
@@ -98,14 +142,23 @@ lne3.copyStart = vec3.copy;
  * @param {lne3} a
  * @returns {lne3} out
  */
-lne3.copyEnd = box3.copyMax;
+lne3.copyEnd =function (out, a)
+{
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
+    return out;
+};
 
 /**
  * Creates a lne3
  *
  * @returns {lne3}
  */
-lne3.create = box3.create;
+lne3.create = function ()
+{
+    return new Float32Array(6);
+};
 
 /**
  * Checks two lne3's for equality
@@ -267,8 +320,10 @@ lne3.getStart = box3.getMin;
  */
 lne3.intersectsNormalConstant = function(a, n, c)
 {
-    let startSign = (n[0] * a[0] + n[1] * a[1] + n[2] * a[2]) + c;
-    let endSign = (n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) + c;
+    const
+        startSign = (n[0] * a[0] + n[1] * a[1] + n[2] * a[2]) + c,
+        endSign = (n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) + c;
+
     return (startSign < 0 && endSign > 0) || (endSign < 0 && startSign > 0);
 };
 

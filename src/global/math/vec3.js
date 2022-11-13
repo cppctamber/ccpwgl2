@@ -1,7 +1,30 @@
-import { vec3, vec4, quat, mat4 } from "gl-matrix";
+import { vec3, quat, mat4 } from "gl-matrix";
 import { num } from "./num";
+import { pool } from "./pool";
+import { vec4 } from "./vec4";
 
-export { vec3 };
+/**
+ * Vector 3
+ * @typedef {Float32Array} vec3
+ */
+
+/**
+ * Allocates a pooled vec3
+ * @returns {Float32Array|vec3}
+ */
+vec3.alloc = function()
+{
+    return pool.allocF32(3);
+};
+
+/**
+ * Unallocates a pooled vec3
+ * @param {vec3|Float32Array} a
+ */
+vec3.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 /**
  * X_AXIS
@@ -21,10 +44,6 @@ vec3.Y_AXIS = vec3.fromValues(0, 1, 0);
  */
 vec3.Z_AXIS = vec3.fromValues(0, 0, 1);
 
-/**
- * Vector 3
- * @typedef {Float32Array} vec3
- */
 
 /**
  * Adds a scalar to a vec3
@@ -105,18 +124,13 @@ vec3.directionFromQuat = function(out, axis, q)
  * @param {mat4} m
  * @returns {vec3} out
  */
-vec3.directionFromMat4 = (function()
+vec3.directionFromMat4 = function (out, axis, m)
 {
-    let quat_0;
-
-    return function directionFromMat4Axis(out, axis, m)
-    {
-        if (!quat_0) quat_0 = quat.create();
-        mat4.getRotation(quat_0, m);
-        return vec3.transformQuat(out, axis, quat_0);
-    };
-
-})();
+    const quat_0 = mat4.getRotation(vec4.alloc(), m);
+    vec3.transformQuat(out, axis, quat_0);
+    vec4.unalloc(quat_0);
+    return out;
+};
 
 /**
  * Divides a vec3 by a scalar
@@ -144,8 +158,6 @@ vec3.euler = {};
 vec3.euler.DEFAULT_ORDER = "XYZ";
 
 
-let mat4_0;
-
 /**
  * Sets a euler from a quat
  *
@@ -156,9 +168,11 @@ let mat4_0;
  */
 vec3.euler.fromQuat = function(out, q, order = vec3.euler.DEFAULT_ORDER)
 {
-    if (!mat4_0) mat4_0 = mat4.create();
-    mat4.fromQuat(mat4_0, q);
-    return vec3.euler.fromMat4(out, mat4_0, order);
+    // mat4.alloc
+    const mat4_0 = mat4.fromQuat(pool.allocF32(16), q);
+    vec3.euler.fromMat4(out, mat4_0, order);
+    pool.unalloc(mat4_0);
+    return out;
 };
 
 /**
@@ -355,7 +369,6 @@ vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
     return out;
 };
 
-let vec3_0;
 
 /**
  * Gets a quat from a euler values
@@ -369,9 +382,10 @@ let vec3_0;
  */
 vec3.euler.getQuatFromValues = function(out, x, y, z, order)
 {
-    if (!vec3_0) vec3_0 = vec3.create();
-    vec3.set(vec3_0, x, y, z);
-    return vec3.euler.getQuat(out, vec3_0, order);
+    const vec3_0 = vec3.set(vec3.alloc(), x, y, z);
+    vec3.euler.getQuat(out, vec3_0, order);
+    vec3.unalloc(vec3_0);
+    return out;
 };
 
 /**
@@ -384,9 +398,10 @@ vec3.euler.getQuatFromValues = function(out, x, y, z, order)
  */
 vec3.euler.getQuatFromDegrees = function(out, v, order)
 {
-    if (!vec3_0) vec3_0 = vec3.create();
-    vec3.radians(vec3_0, v);
-    return vec3.euler.getQuat(out, vec3_0, order);
+    const vec3_0 = vec3.radians(vec3.alloc(), v);
+    vec3.euler.getQuat(out, vec3_0, order);
+    vec3.unalloc(vec3_0);
+    return out;
 };
 
 /**
@@ -401,10 +416,11 @@ vec3.euler.getQuatFromDegrees = function(out, v, order)
  */
 vec3.euler.getQuatFromDegreeValues = function(out, x, y, z, order)
 {
-    if (!vec3_0) vec3_0 = vec3.create();
-    vec3.set(vec3_0, x, y, z);
+    const vec3_0 = vec3.set(vec3.alloc(), x, y, z);
     vec3.radians(vec3_0, vec3_0);
-    return vec3.euler.getQuat(out, vec3_0, order);
+    vec3.euler.getQuat(out, vec3_0, order);
+    vec3.unalloc(vec3_0);
+    return out;
 };
 
 /**
@@ -655,42 +671,38 @@ vec3.subtractScalar = function(out, a, s)
  * @returns {vec3} out
  * @throw On perspective divide error
  */
-vec3.unproject = (function()
+vec3.unproject = function (out, a, invViewProj, viewport)
 {
-    let vec4_0;
+    const vec4_0 = vec4.alloc(4);
 
-    return function unProject(out, a, invViewProj, viewport)
+    let x = a[0],
+        y = a[1],
+        z = a[2];
+
+    vec4_0[0] = (x - viewport[0]) * 2.0 / viewport[2] - 1.0;
+    vec4_0[1] = (y - viewport[1]) * 2.0 / viewport[3] - 1.0;
+    vec4_0[2] = 2.0 * z - 1.0;
+    vec4_0[3] = 1.0;
+
+    vec4.transformMat4(vec4_0, vec4_0, invViewProj);
+
+    if (vec4_0[3] === 0.0)
     {
-        if (!vec4_0)
-        {
-            vec4_0 = vec4.create();
-        }
+        vec4.unalloc(vec4_0);
+        out[0] = 0;
+        out[1] = 0;
+        out[2] = 0;
+        throw new Error("Perspective divide error");
+    }
 
-        let x = a[0],
-            y = a[1],
-            z = a[2];
+    out[0] = vec4_0[0] / vec4_0[3];
+    out[1] = vec4_0[1] / vec4_0[3];
+    out[2] = vec4_0[2] / vec4_0[3];
 
-        vec4_0[0] = (x - viewport[0]) * 2.0 / viewport[2] - 1.0;
-        vec4_0[1] = (y - viewport[1]) * 2.0 / viewport[3] - 1.0;
-        vec4_0[2] = 2.0 * z - 1.0;
-        vec4_0[3] = 1.0;
+    vec4.unalloc(vec4_0);
 
-        vec4.transformMat4(vec4_0, vec4_0, invViewProj);
-
-        if (vec4_0[3] === 0.0)
-        {
-            out[0] = 0;
-            out[1] = 0;
-            out[2] = 0;
-            throw new Error("Perspective divide error");
-        }
-
-        out[0] = vec4_0[0] / vec4_0[3];
-        out[1] = vec4_0[1] / vec4_0[3];
-        out[2] = vec4_0[2] / vec4_0[3];
-        return out;
-    };
-})();
+    return out;
+};
 
 /**
  * Unwraps degrees
@@ -760,9 +772,9 @@ vec3.toRGBA = function(out, linear, linearAlpha = 1)
  */
 vec3.fromRGB = function(out, rgb)
 {
-    out[0] = rgb[0] / 255;
-    out[1] = rgb[1] / 255;
-    out[2] = rgb[2] / 255;
+    out[0] = num.linearFromColor(rgb[0]);
+    out[1] = num.linearFromColor(rgb[1]);
+    out[2] = num.linearFromColor(rgb[2]);
     return out;
 };
 
@@ -868,3 +880,5 @@ vec3.fromMat3Column = function(out, m, index)
 };
 
 
+
+export { vec3 };

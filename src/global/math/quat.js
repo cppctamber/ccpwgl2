@@ -1,4 +1,6 @@
 import { quat } from "gl-matrix";
+import { vec3 } from "./vec3";
+import { num } from "./num";
 
 export { quat };
 
@@ -90,4 +92,43 @@ quat.pow = function(out, inq, exponent)
     out[3] *= exponent;
     quat.exp(out, out);
     return out;
+};
+
+/**
+ * Creates a quat from unit vectors
+ *
+ * @param {quat} out
+ * @param {vec3} from
+ * @param {vec3} to
+ * @returns {vec4}
+ */
+quat.fromUnitVectors = function(out, from, to)
+{
+    let r = vec3.dot(from ,to);
+    if (r < num.EPSILON)
+    {
+        r = 0;
+        if (Math.abs(from[0]) > Math.abs(from[2]))
+        {
+            out[0] = -from[1];
+            out[1] = from[0];
+            out[2] = 0;
+            out[3] = r;
+        }
+        else
+        {
+            out[0] = 0;
+            out[1] = - from[2];
+            out[2] = from[1];
+            out[3] = r;
+        }
+    }
+    else
+    {
+        out[0] = from[1] * to[2] - from[2] * to[1];
+        out[1] = from[2] * to[0] - from[0] * to[2];
+        out[2] = from[0] * to[1] - from[1] * to[0];
+        out[3] = r;
+    }
+    return quat.normalize(out, out);
 };

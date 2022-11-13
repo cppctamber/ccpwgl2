@@ -1,6 +1,25 @@
 import { mat3 } from "gl-matrix";
+import { pool } from "./pool";
 
 export { mat3 };
+
+/**
+ * Allocates a pooled mat3
+ * @returns {Float32Array|mat3}
+ */
+mat3.alloc = function()
+{
+    return pool.allocF32(9);
+};
+
+/**
+ * Unallocates a pooled mat3
+ * @param {mat3|Float32Array} a
+ */
+mat3.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 /**
  * Sets a mat3 from an array at an option offset

@@ -3,6 +3,7 @@ import { vec3 } from "./vec3";
 import { vec4 } from "./vec4";
 import { mat3 } from "./mat3";
 import { box3 } from "./box3";
+import { pool } from "./pool";
 
 /**
  * Plane
@@ -11,6 +12,24 @@ import { box3 } from "./box3";
  */
 
 export const pln = {};
+
+/**
+ * Allocates a pooled pln
+ * @returns {Float32Array|pln}
+ */
+pln.alloc = function()
+{
+    return pool.allocF32(4);
+};
+
+/**
+ * Unallocates a pooled pln
+ * @param {pln|Float32Array} a
+ */
+pln.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 /**
  * Returns a subarray of a plane's normal
@@ -217,9 +236,10 @@ pln.fromCoplanarPoints = function(out, a, b, c)
         az = c[2] - b[2],
         bx = a[0] - b[0],
         by = a[1] - b[1],
-        bz = a[2] - b[2],
-        // get cross product
-        x = ay * bz - az * by,
+        bz = a[2] - b[2];
+
+    // get cross product
+    let x = ay * bz - az * by,
         y = az * bx - ax * bz,
         z = ax * by - ay * bx;
 
@@ -239,6 +259,7 @@ pln.fromCoplanarPoints = function(out, a, b, c)
         out[2] = 0;
         throw new Error("Normalization error");
     }
+
     // set coplanar point
     out[3] = -(a[0] * out[0] + a[1] * out[1] + a[2] * out[2]);
     return out;
@@ -346,21 +367,14 @@ pln.getIntersectLne3 = function(out, a, l)
  * @param {vec3} lineEnd
  * @returns {vec3}
  */
-pln.getIntersectStartEnd = (function()
+pln.getIntersectStartEnd = function(out, a, lineStart, lineEnd)
 {
-    let vec6_0;
-
-    return function(out, a, lineStart, lineEnd)
-    {
-        if (!vec6_0)
-        {
-            vec6_0 = box3.create();
-        }
-
-        box3.from(vec6_0, lineStart, lineEnd);
-        return pln.getIntersectLne3(out, a, vec6_0);
-    };
-})();
+    const vec6_0 = box3.alloc();
+    box3.from(vec6_0, lineStart, lineEnd);
+    pln.getIntersectLne3(out, a, vec6_0);
+    box3.unalloc(vec6_0);
+    return out;
+};
 
 /**
  * Sets a vec3 with the normal component of the pln
@@ -417,21 +431,13 @@ pln.getProjectedPoint = function(out, a, p)
  * @param {vec3} max  - box max bounds to compare
  * @returns {boolean} - true if intersection occurs
  */
-pln.intersectsBounds = (function()
+pln.intersectsBounds = function(a, min, max)
 {
-    let vec6_0;
-
-    return function(a, min, max)
-    {
-        if (!vec6_0)
-        {
-            vec6_0 = box3.create();
-        }
-
-        box3.from(vec6_0, min, max);
-        return box3.intersectsPln(vec6_0, a);
-    };
-})();
+    const box3_0 = box3.from(box3.alloc(), min, max);
+    let result = box3.intersectsPln(box3_0, a);
+    box3.unalloc(box3_0);
+    return result;
+};
 
 /**
  * Checks if a plane intersects a Float32Array(6) bounding box
@@ -622,58 +628,57 @@ pln.toArray = function(a, arr, offset = 0)
  * @param {mat3} [nMatrix] - optional normal matrix
  * @returns {pln} out      - the receiving plane
  */
-pln.transformMat4 = (function()
+pln.transformMat4 = function(out, a, m, nMatrix)
 {
-
-    let mat4_0;
-
-    return function(out, a, m, nMatrix)
+    let mat3_0;
+    if (!nMatrix)
     {
-        if (!nMatrix && !mat4_0)
-        {
-            mat4_0 = mat3.create();
-        }
+        mat3_0 = mat3.alloc();
+        nMatrix = mat3.normalFromMat4(mat3_0, m);
+    }
 
-        nMatrix = nMatrix || mat3.normalFromMat4(mat4_0, m);
+    // Coplanar Point
+    let cpX = a[0] * -a[3],
+        cpY = a[1] * -a[3],
+        cpZ = a[2] * -a[3];
 
-        // Coplanar Point
-        let cpX = a[0] * -a[3],
-            cpY = a[1] * -a[3],
-            cpZ = a[2] * -a[3];
-        // Create reference point from Coplanar Point transformed by the affine mat4
-        let rX = m[0] * cpX + m[4] * cpY + m[8] * cpZ + m[12],
-            rY = m[1] * cpX + m[5] * cpY + m[9] * cpZ + m[13],
-            rZ = m[2] * cpX + m[6] * cpY + m[10] * cpZ + m[14];
-        // Transform plane normal by normal matrix
-        let nX = a[0],
-            nY = a[1],
-            nZ = a[2];
+    // Create reference point from Coplanar Point transformed by the affine mat4
+    let rX = m[0] * cpX + m[4] * cpY + m[8] * cpZ + m[12],
+        rY = m[1] * cpX + m[5] * cpY + m[9] * cpZ + m[13],
+        rZ = m[2] * cpX + m[6] * cpY + m[10] * cpZ + m[14];
 
-        let pX = nX * nMatrix[0] + nY * nMatrix[3] + nZ * nMatrix[6],
-            pY = nX * nMatrix[1] + nY * nMatrix[4] + nZ * nMatrix[7],
-            pZ = nX * nMatrix[2] + nY * nMatrix[5] + nZ * nMatrix[8];
+    // Transform plane normal by normal matrix
+    let nX = a[0],
+        nY = a[1],
+        nZ = a[2],
+        pX = nX * nMatrix[0] + nY * nMatrix[3] + nZ * nMatrix[6],
+        pY = nX * nMatrix[1] + nY * nMatrix[4] + nZ * nMatrix[7],
+        pZ = nX * nMatrix[2] + nY * nMatrix[5] + nZ * nMatrix[8];
 
-        // Normalize plane normal
-        let len = pX * pX + pY * pY + pZ * pZ;
-        if (len > 0)
-        {
-            len = 1 / Math.sqrt(len);
-            out[0] = pX * len;
-            out[1] = pY * len;
-            out[2] = pZ * len;
-        }
-        else
-        {
-            out[0] = 0;
-            out[1] = 0;
-            out[2] = 0;
-            throw new Error("Normalization error");
-        }
-        // recalculate constant from negative dot of reference point and the resulting plane normal
-        out[3] = -(rX * out[0] + rY * out[1] + rZ * out[2]);
-        return out;
-    };
-})();
+    if (mat3_0) mat3.unalloc(mat3_0);
+
+    // Normalize plane normal
+    let len = pX * pX + pY * pY + pZ * pZ;
+    if (len > 0)
+    {
+        len = 1 / Math.sqrt(len);
+        out[0] = pX * len;
+        out[1] = pY * len;
+        out[2] = pZ * len;
+    }
+    else
+    {
+        out[0] = 0;
+        out[1] = 0;
+        out[2] = 0;
+        throw new Error("Normalization error");
+    }
+
+    // recalculate constant from negative dot of reference point and the resulting plane normal
+    out[3] = -(rX * out[0] + rY * out[1] + rZ * out[2]);
+
+    return out;
+};
 
 /**
  * Translates a plane with the given vector
