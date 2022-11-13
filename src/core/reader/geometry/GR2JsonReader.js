@@ -45,13 +45,13 @@ export class GR2JsonReader
 {
 
     static DEFAULT_OPTIONS = {
-        firstMeshOnly : true,
-        aoGenerate : true,
-        aoResolution: 2048,
-        aoBias: 0.001,
-        aoSamples: 2048,
+        firstMeshOnly: true,
+        aoGenerate: true,
+        aoResolution: 1024,
+        aoBias: 0.01,
+        aoSamples: 1024,
         aoIndexed: false
-    }
+    };
 
     /**
      * Prepares a geometry resource
@@ -61,13 +61,34 @@ export class GR2JsonReader
      */
     static Prepare(data, res, options)
     {
+
+        // Temp fix invalid numbers
+
+
         const { models = [], meshes = [], animations = [] } = data;
         const { gl } = device;
 
         options = Object.assign({}, GR2JsonReader.DEFAULT_OPTIONS, options);
 
-        const count = options && options.firstMeshOnly ? 1 : meshes.length;
-        for (let iMesh = 0; iMesh < count; iMesh++)
+        // If we're only loading the base mesh, discard unnecessary stuff
+        if (options.firstMeshOnly)
+        {
+            models.forEach(model =>
+            {
+                for (let i = 0; i < model.meshBindings.length; i++)
+                {
+                    if (model.meshBindings[i] !== 0)
+                    {
+                        model.meshBindings.splice(i, 1);
+                        i--;
+                    }
+                }
+            });
+
+            meshes.splice(1);
+        }
+
+        for (let iMesh = 0; iMesh < meshes.length; iMesh++)
         {
             const
                 srcM = meshes[iMesh],
@@ -149,19 +170,19 @@ export class GR2JsonReader
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 
             let faces = [];
-            for (let i = 0; i < indexData.length; i+=3)
+            for (let i = 0; i < indexData.length; i += 3)
             {
-                faces.push([ indexData[i], indexData[i+1], indexData[i+2] ]);
+                faces.push([ indexData[i], indexData[i + 1], indexData[i + 2] ]);
             }
 
             /*---- Calculate Ambient Occlusion ----*/
 
             if (options["aoGenerate"])
             {
-                const { aoBias=0.01, aoSamples=256, aoResolution=1024, aoIndexed=false } = options;
+                const { aoBias = 0.01, aoSamples = 256, aoResolution = 1024, aoIndexed = false } = options;
 
                 const
-                    positions = vertexElements.find(x=> x.usage === Tw2VertexElement.Type.POSITION && x.usageIndex === 0),
+                    positions = vertexElements.find(x => x.usage === Tw2VertexElement.Type.POSITION && x.usageIndex === 0),
                     normals = vertexElements.find(x => x.usage === Tw2VertexElement.Type.NORMAL && x.usageIndex === 0);
 
                 if (positions)
@@ -232,8 +253,6 @@ export class GR2JsonReader
             mesh.buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
             gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-
-
 
 
             // Bone bindings
