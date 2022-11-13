@@ -35,6 +35,9 @@ export class EveChildParticleSystem extends EveChild
     @meta.list([ "Tw2ParticleSystem", "Tr2GpuParticleSystem" ])
     particleSystems = [];
 
+    @meta.uint
+    reflectionMode = 0;
+
     @meta.quaternion
     rotation = quat.create();
 
