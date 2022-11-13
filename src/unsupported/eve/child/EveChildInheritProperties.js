@@ -6,4 +6,10 @@ import { meta } from "utils";
 export class EveChildInheritProperties extends meta.Model
 {
 
+    @meta.struct()
+    Primary = null;
+
+    @meta.struct()
+    Secondary = null;
+
 }
