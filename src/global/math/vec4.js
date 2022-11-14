@@ -14,7 +14,7 @@ import { pool } from "math/pool";
  */
 vec4.alloc = function()
 {
-    return pool.allocF32(3);
+    return pool.allocF32(4);
 };
 
 /**
