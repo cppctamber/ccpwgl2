@@ -5,11 +5,10 @@ import { meta } from "utils";
 @meta.type("EveChildInheritProperties")
 export class EveChildInheritProperties extends meta.Model
 {
+    // Primary
 
-    @meta.struct()
-    Primary = null;
+    // Secondary
 
-    @meta.struct()
-    Secondary = null;
+    // Tertiary
 
 }
