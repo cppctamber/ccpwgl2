@@ -69,6 +69,9 @@ export class Tw2GeometryMesh
     @meta.list("Tw2BlendShapeData")
     blendShapes = [];
 
+    @meta.boolean
+    forceSystemMirror = false;
+
     _faces = 0;
     _vertices = 0;
     _areas = 0;
@@ -128,7 +131,7 @@ export class Tw2GeometryMesh
      */
     IsSystemMirrorRequired()
     {
-        return !!this.blendShapes.length;
+        return !!(this.forceSystemMirror || this.blendShapes.length);
     }
 
     /**
@@ -319,7 +322,7 @@ export class Tw2GeometryMesh
             const decl = this.declaration.FindUsage(usage, usageIndex);
             if (decl) return decl;
         }
-        
+
         return null;
     }
 
@@ -431,7 +434,7 @@ export class Tw2GeometryMesh
             for (let i = 0; i < v3.length; i++) v3[i] = 0;
             throw new ErrSystemMirrorDisabled();
         }
-        
+
         const d = this.GetUsageDeclaration(usage, usageIndex);
         // If no declaration empty arrays
         if (!d)
@@ -441,7 +444,7 @@ export class Tw2GeometryMesh
             for (let i = 0; i < v3.length; i++) v3[i] = 0;
             throw new ErrVertexDeclarationNotFound({ usage, usageIndex });
         }
-        
+
         const
             indices = Tw2GeometryMesh.GetFaceVertexIndices([], index, this.indexData),
             stride = this.declaration.stride / 4;
@@ -463,8 +466,9 @@ export class Tw2GeometryMesh
 
     /**
      * Gets the vertex indices for a face
+     * TODO: Normalize the parameters so they are like similar functions
      * @param {Number} index
-     * @return {vec3|Array
+     * @return {vec3|Array}
      */
     GetFaceVertexIndices(index)
     {
@@ -517,7 +521,7 @@ export class Tw2GeometryMesh
     {
         return this.GetFaceVertexElements(v1, v2, v3, index, Tw2VertexElement.Type.POSITION, 0);
     }
-    
+
     /**
      * Gets a tri3 for a face at a given index
      * @param {tri3} out
@@ -656,7 +660,12 @@ export class Tw2GeometryMesh
     {
         return this.GetVertexElement(out, index, Tw2VertexElement.Type.BLENDINDICE, 0);
     }
-    
+
+    static GetMidpointData(outMidpoint, outNormal, mesh, indexBuffer, bufferData, start, end)
+    {
+
+    }
+
     /**
      * Gets a face's vertex indices
      * @param {vec3|Array} out
