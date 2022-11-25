@@ -13,7 +13,7 @@ num.PI = Math.PI;
  * @param {number} order
  * @returns {number}
  */
-num.biCumulative = function(t, order)
+num.biCumulative = function (t, order)
 {
     if (order === 1)
     {
@@ -43,7 +43,7 @@ num.ceil = Math.ceil;
  * @param {number} max
  * @returns {number}
  */
-num.clamp = function(a, min, max)
+num.clamp = function (a, min, max)
 {
     return Math.max(min, Math.min(max, a));
 };
@@ -54,7 +54,7 @@ num.clamp = function(a, min, max)
  * @param {number} a
  * @returns {number}
  */
-num.decimalPlaces = function(a)
+num.decimalPlaces = function (a)
 {
     let match = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
     return match ? Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0)) : 0;
@@ -66,7 +66,7 @@ num.decimalPlaces = function(a)
  * @param {number} a
  * @returns {number}
  */
-num.degrees = function(a)
+num.degrees = function (a)
 {
     return a * num.RAD2DEG;
 };
@@ -77,7 +77,7 @@ num.degrees = function(a)
  * @param {number} a
  * @returns {number}
  */
-num.degreesUnwrapped = function(a)
+num.degreesUnwrapped = function (a)
 {
     return num.unwrapDegrees(a * num.RAD2DEG);
 };
@@ -87,7 +87,7 @@ num.degreesUnwrapped = function(a)
  * @param value
  * @return {Number}
  */
-num.dwordToFloat = function(value)
+num.dwordToFloat = function (value)
 {
     const
         b4 = (value & 0xff),
@@ -109,7 +109,7 @@ num.dwordToFloat = function(value)
  * @param b
  * @returns {boolean}
  */
-num.equals = function(a, b)
+num.equals = function (a, b)
 {
     return Math.abs(a - b) <= num.EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
 };
@@ -122,7 +122,7 @@ num.equals = function(a, b)
  * @param {number} b
  * @returns {boolean}
  */
-num.exactEquals = function(a, b)
+num.exactEquals = function (a, b)
 {
     return a === b;
 };
@@ -137,7 +137,7 @@ num.exactEquals = function(a, b)
  * @param {number} time - time
  * @returns {number}
  */
-num.exponentialDecay = function(omega0, torque, I, d, time)
+num.exponentialDecay = function (omega0, torque, I, d, time)
 {
     return torque * time / d + I * (omega0 * d - torque) / (d * d) * (1.0 - Math.pow(Math.E, -d * time / I));
 };
@@ -148,7 +148,7 @@ num.exponentialDecay = function(omega0, torque, I, d, time)
  * @param {number} a
  * @returns {number}
  */
-num.fract = function(a)
+num.fract = function (a)
 {
     return a - Math.floor(a);
 };
@@ -159,7 +159,7 @@ num.fract = function(a)
  * @param {number} a
  * @returns {number}
  */
-num.fromHalfFloat = function(a)
+num.fromHalfFloat = function (a)
 {
     const
         s = (a & 0x8000) >> 15,
@@ -189,7 +189,7 @@ num.floor = Math.floor;
  * @param {number} a
  * @returns {number}
  */
-num.getLongWordOrder = function(a)
+num.getLongWordOrder = function (a)
 {
     return (a === 0 || a === 255 || a === -16777216) ? 0 : 1 + num.getLongWordOrder(a >> 8);
 };
@@ -201,7 +201,7 @@ num.getLongWordOrder = function(a)
  * @param {number} b
  * @returns {number}
  */
-num.greaterThan = function(a, b)
+num.greaterThan = function (a, b)
 {
     return a > b ? 1 : 0;
 };
@@ -213,7 +213,7 @@ num.greaterThan = function(a, b)
  * @param {number} b
  * @returns {number}
  */
-num.greaterThanEqual = function(a, b)
+num.greaterThanEqual = function (a, b)
 {
     return num.isEqual(a, b) || a > b ? 1 : 0;
 };
@@ -226,7 +226,7 @@ num.greaterThanEqual = function(a, b)
  * @param {number} b
  * @returns {number}
  */
-num.greaterThanExactEqual = function(a, b)
+num.greaterThanExactEqual = function (a, b)
 {
     return a >= b ? 1 : 0;
 };
@@ -238,7 +238,7 @@ num.greaterThanExactEqual = function(a, b)
  * @param {number} a
  * @returns {boolean}
  */
-num.isEven = function(a)
+num.isEven = function (a)
 {
     return Math.abs(a) % 2 === 0;
 };
@@ -249,7 +249,7 @@ num.isEven = function(a)
  * @param {number} a
  * @returns {boolean}
  */
-num.isFloat = function(a)
+num.isFloat = function (a)
 {
     return a % 1 !== 0;
 };
@@ -266,7 +266,7 @@ num.isFinite = Number.isFinite;
  * @param {number} a
  * @returns {boolean}
  */
-num.isInt = function(a)
+num.isInt = function (a)
 {
     return a % 1 === 0;
 };
@@ -282,7 +282,7 @@ num.isNaN = Number.isNaN;
  * @param {number} a
  * @returns {boolean}
  */
-num.isOdd = function(a)
+num.isOdd = function (a)
 {
     return Math.abs(a) % 2 === 1;
 };
@@ -293,7 +293,7 @@ num.isOdd = function(a)
  * @param {number} a
  * @returns {boolean}
  */
-num.isPowerOfTwo = function(a)
+num.isPowerOfTwo = function (a)
 {
     return (a & (a - 1)) === 0 && a !== 0;
 };
@@ -305,7 +305,7 @@ num.isPowerOfTwo = function(a)
  * @param {number} b
  * @returns {number}
  */
-num.lessThan = function(a, b)
+num.lessThan = function (a, b)
 {
     return a < b ? 1 : 0;
 };
@@ -317,7 +317,7 @@ num.lessThan = function(a, b)
  * @param {number} b
  * @returns {number}
  */
-num.lessThanEqual = function(a, b)
+num.lessThanEqual = function (a, b)
 {
     return num.isEqual(a, b) || a < b ? 1 : 0;
 };
@@ -330,7 +330,7 @@ num.lessThanEqual = function(a, b)
  * @param {number} b
  * @returns {number}
  */
-num.lessThanExactEqual = function(a, b)
+num.lessThanExactEqual = function (a, b)
 {
     return a <= b ? 1 : 0;
 };
@@ -340,7 +340,7 @@ num.lessThanExactEqual = function(a, b)
  * @param {number} a
  * @returns {number}
  */
-num.log2 = function(a)
+num.log2 = function (a)
 {
     return Math.log(a) * Math.LOG2E;
 };
@@ -362,7 +362,7 @@ num.min = Math.min;
  * @param {number} a
  * @returns {number}
  */
-num.nearestPowerOfTwo = function(a)
+num.nearestPowerOfTwo = function (a)
 {
     return Math.pow(2, Math.round(Math.log(a) / Math.LN2));
 };
@@ -376,7 +376,7 @@ num.nearestPowerOfTwo = function(a)
  * @param {number} precision
  * @returns {number}
  */
-num.normalizeInt = function(value, start, end, precision)
+num.normalizeInt = function (value, start, end, precision)
 {
     let width = end - start;
     let offsetValue = value - start;
@@ -393,7 +393,7 @@ num.normalizeInt = function(value, start, end, precision)
  * @param {number} precision
  * @returns {number}
  */
-num.normalizeFloat = function(value, start, end, precision)
+num.normalizeFloat = function (value, start, end, precision)
 {
     let width = end - start;
     let offsetValue = value - start;
@@ -408,7 +408,7 @@ num.normalizeFloat = function(value, start, end, precision)
  * @param {number} a
  * @returns {number}
  */
-num.radians = function(a)
+num.radians = function (a)
 {
     return a * num.DEG2RAD;
 };
@@ -419,7 +419,7 @@ num.radians = function(a)
  * @param {number} a
  * @returns {number}
  */
-num.radiansUnwrapped = function(a)
+num.radiansUnwrapped = function (a)
 {
     return num.unwrapRadians(a *= num.DEG2RAD);
 };
@@ -431,7 +431,7 @@ num.radiansUnwrapped = function(a)
  * @param {number} high
  * @returns {number}
  */
-num.randomInt = function(low, high)
+num.randomInt = function (low, high)
 {
     return low + Math.floor(Math.random() * (high - low + 1));
 };
@@ -443,7 +443,7 @@ num.randomInt = function(low, high)
  * @param {number} high
  * @returns {number}
  */
-num.randomFloat = function(low, high)
+num.randomFloat = function (low, high)
 {
     return low + Math.random() * (high - low);
 };
@@ -459,7 +459,7 @@ num.round = Math.round;
  * @param {number} a
  * @returns {number}
  */
-num.roundToZero = function(a)
+num.roundToZero = function (a)
 {
     return a < 0 ? Math.ceil(a) : Math.floor(a);
 };
@@ -476,7 +476,7 @@ num.step = num.greaterThan;
  * @param max
  * @returns {number}
  */
-num.smoothStep = function(a, min, max)
+num.smoothStep = function (a, min, max)
 {
     if (a <= min) return 0;
     if (a >= max) return 1;
@@ -491,7 +491,7 @@ num.smoothStep = function(a, min, max)
  * @param max
  * @returns {number}
  */
-num.smootherStep = function(a, min, max)
+num.smootherStep = function (a, min, max)
 {
     if (a <= min) return 0;
     if (a >= max) return 1;
@@ -505,11 +505,11 @@ num.smootherStep = function(a, min, max)
  * @param {number} a
  * @returns {number}
  */
-num.toHalfFloat = (function()
+num.toHalfFloat = (function ()
 {
     let floatView, int32View;
 
-    return function(a)
+    return function (a)
     {
         if (!floatView)
         {
@@ -565,7 +565,7 @@ num.toHalfFloat = (function()
  * @param {Number} a
  * @returns {Number}
  */
-num.colorFromLinear = function(a)
+num.colorFromLinear = function (a)
 {
     return Math.min(Math.floor(a * 255), 255);
 };
@@ -575,7 +575,7 @@ num.colorFromLinear = function(a)
  * @param {Number} a
  * @returns {Number}
  */
-num.linearFromColor = function(a)
+num.linearFromColor = function (a)
 {
     return a / 255;
 };
@@ -585,7 +585,7 @@ num.linearFromColor = function(a)
  * @param {Number} a
  * @returns {String}
  */
-num.hexFromLinear = function(a)
+num.hexFromLinear = function (a)
 {
     return num.hexFromColor(num.colorFromLinear(a));
 };
@@ -595,7 +595,7 @@ num.hexFromLinear = function(a)
  * @param {Number} a
  * @returns {String}
  */
-num.hexFromColor = function(a)
+num.hexFromColor = function (a)
 {
     return (a | 1 << 8).toString(16).slice(1);
 };
@@ -606,7 +606,7 @@ num.hexFromColor = function(a)
  * @param {number} d
  * @returns {number}
  */
-num.unwrapDegrees = function(d)
+num.unwrapDegrees = function (d)
 {
     d = d % 360;
     if (d > 180) d -= 360;
@@ -620,10 +620,30 @@ num.unwrapDegrees = function(d)
  * @param {number} r
  * @returns {number}
  */
-num.unwrapRadians = function(r)
+num.unwrapRadians = function (r)
 {
     r = r % num.TWO_PI;
     if (r > num.PI) r -= num.TWO_PI;
     if (r < -num.PI) r += num.TWO_PI;
     return r;
+};
+
+/**
+ * Converts srgb to linear colour
+ * @param {Number} a
+ * @returns {Number}
+ */
+num.linearFromSRGB = function (a)
+{
+    return (a < 0.04045) ? a * 0.0773993808 : Math.pow(a * 0.9478672986 + 0.0521327014, 2.4);
+};
+
+/**
+ * Converts linear colour to srgb
+ * @param {Number} a
+ * @returns {Number}
+ */
+num.srgbFromLinear = function (a)
+{
+    return (a < 0.0031308) ? a * 12.92 : 1.055 * (Math.pow(a, 0.41666)) - 0.055;
 };

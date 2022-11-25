@@ -1,4 +1,4 @@
-import { vec3, quat, mat4 } from "gl-matrix";
+import { vec3, mat4 } from "gl-matrix";
 import { num } from "./num";
 import { pool } from "./pool";
 import { vec4 } from "./vec4";
@@ -879,6 +879,33 @@ vec3.fromMat3Column = function(out, m, index)
     return vec3.fromArray(out, m, index * 3);
 };
 
+/**
+ * Converts srgb to linear colour
+ * @param {vec3} out
+ * @param {vec3} srgb
+ * @returns {vec3} out
+ */
+vec3.fromSRGB = function(out, srgb)
+{
+    out[0] = num.linearFromSRGB(srgb[0]);
+    out[1] = num.linearFromSRGB(srgb[0]);
+    out[2] = num.linearFromSRGB(srgb[0]);
+    return out;
+};
+
+/**
+ * Converts linear colour to srgb
+ * @param {vec3} out
+ * @param {vec3} srgb
+ * @returns {vec3} out
+ */
+vec3.toSRGB = function(out, linear)
+{
+    out[0] = num.srgbFromLinear(linear[0]);
+    out[1] = num.srgbFromLinear(linear[0]);
+    out[2] = num.srgbFromLinear(linear[0]);
+    return out;
+};
 
 
 export { vec3 };
