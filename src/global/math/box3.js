@@ -3,6 +3,7 @@ import { vec3 } from "./vec3";
 import { sph3 } from "./sph3";
 import { pool } from "./pool";
 
+
 /**
  * 3D Box
  * @typedef {Float32Array} box3
@@ -581,6 +582,20 @@ box3.fromSph3 = function (out, sphere)
     out[4] = sphere[1] + sphere[3];
     out[5] = sphere[2] + sphere[3];
     return out;
+};
+
+/**
+ * Creates a box3 from a transform
+ * @param {box3} out
+ * @param {mat4} m
+ * @param {Number} [initialScale=1]
+ * @returns {box3} out
+ */
+box3.fromTransform = function(out, m, initialScale=1)
+{
+    out[0] = out[1] = out[2] = -initialScale / 2;
+    out[3] = out[4] = out[5] = initialScale / 2;
+    return box3.transformMat4(out, out, m);
 };
 
 /**

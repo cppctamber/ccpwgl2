@@ -1,8 +1,28 @@
 import { quat } from "gl-matrix";
 import { vec3 } from "./vec3";
 import { num } from "./num";
+import { pool } from "global/math/pool";
 
 export { quat };
+
+/**
+ * Allocates a pooled vec4
+ * @returns {Float32Array|vec4}
+ */
+quat.alloc = function()
+{
+    return pool.allocF32(4);
+};
+
+/**
+ * Unallocates a pooled vec4
+ * @param {vec4|Float32Array} a
+ */
+quat.unalloc = function(a)
+{
+    pool.freeType(a);
+};
+
 
 /**
  * QuaternionExp

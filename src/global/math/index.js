@@ -16,6 +16,7 @@ export * from "./pln";
 export * from "./ray3";
 export * from "./sph3";
 
+export * from "./pool";
 
 /**
  * TypedArray

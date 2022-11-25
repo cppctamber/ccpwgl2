@@ -144,16 +144,9 @@ export function createPool()
         allocType,
         unalloc: freeType,
         freeType,
-        free,
+        free
     };
 
 }
 
 export const pool = createPool();
-
-/*
-var pool = createPool();
-// zero pool for initial zero data
-pool.zero = createPool();
-module.exports = pool;
- */
