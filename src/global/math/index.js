@@ -5,8 +5,7 @@ export * from "./vec4";
 export * from "./quat";
 export * from "./mat3";
 export * from "./mat4";
-export * from "./noise";
-export * from "./curve";
+
 
 
 export * from "./box3";
@@ -17,6 +16,10 @@ export * from "./ray3";
 export * from "./sph3";
 
 export * from "./pool";
+export * from "./noise";
+export * from "./curve";
+export * as vertex from "./vertex";
+
 
 /**
  * TypedArray

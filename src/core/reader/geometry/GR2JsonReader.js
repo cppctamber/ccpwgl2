@@ -18,6 +18,7 @@ import {
     Tw2GeometryTrackGroup,
     Tw2GeometryTransformTrack
 } from "core/geometry";
+import { isString } from "utils";
 
 
 const VertexTypes = {
@@ -47,23 +48,27 @@ export class GR2JsonReader
     static DEFAULT_OPTIONS = {
         firstMeshOnly: true,
         aoGenerate: true,
-        aoResolution: 1024,
+        aoResolution: 512,
         aoBias: 0.01,
-        aoSamples: 1024,
+        aoSamples: 256,
         aoIndexed: false
     };
 
     /**
      * Prepares a geometry resource
-     * @param {Object} data
+     * @param {String|Object} data
      * @param {Tw2GeometryRes} res
      * @param {Object} [options]
      */
     static Prepare(data, res, options)
     {
 
-        // Temp fix invalid numbers
-
+        if (isString(data))
+        {
+            // Temp fix invalid numbers
+            // Remove this to increase performance
+            data = JSON.parse(data.replaceAll("-nan(ind)", "0"));
+        }
 
         const { models = [], meshes = [], animations = [] } = data;
         const { gl } = device;
@@ -106,7 +111,7 @@ export class GR2JsonReader
             {
                 for (const key in srcM.vertex)
                 {
-                    if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key].length)
+                    if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key] && srcM.vertex[key].length)
                     {
                         const type = VertexTypes[key.toUpperCase()];
                         if (!type) throw new Error(`Unsupported vertex type: ${key}`);
@@ -432,7 +437,7 @@ export class GR2JsonReader
      * Request response type
      * @type {string}
      */
-    static requestResponseType = "json";
+    static requestResponseType = "text";
 
     /**
      * File extension

@@ -4,6 +4,9 @@ import { isString } from "utils";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { GL_FLOAT } from "constant/gl";
 import { tw2 } from "global/tw2";
+import { calculateNormals, calculateTangents } from "math/vertex";
+import { GR2JsonReader } from "core";
+import * as geo from "geo-ambient-occlusion";
 
 
 /**
@@ -22,9 +25,13 @@ export class OBJReader
     models = [];
     animations = [];
 
-    constructor(data)
+    constructor(data, options={})
     {
+
+        options = Object.assign({}, GR2JsonReader.DEFAULT_OPTIONS, options);
+
         const result = new ObjLoader(data);
+        console.dir(result);
 
         function toElements(source, stride, pad)
         {
@@ -49,42 +56,6 @@ export class OBJReader
             return out;
         }
 
-        // Create declarations
-        this.declaration = new Tw2VertexDeclaration();
-
-        const declarations = [];
-
-        const position = CAKEReader.getDeclarationObjectByName("POSITION");
-        position.vertices = toElements(result.vertices, 3);
-        declarations.push(position);
-
-        const normal = CAKEReader.getDeclarationObjectByName("NORMAL");
-        normal.vertices = toElements(result.vertexNormals, 3);
-        declarations.push(normal);
-
-        const tex0 = CAKEReader.getDeclarationObjectByName("TEXCOORD0");
-        tex0.vertices = toElements(result.textures, 2);
-        declarations.push(tex0);
-
-        try
-        {
-            result.calculateTangentsAndBitangents();
-            const tangent = CAKEReader.getDeclarationObjectByName("TANGENT");
-            tangent.vertices = toElements(result.tangents, 3, true);
-            declarations.push(tangent);
-
-            const biTangent = CAKEReader.getDeclarationObjectByName("BITANGENT");
-            biTangent.vertices = toElements(result.bitangents, 3, true);
-            declarations.push(biTangent);
-        }
-        catch(err)
-        {
-            tw2.Debug({
-                name: "Tw2WavefrontReader",
-                message: "Could not generate tangents and bitangents..."
-            });
-        }
-
         let indexData = [];
         for (let i = 0; i < result.materialNames.length; i++)
         {
@@ -100,6 +71,71 @@ export class OBJReader
                 indexData.push(result.indicesPerMaterial[i][x]);
             }
         }
+
+        // Create declarations
+        this.declaration = new Tw2VertexDeclaration();
+        const declarations = [];
+
+        const positions = result.vertices;
+        const position = CAKEReader.getDeclarationObjectByName("POSITION");
+        position.vertices = toElements(positions, 3);
+        declarations.push(position);
+
+        const texcoords0 = result.textures;
+        const tex0 = CAKEReader.getDeclarationObjectByName("TEXCOORD0");
+        tex0.vertices = toElements(texcoords0, 2);
+        declarations.push(tex0);
+
+        // Calculate normals if required - if normals missing we'll get batman
+        const normals = result.vertexNormals && !isNaN(result.vertexNormals[0]) ? result.vertexNormals : calculateNormals(indexData, positions);
+
+        // Calculate tangents
+        const tangents = calculateTangents(indexData, positions, texcoords0, [], normals);
+        declarations.push({
+            usage: Tw2VertexElement.Type.TANGENT,
+            usageIndex: 0,
+            elements: 4,
+            vertices: toElements(tangents, 4, true)
+        });
+
+
+        /*---- Calculate Ambient Occlusion ----*/
+
+        if (options["aoGenerate"])
+        {
+            const { aoBias, aoSamples, aoResolution } = options;
+            if (positions)
+            {
+                //console.log("Calculating ambient occlusion for", mesh.name);
+                const aoSampler = geo(positions, {
+                    cells: indexData,
+                    bias: aoBias,
+                    resolution: aoResolution,
+                    normals,
+                });
+
+                for (let i = 0; i < aoSamples; i++) aoSampler.sample();
+                const data = aoSampler.report();
+
+                // Flip colours
+                for (let i = 0; i < data.length; i++)
+                {
+                    data[i] = 1.0 - data[i];
+                }
+
+                declarations.push({
+                    usage: Tw2VertexElement.Type.TEXCOORD,
+                    usageIndex: 20,
+                    elements: 1,
+                    vertices: toElements(data, 1, true)
+                });
+
+                aoSampler.dispose();
+            }
+        }
+
+        /*---- Temporary Ambient Occlusion ----*/
+
 
         let vertexSize = 0,
             vertexCount = declarations.length ? declarations[0].vertices.length : 0;
@@ -197,3 +233,4 @@ export class OBJReader
     static byMesh = true;
 
 }
+
