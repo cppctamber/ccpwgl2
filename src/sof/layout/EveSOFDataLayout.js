@@ -8,6 +8,6 @@ export class EveSOFDataLayout extends meta.Model
     name = "";
 
     @meta.list()
-    placements = []
+    placements = [];
 
 }
