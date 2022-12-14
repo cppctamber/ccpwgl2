@@ -36,4 +36,7 @@ export class EveSOFDataHullBanner extends meta.Model
     @meta.uint
     usage = 0;
 
+    @meta.string
+    visibilityGroup = "";
+
 }
