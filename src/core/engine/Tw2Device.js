@@ -1,5 +1,5 @@
 import { num, vec3, vec4, mat4 } from "math";
-import { assignIfExists, get, isString } from "utils";
+import { assignIfExists, get, isNumber, isString } from "utils";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Effect } from "../mesh/Tw2Effect";
@@ -15,6 +15,7 @@ import {
     RM_PICKABLE,
     RM_DEPTH,
     RM_DISTORTION,
+    RM_NORMAL,
     RS_ZENABLE,
     RS_ZWRITEENABLE,
     RS_ALPHATESTENABLE,
@@ -57,6 +58,7 @@ import {
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
 } from "constant";
+
 
 
 export class Tw2Device extends Tw2EventEmitter
@@ -114,8 +116,8 @@ export class Tw2Device extends Tw2EventEmitter
 
     perFrameVSData = null;
     perFramePSData = null;
-    perFrameCustomVSData = null;
-    perFrameCustomPSData = null;
+    perFrameCustomSceneVSData = null;
+    perFrameCustomScenePSData = null;
 
     pickDepth = 16;
 
@@ -187,6 +189,117 @@ export class Tw2Device extends Tw2EventEmitter
         this.tw2 = tw2;
         this.startTime = this.now;
         this.currentTime = this.startTime;
+
+        const opaqueStates = {
+            [RS_ALPHABLENDENABLE]: 0,
+            [RS_ALPHATESTENABLE]: 0,
+            [RS_SEPARATEALPHABLENDENABLE]: 0,
+            [RS_ZENABLE]: 1,
+            [RS_ZWRITEENABLE]: 1,
+            [RS_ZFUNC]: CMP_LEQUAL,
+            [RS_CULLMODE]: CULL_CW,
+            [RS_SLOPESCALEDEPTHBIAS]: 0,
+            [RS_DEPTHBIAS]: 0,
+            [RS_COLORWRITEENABLE]: 0xf
+        };
+
+        const transparentStates = {
+            [RS_CULLMODE]: CULL_CW,
+            [RS_ALPHATESTENABLE]: 0,
+            [RS_ALPHABLENDENABLE]: 1,
+            [RS_SRCBLEND]: BLEND_SRCALPHA,
+            [RS_DESTBLEND]: BLEND_INVSRCALPHA,
+            [RS_BLENDOP]: BLENDOP_ADD,
+            [RS_ZENABLE]: 1,
+            [RS_ZWRITEENABLE]: 0, // Should this be true for RM_DISTORTION?
+            [RS_ZFUNC]: CMP_LEQUAL,
+            [RS_SLOPESCALEDEPTHBIAS]: 0, // -1.0
+            [RS_DEPTHBIAS]: 0,
+            [RS_SEPARATEALPHABLENDENABLE]: 0,
+            [RS_COLORWRITEENABLE]: 0xf
+        };
+
+        this._renderStates = {
+            [RM_DEPTH]: {
+                dirty: true,
+                states: Object.assign({}, opaqueStates)
+            },
+            [RM_OPAQUE]: {
+                dirty: true,
+                states: Object.assign({}, opaqueStates)
+            },
+            [RM_PICKABLE]: {
+                dirty: true,
+                states: Object.assign({}, opaqueStates)
+            },
+            [RM_NORMAL]: {
+                dirty: true,
+                states: Object.assign({}, opaqueStates)
+            },
+            [RM_DISTORTION]: {
+                dirty: true,
+                states: Object.assign({}, transparentStates)
+            },
+            [RM_TRANSPARENT]: {
+                dirty: true,
+                states: Object.assign({}, transparentStates)
+            },
+            [RM_DECAL]: {
+                dirty: true,
+                states: {
+                    [RS_ALPHATESTENABLE]: 0,
+                    [RS_ALPHABLENDENABLE]: 1,
+                    [RS_SEPARATEALPHABLENDENABLE]: 0,
+                    [RS_ZENABLE]: 1,
+                    [RS_ZWRITEENABLE]: 1,
+                    [RS_ZFUNC]: CMP_LEQUAL,
+                    [RS_CULLMODE]: CULL_CW,
+                    [RS_SLOPESCALEDEPTHBIAS]: 0,
+                    [RS_DEPTHBIAS]: 0,
+                    [RS_COLORWRITEENABLE]: 0xf,
+                    [RS_SRCBLEND]: BLEND_SRCALPHA,
+                    [RS_DESTBLEND]: BLEND_INVSRCALPHA,
+                    [RS_ALPHAFUNC]: CMP_GREATER,
+                    [RS_ALPHAREF]: 127,
+                    [RS_BLENDOP]: BLENDOP_ADD,
+                }
+            },
+            [RM_ADDITIVE]: {
+                dirty: true,
+                states: {
+                    [RS_CULLMODE]: CULL_NONE,
+                    [RS_ALPHABLENDENABLE]: 1,
+                    [RS_SRCBLEND]: BLEND_ONE,
+                    [RS_DESTBLEND]: BLEND_ONE,
+                    [RS_BLENDOP]: BLENDOP_ADD,
+                    [RS_ZENABLE]: 1,
+                    [RS_ZWRITEENABLE]: 0,
+                    [RS_ZFUNC]: CMP_LEQUAL,
+                    [RS_ALPHATESTENABLE]: 0,
+                    [RS_SLOPESCALEDEPTHBIAS]: 0,
+                    [RS_DEPTHBIAS]: 0,
+                    [RS_SEPARATEALPHABLENDENABLE]: 0,
+                    [RS_COLORWRITEENABLE]: 0xf
+                }
+            },
+            [RM_FULLSCREEN]: {
+                dirty: true,
+                states: {
+                    [RS_ALPHABLENDENABLE]: 0,
+                    [RS_ALPHATESTENABLE]: 0,
+                    [RS_CULLMODE]: CULL_NONE,
+                    [RS_ZENABLE]: 0,
+                    [RS_ZWRITEENABLE]: 0,
+                    [RS_ZFUNC]: CMP_ALWAYS,
+                    [RS_SLOPESCALEDEPTHBIAS]: 0,
+                    [RS_DEPTHBIAS]: 0,
+                    [RS_SEPARATEALPHABLENDENABLE]: 0,
+                    [RS_COLORWRITEENABLE]: 0xf
+                }
+            }
+        };
+
+
     }
 
     /**
@@ -201,6 +314,7 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Registers options
+     * Todo: Add custom render states
      * @param {*} [opt]
      * @param {Number} opt.textureQuality
      * @param {Number} opt.shaderQuality
@@ -257,7 +371,6 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
 
-
     /**
      * Gets the gl parameters passed to the gl context
      * @return {Object|null}
@@ -269,7 +382,7 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Creates webgl Device
-     * @param  {HTMLCanvasElement|String} canvas    - 3d canvas
+     * @param  {HTMLCanvasElement|String} canvas3d    - 3d canvas
      * @param {HTMLCanvasElement|String} [canvas2d] - optional 2d canvas
      * @param {Object} [glParams]                   - gl parameters
      * @throws ErrWebglContext                      - When unable to create a webgl context
@@ -302,7 +415,7 @@ export class Tw2Device extends Tw2EventEmitter
             this.gl = Tw2Device.CreateContext(params, canvas);
             this.EmitEvent("context_created", this);
         }
-        catch(err)
+        catch (err)
         {
             this.EmitEvent("context_failed", this);
             throw err;
@@ -498,7 +611,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         if (!force && width === this.viewportWidth && height === this.viewportHeight)
         {
-            return  false;
+            return false;
         }
 
         this.viewportWidth = this.canvas.width = width;
@@ -1066,12 +1179,12 @@ export class Tw2Device extends Tw2EventEmitter
                     break;
 
                     /*
-                case CMP_NOTEQUAL:
-                    var alphaTestFunc = 1;
-                    var invertedAlphaTest = 1;
-                    var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-                    break;
-                */
+            case CMP_NOTEQUAL:
+                var alphaTestFunc = 1;
+                var invertedAlphaTest = 1;
+                var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+                break;
+            */
 
                 case CMP_GREATEREQUAL:
                     alphaTestFunc = 0;
@@ -1098,100 +1211,77 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Render states
+     * @type {Object}
+     * @private
+     */
+    _renderStates = null;
+
+    /**
+     * Sets a render mode state
+     * @param {Number} mode
+     * @param {Number} state
+     * @param {Number} value
+     * @returns {boolean} true if updated
+     */
+    SetRenderModeState(mode, state, value)
+    {
+        const rm = this._renderStates[mode];
+        if (rm === undefined) throw new Error(`Invalid render mode: ${mode}`);
+
+        let normValue = Number(value);
+        if (isNaN(normValue)) throw new Error(`Invalid render state value, expected number: ${value}`);
+
+        if (rm.states[state] !== normValue)
+        {
+            rm.states[state] = normValue;
+            rm.dirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets a render mode state
+     * @param {Number} mode
+     * @param {Number} state
+     * @returns {undefined|Number}
+     */
+    GetRenderModeState(mode, state)
+    {
+        const rm = this._renderStates[mode];
+        if (!rm) throw new Error(`Invalid render mode: ${mode}`);
+        return rm.states[mode];
+    }
+
+    /**
      * Sets a render mode
      * @param {number} renderMode
      */
     SetStandardStates(renderMode)
     {
-        if (this._currentRenderMode === renderMode) return;
+        if (this._currentRenderMode === renderMode)
+        {
+            if (renderMode === RM_ANY || !this._renderStates[renderMode].dirty) return;
+        }
 
         this.gl.frontFace(this.gl.CW);
-        switch (renderMode)
+
+        const mode = this._renderStates[renderMode];
+        if (mode)
         {
-
-            case RM_DEPTH:
-            case RM_OPAQUE:
-            case RM_PICKABLE:
-                this.SetRenderState(RS_ALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ZENABLE, true);
-                this.SetRenderState(RS_ZWRITEENABLE, true);
-                this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
-                this.SetRenderState(RS_CULLMODE, CULL_CW);
-                this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
-                this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
-                break;
-
-            case RM_DECAL:
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_ALPHABLENDENABLE, true);
-
-                this.SetRenderState(RS_SRCBLEND, BLEND_SRCALPHA);
-                this.SetRenderState(RS_DESTBLEND, BLEND_INVSRCALPHA);
-
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ALPHAFUNC, CMP_GREATER);
-                this.SetRenderState(RS_ALPHAREF, 127);
-                this.SetRenderState(RS_ZENABLE, true);
-                this.SetRenderState(RS_ZWRITEENABLE, true);
-                this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
-                this.SetRenderState(RS_CULLMODE, CULL_CW);
-                this.SetRenderState(RS_BLENDOP, BLENDOP_ADD);
-                this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
-                this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
-                break;
-
-            case RM_DISTORTION:
-            case RM_TRANSPARENT:
-                this.SetRenderState(RS_CULLMODE, CULL_CW);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_ALPHABLENDENABLE, true);
-                this.SetRenderState(RS_SRCBLEND, BLEND_SRCALPHA);
-                this.SetRenderState(RS_DESTBLEND, BLEND_INVSRCALPHA);
-                this.SetRenderState(RS_BLENDOP, BLENDOP_ADD);
-                this.SetRenderState(RS_ZENABLE, true);
-                this.SetRenderState(RS_ZWRITEENABLE, false); // Should this be true for RM_DISTORTION?
-                this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
-                this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0); // -1.0
-                this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
-                this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
-                break;
-
-            case RM_ADDITIVE:
-                this.SetRenderState(RS_CULLMODE, CULL_NONE);
-                this.SetRenderState(RS_ALPHABLENDENABLE, true);
-                this.SetRenderState(RS_SRCBLEND, BLEND_ONE);
-                this.SetRenderState(RS_DESTBLEND, BLEND_ONE);
-                this.SetRenderState(RS_BLENDOP, BLENDOP_ADD);
-                this.SetRenderState(RS_ZENABLE, true);
-                this.SetRenderState(RS_ZWRITEENABLE, false);
-                this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
-                this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
-                this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
-                break;
-
-            case RM_FULLSCREEN:
-                this.SetRenderState(RS_ALPHABLENDENABLE, false);
-                this.SetRenderState(RS_ALPHATESTENABLE, false);
-                this.SetRenderState(RS_CULLMODE, CULL_NONE);
-                this.SetRenderState(RS_ZENABLE, false);
-                this.SetRenderState(RS_ZWRITEENABLE, false);
-                this.SetRenderState(RS_ZFUNC, CMP_ALWAYS);
-                this.SetRenderState(RS_SLOPESCALEDEPTHBIAS, 0);
-                this.SetRenderState(RS_DEPTHBIAS, 0);
-                this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
-                this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
-                break;
-
-            default:
-                return;
+            for (const key in mode.states)
+            {
+                if (mode.states.hasOwnProperty(key))
+                {
+                    this.SetRenderState(Number(key), Number(mode.states[key]));
+                }
+            }
+            mode.dirty = false;
+        }
+        else
+        {
+            throw new Error(`Invalid render state: ${renderMode}`);
         }
 
         this._currentRenderMode = renderMode;
@@ -1239,7 +1329,7 @@ export class Tw2Device extends Tw2EventEmitter
  * Requests an animation frame
  * @param {Function} callback
  */
-Tw2Device.RequestAnimationFrame = Tw2Device.prototype.RequestAnimationFrame = (function()
+Tw2Device.RequestAnimationFrame = Tw2Device.prototype.RequestAnimationFrame = (function ()
 {
     const request = get(window, VendorRequestAnimationFrame);
     return callback => request(callback);
@@ -1249,11 +1339,12 @@ Tw2Device.RequestAnimationFrame = Tw2Device.prototype.RequestAnimationFrame = (f
  * Cancels an animation frame
  * @param {Number} id
  */
-Tw2Device.CancelAnimationFrame = Tw2Device.prototype.CancelAnimationFrame =  (function()
+Tw2Device.CancelAnimationFrame = Tw2Device.prototype.CancelAnimationFrame = (function ()
 {
     const cancel = get(window, VendorCancelAnimationFrame);
     return id => cancel(id);
 })();
+
 
 
 // Render Modes
