@@ -36,6 +36,8 @@ export class Tw2Transform extends meta.Model
     _boundingSphere = null;
 
     // Optional parameters
+    //_bone = null;
+    //_offsetTransform = null;
     //_parentTransform = null;
     //_localTranspose = null;
     //_localInverse = null;
@@ -65,7 +67,7 @@ export class Tw2Transform extends meta.Model
             this._boundsDirty = true;
         }
 
-        if (force || this._boundsDirty)
+        if (force || this._boundsDirty || this._bone)
         {
             box3.empty(this._boundingBox);
             sph3.empty(this._boundingSphere);
@@ -149,7 +151,6 @@ export class Tw2Transform extends meta.Model
         return this;
     }
 
-
     /**
      * Fires on value changes
      * @param {Object} [opt]
@@ -164,6 +165,58 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
+     * Offsets the model by its bounds center
+     * @param {vec3|Array} [centerOffset] - Optional center offset
+     * @returns {boolean|Tw2Transform}
+     */
+    OffsetToBoundsCenter(centerOffset = [ 0, 0, 0 ])
+    {
+        const { vec3_0, mat4_0 } = Tw2Transform.global;
+        const bb = this.GetBoundingBox([]);
+        if (!bb) throw new Error("Bounds not available");
+
+        vec3.set(vec3_0,
+            -0.5 * (bb[0] + bb[3]) + centerOffset[0],
+            -0.5 * (bb[1] + bb[4]) + centerOffset[1],
+            -0.5 * (bb[2] + bb[5]) + centerOffset[2]
+        );
+
+        // Only set if required
+        if (!vec3.equals(vec3_0, [ 0, 0, 0 ]))
+        {
+            mat4.identity(mat4_0);
+            mat4.translate(mat4_0, mat4_0, vec3_0);
+            this.SetOffsetTransform(mat4_0);
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets an offset transform
+     * @param {mat4} m
+     */
+    SetOffsetTransform(m)
+    {
+        if (!this._offsetTransform) this._offsetTransform = mat4.create();
+        mat4.copy(this._offsetTransform, m);
+        this._rebuildLocal = true;
+        return this;
+    }
+
+    /**
+     * Gets the offset transform
+     * @param {mat4} m
+     * @returns {mat4|null}
+     */
+    GetOffsetTransform(m)
+    {
+        if (this._offsetTransform) return mat4.copy(m, this._offsetTransform);
+        mat4.identity(m);
+        return null;
+    }
+
+    /**
      * Rebuilds transforms
      * @param {Object} [opt]
      * @returns {Boolean} true if updated
@@ -173,9 +226,19 @@ export class Tw2Transform extends meta.Model
         let force = opt && opt.force,
             skipUpdate = opt && opt.skipUpdate;
 
-        if (force || this._rebuildLocal)
+        if (force || this._rebuildLocal || this._bone)
         {
             mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
+
+            if (this._offsetTransform)
+            {
+                mat4.multiply(this._localTransform, this._offsetTransform, this._localTransform);
+            }
+
+            if (this._bone)
+            {
+                mat4.multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
+            }
 
             if (this["_localTranspose"])
             {
@@ -366,7 +429,6 @@ export class Tw2Transform extends meta.Model
         return mat4.getRotation(out, this._worldTransform);
     }
 
-
     /**
      * Gets world direction
      * @param {vec3} out
@@ -485,7 +547,8 @@ export class Tw2Transform extends meta.Model
     GetTransform(out)
     {
         this.RebuildTransforms();
-        return mat4.copy(out, this._localTransform);
+        mat4.copy(out, this._localTransform);
+        return out;
     }
 
     /**
@@ -834,6 +897,23 @@ export class Tw2Transform extends meta.Model
 
         mat4.getRotation(this.rotation, mat4_0);
 
+        this._rebuildLocal = true;
+        return this;
+    }
+
+    /**
+     * Look at standard
+     * @param {vec3} v
+     * @param {Boolean} flip
+     * @returns {Tw2Transform}
+     */
+    LookAt2(v, flip)
+    {
+        this.RebuildTransforms();
+        mat4.copy(mat4_0, this._localTransform);
+        if (flip) mat4.lookAt(mat4_0, this.translation, v, vec3.Y_AXIS);
+        else mat4.lookAt(mat4_0, v, this.translation, vec3.Y_AXIS);
+        mat4.getRotation(this.rotation, mat4_0);
         this._rebuildLocal = true;
         return this;
     }

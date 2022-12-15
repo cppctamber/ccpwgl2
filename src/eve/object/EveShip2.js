@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, vec4, mat4, sph3, box3 } from "math";
+import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
@@ -323,7 +323,7 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     * Finds a turret set by it's locator
+     * Finds a turret set by its locator
      * @param {String} locator
      * @returns {EveTurretSet}
      */
@@ -417,13 +417,35 @@ export class EveShip2 extends EveObject
     }
 
     /**
-     * Finds a locator's bone by it's name
+     * Finds a mesh bone by name
+     * @param {String} boneName
+     * @param {Number} meshIndex
+     * @returns {Tw2Bone|null}
+     */
+    FindMeshBoneByName(boneName, meshIndex)
+    {
+        return this.animation ? this.animation.FindMeshBoneByName(name, meshIndex) : null;
+    }
+
+    /**
+     * Finds a mesh bone by index
+     * @param {Number} boneIndex
+     * @param {Number} meshIndex
+     * @returns {Tw2Bone|null}
+     */
+    FindMeshBoneByIndex(boneIndex, meshIndex)
+    {
+        return this.animation ? this.animation.FindMeshBoneByIndex(boneIndex, meshIndex) : null;
+    }
+
+    /**
+     * Finds a locator's bone by its name
      * @param {String} name
      * @returns {?Tw2Bone} null if not found
      */
     FindLocatorBoneByName(name)
     {
-        return this.animation ? this.animation.FindBoneForMesh(name, this.meshIndex) : null;
+        return this.FindMeshBoneByName(name, this.meshIndex);
     }
 
     /**
@@ -859,7 +881,7 @@ export class EveShip2 extends EveObject
                     case EveSpriteLineSet:
                         if (show.spriteLineSets)
                         {
-                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                            item.GetBatches(mode, accumulator, this._perObjectData);
                         }
                         break;
 
@@ -887,7 +909,7 @@ export class EveShip2 extends EveObject
                     case EveBanner:
                         if (show.banners)
                         {
-                            item.GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
+                            item.GetBatches(mode, accumulator, this._perObjectData);
                         }
                         break;
 
@@ -975,9 +997,7 @@ export class EveShip2 extends EveObject
 
         this.RebuildTransforms({ force: true, skipUpdate: true });
 
-
         const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
-
 
         if (res)
         {
@@ -1002,28 +1022,25 @@ export class EveShip2 extends EveObject
                 }
 
                 // Todo: Do bounds check on animations
-            }
-        }
 
-        // TODO: Replace in Update or ViewDependantUpdate
-        const worldScale =  mat4.maxScaleOnAxis(this._worldTransform);
-        if (this._spriteScale !== worldScale)
-        {
-            this._spriteScale = worldScale;
-
-            if (this.boosters)
-            {
-                this.boosters.SetWorldSpriteScale(this._spriteScale);
-            }
-
-            for (let i = 0; i < this.attachments.length; i++)
-            {
-                if ("SetWorldSpriteScale" in this.attachments[i])
+                // Update locator bones
+                // Todo: Find a way to update this without checking every frame
+                for (let i = 0; i < this.locators.length; i++)
                 {
-                    this.attachments[i].SetWorldSpriteScale(this._spriteScale);
+                    if (this.locators[i]._parentTransform !== this._worldTransform)
+                    {
+                        this.locators[i]._parentTransform = this._worldTransform;
+                    }
+
+                    if (this.locators[i]._meshIndex !== this.meshIndex)
+                    {
+                        this.locators[i]._bone = this.animation.FindMeshBoneByName(this.locators[i].name, this.meshIndex);
+                        this.locators[i]._meshIndex = this.meshIndex;
+                    }
                 }
             }
         }
+
 
         for (let i = 0; i < this.children.length; ++i)
         {
@@ -1065,17 +1082,25 @@ export class EveShip2 extends EveObject
             this.customMasks[i].UpdatePerObjectData(id, this._perObjectData, i, this.visible.customMasks);
         }
 
+        this._spriteScale = mat4.maxScaleOnAxis(this._worldTransform);
+
+        let bones = null;
+        if (this.animation && this.animation.models[this.meshIndex])
+        {
+            bones = this.animation.models[this.meshIndex].bonesByIndex;
+        }
+
         for (let i = 0; i < this.attachments.length; i++)
         {
             if ("UpdateViewDependentData" in this.attachments[i])
             {
-                this.attachments[i].UpdateViewDependentData(this._worldTransform, dt, this._spriteScale, this._perObjectData);
+                this.attachments[i].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
             }
         }
 
         if (this.boosters)
         {
-            this.boosters.UpdateViewDependentData(this._worldTransform);
+            this.boosters.UpdateViewDependentData(this._worldTransform, this.animation, this.meshIndex, this._spriteScale);
         }
     }
 

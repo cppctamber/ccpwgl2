@@ -1,6 +1,6 @@
 import { meta, assignIfExists } from "utils";
 import { device } from "global";
-import { vec3, vec4, mat4 } from "math";
+import { vec3, vec4, mat4, box3, sph3 } from "math";
 import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
@@ -76,8 +76,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
         glow: true,
         symHalo: true,
         halo: true,
-        trail: true,
-        customValues: true
+        trail: true
     };
 
     @meta.float
@@ -91,6 +90,16 @@ export class EveBoosterSetItem extends EveObjectSetItem
     GetTransform(m)
     {
         return mat4.copy(m, this.transform);
+    }
+
+    /**
+     * Gets the item's bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetBoundingBox(out)
+    {
+        return box3.fromTransform(out, this.transform);
     }
 
     /**
@@ -129,6 +138,9 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
 }
 
+/**
+ * Todo: replace locator update with bones...
+ */
 
 @meta.type("EveBoosterSet", true)
 export class EveBoosterSet extends EveObjectSet
@@ -195,7 +207,6 @@ export class EveBoosterSet extends EveObjectSet
         trails: true
     };
 
-    _parentTransform = mat4.create();
     _positions = null;
     _decl = Tw2VertexDeclaration.from(EveBoosterSet.vertexDeclarations);
     _perObjectData = Tw2PerObjectData.from(EveBoosterSet.perObjectData);
@@ -213,20 +224,19 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
-     * Checks if any child bounds are dirty
-     * @return {boolean}
+     * Check if any children have dirty bounds
+     * @returns {boolean}
      */
-    AreItemBoundsDirty()
+    AreBoundsDirty()
     {
-        for (let i = 0; i < this.items.length; i++)
+        if (this._boundsDirty) return true;
+
+        for (let i = 0; i < this._visibleItems.length; i++)
         {
-            if (this.items[i]._boundsDirty)
-            {
-                return true;
-            }
+            if (this._visibleItems[i].AreBoundsDirty()) return true;
         }
 
-        return this.glows ? this.glows._dirty : false;
+        return this.glows ? this.glows.AreBoundsDirty() : false;
     }
 
     /**
@@ -234,7 +244,30 @@ export class EveBoosterSet extends EveObjectSet
      */
     OnRebuildBounds()
     {
+        box3.empty(this._boundingBox);
+        sph3.empty(this._boundingSphere);
 
+        if (!this._visibleItems.length || !this.glows)
+        {
+            this._boundsDirty = false;
+            return;
+        }
+
+        const { box3_0 } = EveObjectSet.global;
+        for (let i = 0; i < this._visibleItems.length; i++)
+        {
+            this._visibleItems[i].GetBoundingBox(box3_0);
+            box3.union(this._boundingBox, this._boundingBox, box3_0);
+        }
+
+        if (this.glows)
+        {
+            this.glows.GetBoundingBox(box3_0);
+            box3.union(this._boundingBox, this._boundingBox, box3_0);
+        }
+
+        sph3.fromBox3(this._boundingSphere, this._boundingBox);
+        this._boundsDirty = false;
     }
 
     /**
@@ -263,7 +296,7 @@ export class EveBoosterSet extends EveObjectSet
                 if (glows)
                 {
                     const
-                        src = item.customValues && item.customValues.display ? item.customValues : this,
+                        src = this,
                         pos = item.GetPosition(g.vec3_1),
                         dir = item.GetDirection(g.vec3_2),
                         scale = item.GetScale();
@@ -390,7 +423,7 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
-     * Rebuilds the booster set from it's parent's locators
+     * Rebuilds the booster set from its parent's locators
      */
     RebuildItemsFromLocators()
     {
@@ -398,24 +431,16 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
-     * Sets world sprite scale
-     * @param {Number} scale
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     * @param {Number} spriteScale
      */
-    SetWorldSpriteScale(scale)
+    UpdateViewDependentData(parentTransform, bones, spriteScale)
     {
-        if (this.glows)
-        {
-            this.glows.SetWorldSpriteScale(scale);
-        }
-    }
-
-    /**
-     * Per frame upadte
-     * @param parentTransform
-     */
-    UpdateViewDependentData(parentTransform)
-    {
-        mat4.copy(this._parentTransform, parentTransform);
+        if (!this.display) return;
+        super.UpdateViewDependentData(parentTransform, null);
+        if (this.glows) this.glows.UpdateViewDependentData(parentTransform, bones, spriteScale);
     }
 
     /**
@@ -424,6 +449,7 @@ export class EveBoosterSet extends EveObjectSet
      */
     Update(dt)
     {
+        if (!this.display) return;
         super.Update(dt);
         if (this.glows) this.glows.Update(dt);
     }

@@ -9,16 +9,147 @@ export class EveObjectSetItem extends meta.Model
     @meta.boolean
     display = true;
 
+    /**
+     * Marks the item as dirty
+     * @type {boolean}
+     */
     _dirty = true;
-    _boundsDirty = true;
 
     /**
-     * Fire on value changes
+     * The item's parent object
+     * @type {null|EveObjectSet}
      */
-    OnValueChanged()
+    _parent = null;
+
+    /**
+     * Checks if the item is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return false;
+    }
+
+    /**
+     * Checks if the item is dirty
+     * @returns {boolean}
+     */
+    get isDirty()
+    {
+        return this._dirty;
+    }
+
+    /**
+     * Fires when rebuild by the parent object
+     * @param {EveObjectSet} parent
+     */
+    OnRebuiltByParent(parent)
+    {
+        this._parent = parent;
+        this._dirty = false;
+    }
+
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged(opt)
     {
         this._dirty = true;
-        this._boundsDirty = true;
+        if (this._parent)
+        {
+            this._parent.OnItemModified(this, opt);
+        }
+    }
+
+    /**
+     * Fires when the item is destroyed
+     */
+    OnDestroy()
+    {
+        this._bone = null;
+        this._parent = null;
+    }
+
+    /**
+     * Gets the object's local transform
+     * @param {mat4} out
+     * @return {mat4} out
+     */
+    @meta.abstract
+    GetTransform(out)
+    {
+
+    }
+
+    /**
+     * Gets the object's world transform
+     * @param {mat4} out
+     */
+    GetWorldTransform(out)
+    {
+        if (!this._parent)
+        {
+            mat4.identity(out);
+            throw new Error("Parent not defined");
+        }
+
+        this.GetTransform(out);
+        return mat4.multiply(out, this._parent.GetParentTransformReference(), out);
+    }
+
+    /**
+     * Gets the item's bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    @meta.abstract
+    GetBoundingBox(out)
+    {
+
+    }
+
+    /**
+     * Gets the item's bounding sphere
+     * @param {sph3} out
+     * @returns {sph3} out
+     */
+    GetBoundingSphere(out)
+    {
+        return sph3.fromBox3(out, this.GetBoundingBox(EveObjectSet.global.box3_0));
+    }
+
+    /**
+     * Gets the item's world bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetWorldBoundingBox(out)
+    {
+        if (!this._parent)
+        {
+            box3.empty(out);
+            throw new Error("Parent not defined");
+        }
+
+        this.GetBoundingBox(out);
+        return box3.transformMat4(out, out, this._parent.GetParentTransformReference());
+    }
+
+    /**
+     * Gets the item's world bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetWorldBoundingSphere(out)
+    {
+        if (!this._parent)
+        {
+            sph3.empty(out);
+            throw new Error("Parent not defined");
+        }
+
+        this.GetBoundingSphere(out);
+        return sph3.transformMat4(out, out, this._parent.GetParentTransformReference());
     }
 
 }
@@ -28,9 +159,6 @@ export class EveObjectSet extends meta.Model
 {
 
     @meta.boolean
-    autoRebuild = true;
-
-    @meta.boolean
     display = true;
 
     @meta.list()
@@ -38,9 +166,20 @@ export class EveObjectSet extends meta.Model
 
     _dirty = true;
     _visibleItems = [];
+
     _boundsDirty = true;
     _boundingBox = null;
     _boundingSphere = null;
+
+    _bones = null;
+    _parentTransform = mat4.create();
+
+    /*
+    get isDirty()
+    {
+        return this._dirty || this.AreItemsDirty();
+    }
+     */
 
     /**
      * Initializes the set
@@ -48,6 +187,29 @@ export class EveObjectSet extends meta.Model
     Initialize()
     {
         this.Rebuild();
+    }
+
+    /**
+     * Gets a reference to the parent transform
+     * @returns {mat4}
+     */
+    GetParentTransformReference()
+    {
+        return this._parentTransform;
+    }
+
+    /**
+     * Gets a bone by its reference
+     * @param {Number} [boneIndex]
+     * @returns {mat4|null}
+     */
+    GetBone(boneIndex)
+    {
+        if (this._bones && this._bones[boneIndex])
+        {
+            return this._bones[boneIndex];
+        }
+        return null;
     }
 
     /**
@@ -63,17 +225,11 @@ export class EveObjectSet extends meta.Model
             this._boundingSphere = sph3.create();
             this._boundsDirty = true;
         }
-
-        if (!force || !this._boundsDirty)
+        
+        if (force || this.AreBoundsDirty())
         {
-            this._boundsDirty = this.AreItemBoundsDirty();
-        }
-
-        if (force || this._boundsDirty)
-        {
-            box3.empty(this._boundingBox);
-            sph3.empty(this._boundingSphere);
             this.OnRebuildBounds();
+            return true;
         }
 
         return false;
@@ -81,10 +237,27 @@ export class EveObjectSet extends meta.Model
 
     /**
      * Fires when bounds need to be rebuilt
+     * - Calculates bounding box and converts to a sphere
      */
     OnRebuildBounds()
     {
-        // Temporarily stop bounds from being rebuilt by the parent
+        box3.empty(this._boundingBox);
+        sph3.empty(this._boundingSphere);
+
+        if (!this._visibleItems.length)
+        {
+            this._boundsDirty = false;
+            return;
+        }
+
+        const { box3_0 } = EveObjectSet.global;
+        for (let i = 0; i < this._visibleItems.length; i++)
+        {
+            this._visibleItems[i].GetBoundingBox(box3_0);
+            box3.union(this._boundingBox, this._boundingBox, box3_0);
+        }
+
+        sph3.fromBox3(this._boundingSphere, this._boundingBox);
         this._boundsDirty = false;
     }
 
@@ -97,7 +270,7 @@ export class EveObjectSet extends meta.Model
     GetBoundingBox(out, force)
     {
         this.RebuildBounds(force);
-        box3.copy(this._boundingBox, this._boundingBox);
+        box3.copy(out, this._boundingBox);
         return this._boundsDirty ? null : out;
     }
 
@@ -110,8 +283,30 @@ export class EveObjectSet extends meta.Model
     GetBoundingSphere(out, force)
     {
         this.RebuildBounds(force);
-        sph3.copy(this._boundingSphere, this._boundingSphere);
+        sph3.copy(out, this._boundingSphere);
         return this._boundsDirty ? null : out;
+    }
+
+    /**
+     * Gets world bounding box
+     * @param {box3} out
+     * @param {Boolean} [force]
+     * @returns {box3|null}
+     */
+    GetWorldBoundingBox(out, force)
+    {
+        return this.GetBoundingBox(out, force) ? box3.transformMat4(out, out, this._parentTransform) : null;
+    }
+
+    /**
+     * Gets world bounding sphere
+     * @param {sph3} out
+     * @param {Boolean} [force]
+     * @returns {sph3|null}
+     */
+    GetWorldBoundingSphere(out, force)
+    {
+        return this.GetBoundingSphere(out, force) ? sph3.transformMat4(out, out, this._parentTransform) : null;
     }
 
     /**
@@ -120,7 +315,14 @@ export class EveObjectSet extends meta.Model
     OnValueChanged()
     {
         this._dirty = true;
-        this._boundsDirty = true;
+    }
+
+    /**
+     * Fires when the item is destroyed
+     */
+    OnDestroy()
+    {
+        this._bones = null;
     }
 
     /**
@@ -131,18 +333,12 @@ export class EveObjectSet extends meta.Model
     OnItemModified(item, opt)
     {
         const skipEvents = opt && opt.skipEvents;
-
         if (this.items.includes(item))
         {
-            this._dirty = true;
             if (!skipEvents) this.EmitEvent("item_modified", item, opt);
         }
-        else
-        {
-            if (!skipEvents) this.EmitEvent("item_removed", item, opt);
-            item.OffEvent("modified", this.OnItemModified);
-        }
-
+        
+        this._dirty = true;
         this._boundsDirty = true;
     }
 
@@ -156,9 +352,11 @@ export class EveObjectSet extends meta.Model
     {
         const item = this.constructor.Item.from(values);
         this.items.push(item);
+        item.OnRebuiltByParent(this);
+
         this._dirty = true;
         this._boundsDirty = true;
-        item.OnEvent("modified", this.OnItemModified, this);
+
         if (!opt || !opt.skipEvents) this.EmitEvent("item_created", item, opt);
         if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
         return item;
@@ -174,9 +372,11 @@ export class EveObjectSet extends meta.Model
         if (!this.items.includes(item))
         {
             this.items.push(item);
+            item.OnRebuiltByParent(this);
+
             this._dirty = true;
             this._boundsDirty = true;
-            item.OnEvent("modified", this.OnItemModified, this);
+
             if (!opt || !opt.skipEvents) this.EmitEvent("item_added", item, opt);
             if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
             return true;
@@ -196,9 +396,11 @@ export class EveObjectSet extends meta.Model
         if (index !== -1)
         {
             this.items.splice(index, 1);
+            item.OnRebuiltByParent(null);
+
             this._dirty = true;
             this._boundsDirty = true;
-            item.OffEvent("modified", this.OnItemModified);
+
             if (!opt || !opt.skipEvents) this.EmitEvent("item_removed", item, opt);
             if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
             return true;
@@ -241,7 +443,7 @@ export class EveObjectSet extends meta.Model
 
     /**
      * Rebuilds items
-     * @param  {Object} [opt]
+     * @param {Object} [opt]
      */
     RebuildItems(opt)
     {
@@ -250,6 +452,7 @@ export class EveObjectSet extends meta.Model
         if (!this.display)
         {
             this._dirty = true;
+            this._boundsDirty = true;
             return;
         }
 
@@ -259,26 +462,24 @@ export class EveObjectSet extends meta.Model
                 item = this.items[i],
                 skipEvents = opt && opt.skipEvents;
 
-            if (!item.HasEvent("modified", this.OnItemModified))
-            {
-                if (!skipEvents) this.EmitEvent("item_added", item,  opt);
-                item.OnEvent("modified", this.OnItemModified, this);
-            }
-
             if (item.display)
             {
                 this._visibleItems.push(item);
             }
 
-            if (item._dirty && !skipEvents)
+            if (item.isDirty)
             {
-                this.EmitEvent("item_rebuilt", item, opt);
+                if (!skipEvents)
+                {
+                    this.EmitEvent("item_rebuilt", item, opt);
+                }
             }
 
-            item._dirty = false;
+            item.OnRebuiltByParent(this);
         }
 
         this._dirty = true;
+        this._boundsDirty = true;
     }
 
     /**
@@ -289,23 +490,22 @@ export class EveObjectSet extends meta.Model
     {
         for (let i = 0; i < this.items.length; i++)
         {
-            if (this.items[i]._dirty)
-            {
-                return true;
-            }
+            if (this.items[i].isDirty) return true;
         }
         return false;
     }
 
     /**
-     * Checks if any child bounds are dirty
-     * @return {boolean}
+     * Check if any children have dirty bounds
+     * @returns {boolean}
      */
-    AreItemBoundsDirty()
+    AreBoundsDirty()
     {
-        for (let i = 0; i < this.items.length; i++)
+        if (this._boundsDirty) return true;
+
+        for (let i = 0; i < this._visibleItems.length; i++)
         {
-            if (this.items[i]._boundsDirty)
+            if (this._visibleItems[i].isSkinned)
             {
                 return true;
             }
@@ -315,21 +515,31 @@ export class EveObjectSet extends meta.Model
 
     /**
      * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     */
+    UpdateViewDependentData(parentTransform, bones)
+    {
+        if (!this.display) return;
+
+        if (this._bones !== bones)
+        {
+            this._bones = bones;
+            this._dirty = true;
+            this._boundsDirty = true;
+        }
+
+        mat4.copy(this._parentTransform, parentTransform);
+    }
+
+    /**
+     * Per frame update
      * @param {Number} dt
      */
     Update(dt)
     {
         if (!this.display) return;
-
-        if (!this._dirty && this.autoRebuild && this.AreItemsDirty())
-        {
-            this._dirty = true;
-        }
-
-        if (this._dirty)
-        {
-            this.Rebuild();
-        }
+        if (this._dirty) this.Rebuild();
     }
 
     /**
@@ -338,10 +548,8 @@ export class EveObjectSet extends meta.Model
      */
     Unload(opt)
     {
-        if (!opt || !opt.skipEvents)
-        {
-            this.EmitEvent("unloaded", this, opt);
-        }
+        if (!opt || !opt.skipEvents) this.EmitEvent("unloaded", this, opt);
+        // this._dirty = true;
     }
 
     /**
@@ -350,10 +558,8 @@ export class EveObjectSet extends meta.Model
      */
     Rebuild(opt)
     {
-        if (!opt || !opt.skipEvents)
-        {
-            this.EmitEvent("rebuilt", this, opt);
-        }
+        this._dirty = false;
+        if (!opt || !opt.skipEvents) this.EmitEvent("rebuilt", this, opt);
     }
 
     /**
@@ -394,7 +600,9 @@ export class EveObjectSet extends meta.Model
         vec3_2: vec3.create(),
         vec4_0: vec4.create(),
         vec4_1: vec4.create(),
-        mat4_0: mat4.create()
+        mat4_0: mat4.create(),
+        box3_0: box3.create(),
+        sph3_0: sph3.create()
     };
 
 }

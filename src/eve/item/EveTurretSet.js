@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { tw2, device } from "global";
-import { vec3, vec4, quat, mat4 } from "math";
+import { vec3, vec4, quat, mat4, box3 } from "math";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
@@ -9,7 +9,9 @@ import {
 } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
-
+/**
+ * Todo: update with bone offset?
+ */
 @meta.type("EveTurretSetItem")
 export class EveTurretSetItem extends EveObjectSetItem
 {
@@ -29,11 +31,19 @@ export class EveTurretSetItem extends EveObjectSetItem
     @meta.quaternion
     rotation = quat.create();
 
-    _isClosest = false;
     _bone = null;
+    _isClosest = false;
     _localTransform = mat4.create();
     _localRotation = quat.create();
 
+    /**
+     * Checks if the item is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._bone !== null;
+    }
 
     /**
      * Fires on initialization
@@ -46,12 +56,15 @@ export class EveTurretSetItem extends EveObjectSetItem
     /**
      * Fires on value changes
      */
-    OnValueChanged()
+    OnValueChanged(opt)
     {
         this._dirty = true;
         this.UpdateTransforms();
+        if (this._parent)
+        {
+            this._parent.OnItemModified(this, opt);
+        }
     }
-
 
     /**
      * Updates the turret's transforms
@@ -76,6 +89,16 @@ export class EveTurretSetItem extends EveObjectSetItem
     GetTransform(m)
     {
         return mat4.copy(m, this._localTransform);
+    }
+
+    /**
+     * Gets the item's bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetBoundingBox(out)
+    {
+        return box3.fromTransform(out, this._localTransform);
     }
 
 }
@@ -184,7 +207,6 @@ export class EveTurretSet extends EveObjectSet
         turrets: true,
         firingEffects: true
     };
-
 
     _activeAnimation = new Tw2AnimationController();
     _activeTurret = -1;
@@ -658,15 +680,16 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Updates view dependent data
      * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
      */
-    UpdateViewDependentData(parentTransform)
+    UpdateViewDependentData(parentTransform, bones)
     {
-        mat4.copy(this._parentTransform, parentTransform);
-
         if (this.firingEffect)
         {
             this.firingEffect.UpdateViewDependentData(parentTransform);
         }
+
+        super.UpdateViewDependentData(parentTransform, bones);
     }
 
     /**

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device } from "global";
-import { mat4, num, vec3, vec4 } from "math";
+import { mat4, num, vec3, vec4, sph3, box3 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "utils";
@@ -59,7 +59,7 @@ export class EveSpriteSetItem extends EveObjectSetItem
     blinkRate = 0;
 
     @meta.uint
-    boneIndex = 0;
+    boneIndex = -1;
 
     @meta.color
     color = vec4.create();
@@ -85,13 +85,80 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.uint
     groupIndex = -1;
 
-    // Testing
+    // ccpwgl only
 
     @meta.uint
     colorType = -1;
 
+    _bone = null;
+    _worldPosition = vec3.create();
+
     /**
-     * Gets the item's local matrix
+     * Checks if the item is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._bone !== null;
+    }
+
+    /**
+     * Fires when rebuild by the parent
+     * @param parent
+     */
+    OnRebuiltByParent(parent)
+    {
+        this._parent = parent;
+        this._bone = parent ? parent.GetBone(this.boneIndex) : null;
+
+        if (parent)
+        {
+            // Could be called twice if skinned
+            this.UpdateWorldPosition(parent.GetParentTransformReference());
+        }
+        else
+        {
+            vec3.set(this._worldPosition, 0,0,0);
+        }
+
+        this._dirty = false;
+    }
+
+    /**
+     * Updates the world transform
+     * @param parentTransform
+     */
+    UpdateWorldPosition(parentTransform)
+    {
+        vec3.copy(this._worldPosition, this.position);
+        if (this._bone) vec3.transformMat4(this._worldPosition, this._worldPosition, this._bone.offsetTransform);
+        vec3.transformMat4(this._worldPosition, this._worldPosition, parentTransform);
+    }
+
+    /**
+     * Gets the item's bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetBoundingBox(out)
+    {
+        return box3.fromSph3(out, this.GetBoundingSphere(EveObjectSet.global.sph3_0));
+    }
+
+    /**
+     * Gets the item's bounding sphere
+     * @param {sph3} out
+     * @returns {sph3} out
+     */
+    GetBoundingSphere(out)
+    {
+        sph3.fromPositionRadius(out, this.position, this.minScale * EveSpriteSet.itemBoundsScaleMultiplier);
+        if (this._bone) sph3.transformMat4(out, out, this._bone.offsetTransform);
+        return out;
+    }
+
+    /**
+     * Gets the item's local transform
      * @param {mat4} m
      * @returns {mat4} m
      */
@@ -101,6 +168,21 @@ export class EveSpriteSetItem extends EveObjectSetItem
         m[12] = this.position[0];
         m[13] = this.position[1];
         m[14] = this.position[2];
+        if (this._bone) mat4.multiply(m, this._bone.offsetTransform, m);
+        return m;
+    }
+
+    /**
+     * Gets the item's world matrix
+     * @param {mat4} m
+     * @returns {mat4|null}
+     */
+    GetWorldTransform(m)
+    {
+        mat4.identity(m);
+        m[12] = this._worldPosition[0];
+        m[13] = this._worldPosition[1];
+        m[14] = this._worldPosition[2];
         return m;
     }
 
@@ -123,15 +205,13 @@ export class EveSpriteSet extends EveObjectSet
     @meta.boolean
     useQuads = null;
 
-
-    _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
     _instanceBuffer = null;
     _decl = null;
     _vdecl = Tw2VertexDeclaration.from([ { usage: "TEXCOORD", usageType: 5, elements: 1 } ]);
     _worldSpriteScale = 1;
-    _randomness =  num.randomFloat(0, 0.2);
+    _randomness = num.randomFloat(0, 0.2);
 
     /**
      * Alias for this.items
@@ -158,15 +238,8 @@ export class EveSpriteSet extends EveObjectSet
     Initialize()
     {
         this.UseQuads(!!this.useQuads);
-        this.Rebuild();
-    }
-
-    /**
-     * Fires when bounds need to be rebuilt
-     */
-    OnRebuildBounds()
-    {
-
+        // Todo can no longer rebuild without at least one per frame update
+        //this.Rebuild();
     }
 
     /**
@@ -192,26 +265,30 @@ export class EveSpriteSet extends EveObjectSet
     }
 
     /**
-     * Sets the world sprite scale
-     * @param {Number} worldSpriteScale
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     * @param {Number} spriteScale
      */
-    SetWorldSpriteScale(worldSpriteScale)
+    UpdateViewDependentData(parentTransform, bones, spriteScale)
     {
-        if (this._worldSpriteScale !== worldSpriteScale)
+        if (!this.display) return;
+
+        if (this._worldSpriteScale !== spriteScale)
         {
-            this._worldSpriteScale = worldSpriteScale;
+            this._worldSpriteScale = spriteScale;
             this._dirty = true;
         }
-    }
 
-    /**
-     * Per frame update
-     * @param {Number} dt - Delta time
-     */
-    Update(dt)
-    {
-        this._time += dt;
-        super.Update(dt);
+        super.UpdateViewDependentData(parentTransform, bones);
+
+        for (let i = 0; i < this._visibleItems.length; i++)
+        {
+            if (this._visibleItems[i].isSkinned)
+            {
+                this._visibleItems[i].UpdateWorldPosition(parentTransform);
+            }
+        }
     }
 
     /**
@@ -252,7 +329,7 @@ export class EveSpriteSet extends EveObjectSet
     Rebuild(opt)
     {
         this.RebuildItems(opt);
-        this._dirty = false;
+
         const itemCount = this._visibleItems.length;
         if (!itemCount)
         {
@@ -269,6 +346,7 @@ export class EveSpriteSet extends EveObjectSet
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 0, 1, 2, 2, 3, 0 ]), gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             this._instanceBuffer = gl.createBuffer();
+            super.Rebuild(opt);
             return;
         }
 
@@ -448,6 +526,9 @@ export class EveSpriteSet extends EveObjectSet
         for (let i = 0; i < itemCount; ++i)
         {
             const item = this._visibleItems[i];
+
+            // Todo: Just use stored _worldTransform or must it be unskinned?
+
             vec3.transformMat4(pos, item.position, world);
             array[index++] = pos[0];
             array[index++] = pos[1];
@@ -505,9 +586,7 @@ export class EveSpriteSet extends EveObjectSet
             d = device,
             gl = d.gl,
             itemCount = this._visibleItems.length,
-            array = new Float32Array(17 * itemCount),
-            pos = EveObjectSet.global.vec3_0,
-            bones = perObjectData.vs.Get("JointMat");
+            array = new Float32Array(17 * itemCount);
 
         d.SetStandardStates(d.RM_ADDITIVE);
 
@@ -515,22 +594,9 @@ export class EveSpriteSet extends EveObjectSet
         for (let i = 0; i < itemCount; ++i)
         {
             const item = this._visibleItems[i];
-            if (this.skinned)
-            {
-                const offset = item.boneIndex * 12;
-                pos[0] = bones[offset] * item.position[0] + bones[offset + 1] * item.position[1] + bones[offset + 2] * item.position[2] + bones[offset + 3];
-                pos[1] = bones[offset + 4] * item.position[0] + bones[offset + 5] * item.position[1] + bones[offset + 6] * item.position[2] + bones[offset + 7];
-                pos[2] = bones[offset + 8] * item.position[0] + bones[offset + 9] * item.position[1] + bones[offset + 10] * item.position[2] + bones[offset + 11];
-                vec3.transformMat4(pos, pos, world);
-            }
-            else
-            {
-                vec3.transformMat4(pos, item.position, world);
-            }
-
-            array[index++] = pos[0];
-            array[index++] = pos[1];
-            array[index++] = pos[2];
+            array[index++] = item._worldPosition[0];
+            array[index++] = item._worldPosition[1];
+            array[index++] = item._worldPosition[2];
             array[index++] = 1;
             array[index++] = item.blinkPhase;
             array[index++] = item.blinkRate;
@@ -601,6 +667,12 @@ export class EveSpriteSet extends EveObjectSet
 
         return item;
     }
+
+    /**
+     * Scales the bounds
+     * @type {number}
+     */
+    static itemBoundsScaleMultiplier = 1.0;
 
     /**
      * The sprite set's item constructor

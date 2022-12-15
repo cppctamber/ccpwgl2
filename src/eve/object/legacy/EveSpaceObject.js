@@ -337,7 +337,7 @@ export class EveSpaceObject extends EveObject
      */
     FindLocatorBoneByName(name)
     {
-        return this.animation ? this.animation.FindBoneForMesh(name, 0) : null;
+        return this.animation ? this.animation.FindMeshBoneByName(name, 0) : null;
     }
 
     /**

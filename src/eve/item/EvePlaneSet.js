@@ -1,6 +1,6 @@
 import { meta, assignIfExists } from "utils";
 import { device } from "global";
-import { vec3, vec4, quat, mat4 } from "math";
+import { vec3, vec4, quat, mat4, box3, sph3 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch, Tw2Effect } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
@@ -40,25 +40,8 @@ export class EvePlaneSetItem extends EveObjectSetItem
     @meta.string
     name = "";
 
-    @meta.notImplemented
-    @meta.float
-    blinkRate = 0;
-
-    @meta.notImplemented
-    @meta.float
-    blinkPhase = 0;
-
-    @meta.notImplemented
     @meta.uint
-    blinkMode = 0;
-
-    @meta.notImplemented
-    @meta.float
-    dutyCycle = 0;
-
-    @meta.notImplemented
-    @meta.float
-    rate = 0;
+    boneIndex = -1;
 
     @meta.color
     color = vec4.create();
@@ -88,17 +71,46 @@ export class EvePlaneSetItem extends EveObjectSetItem
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
-    boneIndex = 0;
-
-    @meta.uint
-    @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
     groupIndex = -1;
 
-    // Testing
+    // Not implemented
+
+    @meta.notImplemented
+    @meta.float
+    blinkRate = 0;
+
+    @meta.notImplemented
+    @meta.float
+    blinkPhase = 0;
+
+    @meta.notImplemented
+    @meta.uint
+    blinkMode = 0;
+
+    @meta.notImplemented
+    @meta.float
+    dutyCycle = 0;
+
+    @meta.notImplemented
+    @meta.float
+    rate = 0;
+
+    // ccpwgl only
 
     @meta.uint
     colorType = -1;
 
+    _localTransform = mat4.create();
+    _bone = null;
+
+    /**
+     * Checks if the item is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._bone !== null;
+    }
 
     /**
      * Alias for maskAtlasID
@@ -120,21 +132,48 @@ export class EvePlaneSetItem extends EveObjectSetItem
     }
 
     /**
-     * Gets the object's transform
-     * @param {mat4} m
-     * @returns {mat4} m
+     * Fires when the item is updated by the parent
+     * @param parent
      */
-    GetTransform(m)
+    OnRebuiltByParent(parent)
     {
-        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
+        this._parent = parent;
+        this._bone = parent ? parent.GetBone(this.boneIndex) : null;
+        this._dirty = false;
     }
+
+    /**
+     * Gets the object's local transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetTransform(out)
+    {
+        mat4.copy(out, this._localTransform);
+        if (this._bone) mat4.multiply(out, this._bone.offsetTransform, out);
+        return out;
+    }
+
+    /**
+     * Gets the plane's local bounding box
+     * @param {box3} out
+     * @returns {box3} out
+     */
+    GetBoundingBox(out)
+    {
+        box3.fromTransform(out, this._localTransform);
+        if (this._bone) box3.transformMat4(out, out, this._bone.offsetTransform);
+        return out;
+    }
+
 
     /**
      * Fires on value changes
      */
-    OnValueChanged()
+    OnValueChanged(opt)
     {
-        this._dirty = true;
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
+        super.OnValueChanged(opt);
     }
 
     /**
@@ -174,7 +213,6 @@ export class EvePlaneSet extends EveObjectSet
     @meta.notImplemented
     @meta.byte
     pickBufferID = 0;
-
 
     _vertexBuffer = null;
     _indexBuffer = null;
@@ -232,12 +270,6 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
-     * Alpha multiplier
-     * @type {number}
-     */
-    static alphaMultiplier = 1;
-
-    /**
      * Rebuilds the plane set's buffers
      * @param {Object} [opt]
      */
@@ -268,23 +300,21 @@ export class EvePlaneSet extends EveObjectSet
             array[offset + 2 * vertexSize + vertexSize - 3] = 2;
             array[offset + 3 * vertexSize + vertexSize - 3] = 3;
 
-            const itemTransform = mat4.fromRotationTranslationScale(EveObjectSet.global.mat4_0, item.rotation, item.position, item.scaling);
-
             for (let j = 0; j < 4; ++j)
             {
                 const vtxOffset = offset + j * vertexSize;
-                array[vtxOffset] = itemTransform[0];
-                array[vtxOffset + 1] = itemTransform[4];
-                array[vtxOffset + 2] = itemTransform[8];
-                array[vtxOffset + 3] = itemTransform[12];
-                array[vtxOffset + 4] = itemTransform[1];
-                array[vtxOffset + 5] = itemTransform[5];
-                array[vtxOffset + 6] = itemTransform[9];
-                array[vtxOffset + 7] = itemTransform[13];
-                array[vtxOffset + 8] = itemTransform[2];
-                array[vtxOffset + 9] = itemTransform[6];
-                array[vtxOffset + 10] = itemTransform[10];
-                array[vtxOffset + 11] = itemTransform[14];
+                array[vtxOffset] =      item._localTransform[0];
+                array[vtxOffset + 1] =  item._localTransform[4];
+                array[vtxOffset + 2] =  item._localTransform[8];
+                array[vtxOffset + 3] =  item._localTransform[12];
+                array[vtxOffset + 4] =  item._localTransform[1];
+                array[vtxOffset + 5] =  item._localTransform[5];
+                array[vtxOffset + 6] =  item._localTransform[9];
+                array[vtxOffset + 7] =  item._localTransform[13];
+                array[vtxOffset + 8] =  item._localTransform[2];
+                array[vtxOffset + 9] =  item._localTransform[6];
+                array[vtxOffset + 10] = item._localTransform[10];
+                array[vtxOffset + 11] = item._localTransform[14];
 
                 array[vtxOffset + 12] = item.color[0];
                 array[vtxOffset + 13] = item.color[1];
@@ -432,6 +462,12 @@ export class EvePlaneSet extends EveObjectSet
      * @type {EvePlaneSetItem}
      */
     static Item = EvePlaneSetItem;
+
+    /**
+     * Alpha multiplier
+     * @type {number}
+     */
+    static alphaMultiplier = 1;
 
     /**
      * Vertex declarations

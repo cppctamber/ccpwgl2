@@ -19,6 +19,19 @@ export class EveLocatorSetItem extends meta.Model
     @meta.vector3
     scaling = vec3.fromValues(1,1,1);
 
+    _bone = null;
+    _localTransform = mat4.create();
+    _worldTransform = mat4.create();
+
+    /**
+     * Checks if the locator set item is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._bone !== null;
+    }
+
     /**
      * Gets the locator's local transform
      * @param {mat4} m
@@ -26,7 +39,40 @@ export class EveLocatorSetItem extends meta.Model
      */
     GetTransform(m)
     {
-        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
+        mat4.copy(m, this._localTransform);
+        if (this._bone) mat4.multiply(m, this._bone.offsetTransform, m);
+        return m;
+    }
+
+    /**
+     * Gets the locator's world transform
+     * @param {mat4} m
+     */
+    GetWorldTransform(m)
+    {
+        mat4.copy(m, this._worldTransform);
+    }
+
+    /**
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     */
+    UpdateViewDependentData(parentTransform, bones)
+    {
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
+
+        if (this.boneIndex > -1 && bones && bones[this.boneIndex])
+        {
+            this._bone = bones[this.boneIndex];
+            mat4.multiply(this._worldTransform, this._bone.offsetTransform, this._localTransform);
+        }
+        else
+        {
+            this._bone = null;
+        }
+
+        mat4.multiply(this._worldTransform, parentTransform, this._worldTransform);
     }
 
     /**
@@ -56,5 +102,18 @@ export class EveLocatorSets extends meta.Model
 
     @meta.list(EveLocatorSetItem)
     locators = [];
+
+    /**
+     * Per frame update
+     * @param {mat4} parentTransform
+     * @param {Array<Tw2Bone>} bones
+     */
+    UpdateViewDependentData(parentTransform, bones)
+    {
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            this.locators[i].UpdateViewDependentData(parentTransform, bones);
+        }
+    }
 
 }

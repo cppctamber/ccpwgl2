@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, mat4, quat, box3, sph3 } from "math";
+import { vec3, quat, mat4, box3, sph3 } from "math";
 
 
 @meta.type("EveLocator2")
@@ -21,9 +21,28 @@ export class EveLocator2 extends meta.Model
     @meta.todo("Move to EveLocator only?")
     atlasIndex1 = 0;
 
-    @meta.struct("Tw2Bone")
-    @meta.isPrivate
-    bone = null;
+    _bone = null;
+    _meshIndex = -1;
+    _parentTransform = null;
+
+    /**
+     * Alias for _bone
+     * todo: Remove all uses of this.bone
+     * @returns {null}
+     */
+    get bone()
+    {
+        return this._bone;
+    }
+
+    /**
+     * Checks if the locator is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._bone !== null;
+    }
 
     /**
      * Gets the locator type
@@ -42,25 +61,90 @@ export class EveLocator2 extends meta.Model
      */
     GetTransform(m)
     {
-        return mat4.copy(m, this.transform);
+        mat4.copy(m, this.transform);
+        if (this._bone) mat4.multiply(m, this._bone.offsetTransform, m);
+        return m;
     }
 
     /**
-     * Gets a bounding box for the locator
-     * @param {box3} out
+     * Gets the locator's world transform
+     * @param {mat4} m
+     * @returns {mat4} m
      */
-    GetBoundingBox(out)
+    GetWorldTransform(m)
     {
-        return box3.fromPositionRadius(out, this.GetTranslation(vec3.create()), this.GetScale() * 2);
+        this.GetTransform(m);
+        return mat4.multiply(m, this._parentTransform, m);
     }
 
     /**
-     * Gets a bounding sphere for the locator
-     * @param {sph3} out
+     * Gets the locator's local transform
+     * @param {box3} box
+     * @returns {box3} box
      */
-    GetBoundingSphere(out)
+    GetBoundingBox(box)
     {
-        return sph3.fromPositionRadius(out, this.GetTranslation(vec3.create()), this.GetScale() * 2);
+
+        box[0] = box[1] = box[2] = -0.5;
+        box[3] = box[4] = box[5] = 0.5;
+
+        const
+            scaling = vec3.alloc(),
+            translation = vec3.alloc(),
+            rotation = quat.alloc(),
+            transform = mat4.alloc();
+
+        this.GetWeaponRotationTranslation(rotation, translation);
+        //mat4.getRotation(rotation, this.transform);
+        //mat4.getTranslation(translation, this.transform);
+        scaling[0] = scaling[1] = scaling[2] = this.GetScale() * 2;
+        mat4.fromRotationTranslationScale(transform, rotation, translation, scaling);
+        box3.transformMat4(box, box, transform);
+        if (this._bone) box3.transformMat4(box, box, this._bone.offsetTransform);
+
+        vec3.unalloc(scaling);
+        vec3.unalloc(translation);
+        quat.unalloc(rotation);
+        mat4.unalloc(transform);
+
+        return box;
+    }
+
+    /**
+     * Gets the locator's world transform
+     * @param {box3} box
+     * @returns {box3} box
+     */
+    GetWorldBoundingBox(box)
+    {
+        this.GetBoundingBox(box);
+        return box3.transformMat4(box, box, this._parentTransform);
+    }
+
+    /**
+     * Gets the locator's local bounding sphere
+     * @param {sph3} sph
+     * @returns {sph3} sph
+     */
+    GetBoundingSphere(sph)
+    {
+        const box3_0 = box3.alloc();
+        sph3.fromBox3(sph, this.GetBoundingBox(box3_0));
+        box3.unalloc(box3_0);
+        return sph;
+    }
+
+    /**
+     * Gets the locator's world transform
+     * @param {sph3} sph
+     * @returns {sph3} sph
+     */
+    GetWorldBoundingSphere(sph)
+    {
+        const box3_0 = box3.alloc();
+        sph3.fromBox3(sph, this.GetWorldBoundingBox(box3_0));
+        box3.unalloc(box3_0);
+        return sph;
     }
 
     /**
@@ -74,7 +158,7 @@ export class EveLocator2 extends meta.Model
     {
         if (!ray.GetOption("locators", "skip"))
         {
-            const intersect = ray.IntersectSph3(this.GetBoundingSphere(vec3.create()), worldTransform);
+            const intersect = ray.IntersectWorldSph3(this.GetWorldBoundingSphere(EveLocator.global.sph3_0));
             if (intersect)
             {
                 intersect.name = this.name;
@@ -96,7 +180,7 @@ export class EveLocator2 extends meta.Model
     {
         this.GetDirection(out);
         if (offset) vec3.scale(out, out, offset);
-        vec3.subtract(out, out, this.GetTranslation(EveLocator2.global.vec3_0));
+        vec3.subtract(out, out, this.GetTranslation(EveLocator.global.vec3_0));
         if (worldTransform) vec3.transformMat4(out, out, worldTransform);
         return out;
     }
@@ -109,13 +193,14 @@ export class EveLocator2 extends meta.Model
      */
     GetWeaponRotationTranslation(outRotation, outTranslation, worldTransform)
     {
-        const transform = mat4.copy(EveLocator2.global.mat4_0, this.transform);
-        vec3.normalize(transform.subarray(0, 3), transform.subarray(0, 3));
-        vec3.normalize(transform.subarray(4, 7), transform.subarray(4, 7));
-        vec3.normalize(transform.subarray(8, 11), transform.subarray(8, 11));
-        if (worldTransform) mat4.multiply(transform, worldTransform, transform);
-        mat4.getRotation(outRotation, transform);
-        mat4.getTranslation(outTranslation, transform);
+        const mat4_0 = EveLocator.global.mat4_0;
+        mat4.copy(mat4_0, this.transform);
+        vec3.normalize(mat4_0.subarray(0, 3), mat4_0.subarray(0, 3));
+        vec3.normalize(mat4_0.subarray(4, 7), mat4_0.subarray(4, 7));
+        vec3.normalize(mat4_0.subarray(8, 11), mat4_0.subarray(8, 11));
+        if (worldTransform) mat4.multiply(mat4_0, worldTransform, mat4_0);
+        mat4.getRotation(outRotation, mat4_0);
+        mat4.getTranslation(outTranslation, mat4_0);
     }
 
     /**
@@ -153,8 +238,13 @@ export class EveLocator2 extends meta.Model
      */
     GetScale()
     {
+        const vec3_0 = EveLocator.global.vec3_0;
         const tr = this.transform;
-        return Math.max(vec3.length([ tr[0], tr[1], tr[2] ]), vec3.length([ tr[4], tr[5], tr[6] ]));
+        vec3.set(vec3_0, tr[0], tr[1], tr[2]);
+        const l1 = vec3.length(vec3_0);
+        vec3.set(vec3_0, tr[4], tr[5], tr[6]);
+        const l2 = vec3.length(vec3_0);
+        return Math.max(l1,l2);
     }
 
 
@@ -166,9 +256,16 @@ export class EveLocator2 extends meta.Model
      */
     FindBone(animationController, meshIndex=0)
     {
-        this.bone = animationController.FindBoneForMesh(this.name, meshIndex);
-        return this.bone;
+        this._bone = animationController.FindMeshBoneByName(this.name, meshIndex);
+        this._meshIndex = meshIndex;
+        return this._bone;
     }
+
+    /**
+     * Bounding scale multipler
+     * @type {number}
+     */
+    static boundsScaleMultiplier = 2;
 
     /**
      * Global and static variables
@@ -176,6 +273,7 @@ export class EveLocator2 extends meta.Model
      */
     static global = {
         vec3_0: vec3.create(),
+        sph3_0: sph3.create(),
         mat4_0: mat4.create()
     };
 

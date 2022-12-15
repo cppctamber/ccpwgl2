@@ -1,8 +1,7 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, quat, mat4 } from "math";
-import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect, Tw2GeometryMesh } from "core";
-import { RM_DECAL } from "constant";
+import { vec3, quat, mat4, tri3 } from "math";
+import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
 @meta.type("EveSpaceObjectDecal", true)
@@ -46,6 +45,7 @@ export class EveSpaceObjectDecal extends meta.Model
     _indexBuffer = null;
     _localTransform = mat4.create();
     _localTransformInverse = mat4.create();
+    _offsetTransform = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
     _parentMeshIndex = 0;
     _parentGeometryRes = null;
@@ -70,6 +70,15 @@ export class EveSpaceObjectDecal extends meta.Model
     }
 
     /**
+     * Checks if the decal is skinned
+     * @returns {boolean}
+     */
+    get isSkinned()
+    {
+        return this._offsetTransform !== null;
+    }
+
+    /**
      * Initializes the decal
      */
     Initialize()
@@ -79,15 +88,36 @@ export class EveSpaceObjectDecal extends meta.Model
     }
 
     /**
+     * Gets the mid point and normal
+     * @param {vec3} point
+     * @param {vec3} normal
+     */
+    GetMidPointAndNormal(point, normal)
+    {
+        EveSpaceObjectDecal.getMidpointAndNormal(point, normal, this);
+        if (this._offsetTransform)
+        {
+            vec3.multiply(point, point, this._offsetTransform);
+            vec3.multiply(normal, normal, this._offsetTransform);
+        }
+    }
+
+    /**
      * Gets the decals edges
-     * @param {Number} [meshIndex=0]
      * @returns {null|Array}
      */
-    GetEdges(meshIndex=0)
+    GetEdges()
     {
-        return this._parentGeometryRes
-            ? EveSpaceObjectDecal.getEdges(this.GetIndexBuffer(meshIndex), this._parentGeometryRes, meshIndex)
-            : null;
+        const edges = EveSpaceObjectDecal.getEdges(this);
+        if (this._offsetTransform)
+        {
+            for (let i = 0; i < edges.length; i++)
+            {
+                vec3.multiply(edges[i].start, edges[i].start, this._offsetTransform);
+                vec3.multiply(edges[i].end, edges[i].end, this._offsetTransform);
+            }
+        }
+        return edges;
     }
 
     /**
@@ -97,7 +127,9 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     GetTransform(m)
     {
-        return mat4.fromRotationTranslationScale(m, this.rotation, this.position, this.scaling);
+        mat4.copy(m, this._localTransform);
+        if (this._offsetTransform) mat4.multiply(m, this._offsetTransform, m);
+        return m;
     }
 
     /**
@@ -119,6 +151,7 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
         mat4.invert(this._localTransformInverse, this._localTransform);
+        this._midPoint = null;
     }
 
     /**
@@ -197,7 +230,6 @@ export class EveSpaceObjectDecal extends meta.Model
         }
     }
 
-    static decalRenderMode = RM_DECAL;
 
     /**
      * Gets batches for rendering
@@ -232,7 +264,7 @@ export class EveSpaceObjectDecal extends meta.Model
         let effect;
         switch (mode)
         {
-            case this.constructor.decalRenderMode: //device.RM_DECAL:
+            case device.RM_DECAL:
                 effect = this.decalEffect;
                 break;
 
@@ -243,8 +275,8 @@ export class EveSpaceObjectDecal extends meta.Model
 
         if (!effect || !effect.IsGood()) return false;
 
-        const batch = new Tw2ForwardingRenderBatch();
-        this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
+        // Todo: Update to new bone method
+        let hasBone;
         if (this.parentBoneIndex >= 0)
         {
             const
@@ -253,12 +285,16 @@ export class EveSpaceObjectDecal extends meta.Model
 
             if (bones[offset] || bones[offset + 4] || bones[offset + 8])
             {
-                const bone = this._perObjectData.vs.Get("parentBoneMatrix");
-                mat4.fromJointMatIndex(bone, bones, this.parentBoneIndex);
-                mat4.transpose(bone, bone);
+                if (!this._offsetTransform) this._offsetTransform = mat4.create();
+                mat4.fromJointMatIndex(this._offsetTransform, bones, this.parentBoneIndex);
+                let bone = this._perObjectData.vs.Get("parentBoneMatrix");
+                mat4.transpose(bone, this._offsetTransform);
+                hasBone = true;
             }
         }
+        if (!hasBone) this._offsetTransform = null;
 
+        this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
         mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
         mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
         mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
@@ -266,6 +302,7 @@ export class EveSpaceObjectDecal extends meta.Model
         this._perObjectData.ps.SetIndex("displayData", 0, counter);
         this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
 
+        const batch = new Tw2ForwardingRenderBatch();
         batch._geometryRes = geometryRes;
         batch.perObjectData = this._perObjectData;
         batch.geometryProvider = this;
@@ -319,23 +356,34 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         let updated = super.set(item, values, opt);
 
-        // If index buffers are provided, assume it is for all of them for now
-        let indexBuffers = values.indexBuffer ? [ values.indexBuffer ] : values.indexBuffers;
-        if (indexBuffers)
+        if (values.indexBuffers)
         {
             item._rawIndexBuffers.splice(0);
-
-            for (let i = 0; i < indexBuffers.length; i++)
+            for (let i = 0; i < values.indexBuffers.length; i++)
             {
-                item.SetIndexBuffer(indexBuffers[i], i);
+                item.SetIndexBuffer(values.indexBuffers[i], i);
             }
-
             updated = true;
+        }
+        // Assume if the old style index buffer is provided then
+        // all existing are removed
+        else if (values.indexBuffer)
+        {
+            item._rawIndexBuffers.splice(0);
+            item.SetIndexBuffer(values.indexBuffer, 0);
         }
 
         if (values.decalEffect)
         {
-            if (!item.decalEffect)
+            if (values.decalEffect instanceof Tw2Effect)
+            {
+                if (values.decalEffect !== values.decalEffect)
+                {
+                    item.decalEffect = values.decalEffect;
+                    updated = true;
+                }
+            }
+            else if (!item.decalEffect)
             {
                 item.decalEffect = Tw2Effect.from(values.decalEffect);
                 updated = true;
@@ -348,7 +396,15 @@ export class EveSpaceObjectDecal extends meta.Model
 
         if (values.pickEffect)
         {
-            if (!item.pickEffect)
+            if (values.pickEffect instanceof Tw2Effect)
+            {
+                if (values.pickEffect !== item.pickEffect)
+                {
+                    item.pickEffect = values.pickEffect;
+                    updated = true;
+                }
+            }
+            else if (!item.pickEffect)
             {
                 item.pickEffect = Tw2Effect.from(values.pickEffect);
                 updated = true;
@@ -392,7 +448,7 @@ export class EveSpaceObjectDecal extends meta.Model
             [ "invWorldMatrix", 16 ],
             [ "decalMatrix", 16 ],
             [ "invDecalMatrix", 16 ],
-            [ "parentBoneMatrix", mat4.identity([]) ],
+            [ "parentBoneMatrix", mat4.create() ],
             [ "clampDecalToEdge", 4 ]
         ],
         ps: [
@@ -401,68 +457,166 @@ export class EveSpaceObjectDecal extends meta.Model
         ]
     };
 
-}
-
-EveSpaceObjectDecal.getEdges = (function()
-{
-    function isEqualEdge(a1, a2, b1, b2)
+    /**
+     * Gets the midpoint and normal for the decal
+     * @param {vec3} outMidpoint
+     * @param {vec3} outNormal
+     * @param {EveSpaceObjectDecal} decal
+     * @returns {boolean}
+     */
+    static getMidpointAndNormal(outMidpoint, outNormal, decal)
     {
-        return vec3.equals(a1, b1) && vec3.equals(a2, b2) || vec3.equals(a1, b2) && vec3.equals(a2, b1);
+        vec3.set(outMidpoint, 0, 0, 0);
+        vec3.set(outNormal, 0, 0, 0);
+
+        const res = decal._parentGeometryRes;
+
+        // Todo: wait until it is ready
+        if (!res || !res.IsGood()) return false;
+
+        const
+            indexBuffer = decal.GetIndexBuffer(decal._parentMeshIndex),
+            mesh = res[decal._parentMeshIndex];
+
+        if (!indexBuffer || !mesh) return false;
+
+        const
+            mat4_0 = mat4.alloc(),
+            vec3_0 = vec3.alloc(),
+            vec3_1 = vec3.alloc(),
+            vec3_2 = vec3.alloc(),
+            vec3_3 = vec3.alloc(),
+            tri3_0 = tri3.alloc();
+
+        // Find middle normal
+        let faces = [];
+        try
+        {
+            for (let i = 0; i < indexBuffer.length; i += 3)
+            {
+                const
+                    v0 = mesh.GetVertexPosition(vec3_0, indexBuffer[i + 0]),
+                    v1 = mesh.GetVertexPosition(vec3_1, indexBuffer[i + 1]),
+                    v2 = mesh.GetVertexPosition(vec3_2, indexBuffer[i + 2]);
+
+                tri3.fromVertices(tri3_0, v0, v1, v2);
+
+                faces.push({
+                    index: i / 3,
+                    midPoint: tri3.getMidpoint([], tri3_0),
+                    normal: tri3.getNormal([], tri3_0)
+                });
+            }
+
+            for (let i = 0; i < faces.length; i++)
+            {
+                vec3.add(outMidpoint, outMidpoint, faces[i].midPoint);
+                vec3.add(outNormal, outNormal, faces[i].normal);
+            }
+
+            vec3.divideScalar(outMidpoint, outMidpoint, faces.length);
+            vec3.divideScalar(outNormal, outNormal, faces.length);
+            return true;
+        }
+        catch (err)
+        {
+            return false;
+        }
+        finally
+        {
+            mat4.unalloc(mat4_0);
+            vec3.unalloc(vec3_0);
+            vec3.unalloc(vec3_1);
+            vec3.unalloc(vec3_2);
+            vec3.unalloc(vec3_3);
+            tri3.unalloc(tri3_0);
+        }
     }
 
-    let v1, v2, v3;
-
-    return function getEdges(indices, geometryRes, meshIndex)
+    /**
+     * Gets a decal's edges
+     * @param {EveSpaceObjectDecal} decal
+     * @returns {{faceIndex: *, start: *, end: *}[]|null}
+     */
+    static getEdges(decal)
     {
-        if (!v1)
+        const res = decal._parentGeometryRes;
+
+        // Todo: wait until it is ready
+        if (!res || !res.IsGood()) return null;
+
+        const
+            indexBuffer = decal.GetIndexBuffer(decal._parentMeshIndex),
+            mesh = res.meshes[decal._parentMeshIndex];
+
+        if (!indexBuffer || !mesh) return null;
+
+        function isEqualEdge(a1, a2, b1, b2)
         {
-            v1 = vec3.create();
-            v2 = vec3.create();
-            v3 = vec3.create();
+            return vec3.equals(a1, b1) && vec3.equals(a2, b2) || vec3.equals(a1, b2) && vec3.equals(a2, b1);
         }
 
         const
-            edges = [],
-            { declaration, bufferData } = geometryRes.meshes[meshIndex],
-            { offset } = declaration.FindUsage(0, 0),
-            stride = declaration.stride / 4;
+            v1 = vec3.alloc(),
+            v2 = vec3.alloc(),
+            v3 = vec3.alloc(),
+            edges = [];
 
-        for (let i = 0; i < indices.length; i += 3)
+        try
         {
-            Tw2GeometryMesh.GetVertexElement(v1, indices[i + 0], stride, offset, 3, bufferData);
-            Tw2GeometryMesh.GetVertexElement(v2, indices[i + 1], stride, offset, 3, bufferData);
-            Tw2GeometryMesh.GetVertexElement(v3, indices[i + 2], stride, offset, 3, bufferData);
-
-            const edgeList = [ [ v1, v2 ], [ v2, v3 ], [ v3, v1 ] ];
-
-            for (let x = 0; x < 3; x++)
+            for (let i = 0; i < indexBuffer.length; i += 3)
             {
-                const
-                    start = edgeList[x][0],
-                    end = edgeList[x][1];
+                mesh.GetVertexPosition(v1, indexBuffer[i + 0]);
+                mesh.GetVertexPosition(v2, indexBuffer[i + 1]);
+                mesh.GetVertexPosition(v3, indexBuffer[i + 2]);
 
-                const found = edges.find(x => isEqualEdge(x.start, x.end, start, end));
-                if (found)
+                const edgeList = [ [ v1, v2 ], [ v2, v3 ], [ v3, v1 ] ];
+
+                for (let x = 0; x < 3; x++)
                 {
-                    found.faces.push(indices[i]);
-                }
-                else
-                {
-                    edges.push({
-                        start: vec3.clone(start),
-                        end: vec3.clone(end),
-                        faces: [ indices[i] ]
-                    });
+                    const
+                        start = edgeList[x][0],
+                        end = edgeList[x][1],
+                        found = edges.find(x => isEqualEdge(x.start, x.end, start, end));
+
+                    if (found)
+                    {
+                        found.faces.push(indexBuffer[i]);
+                    }
+                    else
+                    {
+                        edges.push({
+                            start: vec3.clone(start),
+                            end: vec3.clone(end),
+                            faces: [ indexBuffer[i] ]
+                        });
+                    }
                 }
             }
+
+            return edges
+                .filter(x => x.faces.length === 1)
+                .map(x =>
+                {
+                    return {
+                        start: x.start,
+                        end: x.end,
+                        faceIndex: x.faces[0]
+                    };
+                });
+
         }
+        catch (err)
+        {
+            return null;
+        }
+        finally
+        {
+            vec3.unalloc(v1);
+            vec3.unalloc(v2);
+            vec3.unalloc(v3);
+        }
+    }
+}
 
-        return edges
-            .filter(x => x.faces.length === 1)
-            .map(x =>
-            {
-                return { start: x.start, end: x.end, faceIndex: x.faces[0] };
-            });
-    };
 
-})();
