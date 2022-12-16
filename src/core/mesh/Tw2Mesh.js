@@ -7,7 +7,7 @@ import {
     RM_DECAL,
     RM_OPAQUE,
     RM_TRANSPARENT,
-    RM_PICKABLE
+    RM_PICKABLE, RM_NORMAL
 } from "constant";
 import { box3 } from "math/box3";
 import { sph3 } from "math/sph3";
@@ -337,9 +337,7 @@ export class Tw2Mesh extends meta.Model
     {
         if (!this.IsGood() || !this.display) return false;
 
-        const getBatches = this.constructor.GetAreaBatches;
         let area;
-
         switch (mode)
         {
             case RM_ADDITIVE:
@@ -358,6 +356,10 @@ export class Tw2Mesh extends meta.Model
                 if (this.visible.opaqueAreas) area = this.opaqueAreas;
                 break;
 
+            case RM_NORMAL:
+                if (this.visible.depthNormalAreas) area = this.depthNormalAreas;
+                break;
+
             case RM_TRANSPARENT:
                 if (this.visible.transparentAreas) area = this.transparentAreas;
                 break;
@@ -371,7 +373,7 @@ export class Tw2Mesh extends meta.Model
                 break;
         }
 
-        return area ? getBatches(this, area, mode, accumulator, perObjectData) : false;
+        return area && area.length ? this.constructor.GetAreaBatches(this, area, mode, accumulator, perObjectData) : false;
     }
 
     /**

@@ -782,8 +782,11 @@ export class Tw2Effect extends meta.Model
             if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
         }
 
-        if (d.perFrameCustomVSData && cbh[8]) gl.uniform4fv(cbh[8], d.perFrameCustomVSData.data);
-        if (d.perFrameCustomPSData && cbh[9]) gl.uniform4fv(cbh[9], d.perFrameCustomPSData.data);
+        if (d.perFrameCustomSceneVSData && cbh[8]) gl.uniform4fv(cbh[8], d.perFrameCustomSceneVSData.data);
+        if (d.perFrameCustomScenePSData && cbh[9]) gl.uniform4fv(cbh[9], d.perFrameCustomScenePSData.data);
+
+        //if (d.perFrameCustomObjectVSData && cbh[10]) gl.uniform4fv(cbh[10], d.perFrameCustomObjectVSData.data);
+        //if (d.perFrameCustomObjectVSData && cbh[11]) gl.uniform4fv(cbh[11], d.perFrameCustomObjectVSData.data);
 
     }
 
@@ -855,7 +858,6 @@ export class Tw2Effect extends meta.Model
     {
         return Tw2Effect.getParameterObject(this.parameters, out, false, true, true);
     }
-
 
     /**
      * Gets flattened texture override values

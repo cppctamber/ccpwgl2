@@ -10,7 +10,8 @@ import {
     RM_DECAL,
     RM_OPAQUE,
     RM_TRANSPARENT,
-    RM_PICKABLE
+    RM_PICKABLE,
+    RM_NORMAL
 } from "constant";
 import { ErrFeatureNotImplemented } from "core";
 
@@ -78,11 +79,17 @@ export class Tw2InstancedMesh extends meta.Model
     @meta.list("Tw2MeshArea")
     transparentAreas = [];
 
+    // CCPWGL only
+
+    @meta.list("Tw2MeshArea")
+    depthNormalAreas = [];
+
     @meta.plain
     visible = {
         additiveAreas: true,
         decalAreas: true,
         depthAreas: true,
+        depthNormalAreas: true,
         distortionAreas: true,
         opaqueAreas: true,
         pickableAreas: true,
@@ -221,6 +228,7 @@ export class Tw2InstancedMesh extends meta.Model
             "distortionAreas",
             "depthAreas",
             "additiveAreas",
+            "depthNormalAreas"
         ], out);
     }
 
@@ -305,6 +313,7 @@ export class Tw2InstancedMesh extends meta.Model
         per(this.opaqueAreas, "GetResources", out);
         per(this.pickableAreas, "GetResources", out);
         per(this.transparentAreas, "GetResources", out);
+        per(this.depthNormalAreas, "GetResources", out);
 
         return out;
     }
@@ -341,6 +350,10 @@ export class Tw2InstancedMesh extends meta.Model
                 if (this.visible.opaqueAreas) area = this.opaqueAreas;
                 break;
 
+            case RM_NORMAL:
+                if (this.visible.depthNormalAreas) area = this.depthNormalAreas;
+                break;
+
             case RM_TRANSPARENT:
                 if (this.visible.transparentAreas) area = this.transparentAreas;
                 break;
@@ -354,7 +367,7 @@ export class Tw2InstancedMesh extends meta.Model
                 break;
         }
 
-        return area ? getBatches(this, area, mode, accumulator, perObjectData) : false;
+        return area && area.length ? getBatches(this, area, mode, accumulator, perObjectData) : false;
     }
 
     /**
@@ -391,6 +404,7 @@ export class Tw2InstancedMesh extends meta.Model
         this.opaqueAreas.splice(0);
         this.pickableAreas.splice(0);
         this.transparentAreas.splice(0);
+        this.depthNormalAreas.splice(0);
     }
 
     /**
@@ -414,7 +428,7 @@ export class Tw2InstancedMesh extends meta.Model
             const areaNames = [
                 "additiveAreas", "decalAreas", "depthAreas",
                 "distortionAreas", "opaqueAreas", "pickableAreas",
-                "transparentAreas"
+                "transparentAreas", "depthNormalAreas"
             ];
 
             assignIfExists(item.visible, values.visible, areaNames);
