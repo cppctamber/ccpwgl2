@@ -138,6 +138,7 @@ export class Tw2RenderTarget
         this.Destroy();
 
         if (!this._texture) this._texture = new Tw2TextureRes();
+        this._texture.suppressLogging = true;
         this._texture.Attach(gl.createTexture());
 
         const res = this._texture;

@@ -10,6 +10,7 @@ export class Tw2Resource extends Tw2Notifications
     path = "";
     activeFrame = 0;
     doNotPurge = 0;
+    suppressLogging = false;
 
     _state = Tw2Resource.State.NO_INIT;
     _errors = [];
@@ -193,7 +194,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnWarning(log)
     {
-        resMan.OnPathEvent(this.path, "warning", log);
+        resMan.OnPathEvent(this.path, "warning", log, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.WARNING);
     }
 
@@ -203,7 +204,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     OnDebug(log)
     {
-        resMan.OnPathEvent(this.path, "debug", log);
+        resMan.OnPathEvent(this.path, "debug", log, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.DEBUG);
     }
 
@@ -228,7 +229,7 @@ export class Tw2Resource extends Tw2Notifications
             this.Unload({ hide: true, detail: "errored" });
         }
 
-        resMan.OnPathEvent(this.path, "error", err);
+        resMan.OnPathEvent(this.path, "error", err, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
         return err;
     }
@@ -243,7 +244,7 @@ export class Tw2Resource extends Tw2Notifications
         if (this._SetState(Tw2Resource.State.REQUESTED))
         {
             this._requested = Date.now();
-            resMan.OnPathEvent(this.path, stateName.toLowerCase(), log);
+            resMan.OnPathEvent(this.path, stateName.toLowerCase(), log,this.suppressLogging);
             this.UpdateNotifications(Tw2Resource.Callback[stateName]);
         }
     }
@@ -258,7 +259,7 @@ export class Tw2Resource extends Tw2Notifications
         {
             if (this._requested === null)  this._requested = Date.now();
             log.time = (Date.now() - this._requested) * 0.001;
-            resMan.OnPathEvent(this.path, "loaded", log);
+            resMan.OnPathEvent(this.path, "loaded", log, this.suppressLogging);
             this.UpdateNotifications(Tw2Resource.Callback.LOADED);
         }
     }
@@ -273,7 +274,7 @@ export class Tw2Resource extends Tw2Notifications
         {
             if (this._requested === null) this._requested = Date.now();
             log.time = (Date.now() - this._requested) * 0.001;
-            resMan.OnPathEvent(this.path, "prepared", log);
+            resMan.OnPathEvent(this.path, "prepared", log, this.suppressLogging);
             this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
         }
     }
@@ -286,7 +287,7 @@ export class Tw2Resource extends Tw2Notifications
     {
         if (this._SetState(Tw2Resource.State.UNLOADED))
         {
-            resMan.OnPathEvent(this.path, "unloaded", log);
+            resMan.OnPathEvent(this.path, "unloaded", log, this.suppressLogging);
             this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
         }
     }
@@ -298,7 +299,7 @@ export class Tw2Resource extends Tw2Notifications
     OnPurged(log)
     {
         this._SetState(Tw2Resource.State.PURGED);
-        resMan.OnPathEvent(this.path, "purged", log);
+        resMan.OnPathEvent(this.path, "purged", log, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
     }
 

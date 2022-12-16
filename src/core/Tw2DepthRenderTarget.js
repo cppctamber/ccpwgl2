@@ -287,6 +287,8 @@ export class Tw2DepthRenderTarget
             this._depthTexture = new Tw2TextureRes();
         }
 
+        this._depthTexture.suppressLogging = true;
+
         this._depthTexture.Attach(gl.createTexture());
         this._internalFormat = internalFormat;
 
@@ -328,6 +330,7 @@ export class Tw2DepthRenderTarget
 
         if (!this._colorTexture) this._colorTexture = new Tw2TextureRes();
         this._colorTexture.Attach(gl.createTexture());
+        this._colorTexture.suppressLogging = true;
 
         const
             col = this._colorTexture,
