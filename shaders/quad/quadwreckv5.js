@@ -261,6 +261,9 @@ export const quadWreckV5 = {
                         // PaintMaskMap
                         r0.x=texture2D(s6,v0.xy).x;
                         
+                        // Todo: Figure out why decal areas aren't working correctly
+                        if (r0.x == 1.0) discard;
+                        
                         // MaterialMap
                         r0.y=texture2D(s7,v0.xy).x;    
                         

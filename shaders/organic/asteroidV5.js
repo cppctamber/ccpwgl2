@@ -1,5 +1,12 @@
 import { vs, ps, texture, constant } from "../quad/shared";
-import { quadPickingV5, quadDepthV5, skinnedQuadDepthV5, skinnedQuadPickingV5 } from "../quad";
+import {
+    quadPickingV5,
+    quadDepthV5,
+    skinnedQuadDepthV5,
+    skinnedQuadPickingV5,
+    quadNormalV5,
+    skinnedQuadNormalV5
+} from "../quad";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { overrideConstant } from "../shared/util";
 
@@ -11,6 +18,7 @@ export const asteroidV5 = {
     techniques: {
         Depth: quadDepthV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
@@ -357,6 +365,7 @@ export const skinnedAsteroidV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Main: {
             vs: vs.skinnedQuadV5_PosBwtTexTanTex,
             ps: asteroidV5.techniques.Main.ps

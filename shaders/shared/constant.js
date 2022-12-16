@@ -116,7 +116,10 @@ export const ObjectID = {
     name: "objectId",
     value: [ 0, 0, 0, 0 ],
     ui: {
-        display: 0
+        display: 0,
+        components: [
+            "object id"
+        ]
     }
 };
 
@@ -124,7 +127,10 @@ export const AreaID = {
     name: "areaId",
     value: [ 0, 0, 0, 0 ],
     ui: {
-        display: 0
+        display: 0,
+        components: [
+            "area id"
+        ]
     }
 };
 

@@ -7,6 +7,7 @@ import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
 import { quadExtendedPickingV5, skinnedQuadExtendedPickingV5 } from "./extended/quadExtendedPickingV5";
 import { quadUtilityV5, skinnedQuadUtilityV5 } from "./extended/quadUtilityV5";
+import { quadNormalV5, skinnedQuadNormalV5 } from "./quadNormalV5";
 
 
 export const quadV5 = {
@@ -16,6 +17,7 @@ export const quadV5 = {
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
         Emissive: quadEmissiveV5.techniques.Main,
@@ -531,6 +533,7 @@ export const skinnedQuadV5 = {
     todo: quadV5.todo,
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
         Emissive: skinnedQuadEmissiveV5.techniques.Main,

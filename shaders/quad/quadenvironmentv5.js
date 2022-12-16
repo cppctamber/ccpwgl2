@@ -4,6 +4,7 @@ import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
+import { quadNormalV5, skinnedQuadNormalV5 } from "./quadNormalV5";
 
 
 export const quadEnvironmentV5 = {
@@ -13,6 +14,7 @@ export const quadEnvironmentV5 = {
     techniques: {
         Picking: quadPickingV5.techniques.Main,
         Depth: quadDepthV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         Emissive: quadEmissiveV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
         Main: {
@@ -381,6 +383,7 @@ export const skinnedQuadEnvironmentV5 = {
     techniques: {
         Picking: skinnedQuadPickingV5.techniques.Main,
         Depth: skinnedQuadDepthV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
         Main: {

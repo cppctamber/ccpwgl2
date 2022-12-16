@@ -6,6 +6,7 @@ import { clampToBorder } from "../shared/func";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadExtendedPickingHeatV5, skinnedQuadExtendedPickingHeatV5 } from "./extended/quadExtendedPickingHeatV5";
 import { quadUtilityHeatV5, skinnedQuadUtilityHeatV5 } from "./extended/quadUtilityHeatV5";
+import { quadNormalV5, skinnedQuadNormalV5 } from "./quadNormalV5";
 
 export const quadHeatV5 = {
     name: "quadHeatV5",
@@ -14,6 +15,7 @@ export const quadHeatV5 = {
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
         Outline: quadOutlineV5.techniques.Main,
         ExtendedPicking: quadExtendedPickingHeatV5.techniques.Main,
@@ -549,6 +551,7 @@ export const skinnedQuadHeatV5 = {
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Outline: skinnedQuadOutlineV5.techniques.Main,
         ExtendedPicking: skinnedQuadExtendedPickingHeatV5.techniques.Main,
         Utility: skinnedQuadUtilityHeatV5.techniques.Main,

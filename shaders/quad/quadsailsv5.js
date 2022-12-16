@@ -8,6 +8,7 @@ import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5
 import { quadUtilitySailsV5, skinnedQuadUtilitySailsV5 } from "./extended/quadUtilitySailsV5";
 import { quadExtendedPickingSailsV5, skinnedQuadExtendedPickingSailsV5 } from "./extended/quadExtendedPickingSailsV5";
 import { quadOutlineSailsV5, skinnedQuadOutlineSailsV5 } from "./extended/quadOutlineSails";
+import { quadNormalV5, skinnedQuadNormalV5 } from "./quadNormalV5";
 
 
 
@@ -22,6 +23,7 @@ export const quadSailsV5 = {
         Emissive: quadEmissiveV5.techniques.Main,
         Outline: quadOutlineSailsV5.techniques.Main,
         Utility: quadUtilitySailsV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         ExtendedPicking: quadExtendedPickingSailsV5.techniques.Main,
         Main: {
             vs: vs.quadV5_PosTexTanTexL01,
@@ -374,6 +376,7 @@ export const skinnedQuadSailsV5 = {
     todo: quadSailsV5.todo,
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
         Outline: skinnedQuadOutlineSailsV5.techniques.Main,

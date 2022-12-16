@@ -7,6 +7,7 @@ import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
 import { quadUtilityGlassV5, skinnedQuadUtilityGlassV5 } from "./extended/quatUtilityGlassV5";
 import { quadExtendedPickingGlassV5, skinnedQuadExtendedPickingGlassV5 } from "./extended/quadExtendedPickingGlassV5";
+import { quadNormalV5, skinnedQuadNormalV5 } from "./quadNormalV5";
 
 
 const shared = {
@@ -328,6 +329,7 @@ export const quadGlassV5 = {
     todo: "Add dirt",
     techniques: {
         Depth: quadDepthV5.techniques.Main,
+        Normal: quadNormalV5.techniques.Main,
         Picking: quadPickingV5.techniques.Main,
         Emissive: quadEmissiveV5.techniques.Main,
         ExtendedPicking: quadExtendedPickingGlassV5.techniques.Main,
@@ -360,6 +362,7 @@ export const skinnedQuadGlassV5 = {
     todo: quadGlassV5.todo,
     techniques: {
         Depth: skinnedQuadDepthV5.techniques.Main,
+        Normal: skinnedQuadNormalV5.techniques.Main,
         Picking: skinnedQuadPickingV5.techniques.Main,
         Emissive: skinnedQuadEmissiveV5.techniques.Main,
         ExtendedPicking: skinnedQuadExtendedPickingGlassV5.techniques.Main,
