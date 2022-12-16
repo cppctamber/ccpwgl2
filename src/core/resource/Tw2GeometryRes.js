@@ -1,12 +1,10 @@
 import { meta } from "utils";
 import { resMan, device } from "global";
-import { box3, sph3, vec3 } from "math";
+import { box3, sph3, vec3, vertex } from "math";
 import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
-// import * as geo from "geo-ambient-occlusion";
-
 
 import {
     Tw2GeometryAnimation,
@@ -50,8 +48,8 @@ export class Tw2GeometryRes extends Tw2Resource
     boundsSphereRadius = 0;
     models = [];
     animations = [];
-    requiresSystemMirror = false;
 
+    _requiresSystemMirror = false;
     _requestResponseType = null;
     _extension = null;
     _boundsDirty = true;
@@ -59,7 +57,7 @@ export class Tw2GeometryRes extends Tw2Resource
     /**
      * Sets system mirror
      * @param {Boolean} enable
-     * @returns {Promise<Tw2GeometryRes|Error>}
+     * @returns {Promise<Boolean>} true if the resource was reloaded
      */
     async SetSystemMirror(enable)
     {
@@ -86,7 +84,23 @@ export class Tw2GeometryRes extends Tw2Resource
             });
         }
 
-        if (!enable) this.ClearSystemMirrorIfNotRequired();
+        if (!enable)
+        {
+            this.ClearSystemMirrorIfNotRequired();
+        }
+
+        return reloadRequired;
+    }
+
+    /**
+     * Forces system mirror
+     * @param {Boolean} bool
+     * @returns {Promise<boolean>} true if resource was reloaded
+     */
+    async ForceSystemMirror(bool)
+    {
+        this._requiresSystemMirror = !!bool;
+        return this.SetSystemMirror(bool);
     }
 
     /**
@@ -94,7 +108,7 @@ export class Tw2GeometryRes extends Tw2Resource
      */
     ClearSystemMirrorIfNotRequired()
     {
-        if (!this.requiresSystemMirror)
+        if (!this._requiresSystemMirror)
         {
             for (let i = 0; i < this.meshes.length; i++)
             {
@@ -109,7 +123,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Array} intersects
      * @param {mat4} worldTransform
      * @param {Object} [cache={}]
-     * @param {Number} MeshIndex
+     * @param {Number} meshIndex
      * @returns {Array}
      */
     Intersect(ray, intersects, worldTransform, cache = {}, meshIndex = 0)
@@ -275,8 +289,9 @@ export class Tw2GeometryRes extends Tw2Resource
      * Prepares the object
      * TODO: Normalize geometry readers
      * @param {*} data
+     * @param {Object} [options]
      */
-    Prepare(data)
+    Prepare(data, options)
     {
         this.Clear();
 
@@ -290,7 +305,7 @@ export class Tw2GeometryRes extends Tw2Resource
         }
         else
         {
-            Reader.Prepare(data, this);
+            Reader.Prepare(data, this, options);
         }
 
         this.RebuildBounds();
@@ -856,6 +871,45 @@ export class Tw2GeometryRes extends Tw2Resource
             curve.controls[i] = reader.ReadFloat32();
         }
         return curve;
+    }
+
+    /**
+     * Updates the geometry res from json
+     * @param json
+     * @param options
+     */
+    UpdateFromJSON(json, options)
+    {
+        this._extension = "gr2_json";
+        this.Prepare(json, options);
+    }
+
+    /**
+     * Updates the geometry res from raw geometry data
+     * @param {Array|TypedArray} indices
+     * @param {Array|TypedArray} positions
+     * @param {Array|TypedArray} texcoord0s
+     * @param {Array|TypedArray} [areas]
+     * @param {Array|TypedArray} [normals]
+     * @param {Array|TypedArray} [tangents]
+     */
+    UpdateFromRaw(indices, positions, texcoord0s, areas, normals, tangents)
+    {
+        return this.UpdateFromJSON(vertex.toJSON(indices, positions, texcoord0s, areas, normals, tangents));
+    }
+
+    /**
+     * Creates a geometry resource from json data
+     * @param {Array<Object>|Object} json
+     * @param {Object} [options]
+     * @param {Tw2GeometryRes} [res]
+     * @returns {Tw2GeometryRes}
+     */
+    static from(json, options)
+    {
+        const res = new Tw2GeometryRes();
+        res.UpdateFromJSON(json, options);
+        return res;
     }
 
 }
