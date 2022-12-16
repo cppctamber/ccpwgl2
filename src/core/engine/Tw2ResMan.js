@@ -215,8 +215,9 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {String} path      - Resource path
      * @param {String} eventName - Resource state name
      * @param {*} [log={}]       - Resource log
+     * @param {Boolean}          - skipLogging
      */
-    OnPathEvent(path, eventName, log = {})
+    OnPathEvent(path, eventName, log = {}, skipLogging)
     {
         const
             res = this.motherLode.Find(path),
@@ -233,7 +234,11 @@ export class Tw2ResMan extends Tw2EventEmitter
         log.name = "Resource manager";
 
         this.EmitEvent(eventName, path, res, err);
-        this.tw2.logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+
+        if (!skipLogging)
+        {
+            this.tw2.logger.Add(Tw2ResMan.LogType[eventName.toUpperCase()], log);
+        }
     }
 
     /**
