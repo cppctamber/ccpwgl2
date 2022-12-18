@@ -66,7 +66,8 @@ export class EveChildQuad extends EveChild
      */
     IsGood()
     {
-        return !!(this.effect && this.effect.IsGood() && this._vertices);
+        return false;
+        //return !!(this.effect && this.effect.IsGood() && this._vertices);
     }
 
     /**
@@ -288,6 +289,9 @@ export class EveChildQuad extends EveChild
 
     Rebuild()
     {
+        return;
+
+        /*
         this.Unload();
 
         const { gl } = device;
@@ -308,6 +312,7 @@ export class EveChildQuad extends EveChild
         this._vertices.count = count;
 
         this._dirty = false;
+         */
     }
 
     static thing = [
