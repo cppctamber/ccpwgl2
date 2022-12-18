@@ -223,6 +223,21 @@ export class GR2JsonReader
                     vertexSize += 1;
                 }
             }
+            // Fill will all white for now
+            else
+            {
+                let data = [];
+                for (let i = 0; i < vertexCount; i++) data[i] = 1;
+                vertexElements.push({
+                    usage: Tw2VertexElement.Type.TEXCOORD,
+                    usageIndex: 20,
+                    offset: vertexSize * 4,
+                    type: GL_FLOAT,
+                    elements: 1,
+                    data
+                });
+                vertexSize+=1;
+            }
 
             /*---- Temporary Ambient Occlusion ----*/
 

@@ -133,6 +133,18 @@ export class OBJReader
                 aoSampler.dispose();
             }
         }
+        else
+        {
+            let data = [];
+            const vertexCount = position.vertices.length;
+            for (let i = 0; i < vertexCount; i++) data[i] = 1;
+            declarations.push({
+                usage: Tw2VertexElement.Type.TEXCOORD,
+                usageIndex: 20,
+                elements: 1,
+                vertices: toElements(data, 1, true)
+            });
+        }
 
         /*---- Temporary Ambient Occlusion ----*/
 
