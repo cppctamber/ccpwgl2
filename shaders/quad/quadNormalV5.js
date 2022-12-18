@@ -1,4 +1,5 @@
 import { vs, ps } from "./shared";
+import { NormalMap } from "./shared/texture";
 
 export const quadNormalV5 = {
     name: "quadNormalV5",
@@ -6,12 +7,17 @@ export const quadNormalV5 = {
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
+                textures: [
+                    //NormalMap
+                ],
                 shader: `
                 
                     ${ps.header}
-                    
+              
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
+                    
+                    //uniform sampler2D s0;
                     uniform vec4 cb4[3];
                     
                     void main()
@@ -24,10 +30,8 @@ export const quadNormalV5 = {
                         r0.w=cb4[1].w;
                         r0=cb4[2].xxxx*r0.xxxx+(-r0.wwww);
                         if(any(lessThan(r0,vec4(0.0))))discard;
-                        gl_FragData[0].xyz = texcoord1.xyz;
-                        gl_FragData[0].w = 1.0;
+                        gl_FragData[0] = vec4(normalize(texcoord1.xyz) * 0.5 + 0.5, gl_FragCoord.z);
                     }
-                
                 `
             }
         }
