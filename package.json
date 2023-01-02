@@ -22,18 +22,18 @@
     "@babel/plugin-proposal-export-namespace-from": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "^8.3.0",
     "core-js": "^3.6.5",
     "eslint": "^5.16.0",
-    "eslint-loader": "^2.2.1",
+    "eslint-loader": "^4.0.2",
     "gl-matrix": "^2.8.1",
     "progress-bar-webpack-plugin": "^1.12.1",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.13.7",
     "terser-webpack-plugin": "^1.4.2",
     "webgl-obj-loader": "^2.0.8",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "geo-ambient-occlusion": "^3.0.4"
   }
 }
