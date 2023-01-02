@@ -174,19 +174,12 @@ export class EveObjectSet extends meta.Model
     _bones = null;
     _parentTransform = mat4.create();
 
-    /*
-    get isDirty()
-    {
-        return this._dirty || this.AreItemsDirty();
-    }
-     */
-
     /**
      * Initializes the set
      */
     Initialize()
     {
-        this.Rebuild();
+        //this.Rebuild();
     }
 
     /**

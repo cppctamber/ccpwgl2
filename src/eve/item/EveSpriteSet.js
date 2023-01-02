@@ -91,7 +91,6 @@ export class EveSpriteSetItem extends EveObjectSetItem
     colorType = -1;
 
     _bone = null;
-    _worldPosition = vec3.create();
 
     /**
      * Checks if the item is skinned
@@ -110,17 +109,6 @@ export class EveSpriteSetItem extends EveObjectSetItem
     {
         this._parent = parent;
         this._bone = parent ? parent.GetBone(this.boneIndex) : null;
-
-        if (parent)
-        {
-            // Could be called twice if skinned
-            this.UpdateWorldPosition(parent.GetParentTransformReference());
-        }
-        else
-        {
-            vec3.set(this._worldPosition, 0,0,0);
-        }
-
         this._dirty = false;
     }
 
@@ -173,17 +161,34 @@ export class EveSpriteSetItem extends EveObjectSetItem
     }
 
     /**
-     * Gets the item's world matrix
-     * @param {mat4} m
-     * @returns {mat4|null}
+     * World position as calculated for quads
+     * @type {null|vec3}
+     * @private
      */
-    GetWorldTransform(m)
+    _worldPosition = null;
+
+    /**
+     * Gets the sprite's world position
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
+    GetWorldPosition(out)
     {
-        mat4.identity(m);
-        m[12] = this._worldPosition[0];
-        m[13] = this._worldPosition[1];
-        m[14] = this._worldPosition[2];
-        return m;
+        // Check if already calculated for quads, when visible
+        if (this._worldPosition && this.display)
+        {
+            return vec3.copy(out, this._worldPosition);
+        }
+
+        if (!this._parent)
+        {
+            vec3.set(out, 0,0,0);
+            throw new Error("Parent not defined");
+        }
+
+        vec3.copy(out, this.position);
+        if (this._bone) vec3.transformMat4(out, out, this._bone.offsetTransform);
+        return vec3.transformMat4(out, out, this._parent.GetParentTransformReference());
     }
 
 }
@@ -238,8 +243,6 @@ export class EveSpriteSet extends EveObjectSet
     Initialize()
     {
         this.UseQuads(!!this.useQuads);
-        // Todo can no longer rebuild without at least one per frame update
-        //this.Rebuild();
     }
 
     /**
@@ -281,14 +284,6 @@ export class EveSpriteSet extends EveObjectSet
         }
 
         super.UpdateViewDependentData(parentTransform, bones);
-
-        for (let i = 0; i < this._visibleItems.length; i++)
-        {
-            if (this._visibleItems[i].isSkinned)
-            {
-                this._visibleItems[i].UpdateWorldPosition(parentTransform);
-            }
-        }
     }
 
     /**
@@ -594,6 +589,12 @@ export class EveSpriteSet extends EveObjectSet
         for (let i = 0; i < itemCount; ++i)
         {
             const item = this._visibleItems[i];
+
+            if (!item._worldPosition) item._worldPosition = vec3.create();
+            if (item._bone) vec3.transformMat4(item._worldPosition, item.position, item._bone.offsetTransform);
+            else vec3.copy(item._worldPosition, item.position);
+            vec3.transformMat4(item._worldPosition, item._worldPosition, this._parentTransform);
+
             array[index++] = item._worldPosition[0];
             array[index++] = item._worldPosition[1];
             array[index++] = item._worldPosition[2];
