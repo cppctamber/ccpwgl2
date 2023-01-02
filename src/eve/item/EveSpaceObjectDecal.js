@@ -89,17 +89,34 @@ export class EveSpaceObjectDecal extends meta.Model
 
     /**
      * Gets the mid point and normal
-     * @param {vec3} point
+     * @param {vec3} midPoint
      * @param {vec3} normal
+     * @returns {Boolean} true if successful
      */
-    GetMidPointAndNormal(point, normal)
+    GetMidPointAndNormal(midPoint, normal)
     {
-        EveSpaceObjectDecal.getMidpointAndNormal(point, normal, this);
-        if (this._offsetTransform)
+        const
+            mesh = this._parentGeometryRes ? this._parentGeometryRes.meshes[this._parentMeshIndex] : null,
+            indexBuffer = this._rawIndexBuffers[this._parentMeshIndex];
+
+        if (!mesh || !indexBuffer)
         {
-            vec3.multiply(point, point, this._offsetTransform);
-            vec3.multiply(normal, normal, this._offsetTransform);
+            vec3.set(midPoint, 0,0,0);
+            vec3.set(normal, 0,0,0);
+            return false;
         }
+
+        if (mesh.GetMidPointAndNormal(midPoint, normal, indexBuffer, mesh.bufferData))
+        {
+            if (this._offsetTransform)
+            {
+                vec3.multiply(midPoint, midPoint, this._offsetTransform);
+                vec3.multiply(normal, normal, this._offsetTransform);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -108,13 +125,22 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     GetEdges()
     {
-        const edges = EveSpaceObjectDecal.getEdges(this);
-        if (this._offsetTransform)
+        const
+            mesh = this._parentGeometryRes ? this._parentGeometryRes.meshes[this._parentMeshIndex] : null,
+            indexBuffer = this._rawIndexBuffers[this._parentMeshIndex];
+
+        if (!mesh || !indexBuffer) return null;
+
+        const edges = mesh.FindEdges(indexBuffer, mesh.bufferData);
+        if (edges)
         {
-            for (let i = 0; i < edges.length; i++)
+            if (this._offsetTransform)
             {
-                vec3.multiply(edges[i].start, edges[i].start, this._offsetTransform);
-                vec3.multiply(edges[i].end, edges[i].end, this._offsetTransform);
+                for (let i = 0; i < edges.length; i++)
+                {
+                    vec3.multiply(edges[i].start, edges[i].start, this._offsetTransform);
+                    vec3.multiply(edges[i].end, edges[i].end, this._offsetTransform);
+                }
             }
         }
         return edges;
@@ -275,7 +301,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
         if (!effect || !effect.IsGood()) return false;
 
-        // Todo: Update to new bone method
+        // Todo: Update to new bone method so it doesn't have to calculate every frame
         let hasBone;
         if (this.parentBoneIndex >= 0)
         {
@@ -287,8 +313,7 @@ export class EveSpaceObjectDecal extends meta.Model
             {
                 if (!this._offsetTransform) this._offsetTransform = mat4.create();
                 mat4.fromJointMatIndex(this._offsetTransform, bones, this.parentBoneIndex);
-                let bone = this._perObjectData.vs.Get("parentBoneMatrix");
-                mat4.transpose(bone, this._offsetTransform);
+                mat4.transpose(this._perObjectData.vs.Get("parentBoneMatrix"), this._offsetTransform);
                 hasBone = true;
             }
         }
@@ -457,166 +482,6 @@ export class EveSpaceObjectDecal extends meta.Model
         ]
     };
 
-    /**
-     * Gets the midpoint and normal for the decal
-     * @param {vec3} outMidpoint
-     * @param {vec3} outNormal
-     * @param {EveSpaceObjectDecal} decal
-     * @returns {boolean}
-     */
-    static getMidpointAndNormal(outMidpoint, outNormal, decal)
-    {
-        vec3.set(outMidpoint, 0, 0, 0);
-        vec3.set(outNormal, 0, 0, 0);
-
-        const res = decal._parentGeometryRes;
-
-        // Todo: wait until it is ready
-        if (!res || !res.IsGood()) return false;
-
-        const
-            indexBuffer = decal.GetIndexBuffer(decal._parentMeshIndex),
-            mesh = res[decal._parentMeshIndex];
-
-        if (!indexBuffer || !mesh) return false;
-
-        const
-            mat4_0 = mat4.alloc(),
-            vec3_0 = vec3.alloc(),
-            vec3_1 = vec3.alloc(),
-            vec3_2 = vec3.alloc(),
-            vec3_3 = vec3.alloc(),
-            tri3_0 = tri3.alloc();
-
-        // Find middle normal
-        let faces = [];
-        try
-        {
-            for (let i = 0; i < indexBuffer.length; i += 3)
-            {
-                const
-                    v0 = mesh.GetVertexPosition(vec3_0, indexBuffer[i + 0]),
-                    v1 = mesh.GetVertexPosition(vec3_1, indexBuffer[i + 1]),
-                    v2 = mesh.GetVertexPosition(vec3_2, indexBuffer[i + 2]);
-
-                tri3.fromVertices(tri3_0, v0, v1, v2);
-
-                faces.push({
-                    index: i / 3,
-                    midPoint: tri3.getMidpoint([], tri3_0),
-                    normal: tri3.getNormal([], tri3_0)
-                });
-            }
-
-            for (let i = 0; i < faces.length; i++)
-            {
-                vec3.add(outMidpoint, outMidpoint, faces[i].midPoint);
-                vec3.add(outNormal, outNormal, faces[i].normal);
-            }
-
-            vec3.divideScalar(outMidpoint, outMidpoint, faces.length);
-            vec3.divideScalar(outNormal, outNormal, faces.length);
-            return true;
-        }
-        catch (err)
-        {
-            return false;
-        }
-        finally
-        {
-            mat4.unalloc(mat4_0);
-            vec3.unalloc(vec3_0);
-            vec3.unalloc(vec3_1);
-            vec3.unalloc(vec3_2);
-            vec3.unalloc(vec3_3);
-            tri3.unalloc(tri3_0);
-        }
-    }
-
-    /**
-     * Gets a decal's edges
-     * @param {EveSpaceObjectDecal} decal
-     * @returns {{faceIndex: *, start: *, end: *}[]|null}
-     */
-    static getEdges(decal)
-    {
-        const res = decal._parentGeometryRes;
-
-        // Todo: wait until it is ready
-        if (!res || !res.IsGood()) return null;
-
-        const
-            indexBuffer = decal.GetIndexBuffer(decal._parentMeshIndex),
-            mesh = res.meshes[decal._parentMeshIndex];
-
-        if (!indexBuffer || !mesh) return null;
-
-        function isEqualEdge(a1, a2, b1, b2)
-        {
-            return vec3.equals(a1, b1) && vec3.equals(a2, b2) || vec3.equals(a1, b2) && vec3.equals(a2, b1);
-        }
-
-        const
-            v1 = vec3.alloc(),
-            v2 = vec3.alloc(),
-            v3 = vec3.alloc(),
-            edges = [];
-
-        try
-        {
-            for (let i = 0; i < indexBuffer.length; i += 3)
-            {
-                mesh.GetVertexPosition(v1, indexBuffer[i + 0]);
-                mesh.GetVertexPosition(v2, indexBuffer[i + 1]);
-                mesh.GetVertexPosition(v3, indexBuffer[i + 2]);
-
-                const edgeList = [ [ v1, v2 ], [ v2, v3 ], [ v3, v1 ] ];
-
-                for (let x = 0; x < 3; x++)
-                {
-                    const
-                        start = edgeList[x][0],
-                        end = edgeList[x][1],
-                        found = edges.find(x => isEqualEdge(x.start, x.end, start, end));
-
-                    if (found)
-                    {
-                        found.faces.push(indexBuffer[i]);
-                    }
-                    else
-                    {
-                        edges.push({
-                            start: vec3.clone(start),
-                            end: vec3.clone(end),
-                            faces: [ indexBuffer[i] ]
-                        });
-                    }
-                }
-            }
-
-            return edges
-                .filter(x => x.faces.length === 1)
-                .map(x =>
-                {
-                    return {
-                        start: x.start,
-                        end: x.end,
-                        faceIndex: x.faces[0]
-                    };
-                });
-
-        }
-        catch (err)
-        {
-            return null;
-        }
-        finally
-        {
-            vec3.unalloc(v1);
-            vec3.unalloc(v2);
-            vec3.unalloc(v3);
-        }
-    }
 }
 
 

@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat4, box3, sph3, tri3, vec3, ray3, lne3 } from "math";
+import { mat4, box3, sph3, tri3, vec3, ray3, lne3, num } from "math";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 import { ErrIndexBounds, Tw2Error } from "core/Tw2Error";
@@ -661,9 +661,135 @@ export class Tw2GeometryMesh
         return this.GetVertexElement(out, index, Tw2VertexElement.Type.BLENDINDICE, 0);
     }
 
-    static GetMidpointData(outMidpoint, outNormal, mesh, indexBuffer, bufferData, start, end)
+    /**
+     * Gets midpoint position and normal for an array of face indices
+     * @param {vec3} outMidpoint
+     * @param {vec3} outNormal
+     * @param {Array<Number>|TypedArray} customIndexBuffer
+     * @param {Array<Number>|TypedArray} [bufferData]
+     * @returns {Boolean} true if successful
+     */
+    GetMidpointAndNormal(outMidpoint, outNormal, customIndexBuffer, bufferData=this.bufferData)
     {
+        vec3.set(outMidpoint, 0, 0, 0);
+        vec3.set(outNormal, 0, 0, 0);
 
+        if (!bufferData) bufferData = this.bufferData;
+        if (!customIndexBuffer || !bufferData) return false;
+
+        const
+            v0 = vec3.alloc(),
+            v1 = vec3.alloc(),
+            v2 = vec3.alloc(),
+            midPoint = vec3.alloc(),
+            normal = vec3.alloc(),
+            tri3_0 = tri3.alloc();
+
+        try
+        {
+            const faces = customIndexBuffer / 3;
+            for (let i = 0; i < faces; i += 3)
+            {
+                this.GetVertexElement(v0, customIndexBuffer[i + 0], Tw2VertexElement.Type.POSITION, 0, bufferData);
+                this.GetVertexElement(v1, customIndexBuffer[i + 1], Tw2VertexElement.Type.POSITION, 0, bufferData);
+                this.GetVertexElement(v2, customIndexBuffer[i + 2], Tw2VertexElement.Type.POSITION, 0, bufferData);
+                tri3.fromVertices(tri3_0, v0, v1, v2);
+                tri3.getMidpoint(midPoint, tri3_0);
+                tri3.getNormal(normal, tri3_0);
+                vec3.add(outMidpoint, outMidpoint, midPoint);
+                vec3.add(outNormal, outNormal, normal);
+            }
+            vec3.divideScalar(outMidpoint, outMidpoint, faces);
+            vec3.divideScalar(outNormal, outNormal, faces);
+            return true;
+        }
+        catch(err)
+        {
+            return false;
+        }
+        finally
+        {
+            vec3.unalloc(v0);
+            vec3.unalloc(v1);
+            vec3.unalloc(v2);
+            vec3.unalloc(midPoint);
+            vec3.unalloc(normal);
+            tri3.unalloc(tri3_0);
+        }
+    }
+
+    /**
+     * Finds edges from a custom index buffer
+     * @param {Array<Number>|TypedArray} customIndexBuffer
+     * @param {Array<Number>|TypedArray} bufferData
+     * @returns {null|{faceIndex: *, start: *, end: *}[]}
+     */
+    FindEdges(customIndexBuffer, bufferData=this.bufferData)
+    {
+        function isEqualEdge(a1, a2, b1, b2)
+        {
+            return vec3.equals(a1, b1) && vec3.equals(a2, b2) || vec3.equals(a1, b2) && vec3.equals(a2, b1);
+        }
+
+        const
+            v0 = vec3.alloc(),
+            v1 = vec3.alloc(),
+            v2 = vec3.alloc(),
+            edges = [];
+
+        try
+        {
+            for (let i = 0; i < customIndexBuffer.length; i += 3)
+            {
+                this.GetVertexElement(v0, customIndexBuffer[i + 0], Tw2VertexElement.Type.POSITION, 0, bufferData);
+                this.GetVertexElement(v1, customIndexBuffer[i + 1], Tw2VertexElement.Type.POSITION, 0, bufferData);
+                this.GetVertexElement(v2, customIndexBuffer[i + 2], Tw2VertexElement.Type.POSITION, 0, bufferData);
+
+                const edgeList = [ [ v0, v1 ], [ v1, v2 ], [ v2, v0 ] ];
+                for (let x = 0; x < 3; x++)
+                {
+                    const
+                        start = edgeList[x][0],
+                        end = edgeList[x][1],
+                        found = edges.find(x => isEqualEdge(x.start, x.end, start, end));
+
+                    if (found)
+                    {
+                        found.faces.push(customIndexBuffer[i]);
+                    }
+                    else
+                    {
+                        edges.push({
+                            start: vec3.clone(start),
+                            end: vec3.clone(end),
+                            faces: [ customIndexBuffer[i] ]
+                        });
+                    }
+                }
+            }
+
+            return edges
+                .filter(x => x.faces.length === 1)
+                .map(x =>
+                {
+                    return {
+                        start: x.start,
+                        end: x.end,
+                        faceIndex: x.faces[0]
+                    };
+                });
+
+        }
+        catch (err)
+        {
+            return null;
+        }
+        finally
+        {
+            vec3.unalloc(v0);
+            vec3.unalloc(v1);
+            vec3.unalloc(v2);
+        }
     }
 
     /**
