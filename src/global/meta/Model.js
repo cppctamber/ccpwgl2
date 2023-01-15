@@ -338,17 +338,6 @@ export class Model
 
     /**
      * Prepares the instance for destruction
-     * Todo: Refactor
-     * @param opt
-     */
-    Destructor(opt)
-    {
-        console.log("Destructor has been replaced with 'Destroy'");
-        return this.Destroy(opt);
-    }
-
-    /**
-     * Prepares the instance for destruction
      * @param opt
      */
     Destroy(opt = {})
@@ -356,20 +345,11 @@ export class Model
         if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("destroy", this, opt);
-            // Todo: refactor
-            this.EmitEvent("destruct", this, opt);
         }
 
         if (this["OnDestroy"])
         {
             this["OnDestroy"]();
-        }
-
-        // Todo: refactor
-        if (this["OnDestruct"])
-        {
-            console.log("'OnDestruct' has been replaced with 'OnDestroy'");
-            this["OnDestruct"]();
         }
 
         if (!opt || !opt.skipChildren)
@@ -380,8 +360,6 @@ export class Model
         if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("destroyed", this, opt);
-            // Todo: Refactor
-            this.EmitEvent("destructed", this, opt);
         }
 
         this.ClearEvent("*");
@@ -407,53 +385,48 @@ export class Model
 
         let childOpt;
 
-        const structLists = getMetadata("structLists", this.constructor) || [];
-        structLists.forEach(property =>
+        if (hasMetadata("structLists", this.constructor))
         {
-            if (getMetadata("isPrivate", this, property)) return;
-
-            for (let i = 0; i < this[property].length; i++)
+            const structLists = getMetadata("structLists", this.constructor);
+            structLists.forEach(property =>
             {
-                if (this[property][i])
+                if (getMetadata("isPrivate", this, property)) return;
+
+                for (let i = 0; i < this[property].length; i++)
                 {
-                    if (this[property][i].Destroy)
+                    if (this[property][i])
                     {
-                        this[property][i].Destroy({ controller: opt.controller });
+                        if (this[property][i].Destroy)
+                        {
+                            this[property][i].Destroy({ controller: opt.controller });
+                        }
+                        updated = true;
                     }
-                    // Todo: Refactor
-                    else if (this[property][i].Destructor)
+                }
+
+                this[property].splice(0);
+            });
+        }
+
+        if (hasMetadata("structs", this.constructor))
+        {
+            const structs = getMetadata("structs", this.constructor);
+            structs.forEach(property =>
+            {
+                if (getMetadata("isPrivate", this, property)) return;
+
+                if (this[property])
+                {
+                    if (this[property].Destroy)
                     {
-                        this[property][i].Destructor({ controller: opt.controller });
+                        childOpt = childOpt || { controller: opt.controller };
+                        this[property].Destroy(childOpt);
                     }
+                    this[property] = null;
                     updated = true;
                 }
-            }
-
-            this[property].splice(0);
-        });
-
-        const structs = getMetadata("structs", this.constructor) || [];
-        structs.forEach(property =>
-        {
-            if (getMetadata("isPrivate", this, property)) return;
-
-            if (this[property])
-            {
-                if (this[property].Destroy)
-                {
-                    childOpt = childOpt || { controller: opt.controller };
-                    this[property].Destroy(childOpt);
-                }
-                // Todo: Refactor
-                else if (this[property].Destructor)
-                {
-                    childOpt = childOpt || { controller: opt.controller };
-                    this[property].Destructor(childOpt);
-                }
-                this[property] = null;
-                updated = true;
-            }
-        });
+            });
+        }
 
         if (!opt || !opt.skipEvents)
         {
@@ -560,14 +533,28 @@ export class Model
     /**
      * Finds an object by it's id
      * @param {String} id
+     * @param {Array} [out] - Optional array for capturing the path to the found object
      * @return {*}
      */
-    FindObjectByID(id)
+    FindObjectByID(id, out)
     {
         return this.Traverse(x =>
         {
             if (x.struct._id === id)
             {
+                if (out)
+                {
+                    const parts = x.path.split("/");
+                    parts.shift(); // remove root
+
+                    let cur = this;
+                    for (let i = 0; i < parts.length; i++)
+                    {
+                        cur = cur[parts[i]];
+                        out.push(cur);
+                    }
+                }
+
                 return x.struct;
             }
         });
@@ -847,7 +834,7 @@ export class Model
                         continue;
                     }
 
-                    if (!handler.is(value, item[key], options))
+                    if (!handler.is(value))
                     {
                         throw new TypeError(`${constructorType} > Unexpected value type for property: ${key}`);
                     }

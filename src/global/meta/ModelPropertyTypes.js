@@ -1,24 +1,20 @@
-import { num, vec2, vec3, vec4, mat3, mat4 } from "math";
+import { num } from "math";
 import * as Type from "constant/type";
 import {
     isArray,
     isBoolean,
     isEqual,
-    isMatrix3,
-    isMatrix4,
     isNumber,
     isPlain,
     isString,
     isVector,
-    isVector2,
-    isVector3, isVector4,
     isVectorEqual
 } from "../utils/type";
 
 export const propTypes = new Map();
 
 //  Helpers
-const getArray = (a, key) => Array.from(a[key]);
+const getArray = (a, key) => a[key] ? Array.from(a[key]) : [];
 const getPrimary = (a, key) => a[key];
 const setPrimary = (a, key, value) => a[key] = value;
 const exactEquals = (a, b) => a === b;
@@ -34,6 +30,7 @@ propTypes.set(Type.PT_BOOLEAN, {
     set: setPrimary,
     type: Type.PT_BOOLEAN
 });
+
 
 // Numbers
 function setNumber(type)
@@ -52,6 +49,7 @@ setNumber(Type.PT_FLOAT);
 setNumber(Type.PT_UINT);
 setNumber(Type.PT_USHORT);
 
+
 //  Strings
 function setString(type)
 {
@@ -67,11 +65,14 @@ setString(Type.PT_STRING);
 setString(Type.PT_EXPRESSION);
 setString(Type.PT_PATH);
 
+
 // Vectors
 function setVector(type, Constructor, length)
 {
+    let is = length ? x => isVector(x, length) : isVector;
+
     propTypes.set(type, {
-        is: x => isVector(x, length),
+        is,
         equals: isVectorEqual,
         get: getArray,
         set: (a, key, value) =>
@@ -90,70 +91,17 @@ function setVector(type, Constructor, length)
     });
 }
 
-setVector(Type.PT_VECTOR, Float32Array);
-setVector(Type.PT_INT32_ARRAY, Int32Array);
-setVector(Type.PT_INT16_ARRAY, Int16Array);
-setVector(Type.PT_INT8_ARRAY, Int8Array);
-setVector(Type.PT_UINT8_ARRAY, Uint8Array);
-setVector(Type.PT_UINT32_ARRAY, Uint32Array);
-setVector(Type.PT_UINT16_ARRAY, Uint16Array);
-setVector(Type.PT_UINT32_ARRAY, Uint32Array);
-setVector(Type.PT_FLOAT32_ARRAY, Float32Array);
-setVector(Type.PT_FLOAT64_ARRAY, Float64Array);
 
-//setVector(Type.PT_MATRIX3, Float32Array, 9);
-//setVector(Type.PT_MATRIX4, Float32Array, 16);
-//setVector(Type.PT_VECTOR2, Float32Array, 2);
-//setVector(Type.PT_VECTOR3, Float32Array, 3);
-//setVector(Type.PT_VECTOR4, Float32Array, 3);
-//setVector(Type.PT_COLOR, Float32Array, 4);
-//setVector(Type.PT_QUATERNION, Float32Array, 4);
-
-propTypes.set(Type.PT_MATRIX3, {
-    is: isMatrix3,
-    equals: mat3.equals,
-    get: getArray,
-    set: (a, key, value) => mat3.copy(a[key], value),
-    type: Type.PT_MATRIX3
-});
-
-propTypes.set(Type.PT_MATRIX4, {
-    is: isMatrix4,
-    equals: mat4.equals,
-    get: getArray,
-    set: (a, key, value) => mat4.copy(a[key], value),
-    type: Type.PT_MATRIX4
-});
-
-propTypes.set(Type.PT_VECTOR2, {
-    is: isVector2,
-    equals: vec2.equals,
-    get: getArray,
-    set: (a, key, value) => vec2.copy(a[key], value),
-    type: Type.PT_VECTOR2
-});
-
-propTypes.set(Type.PT_VECTOR3, {
-    is: isVector3,
-    equals: vec3.equals,
-    get: getArray,
-    set: (a, key, value) => vec3.copy(a[key], value),
-    type: Type.PT_VECTOR3
-});
-
-function setVector4(type)
+// Setup all vectors
+for (const type in Type.VectorConstructors)
 {
-    propTypes.set(type, {
-        is: isVector4,
-        equals: vec4.equals,
-        get: getArray,
-        set: (a, key, value) => vec4.copy(a[key], value),
-        type
-    });
+    if (Type.VectorConstructors.hasOwnProperty(type))
+    {
+        let id = Number(type);
+        setVector(id, Type.VectorConstructors[id], Type.VectorLengths[id]);
+    }
 }
-setVector4(Type.PT_VECTOR4);
-setVector4(Type.PT_COLOR);
-setVector4(Type.PT_QUATERNION);
+
 
 // Objects
 propTypes.set(Type.PT_PLAIN, {

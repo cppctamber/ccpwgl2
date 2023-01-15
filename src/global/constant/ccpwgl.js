@@ -39,6 +39,20 @@ export const Touch = {
     DOLLY_ROTATE: 3
 };
 
+export const PickingToSelector = {
+    1: 6,
+    2: 7,
+    3: 8,
+    4: 9,
+    5: 18,
+    6: 19,
+    10: 11,
+    11: 4,
+    12: 21,
+    13: 22,
+    14: 23
+};
+
 
 export const PickingBlueChannel = {
     UNKNOWN: 0,
@@ -55,7 +69,9 @@ export const PickingBlueChannel = {
     HEAT: 12,
     GLASS: 13,
     SAIL: 14,
-    DETAIL: 15,
+    SAIL_PATTERN: 14,
+    SAIL_BACKGROUND: 15,
+    DETAIL: 16,
 
     DECAL: 20,
     BOOSTER: 21,

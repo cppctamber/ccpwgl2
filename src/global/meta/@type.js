@@ -34,7 +34,12 @@ import {
     PT_UINT8_ARRAY,
     PT_UINT8_CLAMPED_ARRAY,
     PT_UINT16_ARRAY,
-    PT_UINT32_ARRAY
+    PT_UINT32_ARRAY,
+    PT_ROTATION,
+    PT_TRANSLATION,
+    PT_SCALING,
+    PT_LOCAL_TRANSFORM,
+    PT_ROTATION_TRANSFORM
 } from "constant";
 
 
@@ -92,10 +97,10 @@ const typeHandler = function({ target, property }, type, ...typesOf)
 };
 
 export const type = createDecorator({
-    ctor({ target }, type, ccp=type)
+    ctor({ target }, type, ccp)
     {
         defineMetadata("type", type, target);
-        defineMetadata("ccp", ccp, target);
+        if (ccp) defineMetadata("ccp", ccp, target);
     },
     parameter(options, type, typesOf)
     {
@@ -137,6 +142,12 @@ export const color = create(PT_COLOR);
 export const quaternion = create(PT_QUATERNION);
 export const matrix3 = create(PT_MATRIX3);
 export const matrix4 = create(PT_MATRIX4);
+
+export const rotation = create(PT_ROTATION);
+export const translation = create(PT_TRANSLATION);
+export const scaling = create(PT_SCALING);
+export const localTransform = create(PT_LOCAL_TRANSFORM);
+export const rotationTransform = create(PT_ROTATION_TRANSFORM);
 
 export const int8Array = create(PT_INT8_ARRAY);
 export const int16Array = create(PT_INT16_ARRAY);

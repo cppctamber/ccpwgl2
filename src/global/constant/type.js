@@ -27,6 +27,12 @@ export const PT_QUATERNION = 61;
 export const PT_MATRIX3 = 70;
 export const PT_MATRIX4 = 71;
 
+export const PT_TRANSLATION = 72;
+export const PT_SCALING = 73;
+export const PT_ROTATION = 74;
+export const PT_LOCAL_TRANSFORM = 75;
+export const PT_ROTATION_TRANSFORM = 76;
+
 export const PT_UINT8_ARRAY = 81;
 export const PT_UINT8_CLAMPED_ARRAY = 82;
 export const PT_UINT16_ARRAY = 83;
@@ -36,6 +42,7 @@ export const PT_INT16_ARRAY = 86;
 export const PT_INT32_ARRAY = 87;
 export const PT_FLOAT32_ARRAY = 88;
 export const PT_FLOAT64_ARRAY = 89;
+
 
 export const VectorConstructors = {
     [PT_VECTOR2]: Float32Array,
@@ -53,9 +60,13 @@ export const VectorConstructors = {
     [PT_UINT32_ARRAY] : Uint32Array,
     [PT_INT8_ARRAY] : Int8Array,
     [PT_INT16_ARRAY] : Int16Array,
-    [PT_INT32_ARRAY] : Int32Array
+    [PT_INT32_ARRAY] : Int32Array,
+    [PT_ROTATION]: Float32Array,
+    [PT_TRANSLATION]: Float32Array,
+    [PT_SCALING]: Float32Array,
+    [PT_ROTATION_TRANSFORM]: Float32Array,
+    [PT_LOCAL_TRANSFORM]: Float32Array,
 };
-
 
 export const VectorLengths = {
     [PT_VECTOR2] : 2,
@@ -65,6 +76,11 @@ export const VectorLengths = {
     [PT_COLOR] : 4,
     [PT_MATRIX3] : 9,
     [PT_MATRIX4] : 16,
+    [PT_ROTATION]: 4,
+    [PT_TRANSLATION]: 3,
+    [PT_SCALING]: 3,
+    [PT_ROTATION_TRANSFORM]: 16,
+    [PT_LOCAL_TRANSFORM]: 16,
 };
 
 

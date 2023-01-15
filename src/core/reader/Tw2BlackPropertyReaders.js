@@ -35,7 +35,12 @@ import {
     PT_UINT8_CLAMPED_ARRAY,
     PT_UINT8_ARRAY,
     PT_VECTOR,
-    PT_MATRIX3
+    PT_MATRIX3,
+    PT_ROTATION,
+    PT_ROTATION_TRANSFORM,
+    PT_LOCAL_TRANSFORM,
+    PT_TRANSLATION,
+    PT_SCALING
 } from "constant/type";
 
 let Types;
@@ -76,6 +81,11 @@ function getReaderFromType(type)
             [PT_UINT8_ARRAY]: indexBuffer,
             [PT_VECTOR]: indexBuffer,
             [PT_MATRIX3]: indexBuffer,
+            [PT_SCALING] : vector3,
+            [PT_TRANSLATION] : vector3,
+            [PT_ROTATION] : vector4,
+            [PT_LOCAL_TRANSFORM]: matrix,
+            [PT_ROTATION_TRANSFORM]: matrix
         };
     }
 
