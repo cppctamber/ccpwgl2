@@ -1,7 +1,7 @@
 import { precision } from "../shared/func";
 import { ps, vs, texture, constant } from "../shared";
 
-const Selectors = {
+export const Selectors = {
     name: "Selectors",
     value: [
         0,0,0,0,
