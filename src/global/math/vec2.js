@@ -1,7 +1,25 @@
 import { vec2 } from "gl-matrix";
+import { pool } from "global/math/pool";
 
 export { vec2 };
 
+/**
+ *
+ * @returns {Float32Array}
+ */
+vec2.alloc = function()
+{
+    return pool.allocF32(2);
+};
+
+/**
+ *
+ * @param a
+ */
+vec2.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 /**
  * Adds a scalar to a vec2

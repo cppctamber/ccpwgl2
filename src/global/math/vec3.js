@@ -574,7 +574,7 @@ vec3.polarToCartesian = function(out, radius, latitude, longitude)
 };
 
 /**
- * Projects a local vec3 to screen space with viewport settings
+ * Projects a world vec3 to screen space with viewport settings
  * @param {vec3} out           - receiving vec3
  * @param {vec3} a             - local vec3
  * @param {mat4} m             - model view projection matrix
@@ -904,6 +904,37 @@ vec3.toSRGB = function(out, linear)
     out[0] = num.srgbFromLinear(linear[0]);
     out[1] = num.srgbFromLinear(linear[0]);
     out[2] = num.srgbFromLinear(linear[0]);
+    return out;
+};
+
+/**
+ * Three js
+ * Todo: replace with glMatrix
+ */
+vec3.applyQuaternion = function(out, a, q)
+{
+
+    const
+        x = a[0],
+        y = a[1],
+        z = a[2],
+        qx = q[0],
+        qy = q[1],
+        qz = q[2],
+        qw = q[3];
+
+    // calculate quat * vector
+    const
+        ix = qw * x + qy * z - qz * y,
+        iy = qw * y + qz * x - qx * z,
+        iz = qw * z + qx * y - qy * x,
+        iw = - qx * x - qy * y - qz * z;
+
+    // calculate result * inverse quat
+    out[0] = ix * qw + iw * - qx + iy * - qz - iz * - qy;
+    out[1] = iy * qw + iw * - qy + iz * - qx - ix * - qz;
+    out[2] = iz * qw + iw * - qz + ix * - qy - iy * - qx;
+
     return out;
 };
 

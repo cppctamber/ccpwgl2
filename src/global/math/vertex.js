@@ -1,5 +1,74 @@
-import { vec3 } from "./vec3";
-import { vec2 } from "./vec2";
+import { vec2, vec3 } from "math";
+import { isArray, toArray } from "utils";
+
+
+export function calculateNormals(indices, positions)
+{
+    const normals = [];
+
+    for (let i = 0; i < positions.length; i++)
+    {
+        normals[i] = 0.0;
+    }
+
+    const
+        pA = vec3.create(),
+        pB = vec3.create(),
+        pC = vec3.create();
+
+    const
+        nA = vec3.create(),
+        nB = vec3.create(),
+        nC = vec3.create();
+
+    const
+        cb = vec3.create(),
+        ab = vec3.create();
+
+    for (let i = 0, il = indices.length; i < il; i += 3)
+    {
+        const vA = indices[i + 0];
+        const vB = indices[i + 1];
+        const vC = indices[i + 2];
+
+        vec3.fromArray(pA, positions, vA);
+        vec3.fromArray(pB, positions, vB);
+        vec3.fromArray(pC, positions, vC);
+
+        vec3.subtract(cb, pC, pB);
+        vec3.subtract(ab, pA, pB);
+        vec3.cross(cb, cb, ab);
+
+        vec3.fromArray(nA, normals, vA);
+        vec3.fromArray(nB, normals, vB);
+        vec3.fromArray(nC, normals, vC);
+
+        vec3.add(nA, nA, cb);
+        vec3.add(nB, nB, cb);
+        vec3.add(nC, nC, cb);
+
+        normals[vA+0] = nA[0];
+        normals[vA+1] = nA[1];
+        normals[vA+2] = nB[2];
+        normals[vB+0] = nB[0];
+        normals[vB+1] = nB[1];
+        normals[vB+2] = nB[2];
+        normals[vC+0] = nB[0];
+        normals[vC+1] = nB[1];
+        normals[vC+2] = nB[2];
+    }
+
+    for (let i = 0, il = normals.length; i < il; i+=3)
+    {
+        vec3.fromArray(cb, normals, i);
+        vec3.normalize(cb, cb);
+        normals[i+0] = cb[0];
+        normals[i+1] = cb[1];
+        normals[i+2] = cb[2];
+    }
+
+    return normals;
+}
 
 
 /**
@@ -8,11 +77,11 @@ import { vec2 } from "./vec2";
  * @param {Array|TypedArray} positions
  * @returns {Array} normals
  */
-export function calculateNormals(indices, positions)
+export function _calculateNormals(indices, positions)
 {
     const normals = [];
 
-    for (let i = 0; i < indices.length; i++)
+    for (let i = 0; i < indices.length; i+=3)
     {
         const
             i0 = indices[i + 0],
@@ -67,24 +136,23 @@ export function calculateNormals(indices, positions)
  * @author Three.js (converted)
  * @param {Array|TypedArray} indices
  * @param {Array|TypedArray} positions
- * @param {Array|TypedArray} texcoord0s
+ * @param {Array|TypedArray} uvs
  * @param {Array<Object>} [areas]
  * @param {Array|TypedArray} [normals]
  * @returns {Array}
  */
-export function calculateTangents(indices, positions, texcoord0s, areas, normals)
+export function calculateTangents(indices, positions, uvs, areas, normals)
 {
-    
-    if (!indices || !positions || !texcoord0s || !indices.length || !positions.length || !texcoord0s.length)
+
+    if (!indices || !positions || !uvs || !indices.length || !positions.length || !uvs.length)
     {
-        console.dir({ indices, positions, texcoord0s, areas, normals });
+        console.dir({ indices, positions, uvs, areas, normals });
         throw new Error("Invalid inputs");
     }
 
-    
     // based on http://www.terathon.com/code/tangent.html
     // (per vertex tangents)
-    
+
     if (!normals || !normals.length)
     {
         normals = calculateNormals(indices, positions);
@@ -119,9 +187,9 @@ export function calculateTangents(indices, positions, texcoord0s, areas, normals
         vec3.fromArray(vB, positions, b * 3);
         vec3.fromArray(vC, positions, c * 3);
 
-        vec2.fromArray(uvA, texcoord0s, a * 2);
-        vec2.fromArray(uvB, texcoord0s, b * 2);
-        vec2.fromArray(uvC, texcoord0s, c * 2);
+        vec2.fromArray(uvA, uvs, a * 2);
+        vec2.fromArray(uvB, uvs, b * 2);
+        vec2.fromArray(uvC, uvs, c * 2);
 
         vec3.subtract(vB, vB, vA);
         vec3.subtract(vC, vC, vA);
@@ -133,12 +201,12 @@ export function calculateTangents(indices, positions, texcoord0s, areas, normals
 
         // silently ignore degenerate uv triangles having coincident or colinear vertices
         if (!isFinite(r)) return;
-        
+
         vec3.copy(sdir, vB);
         vec3.multiplyScalar(sdir, sdir, uvC[1]);
         vec3.scaleAndAdd(sdir, sdir, vC, -uvB[1]);
         vec3.multiplyScalar(sdir, sdir, r);
-        
+
         vec3.copy(tdir, vC);
         vec3.multiplyScalar(tdir, tdir, uvB[0]);
         vec3.scaleAndAdd(tdir, tdir, vC, -uvC[0]);
@@ -188,7 +256,7 @@ export function calculateTangents(indices, positions, texcoord0s, areas, normals
     {
         vec3.fromArray(n, normals, v * 3);
         vec3.copy(n2, n);
-        
+
         const t = tan1[v];
 
         // Gram-Schmidt orthogonalize
@@ -235,28 +303,23 @@ calculateTangents.handedness = 1.0;
  * Converts index and buffer data to json
  * @param {Array|TypedArray} indices
  * @param {Array|TypedArray} positions
- * @param {Array|TypedArray} texcoord0s
- * @param {Array|TypedArray} [areas]
+ * @param {Array|TypedArray} uvs
+ * @param {Array|Object} [areas]
  * @param {Array|TypedArray} [normals]
  * @param {Array|TypedArray} [tangents]
  * @throw If required data is not provided
  * @returns {Object}
  */
-export function toJSON(indices, positions, texcoord0s, areas, normals, tangents)
+export function toJSON(indices, positions, uvs, normals, areas, tangents)
 {
 
-    if (!indices || !positions || !texcoord0s || !indices.length || !positions.length || !texcoord0s.length)
+    if (!indices || !positions || !uvs || !indices.length || !positions.length || !uvs.length)
     {
         throw new Error("Invalid inputs");
     }
 
-    if (!areas)
-    {
-        areas = [ {
-            start: 0,
-            count: indices.length
-        } ];
-    }
+    areas = areas || { start: 0, count: indices.length };
+    areas = toArray(areas);
 
     if (!normals || !normals.length)
     {
@@ -265,7 +328,7 @@ export function toJSON(indices, positions, texcoord0s, areas, normals, tangents)
 
     if (!tangents || !tangents.length)
     {
-        tangents = calculateTangents(indices, positions, texcoord0s, areas, normals);
+        tangents = calculateTangents(indices, positions, uvs, areas, normals);
     }
 
     return {
@@ -273,7 +336,7 @@ export function toJSON(indices, positions, texcoord0s, areas, normals, tangents)
             name,
             vertex: {
                 position: positions,
-                texcoord0: texcoord0s,
+                texcoord0: uvs,
                 tangent: tangents,
                 normal: normals,
                 texcoord1: null,
@@ -292,6 +355,38 @@ export function toJSON(indices, positions, texcoord0s, areas, normals, tangents)
             })
         } ]
     };
+}
+
+export function toContainer(tw2, json, name="", autoCreateMeshAreas={})
+{
+    const
+        container = new tw2.EveChildMesh(),
+        mesh = container.mesh = new tw2.Tw2Mesh(),
+        res = mesh.geometryResource = new tw2.Tw2GeometryRes;
+
+    container.name = name;
+    res.UpdateFromJSON(json);
+    res.OnPrepared();
+
+    Object
+        .keys(autoCreateMeshAreas)
+        .forEach(areaName =>
+        {
+            const effect = autoCreateMeshAreas[areaName] || {};
+            for (let m = 0; m < res.meshes.length; m++)
+            {
+                for (let a = 0; a < res.meshes[m].areas.length; a++)
+                {
+                    const meshArea = new tw2.Tw2MeshArea();
+                    meshArea.meshIndex = m;
+                    meshArea.index = a;
+                    meshArea.effect = tw2.Tw2Effect.from(effect);
+                    mesh[areaName].push(meshArea);
+                }
+            }
+        });
+
+    return container;
 }
 
 // https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2020/ENU/Maya-Modeling/files/GUID-71B1F48B-52C7-46D2-ADE8-F920AC0DD3F9-htm.html

@@ -147,9 +147,9 @@ mat4.fromMat3 = function (out, m)
 mat4.lookAtGL = function (out, eye, center, up)
 {
     const
-        vec3_0 = pool.allocF32(3),
-        vec3_1 = pool.allocF32(3),
-        vec3_2 = pool.allocF32(3);
+        vec3_0 = pool.allocF32(3), //x
+        vec3_1 = pool.allocF32(3), //y
+        vec3_2 = pool.allocF32(3); //z
 
     vec3.subtract(vec3_2, eye, center);
 
@@ -163,7 +163,15 @@ mat4.lookAtGL = function (out, eye, center, up)
 
     if (vec3.squaredLength(vec3_0) === 0)
     {
-        vec3_2[2] += 0.0001;
+        if (Math.abs(up[2]) === 1)
+        {
+            vec3_2[0] += 0.0001;
+        }
+        else
+        {
+            vec3_2[2] += 0.0001;
+        }
+        vec3.normalize(vec3_2, vec3_2);
         vec3.cross(vec3_0, up, vec3_2);
     }
 
@@ -193,6 +201,79 @@ mat4.lookAtGL = function (out, eye, center, up)
 
     return out;
 };
+
+/**
+ * Generates a look-at matrix with the given eye position, focal point, and up axis from a left handed coordinate system
+ *
+ * @param {mat4} out - mat4 frustum matrix will be written into
+ * @param {mat4} m - matrix
+ * @param {vec3} eye - Position of the viewer
+ * @param {vec3} center - Point the viewer is looking at
+ * @param {vec3} up - vec3 pointing up
+ * @returns {mat4} out
+ */
+mat4.lookAtGLFixed = function (out, m, eye, center, up)
+{
+    const
+        vec3_0 = pool.allocF32(3), //x
+        vec3_1 = pool.allocF32(3), //y
+        vec3_2 = pool.allocF32(3); //z
+
+    vec3.subtract(vec3_2, eye, center);
+
+    if (vec3.squaredLength(vec3_2) === 0)
+    {
+        vec3_2[2] = 1;
+    }
+
+    vec3.normalize(vec3_2, vec3_2);
+    vec3.cross(vec3_0, up, vec3_2);
+
+    if (vec3.squaredLength(vec3_0) === 0)
+    {
+        if (Math.abs(up[2]) === 1)
+        {
+            vec3_2[0] += 0.0001;
+        }
+        else
+        {
+            vec3_2[2] += 0.0001;
+        }
+        vec3.normalize(vec3_2, vec3_2);
+        vec3.cross(vec3_0, up, vec3_2);
+    }
+
+    vec3.normalize(vec3_0, vec3_0);
+    vec3.cross(vec3_1, vec3_2, vec3_0);
+
+    out[0] = vec3_0[0];
+    out[1] = vec3_0[1];
+    out[2] = vec3_0[2];
+    out[4] = vec3_1[0];
+    out[5] = vec3_1[1];
+    out[6] = vec3_1[2];
+    out[8] = vec3_2[0];
+    out[9] = vec3_2[1];
+    out[10] = vec3_2[2];
+
+    if (out !== m)
+    {
+        out[3] = m[3];
+        out[7] = m[7];
+        out[11] = m[11];
+        out[12] = m[12];
+        out[13] = m[13];
+        out[14] = m[14];
+        out[15] = m[15];
+    }
+
+    pool.freeType(vec3_0);
+    pool.freeType(vec3_1);
+    pool.freeType(vec3_2);
+
+    return out;
+};
+
 
 /**
  * Gets a mat4's maximum column axis scale

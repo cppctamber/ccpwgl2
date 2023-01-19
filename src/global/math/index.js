@@ -6,8 +6,6 @@ export * from "./quat";
 export * from "./mat3";
 export * from "./mat4";
 
-
-
 export * from "./box3";
 export * from "./tri3";
 export * from "./lne3";
@@ -18,7 +16,9 @@ export * from "./sph3";
 export * from "./pool";
 export * from "./noise";
 export * from "./curve";
+
 export * as vertex from "./vertex";
+export * as geometry from "./geometry";
 
 
 /**
