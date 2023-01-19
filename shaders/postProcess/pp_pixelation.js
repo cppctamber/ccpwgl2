@@ -120,11 +120,12 @@ export const pp_pixelation = {
                         if (depthEdgeStrength > 0.0) dei = depthEdgeIndicator(depth, normal);
                         
                         float nei = 0.0;
-                        if (normalEdgeStrength > 0.0) nei = normalEdgeIndicator(depth, normal);
+                        if (normalEdgeStrength > 0.0) nei = -normalEdgeIndicator(depth, normal);
                         
                         float strength = dei > 0.0 ? (1.0 - depthEdgeStrength * dei) : (1.0 + normalEdgeStrength * nei);
                         
-                        gl_FragColor = texel * strength;
+                        gl_FragData[0].xyz = vec3(strength);
+                        gl_FragData[0].w = 1.0;
                     }
                 `
             }

@@ -210,3 +210,19 @@ export const frexp = `
     
 `;
 
+export const standardDerivatives = `
+
+        #ifdef GL_OES_standard_derivatives
+        #extension GL_OES_standard_derivatives: enable
+        #endif
+        
+        #if defined(GL_ES)&&!defined(GL_OES_standard_derivatives)
+        float dd(float x){return 0.0;}
+        vec2 dd(vec2 x){return vec2(0.0);}
+        vec3 dd(vec3 x){return vec3(0.0);}
+        vec4 dd(vec4 x){return vec4(0.0);}
+        #define dFdx(x) dd(x)
+        #define dFdy(x) dd(x)
+        #endif
+
+`;

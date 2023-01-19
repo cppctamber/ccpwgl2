@@ -26,7 +26,7 @@ export const EveSpaceSceneDepthMap = createTex("EveSpaceSceneDepthMap", TEX_2D, 
     }
 });
 
-export const EveSpaceSceneNormalMap = createTex("EveSpaceSceneDepthMap", TEX_2D, {
+export const EveSpaceSceneNormalMap = createTex("EveSpaceSceneNormalMap", TEX_2D, {
     isAutoregister: 1,
     ui: {
         display: 0

@@ -20,7 +20,7 @@ export const Time = {
 /*------------------------------------------------------------------------------------------------- global ----------*/
 
 export const G_TEXEL_SIZE = {
-    name: "g_texel_size",
+    name: "g_texelSize",
     value: [ 0, 0, 0, 0 ],
     isAutoregister: 1,
     ui: {

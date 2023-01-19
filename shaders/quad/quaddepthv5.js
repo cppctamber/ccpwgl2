@@ -8,16 +8,12 @@ export const quadDepthV5 = {
         Main: {
             vs: vs.quadV5_PosTex,
             ps: {
-                textures: [
-                    texture.NormalMap
-                ],
                 shader: `
 
                     ${ps.headerNoShadow}
                     
                     varying vec4 texcoord;
                     uniform vec4 cb4[3];
-                    uniform sampler2D s0; // NormalMap
                     
                     void main()
                     {

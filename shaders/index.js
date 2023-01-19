@@ -1,8 +1,7 @@
 import { Tw2EffectRes } from "core";
 import * as decals from "./decal";
 import * as quad from "./quad";
-import * as organic from "./organic";
-import * as specialFX from "./specialFx";
+import * as other from "./other";
 import * as postProcess from "./postProcess";
 import { tw2 } from "global";
 
@@ -89,8 +88,7 @@ function addShaders(obj)
 
 addShaders(decals);
 addShaders(quad);
-addShaders(organic);
-addShaders(specialFX);
+addShaders(other);
 addShaders(postProcess);
 
 

@@ -3,7 +3,7 @@ import { quadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5 } from "./quadpickingv5";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { clampToBorder } from "../shared/func";
-import { quadNormalV5 } from "./quadNormalV5";
+import { quadnormalv5 } from "./quadnormalv5";
 
 
 export const quadInstancedV5 = {
@@ -21,8 +21,8 @@ export const quadInstancedV5 = {
             ps: quadPickingV5.techniques.Main.ps
         },
         Normal: {
-            vs: vs.quadInstancedV5_PosTexTexTexTex,
-            ps: quadNormalV5.techniques.Main.ps
+            vs: vs.quadInstancedV5_PosTexTanTexTexTexTex,
+            ps: quadnormalv5.techniques.Main.ps
         },
         Main: {
             vs: vs.quadInstancedV5_PosTexTanTexTexTexTexL01,
