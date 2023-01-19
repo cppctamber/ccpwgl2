@@ -33,9 +33,9 @@ const NormalEdgeBias = {
 };
 
 
-export const pp_pixelation = {
+export const pp_outline = {
 
-    name: "pp_pixelation",
+    name: "pp_outline",
     author: "ThreeJS",
     techniques: {
         Main: {
