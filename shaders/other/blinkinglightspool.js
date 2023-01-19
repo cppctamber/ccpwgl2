@@ -5,7 +5,7 @@ import { ps, vs } from "../shared";
 export const blinkinglightspool = {
     name: "blinkinglightspool",
     replaces: "graphics/effect.gles2/managed/space/spaceobject/fx/blinkinglightspool",
-    description: "nebula shader",
+    description: "Blinking lights pool",
     techniques: {
         Main: {
             vs: {
