@@ -24,16 +24,17 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "core-js": "^3.6.5",
+    "earcut": "^2.2.4",
     "eslint": "^5.16.0",
     "eslint-loader": "^2.2.1",
-    "gl-matrix": "^2.8.1",
+    "geo-ambient-occlusion": "^3.0.4",
+    "gl-matrix": "^3.4.1",
     "progress-bar-webpack-plugin": "^1.12.1",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.13.7",
     "terser-webpack-plugin": "^1.4.2",
     "webgl-obj-loader": "^2.0.8",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
-    "geo-ambient-occlusion": "^3.0.4"
+    "webpack-cli": "^3.3.12"
   }
 }
