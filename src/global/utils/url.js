@@ -130,3 +130,14 @@ export function getURLBoolean(key, defaultValue)
     key = key.toLowerCase();
     return key in url ? url[key] : defaultValue;
 }
+
+/**
+ * Checks if an url key is not undefined
+ * @param key
+ * @returns {boolean}
+ */
+export function hasURLValue(key)
+{
+    key = key.toLowerCase();
+    return key in url && url[key] !== undefined;
+}
