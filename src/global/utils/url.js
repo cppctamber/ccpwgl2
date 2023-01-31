@@ -1,4 +1,4 @@
-import { isFunction, isPlain } from "./type";
+import { isArray, isFunction, isObjectObject, isPlain, isString } from "./type";
 
 const
     url = {},
@@ -140,4 +140,86 @@ export function hasURLValue(key)
 {
     key = key.toLowerCase();
     return key in url && url[key] !== undefined;
+}
+
+/**
+ * Updates an object from url values if they're defined
+ * @param {Object} [src={}]
+ * @param {Object} [out={}]
+ * @returns {{}} out
+ */
+export function fromURLIfDefined(src={}, out={})
+{
+    for (const prop in src)
+    {
+        if (!src.hasOwnProperty(prop)) continue;
+
+        // src[prop] = { .... }
+        if (isObjectObject(src[prop]))
+        {
+            out[prop] = fromURLIfDefined(src[prop], out[prop]);
+            continue;
+        }
+
+        let urlKey,
+            urlType;
+
+        // src[prop] = [ "urlKey", "urlType" ]
+        if (isArray(src[prop]))
+        {
+            urlKey = src[prop][0];
+            urlType = src[prop][1];
+        }
+        // src[prop] = "urlType"
+        // src[prop] = function(urlKeyValue)
+        else if (isString(src[prop]) || isFunction(src[prop]))
+        {
+            urlKey = prop;
+            urlType = src[prop];
+        }
+        else
+        {
+            throw new TypeError("Invalid property value");
+        }
+
+        if (hasURLValue(urlKey))
+        {
+            if (isFunction(urlType))
+            {
+                out[prop] = urlType(url[urlKey]);
+            }
+            else if (isString(urlType))
+            {
+                let handler;
+                switch (urlType.toUpperCase())
+                {
+                    case "BOOLEAN":
+                        handler = getURLBoolean;
+                        break;
+
+                    case "STRING":
+                        handler = getURLString;
+                        break;
+
+                    case "INTEGER":
+                        handler = getURLInteger;
+                        break;
+
+                    case "FLOAT":
+                        handler = getURLFloat;
+                        break;
+
+                    default:
+                        throw new TypeError(`Unknown string type${urlType}`);
+                }
+
+                out[prop] = handler(urlKey);
+            }
+            else
+            {
+                throw new TypeError("Invalid property value");
+            }
+        }
+    }
+    return out;
 }
