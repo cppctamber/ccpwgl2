@@ -8,7 +8,7 @@ import {
     Tw2BatchAccumulator2,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess
+    Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter
 } from "core";
 import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
 
@@ -16,7 +16,7 @@ import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
 @meta.type("EveSpaceScene")
 export class EveSpaceScene extends meta.Model
 {
-    
+
     @meta.struct("Tw2Effect")
     backgroundEffect = null;
 
@@ -52,10 +52,10 @@ export class EveSpaceScene extends meta.Model
 
     @meta.color
     fogColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
-    
+
     @meta.float
     contrast = 1;
-    
+
     @meta.float
     nebulaIntensity = 1;
 
@@ -64,17 +64,18 @@ export class EveSpaceScene extends meta.Model
 
     @meta.path
     @meta.isPrivate
+    @meta.todo("Check case on this property")
     postProcessPath = "";
 
-    @meta.struct("Tw2PostProcess")
-    postProcess = null;
+    @meta.struct()
+    postprocess = null;
 
     @meta.color
     sunDiffuseColor = vec4.fromValues(1, 1, 1, 1);
-    
+
     @meta.vector3
     sunDirection = vec3.fromValues(1, -1, 1);
-    
+
     @meta.boolean
     display = true;
 
@@ -100,7 +101,7 @@ export class EveSpaceScene extends meta.Model
     @meta.color
     @meta.noLongerSupported
     ambientColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
-    
+
     @meta.float
     @meta.noLongerSupported
     fogEnd = 0;
@@ -164,7 +165,7 @@ export class EveSpaceScene extends meta.Model
     @meta.notImplemented
     @meta.boolean
     useSunDiffuseColorWithDynamicLights = false;
-    
+
     //  ------------------[ ccpwgl ]--------------------
 
     @meta.uint
@@ -185,6 +186,7 @@ export class EveSpaceScene extends meta.Model
     @meta.plain
     visible = {
         backgroundObjects: true,
+        backgroundTexture: true,
         clearColor: true,
         debug: false,
         distortion: true,
@@ -203,13 +205,13 @@ export class EveSpaceScene extends meta.Model
     };
 
     @meta.color
-    selectorColor=vec4.fromValues(0.5,0.3,0.0,1.0);
+    selectorColor = vec4.fromValues(0.5, 0.3, 0.0, 1.0);
 
     _shadowView = mat4.create();
     _shadowProjection = mat4.create();
     _shadowViewProjection = mat4.create();
-    _shadowCameraRange = vec4.fromValues(1,0,0,0);
-    _shadowMapSettings = vec4.fromValues(1,1,0,0);
+    _shadowCameraRange = vec4.fromValues(1, 0, 0, 0);
+    _shadowMapSettings = vec4.fromValues(1, 1, 0, 0);
     _shadowMapRes = null;
 
     _localTransform = mat4.create();
@@ -220,6 +222,9 @@ export class EveSpaceScene extends meta.Model
 
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
+
+    _perFrameCustomSceneVSData = Tw2RawData.from(EveSpaceScene.customScenePerFrameData.vs);
+    _perFrameCustomScenePSData = Tw2RawData.from(EveSpaceScene.customScenePerFrameData.ps);
 
     _envMapRes = null;
     _envMap1Res = null;
@@ -232,6 +237,24 @@ export class EveSpaceScene extends meta.Model
     _distortionAccumulator = null;
     _distortionPostProcess = null;
     _depthRendered = false;
+
+    /**
+     * Alias for postprocess
+     * @returns {Tw2PostProcess|Tr2PostProcess}
+     */
+    get postProcess()
+    {
+        return this.postprocess;
+    }
+
+    /**
+     * Alias for postprocess
+     * @param @returns {Tw2PostProcess|Tr2PostProcess} obj
+     */
+    set postProcess(obj)
+    {
+        this.postprocess = obj;
+    }
 
     /**
      * Constructor
@@ -339,7 +362,7 @@ export class EveSpaceScene extends meta.Model
      */
     async SetPostProcess(path = "", awaitCompleted)
     {
-        return EveSpaceScene.HandleResource(this, path, "postProcessPath", "postProcess", awaitCompleted);
+        return EveSpaceScene.HandleResource(this, path, "postProcessPath", "postprocess", awaitCompleted);
     }
 
     /**
@@ -410,7 +433,7 @@ export class EveSpaceScene extends meta.Model
         }
 
         if (this.backgroundEffect) this.backgroundEffect.GetResources(out);
-        if (this.postProcess) this.postProcess.GetResources(out);
+        if (this.postprocess) this.postprocess.GetResources(out);
         if (this.starfield) this.starfield.GetResources(out);
 
         if (this._envMapRes && !out.includes(this._envMapRes)) out.push(this._envMapRes);
@@ -500,9 +523,9 @@ export class EveSpaceScene extends meta.Model
 
         this.PerChildObject("Update", dt);
 
-        if (this.postProcess)
+        if (this.postprocess)
         {
-            this.postProcess.Update(dt, this);
+            this.postprocess.Update(dt, this);
         }
     }
 
@@ -529,12 +552,13 @@ export class EveSpaceScene extends meta.Model
      */
     RenderBackgroundEffect(force = this.backgroundRenderingEnabled)
     {
-        if (this.backgroundEffect)
+        if (this.backgroundEffect && this.backgroundEffect.IsGood())
         {
-            if (force)
+            if (force || !this.backgroundEffect._hasRenderedOnce)
             {
                 device.SetStandardStates(device.RM_FULLSCREEN);
                 device.RenderCameraSpaceQuad(this.backgroundEffect);
+                this.backgroundEffect._hasRenderedOnce = true;
             }
             else
             {
@@ -548,7 +572,7 @@ export class EveSpaceScene extends meta.Model
      * @param {Number} dt
      * @param {Tw2BatchAccumulator} [accumulator=this._accumulator]
      */
-    RenderPlanets(dt, accumulator=this._accumulator)
+    RenderPlanets(dt, accumulator = this._accumulator)
     {
         if (!this.planets.length) return;
 
@@ -604,6 +628,28 @@ export class EveSpaceScene extends meta.Model
         this._accumulator.Clear();
 
         this.ApplyPerFrameData();
+
+
+        if (this.backgroundTexturePath && this.visible.backgroundTexture)
+        {
+            if (!this._backgroundTexture)
+            {
+                this._backgroundTexture = new Tw2TextureParameter("BackgroundTexture", this.backgroundTexturePath);
+            }
+            else if (this._backgroundTexture.resourcePath !== this.backgroundTexturePath)
+            {
+                this._backgroundTexture.SetValue(this.backgroundTexturePath);
+            }
+
+            if (this._backgroundTexture.IsGood())
+            {
+                tw2.gl.disable(tw2.gl.DEPTH_TEST);
+                tw2.device.RenderTexture(this._backgroundTexture.textureRes);
+                tw2.gl.clear(tw2.gl.DEPTH_BUFFER_BIT);
+                tw2.gl.enable(tw2.gl.DEPTH_TEST);
+            }
+        }
+
         this.RenderBackgroundEffect(this.backgroundRenderingEnabled);
 
         if (show.planets)
@@ -706,14 +752,23 @@ export class EveSpaceScene extends meta.Model
             this._customPass(dt, this);
         }
 
-        if (this.postProcess)
+        if (this.postprocess)
         {
-            this.postProcess.Render(dt);
+            this.postprocess.Render(dt);
         }
 
-        this.RenderDepth();
-        this.RenderDistortion();
+        this.RenderDepth(dt);
+        this.RenderDistortion(dt);
+
     }
+
+    @meta.boolean
+    normalCalculation = true;
+
+    _backgroundTexture = null;
+    
+    @meta.path
+    backgroundTexturePath = "";
 
     /**
      * Renders depth
@@ -723,9 +778,8 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDepth(dt, force)
     {
-        this._depthRendered = false;
 
-        if (!this.depthCalculation && !force)
+        if (!force && !this.depthCalculation || this._depthRendered)
         {
             return false;
         }
@@ -750,26 +804,65 @@ export class EveSpaceScene extends meta.Model
             this._internalRenderTarget.Create(tw2.width, tw2.height, this.depthPrecision);
         }
 
-        if (this.visible.objects)
-        {
-            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_DEPTH, "Main");
-            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
-        }
+        const { gl } = device;
 
-        if (this.visible.backgroundObjects)
+        // Todo: Include planets
+        let depthTexture;
+
+        if (this.normalCalculation)
         {
-            this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
-            this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
+            if (this.visible.objects) this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Normal");
+            if (this.visible.backgroundObjects) this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Normal");
+
+            depthTexture = tw2.GetVariable("EveSpaceSceneNormalMap");
+            if (!depthTexture.textureRes)
+            {
+                const res = new Tw2TextureRes();
+                res.suppressLogging = true;
+                res.Attach(gl.createTexture());
+                depthTexture.AttachTextureRes(res);
+            }
+        }
+        else
+        {
+            if (this.visible.objects)
+            {
+                this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_DEPTH, "Main");
+                this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
+            }
+
+            if (this.visible.backgroundObjects)
+            {
+                this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
+                this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Depth");
+            }
         }
 
         this._internalRenderTarget.SetCallUnset(() =>
         {
             tw2.ClearBufferBits(true, true, true);
             this._depthAccumulator.Render();
+            this._depthRendered = true;
+
+            if (depthTexture)
+            {
+                // Copy the results to the global depth texture
+                gl.bindTexture(gl.TEXTURE_2D, depthTexture.textureRes.texture);
+                gl.copyTexImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    device.alphaBlendBackBuffer ? gl.RGBA : gl.RGB,
+                    0,
+                    0,
+                    device.viewportWidth,
+                    device.viewportHeight,
+                    0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+
         });
 
-        this._depthRendered = true;
-        return true;
+        return this._depthRendered;
     }
 
     /**
@@ -867,6 +960,9 @@ export class EveSpaceScene extends meta.Model
         d.perFrameVSData = vs;
         d.perFramePSData = ps;
 
+        d.perFrameCustomSceneVSData = this._perFrameCustomSceneVSData;
+        d.perFrameCustomScenePSData = this._perFrameCustomScenePSData;
+
         // Sun direction
         vec3.transformMat4(sunDir, this.sunDirection, this._localTransform);
         vec3.negate(sunDir, sunDir);
@@ -893,6 +989,8 @@ export class EveSpaceScene extends meta.Model
      */
     ApplyPerFrameData()
     {
+        this._depthRendered = false;
+
         this.UpdateViewProjectionFrameData();
 
         const
@@ -1019,15 +1117,38 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Per frame custom scene data
+     * @type {{ps , vs}}
+     */
+    static customScenePerFrameData = {
+        vs: [
+            [ "LightSourceWorld0", [ 1000, 100, 100, 1 ] ],
+            [ "LightSourceWorld1", [ -1000, -100, -100, 1 ] ],
+            [ "LightSourceWorld2", [ 0, -1000, 100, 1 ] ],
+            [ "LightSourceWorld3", [ 0, 1000, -100, 1 ] ]
+        ],
+        ps: [
+            [ "LightSource0Diffuse", [ 1, 0, 0, 0 ] ],
+            [ "LightSource0Specular", 4 ],
+            [ "LightSource1Diffuse", [ 0, 1, 0, 0 ] ],
+            [ "LightSource1Specular", 4 ],
+            [ "LightSource2Diffuse", [ 0, 0, 1, 0 ] ],
+            [ "LightSource2Specular", 4 ],
+            [ "LightSource3Diffuse", [ 1, 1, 0, 0 ] ],
+            [ "LightSource3Specular", 4 ],
+        ]
+    };
+
+    /**
      * Per frame data
      * @type {*}
      */
     static perFrameData = {
         ps: [
-            [ "ViewInverseTransposeMat", 16 ],
-            [ "ViewMat", 16 ],
-            [ "EnvMapRotationMat", 16 ],
-            [ "SunData.DirWorld", 4 ],
+            [ "ViewInverseTransposeMat", 16 ], // 0, 1, 2, 3
+            [ "ViewMat", 16 ],                 // 4, 5, 6, 7
+            [ "EnvMapRotationMat", 16 ],       // 8, 9, 10, 11
+            [ "SunData.DirWorld", 4 ],         // 12
             [ "SunData.DiffuseColor", 4 ],
             [ "SceneData.AmbientColor", 3 ],
             [ "SceneData.NebulaIntensity", 1 ],
