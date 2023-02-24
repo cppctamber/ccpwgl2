@@ -21,26 +21,26 @@ export class EveSOFDataPattern extends meta.Model
 
     /**
      * Checks if a pattern projection exists
-     * @param {string} name
+     * @param {string} hullName
      * @returns {boolean}
      */
-    Has(name)
+    Has(hullName)
     {
-        return this.IndexOfProjection(name) !== -1;
+        return this.IndexOfProjection(hullName) !== -1;
     }
 
     /**
      * Gets a pattern projection
-     * @param {String} name
+     * @param {String} hullName
      * @returns {*}
      */
-    Get(name)
+    Get(hullName)
     {
-        const index = this.IndexOfProjection(name);
+        const index = this.IndexOfProjection(hullName);
 
         if (index === -1)
         {
-            throw new ErrSOFProjectionNotFound({ pattern: this.name, projection: name });
+            throw new ErrSOFProjectionNotFound({ pattern: this.name, projection: hullName });
         }
 
         return {
@@ -54,14 +54,14 @@ export class EveSOFDataPattern extends meta.Model
 
     /**
      * Gets the index of a projection
-     * @param {String} name
+     * @param {String} hullName
      * @returns {number}
      */
-    IndexOfProjection(name)
+    IndexOfProjection(hullName)
     {
         for (let i = 0; i < this.projections.length; i++)
         {
-            if (this.projections[i].name.toUpperCase() === name.toUpperCase())
+            if (this.projections[i].name.toUpperCase() === hullName.toUpperCase())
             {
                 return i;
             }
