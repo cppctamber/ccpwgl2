@@ -32,7 +32,7 @@ export class EveSOFDataHullArea extends meta.Model
 
     /**
      * Assigns the object's textures and parameters to an effect config
-     * @param {Object} config={}]
+     * @param {Object} [config={}]
      * @returns {Object} config
      */
     Assign(config = {})
