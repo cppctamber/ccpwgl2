@@ -43,6 +43,11 @@ export class EveSOFDataGenericDecalShader extends meta.Model
             if (this.defaultTextures[i].name === name) return true;
         }
 
+        for (let i = 0; i < this.parentTextures.length; i++)
+        {
+            if (this.parentTextures[i].name === name) return true;
+        }
+
         return false;
     }
 
