@@ -148,7 +148,7 @@ export function hasURLValue(key)
  * @param {Object} [out={}]
  * @returns {{}} out
  */
-export function fromURLIfDefined(src={}, out={})
+export function updateFromURLIfDefined(src={}, out={})
 {
     for (const prop in src)
     {
@@ -157,7 +157,7 @@ export function fromURLIfDefined(src={}, out={})
         // src[prop] = { .... }
         if (isObjectObject(src[prop]))
         {
-            out[prop] = fromURLIfDefined(src[prop], out[prop]);
+            out[prop] = updateFromURLIfDefined(src[prop], out[prop]);
             continue;
         }
 
