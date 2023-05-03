@@ -42,6 +42,9 @@ export class EveSOFDataHull extends meta.Model
     @meta.list("EveSOFDataHullChild")
     children = [];
 
+    @meta.list()
+    childSets = [];
+
     @meta.list("EveSOFDataHullController")
     controllers = [];
 
