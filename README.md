@@ -5,49 +5,9 @@ This version of the library provides partial support for newer ships and reading
 
 The original library can be found here: https://github.com/ccpgames/ccpwgl
 
-Core files
------
-* `dist/ccpwgl_int2.js`      - ccp webgl core library
-* `dist/ccpwgl_int2.min.js`  - minified ccp webgl core library
+Warning
+======
+This library is effectively in maintenance while I figure out how to provide the library without requiring constant maintenance to keep it up to date and supporting the latest eve online clients.
 
-Installation
-------
-1) Install  [Node.js](http://www.nodejs.org) along with the node package manager
-2) Clone `git clone https://github.com/cppctamber/ccpwgl2.git`
-3) Run `npm install` once from your ccpwgl2 folder
-
-Build
------
-* Run `npm run build` to lint, format and build `dist/ccpwgl2_int.js` and `dist/ccpwgl2_int.min.js` 
-
-Demos
------
-* None supplied yet 
-
-
-Registering your custom resource server
-------
-Registering your custom resource server with the library can be done in a few ways:
-
-- Register a custom config object along with your other settings:
-```
-const customConfig = {
-    ...,
-    paths: { cdn: "https://localhost:3000" },
-    ...
-}
-tw2.Register(customConfig);
-```
-
-- Set the path by itself: 
-```
-tw2.SetPath("cdn", "https://localhost:3000")
-```
-
-```
-{\__/}
-(x n x)
- .⊂  \ 
-```
 
 
