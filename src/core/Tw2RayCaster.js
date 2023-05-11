@@ -12,8 +12,6 @@ let
     sph3_0,
     box3_0,
     vec3_0,
-    lne3_0,
-    tri3_0,
     mat4_0,
     pln_0;
 
@@ -35,6 +33,8 @@ export class Tw2RayCaster
     nearSquared = 0;
     farSquared = Infinity;
 
+    bones = null;
+
     _pixelPosition = vec2.create();
     _viewport = vec4.create();
 
@@ -50,10 +50,12 @@ export class Tw2RayCaster
 
     /**
      * Updates the ray caster from an event
+     * Todo: Add options
      * @param {MouseEvent} event
      * @param {HTMLElement} [element=event.target]
+     * @param {Object} [options]
      */
-    UpdateFromEvent(event, element=event.target)
+    UpdateFromEvent(event, element=event.target, options)
     {
         vec2.pixelPositionFromEvent(this._pixelPosition, event, element);
         vec4.set(this._viewport, 0,0, device.viewportWidth, device.viewportHeight);
