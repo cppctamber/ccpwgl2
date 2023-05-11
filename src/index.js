@@ -7,6 +7,6 @@ import { tw2 } from "./global";
 
 tw2.Register(config);
 
-export { tiny } from "./wrapped";
+//export { tiny } from "./wrapped";
 export { tw2, tw2 as CCPWGL };
 
