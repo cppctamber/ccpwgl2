@@ -78,6 +78,7 @@ export class EveSOFDataGenericShader extends meta.Model
      */
     Assign(config = {}, provided = {})
     {
+        //config.effectFilePath = this.shader;
         config.textures = this.AssignTextures(config.textures, provided.textures);
         config.parameters = this.AssignParameters(config.parameters, provided.parameters);
         return config;

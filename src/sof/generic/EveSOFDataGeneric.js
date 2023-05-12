@@ -83,6 +83,20 @@ export class EveSOFDataGeneric extends meta.Model
             // TODO: Figure out default parameters and textures for unpacked banner shader
         }
 
+
+        // Temporary fix for decals with incorrect parent texture names
+        const NormalMap = new EveSOFDataGeneric();
+        NormalMap.str = "NormalMap";
+
+        const AoMap = new EveSOFDataGeneric();
+        AoMap.str = "AoMap";
+
+        for (let i = 0; i < this.decalShaders.length; i++)
+        {
+            const hasNoMap = this.decalShaders[i].parentTextures.find(x => x.str === "NoMap");
+            if (hasNoMap) this.decalShaders[i].parentTextures.push(NormalMap, AoMap);
+        }
+
         this.useUnpackedTextures = true;
     }
 

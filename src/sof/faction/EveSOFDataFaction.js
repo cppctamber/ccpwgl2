@@ -1,6 +1,5 @@
 import { meta } from "utils";
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
-import resPathInserts from "./resPathInsert.json";
 import { tw2 } from "global/tw2";
 
 
@@ -55,7 +54,6 @@ export class EveSOFDataFaction extends meta.Model
 
     @meta.struct("EveSOFDataFactionVisibilityGroupSet")
     visibilityGroupSet = null;
-
 
     /**
      * Checks if a color usage Type exists
@@ -227,50 +225,6 @@ export class EveSOFDataFaction extends meta.Model
     }
 
     /**
-     * Gets a resPathInsert
-     * @param {String} hull
-     * @param {String} path
-     * @param {String} [resPathInsert]
-     * @returns {string}
-     */
-    GetResPathInsert(hull, path, resPathInsert)
-    {
-        if (!resPathInsert || resPathInsert.toUpperCase() === "NONE" || resPathInsert.toUpperCase() === "BASE")
-        {
-            if (!this.resPathInsert)
-            {
-                return path;
-            }
-
-            resPathInsert = this.resPathInsert;
-        }
-
-        if (!EveSOFDataFaction.IsValidResPathInsert(hull, resPathInsert))
-        {
-            tw2.Debug({
-                name: "Space object factory",
-                message: `ResPathInsert not found for hull ${hull}: ${resPathInsert}`
-            });
-
-            return path;
-        }
-
-        let index = path.lastIndexOf("/");
-        if (index >= 0)
-        {
-            path = path.substr(0, index + 1) + resPathInsert + "/" + path.substr(index + 1);
-        }
-
-        index = path.lastIndexOf("_");
-        if (index >= 0)
-        {
-            path = path.substr(0, index) + "_" + resPathInsert + path.substr(index);
-        }
-
-        return path;
-    }
-
-    /**
      * Finds a plane set group by it's index
      * @param {Number} groupIndex
      * @returns {EveSOFDataFactionPlaneSet}
@@ -302,32 +256,5 @@ export class EveSOFDataFaction extends meta.Model
         }
     }
 
-    /**
-     * Checks if a res path insert is valid
-     * @param {String} hull
-     * @param {String} resPathInsert
-     * @return {Boolean}
-     */
-    static IsValidResPathInsert(hull, resPathInsert)
-    {
-        const inserts = resPathInserts[hull];
-        return inserts ? inserts.includes(resPathInsert) : false;
-    }
-
-    /**
-     * Gets a hull's res path inserts
-     * @param {String} hull
-     * @return {Array<String>}
-     */
-    static GetHullResPathInserts(hull)
-    {
-        return resPathInserts[hull] ? Array.from(resPathInserts[hull]) : [];
-    }
-
-    /**
-     * Res path inserts
-     * @type {null|Object}
-     */
-    static resPathInserts = null;
 }
 

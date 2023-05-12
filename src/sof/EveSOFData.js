@@ -8,7 +8,7 @@ import {
     isArray,
     get,
     findElementByPropertyValue,
-    isObjectObject
+    isObjectObject, isString, isObject, isNumber
 } from "utils";
 
 import {
@@ -74,12 +74,44 @@ export class EveSOFData extends meta.Model
      */
     _options = {
 
+        // Simplifies mesh parameters
+        simplifyParameters: true,
+
         // Allow reverting to old spotlight sets
         useSpotlightPool: true,
 
         devColor: [ 0, 0, 0, 0 ],
 
-        bannerGeometryRes: null,
+        banners: {
+            defaultBorderMap: "cdn:/texture/global/white.png",
+            defaultImageMap: "cdn:/texture/global/white.png",
+            defaultHorizontalImageMap: "cdn:/texture/global/white.png",
+            defaultVerticalImageMap: "cdn:/texture/global/white.png",
+            Type: {
+                SQUARE: 0,
+                VERTICAL: 1,
+                HORIZONTAL: 2
+            },
+            Usage: {
+                "ALLIANCE_LOGO": 0, // Corp Logo, Vertical Banner, Hologram
+                "CORP_LOGO": 1,
+                "OWNER_LOGO": 2,
+                //UNKNOWN
+                "BANNER": 4, // Horizontal Banner, Vertical Banner
+                "TARGET_SYSTEM_ALLIANCE_LOGO": 5,
+                "TARGET_SYSTEM_ALLIANCE_BANNER": 6,
+                //UNKNOWN
+                "TARGET_SYSTEM_STATUS_1": 8,
+                "TARGET_SYSTEM_STATUS_2": 9,
+                "TARGET_SYSTEM_STATUS_3": 10,
+                "TARGET_SYSTEM_STATUS_4": 11,
+                "TARGET_SYSTEM_STATUS_5": 12,
+                "TRAVEL_WARNING_NOTICE": 13,
+                "CURRENT_SYSTEM_ALLIANCE_LOGO": 14,
+                "CURRENT_SYSTEM_ALLIANCE_BANNER": 15,
+                "PORTRAIT": 18
+            }
+        },
 
         wreckArea: {
             fallbackGeneralGlowColor: [ 67, 9, 0, 1 ],
@@ -93,6 +125,7 @@ export class EveSOFData extends meta.Model
         },
 
         multiplier: {
+            spriteScale: 0.5,
             // Boost lights
             generalGlowColor: [ 10, 10, 10, 1 ],
             generalHeatGlowColor: [ 100, 100, 100, 1 ],
@@ -142,8 +175,6 @@ export class EveSOFData extends meta.Model
             hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.dds",
             hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.dds",
             hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.dds",
-            bannerImage: "",
-            bannerBorder: ""
         },
 
         decalUsage: [
@@ -154,12 +185,30 @@ export class EveSOFData extends meta.Model
             "decalglowcylindricv5.fx", // Unknown - GLOW ROTATION -
             "decalglowv5.fx",
             "decalv5.fx"
-        ]
+        ],
+
+        resFiles: null,
+        resPathInserts: {},
+        modelDirectory: "cdn:/dx9/model/"
 
     };
 
+    static TrigBalls = {
+        "tgb01_t1": [ 0, -57.502, 151.432, 2.5, 2.5, 2.5 ],
+        "tgbc01_t1": [ 0, 0, -22.64, 1.5, 1.5, 1.5 ],
+        "tgc01": [ 0, -4.1, -0.278, .8, .8, .8 ],
+        "tgc02_t1": [ 0, -17.35, 125.826, .8, .8, .8 ],
+        "tgde01": [ 0, 1.85, 0, .4, .4, .4 ],
+        "tgdn01": [ 0, 47.343, 421.454, 6, 6, 6 ],
+        "tgf01": [ 0, -3.969, -0.633, .25, .25, .25 ],
+        "tgi1": [ 0, 37.754, -110.305, 1, 1, 1 ],
+        "tgi2": [ 0, 37.754, -110.305, 1, 1, 1 ],
+        "tgi3": [ 0, 37.754, -110.305, 1, 1, 1 ],
+    };
+
+
     /**
-     * Creates a triglavian ball child container
+     * Creates a Triglavian ball child container
      * @param {vec3|Array} translation
      * @param {vec3|Array} scaling
      * @returns {EveChildContainer}
@@ -231,18 +280,197 @@ export class EveSOFData extends meta.Model
         return container;
     };
 
+    /**
+     * Creates a banner
+     * Temporary
+     * @param {Object} options
+     * @param {Object} [options.textures]
+     * @param {Object} [options.parameters]
+     * @param {vec3} [options.scaling]
+     * @param {vec3} [options.position]
+     * @param {quat} [options.rotation]
+     * @returns {EveBanner}
+     */
+    CreateBanner(options = {})
+    {
+        const {
+            textures = {},
+            parameters = {},
+            scaling,
+            position,
+            rotation
+        } = options;
+
+        if (!parameters.BaseColor) parameters.BaseColor = [ 0, 0, 0, 1 ];
+
+        const banner = EveBanner.from({ scaling, position, rotation });
+        banner.effect.SetValues({ textures, parameters });
+        return banner;
+    }
+
+    /**
+     * Checks if a respathinsert is valid for a hull
+     * @param {String} hull
+     * @param {String} resPathInsert
+     * @returns {boolean}
+     */
+    IsValidHullResPathInsert(hull, resPathInsert)
+    {
+        resPathInsert = resPathInsert ? resPathInsert.toLowerCase() : "";
+        if (!resPathInsert || resPathInsert === "none" || resPathInsert === "base") return true;
+        return this.GetHullResPathInserts(hull).includes(resPathInsert);
+    }
+
+    /**
+     * Gets hull res path inserts for a hull
+     * @param {EveSOFDataHull|String} hull
+     * @returns {Array<String>}
+     */
+    GetHullResPathInserts(hull)
+    {
+        hull = isString(hull) ? this.GetHull(hull) : hull;
+
+        // Cache the hull's respathinserts
+        if (!this._options.resPathInserts[hull.name])
+        {
+            const
+                resFiles = this.GetResFiles(),
+                rootDirectory = `${this._options.modelDirectory}${hull.description}`,
+                hullFiles = resFiles.filter(x => x.indexOf(rootDirectory) === 0 && EveSOFData.IsResPathInsertCheckRequired(x));
+
+            this._options.resPathInserts[hull.name] = hullFiles
+                .reduce((acc, cur) =>
+                {
+                    cur = cur.replace(rootDirectory, "");
+                    const split = cur.split("/");
+                    let faction = split[0] || split[1];
+                    if (faction.includes(".")) faction = null;
+                    if (faction && !acc.includes(faction)) acc.push(faction);
+                    return acc;
+                }, [])
+                .sort((a, b) => a.localeCompare(b));
+        }
+
+
+        return this._options.resPathInserts[hull.name];
+    }
+
+    /**
+     * Gets horizontal banner resource paths
+     * @returns {Array<String>}
+     */
+    GetHorizontalBannerResPaths()
+    {
+        if (!this._options.resources || !this._options.resources.horizontalBanners)
+        {
+            this._options.resources = this._options.resources || {};
+            const resFileIndex = this.GetResFiles();
+            this._options.resources.horizontalBanners = resFileIndex
+                .filter(x => x.includes("texture/sprite/banners/") && x.includes(".png"))
+                .sort((a, b) => a.localeCompare(b));
+        }
+        return this._options.resources.horizontalBanners;
+    }
+
+    /**
+     * Gets billboard resource paths
+     * @returns {Array<String>}
+     */
+    GetBillboardResPaths()
+    {
+        if (!this._options.resources || !this._options.resources.billboards)
+        {
+            this._options.resources = this._options.resources || {};
+            const resFileIndex = this.GetResFiles();
+            this._options.resources.billboards = resFileIndex.index
+                .filter(x => x.includes("video/billboards") === 0)
+                .sort((a, b) => a.localeCompare(b));
+        }
+        return this._options.resources.billboards;
+    }
+
+    /**
+     * Temporary
+     * @returns {Object}
+     */
+    GetResFiles()
+    {
+        if (!this._options.resFiles) throw new Error("Resfiles not provided");
+        return this._options.resFiles;
+    }
+
+    /**
+     * Gets a res path insert
+     * @param {EveSOFDataHull|String} hull
+     * @param {EveSOFDataFaction|String} faction
+     * @param {String} originalFileName
+     * @param {String} resPathInsert
+     */
+    UpdateResPathInsert(hull, faction, originalFileName, resPathInsert)
+    {
+        if (!originalFileName) return "";
+
+        // Normalize strings
+        originalFileName = originalFileName.toLowerCase();
+        resPathInsert = resPathInsert ? resPathInsert.toLowerCase() : "";
+
+        // Normalize sof objects
+        hull = isString(hull) ? this.GetHull(hull) : hull;
+        faction = isString(faction) ? this.GetFaction(faction) : faction;
+
+        // Use the base texture (assumes that is what was passed in)
+        if (resPathInsert === "base")
+        {
+            // Assumes the base file
+            return originalFileName;
+        }
+
+        // Fall back to the default
+        if (!resPathInsert || resPathInsert === "none")
+        {
+            resPathInsert = faction.resPathInsert;
+        }
+
+        if (!resPathInsert)
+        {
+            return originalFileName;
+        }
+
+        // Try to find a respathinsert version
+        const resFiles = this.GetResFiles();
+
+        let path = originalFileName.toLowerCase();
+        let index = path.lastIndexOf("/");
+        if (index >= 0) path = path.substr(0, index + 1) + resPathInsert + "/" + path.substr(index + 1);
+        index = path.lastIndexOf("_");
+        if (index >= 0) path = path.substr(0, index) + "_" + resPathInsert + path.substr(index);
+        if (resFiles.includes(path.split(":/")[1]) || resFiles.includes(path)) return path;
+
+        // Extra check for faction ships
+        if (hull.name.includes("_fn") && !resPathInsert)
+        {
+            let nonFaction = originalFileName.replace("_fn", "_t1");
+            if (resFiles.includes(nonFaction.split(":/")[1]) || resFiles.includes(nonFaction)) return nonFaction;
+        }
+
+        // Fallback to the original file name
+        return originalFileName;
+    }
+
+    /**
+     * Registers options
+     * @param {Object} options
+     */
+    Register(options)
+    {
+        if (options) Object.assign(this._options, options);
+    }
 
     /**
      * Initializes the sof data
-     * @param {Object}  options
      */
-    Initialize(options)
+    Initialize()
     {
-        if (options)
-        {
-            Object.assign(this._options, options);
-        }
-
         const { effect, effectPath, texturePath } = this._options;
 
         if (!effect.sprite)
@@ -253,50 +481,6 @@ export class EveSOFData extends meta.Model
                 parameters: {
                     MainIntensity: 1,
                     GradientMap: texturePath.whiteSharp
-                }
-            });
-        }
-
-        if (!effect.banner)
-        {
-            effect.banner = Tw2Effect.from({
-                name: "Shared banner effect",
-                effectFilePath: effectPath.banner,
-                autoParameter: true,
-                parameters: {
-                    // TODO: Figure out defaults
-                    Layer1Transform: [
-                        1.5, // Scale U
-                        1.5, // Scale V
-                        0.0, // Offset U
-                        0.0  // Offset V
-                    ],
-                    Layer2Transform: [
-                        1.0,
-                        1.0,
-                        0.0,
-                        0.0
-                    ],
-                    Layer1Scroll: [
-                        0.1,// Scroll speed U
-                        0.1,// Scroll speed V
-                        0.1,// Scroll offset U
-                        0.1 // Scroll offset U
-                    ],
-                    Layer2Scroll: [
-                        0.2,
-                        0.2,
-                        0.0,
-                        0.0
-                    ],
-                    BaseColor: [ 1.388235330581665, 1.4980392456054688, 1.7882353067398071, 1 ]
-                },
-                textures: {
-                    BorderMap: texturePath.bannerBorder,
-                    ImageMap: texturePath.bannerImage,
-                    Layer1Map: texturePath.hologramNoise,
-                    Layer2Map: texturePath.hologramPulse,
-                    MaskMap: texturePath.hologramInterlace
                 }
             });
         }
@@ -342,7 +526,6 @@ export class EveSOFData extends meta.Model
                 }
             }
         }
-
     }
 
     /**
@@ -373,17 +556,6 @@ export class EveSOFData extends meta.Model
     HasHull(name)
     {
         return !!findElementByPropertyValue(this.hull, "name", name);
-    }
-
-    /**
-     * Gets a hull's res path inserts
-     * @param {String} hull
-     * @return {Array<String>}
-     */
-    GetHullResPathInserts(hull)
-    {
-        this.GetHull(hull);
-        return EveSOFDataFaction.GetHullResPathInserts(hull);
     }
 
     /**
@@ -577,6 +749,7 @@ export class EveSOFData extends meta.Model
 
     /**
      * Parses a dna string into  a dna object
+     * TODO: Remove defaults from here
      * @param {String} dna
      * @returns {Object}
      */
@@ -619,9 +792,16 @@ export class EveSOFData extends meta.Model
             for (let i = 0; i < m.length; i++)
             {
                 this.generic.GetMaterialPrefix(i + 1); // off by one
-                if (m[i] && m[i].toUpperCase() !== "NONE")
+                if (m[i] && m[i] !== "none")
                 {
-                    area[`material${i + 1}`] = this.GetMaterial(m[i]).name;
+                    try
+                    {
+                        area[`material${i + 1}`] = this.GetMaterial(m[i]).name;
+                    }
+                    catch(err)
+                    {
+                        console.dir({ err, m, i });
+                    }
                 }
             }
         }
@@ -629,18 +809,19 @@ export class EveSOFData extends meta.Model
         const p = commands["PATTERN"];
         if (p)
         {
-            pattern = !p[0] || p[0].toUpperCase() === "NONE" ? null : this.GetHullPattern(hull.name, p[0]);
+            pattern = p[0] && p[0] !== "none" ? this.GetHullPattern(hull.name, p[0]) : null;
 
             for (let i = 1; i < p.length; i++)
             {
                 this.generic.GetPatternMaterialPrefix(i);
-                if (p[i] && p[i].toUpperCase() !== "NONE")
+                if (p[i] && p[i] !== "none")
                 {
                     area[`patternMaterial${i}`] = this.GetMaterial(p[i]).name;
                 }
             }
         }
 
+        // Why are the faction defaults in here?
         if (!pattern)
         {
             if (faction.defaultPattern)
@@ -653,16 +834,22 @@ export class EveSOFData extends meta.Model
             }
         }
 
+        // Why are the faction defaults in here?
         if (!area.patternMaterial1 && faction.defaultPatternLayer1MaterialName)
         {
             area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
         }
 
         resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
-        if (!EveSOFDataFaction.IsValidResPathInsert(hull.name, resPathInsert))
+
+        // Validate the res path insert
+        if (!this.IsValidHullResPathInsert(hull, resPathInsert))
         {
-            resPathInsert = "none";
-            //throw new ErrSOFResPathInsertInvalid({ hull: hull.name, resPathInsert });
+            tw2.Warning({
+                type: "Space Object Factory",
+                message: `Invalid respathinsert ${resPathInsert} for hull ${hull}`
+            });
+            //resPathInsert = "none";
         }
 
         return { hull, faction, race, area, resPathInsert, pattern, dna };
@@ -674,23 +861,23 @@ export class EveSOFData extends meta.Model
      * @return {string}
      * @constructor
      */
-    ToDNA(options)
+    StringifyDNA(options)
     {
         let { hull, faction, race, area, resPathInsert, pattern } = options;
 
-        if (isObjectObject(hull)) hull = hull.name;
-        if (isObjectObject(faction)) faction = faction.name;
-        if (isObjectObject(race)) race = race.name;
-        if (isObjectObject(pattern)) pattern = pattern.name;
+        if (isObject(hull)) hull = hull.name;
+        if (isObject(faction)) faction = faction.name;
+        if (isObject(race)) race = race.name;
+        if (isObject(pattern)) pattern = pattern.name;
 
         if (!hull || !faction || !race)
         {
             throw new ReferenceError("Invalid dna object");
         }
 
-        let str = `${hull}:${faction}:${race}`.toLowerCase();
+        let str = `${hull}:${faction}:${race}`;
 
-        if (resPathInsert) str += ":respathinsert?resPathInsert";
+        if (resPathInsert) str += `:respathinsert?${resPathInsert}`;
 
         if (!area)
         {
@@ -699,8 +886,8 @@ export class EveSOFData extends meta.Model
             area.material2 = options.material2;
             area.material3 = options.material3;
             area.material4 = options.material4;
-            area.patternMaterial1 = options.material5;
-            area.patternMaterial2 = options.material6;
+            area.patternMaterial1 = options.patternMaterial1;
+            area.patternMaterial2 = options.patternMaterial2;
         }
 
         if (area)
@@ -719,9 +906,8 @@ export class EveSOFData extends meta.Model
             }
         }
 
-        return str;
+        return str.toLowerCase();
     }
-
 
     /**
      *  TEMPORARY
@@ -904,47 +1090,10 @@ export class EveSOFData extends meta.Model
         this.SetupControllers(...args);
 
         // Temporarily add triglavian balls
-        if (sof.hull.name.indexOf("tg") === 0)
+        if (sof.hull.name.indexOf("tg") === 0 && !obj.effectChildren.find(x => x.name === "TempTrigSphereContainer"))
         {
-            if (!obj.effectChildren.find(x => x.name === "TempTrigSphereContainer"))
-            {
-                let trigBall;
-                switch (sof.hull.name)
-                {
-                    case "tgb01_t1":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -57.502, 151.432 ], [ 2.5, 2.5, 2.5 ]);
-                        break;
-
-                    case "tgbc01_t1":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, 0, -22.64 ], [ 1.5, 1.5, 1.5 ]);
-                        break;
-
-                    case "tgc01_t1":
-                    case "tgc01_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -4.1, -0.278 ], [ .8, .8, .8 ]);
-                        break;
-
-                    case "tgc02_t1":
-                    case "tgc02_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -17.35, 125.826 ], [ .8, .8, .8 ]);
-                        break;
-
-                    case "tgde01_t1":
-                    case "tgde01_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, 1.85, 0 ], [ .4, .4, .4 ]);
-                        break;
-
-                    case "tgdn01_t1":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, 47.343, 421.454 ], [ 6, 6, 6 ]);
-                        break;
-
-                    case "tgf01_t1":
-                    case "tgf01_t2":
-                        trigBall = EveSOFData.createTriglavianBall([ 0, -3.969, -0.633 ], [ .25, .25, .25 ]);
-                        break;
-                }
-                if (trigBall) obj.effectChildren.push(trigBall);
-            }
+            const cfg = this.TrigBalls[sof.hull.name.split("_")[0]];
+            if (cfg) obj.effectChildren.push(EveSOFData.createTriglavianBall([ cfg[0], cfg[1], cfg[2] ], [ cfg[3], cfg[4], cfg[5] ]));
         }
 
         return obj;
@@ -998,7 +1147,7 @@ export class EveSOFData extends meta.Model
         {
             mask.display = false;
             mask.materialIndex = 0;
-            mask.parameters.PatternMaskMap.SetValue("cdn:/texture/global/black.png");
+            mask.parameters.PatternMaskMap.SetValue("cdn:/texture/projection/solid_white.png");
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
 
@@ -1089,14 +1238,26 @@ export class EveSOFData extends meta.Model
          */
     }
 
+    static assignMaterialNamesIfUsable(dest, src)
+    {
+        [ "material1", "material2", "material3", "material4", "patternMaterial1", "patternMaterial2" ].forEach(key =>
+        {
+            if (src[key] && src[key] !== "none" && src[key] !== "base")
+            {
+                dest[key] = src[key];
+            }
+        });
+    }
+
     /**
      *
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
      * @param {Object} [options={}]
+     * @param {Boolean} [opaqueAreasOnly]
      */
-    static async SetupMesh(data, obj, sof, options)
+    static async SetupMesh(data, obj, sof, options, opaqueAreasOnly)
     {
         const
             mesh = obj.mesh = obj.mesh || new Tw2Mesh(),
@@ -1107,6 +1268,8 @@ export class EveSOFData extends meta.Model
         if (!resPath) throw new TypeError("Hull has no geometry");
 
         await mesh.FetchGeometryResPath(resPath);
+
+        let cachedParameters = {};
 
         /**
          * Setup a mesh area
@@ -1149,24 +1312,21 @@ export class EveSOFData extends meta.Model
                 const areaData = sof.faction.AssignAreaType(areaType);
 
                 // Temporarily keep track of the hull area nane
-                const { name: areaName, colorType } = sof.faction.GetAreaType(areaType, 0);
-                area._areaName = areaName;
-                area._colorType = colorType;
-
-                console.dir({ areaData, area: sof.area });
+                area._areaData = Object.assign({}, areaData);
+                this.assignMaterialNamesIfUsable(area._areaData, sof.area);
 
                 // Get custom values
                 Object.assign(areaData, sof.area);
+
                 data.AssignMaterialParameters(areaData, eff.parameters);
 
                 // Handle res path inserts
-                if (eff.textures.PmdgMap)
+                for (const key in eff.textures)
                 {
-                    eff.textures.PmdgMap = sof.faction.GetResPathInsert(sof.hull.name, eff.textures.PmdgMap, sof.resPathInsert);
-                }
-                else if (eff.textures.MaterialMap)
-                {
-                    eff.textures.MaterialMap = sof.faction.GetResPathInsert(sof.hull.name, eff.textures.MaterialMap, sof.resPathInsert);
+                    if (eff.textures.hasOwnProperty(key) && EveSOFData.IsResPathInsertCheckRequired(eff.textures[key]))
+                    {
+                        eff.textures[key] = data.UpdateResPathInsert(sof.hull, sof.faction, eff.textures[key], sof.resPathInsert);
+                    }
                 }
 
                 // Handle heat colour
@@ -1278,10 +1438,40 @@ export class EveSOFData extends meta.Model
 
                 // Add white ambient occlusion texture if an AO map doesn't exist and is required
                 const params = area.effect.GetTextures();
-                if (params.AlbedoMap)
+                if (params.AoMap)
                 {
-                    // Generate Albedo Map
                     area.effect.SetTextures({ AoMap: params.AoMap || "cdn:/graphics/shared_texture/global/white.png" });
+                }
+
+                // Reuse parameters that are the same
+                if (options.simplifyParameters)
+                {
+                    let updated = false;
+                    for (const name in area.effect.parameters)
+                    {
+                        if (area.effect.parameters.hasOwnProperty(name))
+                        {
+                            if (!cachedParameters[areaType])
+                            {
+                                cachedParameters[areaType] = {};
+                            }
+
+                            if (!cachedParameters[areaType][name])
+                            {
+                                cachedParameters[areaType][name] = area.effect.parameters[name];
+                            }
+                            else if (cachedParameters[areaType][name].EqualsValue(area.effect.parameters[name].GetValue()))
+                            {
+                                area.effect.parameters[name] = cachedParameters[areaType][name];
+                                updated = true;
+                            }
+                        }
+                    }
+
+                    if (updated)
+                    {
+                        area.effect.BindParameters();
+                    }
                 }
 
             });
@@ -1292,14 +1482,19 @@ export class EveSOFData extends meta.Model
                 obj.mesh[areasName].splice(obj.mesh[areasName].indexOf(area), 1);
             });
 
+            obj.mesh[areasName].sort((a, b) => a.index - b.index);
         };
 
-        setupMeshArea("additiveAreas");
-        setupMeshArea("decalAreas");
-        setupMeshArea("depthAreas");
-        setupMeshArea("distortionAreas");
         setupMeshArea("opaqueAreas");
-        setupMeshArea("transparentAreas");
+
+        if (!opaqueAreasOnly)
+        {
+            setupMeshArea("additiveAreas");
+            setupMeshArea("decalAreas");
+            setupMeshArea("depthAreas");
+            setupMeshArea("distortionAreas");
+            setupMeshArea("transparentAreas");
+        }
 
         obj.mesh = mesh;
     }
@@ -1318,8 +1513,18 @@ export class EveSOFData extends meta.Model
         return found[0] ? found[0] : null;
     }
 
+    /**
+     * Sets up banners
+     * @param data
+     * @param obj
+     * @param sof
+     * @param options
+     * @constructor
+     */
     static SetupBanners(data, obj, sof, options)
     {
+        const { banners: opt } = options;
+
         const
             { banners = [] } = sof.hull,
             arr = obj.attachments,
@@ -1328,21 +1533,18 @@ export class EveSOFData extends meta.Model
         banners.forEach(srcSet =>
         {
             let set = this.FindAttachmentByConstructorAndName(arr, EveBanner, srcSet.name);
-
             if (set)
             {
                 toRemove.splice(toRemove.indexOf(set), 1);
-            }
-            else
-            {
-                set = new EveBanner();
-                arr.push(set);
+                return;
             }
 
+            set = new EveBanner();
+            arr.push(set);
+
+            // Setup base banner
             const { lightOverride, ...options } = srcSet;
-
             set.SetValues(options);
-
             if (lightOverride)
             {
                 tw2.Debug({
@@ -1351,15 +1553,70 @@ export class EveSOFData extends meta.Model
                 });
             }
 
-            // Setup effect
-            const { bannerShader } = data.generic;
-            if (!set.effect) set.effect = Tw2Effect.from(bannerShader.shader);
-            set.effect.SetTextures(bannerShader.AssignTextures());
-            set.effect.SetParameters(bannerShader.AssignParameters());
-            set.effect.SetParameters({ BaseColor: [ 0,0,0,1 ] });
+            let ImageMap = set.effect ? set.imageMapResPath : "";
+            if (!ImageMap)
+            {
+                let x = Math.round(srcSet.scaling[0]),
+                    y = Math.round(srcSet.scaling[1]),
+                    type = 0;
 
-            // Todo
-            set._geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
+                if (x < y) type = 1;
+                if (x > y) type = 2;
+
+                switch (srcSet.usage)
+                {
+                    case opt.Usage.ALLIANCE_LOGO:
+                        if (type === 1) ImageMap = opt.defaultVerticalImageMap;
+                        else if (type === 2) ImageMap = opt.defaultHorizontalImageMap;
+                        else ImageMap = data.generic.resPathDefaultAlliance;
+                        break;
+
+                    case opt.Usage.BANNER:
+                        ImageMap = type === 1
+                            ? opt.defaultVerticalImageMap
+                            : opt.defaultHorizontalImageMap;
+                        break;
+
+                    case opt.Usage.CORP_LOGO:
+                        ImageMap = data.generic.resPathDefaultCorp;
+                        break;
+
+                    case opt.Usage.PORTRAIT:
+                        ImageMap = data.generic.resPathDefaultCeo;
+                        break;
+                }
+
+                // Turn off until explicitly turned on?
+                set.display = false;
+            }
+
+            if (ImageMap)
+            {
+                set.effect.SetParameters({ ImageMap });
+            }
+
+            /*
+            // Setup effect
+            if (!set.effect) set.effect = new Tw2Effect();
+            const
+                { bannerShader } = data.generic,
+                effectSettings = {
+                    effectFilePath: bannerShader.shader,
+                    autoParameter: true,
+                    parameters: {
+                        BaseColor: [ 0, 0, 0, 1 ]
+                    },
+                    textures: {
+                        BorderMap: opt.defaultBorderMap,
+                        ImageMap
+                    }
+                };
+
+            bannerShader.Assign(effectSettings);
+            set.effect.SetValues(effectSettings);
+             */
+
+            set.UpdateValues();
 
         });
 
@@ -1416,7 +1673,10 @@ export class EveSOFData extends meta.Model
             {
                 const color = vec4.fromValues(1, 1, 1, 1);
                 sof.faction.GetColorType(srcItem.colorType, color, 0);
-                set.items.push(EveSpriteSetItem.from(Object.assign({}, srcItem, { color })));
+                const spriteItem = EveSpriteSetItem.from(Object.assign({}, srcItem, { color }));
+                spriteItem.minScale *= options.multiplier.spriteScale;
+                spriteItem.maxScale *= options.multiplier.spriteScale;
+                set.items.push(spriteItem);
             });
 
             set.Initialize();
@@ -1691,42 +1951,21 @@ export class EveSOFData extends meta.Model
     {
         const { hull, faction } = sof;
 
-        // Assumes the first one is correct...
-        // Todo: Get from the sof object?
-        function getParameter(name)
-        {
-            const result = obj.mesh.FindParameters(name);
-            return result[0] ? result[0].resourcePath : "";
-        }
-
         // Get this properly...
-        const
-            provided = {
-                textures: {
-                    PmdgMap: getParameter("PmdgMap"),
-                    NoMap: getParameter("NoMap"),
-                    NormalMap: getParameter("NormalMap"),
-                    GlowMap: getParameter("GlowMap"),
-                    AoMap: getParameter("AoMap"),
-                    AlbedoMap: getParameter("AlbedoMap"),
-                    RoughnessMap: getParameter("RoughnessMap"),
-                    DirtMap: getParameter("DirtMap"),
-                    MaterialMap: getParameter("MaterialMap"),
-                    PatternMaskMap: getParameter("PatternMaskMap"),
-                }
-            },
-            toRemove = Array.from(obj.decals);
+        const toRemove = Array.from(obj.decals);
 
         hull.decalSets.forEach(srcSet =>
         {
             const setVisible = !srcSet.visibilityGroup || faction.HasVisibilityGroup(srcSet.visibilityGroup);
+            console.log(srcSet.name, "not visible");
+            if (!setVisible) return;
 
             srcSet.items.forEach(srcItem =>
             {
                 const name = `${srcSet.name}_${srcItem.name}`;
                 let decal = this.FindAttachmentByConstructorAndName(obj.decals, EveSpaceObjectDecal, name);
 
-                const { visibilityGroup, logoType, usage, glowColorType } = srcItem;
+                const { visibilityGroup, logoType, usage, glowColorType, meshIndex } = srcItem;
 
                 // Check visibility
                 let itemVisible = !visibilityGroup || faction.HasVisibilityGroup(visibilityGroup);
@@ -1738,7 +1977,12 @@ export class EveSOFData extends meta.Model
                     });
                     itemVisible = false;
                 }
-                if (!setVisible || !itemVisible) return;
+
+                if (!itemVisible)
+                {
+                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible");
+                    return;
+                }
 
                 if (decal)
                 {
@@ -1751,10 +1995,10 @@ export class EveSOFData extends meta.Model
                 }
 
                 // How to tell what kind of effect to load??
-                const effect = data.generic.GetShaderConfig(options.decalUsage[usage], false, provided);
-
-                // Ensure there is always an ao map
-                if (!effect.parameters.AoMap) effect.parameters.AoMap = "cdn:/texture/global/white.png";
+                const
+                    mesh = obj.mesh.opaqueAreas.find(x => x.meshIndex === meshIndex),
+                    provided = { textures: mesh ? mesh.effect.GetTextures() : {} },
+                    effect = data.generic.GetShaderConfig(options.decalUsage[usage], false, provided);
 
                 switch (usage)
                 {
@@ -1790,8 +2034,7 @@ export class EveSOFData extends meta.Model
                 //  Temporary
                 decal.decalEffect = decal.decalEffect || new Tw2Effect();
                 decal.decalEffect.SetValues(effect);
-
-
+                decal.decalEffect.PopulateParameters();
 
                 // Keep track of the original logo type
                 decal._logoType = logoType;
@@ -2043,15 +2286,16 @@ export class EveSOFData extends meta.Model
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-
+        console.log("Creating instanced meshes");
         // TODO: Update if there are any changes
         if (obj.mesh && obj.mesh.constructor === Tw2InstancedMesh)
         {
-            return;
+            //return;
         }
 
         if (!sof.hull.instancedMeshes || !sof.hull.instancedMeshes.length)
         {
+            console.log("No instanced meshes found...");
             return;
         }
 
@@ -2070,6 +2314,8 @@ export class EveSOFData extends meta.Model
         const container = new EveChildContainer();
         container.name = "Instanced meshes";
         obj.effectChildren.push(container);
+
+        console.dir(container);
 
         for (let h = 0; h < instancedMeshes.length; h++)
         {
@@ -2349,6 +2595,16 @@ export class EveSOFData extends meta.Model
 
         const effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
 
+        // Remove all children except temp trig spheres
+        for (let i = 0; i < obj.effectChildren.length; i++)
+        {
+            if (obj.effectChildren.name !== "TempTrigSphereContainer")
+            {
+                obj.effectChildren.splice(i, 1);
+                i--;
+            }
+        }
+
         for (let i = 0; i < effects.length; i++)
         {
             const effect = await tw2.Fetch(effects[i].redFilePath);
@@ -2480,9 +2736,10 @@ export class EveSOFData extends meta.Model
      * @param pFactionName
      * @param tFactionName
      * @param parentParameters
+     * @param rerouteMaterials
      * @returns {Promise<void>}
      */
-    async SetupTurretMaterial(turretSet, pFactionName, tFactionName, parentParameters)
+    async SetupTurretMaterial(turretSet, pFactionName, tFactionName, parentParameters, rerouteMaterials)
     {
         const
             pFaction = pFactionName ? this.GetFaction(pFactionName) : null,
@@ -2550,12 +2807,20 @@ export class EveSOFData extends meta.Model
                 break;
         }
 
-        const {
+        let {
             materialUsageMtl1 = 0,
             materialUsageMtl2 = 1,
             materialUsageMtl3 = 2,
             materialUsageMtl4 = 3
         } = pFaction || {};
+
+        if (rerouteMaterials)
+        {
+            if (rerouteMaterials[0] !== -1) materialUsageMtl1 = rerouteMaterials[0];
+            if (rerouteMaterials[1] !== -1) materialUsageMtl2 = rerouteMaterials[1];
+            if (rerouteMaterials[2] !== -1) materialUsageMtl3 = rerouteMaterials[2];
+            if (rerouteMaterials[3] !== -1) materialUsageMtl4 = rerouteMaterials[3];
+        }
 
         if (!useParent)
         {
@@ -2619,269 +2884,41 @@ export class EveSOFData extends meta.Model
 
     }
 
-}
-
-@meta.type("Tw2ParameterSet")
-class Tw2ParameterSet extends meta.Model
-{
-
-    @meta.string
-    name = "";
-
-    @meta.struct()
-    parameter = null;
-
-    @meta.list()
-    items = [];
-
-    get isUnused()
-    {
-        return !!this.items.length;
-    }
-
-    constructor(name)
-    {
-        super();
-        this.name = name;
-    }
-
-    Empty(opt)
-    {
-        let removed = this.items.splice(0);
-        if (removed.length)
-        {
-            if (!opt || !opt.skipEvent) this.EmitEvent("removed", this, removed);
-            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
-        }
-    }
-
-    SetValue(value, opt)
-    {
-        this.parameter.SetValue(value, opt);
-        for (let i = 0; i < this.items.length; i++)
-        {
-            this.items[i].SetValue(value, opt);
-        }
-    }
-
-    GetValue(out)
-    {
-        return this.parameter.GetValue(out);
-    }
-
-    SetIndexValue(index, value, opt)
-    {
-        if (this.parameter.SetIndexValue)
-        {
-            this.parameter.SetIndexValue(index, value, opt);
-            for (let i = 0; i < this.items.length; i++)
-            {
-                this.items[i].SetIndexValue(index, value, opt);
-            }
-            return true;
-        }
-        throw new Error("SetIndexValue not supported");
-    }
-
-    GetIndexValue(index)
-    {
-        if (this.parameter.GetIndexValue)
-        {
-            return this.parameter.GetIndexValue(index);
-        }
-        throw new Error("SetIndexValue not supported");
-    }
-
-    Add(param, opt)
-    {
-        let updateValues = true;
-        if (!this.parameter)
-        {
-            this.parameter = new param.constructor(param.GetValue());
-            updateValues = false;
-            this.parameter.OnEvent("modified", () =>
-            {
-                this.EmitEvent("modified", this);
-            });
-        }
-        else if (param.constructor !== this.parameter.constructor)
-        {
-            throw new Error(`Invalid parameter constructor '${param.constructor.name}', expected '${this.parameter.constructor.name}'`);
-        }
-
-        if (this.items.includes(param)) return false;
-
-        if (updateValues) param.SetValue(this.parameter.GetValue());
-        this.items.push(param);
-
-        if (!opt || !opt.skipEvent) this.EmitEvent("added", this, param);
-        if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
-
-        return true;
-    }
-
-}
-
-@meta.type("Tw2ParameterGroup")
-class Tw2ParameterGroup extends meta.Model
-{
-    @meta.string
-    name = "";
-
-    @meta.list()
-    items = [];
-
-    get isUnused()
-    {
-        for (let i = 0; i < this.items.length; i++)
-        {
-            if (!this.items.isUnused)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+    /**
+     * List of texture codes that could possibly be swapped out for different factions
+     */
+    static resFileResPathInsertSuffixes = [
+        "pmdg",
+        "ar",
+        "no",
+        "a",  // albedo
+        "o",  // occlusion (no longer required)
+        "m",  // material
+        "m2", // material 2
+        "p3", // paint mask
+        "r",  // roughness
+        "g",  // glow mask
+        "d",  // dirt mask
+        "n",  // normal
+    ];
 
     /**
-     * Fires when a group is modified
-     * @param {Tw2ParameterSet} set
-     * @private
+     * Checks if a res path insert check is required
+     * @param {String} path
+     * @returns {boolean}
      */
-    _onParameterSetModified = set =>
+    static IsResPathInsertCheckRequired(path = "")
     {
-        this.EmitEvent("modified", this, set);
-    };
+        path = path.toLowerCase();
+        const index = path.lastIndexOf("_") + 1;
+        if (!index) return false;
 
-    constructor(name)
-    {
-        super();
-        if (!name) throw new Error("name must be defined");
-        this.name = name;
-    }
-
-    Empty(opt)
-    {
-        for (let i = 0; i < this.items.length; i++)
-        {
-            this.items[i].Empty(opt);
-        }
-    }
-
-    Add(param, opt)
-    {
-        let found = this.items.find(x => x.name === param.name);
-        if (!found)
-        {
-            found = new Tw2ParameterSet(param.name);
-            found.OnEvent("modified", this._onParameterSetModified);
-            this.items.push(found);
-            if (!opt || !opt.skipEvent) this.EmitEvent("added", this, found);
-            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
-        }
-        found.Add(param);
-        return found;
-    }
-
-    RemoveUnused(opt)
-    {
-        const removed = [];
-        for (let i = 0; i < this.items.length; i++)
-        {
-            if (this.items[i].isUnused)
-            {
-                const [ item ] = this.items.splice(i, 1);
-                removed.push(item);
-                item.Destroy(opt);
-                i--;
-            }
-        }
-
-        if (removed.length)
-        {
-            if (!opt || !opt.skipEvent) this.EmitEvent("removed", this, removed);
-            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
-        }
-
-        return this.isUnused;
-    }
-}
-
-@meta.type("Tw2ParameterGroups")
-class Tw2ParameterGroups extends meta.Model
-{
-
-    @meta.list()
-    groups = [];
-
-    /**
-     * Fires when a parameter group is modified
-     * @param {Tw2ParameterGroup} group
-     * @private
-     */
-    _onParameterGroupModified = group =>
-    {
-        this.EmitEvent("modified", this, group);
-    };
-
-    Empty(opt)
-    {
-        for (let i = 0; i < this.groups.length; i++)
-        {
-            this.groups[i].Empty(opt);
-        }
-    }
-
-    GetGroup(name)
-    {
-        let found = this.groups.find(x => x.name === name);
-        if (!found)
-        {
-            found = new Tw2ParameterGroup(name);
-            this.groups.push(found);
-            this.EmitEvent("added", this, found);
-            found.OnEvent("modified", this._onParameterGroupModified);
-        }
-        return found;
-    }
-
-    AddFromAreaEffect(sofAreaName, effect)
-    {
-        const { parameters } = effect;
-        const group = this.GetGroup(sofAreaName);
-        for (const key in parameters)
-        {
-            if (parameters.hasOwnProperty(key))
-            {
-                group.Add(parameters[key]);
-            }
-        }
-    }
-
-    RemoveUnused(opt)
-    {
-        let removed = [];
-        for (let i = 0; i < this.groups.length; i++)
-        {
-            if (this.groups[i].RemoveUnused({ skipEvent: true, skipUpdate: true }))
-            {
-                const [ group ] = this.groups.splice(i, 1);
-                removed.push(group);
-                group.Destroy(opt);
-                i--;
-            }
-        }
-
-        if (removed.length)
-        {
-            if (!opt || !opt.skipEvent) this.EmitEvent("removed", this, removed);
-            if (!opt || !opt.skipUpdate) this.UpdateValues(opt);
-        }
-
-        return !!this.groups.length;
+        const suffix = path.substring(index).split(".")[0];
+        return this.resFileResPathInsertSuffixes.includes(suffix);
     }
 
 }
+
 
 /**
  * Fires when a sof hull is not found

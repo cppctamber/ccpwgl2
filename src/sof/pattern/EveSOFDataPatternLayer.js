@@ -30,7 +30,76 @@ export class EveSOFDataPatternLayer extends meta.Model
     textureName = "";
 
     @meta.path
-    textureResFilePath = "";
+    textureResFilePath = EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
+
+    /**
+     * Constructor
+     * @param {String} name
+     */
+    constructor(name="")
+    {
+        super();
+        this.textureName = name;
+    }
+
+    /**
+     * Empties the pattern layer
+     * @param {Object} opt
+     */
+    Empty()
+    {
+        this.isTargetMtl1 = false;
+        this.isTargetMtl2 = false;
+        this.isTargetMtl3 = false;
+        this.isTargetMtl4 = false;
+        this.materialSource = 0;
+        this.projectionTypeU = 0;
+        this.projectionTypeV = 0;
+        this.textureResFilePath = this.constructor.EMPTY_TEXTURE_RES_FILE_PATH;
+    }
+
+    /**
+     * Sets data from a texture parameter and optional sampler override
+     * @param {Tw2TextureParameter} textureParameter
+     * @param {Tw2SamplerOverride} [samplerOverride]
+     */
+    SetFromTexture(textureParameter, samplerOverride)
+    {
+        this.projectionTypeU = 0;
+        this.projectionTypeV = 0;
+        this.textureResFilePath = textureParameter.GetValue() || this.constructor.EMPTY_TEXTURE_RES_FILE_PATH;
+
+        if (!samplerOverride && textureParameter.useAllOverrides)
+        {
+            samplerOverride = textureParameter.overrides;
+        }
+
+        if (samplerOverride)
+        {
+            this.projectionTypeU = this.constructor.FromAddressMode(samplerOverride.addressUMode);
+            this.projectionTypeV = this.constructor.FromAddressMode(samplerOverride.addressVMode);
+        }
+    }
+
+    /**
+     * Sets the pattern layer from a custom mask
+     * @param {EveCustomMask} [customMask]
+     */
+    SetFromCustomMask(customMask)
+    {
+        if (!customMask)
+        {
+            this.Empty();
+            return;
+        }
+
+        this.isTargetMtl1 = !!customMask.targetMaterials[0];
+        this.isTargetMtl2 = !!customMask.targetMaterials[1];
+        this.isTargetMtl3 = !!customMask.targetMaterials[2];
+        this.isTargetMtl4 = !!customMask.targetMaterials[3];
+        this.materialSource = customMask.materialIndex;
+        this.SetFromTexture(customMask.parameters.PatternMaskMap);
+    }
 
     /**
      * Gets an address mode from a projection type
@@ -71,5 +140,11 @@ export class EveSOFDataPatternLayer extends meta.Model
                 return 0;
         }
     }
+
+    /**
+     * Empty texture res file path
+     * @type {string}
+     */
+    static EMPTY_TEXTURE_RES_FILE_PATH = "cdn:/texture/global/black.png";
 
 }
