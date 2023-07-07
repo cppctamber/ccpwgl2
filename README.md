@@ -7,7 +7,7 @@ The original library can be found here: https://github.com/ccpgames/ccpwgl
 
 Warning
 ======
-This library is effectively in maintenance while I figure out how to provide the library without requiring constant maintenance to keep it up to date and supporting the latest eve online clients.
+The resource files required for this library to work are no longer available, RIP.
 
 
 
