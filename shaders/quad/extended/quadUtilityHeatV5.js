@@ -68,6 +68,8 @@ export const quadUtilityHeatV5 = {
                     
                     void main()
                     {
+                        if (int(cb7[1].x)==1) discard;
+                    
                         vec4 v0;
                         vec4 v1;
                         vec4 v2;

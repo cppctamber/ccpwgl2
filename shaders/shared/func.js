@@ -226,3 +226,48 @@ export const standardDerivatives = `
         #endif
 
 `;
+
+export const getWorldEyePositionFromViewMatrix = `
+
+    vec3 getWorldEyePositionFromViewMatrix(mat4 m)
+    {
+        return vec3(m[0].w,m[1].w,m[2].w);
+    }
+    
+`;
+
+export const getWorldEyeDirectionFromViewMatrix = `
+
+    vec3 getWorldEyeDirectionFromViewMatrix(mat4 m)
+    {
+        return vec3(m[0].z,m[1].z,m[2].z);
+    }
+    
+`;
+
+export const getNearPlaneFromProjectionMatrix = `
+
+    float getNearPlaneFromProjectionMatrix(mat4 m)
+    {
+        return m[3][2]/m[2][2];
+    }
+    
+`;
+
+export const getFarPlaneFromProjectionMatrix = `
+
+    float getFarPlaneFromProjectionMatrix(mat4 m)
+    {
+        return m[3][2]/(mat[2][2]+1.0);
+    }
+    
+`;
+
+export const getFieldOfViewFromProjectionMatrix = `
+
+    float getFieldOfViewFromProjectionMatrix(mat4 m)
+    {
+        return 2.0*atan(1.0/m[1][1]);
+    }
+    
+`;

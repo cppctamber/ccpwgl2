@@ -54,6 +54,23 @@ export const G_CAMERA = {
     }
 };
 
+// What is this used for?
+export const G_TRANSPARENT_BACKGROUND = {
+    name: "g_transparent_background",
+    value: [ 0, 0.3, 0, 0 ],
+    isAutoregister: 1,
+    ui: {
+        group: "Global",
+        description: "Transparent background settings",
+        components: [
+            "transparent background",
+            "transparent threshold"
+        ],
+        widget: WidgetType.MIXED,
+        display: 0
+    }
+};
+
 
 /*------------------------------------------------------------------------------------------------- plane ------------*/
 

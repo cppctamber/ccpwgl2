@@ -19,6 +19,7 @@ export const Outline = {
 
 
 export const Mode = {
+    NONE: 0,
     NORMALS: 1,
     BI_TANGENTS: 2,
     TANGENTS: 3,
