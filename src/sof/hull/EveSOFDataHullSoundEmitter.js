@@ -12,6 +12,9 @@ export class EveSOFDataHullSoundEmitter extends meta.Model
     @meta.string
     prefix = "";
 
+    @meta.float
+    attenuationScalingFactor = 0;
+
     @meta.vector3
     position = vec3.create();
 
