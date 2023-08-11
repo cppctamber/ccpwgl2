@@ -2,7 +2,10 @@ import { vec3 } from "../vec3";
 import { vec2 } from "../vec2";
 import { toJSON } from "../vertex";
 
-
+/**
+ * Creates a cylinder
+ * @author Three.js converted
+ **/
 export function createCylinder(options = {})
 {
     let {

@@ -1,7 +1,10 @@
 import { vec2, vec3, num } from "math";
 import { toJSON } from "math/vertex";
 
-
+/**
+ * Creates a lathe
+ * @author Three.js converted
+ **/
 export function createLathe(options)
 {
     let {

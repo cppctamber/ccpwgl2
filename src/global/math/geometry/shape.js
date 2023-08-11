@@ -2,7 +2,10 @@ import { toArray } from "utils";
 import { isShapeClockWise, triangulateShape } from "./helpers/misc";
 import { toJSON } from "../vertex";
 
-
+/**
+ * Creates a shape
+ * @author Three.js converted
+ **/
 export function createShape(shapes)
 {
     shapes = toArray(shapes);
