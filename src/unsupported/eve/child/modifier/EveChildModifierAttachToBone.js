@@ -19,12 +19,12 @@ export class EveChildModifierAttachToBone extends EveChildModifier
      */
     Modify(parent, perObjectData)
     {
-        if (this.boneIndex >= 0)
+        if (this.boneIndex > -1 && parent.boneIndex !== this.boneIndex)
         {
+            if (!parent._boneTransform) parent._boneTransform = mat4.create();
             const bones = perObjectData.vs.Get("JointMat");
-            const boneMat4 = mat4.fromJointMatIndex(EveChildModifier.global.mat4_0, bones, this.boneIndex);
-            mat4.multiply(parent.localTransform, boneMat4, parent.localTransform);
-            return true;
+            mat4.fromJointMatIndex(parent._boneTransform, bones, this.boneIndex);
+            parent._hasBone = true;
         }
         return false;
     }

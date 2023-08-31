@@ -85,7 +85,7 @@ export class Tr2CurveScalar extends Tw2Curve
     timeOffset = 0;
 
     @meta.float
-    timeScale = 0;
+    timeScale = 1;
 
     @meta.float
     @meta.isPrivate

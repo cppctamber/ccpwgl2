@@ -9,3 +9,4 @@ export * from "./pi";
 export * from "./ui";
 
 export * from "./EveLineContainer";
+export * from "./EveSpaceObjectFxAttributes";

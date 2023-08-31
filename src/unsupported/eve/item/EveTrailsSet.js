@@ -1,35 +1,10 @@
 import { meta } from "utils";
-import { tw2 } from "global";
-import { Tw2RenderBatch } from "core/batch";
+import { resMan, tw2 } from "global";
+import { Tw2GeometryBatch } from "core/batch";
+import { Tw2Effect, Tw2PerObjectData } from "core";
+import { RM_ADDITIVE } from "constant";
+import { mat4, vec3, vec4 } from "math";
 
-
-@meta.notImplemented
-export class EveTrailSetRenderBatch extends Tw2RenderBatch
-{
-
-    trailsSet = null;
-
-    /**
-     * Commits the batch
-     * @param {String} [technique] - technique name
-     * @returns {Boolean} true if rendered
-     */
-    Commit(technique)
-    {
-        return this.trailsSet.Render(technique);
-    }
-
-    /**
-     * Checks if the render batch supports a technique
-     * @param {String} technique
-     * @returns {boolean}
-     */
-    HasTechnique(technique)
-    {
-        return this.trailsSet && this.trailsSet.effect && this.trailsSet.effect.HasTechnique(technique);
-    }
-
-}
 
 
 @meta.notImplemented
@@ -41,14 +16,33 @@ export class EveTrailsSet extends meta.Model
     effect = null;
 
     @meta.path
-    geometryResPath = "";
+    geometryResPath = EveTrailsSet.defaultGeometryResPath;
 
     @meta.boolean
     display = true;
 
+    _position = vec3.create();
+    _worldPosition = vec3.create();
+    _positionWorldCenter = vec3.create();
+    _dirWorldSizeCylinder = vec3.create();
+    _cylinderCap1 = vec4.create();
+    _cylinderCap2 = vec4.create();
+    _nearPlaneCape = vec4.create();
+    _data = vec4.create();
 
     _geometryRes = null;
+    _vertex = null;
+    _perObjectData = Tw2PerObjectData.from(EveTrailsSet.perObjectData);
+    _geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
 
+    /**
+     * Checks if the trail set is good
+     * @returns {boolean}
+     */
+    IsGood()
+    {
+        return !!(this.effect && this.geometryResource);
+    }
 
     /**
      * Initializes the object
@@ -57,17 +51,13 @@ export class EveTrailsSet extends meta.Model
     {
         if (this.geometryResPath)
         {
-            this._geometryRes = tw2.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+            this._geometryRes = tw2.GetResource(this.geometryResPath);
         }
-    }
 
-    /**
-     * Rebuilds cached data
-     * @param {Tw2GeometryRes} res
-     */
-    OnResPrepared(res)
-    {
-        //TODO: OnResPrepared
+        if (!this.effect)
+        {
+            this.effect = Tw2Effect.from(EveTrailsSet.defaultTrailEffect);
+        }
     }
 
     /**
@@ -90,4 +80,57 @@ export class EveTrailsSet extends meta.Model
         return out;
     }
 
+    /**
+     *
+     * @param mode
+     * @param accumulator
+     * @param perObjectData
+     * @returns {boolean}
+     * @constructor
+     */
+    GetBatches(mode, accumulator, perObjectData)
+    {
+        if (mode !== RM_ADDITIVE || !this.display || !this.IsGood()) return false;
+
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+        this._perObjectData.ps = perObjectData.ps;
+
+        const batch = new Tw2GeometryBatch();
+        batch.renderMode = mode;
+        batch.perObjectData = this._perObjectData;
+        batch.geometryRes = this._geometryResource;
+        batch.meshIx = 0;
+        batch.start = 0;
+        batch.count = this._geometryResource.meshes[0].areas.length;
+        batch.effect = this.effect;
+        accumulator.Commit(batch);
+
+        return true;
+    }
+
+    Render(technique)
+    {
+
+    }
+
+    /**
+     * Default trail effect
+     * @type {string}
+     */
+    static defaultTrailEffect = "cdn:/graphics/effect.gles2/managed/space/booster/volumetrictrails.sm_hi";
+
+    /**
+     * Default geometry res path
+     * @type {string}
+     */
+    static defaultGeometryResPath = "cdn:/dx9/model/ship/booster/volumetrictrail.gr2_json";
+
+    /**
+     * Per Object Data
+     * @type {{ps: [], vs: []}}
+     */
+    static perObjectData = {
+        ps: [],
+        vs: []
+    }
 }

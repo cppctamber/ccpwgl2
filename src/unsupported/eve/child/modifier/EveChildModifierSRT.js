@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, quat } from "math";
+import { vec3, quat, mat4 } from "math";
 import { EveChildModifier } from "./EveChildModifier";
 
 
@@ -16,5 +16,15 @@ export class EveChildModifierSRT extends EveChildModifier
 
     @meta.vector3
     translation = vec3.create();
+
+    /**
+     * Modifies a parent object
+     * @param parent
+     * @param perObjectData
+     */
+    Modify(parent, perObjectData)
+    {
+        mat4.fromRotationTranslationScale(parent.localTransform, this.rotation, this.translation, this.scaling);
+    }
 
 }

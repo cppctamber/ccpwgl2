@@ -55,6 +55,9 @@ export class Tr2PointLight extends meta.Model
     @meta.path
     lightProfilePath = "";
 
+    @meta.string
+    flags = "";
+
     @meta.float
     noiseAmplitude = 0;
 
