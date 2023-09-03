@@ -39,7 +39,10 @@ import {
     PT_TRANSLATION,
     PT_SCALING,
     PT_LOCAL_TRANSFORM,
-    PT_ROTATION_TRANSFORM
+    PT_ROTATION_TRANSFORM,
+    PT_WORLD_TRANSFORM,
+    PT_PARENT_WORLD_TRANSFORM,
+    PT_PARENT_LOCAL_TRANSFORM
 } from "constant";
 
 
@@ -148,6 +151,9 @@ export const translation = create(PT_TRANSLATION);
 export const scaling = create(PT_SCALING);
 export const localTransform = create(PT_LOCAL_TRANSFORM);
 export const rotationTransform = create(PT_ROTATION_TRANSFORM);
+export const worldTransform = create(PT_WORLD_TRANSFORM);
+export const parentWorldTransform = create(PT_PARENT_WORLD_TRANSFORM);
+export const parentLocalTransform = create(PT_PARENT_LOCAL_TRANSFORM);
 
 export const int8Array = create(PT_INT8_ARRAY);
 export const int16Array = create(PT_INT16_ARRAY);

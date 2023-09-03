@@ -40,7 +40,10 @@ import {
     PT_ROTATION_TRANSFORM,
     PT_LOCAL_TRANSFORM,
     PT_TRANSLATION,
-    PT_SCALING
+    PT_SCALING,
+    PT_WORLD_TRANSFORM,
+    PT_PARENT_WORLD_TRANSFORM,
+    PT_PARENT_LOCAL_TRANSFORM
 } from "constant/type";
 
 let Types;
@@ -85,7 +88,10 @@ function getReaderFromType(type)
             [PT_TRANSLATION] : vector3,
             [PT_ROTATION] : vector4,
             [PT_LOCAL_TRANSFORM]: matrix,
-            [PT_ROTATION_TRANSFORM]: matrix
+            [PT_ROTATION_TRANSFORM]: matrix,
+            [PT_WORLD_TRANSFORM]: matrix,
+            [PT_PARENT_WORLD_TRANSFORM]: matrix,
+            [PT_PARENT_LOCAL_TRANSFORM]: matrix
         };
     }
 
@@ -362,7 +368,7 @@ export function float(reader)
 }
 
 /**
- * Reads a ushort
+ * Reads an ushort
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Number}
  */
@@ -372,7 +378,7 @@ export function ushort(reader)
 }
 
 /**
- * Reads a uint
+ * Reads an uint
  * TODO: What to do with the maximum number 4294967295 and 2147483648 ??
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Number}

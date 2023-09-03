@@ -1,3 +1,6 @@
+
+
+
 export const PT_UNKNOWN = 0;
 export const PT_BOOLEAN = 1;
 export const PT_ENUM = 2;
@@ -32,6 +35,9 @@ export const PT_SCALING = 73;
 export const PT_ROTATION = 74;
 export const PT_LOCAL_TRANSFORM = 75;
 export const PT_ROTATION_TRANSFORM = 76;
+export const PT_WORLD_TRANSFORM = 77;
+export const PT_PARENT_WORLD_TRANSFORM = 78;
+export const PT_PARENT_LOCAL_TRANSFORM = 79;
 
 export const PT_UINT8_ARRAY = 81;
 export const PT_UINT8_CLAMPED_ARRAY = 82;
@@ -42,7 +48,6 @@ export const PT_INT16_ARRAY = 86;
 export const PT_INT32_ARRAY = 87;
 export const PT_FLOAT32_ARRAY = 88;
 export const PT_FLOAT64_ARRAY = 89;
-
 
 export const VectorConstructors = {
     [PT_VECTOR2]: Float32Array,
