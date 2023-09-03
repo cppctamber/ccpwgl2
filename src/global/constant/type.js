@@ -71,6 +71,9 @@ export const VectorConstructors = {
     [PT_SCALING]: Float32Array,
     [PT_ROTATION_TRANSFORM]: Float32Array,
     [PT_LOCAL_TRANSFORM]: Float32Array,
+    [PT_WORLD_TRANSFORM]: Float32Array,
+    [PT_PARENT_LOCAL_TRANSFORM]: Float32Array,
+    [PT_PARENT_WORLD_TRANSFORM]: Float32Array
 };
 
 export const VectorLengths = {
