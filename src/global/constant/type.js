@@ -86,6 +86,9 @@ export const VectorLengths = {
     [PT_SCALING]: 3,
     [PT_ROTATION_TRANSFORM]: 16,
     [PT_LOCAL_TRANSFORM]: 16,
+    [PT_WORLD_TRANSFORM]: 16,
+    [PT_PARENT_LOCAL_TRANSFORM]:16,
+    [PT_PARENT_WORLD_TRANSFORM]:16
 };
 
 
