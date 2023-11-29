@@ -179,7 +179,7 @@ export const config = {
         "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
 
         // Local resource server (not provided with this library)
-        "cdn": "http://localhost:3000/"
+        "cdn": "http://localhost:3000/",
 
     },
 
@@ -197,11 +197,15 @@ export const config = {
         "dds": core.Tw2TextureRes,
         "cube": core.Tw2TextureRes,
         "qube": core.Tw2TextureRes,
+        "tga" : core.Tw2TextureRes,
         "mp4": core.Tw2VideoRes,
-        "ogg": core.Tw2VideoRes,
         "webm": core.Tw2VideoRes,
         "black": core.Tw2LoadingObject,
-        "red": core.Tw2LoadingObject
+        "red": core.Tw2LoadingObject,
+        "mp3": core.Tw2AudioRes,
+        "wav": core.Tw2AudioRes,
+        // Assumes audio...
+        "ogg": core.Tw2AudioRes,
     },
 
     constructors: [
@@ -245,8 +249,15 @@ export const config = {
 
         // Custom
         "g_wreckShaderAdjustments": [ 1.1, 3.0, 0.1, 0 ],
-        "g_banner" : [ 1.0, 0.0, 0.0, 0.0 ],
+        "g_banner": [
+            1.0, // Brightness
+            0.0,
+            0.0,
+            0.0
+        ],
+        "g_transparent_background": [ 0, 0.3, 0, 0 ],
         "EveSpaceSceneDepthMap": "",
-        "SelectorColor" : [ 0.5, 0.25, 0.0, 1.0 ]
+        "EveSpaceSceneNormalMap": "",
+        "SelectorColor": [ 0.5, 0.25, 0.0, 1.0 ]
     }
 };
