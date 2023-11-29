@@ -166,30 +166,25 @@ export class Tw2Transform extends meta.Model
 
     /**
      * Offsets the model by its bounds center
+     * @param {vec3} out
      * @param {vec3|Array} [centerOffset] - Optional center offset
-     * @returns {boolean|Tw2Transform}
      */
-    OffsetToBoundsCenter(centerOffset = [ 0, 0, 0 ])
+    GetOffsetFromBoundsCenter(out, centerOffset = [ 0, 0, 0 ])
     {
-        const { vec3_0, mat4_0 } = Tw2Transform.global;
-        const bb = this.GetBoundingBox([]);
-        if (!bb) throw new Error("Bounds not available");
+        const bb = box3.create();
+        // Fallback to mesh bounds
+        if (!this.GetBoundingBox(bb))
+        {
+            const res = this.wrapped.mesh.geometryResource;
+            box3.fromBounds(bb, res.minBounds, res.maxBounds);
+        }
 
-        vec3.set(vec3_0,
+        vec3.set(out,
             -0.5 * (bb[0] + bb[3]) + centerOffset[0],
             -0.5 * (bb[1] + bb[4]) + centerOffset[1],
             -0.5 * (bb[2] + bb[5]) + centerOffset[2]
         );
-
-        // Only set if required
-        if (!vec3.equals(vec3_0, [ 0, 0, 0 ]))
-        {
-            mat4.identity(mat4_0);
-            mat4.translate(mat4_0, mat4_0, vec3_0);
-            this.SetOffsetTransform(mat4_0);
-        }
-
-        return this;
+        return out;
     }
 
     /**
@@ -888,11 +883,13 @@ export class Tw2Transform extends meta.Model
 
         if (flip)
         {
-            mat4.lookAtGL(mat4_0, this.translation, v, vec3.Y_AXIS);
+            mat4.lookAtGLFixed(mat4_0, mat4_0, this.translation, v, vec3.Y_AXIS);
+            //mat4.lookAtGL(mat4_0, this.translation, v, vec3.Y_AXIS);
         }
         else
         {
-            mat4.lookAtGL(mat4_0, v, this.translation, vec3.Y_AXIS);
+            mat4.lookAtGLFixed(mat4_0, mat4_0, v, this.translation, vec3.Y_AXIS);
+            //mat4.lookAtGL(mat4_0, v, this.translation, vec3.Y_AXIS);
         }
 
         mat4.getRotation(this.rotation, mat4_0);
@@ -990,6 +987,19 @@ export class Tw2Transform extends meta.Model
         vec3.transformQuat(vec3_0, axis, this.rotation);
         vec3.scaleAndAdd(this.translation, this.translation, vec3_0, distance);
         this._rebuildLocal = true;
+        return this;
+    }
+
+    /**
+     * Translates the object
+     * @param {vec3} v
+     * @returns {Tw2Transform}
+     */
+    Translate(v)
+    {
+        this.TranslateOnAxis(vec3.X_AXIS, v[0]);
+        this.TranslateOnAxis(vec3.Y_AXIS, v[1]);
+        this.TranslateOnAxis(vec3.Z_AXIS, v[2]);
         return this;
     }
 

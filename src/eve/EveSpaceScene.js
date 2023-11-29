@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, vec4, quat, mat4 } from "math";
+import { vec2, vec3, vec4, quat, mat4 } from "math";
 import {
     Tw2BatchAccumulator,
     Tw2RawData,
@@ -207,10 +207,15 @@ export class EveSpaceScene extends meta.Model
     @meta.color
     selectorColor = vec4.fromValues(0.5, 0.3, 0.0, 1.0);
 
+    @meta.vector2
+    shadowCameraRange = vec2.fromValues(1,0);
+
+    @meta.float
+    shadowLightness = 0;
+
     _shadowView = mat4.create();
     _shadowProjection = mat4.create();
     _shadowViewProjection = mat4.create();
-    _shadowCameraRange = vec4.fromValues(1, 0, 0, 0);
     _shadowMapSettings = vec4.fromValues(1, 1, 0, 0);
     _shadowMapRes = null;
 
@@ -1052,7 +1057,12 @@ export class EveSpaceScene extends meta.Model
         }
 
         ps.Set("ShadowMapSettings", this._shadowMapSettings); // TODO: Identify source of this information
-        ps.Set("ShadowCameraRange", this._shadowCameraRange); // TODO: Identify source of this information
+        ps.Set("ShadowCameraRange", [
+            this.shadowCameraRange[0],
+            this.shadowCameraRange[1],
+            this.shadowLightness,
+            0
+        ]);
 
         ps.Set("EnvMapRotationMat", envMapTransform);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
@@ -1145,10 +1155,10 @@ export class EveSpaceScene extends meta.Model
      */
     static perFrameData = {
         ps: [
-            [ "ViewInverseTransposeMat", 16 ], // 0, 1, 2, 3
-            [ "ViewMat", 16 ],                 // 4, 5, 6, 7
-            [ "EnvMapRotationMat", 16 ],       // 8, 9, 10, 11
-            [ "SunData.DirWorld", 4 ],         // 12
+            [ "ViewInverseTransposeMat", 16 ],
+            [ "ViewMat", 16 ],
+            [ "EnvMapRotationMat", 16 ],
+            [ "SunData.DirWorld", 4 ],
             [ "SunData.DiffuseColor", 4 ],
             [ "SceneData.AmbientColor", 3 ],
             [ "SceneData.NebulaIntensity", 1 ],
@@ -1157,11 +1167,11 @@ export class EveSpaceScene extends meta.Model
             [ "ViewportSize", 2 ],
             [ "TargetResolution", 4 ],
             [ "ShadowMapSettings", 4 ],
-            [ "ShadowCameraRange", 4 ],
+            [ "ShadowCameraRange", 4 ], // shadow camera range, shadow camera range, shadow lightness. unused
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
             [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1
-            [ "Unknown0", 4 ]
+            [ "VolumetricSlices", 4 ]
         ],
         vs: [
             [ "ViewInverseTransposeMat", 16 ],
@@ -1176,7 +1186,7 @@ export class EveSpaceScene extends meta.Model
             [ "FogFactors", 4 ],
             [ "TargetResolution", 4 ],
             [ "ViewportAdjustment", 4 ],
-            [ "MiscSettings", 4 ] // currentTime, 0, viewportWidth, viewportHeight
+            [ "MiscSettings", 4 ] // currentTime, unused, viewportWidth, viewportHeight
         ]
     };
 
