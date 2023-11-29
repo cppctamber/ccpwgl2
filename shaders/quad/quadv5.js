@@ -9,7 +9,6 @@ import { quadExtendedPickingV5, skinnedQuadExtendedPickingV5 } from "./extended/
 import { quadUtilityV5, skinnedQuadUtilityV5 } from "./extended/quadUtilityV5";
 import { quadnormalv5, skinnedQuadNormalV5 } from "./quadnormalv5";
 
-
 export const quadV5 = {
     name: "quadV5",
     replaces: "graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadV5",
@@ -70,7 +69,7 @@ export const quadV5 = {
                 
                     ${ps.header}
                     ${clampToBorder}
-
+  
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
                     varying vec4 texcoord2;
@@ -133,6 +132,7 @@ export const quadV5 = {
                         vec4 c21=vec4(1,2,-1,0);
                         vec4 c22=vec4(-0,-0.333333343,-0.666666687,-1);
                         vec4 c23=vec4(3.19148946,1.03191495,0.5,-0.5);
+                        // c24.xyz = paint mask fresnel color
                         vec4 c24=vec4(0.0383840017,0.0393519998,0.0391650014,9.99999987e+014);
                         vec4 c25=vec4(1.10000002,6,-9.27999973,7);
                         vec4 c26=vec4(1.04166663,0.474999994,0.018229166,0.25);
@@ -141,6 +141,10 @@ export const quadV5 = {
                         vec4 c29=vec4(0.416666657,1.05499995,-0.0549999997,0);
                         vec4 c30=vec4(-1,-2,-3,-4);
                         vec4 c31=vec4(3.14159274,-1e-015,1,1.54499996);
+                        
+                        // Custom
+                        // c32.xyz Dirt Fresnel color
+                        vec4 c32=vec4(0.019,0.017,0.014,1.0);
                         
                         v0=texcoord;
                         v1=texcoord1;
@@ -162,7 +166,7 @@ export const quadV5 = {
                         r0.x=texture2D(s5,v0.xy).x;  
                         
                         // MaterialMap
-                        r0.y=texture2D(s6,v0.xy).x;    
+                        r0.y=texture2D(s6,v0.xy).x; 
                         
                         // DirtMap (Not required here)     
                         r0.z=texture2D(s7,v0.xy).x;   
@@ -436,18 +440,6 @@ export const quadV5 = {
                         r0.xzw=r6.xyz*r0.xxx+r5.xyz;
                         r1.w=clamp(dot(cb2[12].xyz,r10.xyz),0.0, 1.0);
                         
-                        // Dirt test
-                        float unknown1 = r1.w; // Whatever this is? 
-                        vec4 dustDetailNoise = texture2D(s11, v0.xy);
-                        vec3 dirt = texture2D(s7,v0.xy).xxx; 
-                        dustDetailNoise = dustDetailNoise += vec4(0.5);
-                        float unknownShadowValue = 0.0;
-                        float unknown0 = saturate(unknownShadowValue * (-dustDetailNoise.z) + 1.0);
-                        float dirty = dirt.x * dustDetailNoise.w;
-                        dustDetailNoise.xy = (vec2(-unknown0)) + vec2(1,1.54499996);
-                        float unknown3 = min(dustDetailNoise.y, 1.0);
-                        dustDetailNoise = dustDetailNoise.xxxx * vec4(1.04166663,0.474999994,0.018229166,0.25) + r8.xxyz;  
-                        
                         r0.xzw=r0.xzw*r1.www;
                         r0.xzw=r1.xyz*r0.xzw;
                         r1.xyz=max(r0.xzw,c21.www);
@@ -511,11 +503,19 @@ export const quadV5 = {
                         r2.xyz=r2.xyz*c28.www;
                         {
                             bvec3 tmp=greaterThanEqual(r0.xyz,vec3(0.0));
-                            gl_FragData[0].xyz=vec3(tmp.x?r1.x:r2.x,tmp.y?r1.y:r2.y,tmp.z?r1.z:r2.z);
+                            gl_FragData[0].x=tmp.x?r1.x:r2.x;
+                            gl_FragData[0].y=tmp.y?r1.y:r2.y;
+                            gl_FragData[0].z=tmp.z?r1.z:r2.z;
                         }
-                        
-                        // Dirt test
-                        gl_FragData[0].xyz = mix(gl_FragData[0].xyz, dirt * cb4[0].z, dirt / 5.0);
+                      
+                        // Temp dirt
+                        float glow=texture2D(s8,v0.xy).x;
+                        vec4  dirtDetail=vec4(0.5)+texture2D(s11,v0.xy*20.0);
+                        vec3  albedo=texture2D(s2,v0.xy).xyz;
+                        vec3  dirtAlbedoColor=vec3(0.13,0.09,0.1)*albedo*dirtDetail.x;
+                        float dirtMap=texture2D(s7,v0.xy).x;
+                        float dirtLevel=saturate(dirtDetail.w*dirtMap/(1.0-cb4[0].z))*(1.0-glow);
+                        gl_FragData[0].xyz=vec3(pow((1.0-dirtLevel),3.0))*gl_FragData[0].xyz+dirtLevel*dirtAlbedoColor;
                         
                         ${ps.shadowFooter}
                     }
