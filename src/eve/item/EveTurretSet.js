@@ -8,6 +8,23 @@ import {
     Tw2ForwardingRenderBatch
 } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { AudEventKey } from "../../unsupported/curve/curve/AudEventCurve";
+
+
+/**
+ * Temporary class for audio key
+ * Probably should be an audio curve with one key
+ */
+class AudEvent
+{
+    static blackStruct(reader)
+    {
+        return AudEventKey.from({
+            value: reader.ReadU16(),
+            time: reader.ReadF32()
+        });
+    }
+}
 
 /**
  * Todo: update with bone offset?
@@ -25,10 +42,10 @@ export class EveTurretSetItem extends EveObjectSetItem
     @meta.boolean
     canFireWhenHidden = false;
 
-    @meta.vector3
+    @meta.translation
     position = vec3.create();
 
-    @meta.quaternion
+    @meta.rotation
     rotation = quat.create();
 
     _bone = null;
@@ -133,6 +150,9 @@ export class EveTurretSet extends EveObjectSet
     @meta.path
     geometryResPath = "";
 
+    @meta.struct(AudEvent)
+    idleToTargetingMovementAudioEvent = null;
+
     @meta.notImplemented
     @meta.float
     impactSize = 0;
@@ -147,6 +167,10 @@ export class EveTurretSet extends EveObjectSet
     @meta.notImplemented
     @meta.uint
     maxCyclingFirePos = 0;
+
+    @meta.notImplemented
+    @meta.struct()
+    turretMovementObserver = null;
 
     @meta.notImplemented
     @meta.boolean
