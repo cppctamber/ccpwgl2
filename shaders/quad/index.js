@@ -15,3 +15,7 @@ export * from "./fxbannerv5";
 export * from "./quadnormalv5";
 export * from "./asteroidV5";
 export * from "./rockV5";
+export * from "./extended/quadUtilityHeatV5";
+export * from "./extended/quadUtilityV5";
+export * from "./extended/quadUtilitySailsV5";
+export * from "./extended/quadUtilityHeatV5";
