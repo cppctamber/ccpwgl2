@@ -12,7 +12,7 @@ import { vec4 } from "./vec4";
  * Allocates a pooled vec3
  * @returns {Float32Array|vec3}
  */
-vec3.alloc = function()
+vec3.alloc = function ()
 {
     return pool.allocF32(3);
 };
@@ -21,7 +21,7 @@ vec3.alloc = function()
  * Unallocates a pooled vec3
  * @param {vec3|Float32Array} a
  */
-vec3.unalloc = function(a)
+vec3.unalloc = function (a)
 {
     pool.freeType(a);
 };
@@ -53,7 +53,7 @@ vec3.Z_AXIS = vec3.fromValues(0, 0, 1);
  * @param {Number} s
  * @returns {vec3} out
  */
-vec3.addScalar = function(out, a, s)
+vec3.addScalar = function (out, a, s)
 {
     out[0] = a[0] + s;
     out[1] = a[1] + s;
@@ -68,7 +68,7 @@ vec3.addScalar = function(out, a, s)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.degrees = function(out, a)
+vec3.degrees = function (out, a)
 {
     out[0] = num.degrees(a[0]);
     out[1] = num.degrees(a[1]);
@@ -83,7 +83,7 @@ vec3.degrees = function(out, a)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.degreesUnwrapped = function(out, a)
+vec3.degreesUnwrapped = function (out, a)
 {
     out[0] = num.degreesUnwrapped(a[0]);
     out[1] = num.degreesUnwrapped(a[1]);
@@ -98,7 +98,7 @@ vec3.degreesUnwrapped = function(out, a)
  * @param {vec3} b
  * @returns {vec3}
  */
-vec3.direction = function(out, a, b)
+vec3.direction = function (out, a, b)
 {
     vec3.subtract(out, a, b);
     vec3.normalize(out, out);
@@ -112,7 +112,7 @@ vec3.direction = function(out, a, b)
  * @param {quat} q
  * @returns {vec3} out
  */
-vec3.directionFromQuat = function(out, axis, q)
+vec3.directionFromQuat = function (out, axis, q)
 {
     return vec3.transformQuat(out, axis, q);
 };
@@ -140,7 +140,7 @@ vec3.directionFromMat4 = function (out, axis, m)
  * @param {Number} s
  * @returns {vec3} out
  */
-vec3.divideScalar = function(out, a, s)
+vec3.divideScalar = function (out, a, s)
 {
     return vec3.multiplyScalar(out, a, 1 / s);
 };
@@ -166,7 +166,7 @@ vec3.euler.DEFAULT_ORDER = "XYZ";
  * @param {string} [order=vec3.euler.DEFAULT_ORDER]
  * @returns {vec3} out
  */
-vec3.euler.fromQuat = function(out, q, order = vec3.euler.DEFAULT_ORDER)
+vec3.euler.fromQuat = function (out, q, order = vec3.euler.DEFAULT_ORDER)
 {
     // mat4.alloc
     const mat4_0 = mat4.fromQuat(pool.allocF32(16), q);
@@ -184,7 +184,7 @@ vec3.euler.fromQuat = function(out, q, order = vec3.euler.DEFAULT_ORDER)
  * @param {string} [order=vec3.euler.DEFAULT_ORDER]
  * @returns {vec3} out
  */
-vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
+vec3.euler.fromMat4 = function (out, m, order = vec3.euler.DEFAULT_ORDER)
 {
     const
         m11 = m[0], m12 = m[4], m13 = m[8],
@@ -301,7 +301,7 @@ vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
  * @param [order=vec3.euler.DEFAULT_ORDER]
  * @returns {quat} out
  */
-vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
+vec3.euler.getQuat = function (out, euler, order = vec3.euler.DEFAULT_ORDER)
 {
     const
         x = euler[0],
@@ -380,7 +380,7 @@ vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
  * @param {String} [order]
  * @return {quat} out
  */
-vec3.euler.getQuatFromValues = function(out, x, y, z, order)
+vec3.euler.getQuatFromValues = function (out, x, y, z, order)
 {
     const vec3_0 = vec3.set(vec3.alloc(), x, y, z);
     vec3.euler.getQuat(out, vec3_0, order);
@@ -396,7 +396,7 @@ vec3.euler.getQuatFromValues = function(out, x, y, z, order)
  * @param {String} [order]
  * @return {quat} out
  */
-vec3.euler.getQuatFromDegrees = function(out, v, order)
+vec3.euler.getQuatFromDegrees = function (out, v, order)
 {
     const vec3_0 = vec3.radians(vec3.alloc(), v);
     vec3.euler.getQuat(out, vec3_0, order);
@@ -414,7 +414,7 @@ vec3.euler.getQuatFromDegrees = function(out, v, order)
  * @param {String} [order]
  * @return {quat} out
  */
-vec3.euler.getQuatFromDegreeValues = function(out, x, y, z, order)
+vec3.euler.getQuatFromDegreeValues = function (out, x, y, z, order)
 {
     const vec3_0 = vec3.set(vec3.alloc(), x, y, z);
     vec3.radians(vec3_0, vec3_0);
@@ -431,7 +431,7 @@ vec3.euler.getQuatFromDegreeValues = function(out, x, y, z, order)
  * @param {String} [order]
  * @return {vec3} out
  */
-vec3.euler.fromQuatInDegrees = function(out, q, order)
+vec3.euler.fromQuatInDegrees = function (out, q, order)
 {
     vec3.euler.fromQuat(out, q, order);
     return vec3.degrees(out, out);
@@ -448,7 +448,7 @@ vec3.euler.fromQuatInDegrees = function(out, q, order)
  * @param {number} time
  * @returns {vec3} out
  */
-vec3.exponentialDecay = function(out, omega0, torque, I, drag, time)
+vec3.exponentialDecay = function (out, omega0, torque, I, drag, time)
 {
     out[0] = num.exponentialDecay(omega0[0], torque[0], I, drag, time);
     out[1] = num.exponentialDecay(omega0[1], torque[1], I, drag, time);
@@ -460,9 +460,9 @@ vec3.exponentialDecay = function(out, omega0, torque, I, drag, time)
  * Creates a spherical
  * @returns {vec3}
  */
-vec3.createSpherical = function()
+vec3.createSpherical = function ()
 {
-    return vec3.fromValues(0,0,1);
+    return vec3.fromValues(0, 0, 1);
 };
 
 /**
@@ -472,7 +472,7 @@ vec3.createSpherical = function()
  * @param {vec3} [center]  - Optional center
  * @returns {vec3} out     - receiving vec3
  */
-vec3.fromSpherical = function(out, spherical, center)
+vec3.fromSpherical = function (out, spherical, center)
 {
     const
         phi = spherical[0],
@@ -499,7 +499,7 @@ vec3.fromSpherical = function(out, spherical, center)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.getSpherical = function(out, a)
+vec3.getSpherical = function (out, a)
 {
     let phi = 0,
         theta = 0,
@@ -507,7 +507,7 @@ vec3.getSpherical = function(out, a)
 
     if (radius !== 0)
     {
-        phi = Math.acos(num.clamp(a[1]/radius,-1, 1));
+        phi = Math.acos(num.clamp(a[1] / radius, -1, 1));
         theta = Math.atan2(a[0], a[2]);
     }
 
@@ -523,7 +523,7 @@ vec3.getSpherical = function(out, a)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.makeSphericalSafe = function(out, a)
+vec3.makeSphericalSafe = function (out, a)
 {
     out[0] = Math.max(num.EPSILON, Math.min(Math.PI - num.EPSILON, a[0]));
     out[1] = a[1];
@@ -536,7 +536,7 @@ vec3.makeSphericalSafe = function(out, a)
  * @param {vec3} a
  * @returns {boolean}
  */
-vec3.isEmpty = function(a)
+vec3.isEmpty = function (a)
 {
     return a[0] === 0 && a[1] === 0 && a[2] === 0;
 };
@@ -549,7 +549,7 @@ vec3.isEmpty = function(a)
  * @param {Number} s
  * @returns {vec3} out
  */
-vec3.multiplyScalar = function(out, a, s)
+vec3.multiplyScalar = function (out, a, s)
 {
     out[0] = a[0] * s;
     out[1] = a[1] * s;
@@ -565,7 +565,7 @@ vec3.multiplyScalar = function(out, a, s)
  * @param {Number} longitude
  * @returns {vec3} out
  */
-vec3.polarToCartesian = function(out, radius, latitude, longitude)
+vec3.polarToCartesian = function (out, radius, latitude, longitude)
 {
     out[0] = radius * Math.cos(latitude) * Math.sin(longitude);
     out[1] = radius * Math.sin(latitude);
@@ -581,7 +581,7 @@ vec3.polarToCartesian = function(out, radius, latitude, longitude)
  * @param {vec4} viewport      - view port settings (x, y, width, height)
  * @returns {vec3} out         - receiving vec3 (x, y, perspectiveDivide)
  */
-vec3.project = function(out, a, m, viewport)
+vec3.project = function (out, a, m, viewport)
 {
     let x = a[0],
         y = a[1],
@@ -607,7 +607,7 @@ vec3.project = function(out, a, m, viewport)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.radians = function(out, a)
+vec3.radians = function (out, a)
 {
     out[0] = num.radians(a[0]);
     out[1] = num.radians(a[1]);
@@ -622,7 +622,7 @@ vec3.radians = function(out, a)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.radiansUnwrapped = function(out, a)
+vec3.radiansUnwrapped = function (out, a)
 {
     out[0] = num.radiansUnwrapped(a[0]);
     out[1] = num.radiansUnwrapped(a[1]);
@@ -637,7 +637,7 @@ vec3.radiansUnwrapped = function(out, a)
  * @param {Number} s
  * @returns {vec3} out
  */
-vec3.setScalar = function(out, s)
+vec3.setScalar = function (out, s)
 {
     out[0] = s;
     out[1] = s;
@@ -653,7 +653,7 @@ vec3.setScalar = function(out, s)
  * @param {Number} s
  * @returns {vec3} out
  */
-vec3.subtractScalar = function(out, a, s)
+vec3.subtractScalar = function (out, a, s)
 {
     out[0] = a[0] - s;
     out[1] = a[1] - s;
@@ -711,7 +711,7 @@ vec3.unproject = function (out, a, invViewProj, viewport)
  * @param {vec3} a
  * @returns {vec3}
  */
-vec3.unwrapDegrees = function(out, a)
+vec3.unwrapDegrees = function (out, a)
 {
     out[0] = num.unwrapDegrees(a[0]);
     out[1] = num.unwrapDegrees(a[1]);
@@ -726,7 +726,7 @@ vec3.unwrapDegrees = function(out, a)
  * @param {vec3} a
  * @returns {vec3}
  */
-vec3.unwrapRadians = function(out, a)
+vec3.unwrapRadians = function (out, a)
 {
     out[0] = num.unwrapRadians(a[0]);
     out[1] = num.unwrapRadians(a[1]);
@@ -740,7 +740,7 @@ vec3.unwrapRadians = function(out, a)
  * @param {vec3} linear
  * @returns {vec3}
  */
-vec3.toRGB = function(out, linear)
+vec3.toRGB = function (out, linear)
 {
     out[0] = num.colorFromLinear(linear[0]);
     out[1] = num.colorFromLinear(linear[1]);
@@ -755,7 +755,7 @@ vec3.toRGB = function(out, linear)
  * @param {Number} [linearAlpha=1]
  * @return {vec4} out
  */
-vec3.toRGBA = function(out, linear, linearAlpha = 1)
+vec3.toRGBA = function (out, linear, linearAlpha = 1)
 {
     out[0] = num.colorFromLinear(linear[0]);
     out[1] = num.colorFromLinear(linear[1]);
@@ -770,7 +770,7 @@ vec3.toRGBA = function(out, linear, linearAlpha = 1)
  * @param {vec3} rgb
  * @returns {vec3} out
  */
-vec3.fromRGB = function(out, rgb)
+vec3.fromRGB = function (out, rgb)
 {
     out[0] = num.linearFromColor(rgb[0]);
     out[1] = num.linearFromColor(rgb[1]);
@@ -783,7 +783,7 @@ vec3.fromRGB = function(out, rgb)
  * @param {vec4} linear
  * @returns {string} hex value
  */
-vec3.toHex = function(linear)
+vec3.toHex = function (linear)
 {
     return "#" +
         num.hexFromLinear(linear[0]) +
@@ -797,7 +797,7 @@ vec3.toHex = function(linear)
  * @param {Number} [linearAlpha=1]
  * @return {string}
  */
-vec3.toHexA = function(linear, linearAlpha = 1)
+vec3.toHexA = function (linear, linearAlpha = 1)
 {
     return "#" +
         num.hexFromLinear(linear[0]) +
@@ -812,7 +812,7 @@ vec3.toHexA = function(linear, linearAlpha = 1)
  * @param {String} hex
  * @return {vec3} out
  */
-vec3.fromHex = function(out, hex)
+vec3.fromHex = function (out, hex)
 {
     // Set empty color in case of error
     out[0] = 0;
@@ -840,6 +840,69 @@ vec3.fromHex = function(out, hex)
     return out;
 };
 
+
+vec3.linearToHSV = function (out, linear)
+{
+    let rabs,
+        gabs,
+        babs, rr,
+        gg, bb,
+        h,
+        s,
+        v,
+        diff,
+        diffc,
+        percentRoundFn;
+
+    rabs = linear[0];
+    gabs = linear[1];
+    babs = linear[2];
+
+    v = Math.max(rabs, gabs, babs);
+    diff = v - Math.min(rabs, gabs, babs);
+    diffc = c => (v - c) / 6 / diff + 1 / 2;
+    percentRoundFn = num => Math.round(num * 100) / 100;
+
+    if (diff == 0)
+    {
+        h = s = 0;
+    }
+    else
+    {
+        s = diff / v;
+        rr = diffc(rabs);
+        gg = diffc(gabs);
+        bb = diffc(babs);
+
+        if (rabs === v)
+        {
+            h = bb - gg;
+        }
+        else if (gabs === v)
+        {
+            h = (1 / 3) + rr - bb;
+        }
+        else if (babs === v)
+        {
+            h = (2 / 3) + gg - rr;
+        }
+
+        if (h < 0)
+        {
+            h += 1;
+        }
+        else if (h > 1)
+        {
+            h -= 1;
+        }
+    }
+
+    out[0] = Math.round(h * 360);
+    out[1] = percentRoundFn(s * 100);
+    out[2] = percentRoundFn(v * 100);
+    return out;
+};
+
 /**
  * Sets a vec3 from an array with an optional offset
  * @param {vec3} out
@@ -847,7 +910,7 @@ vec3.fromHex = function(out, hex)
  * @param {Number} [offset=0]
  * @returns {vec3} out
  */
-vec3.fromArray = function(out, array, offset=0)
+vec3.fromArray = function (out, array, offset = 0)
 {
     out[0] = array[offset];
     out[1] = array[offset + 1];
@@ -862,7 +925,7 @@ vec3.fromArray = function(out, array, offset=0)
  * @param {Number} index
  * @returns {vec3} out
  */
-vec3.fromMat4Column = function(out, m, index)
+vec3.fromMat4Column = function (out, m, index)
 {
     return vec3.fromArray(out, m, index * 4);
 };
@@ -874,7 +937,7 @@ vec3.fromMat4Column = function(out, m, index)
  * @param {Number} index
  * @returns {vec3} out
  */
-vec3.fromMat3Column = function(out, m, index)
+vec3.fromMat3Column = function (out, m, index)
 {
     return vec3.fromArray(out, m, index * 3);
 };
@@ -885,7 +948,7 @@ vec3.fromMat3Column = function(out, m, index)
  * @param {vec3} srgb
  * @returns {vec3} out
  */
-vec3.fromSRGB = function(out, srgb)
+vec3.fromSRGB = function (out, srgb)
 {
     out[0] = num.linearFromSRGB(srgb[0]);
     out[1] = num.linearFromSRGB(srgb[0]);
@@ -899,7 +962,7 @@ vec3.fromSRGB = function(out, srgb)
  * @param {vec3} srgb
  * @returns {vec3} out
  */
-vec3.toSRGB = function(out, linear)
+vec3.toSRGB = function (out, linear)
 {
     out[0] = num.srgbFromLinear(linear[0]);
     out[1] = num.srgbFromLinear(linear[0]);
@@ -911,7 +974,7 @@ vec3.toSRGB = function(out, linear)
  * Three js
  * Todo: replace with glMatrix
  */
-vec3.applyQuaternion = function(out, a, q)
+vec3.applyQuaternion = function (out, a, q)
 {
 
     const
@@ -928,12 +991,12 @@ vec3.applyQuaternion = function(out, a, q)
         ix = qw * x + qy * z - qz * y,
         iy = qw * y + qz * x - qx * z,
         iz = qw * z + qx * y - qy * x,
-        iw = - qx * x - qy * y - qz * z;
+        iw = -qx * x - qy * y - qz * z;
 
     // calculate result * inverse quat
-    out[0] = ix * qw + iw * - qx + iy * - qz - iz * - qy;
-    out[1] = iy * qw + iw * - qy + iz * - qx - ix * - qz;
-    out[2] = iz * qw + iw * - qz + ix * - qy - iy * - qx;
+    out[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    out[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
     return out;
 };
