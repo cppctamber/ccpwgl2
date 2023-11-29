@@ -201,7 +201,7 @@ export class EveSOFDataFaction extends meta.Model
      * Assigns a logo type
      * @param {Number} type
      * @param {Object} out
-     * @param {Number} fallback
+     * @param {Number} [fallback]
      * @return {Object} out
      */
     AssignLogoType(type, out, fallback)
@@ -241,7 +241,7 @@ export class EveSOFDataFaction extends meta.Model
     }
 
     /**
-     * Finds a plane set group by it's index
+     * Finds a plane set group by its index
      * @param {Number} groupIndex
      * @returns {EveSOFDataFactionSpotlightSet}
      */
