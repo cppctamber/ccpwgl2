@@ -410,12 +410,12 @@ export class Tw2AnimationController extends meta.Model
     }
 
     /**
-     * Finds a bone for a mesh by it's name
+     * Finds a bone for a mesh by its name
      * @param {String} name
      * @param {Number} meshIndex
      * @returns {null|Tw2Bone}
      */
-    FindBoneForMesh(name, meshIndex)
+    FindMeshBoneByName(name, meshIndex)
     {
         const model = this.FindModelForMesh(meshIndex);
         if (model)
@@ -429,6 +429,18 @@ export class Tw2AnimationController extends meta.Model
             }
         }
         return null;
+    }
+
+    /**
+     * Finds a bone by its index
+     * @param {Number} boneIndex
+     * @param {Number} meshIndex
+     * @returns {null|Tw2Bone}
+     */
+    FindMeshBoneByIndex(boneIndex, meshIndex)
+    {
+        if (!this.models[meshIndex] || boneIndex === -1) return null;
+        return this.models[meshIndex].bones.find(bone => bone.index === boneIndex) || null;
     }
 
     /**
@@ -881,6 +893,7 @@ export class Tw2AnimationController extends meta.Model
                             boneBinding.array = meshBindings.meshIndex[meshIx];
                             boneBinding.offset = k * 12;
                             model.bones[n].bindingArrays.push(boneBinding);
+                            model.bones[n].index = k;
                             //meshBindings.meshIndex[meshIx][k] = model.bones[n].offsetTransform;
                             break;
                         }

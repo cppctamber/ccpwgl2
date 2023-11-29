@@ -6,6 +6,9 @@ import { mat4 } from "math";
 export class Tw2Bone
 {
 
+    @meta.uint
+    index = -1;
+
     @meta.struct("Tw2GeometryBone")
     boneRes = null;
 
