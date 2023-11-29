@@ -92,6 +92,20 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
+     * Reloads the texture if it isn't attached
+     * @returns {Boolean} true if reloaded
+     */
+    Reload()
+    {
+        if (this.textureRes && !this._isAttached && !this.textureRes._isAttached)
+        {
+            this.textureRes.Reload();
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Sets the texture path
      * @param {String} value
      * @param {Object} opt
