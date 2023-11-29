@@ -121,7 +121,7 @@ export function toUniqueArray(a)
 }
 
 /**
- * Returns an array in chuncks
+ * Returns an array in chunks
  * @param {Array} arr
  * @param {Number} chunkSize
  * @return {Array}

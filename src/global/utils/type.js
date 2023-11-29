@@ -3,6 +3,42 @@ import { num } from "math/num";
 const toString = Object.prototype.toString;
 
 /**
+ * Checks if a value is a date
+ * @param s
+ * @returns {boolean}
+ */
+export function isDate(s)
+{
+    return !!(s && s instanceof Date);
+}
+
+/**
+ * Checks if a value is a map
+ * @param o
+ * @returns {boolean}
+ */
+export function isMap(o)
+{
+    return !!(o && o instanceof Map);
+}
+
+/**
+ * Checks if a value is a set
+ * @param o
+ * @returns {boolean}
+ */
+export function isSet(o)
+{
+    return !!(o && o instanceof Set);
+}
+
+/**
+ * Checks if an object is iterable
+ * @type {function(*)}
+ */
+export const isIterable = isObjectObject;
+
+/**
  * Checks if a value is an array
  * @param {*} a
  * @returns {Boolean}
@@ -433,6 +469,11 @@ export function isVectorEqual(a, b)
     return true;
 }
 
+export function isDateEqual(a, b)
+{
+    return a.getTime() === b.getTime();
+}
+
 /**
  * Checks two parameters for equality
  * TODO: Optimize
@@ -448,6 +489,7 @@ export function isEqual(a, b)
 
     // allow "almost" equal numbers
     if (isNumber(a)) return isNumber(b) ? num.equals(a, b) : false;
+    //if(isDate(a))) return isDate(b) ? isEqual(a, b) : false;
     if (isVector(a)) return isVector(b) ? isVectorEqual(a, b) : false;
     if (!isObjectObject(a) || !isObjectObject(b)) return false;
     if (a.constructor !== b.constructor) return false;
