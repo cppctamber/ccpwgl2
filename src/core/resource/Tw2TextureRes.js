@@ -8,6 +8,7 @@ import {
     ErrResourceFormatInvalid,
     ErrResourceFormatNotImplemented
 } from "./Tw2Resource";
+import { Targa } from "./formats/Targa";
 
 import {
     DDPF_LUMINANCE,
@@ -103,8 +104,36 @@ export class Tw2TextureRes extends Tw2Resource
 
         this.DeleteGL();
 
+        let canvas;
+
         switch (this._extension)
         {
+            case "tga":
+                // Todo Handle cube map: could use the width/height ratio to guess...
+
+                const tga = new Targa();
+                tga.load(new Uint8Array(data));
+                canvas = tga.getCanvas();
+
+                this._width = canvas.width;
+                this._height = canvas.height;
+
+                this._target = gl.TEXTURE_2D;
+                this._format = format;
+                this._type = gl.UNSIGNED_BYTE;
+                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(this._width, this._height);
+                this.texture = gl.createTexture();
+
+                gl.bindTexture(this._target, this.texture);
+                gl.texImage2D(this._target, 0, this._format, this._format, this._type, canvas);
+                if (this._isPowerOfTwo || device.glVersion > 1)
+                {
+                    gl.generateMipmap(this._target);
+                    this._hasMipMaps = true;
+                }
+                gl.bindTexture(this._target, null);
+                break;
+
             case "cube":
                 this._target = gl.TEXTURE_CUBE_MAP;
                 this._format = format;
@@ -115,7 +144,7 @@ export class Tw2TextureRes extends Tw2Resource
 
                 gl.bindTexture(this._target, this.texture);
 
-                const canvas = document.createElement("canvas");
+                canvas = document.createElement("canvas");
                 canvas.width = canvas.height = data.height;
                 const ctx = canvas.getContext("2d");
                 for (let j = 0; j < 6; ++j)
@@ -399,6 +428,20 @@ export class Tw2TextureRes extends Tw2Resource
                 path = path.replace(".qube", ".cube");
                 this._isCube = true;
                 break;
+
+            case "tga":
+                this._extension = extension;
+                resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
+                    .then(response =>
+                    {
+                        this.OnLoaded();
+                        resMan.Queue(this, response);
+                    })
+                    .catch(err =>
+                    {
+                        this.OnError(err);
+                    });
+                return true;
 
             case "png":
                 this._extension = extension;
