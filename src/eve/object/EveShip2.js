@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isArray, meta } from "utils";
 import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
@@ -93,22 +93,23 @@ export class EveShip2 extends EveObject
 
     @meta.plain
     visible = {
-        mesh: true,
         banners: true,
-        children: true,
-        effectChildren: true,
-        planeSets: true,
-        spotlightSets: true,
-        decals: true,
-        spriteSets: true,
-        hazeSets: true,
-        overlayEffects: true,
-        lineSets: true,
-        killmarks: true,
-        customMasks: true,
-        turretSets: true,
         boosters: true,
-        shadows: true
+        children: true,
+        customMasks: true,
+        decals: true,
+        dirt: true,
+        effectChildren: true,
+        hazeSets: true,
+        killmarks: true,
+        lineSets: true,
+        mesh: true,
+        overlayEffects: true,
+        planeSets: true,
+        shadows: true,
+        spotlightSets: true,
+        spriteSets: true,
+        turretSets: true
     };
 
     @meta.float
@@ -117,7 +118,6 @@ export class EveShip2 extends EveObject
     // Testing...
     _enableCurves = false;
     _pixelSizeAcross = 0;
-    _effectScale = 1;
 
     _spriteScale = 1;
     _parentTransform = mat4.create();
@@ -792,8 +792,6 @@ export class EveShip2 extends EveObject
         return true;
     }
 
-    dirtMultiplier = 10;
-
     /**
      * Gets render batches
      * @param {number} mode
@@ -808,14 +806,6 @@ export class EveShip2 extends EveObject
             c = accumulator.length,
             show = this.visible,
             res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
-
-        const shipData = this._perObjectData.ps.Get("Shipdata");
-        shipData[0] = this.boosterGain;
-        shipData[2] = 0;
-        if (this.weeksSinceCleaned> 0)
-        {
-            shipData[2] = -(0.7 - 1.0 / (Math.pow(this.weeksSinceCleaned, 0.65) + (1.0 / 2.7))) * this.dirtMultiplier;
-        }
 
         if (show.boosters && this.boosters)
         {
@@ -979,8 +969,6 @@ export class EveShip2 extends EveObject
         mat4.copy(this._parentTransform, parentTransform);
         mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
-        this._perObjectData.vs.SetIndex("Unknown0", 3, this._effectScale);
-
         // Enabling curves overrides rotation and translation
         if (this._enableCurves && this.rotationCurve || this.translationCurve)
         {
@@ -1049,6 +1037,10 @@ export class EveShip2 extends EveObject
 
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
 
+        const invWorldMat = this._perObjectData.vs.Get("InvWorldMat");
+        mat4.invert(invWorldMat, this._worldTransform);
+        mat4.transpose(invWorldMat, invWorldMat);
+
         const
             center = this._perObjectData.vs.Get("EllipsoidCenter"),
             radii = this._perObjectData.vs.Get("EllipsoidRadii");
@@ -1071,6 +1063,16 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        const shipData = this._perObjectData.ps.Get("Shipdata");
+        shipData[0] = this.visible.boosters ? this.boosterGain : 0;
+        shipData[1] = this.activationStrength; //Math.max(Math.min(this.activationStrength, 1.0), 0.0);
+        shipData[2] = EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt);
+        // Unscaled bounding sphere radius
+        shipData[3] = this.boundingSphereRadius;
+
+        // Copy
+        this._perObjectData.vs.Set("Shipdata", shipData);
+
         // Is this correct?
         const id = mat4.identity(EveObject.global.mat4_0);
         id[12] = 0;
@@ -1087,7 +1089,12 @@ export class EveShip2 extends EveObject
         let bones = null;
         if (this.animation && this.animation.models[this.meshIndex])
         {
-            bones = this.animation.models[this.meshIndex].bonesByIndex;
+            bones = this.animation.models[this.meshIndex].bones;
+            if (!isArray(bones))
+            {
+                console.dir({ msg: "Invalid bones", bones });
+                bones = null;
+            }
         }
 
         for (let i = 0; i < this.attachments.length; i++)
@@ -1100,10 +1107,39 @@ export class EveShip2 extends EveObject
 
         if (this.boosters)
         {
-            this.boosters.UpdateViewDependentData(this._worldTransform, this.animation, this.meshIndex, this._spriteScale);
+            this.boosters.UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
         }
+
+
     }
 
+    @meta.float
+    activationStrength = 1.0;
+
+    /**
+     * The level to use when dirt is off
+     * @type {number}
+     */
+    static DIRT_OFF_LEVEL = 5.0;
+
+    /**
+     * Age modifier
+     * @type {number}
+     */
+    static DIRT_AGE_MODIFIER = 0.01;
+
+    /**
+     * Gets dirt level from weeks since cleaned
+     * @param {Number} weeks
+     * @param {Boolean} [isDisabled]
+     * @returns {number}
+     */
+    static getDirtLevelFromWeeks(weeks, isDisabled)
+    {
+        weeks *= this.DIRT_AGE_MODIFIER;
+        if (isDisabled || isNaN(weeks)) return this.DIRT_OFF_LEVEL;
+        return (0.7 - 1.0 / (Math.pow(Math.max(weeks, 0.0), 0.65) + (1.0 / 2.7)));
+    }
 
     /**
      * Per object data
@@ -1113,17 +1149,14 @@ export class EveShip2 extends EveObject
         vs: [
             [ "WorldMat", 16 ],
             [ "WorldMatLast", 16 ],
-            [ "Shipdata", [ 0, 1, 0, -10 ] ],
-            [ "Clipdata1", 4 ],                 // Still clip data?
-            [ "Unknown_WasEllipsoidRadii", 4 ],
-            [ "Unknown_WasEllipsoidCenter", 4 ],
-            [ "Unknown0", [
-                0,
-                1,     // glow brightness
-                0,
+            [ "InvWorldMat", 16 ],
+            [ "Shipdata", [
+                0,     // booster gain / dirt
+                1,     // activation
+                0,     // Should be dirt?
                 1      // effect scale?
             ] ],
-            [ "Unknown1", 4 ],
+            [ "Clipdata1", 4 ], // Some sort of effect data - center(vec3), signed squared size
             [ "EllipsoidRadii", 4 ],
             [ "EllipsoidCenter", 4 ],
             [ "CustomMaskMatrix0", mat4.create() ],
@@ -1133,15 +1166,21 @@ export class EveShip2 extends EveObject
             [ "JointMat", 696 ]
         ],
         ps: [
-            [ "Shipdata", [ 0, 1, 0, 1 ] ],
-            [ "Clipdata1", 4 ],
-            [ "Clipdata2", 4 ],
+            [ "Shipdata", [
+                0, // booster strength
+                1, // activation
+                0, // dirt level
+                1  // bounding sphere radius
+            ] ],
+            [ "Clipdata1", 4 ],     // Some sort of effect data - center(vec3), signed squared size
+            [ "Miscdata", 4 ],      // clip sphere center, dissolve radius with a sign
             [ "ShLighting", 4 * 7 ],
             [ "CustomMaskMaterialID0", 4 ],
             [ "CustomMaskMaterialID1", 4 ],
             [ "CustomMaskTarget0", 4 ],
             [ "CustomMaskTarget1", 4 ],
-            [ "Unknown4", 4 ]
+            [ "CustomMaskClamps", 4 ], // Unused
+            [ "Screensize", 4 ]        // Unused
         ]
     };
 
