@@ -924,7 +924,7 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Renders a Texture to the screen
-     * @param {Tw2TextureRes} texture
+     * @param {Tw2TextureRes|Tw2TextureParameter} texture
      * @returns {Boolean}
      */
     RenderTexture(texture)
@@ -937,6 +937,11 @@ export class Tw2Device extends Tw2EventEmitter
                     BlitSource: ""
                 }
             });
+        }
+
+        if (texture.textureRes)
+        {
+            texture = texture.textureRes;
         }
 
         this._blitEffect.parameters["BlitSource"].AttachTextureRes(texture);
