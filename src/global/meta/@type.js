@@ -1,6 +1,7 @@
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import { isFunction, isPlain, isString } from "../utils/type";
-import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
+import { defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
+import { createDecorator } from "../utils/decorator";
 
 import {
     PT_ARRAY,

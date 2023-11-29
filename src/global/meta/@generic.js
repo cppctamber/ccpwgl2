@@ -1,5 +1,6 @@
 import { ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
-import { createDecorator, defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
+import { defineMetadata, getMetadata, hasMetadata } from "../utils/reflect";
+import { createDecorator } from "../utils/decorator";
 
 
 export const abstract = createDecorator({
