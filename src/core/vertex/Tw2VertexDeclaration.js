@@ -16,8 +16,20 @@ export class Tw2VertexDeclaration
     //@meta.uint
     //stride = null;
 
-    // @meta.uint
-    // vertexSize
+    /**
+     * Gets the vertex count
+     * TODO: Replace stride with this when manually defined strides are removed
+     * @returns {number}
+     */
+    get vertexCount()
+    {
+        let count = 0;
+        for (let i = 0; i < this.elements.length; i++)
+        {
+            count += this.elements[i].elements;
+        }
+        return count;
+    }
 
     /**
      * Fire on value changes
@@ -250,6 +262,35 @@ export class Tw2VertexDeclaration
                 device.gl.vertexAttribDivisor(resetData[i], 0);
             }
         }
+    }
+
+    /**
+     * Gets a usage as an array of arrays
+     * @param {Array|TypedArray} bufferData
+     * @param {Number} usage
+     * @param {Number} usageIndex
+     * @returns {undefined|*[]}
+     */
+    GetUsageAsArrayOfArrays(bufferData, usage, usageIndex)
+    {
+        const decl = this.FindUsage(usage, usageIndex);
+        if (!decl) return;
+
+        const out = [];
+        for (let i = 0; i < bufferData.length; i+=this.stride)
+        {
+            const
+                el = [],
+                ix = i * this.stride + decl.offset;
+
+            for (let x = 0; x < decl.elements; x++)
+            {
+                el[x] = bufferData[ix + x];
+            }
+            out.push(el);
+        }
+
+        return out;
     }
 
     /**
