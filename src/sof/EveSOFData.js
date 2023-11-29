@@ -8,7 +8,8 @@ import {
     isArray,
     get,
     findElementByPropertyValue,
-    isObjectObject, isString, isObject, isNumber
+    isString,
+    isObject
 } from "utils";
 
 import {
@@ -115,9 +116,9 @@ export class EveSOFData extends meta.Model
 
         wreckArea: {
             fallbackGeneralGlowColor: [ 67, 9, 0, 1 ],
-            minMapScaleUV: 8,
+            minMapScaleUV: 2,
             minGlowIntensity: 50,
-            maxGlowFlicker: 0.003,
+            maxGlowFlicker: 0.005,
             minSharpness: 2.1,
             // Decal wreck area only
             maxGlowFlickerDecalAreas: 0.004,
@@ -1980,7 +1981,7 @@ export class EveSOFData extends meta.Model
 
                 if (!itemVisible)
                 {
-                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible");
+                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType(${logoType})`);
                     return;
                 }
 
@@ -2024,6 +2025,7 @@ export class EveSOFData extends meta.Model
                 }
 
                 // Faction
+                //if (faction.HasLogoType(logoType))
                 faction.AssignLogoType(logoType, effect);
                 const { DecalGlowColor } = effect.parameters;
                 if (DecalGlowColor) faction.GetColorType(glowColorType, DecalGlowColor, 0);
@@ -2040,6 +2042,7 @@ export class EveSOFData extends meta.Model
                 decal._logoType = logoType;
 
                 const values = Object.assign({ display: true }, {
+                    //display: !faction.HasLogoType(logoType),
                     rotation: srcItem.rotation,
                     position: srcItem.position,
                     scaling: srcItem.scaling,
@@ -2331,7 +2334,7 @@ export class EveSOFData extends meta.Model
             ]);
 
             iMesh.declaration.stride = 12 * 4;
-            iMesh.declaration.name = him.name;
+            iMesh.name = him.name;
 
             const vertices = [];
             for (let i = 0; i < him.instances.length; i++)
