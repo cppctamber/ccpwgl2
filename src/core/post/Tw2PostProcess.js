@@ -3,6 +3,7 @@ import { tw2 } from "global/tw2";
 import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
+import { RM_OPAQUE } from "constant";
 
 
 @meta.type("Tw2PostProcess", "Tr2PostProcess")
@@ -25,6 +26,12 @@ export class Tw2PostProcess extends meta.Model
 
     @meta.boolean
     autoRebuild = true;
+
+    @meta.uint
+    depthMode = 0;
+
+    @meta.uint
+    renderMode = RM_OPAQUE;
 
     /**
      * Identifies if the post requires a rebuild
@@ -309,7 +316,7 @@ export class Tw2PostProcess extends meta.Model
         gl.bindTexture(gl.TEXTURE_2D, this._blitOriginal.texture);
         gl.copyTexImage2D(gl.TEXTURE_2D, 0, device.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, width, height, 0);
         gl.bindTexture(gl.TEXTURE_2D, null);
-        device.SetStandardStates(device.RM_OPAQUE);
+        device.SetStandardStates(this.renderMode);
 
         let cameraCache;
 
@@ -329,11 +336,10 @@ export class Tw2PostProcess extends meta.Model
 
             if (g_texelSize)
             {
-                let tex = renderTarget ? 1 / renderTarget.width : 1 / width;
                 // texel width
-                g_texelSize.value[0] = tex;
+                g_texelSize.value[0] = renderTarget ? 1 / renderTarget.width: 1 / width;
                 // texel height
-                g_texelSize.value[1] = tex;
+                g_texelSize.value[1] = renderTarget ? 1 / renderTarget.height : 1 / height;
                 // width
                 g_texelSize.value[2] = renderTarget ? renderTarget.width : width;
                 // height
@@ -355,7 +361,7 @@ export class Tw2PostProcess extends meta.Model
                     // fov
                     cameraCache[2] = 2 * Math.atan(1/p[5]) * 180 / Math.PI;
                     // unused
-                    cameraCache[3] = 0;
+                    cameraCache[3] = this.depthMode;
                 }
 
                 g_camera.SetValue(cameraCache);
