@@ -32,13 +32,13 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.struct("Tw2Effect")
     pickEffect = null;
 
-    @meta.vector3
+    @meta.translation
     position = vec3.create();
 
-    @meta.quaternion
+    @meta.rotation
     rotation = quat.create();
 
-    @meta.vector3
+    @meta.scaling
     scaling = vec3.fromValues(1, 1, 1);
 
     _dirty = true;
@@ -404,7 +404,8 @@ export class EveSpaceObjectDecal extends meta.Model
             {
                 if (values.decalEffect !== values.decalEffect)
                 {
-                    item.decalEffect = values.decalEffect;
+                    if (!item.decalEffect) item.decalEffect = new Tw2Effect();
+                    item.decalEffect.SetValues(values.decalEffect.GetValues());
                     updated = true;
                 }
             }
@@ -425,7 +426,8 @@ export class EveSpaceObjectDecal extends meta.Model
             {
                 if (values.pickEffect !== item.pickEffect)
                 {
-                    item.pickEffect = values.pickEffect;
+                    if (!item.pickEffect) item.pickEffect = new Tw2Effect();
+                    item.pickEffect.SetValues(values.pickEffect.GetValues());
                     updated = true;
                 }
             }
@@ -452,15 +454,14 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     static get(item, out = {}, opt = {})
     {
-        super.get(item, out, opt);
-
         out.indexBuffers = [];
+
         for (let i = 0; i < item._rawIndexBuffers.length; i++)
         {
             out.indexBuffers.push(Array.from(item._rawIndexBuffers[i]));
         }
 
-        return out;
+        return super.get(item, out, opt);
     }
 
     /**
