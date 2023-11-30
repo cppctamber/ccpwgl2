@@ -126,3 +126,11 @@ export const stage = createDecorator({
         defineMetadata("stage", stage, target, property);
     }
 });
+
+export const isNullable = createDecorator({
+    noArgs: true,
+    property({ target, property })
+    {
+        defineMetadata("isNullable", true, target, property);
+    }
+});
