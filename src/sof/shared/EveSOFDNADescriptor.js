@@ -14,6 +14,18 @@ export class EveSOFDNADescriptor extends meta.Model
     race = "";
 
     @meta.string
-    faction = ""
+    faction = "";
+
+    @meta.string
+    material1 = "";
+
+    @meta.string
+    material2 = "";
+
+    @meta.string
+    material3 = "";
+
+    @meta.string
+    material4 = "";
 
 }

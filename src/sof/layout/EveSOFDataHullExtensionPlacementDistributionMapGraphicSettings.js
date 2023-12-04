@@ -5,6 +5,9 @@ import { meta } from "utils";
 export class EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings extends meta.Model
 {
 
+    @meta.string
+    name = "";
+
     @meta.notImplemented
     @meta.struct()
     displayFilter = null;

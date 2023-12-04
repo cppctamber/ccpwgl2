@@ -19,6 +19,7 @@ export * from "./EveSOFDataHullLightSetSpotLight";
 export * from "./EveSOFDataHullLightSetTexturedPointLight";
 export * from "./EveSOFDataHullLocator";
 export * from "./EveSOFDataHullLocatorSet";
+export * from "./EveSOFDataHullLocatorSetGroup";
 export * from "./EveSOFDataHullPlaneSet";
 export * from "./EveSOFDataHullPlaneSetItem";
 export * from "./EveSOFDataHullSoundEmitter";

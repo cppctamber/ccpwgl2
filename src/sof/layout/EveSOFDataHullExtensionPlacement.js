@@ -6,20 +6,31 @@ import{ vec3 } from "math";
 export class EveSOFDataHullExtensionPlacement extends meta.Model
 {
 
-    @meta.struct()
-    descriptor = null;
-
-    @meta.struct()
-    distribution = null;
-
-    @meta.list()
-    distributionConditions = [];
+    @meta.string
+    name = "";
 
     @meta.boolean
-    isInstanced = false;
+    enabled = true;
 
     @meta.string
     locatorSetName = "";
+
+    @meta.vector3
+    offset = vec3.create();
+
+    @meta.boolean
+    isInstanced = true;
+
+    @meta.struct("EveSOFDNADescriptor")
+    descriptor = null;
+
+    @meta.struct("EveSOFDataHullExtensionPlacementDistributionPlacement")
+    distribution = null;
+
+    @meta.list() // "EveSOFDataHulLExtensionPlacementDistribution"
+    distributionConditions = [];
+
+    /*
 
     @meta.boolean
     matchHull = true;
@@ -27,16 +38,12 @@ export class EveSOFDataHullExtensionPlacement extends meta.Model
     @meta.boolean
     matchFaction = true;
 
-    @meta.string
-    name = "";
-
-    @meta.vector3
-    offset = vec3.create();
-
     @meta.struct()
     parentDescriptor = null;
 
     @meta.string
     resPathDefaultCorp = "";
+
+     */
 
 }
