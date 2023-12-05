@@ -4,6 +4,22 @@ import { pool } from "math/pool";
 export { mat4 };
 
 /**
+ *
+ * @param {mat4} m
+ * @param {quat} rotation
+ * @param {vec3} translation
+ * @param {vec3} scaling
+ * @returns {mat4} m
+ */
+mat4.decompose = function (m, rotation, translation, scaling)
+{
+    mat4.getRotation(rotation, m);
+    mat4.getTranslation(translation, m);
+    mat4.getScaling(scaling, m);
+    return m;
+};
+
+/**
  * Allocates a pooled mat4
  * @returns {Float32Array|mat4}
  */
