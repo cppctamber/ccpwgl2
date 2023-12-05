@@ -26,4 +26,40 @@ export class EveSOFDataParameter extends meta.Model
         return out;
     }
 
+    /**
+     *
+     * @param {Array<EveSOFDataParameter>} a
+     * @param {Array<EveSOFDataParameter>} [b]
+     * @param {Array<EveSOFDataParameter>} [out=[]]
+     * @returns {Array<EveSOFDataParameter>}
+     */
+    static combineArrays(a, b, out = [])
+    {
+        // Remove unused textures
+        const validTextureNames = a.map(x => x.name);
+        for (let i = 0; i < out.length; i++)
+        {
+            if (!validTextureNames.includes(out[i].name))
+            {
+                out.splice(i, 1);
+                i--;
+            }
+        }
+
+        for (let i = 0; i < a.length; i++)
+        {
+            const { name, value } = a[i];
+            let found = out.find(x => x.name === name);
+            if (!found)
+            {
+                found = new EveSOFDataParameter();
+                found.name = name;
+                out.push(found);
+            }
+            const foundB = b ? b.find(x => x.name === name) : null;
+            vec4.copy(found.value, foundB ? foundB.value : value);
+        }
+
+        return out;
+    }
 }

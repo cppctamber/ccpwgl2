@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { Tw2Error } from "core";
+import { EveSOFDataLogo } from "./EveSOFDataLogo";
 
 
 @meta.type("EveSOFDataLogoSet")
@@ -66,6 +67,21 @@ export class EveSOFDataLogoSet extends meta.Model
         "Marking_01",
         "Marking_02",
     ];
+
+    /**
+     *
+     * @param {EveSOFDataLogoSet} a
+     * @param {EveSOFDataLogoSet} [b]
+     * @param {EveSOFDataLogoSet} [out=new EveSOFDataLogoSet]
+     * @returns {EveSOFDataLogoSet}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        if (!a) return out;
+        this.LogoType.forEach(type => out[type] = EveSOFDataLogo.combine(a[type], b ? b[type] : null, out[type]));
+        return out;
+    }
 
 }
 

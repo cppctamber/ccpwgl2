@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { __get, meta } from "utils";
 import { vec4 } from "math";
 
 
@@ -40,6 +40,27 @@ export class EveSOFDataBoosterShape extends meta.Model
     get noiseAmplitudeStart()
     {
         return this.noiseAmplitureStart;
+    }
+
+    /**
+     *
+     * @param {EveSOFDataBoosterShape} a
+     * @param {EveSOFDataBoosterShape} b
+     * @param {EveSOFDataBoosterShape} [out=new EveSOFDataBoosterShape]
+     * @returns {EveSOFDataBoosterShape}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        if (!a && !b) return out;
+        if (!a) a = out;
+        vec4.copy(out.color, __get(b, "color", a));
+        vec4.copy(out.noiseAmplitureEnd, __get(b, "noiseAmplitureEnd", a));
+        vec4.copy(out.noiseAmplitureStart, __get(b, "noiseAmplitureStart", a));
+        vec4.copy(out.noiseFrequency, __get(b, "noiseFrequency", a));
+        out.noiseFunction = __get(b, "noiseFunction", a);
+        out.noiseSpeed = __get(b, "noiseSpeed", a);
+        return out;
     }
 
 }

@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { __get, meta } from "utils";
 
 
 @meta.type("EveSOFDataFactionVisibilityGroupSet")
@@ -26,4 +26,19 @@ export class EveSOFDataFactionVisibilityGroupSet extends meta.Model
         return false;
     }
 
+    /**
+     *
+     * @param a
+     * @param b
+     * @param dest
+     * @returns {EveSOFDataFactionVisibilityGroupSet}
+     */
+    static combine(a, b, dest)
+    {
+        dest = dest || new this();
+        dest.visibilityGroups.splice(0);
+        if (!a) a = dest;
+        __get(b, "visibilityGroups", a).forEach(x => dest.visibilityGroups.push(x));
+        return dest;
+    }
 }

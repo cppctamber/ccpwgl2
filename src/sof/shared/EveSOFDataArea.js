@@ -130,6 +130,50 @@ export class EveSOFDataArea extends meta.Model
             parent._typesByIndex.push(property);
         }
     }
+
+    static Types = [
+        "Black",
+        "Blue",
+        "Booster",
+        "Cyan",
+        "Darkhull",
+        "Fire",
+        "Glass",
+        "Green",
+        "Hull",
+        "Killmark",
+        "Monument",
+        "Orange",
+        "Ornament",
+        "Primary",
+        "Reactor",
+        "Red",
+        "Rock",
+        "Sails",
+        "SimplePrimary",
+        "Secondary",
+        "Tertiary",
+        "White",
+        "Yellow"
+    ];
+
+    /**
+     * Merges two data areas
+     * @param {EveSOFDataArea} a
+     * @param {EveSOFDataArea} b
+     * @param {EveSOFDataArea} [out=new EveSOFDataArea]
+     * @returns {EveSOFDataArea}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        if (!a) return out;
+        out._typesByIndex.splice(0);
+        a._typesByIndex.forEach(type => out._typesByIndex.push(type));
+        this.Types.forEach(type => out[type] = EveSOFDataAreaMaterial.combine(a[type], b ? b[type] : null, out[type]));
+        return out;
+    }
+
 }
 
 /**

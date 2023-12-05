@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { __get, meta } from "utils";
 import { vec4 } from "math";
 import { Tw2Error } from "core";
 
@@ -73,6 +73,12 @@ export class EveSOFDataFactionColorSet extends meta.Model
     @meta.color
     Yellow = vec4.create();
 
+    @meta.color
+    ForceField = vec4.create();
+
+    @meta.color
+    Haze = vec4.create();
+
 
     /**
      * Checks if a color type exists
@@ -136,6 +142,21 @@ export class EveSOFDataFactionColorSet extends meta.Model
         "TertiaryLight",
         "WhiteLight"
     ];
+
+    /**
+     *
+     * @param {EveSOFDataFactionColorSet} a
+     * @param {EveSOFDataFactionColorSet} b
+     * @param {EveSOFDataFactionColorSet} out
+     * @returns {EveSOFDataFactionColorSet}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        if (!a) a = out;
+        this.Type.forEach(type => vec4.copy(out[type], __get(b, type, a)));
+        return out;
+    }
 
 }
 

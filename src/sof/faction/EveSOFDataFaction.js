@@ -1,11 +1,17 @@
-import { meta } from "utils";
-import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound } from "sof/shared";
 import { tw2 } from "global/tw2";
+import { isNoU, meta } from "utils";
+import { vec4 } from "math";
+import { EveSOFDataFactionColorSet } from "./EveSOFDataFactionColorSet";
+import { EveSOFDataFactionVisibilityGroupSet } from "./EveSOFDataFactionVisibilityGroupSet";
+import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound, EveSOFDataArea, EveSOFDataLogoSet } from "sof/shared";
 
 
 @meta.type("EveSOFDataFaction")
 export class EveSOFDataFaction extends meta.Model
 {
+
+    @meta.string
+    override = null;
 
     @meta.string
     name = "";
@@ -54,6 +60,7 @@ export class EveSOFDataFaction extends meta.Model
 
     @meta.struct("EveSOFDataFactionVisibilityGroupSet")
     visibilityGroupSet = null;
+
 
     /**
      * Checks if a color usage Type exists
@@ -256,5 +263,44 @@ export class EveSOFDataFaction extends meta.Model
         }
     }
 
+    /**
+     *
+     * @param {EveSOFDataFaction} [a]
+     * @param {EveSOFDataFaction} b
+     * @param {EveSOFDataFaction} [out]
+     * @returns {null|EveSOFDataFaction}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        out.name = b._id;
+        out.areaTypes = EveSOFDataArea.combine(a.areaTypes, b.areaTypes, out.areaTypes);
+
+        out.children = Array.from(a.children);
+        out.colorSet = EveSOFDataFactionColorSet.combine(a.colorSet, b.colorSet, out.colorSet);
+        out.defaultPattern = b.defaultPattern || a.defaultPattern || "";
+        out.defaultPatternLayer1MaterialName = b.defaultPatternLayer1MaterialName || a.defaultPatternLayer1MaterialName || "";
+        out.description = b.description || a.description || "";
+        out.logoSet = EveSOFDataLogoSet.combine(a.logoSet, b.logoSet, out.logoSet);
+        out.materialUsageMtl1 = isNoU(b.materialUsageMtl1) ? a.materialUsageMtl1 : b.materialUsageMtl1;
+        out.materialUsageMtl2 = isNoU(b.materialUsageMtl2) ? a.materialUsageMtl2 : b.materialUsageMtl2;
+        out.materialUsageMtl3 = isNoU(b.materialUsageMtl3) ? a.materialUsageMtl3 : b.materialUsageMtl3;
+        out.materialUsageMtl4 = isNoU(b.materialUsageMtl4) ? a.materialUsageMtl4 : b.materialUsageMtl4;
+        out.resPathInsert = b.resPathInsert || a.resPathInsert || "";
+        out.visibilityGroupSet = EveSOFDataFactionVisibilityGroupSet.combine(a.visibilityGroupSet, b.visibilityGroupSet, out.visibilityGroupSet);
+
+
+        // Not implemented yet
+        //out.children = EveSOFDataFactionChild.merge(a.children, b.children, out.children);
+        //out.planeSets = EveSOFDataFactionPlaneSet.merge(a.planeSets, b.planeSets, out.planeSets);
+        //out.spotlightSets = EveSOFDataFactionSpotlightSet.merge(a.planeSets, b.planeSets, out.planeSets);
+        out.planeSets = Array.from(a.planeSets);
+        out.spotlightSets = Array.from(a.spotlightSets);
+        out.children = Array.from(a.children);
+
+        return out;
+    }
+
+    
 }
 

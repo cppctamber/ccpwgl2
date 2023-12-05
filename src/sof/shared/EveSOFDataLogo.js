@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { EveSOFDataTexture } from "./EveSOFDataTexture";
 
 
 @meta.type("EveSOFDataLogo")
@@ -32,6 +33,21 @@ export class EveSOFDataLogo extends meta.Model
         {
             this.textures[i].Assign(out);
         }
+        return out;
+    }
+
+    /**
+     *
+     * @param {EveSOFDataLogo} a
+     * @param {EveSOFDataLogo} b
+     * @param {EveSOFDataLogo} out
+     * @returns {EveSOFDataLogo}
+     */
+    static combine(a, b, out)
+    {
+        out = out || new this();
+        if (!a) return out;
+        EveSOFDataTexture.combineArrays(a.textures, b ? b.textures : null, out.textures);
         return out;
     }
 
