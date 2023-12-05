@@ -28,8 +28,8 @@ export class Tr2SpotLight extends meta.Model
     @meta.float
     noiseFrequency = 0;
 
-    //@meta.float
-    //noiseOctaves = 0;
+    @meta.uint
+    noiseOctaves = 0;
 
     @meta.path
     lightProfilePath = "";
