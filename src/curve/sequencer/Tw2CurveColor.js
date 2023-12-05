@@ -31,6 +31,12 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     @meta.boolean
     srgbOutput = false;
 
+    @meta.float
+    timeScale = 1;
+
+    @meta.float
+    timeOffset = 0;
+
     /**
      * Sorts the sequencer
      */
@@ -65,6 +71,8 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      */
     GetValueAt(time, value)
     {
+        time = time / this.timeScale + this.timeOffset;
+
         value[0] = this.r ? this.r.GetValueAt(time) : 0;
         value[1] = this.g ? this.g.GetValueAt(time) : 0;
         value[2] = this.b ? this.b.GetValueAt(time) : 0;
