@@ -23,6 +23,16 @@ export const LodLevelPixels = {
     TWO: 250
 };
 
+
+export const DisplayFilter = [
+    "LOW",
+    "LOW_MEDIUM",
+    "MEDIUM",
+    "HIGH",
+    "ALL",
+    "REFLECTIONS_ONLY"
+];
+
 export const Mouse = {
     LEFT: 0,
     MIDDLE: 1,
