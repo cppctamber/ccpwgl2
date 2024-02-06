@@ -21,6 +21,9 @@ export class EveSOFDataHull extends meta.Model
     @meta.list("EveSOFDataHullBanner")
     banners = [];
 
+    @meta.list("EveSofDataHullBannerSet")
+    bannerSets = [];
+
     @meta.struct("EveSOFDataHullBooster")
     booster = null;
 
@@ -111,6 +114,9 @@ export class EveSOFDataHull extends meta.Model
     @meta.vector3
     shapeEllipsoidRadius = vec3.create();
 
+    @meta.boolean
+    sof6 = false;
+
     @meta.list("EveSOFDataHullSoundEmitter")
     soundEmitters = [];
 
@@ -125,6 +131,9 @@ export class EveSOFDataHull extends meta.Model
 
     @meta.list("EveSOFDataHullArea")
     transparentAreas = [];
+
+    @meta.string
+    visibilityGroup = "";
 
     /**
      * Initializer

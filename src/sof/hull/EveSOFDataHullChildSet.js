@@ -5,7 +5,13 @@ import { meta } from "utils";
 export class EveSOFDataHullChildSet extends meta.Model
 {
 
+    @meta.string
+    name = "";
+
     @meta.list("EveSOFDataHullChildSetItem")
     items = [];
+
+    @meta.string
+    visibilityGroup = "";
 
 }

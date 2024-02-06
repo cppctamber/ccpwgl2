@@ -45,7 +45,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
 
     @meta.color
     PrimaryLight = vec4.create();
-
+    
     @meta.color
     Reactor = vec4.create();
 
@@ -74,10 +74,58 @@ export class EveSOFDataFactionColorSet extends meta.Model
     Yellow = vec4.create();
 
     @meta.color
-    ForceField = vec4.create();
+    PrimarySpotlight = vec4.create();
 
     @meta.color
-    Haze = vec4.create();
+    SecondarySpotlight = vec4.create();
+
+    @meta.color
+    TertiarySpotlight = vec4.create();
+
+    @meta.color
+    PrimaryHologram = vec4.create();
+
+    @meta.color
+    SecondaryHologram = vec4.create();
+
+    @meta.color
+    TertiaryHologram = vec4.create();
+
+    @meta.color
+    State0 = vec4.create();
+
+    @meta.color
+    State1 = vec4.create();
+
+    @meta.color
+    State2 = vec4.create();
+
+    @meta.color
+    State3 = vec4.create();
+
+    @meta.color
+    StateVulnerable = vec4.create();
+
+    @meta.color
+    StateInvulnerable = vec4.create();
+
+    @meta.color
+    PrimaryForcefield = vec4.create();
+
+    @meta.color
+    SecondaryForcefield = vec4.create();
+
+    @meta.color
+    PrimaryBanner = vec4.create();
+
+    @meta.color
+    PrimaryBillboard = vec4.create();
+
+    @meta.color
+    PrimaryFx = vec4.create();
+
+    @meta.color
+    SecondaryFx = vec4.create();
 
 
     /**
@@ -140,7 +188,25 @@ export class EveSOFDataFactionColorSet extends meta.Model
         "PrimaryLight",
         "SecondaryLight",
         "TertiaryLight",
-        "WhiteLight"
+        "WhiteLight",
+        "PrimarySpotlight",
+        "SecondarySpotlight",
+        "TertiarySpotlight",
+        "PrimaryHologram",
+        "SecondaryHologram",
+        "TertiaryHologram",
+        "State0",
+        "State1",
+        "State2",
+        "State3",
+        "StateVulnerable",
+        "StateInvulnerable",
+        "PrimaryForcefield",
+        "SecondaryForcefield",
+        "PrimaryBanner",
+        "PrimaryBillboard",
+        "PrimaryFx",
+        "SecondaryFx"
     ];
 
     /**
