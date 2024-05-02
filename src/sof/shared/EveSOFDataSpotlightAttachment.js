@@ -2,8 +2,8 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.type("EveSOFDataSpotlightAttachment")
-export class EveSOFDataSpotlightAttachment extends meta.Model
+@meta.type("EveSOFDataSpotLightAttachment")
+export class EveSOFDataSpotLightAttachment extends meta.Model
 {
 
     @meta.float
@@ -26,5 +26,10 @@ export class EveSOFDataSpotlightAttachment extends meta.Model
 
     @meta.float
     saturation = 0.0;
+
+}
+
+export class EveSOFDataSpotlightAttachment extends EveSOFDataSpotLightAttachment
+{
 
 }

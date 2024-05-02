@@ -1,6 +1,5 @@
 import { meta } from "utils";
 
-
 @meta.type("EveSOFDataHullSpotlightSet")
 export class EveSOFDataHullSpotlightSet extends meta.Model
 {
@@ -22,5 +21,8 @@ export class EveSOFDataHullSpotlightSet extends meta.Model
 
     @meta.float
     zOffset = 0;
+
+    @meta.string
+    visibilityGroup = "";
 
 }

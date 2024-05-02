@@ -1,3 +1,5 @@
+export * from "./EveSOFDataPointLightAttachment";
+export * from "./EveSOFDataSpotlightAttachment";
 export * from "./EveSOFDataArea";
 export * from "./EveSOFDataAreaMaterial";
 export * from "./EveSOFDataBooster";
@@ -11,5 +13,4 @@ export * from "./EveSOFDataParameter";
 export * from "./EveSOFDataTexture";
 export * from "./EveSOFDataTransform";
 export * from "./EveSOFDNADescriptor";
-export * from "./EveSOFDataPointLightAttachment";
-export * from "./EveSOFDataSpotlightAttachment";
+
