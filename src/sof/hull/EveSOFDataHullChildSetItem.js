@@ -16,10 +16,10 @@ export class EveSOFDataHullChildSetItem extends meta.Model
     translation = vec3.create();
 
     @meta.vector3
-    scaling = vec3.fromValues(1,1,1);
+    scaling = vec3.fromValues(1, 1, 1);
 
     @meta.quaternion
-    rotation = quat.create()
+    rotation = quat.create();
 
     @meta.uint
     buildFilter = -1;

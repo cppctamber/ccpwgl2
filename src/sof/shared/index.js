@@ -11,3 +11,5 @@ export * from "./EveSOFDataParameter";
 export * from "./EveSOFDataTexture";
 export * from "./EveSOFDataTransform";
 export * from "./EveSOFDNADescriptor";
+export * from "./EveSOFDataPointLightAttachment";
+export * from "./EveSOFDataSpotlightAttachment";

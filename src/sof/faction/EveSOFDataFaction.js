@@ -301,6 +301,6 @@ export class EveSOFDataFaction extends meta.Model
         return out;
     }
 
-    
+
 }
 

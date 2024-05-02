@@ -19,7 +19,7 @@ export class EveSOFDataPatternPerHull extends meta.Model
      * Constructor
      * @param {String} name
      */
-    constructor(name="")
+    constructor(name = "")
     {
         super();
         this.name = name;

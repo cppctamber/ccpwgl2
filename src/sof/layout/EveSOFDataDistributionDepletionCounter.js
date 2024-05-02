@@ -9,7 +9,7 @@ export class EveSOFDataDistributionDepletionCounter extends meta.Model
     name = "";
 
     @meta.uint
-    value
+    value;
 
 
 }

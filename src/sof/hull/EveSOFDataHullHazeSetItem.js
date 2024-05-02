@@ -21,11 +21,17 @@ export class EveSOFDataHullHazeSetItem extends meta.Model
     @meta.float
     hazeFalloff = 0;
 
+    @meta.list()
+    lights = [];
+
     @meta.vector3
     position = vec3.create();
 
     @meta.quaternion
     rotation = quat.create();
+
+    @meta.float
+    saturation = 0;
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);

@@ -45,7 +45,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
 
     @meta.color
     PrimaryLight = vec4.create();
-    
+
     @meta.color
     Reactor = vec4.create();
 
@@ -127,6 +127,32 @@ export class EveSOFDataFactionColorSet extends meta.Model
     @meta.color
     SecondaryFx = vec4.create();
 
+    @meta.color
+    PrimaryWarpFx = vec4.create();
+
+    @meta.color
+    PrimaryAttackFX = vec4.create();
+
+    @meta.color
+    PrimarySiegeFX = vec4.create();
+
+    @meta.color
+    PrimaryDockedFX = vec4.create();
+
+    get PrimaryAttackFx()
+    {
+        return this.PrimaryAttackFX;
+    }
+
+    get PrimarySiegeFx()
+    {
+        return this.PrimarySiegeFX;
+    }
+
+    get PrimaryDockedFx()
+    {
+        return this.PrimaryDockedFX;
+    }
 
     /**
      * Checks if a color type exists

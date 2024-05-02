@@ -18,6 +18,9 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
     @meta.uint
     boneIndex = -1;
 
+    @meta.struct()
+    light = null;
+
     @meta.vector3
     position = vec3.create();
 
@@ -28,7 +31,7 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
-    usage = 0;
+    usage = -1; // Corp Banner , Alliance Banner etc.
 
     @meta.string
     visibilityGroup = "";
@@ -64,6 +67,6 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
         20: "RECRUITMENT_INFO_2",
         21: "RECRUITMENT_INFO_3",
         22: "RECRUITMENT_INFO_4",
-    }
+    };
 
 }

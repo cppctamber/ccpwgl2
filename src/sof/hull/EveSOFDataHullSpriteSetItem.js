@@ -27,6 +27,9 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     @meta.float
     intensity = 1;
 
+    @meta.struct()
+    light = null;
+
     @meta.float
     maxScale = 0;
 

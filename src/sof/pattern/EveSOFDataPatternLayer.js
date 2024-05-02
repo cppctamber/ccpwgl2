@@ -36,7 +36,7 @@ export class EveSOFDataPatternLayer extends meta.Model
      * Constructor
      * @param {String} name
      */
-    constructor(name="")
+    constructor(name = "")
     {
         super();
         this.textureName = name;
@@ -44,7 +44,6 @@ export class EveSOFDataPatternLayer extends meta.Model
 
     /**
      * Empties the pattern layer
-     * @param {Object} opt
      */
     Empty()
     {

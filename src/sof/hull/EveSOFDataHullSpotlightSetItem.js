@@ -12,6 +12,9 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
     @meta.boolean
     boosterGainInfluence = false;
 
+    @meta.uint
+    colorType = 0;
+
     @meta.float
     coneIntensity = 0;
 
@@ -20,6 +23,9 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
 
     @meta.uint
     groupIndex = -1;
+
+    @meta.struct()
+    light = null;
 
     @meta.float
     spriteIntensity = 0;
