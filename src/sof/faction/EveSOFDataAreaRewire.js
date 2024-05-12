@@ -3,7 +3,6 @@ import { vec4 } from "math";
 import { EveSOFDataFaction } from "sof";
 
 
-
 @meta.type("EveSOFDataAreaRewire")
 export class EveSOFDataAreaRewire extends meta.Model
 {
@@ -114,7 +113,7 @@ export class EveSOFDataAreaRewire extends meta.Model
  * @param {string} originalRespathInsert
  * @returns {string}
  */
-EveSOFDataFaction.prototype.GetRewiredRespathInsert = function(race, originalRespathInsert="")
+EveSOFDataFaction.prototype.GetRewiredRespathInsert = function (race, originalRespathInsert = "")
 {
     if (!this.rewires) this.rewires = [];
     race = race.toLowerCase();
@@ -128,7 +127,7 @@ EveSOFDataFaction.prototype.GetRewiredRespathInsert = function(race, originalRes
  * @param {string} originalRespathInsert
  * @returns {string}
  */
-EveSOFDataFaction.prototype.RewireEffectMaterials = function(race, effect)
+EveSOFDataFaction.prototype.RewireEffectMaterials = function (race, effect)
 {
     if (!this.rewires) this.rewires = [];
     race = race.toLowerCase();
@@ -146,7 +145,7 @@ let originalCombine = EveSOFDataFaction.combine;
  * @param out
  * @returns {EveSOFDataFaction|null}
  */
-EveSOFDataFaction.combine = function(a, b, out)
+EveSOFDataFaction.combine = function (a, b, out)
 {
     out = originalCombine(a, b, out);
     out.rewires = EveSOFDataAreaRewire.combineArrays(a.rewires, b.rewires, out.rewires);

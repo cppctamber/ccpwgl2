@@ -139,16 +139,31 @@ export class EveSOFDataFactionColorSet extends meta.Model
     @meta.color
     PrimaryDockedFX = vec4.create();
 
+
+    _types = [];
+
+    /**
+     * Alias for ccp not following their normal casing
+     * @returns {vec4}
+     */
     get PrimaryAttackFx()
     {
         return this.PrimaryAttackFX;
     }
 
+    /**
+     * Alias for ccp not following their normal casing
+     * @returns {vec4}
+     */
     get PrimarySiegeFx()
     {
         return this.PrimarySiegeFX;
     }
 
+    /**
+     * Alias for ccp not following their normal casing
+     * @returns {vec4}
+     */
     get PrimaryDockedFx()
     {
         return this.PrimaryDockedFX;
@@ -161,42 +176,40 @@ export class EveSOFDataFactionColorSet extends meta.Model
      */
     Has(type)
     {
-        const name = EveSOFDataFactionColorSet.Type[type];
-
-        if (name === undefined)
-        {
-            throw new ErrSOFFactionColorSetTypeUnknown({ type });
-        }
-
-        return !!this[name];
+        const colorName = this._types[type];
+        if (!colorName) throw new ErrSOFFactionColorSetTypeUnknown({ type });
+        return colorName in this;
     }
 
     /**
      * Gets a color type
      * @param {Number} type
      * @param {vec4} [out=vec4.create()]
+     * @param {Number} [fallback] - Optional fallback colour
      * @return {vec4} out
      */
-    Get(type, out = vec4.create())
+    Get(type, out = vec4.create(), fallback)
     {
         if (!this.Has(type))
         {
-            throw new ErrSOFFactionColorSetTypeNotFound({ type });
+            if (fallback !== undefined && this.Has(fallback))
+            {
+                type = fallback;
+            }
+            else
+            {
+                throw new ErrSOFFactionColorSetTypeNotFound({ type });
+            }
         }
 
-        return vec4.copy(out, this[EveSOFDataFactionColorSet.Type[type]]);
+        const colorName = this._types[type];
+        return vec4.copy(out, this[colorName]);
     }
 
-    /**
-     * Usage index
-     * TODO: Figure out how to automate this array
-     * @type {string[]}
-     */
     static Type = [
         "Primary",
         "Secondary",
         "Tertiary",
-        "Black",
         "White",
         "Yellow",
         "Orange",
@@ -230,10 +243,29 @@ export class EveSOFDataFactionColorSet extends meta.Model
         "PrimaryForcefield",
         "SecondaryForcefield",
         "PrimaryBanner",
-        "PrimaryBillboard",
         "PrimaryFx",
-        "SecondaryFx"
+        "SecondaryFx",
+        // Unknown
+        // Unknown
+        // Unknown
+        // Unknown
+        // Unknown
     ];
+
+
+    /**
+     * Custom black property reader which is fired after each read of this object
+     * @param {String} property - The property being read
+     * @param {Object} value    - The value returned
+     * @param {Object} parent   - The object that the property and value belongs to
+     */
+    static onAfterBlackPropertyReader(property, value, parent)
+    {
+        if (!parent._count) parent._count = 0;
+        if (!parent._test) parent._test = [];
+        parent._test.push({ property, value, count: parent._count++ });
+        parent._types.push(property);
+    }
 
     /**
      *

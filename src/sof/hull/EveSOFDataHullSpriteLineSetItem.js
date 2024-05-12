@@ -25,6 +25,7 @@ export class EveSOFDataHullSpriteLineSetItem extends meta.Model
     falloff = 0;
 
     @meta.uint
+    @meta.desc("Deprecated")
     groupIndex = -1;
 
     @meta.float

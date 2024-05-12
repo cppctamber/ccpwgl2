@@ -19,6 +19,7 @@ export class EveSOFDataHull extends meta.Model
     audioPosition = vec3.create();
 
     @meta.list("EveSOFDataHullBanner")
+    @meta.desc("Deprecated")
     banners = [];
 
     @meta.list("EveSofDataHullBannerSet")
@@ -43,6 +44,7 @@ export class EveSOFDataHull extends meta.Model
     category = "";
 
     @meta.list("EveSOFDataHullChild")
+    @meta.desc("Deprecated")
     children = [];
 
     @meta.list()

@@ -42,6 +42,7 @@ import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataFaction } from "sof/faction";
 import { EveSOFDataRace } from "sof/race";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
+import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 
 
 @meta.type("EveSOFData")
@@ -100,25 +101,7 @@ export class EveSOFData extends meta.Model
                 VERTICAL: 1,
                 HORIZONTAL: 2
             },
-            Usage: {
-                "ALLIANCE_LOGO": 0, // Corp Logo, Vertical Banner, Hologram
-                "CORP_LOGO": 1,
-                "OWNER_LOGO": 2,
-                //UNKNOWN
-                "BANNER": 4, // Horizontal Banner, Vertical Banner
-                "TARGET_SYSTEM_ALLIANCE_LOGO": 5,
-                "TARGET_SYSTEM_ALLIANCE_BANNER": 6,
-                //UNKNOWN
-                "TARGET_SYSTEM_STATUS_1": 8,
-                "TARGET_SYSTEM_STATUS_2": 9,
-                "TARGET_SYSTEM_STATUS_3": 10,
-                "TARGET_SYSTEM_STATUS_4": 11,
-                "TARGET_SYSTEM_STATUS_5": 12,
-                "TRAVEL_WARNING_NOTICE": 13,
-                "CURRENT_SYSTEM_ALLIANCE_LOGO": 14,
-                "CURRENT_SYSTEM_ALLIANCE_BANNER": 15,
-                "PORTRAIT": 18
-            }
+            Usage: EveSOFDataHullBannerSetItem.Usage
         },
 
         wreckArea: {
@@ -186,13 +169,13 @@ export class EveSOFData extends meta.Model
         },
 
         decalUsage: [
-            "decalv5.fx",              // Looks correct, lots of random stuff
-            "decalcounterv5.fx",
-            "decalholev5.fx",
-            "decalcylindricv5.fx",     // Unknown - HAZARD STRIPES  -
-            "decalglowcylindricv5.fx", // Unknown - GLOW ROTATION -
-            "decalglowv5.fx",
-            "decalv5.fx"
+            "decalv5.fx",              // Standard
+            "decalcounterv5.fx",       // Killmark
+            "decalholev5.fx",          // Hole
+            "decalcylindricv5.fx",     // Cylindrical
+            "decalglowcylindricv5.fx", // Glow Cylindrical
+            "decalglowv5.fx",          // Glow
+            "decalv5.fx"               // Logo
         ],
 
         resFiles: null,
@@ -202,10 +185,10 @@ export class EveSOFData extends meta.Model
     };
 
     static TrigBalls = {
-        "tgb01_t1": [ 0, -57.502, 151.432, 2.5, 2.5, 2.5 ],
-        "tgbc01_t1": [ 0, 0, -22.64, 1.5, 1.5, 1.5 ],
+        "tgb01": [ 0, -57.502, 151.432, 2.5, 2.5, 2.5 ],
+        "tgbc01": [ 0, 0, -22.64, 1.5, 1.5, 1.5 ],
         "tgc01": [ 0, -4.1, -0.278, .8, .8, .8 ],
-        "tgc02_t1": [ 0, -17.35, 125.826, .8, .8, .8 ],
+        "tgc02": [ 0, -17.35, 125.826, .8, .8, .8 ],
         "tgde01": [ 0, 1.85, 0, .4, .4, .4 ],
         "tgdn01": [ 0, 47.343, 421.454, 6, 6, 6 ],
         "tgf01": [ 0, -3.969, -0.633, .25, .25, .25 ],
@@ -353,10 +336,12 @@ export class EveSOFData extends meta.Model
                     const split = cur.split("/");
                     let faction = split[0] || split[1];
                     if (faction.includes(".")) faction = null;
-                    if (faction && !acc.includes(faction)) acc.push(faction);
+                    if (faction && faction !== "none" && !acc.includes(faction)) acc.push(faction);
                     return acc;
                 }, [])
                 .sort((a, b) => a.localeCompare(b));
+
+            this._options.resPathInserts[hull.name].unshift("none");
         }
 
 
@@ -426,39 +411,31 @@ export class EveSOFData extends meta.Model
         hull = isString(hull) ? this.GetHull(hull) : hull;
         faction = isString(faction) ? this.GetFaction(faction) : faction;
 
-        // Use the base texture (assumes that is what was passed in)
-        if (resPathInsert === "base")
-        {
-            // Assumes the base file
-            return originalFileName;
-        }
-
-        // Fall back to the default
-        if (!resPathInsert || resPathInsert === "none")
+        if (!resPathInsert)
         {
             resPathInsert = faction.resPathInsert;
         }
 
-        if (!resPathInsert)
+        // Use the base texture (this assumes we were given the base texture as the original file name)
+        // TODO: Strip all respathinserts we're using none!
+        if (resPathInsert && resPathInsert !== "base" && resPathInsert !== "none" && this.IsValidHullResPathInsert(hull.name, resPathInsert))
         {
-            return originalFileName;
-        }
+            // Try to find a respathinsert version
+            const resFiles = this.GetResFiles();
 
-        // Try to find a respathinsert version
-        const resFiles = this.GetResFiles();
+            let path = originalFileName.toLowerCase();
+            let index = path.lastIndexOf("/");
+            if (index >= 0) path = path.substr(0, index + 1) + resPathInsert + "/" + path.substr(index + 1);
+            index = path.lastIndexOf("_");
+            if (index >= 0) path = path.substr(0, index) + "_" + resPathInsert + path.substr(index);
+            if (resFiles.includes(path.split(":/")[1]) || resFiles.includes(path)) return path;
 
-        let path = originalFileName.toLowerCase();
-        let index = path.lastIndexOf("/");
-        if (index >= 0) path = path.substr(0, index + 1) + resPathInsert + "/" + path.substr(index + 1);
-        index = path.lastIndexOf("_");
-        if (index >= 0) path = path.substr(0, index) + "_" + resPathInsert + path.substr(index);
-        if (resFiles.includes(path.split(":/")[1]) || resFiles.includes(path)) return path;
-
-        // Extra check for faction ships
-        if (hull.name.includes("_fn") && !resPathInsert)
-        {
-            let nonFaction = originalFileName.replace("_fn", "_t1");
-            if (resFiles.includes(nonFaction.split(":/")[1]) || resFiles.includes(nonFaction)) return nonFaction;
+            // Extra check for faction ships
+            if (hull.name.includes("_fn") && !resPathInsert)
+            {
+                let nonFaction = originalFileName.replace("_fn", "_t1");
+                if (resFiles.includes(nonFaction.split(":/")[1]) || resFiles.includes(nonFaction)) return nonFaction;
+            }
         }
 
         // Fallback to the original file name
@@ -1167,15 +1144,13 @@ export class EveSOFData extends meta.Model
             }
         }
 
+        // Custom
         this.SetupSOFOverrides(...args);
 
-        this.SetupBounds(...args);
-        this.SetupCustomMasks(...args);
-
-        // Temporary
-        await this.SetupMesh(...args);
-
         // Supported
+        this.SetupCustomMasks(...args);
+        await this.SetupMesh(...args);
+        this.SetupBounds(...args);
         this.SetupBanners(...args);
         this.SetupSpotlightSets(...args);
         this.SetupPlaneSets(...args);
@@ -1184,16 +1159,17 @@ export class EveSOFData extends meta.Model
         this.SetupBoosters(...args);
         this.SetupLocators(...args);
         this.SetupInstancedMesh(...args);
+        this.SetupLocatorSets(...args);
+        // partial support
+        await this.SetupChildren(...args);
         // Unsupported
         await this.SetupShadows(...args);
-        this.SetupLocatorSets(...args);
         this.SetupHazeSets(...args);
         this.SetupSpriteLineSets(...args);
         this.SetupAudio(...args);
         this.SetupModelCurves(...args);
         this.SetupLights(...args);
         this.SetupObservers(...args);
-        await this.SetupChildren(...args);
         this.SetupControllers(...args);
 
         // Temporarily add triglavian balls
@@ -1207,7 +1183,7 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     *
+     * Custom overrides
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
@@ -1346,21 +1322,32 @@ export class EveSOFData extends meta.Model
      */
     static SetupBounds(data, obj, sof, options)
     {
-        const bounds = get(sof.hull, "boundingSphere", [ 0, 0, 0, 0 ]);
-        obj.boundingSphereRadius = bounds[3];
-        vec3.copy(obj.boundingSphereCenter, bounds);
-
-        const
-            center = vec3.copy(obj.shapeEllipsoidCenter, get(sof.hull, "shapeEllipsoidCenter", [ 0, 0, 0 ])),
-            radii = vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "shapeEllipsoidRadius", [ 0, 0, 0 ]));
-
-        if (radii[0] <= 0)
+        try
         {
-            const { maxBounds, minBounds } = obj.mesh.geometryResource;
-            vec3.subtract(center, maxBounds, minBounds);
-            vec3.scale(center, center, 0.5 * 1.732050807);
-            vec3.add(radii, maxBounds, minBounds);
-            vec3.scale(radii, radii, 0.5);
+            const bounds = get(sof.hull, "boundingSphere", [ 0, 0, 0, 0 ]);
+            obj.boundingSphereRadius = bounds[3];
+            vec3.copy(obj.boundingSphereCenter, bounds);
+
+            const
+                center = vec3.copy(obj.shapeEllipsoidCenter, get(sof.hull, "shapeEllipsoidCenter", [ 0, 0, 0 ])),
+                radii = vec3.copy(obj.shapeEllipsoidRadius, get(sof.hull, "shapeEllipsoidRadius", [ 0, 0, 0 ]));
+
+            if (radii[0] <= 0)
+            {
+                const { maxBounds, minBounds } = obj.mesh.geometryResource;
+                vec3.subtract(center, maxBounds, minBounds);
+                vec3.scale(center, center, 0.5 * 1.732050807);
+                vec3.add(radii, maxBounds, minBounds);
+                vec3.scale(radii, radii, 0.5);
+            }
+        }
+        catch (err)
+        {
+            tw2.Error({
+                name: "Space object factory",
+                message: "Failed to generate bounds",
+                error: err
+            });
         }
 
     }
@@ -1427,9 +1414,11 @@ export class EveSOFData extends meta.Model
                     area.name = name;
                     area.index = index;
                     area.count = count;
-                    // Keep track of area type
-                    area._areaType = areaType;
                     mesh[areasName].push(area);
+
+                    // Keep track of area type
+                    area.areaType = areaType;
+                    area.colorType = -1;
                 }
 
                 const eff = data.generic.GetShaderConfig(shader, sof.hull.isSkinned);
@@ -1442,8 +1431,9 @@ export class EveSOFData extends meta.Model
                 const areaData = sof.faction.AssignAreaType(areaType);
 
                 // Temporarily keep track of the hull area nane
-                area._areaData = Object.assign({}, areaData);
-                this.assignMaterialNamesIfUsable(area._areaData, sof.area);
+                area._sofMeta = area._sofMeta || {};
+                area._sofMeta.areaData = Object.assign({}, areaData);
+                this.assignMaterialNamesIfUsable(area._sofMeta.areaData, sof.area);
 
                 // Get custom values
                 Object.assign(areaData, sof.area);
@@ -1492,6 +1482,7 @@ export class EveSOFData extends meta.Model
                         if (sof.faction.HasColorType(11))
                         {
                             sof.faction.GetColorType(11, glowColor);
+                            area.colorType = 11;
                         }
                         else
                         {
@@ -1534,7 +1525,8 @@ export class EveSOFData extends meta.Model
                     }
                     else
                     {
-                        sof.faction.GetColorType(areaData.colorType, glowColor, 0);
+                        area.colorType = sof.faction.HasColorType(areaData.colorType) ? areaData.colorType : 0;
+                        sof.faction.GetColorType(area.colorType, glowColor);
                     }
 
                     vec4.multiply(glowColor, glowColor, options.multiplier.generalGlowColor);
@@ -1637,35 +1629,55 @@ export class EveSOFData extends meta.Model
      * @param {Array} arr
      * @param {Function} Ctor
      * @param {String} name
+     * @param {Boolean} isSof6
      * @return {*} attachment
      */
-    static FindAttachmentByConstructorAndName(arr, Ctor, name)
+    static FindAttachmentByConstructorAndName(arr, Ctor, name, isSof6)
     {
+
+        if (isSof6) tw2.Log({
+            name: "Space object factory - SOF 6 Update",
+            message: "Finding items by name will not work with the latest SOF 6 updates"
+        });
+
         const found = arr.filter(x => x.constructor === Ctor && x.name === name);
         if (found.length > 1) throw new ReferenceError(`Found ${found.length} attachments, expected 1`);
         return found[0] ? found[0] : null;
     }
 
+
     /**
-     * Sets up banners
+     * Sets up banners using pre SOF 6 methods
      * @param data
      * @param obj
      * @param sof
      * @param options
-     * @constructor
      */
     static SetupBanners(data, obj, sof, options)
     {
-        const { banners: opt } = options;
+        const
+            sof6 = sof.hull.sof6 && data.enableSof6;
+
+        let banners;
+        if (sof6)
+        {
+            banners = sof.hull.banners
+                .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x))
+                .flatMap(x => x.items);
+        }
+        else
+        {
+            banners = sof.hull.banners.filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x));
+        }
 
         const
-            { banners = [] } = sof.hull,
+            { banners: opt } = options,
             arr = obj.attachments,
             toRemove = EveSOFData.FindObjectsByConstructor(arr, EveBanner);
 
         banners.forEach(srcSet =>
         {
-            let set = this.FindAttachmentByConstructorAndName(arr, EveBanner, srcSet.name);
+            let set = this.FindAttachmentByConstructorAndName(arr, EveBanner, srcSet.name, sof6);
             if (set)
             {
                 toRemove.splice(toRemove.indexOf(set), 1);
@@ -1686,39 +1698,33 @@ export class EveSOFData extends meta.Model
                 });
             }
 
+            // This isn't a requirement of the space object factory
+            // TODO: Remove this...
             let ImageMap = set.effect ? set.imageMapResPath : "";
             if (!ImageMap)
             {
-                let x = Math.round(srcSet.scaling[0]),
-                    y = Math.round(srcSet.scaling[1]),
-                    type = 0;
-
-                if (x < y) type = 1;
-                if (x > y) type = 2;
-
                 switch (srcSet.usage)
                 {
-                    case opt.Usage.ALLIANCE_LOGO:
-                        if (type === 1) ImageMap = opt.defaultVerticalImageMap;
-                        else if (type === 2) ImageMap = opt.defaultHorizontalImageMap;
-                        else ImageMap = data.generic.resPathDefaultAlliance;
+                    case EveSOFDataHullBannerSetItem.Usage.ALLIANCE_LOGO:
+                        ImageMap = data.generic.resPathDefaultAlliance;
                         break;
 
-                    case opt.Usage.BANNER:
-                        ImageMap = type === 1
-                            ? opt.defaultVerticalImageMap
-                            : opt.defaultHorizontalImageMap;
+                    case EveSOFDataHullBannerSetItem.Usage.VERTICAL_BANNER:
+                        ImageMap = opt.defaultVerticalImageMap;
                         break;
 
-                    case opt.Usage.CORP_LOGO:
+                    case EveSOFDataHullBannerSetItem.usage.HORIZONTAL_BANNER:
+                        ImageMap = opt.defaultHorizontalImageMap;
+                        break;
+
+                    case EveSOFDataHullBannerSetItem.Usage.CORP_LOGO:
                         ImageMap = data.generic.resPathDefaultCorp;
                         break;
 
-                    case opt.Usage.PORTRAIT:
+                    case EveSOFDataHullBannerSetItem.Usage.CEO_PORTRAIT:
                         ImageMap = data.generic.resPathDefaultCeo;
                         break;
                 }
-
                 // Turn off until explicitly turned on?
                 set.display = false;
             }
@@ -1762,6 +1768,12 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Debugging sof6
+     * @type {boolean}
+     */
+    enableSof6 = false;
+
+    /**
      *
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
@@ -1770,21 +1782,29 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpriteSets(data, obj, sof, options)
     {
+
+        const sof6 = sof.hull.sof6 && data.enableSof6;
+
         const
-            { isSkinned = false, spriteSets = [] } = sof.hull,
+            { isSkinned = false } = sof.hull,
             arr = obj.attachments || obj.spriteSets,
             toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpriteSet);
 
+        const spriteSets = sof.hull.spriteSets
+            .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x));
+
+
         spriteSets.forEach(srcSet =>
         {
-            let set = this.FindAttachmentByConstructorAndName(arr, EveSpriteSet, srcSet.name);
-
+            /*
             //  If they aren't visible, don't bother to create them
             if (srcSet.visibilityGroup && !sof.faction.HasVisibilityGroup(srcSet.visibilityGroup))
             {
                 return;
             }
+             */
 
+            let set = this.FindAttachmentByConstructorAndName(arr, EveSpriteSet, srcSet.name, sof6);
             if (set)
             {
                 set.ClearItems();
@@ -1802,15 +1822,24 @@ export class EveSOFData extends meta.Model
             set.skinned = srcSet.skinned && isSkinned;
             set.effect = options.effect.sprite;
 
+            const color = vec4.alloc();
+            color[0] = color[1] = color[2] = 0;
+            color[3] = 1;
+
             srcSet.items.forEach(srcItem =>
             {
-                const color = vec4.fromValues(1, 1, 1, 1);
+                //srcItem.colorType = sof.faction.HasColorType(srcItem.colorType) ? srcItem.colorType : 0;
                 sof.faction.GetColorType(srcItem.colorType, color, 0);
                 const spriteItem = EveSpriteSetItem.from(Object.assign({}, srcItem, { color }));
+
+                // Something is wrong here...
+                if (!spriteItem.minScale) spriteItem.minScale = spriteItem.maxScale * 0.25;
                 spriteItem.minScale *= options.multiplier.spriteScale;
                 spriteItem.maxScale *= options.multiplier.spriteScale;
                 set.items.push(spriteItem);
             });
+
+            vec4.unalloc(color);
 
             set.Initialize();
         });
@@ -1822,7 +1851,6 @@ export class EveSOFData extends meta.Model
         });
     }
 
-
     static FindObjectsByConstructor(arr, Ctor)
     {
         return arr.filter(x => x.constructor === Ctor);
@@ -1830,7 +1858,6 @@ export class EveSOFData extends meta.Model
 
     /**
      *
-     * TODO: Handle extra sets...
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
@@ -1838,14 +1865,22 @@ export class EveSOFData extends meta.Model
      */
     static SetupSpotlightSets(data, obj, sof, options)
     {
+
         const
-            { isSkinned = false, spotlightSets = [] } = sof.hull,
-            arr = obj.attachments || obj.spotlightSets,
+            sof6 = sof.hull.sof6 && data.enableSof6;
+
+        const
+            { isSkinned = false } = sof.hull,
+            arr = obj.attachments || obj["spotlightSets"],
             toRemove = EveSOFData.FindObjectsByConstructor(arr, EveSpotlightSet);
+
+        const spotlightSets = sof.hull.spotlightSets
+            .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x));
 
         spotlightSets.forEach(srcSet =>
         {
-            let set = this.FindAttachmentByConstructorAndName(arr, EveSpotlightSet, srcSet.name);
+            // This will no longer work with SOF 6 as src set item names are the visibility group name
+            let set = this.FindAttachmentByConstructorAndName(arr, EveSpotlightSet, srcSet.name, sof6);
             if (set)
             {
                 set.ClearItems();
@@ -1904,19 +1939,42 @@ export class EveSOFData extends meta.Model
             });
             srcSet.items.forEach(item => set.CreateItem(item));
 
+            const color = vec4.alloc();
+
             // Update factions...
             set.items.forEach(item =>
             {
-                const faction = sof.faction.FindSpotlightSetByGroupIndex(item.groupIndex);
-                if (faction)
+
+                color[0] = color[1] = color[2] = 0;
+                color[3] = 1;
+
+                if (sof6)
                 {
+                    sof.faction.GetColorType(item.colorType, color, 0);
+
                     item.SetValues({
-                        coneColor: faction.coneColor,
-                        flareColor: faction.flareColor,
-                        spriteColor: faction.spriteColor
+                        coneColor: color,
+                        flareColor: color,
+                        spriteColor: color
                     });
+
+                    console.dir({ colorType: item.colorType, color });
+                }
+                else
+                {
+                    const faction = sof.faction.FindSpotlightSetByGroupIndex(item.groupIndex);
+                    if (faction)
+                    {
+                        item.SetValues({
+                            coneColor: faction.coneColor,
+                            flareColor: faction.flareColor,
+                            spriteColor: faction.spriteColor
+                        });
+                    }
                 }
             });
+
+            vec4.unalloc(color);
         });
 
         toRemove.forEach(set =>
@@ -1971,6 +2029,7 @@ export class EveSOFData extends meta.Model
         {
             obj.RandomizeBillboards = () =>
             {
+
             };
         }
     }
@@ -1984,14 +2043,31 @@ export class EveSOFData extends meta.Model
      */
     static SetupPlaneSets(data, obj, sof, options)
     {
+
         const
-            { isSkinned, planeSets } = sof.hull,
+            sof6 = sof.hull.sof6 && data.enableSof6;
+
+        const
+            { isSkinned } = sof.hull,
             arr = obj.attachments || obj.planeSets,
             toRemove = EveSOFData.FindObjectsByConstructor(arr, EvePlaneSet);
 
+        let planeSets;
+
+        if (sof6)
+        {
+            planeSets = sof.hull.planeSets
+                .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x));
+        }
+        else
+        {
+            // Should be filtering out those group indices that aren't visible
+            planeSets = sof.hull.planeSets;
+        }
+
         planeSets.forEach(srcSet =>
         {
-            let set = this.FindAttachmentByConstructorAndName(arr, EvePlaneSet, srcSet.name);
+            let set = this.FindAttachmentByConstructorAndName(arr, EvePlaneSet, srcSet.name, sof6);
 
             if (set)
             {
@@ -2047,11 +2123,21 @@ export class EveSOFData extends meta.Model
             // Update faction colours
             set.items.forEach(item =>
             {
-                const faction = sof.faction.FindPlaneSetByGroupIndex(item.groupIndex);
-                if (faction) item.SetValues({ color: faction.color });
-                // Hide plane sets that are invisible???
-                if (EveSOFData.isZeroColor(item.color)) item.SetValues({ display: false });
+                if (sof6)
+                {
+                    vec4.copy(item.color, [ 0, 0, 0, 1 ]);
+                    sof.faction.GetColorType(item.colorType, item.color, 0);
+                }
+                else
+                {
+                    const faction = sof.faction.FindPlaneSetByGroupIndex(item.groupIndex);
+                    if (faction) vec4.copy(item.color, faction.color);
+                }
+
+                if (EveSOFData.isZeroColor(item.color)) item.display = false;
+                item.UpdateValues();
             });
+
         });
 
         this.HandleBillboards(obj, options);
@@ -2075,6 +2161,7 @@ export class EveSOFData extends meta.Model
 
     /**
      *
+     * TODO: Migrate decal usage to consts
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
      * @param {Object} sof
@@ -2090,7 +2177,7 @@ export class EveSOFData extends meta.Model
         hull.decalSets.forEach(srcSet =>
         {
             const setVisible = !srcSet.visibilityGroup || faction.HasVisibilityGroup(srcSet.visibilityGroup);
-            console.log(srcSet.name, "not visible");
+            console.log(srcSet.name, setVisible ? "visible" : "not visible");
             if (!setVisible) return;
 
             srcSet.items.forEach(srcItem =>
@@ -2098,22 +2185,21 @@ export class EveSOFData extends meta.Model
                 const name = `${srcSet.name}_${srcItem.name}`;
                 let decal = this.FindAttachmentByConstructorAndName(obj.decals, EveSpaceObjectDecal, name);
 
-                const { visibilityGroup, logoType, usage, glowColorType, meshIndex } = srcItem;
+                const { logoType, usage, meshIndex } = srcItem;
+                let { glowColorType } = srcItem;
 
                 // Check visibility
-                let itemVisible = !visibilityGroup || faction.HasVisibilityGroup(visibilityGroup);
-                if (!faction.HasLogoType(logoType))
+                let itemVisible = true;
+
+                // Logos must have a faction logo set
+                if (usage === 6 && !faction.HasLogoType(logoType))
                 {
-                    tw2.Debug({
-                        name: "Space object factory",
-                        message: `Could not find logo type for decal: ${name} (${logoType})`
-                    });
                     itemVisible = false;
                 }
 
                 if (!itemVisible)
                 {
-                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType(${logoType})`);
+                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType ${logoType}, usage ${usage})`);
                     return;
                 }
 
@@ -2127,7 +2213,6 @@ export class EveSOFData extends meta.Model
                     obj.decals.push(decal);
                 }
 
-                // How to tell what kind of effect to load??
                 const
                     mesh = obj.mesh.opaqueAreas.find(x => x.meshIndex === meshIndex),
                     provided = { textures: mesh ? mesh.effect.GetTextures() : {} },
@@ -2156,11 +2241,27 @@ export class EveSOFData extends meta.Model
                         break;
                 }
 
-                // Faction
-                //if (faction.HasLogoType(logoType))
-                faction.AssignLogoType(logoType, effect);
+
+                // Factions don't necessarily contain the default information for a decal
+                // So don't bother overwriting if it doesn't exist
+                if (faction.HasLogoType(logoType))
+                {
+                    faction.AssignLogoType(logoType, effect);
+                }
+
                 const { DecalGlowColor } = effect.parameters;
-                if (DecalGlowColor) faction.GetColorType(glowColorType, DecalGlowColor, 0);
+
+
+                if (DecalGlowColor)
+                {
+                    glowColorType = faction.HasLogoType(logoType) ? logoType : 0;
+                    faction.GetColorType(glowColorType, DecalGlowColor);
+                }
+                else
+                {
+                    // Non glow decals still have glow colors for some reason
+                    glowColorType = -1;
+                }
 
                 // Item's values override faction
                 srcItem.Assign(effect);
@@ -2173,15 +2274,18 @@ export class EveSOFData extends meta.Model
                 // Keep track of the original logo type
                 decal._logoType = logoType;
 
-                const values = Object.assign({ display: true }, {
-                    //display: !faction.HasLogoType(logoType),
+                const values = {
+                    display: true, // faction.HasLogoType(logoType), // Remove this and identify earlier and maybe don't create?
                     rotation: srcItem.rotation,
                     position: srcItem.position,
                     scaling: srcItem.scaling,
                     parentBoneIndex: srcItem.boneIndex,
                     name: srcItem.name,
-                    indexBuffers: srcItem.GetIndexBuffers()
-                });
+                    indexBuffers: srcItem.GetIndexBuffers(),
+                    meshIndex: srcItem.meshIndex,
+                    logoType: srcItem.logoType,
+                    colorType: glowColorType
+                };
 
                 //console.dir(values);
 
@@ -3052,6 +3156,17 @@ export class EveSOFData extends meta.Model
         return this.resFileResPathInsertSuffixes.includes(suffix);
     }
 
+    /**
+     * Builds classes
+     * @type {Object<Number:String>}
+     */
+    static BuildClass = {
+        0: "EveShip2",
+        1: "EveMobile",
+        2: "EveStation2",
+        3: "EveSwarm",
+        4: "Extension"
+    };
 }
 
 

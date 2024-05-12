@@ -20,6 +20,7 @@ export class EveSOFDataFaction extends meta.Model
     areaTypes = null;
 
     @meta.list("EveSOFDataFactionChild")
+    @meta.desc("Deprecated?")
     children = [];
 
     @meta.struct("EveSOFDataFactionColorSet")
@@ -50,12 +51,14 @@ export class EveSOFDataFaction extends meta.Model
     materialUsageMtl4 = 0;
 
     @meta.list("EveSOFDataFactionPlaneSet")
+    @meta.desc("Deprecated")
     planeSets = [];
 
     @meta.string
     resPathInsert = "";
 
     @meta.list("EveSOFDataFactionSpotlightSet")
+    @meta.desc("Deprecated")
     spotlightSets = [];
 
     @meta.struct("EveSOFDataFactionVisibilityGroupSet")
@@ -229,6 +232,17 @@ export class EveSOFDataFaction extends meta.Model
     HasVisibilityGroup(name)
     {
         return this.visibilityGroupSet ? this.visibilityGroupSet.Has(name) : false;
+    }
+
+    /**
+     * Checks if an object is visible
+     * @param {Object} obj
+     * @returns {boolean|*|boolean}
+     * @constructor
+     */
+    IsObjectVisible(obj)
+    {
+        return this.visibilityGroupSet ? this.visibilityGroupSet.IsObjectVisible(obj) : false;
     }
 
     /**
