@@ -101,83 +101,63 @@ export class Tw2TextureRes extends Tw2Resource
     {
         const gl = device.gl;
         const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
+        let canvas;
 
         this.DeleteGL();
-
-        let canvas;
 
         switch (this._extension)
         {
             case "tga":
-                // Todo Handle cube map: could use the width/height ratio to guess...
-
-                const tga = new Targa();
-                tga.load(new Uint8Array(data));
-                canvas = tga.getCanvas();
-
-                this._width = canvas.width;
-                this._height = canvas.height;
-
-                this._target = gl.TEXTURE_2D;
-                this._format = format;
-                this._type = gl.UNSIGNED_BYTE;
-                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(this._width, this._height);
-                this.texture = gl.createTexture();
-
-                gl.bindTexture(this._target, this.texture);
-                gl.texImage2D(this._target, 0, this._format, this._format, this._type, canvas);
-                if (this._isPowerOfTwo || device.glVersion > 1)
-                {
-                    gl.generateMipmap(this._target);
-                    this._hasMipMaps = true;
-                }
-                gl.bindTexture(this._target, null);
-                break;
-
-            case "cube":
-                this._target = gl.TEXTURE_CUBE_MAP;
-                this._format = format;
-                this._type = gl.UNSIGNED_BYTE;
-                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.height);
-                this._width = this._height = data.height;
-                this.texture = gl.createTexture();
-
-                gl.bindTexture(this._target, this.texture);
-
-                canvas = document.createElement("canvas");
-                canvas.width = canvas.height = data.height;
-                const ctx = canvas.getContext("2d");
-                for (let j = 0; j < 6; ++j)
-                {
-                    ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-                    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, this._format, this._format, this._type, canvas);
-                }
-                if (this._isPowerOfTwo || device.glVersion > 1)
-                {
-                    gl.generateMipmap(this._target);
-                }
-                gl.bindTexture(this._target, null);
-                this._hasMipMaps = true;
-                break;
-
             case "png":
-                this._target = gl.TEXTURE_2D;
-                this._format = format;
-                this._type = gl.UNSIGNED_BYTE;
-                this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(data.width, data.height);
-                this.texture = gl.createTexture();
-
-                gl.bindTexture(this._target, this.texture);
-                gl.texImage2D(this._target, 0, this._format, this._format, this._type, data);
-                if (this._isPowerOfTwo || device.glVersion > 1)
+            case "cube":
+                if (!this._isCube || this._extension !== "cube")
                 {
-                    gl.generateMipmap(this._target);
+                    this._target = gl.TEXTURE_2D;
+                    this._format = format;
+                    this._type = gl.UNSIGNED_BYTE;
+                    this._width = data.width;
+                    this._height = data.height;
+                    this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(this._width, this._height);
+
+                    this.texture = gl.createTexture();
+                    gl.bindTexture(this._target, this.texture);
+                    gl.texImage2D(this._target, 0, this._format, this._format, this._type, data);
+                    if (this._isPowerOfTwo || device.glVersion > 1)
+                    {
+                        gl.generateMipmap(this._target);
+                        this._hasMipMaps = true;
+                    }
+                }
+                else
+                {
+                    this._isCube = true;
+                    this._target = gl.TEXTURE_CUBE_MAP;
+                    this._format = format;
+                    this._type = gl.UNSIGNED_BYTE;
+                    this._width = this._height = data.height;
+                    this._isPowerOfTwo = Tw2TextureRes.IsPowerOfTwo(this._width, this._height);
+
+                    this.texture = gl.createTexture();
+                    gl.bindTexture(this._target, this.texture);
+
+                    canvas = document.createElement("canvas");
+                    canvas.width = canvas.height = data.height;
+                    const ctx = canvas.getContext("2d");
+                    for (let j = 0; j < 6; ++j)
+                    {
+                        ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+                        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, this._format, this._format, this._type, canvas);
+                    }
+                    if (this._isPowerOfTwo || device.glVersion > 1)
+                    {
+                        gl.generateMipmap(this._target);
+                    }
                     this._hasMipMaps = true;
                 }
+
                 gl.bindTexture(this._target, null);
-                this._width = data.width;
-                this._height = data.height;
                 break;
+
 
                 /**
 
@@ -415,27 +395,41 @@ export class Tw2TextureRes extends Tw2Resource
      */
     DoCustomLoad(path, extension)
     {
+
+        // Assume all cubes have _cube in the name somewhere
+        this._isCube = path.toLowerCase().includes("_cube") || path.includes(".cube");
+
+        // Handle the old hardcoded cube extensions
         switch (extension)
         {
+            // TODO: Deprecate this
             case "cube":
-                this._extension = extension;
+                extension = this._extension = "png";
                 this._isCube = true;
                 path = path.substr(0, path.length - 5) + ".png";
                 break;
 
+            // From ccpwgl2
             case "qube":
-                this._extension = "cube";
-                path = path.replace(".qube", ".cube");
+                extension = this._extension = "cube";
                 this._isCube = true;
+                path = path.replace(".qube", ".cube");
                 break;
+        }
 
+        this._extension = extension;
+
+        switch (extension)
+        {
             case "tga":
-                this._extension = extension;
                 resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
                     .then(response =>
                     {
+                        const tga = new Targa();
+                        tga.load(new Uint8Array(response));
+                        const data = tga.getCanvas();
                         this.OnLoaded();
-                        resMan.Queue(this, response);
+                        resMan.Queue(this, data);
                     })
                     .catch(err =>
                     {
@@ -443,13 +437,7 @@ export class Tw2TextureRes extends Tw2Resource
                     });
                 return true;
 
-            case "png":
-                this._extension = extension;
-                this._isCube = false;
-                break;
-
             case "dds":
-                this._extension = extension;
                 resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
                     .then(response =>
                     {

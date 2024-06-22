@@ -49,6 +49,7 @@ export class Tw2GeometryRes extends Tw2Resource
     models = [];
     animations = [];
 
+    _isCustom = false;
     _requiresSystemMirror = false;
     _requestResponseType = null;
     _extension = null;
@@ -74,14 +75,21 @@ export class Tw2GeometryRes extends Tw2Resource
 
         if (reloadRequired)
         {
-            await new Promise((onResolved, onRejected) =>
+            if (this._custom)
             {
-                this.RegisterCallbacks(onResolved, onRejected);
-                resMan.LoadResource(this, {
-                    name: "System Mirror",
-                    message: "Rebuilding system mirror"
+                this.UpdateFromJSON(this._custom.factory(this._custom.options));
+            }
+            else
+            {
+                await new Promise((onResolved, onRejected) =>
+                {
+                    this.RegisterCallbacks(onResolved, onRejected);
+                    resMan.LoadResource(this, {
+                        name: "System Mirror",
+                        message: "Rebuilding system mirror"
+                    });
                 });
-            });
+            }
         }
 
         if (!enable)
@@ -108,7 +116,7 @@ export class Tw2GeometryRes extends Tw2Resource
      */
     ClearSystemMirrorIfNotRequired()
     {
-        if (!this._requiresSystemMirror)
+        if (!this._requiresSystemMirror && !this._isCustom)
         {
             for (let i = 0; i < this.meshes.length; i++)
             {
@@ -309,6 +317,8 @@ export class Tw2GeometryRes extends Tw2Resource
         }
 
         this.RebuildBounds();
+        this._custom = null;
+
         if (!resMan.IsSystemMirrorEnabled()) this.ClearSystemMirrorIfNotRequired();
         this.OnPrepared();
     }
@@ -875,28 +885,28 @@ export class Tw2GeometryRes extends Tw2Resource
 
     /**
      * Updates the geometry res from json
-     * @param json
-     * @param options
+     * @param {Object} json
+     * @param {Object} extensionOptions - options for the geometry reader
      */
-    UpdateFromJSON(json, options)
+    UpdateFromJSON(json, extensionOptions)
     {
+        this.Clear();
+
         this._extension = "gr2_json";
-        this.Prepare(json, options);
+        this._isCustom = true;
+        const Reader = readers[this._extension];
+        if (!Reader) throw new ErrResourceFormatUnsupported({ format: this._extension });
+        Reader.Prepare(json, this, extensionOptions);
+        this.RebuildBounds();
+
+        if (json.factory)
+        {
+            this._custom = this._custom || {};
+            this._custom.factory = json.factory;
+            this._custom.options = json.options;
+        }
     }
 
-    /**
-     * Updates the geometry res from raw geometry data
-     * @param {Array|TypedArray} indices
-     * @param {Array|TypedArray} positions
-     * @param {Array|TypedArray} texcoord0s
-     * @param {Array|TypedArray} [areas]
-     * @param {Array|TypedArray} [normals]
-     * @param {Array|TypedArray} [tangents]
-     */
-    UpdateFromRaw(indices, positions, texcoord0s, areas, normals, tangents)
-    {
-        return this.UpdateFromJSON(vertex.toJSON(indices, positions, texcoord0s, areas, normals, tangents));
-    }
 
     /**
      * Creates a geometry resource from json data

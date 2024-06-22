@@ -293,7 +293,7 @@ export class Tw2GeometryMesh
                         item: this,
                         areaIndex,
                         faceIndex: index,
-                        positionIndices: this.GetFaceVertexIndices(index),
+                        positionIndices: this.GetFaceVertexIndices([], index),
                         edgeStartIndex: debug.vertexIndices[debug.edgeStart],
                         edgeEndIndex: debug.vertexIndices[debug.edgeEnd],
                         vertexIndex: debug.vertexIndices[debug.closest],
@@ -415,6 +415,7 @@ export class Tw2GeometryMesh
         return sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
     }
 
+
     /**
      * Gets face vertex elements
      * @param {Array|Float32Array} v1
@@ -467,12 +468,13 @@ export class Tw2GeometryMesh
     /**
      * Gets the vertex indices for a face
      * TODO: Normalize the parameters so they are like similar functions
+     * @param {Array|TypedArray|vec3}
      * @param {Number} index
      * @return {vec3|Array}
      */
-    GetFaceVertexIndices(index)
+    GetFaceVertexIndices(out, index)
     {
-        return Tw2GeometryMesh.GetFaceVertexIndices([], index, this.indexData);
+        return Tw2GeometryMesh.GetFaceVertexIndices(out, index, this.indexData);
     }
 
     /**

@@ -102,6 +102,37 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
+     * Gets mesh areas by their color type
+     * @param {Number} colorType
+     * @param {Array<*>} [out=[]]
+     * @returns {Array<*>}
+     */
+    GetItemByColorType(colorType, out=[])
+    {
+        function getItemByColorType(area)
+        {
+            for (let i = 0; i < area.length; i++)
+            {
+                if (area[i].colorType === colorType && !out.includes(area[i]))
+                {
+                    out.push(area[i]);
+                }
+            }
+        }
+
+        getItemByColorType(this.additiveAreas);
+        getItemByColorType(this.decalAreas);
+        getItemByColorType(this.depthAreas);
+        getItemByColorType(this.depthNormalAreas);
+        getItemByColorType(this.distortionAreas);
+        getItemByColorType(this.opaqueAreas);
+        getItemByColorType(this.pickableAreas);
+        getItemByColorType(this.transparentAreas);
+
+        return out;
+    }
+
+    /**
      * Gets the current mesh index
      * @returns {number}
      */

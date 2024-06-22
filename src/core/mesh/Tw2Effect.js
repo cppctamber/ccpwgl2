@@ -5,7 +5,17 @@ import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2Resource } from "core/resource";
 import { getOverriddenShaderPath } from "../../../shaders";
+import { Tw2SamplerState } from "core";
 
+
+class TemporaryBinaryReader
+{
+    static blackStruct(r)
+    {
+        console.dir(r);
+        throw new Error("Force fail");
+    }
+}
 
 class Tw2ConstantParameter
 {
@@ -1230,6 +1240,12 @@ export class Tw2Effect extends meta.Model
             key: "name",
             value: "value",
             struct: Tw2EffectOption
+        }),
+
+        samplerOverrides: fromList({
+            key: "name",
+            reroute: "samplerOverrides",
+            struct: TemporaryBinaryReader
         }),
 
         resources: fromList({

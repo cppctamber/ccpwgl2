@@ -35,11 +35,9 @@ export class Tw2MeshArea extends meta.Model
     meshIndex = 0;
 
     // CCPWGL2 only
-
-    @meta.string
+    @meta.plain
     @meta.isPrivate
-    sofHullAreaName = "";
-
+    _sofMeta = null;
 
     /**
      * Gets a mesh areas's resources

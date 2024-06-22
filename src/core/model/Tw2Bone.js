@@ -24,4 +24,13 @@ export class Tw2Bone
     @meta.matrix4
     offsetTransform = mat4.create();
 
+    /**
+     * Gets the bone's parent bone index
+     * @returns {Number}
+     */
+    GetParentBoneIndex()
+    {
+        return this.boneRes ? this.boneRes.parentIndex : -1;
+    }
+
 }

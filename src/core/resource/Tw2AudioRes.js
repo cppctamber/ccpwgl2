@@ -65,7 +65,7 @@ export class Tw2AudioRes extends Tw2Resource
 
         this.audio.onended = () =>
         {
-            this.emit("on_ended");
+            this.EmitEvent("on_ended");
         };
 
         /**
@@ -73,7 +73,7 @@ export class Tw2AudioRes extends Tw2Resource
          */
         this.audio.onpause = () =>
         {
-            this.emit("on_paused");
+            this.EmitEvent("on_paused");
         };
 
         /**
@@ -81,7 +81,7 @@ export class Tw2AudioRes extends Tw2Resource
          */
         this.audio.onplaying = () =>
         {
-            this.emit("on_playing");
+            this.EmitEvent("on_playing");
         };
 
         this.audio.src = path;
