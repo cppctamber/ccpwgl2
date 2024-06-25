@@ -43,7 +43,9 @@ export const isMasked = `
 
 `;
 
-let amount = 0.33 / 2;
+/*
+
+ let amount = 0.33 / 2;
 
 export const getMaterialMask = `
 
@@ -53,9 +55,37 @@ export const getMaterialMask = `
         float material=texture2D(materialSampler,uv).x;
         if      (material<${  amount}) {v0.x=1.0;}
         else if (material>${1-amount}) {v0.w=1.0;}
-        else if (material<${3*amount}) {v0.y=1.0;} 
+        else if (material<${3*amount}) {v0.y=1.0;}
         else                           {v0.z=1.0;}
         return v0;
+    }
+
+`;
+
+ */
+
+export const getMaterialMask = `
+
+    vec4 getMaterialMask(float m)
+    {
+        float d=0.01;
+        float s=1.0/(1.0/3.0-2.0*d);
+        float o=1.0+d*s;
+        return saturate(vec4(o)-abs(s*(vec4(m)-vec4(0.0,1.0/3.0,2.0/3.0,1.0))));    
+    }
+    
+    vec4 getMaterialMask(sampler2D materialSampler,vec2 uv)
+    {
+        return getMaterialMask(texture2D(materialSampler,uv).x);
+    }
+    
+    int getMaterialIndex(float m)
+    {
+        vec4 mask = getMaterialMask(m);
+        if (mask.x > 0.0) return 0;
+        if (mask.y > 0.0) return 1;
+        if (mask.z > 0.0) return 2;
+        if (mask.w > 0.0) return 3;
     }
     
 `;
@@ -70,3 +100,4 @@ export const getPatternLayer = `
     }
      
 `;
+

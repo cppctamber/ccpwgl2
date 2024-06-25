@@ -45,9 +45,10 @@ export const Mode = {
     SAILS_MAP: 23,
     SAILS_MAP_PATTERN: 24,
     SAILS_MAP_BACKGROUND: 25,
-    DETAIL_1_MAP: 26,
-    DETAIL_2_MAP: 27,
-    DETAIL_3_MAP: 28
+    DETAIL_MAPS: 26,
+    DETAIL_1_MAP: 27,
+    DETAIL_2_MAP: 28,
+    DETAIL_3_MAP: 29
 };
 
 

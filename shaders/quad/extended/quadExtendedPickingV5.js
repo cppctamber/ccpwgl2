@@ -12,7 +12,7 @@ export const quadExtendedPickingV5 = {
         Main: {
             vs: vs.quadV5_PosTexTanTex,
             ps: {
-                constants: [
+                constants: [ // CB7
                     ObjectID
                 ],
                 textures: [
@@ -42,7 +42,7 @@ export const quadExtendedPickingV5 = {
                     uniform sampler2D s4; // PatternMask2Map
                     
                     uniform vec4 cb4[14];
-                    uniform vec4 cb7[1];
+                    uniform vec4 cb7[1]; // ID OF OBJECT
             
                     void main()
                     {
@@ -50,6 +50,7 @@ export const quadExtendedPickingV5 = {
                         vec4 v5;
                         vec4 v6;
                         vec4 r0;
+                        vec4 r1;
                         
                         int i0=0;
                         float c0 = 0.00392156886;
@@ -81,11 +82,11 @@ export const quadExtendedPickingV5 = {
                             else if (r0.z>0.0) {i0=${PickingBlueChannel.MATERIAL_3};}
                             else {i0=${PickingBlueChannel.MATERIAL_4};}
                             
-                            r0.x=getPatternLayer(s3,v6.xy,cb4[10].yz,cb4[12],r0);
-                            if(r0.x>0.5){i0=${PickingBlueChannel.MATERIAL_5};}
+                            r1.x=getPatternLayer(s3,v6.xy,cb4[10].yz,cb4[12],r0);
+                            if(r1.x>0.5){i0=${PickingBlueChannel.MATERIAL_5};}
                             
-                            r0.x=getPatternLayer(s4,v6.zw,cb4[11].yz,cb4[13],r0);
-                            if(r0.x>0.5){i0=${PickingBlueChannel.MATERIAL_6};}
+                            r1.x=getPatternLayer(s4,v6.zw,cb4[11].yz,cb4[13],r0);
+                            if(r1.x>0.5){i0=${PickingBlueChannel.MATERIAL_6};}
                         }
                          
                         if (i0==0) discard;
