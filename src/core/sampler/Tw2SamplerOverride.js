@@ -91,4 +91,24 @@ export class Tw2SamplerOverride extends meta.Model
         this._isDirty =  false;
         return s;
     }
+
+    /**
+     * Black reader
+     * @param {Tw2BlackBinaryReader} r
+     * @returns {Tw2SamplerOverride}
+     */
+    static blackStruct(r)
+    {
+        const item = new this();
+        item.mipFilter = r.ReadU16();
+        item.maxAnisotropy = r.ReadU16();
+        item.name = r.ReadStringU16();
+        item.maxMipLevel = r.ReadU16();
+        item.addressU = r.ReadU16();
+        item.addressV = r.ReadU16();
+        item.addressW = r.ReadU16();
+        item.filter = r.ReadU16();
+        item.loadBias = r.ReadF32();
+        return item;
+    }
 }

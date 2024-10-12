@@ -5,7 +5,7 @@ import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2Resource } from "core/resource";
 import { getOverriddenShaderPath } from "../../../shaders";
-import { Tw2SamplerState } from "core";
+import { Tw2SamplerOverride } from "core/sampler";
 
 
 class TemporaryBinaryReader
@@ -40,6 +40,7 @@ class Tw2ConstantParameter
     }
 
 }
+
 
 class Tw2EffectOption
 {
@@ -1245,7 +1246,7 @@ export class Tw2Effect extends meta.Model
         samplerOverrides: fromList({
             key: "name",
             reroute: "samplerOverrides",
-            struct: TemporaryBinaryReader
+            struct: Tw2SamplerOverride
         }),
 
         resources: fromList({
