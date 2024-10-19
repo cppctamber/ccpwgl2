@@ -39,7 +39,7 @@ import {
 
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
-import { EveSOFDataFaction } from "sof/faction";
+import { EveSOFDataFaction, EveSOFDataFactionColorSet } from "sof/faction";
 import { EveSOFDataRace } from "sof/race";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
@@ -48,6 +48,10 @@ import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetIte
 @meta.type("EveSOFData")
 export class EveSOFData extends meta.Model
 {
+
+    @meta.boolean
+    @meta.uiDescription("Custom property")
+    enableChildren = false;
 
     @meta.list("EveSOFDataFaction")
     faction = [];
@@ -1147,6 +1151,32 @@ export class EveSOFData extends meta.Model
         // Custom
         this.SetupSOFOverrides(...args);
 
+
+        // TODO: DELETE THIS WHEN TESTING FINISHED!
+        if (obj._sofFactionColorSetHandler && obj.sofFactionColorSet)
+        {
+            obj.sofFactionColorSet.OffEvent("modified", obj._sofFactionColorSetHandler);
+        }
+
+        // Temporary for controlling faction colors?
+        obj.sofFactionColorSet = sof.faction.colorSet;
+
+        obj._sofFactionColorSetHandler = () =>
+        {
+            for (let i = 0; i < EveSOFDataFactionColorSet.Type.length; i++)
+            {
+                const colorName = EveSOFDataFactionColorSet.Type[i];
+                const color = sof.faction.colorSet[colorName];
+                if (color)
+                {
+                    console.log(`Updating ${i} ${colorName}`);
+                    obj.UpdateColorType(i, color);
+                }
+            }
+        };
+
+        obj.sofFactionColorSet.OnEvent("modified", obj._sofFactionColorSetHandler);
+
         // Supported
         this.SetupCustomMasks(...args);
         await this.SetupMesh(...args);
@@ -1479,6 +1509,7 @@ export class EveSOFData extends meta.Model
                         } = options.wreckArea;
 
                         // Use fire color if it exists
+                        // TODO: Replace this with SOF6 controls
                         if (sof.faction.HasColorType(11))
                         {
                             sof.faction.GetColorType(11, glowColor);
@@ -1661,9 +1692,9 @@ export class EveSOFData extends meta.Model
         let banners;
         if (sof6)
         {
-            banners = sof.hull.banners
+            banners = sof.hull.bannerSets
                 .filter(x => sof.faction.visibilityGroupSet.IsObjectVisible(x))
-                .flatMap(x => x.items);
+                .flatMap(x => x.banners);
         }
         else
         {
@@ -1832,6 +1863,9 @@ export class EveSOFData extends meta.Model
                 sof.faction.GetColorType(srcItem.colorType, color, 0);
                 const spriteItem = EveSpriteSetItem.from(Object.assign({}, srcItem, { color }));
 
+                // Turn off lights which don't have a colour
+                if (vec3.equals(color, [ 0, 0, 0 ])) spriteItem.display = false;
+
                 // Something is wrong here...
                 if (!spriteItem.minScale) spriteItem.minScale = spriteItem.maxScale * 0.25;
                 spriteItem.minScale *= options.multiplier.spriteScale;
@@ -1971,6 +2005,15 @@ export class EveSOFData extends meta.Model
                             spriteColor: faction.spriteColor
                         });
                     }
+                }
+
+                // Disable lights which aren't visible
+                if (
+                    vec3.equals(item.coneColor, [ 0, 0, 0 ]) ||
+                    vec3.equals(item.flareColor, [ 0, 0, 0 ]) ||
+                    vec3.equals(item.spriteColor, [ 0, 0, 0 ]))
+                {
+                    item.SetValues({ display: false });
                 }
             });
 
@@ -2194,13 +2237,19 @@ export class EveSOFData extends meta.Model
                 // Logos must have a faction logo set
                 if (usage === 6 && !faction.HasLogoType(logoType))
                 {
+
+                    console.dir({
+                        usage: 6,
+                        factionHasLogoType: faction.HasLogoType(logoType)
+                    });
+
                     itemVisible = false;
                 }
 
                 if (!itemVisible)
                 {
                     console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType ${logoType}, usage ${usage})`);
-                    return;
+                    //return;
                 }
 
                 if (decal)
@@ -2241,12 +2290,13 @@ export class EveSOFData extends meta.Model
                         break;
                 }
 
+                // TODO: Handle usage as that dicates where textures come from.
 
                 // Factions don't necessarily contain the default information for a decal
                 // So don't bother overwriting if it doesn't exist
                 if (faction.HasLogoType(logoType))
                 {
-                    faction.AssignLogoType(logoType, effect);
+                    faction.AssignLogoType(logoType, effect, srcItem.meshIndex);
                 }
 
                 const { DecalGlowColor } = effect.parameters;
@@ -2269,13 +2319,29 @@ export class EveSOFData extends meta.Model
                 //  Temporary
                 decal.decalEffect = decal.decalEffect || new Tw2Effect();
                 decal.decalEffect.SetValues(effect);
+
+                // Override the default
+                if (decal.decalEffect.parameters.NormalMap)
+                {
+                    const found = sof.hull.opaqueAreas.find(x => x.index === srcItem.meshIndex);
+                    if (found)
+                    {
+                        const NormalMap = found.textures.find(x => x.name === "NormalMap");
+                        if (NormalMap)
+                        {
+                            decal.decalEffect.parameters.NormalMap.SetValue(NormalMap.resFilePath);
+                        }
+                    }
+                }
+
+
                 decal.decalEffect.PopulateParameters();
 
                 // Keep track of the original logo type
                 decal._logoType = logoType;
 
                 const values = {
-                    display: true, // faction.HasLogoType(logoType), // Remove this and identify earlier and maybe don't create?
+                    display: itemVisible, // faction.HasLogoType(logoType), // Remove this and identify earlier and maybe don't create?
                     rotation: srcItem.rotation,
                     position: srcItem.position,
                     scaling: srcItem.scaling,
@@ -2830,7 +2896,20 @@ export class EveSOFData extends meta.Model
      */
     static async SetupChildren(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Child objects partially implemented" });
+
+        if (!data.enableChildren)
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Child objects disabled"
+            });
+            return;
+        }
+
+        tw2.Debug({
+            name: "Space object factory",
+            message: "Child objects partially implemented"
+        });
 
         const effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
 

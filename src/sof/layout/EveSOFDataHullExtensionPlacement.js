@@ -12,6 +12,15 @@ export class EveSOFDataHullExtensionPlacement extends meta.Model
     @meta.boolean
     enabled = true;
 
+    @meta.boolean
+    extendsBoundingSphere = false;
+
+    @meta.boolean
+    extendsBoundingEllipsoid = false;
+
+    @meta.boolean
+    extendsShieldEllipsoid = false;
+
     @meta.string
     locatorSetName = "";
 

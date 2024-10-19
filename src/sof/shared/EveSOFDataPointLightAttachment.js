@@ -13,7 +13,7 @@ export class EveSOFDataPointLightAttachment extends meta.Model
     innerScaleMultiplier = 0.0;
 
     @meta.path
-    lightProfilePath = 0.0;
+    lightProfilePath = "";
 
     @meta.float
     noiseAmplitude = 0.0;
@@ -32,7 +32,6 @@ export class EveSOFDataPointLightAttachment extends meta.Model
 
     @meta.quaternion
     rotation = quat.create();
-
 
     @meta.float
     saturation = 0.0;

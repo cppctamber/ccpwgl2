@@ -34,6 +34,9 @@ export class EveSOFDataHullSpriteLineSetItem extends meta.Model
     @meta.boolean
     isCircle = false;
 
+    @meta.struct()
+    light = null;
+
     @meta.float
     maxScale = 0;
 

@@ -22,6 +22,15 @@ export class EveSOFDataHullExtensionPlacementDistributionPlacement extends meta.
     distributionConditions = [];
 
     @meta.boolean
+    extendsBoundingSphere = false;
+
+    @meta.boolean
+    extendsBoundingEllipsoid = false;
+
+    @meta.boolean
+    extendsShieldEllipsoid = false;
+
+    @meta.boolean
     occupyLocators = true;
 
     @meta.vector3

@@ -9,7 +9,7 @@ export class EveSOFDataHullChildSetItem extends meta.Model
     @meta.string
     name = "";
 
-    @meta.string
+    @meta.path
     redFilePath = "";
 
     @meta.vector3

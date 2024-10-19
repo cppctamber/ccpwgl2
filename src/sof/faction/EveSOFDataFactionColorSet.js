@@ -140,7 +140,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
     PrimaryDockedFX = vec4.create();
 
 
-    _types = [];
+    //_types = [];
 
     /**
      * Alias for ccp not following their normal casing
@@ -176,7 +176,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
      */
     Has(type)
     {
-        const colorName = this._types[type];
+        const colorName = this.constructor.Type[type];
         if (!colorName) throw new ErrSOFFactionColorSetTypeUnknown({ type });
         return colorName in this;
     }
@@ -202,14 +202,19 @@ export class EveSOFDataFactionColorSet extends meta.Model
             }
         }
 
-        const colorName = this._types[type];
+        const colorName = this.constructor.Type[type];
         return vec4.copy(out, this[colorName]);
     }
 
+    /**
+     * A list of all the available color sets
+     * WHO KNOWS HOW THESE ARE INDEXED!!!@#!@#!@#!@#!@#!@#!@
+     */
     static Type = [
         "Primary",
         "Secondary",
         "Tertiary",
+        "Black",
         "White",
         "Yellow",
         "Orange",
@@ -228,9 +233,6 @@ export class EveSOFDataFactionColorSet extends meta.Model
         "SecondaryLight",
         "TertiaryLight",
         "WhiteLight",
-        "PrimarySpotlight",
-        "SecondarySpotlight",
-        "TertiarySpotlight",
         "PrimaryHologram",
         "SecondaryHologram",
         "TertiaryHologram",
@@ -245,11 +247,14 @@ export class EveSOFDataFactionColorSet extends meta.Model
         "PrimaryBanner",
         "PrimaryFx",
         "SecondaryFx",
-        // Unknown
-        // Unknown
-        // Unknown
-        // Unknown
-        // Unknown
+        "PrimarySpotlight",
+        "SecondarySpotlight",
+        "TertiarySpotlight",
+        "PrimaryBillboard",
+        "PrimaryWarpFx",
+        "PrimaryAttackFX",
+        "PrimarySiegeFX",
+        "PrimaryDockedFX"
     ];
 
 
@@ -259,6 +264,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
      * @param {Object} value    - The value returned
      * @param {Object} parent   - The object that the property and value belongs to
      */
+    /*
     static onAfterBlackPropertyReader(property, value, parent)
     {
         if (!parent._count) parent._count = 0;
@@ -266,6 +272,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
         parent._test.push({ property, value, count: parent._count++ });
         parent._types.push(property);
     }
+     */
 
     /**
      *

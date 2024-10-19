@@ -22,6 +22,9 @@ export class EveSOFDataLogoSet extends meta.Model
     @meta.struct("EveSOFDataLogo")
     Tertiary = null;
 
+    @meta.struct("EveSOFDataLogo")
+    Corporation = null;
+
 
     /**
      * Checks if a logo exists by type
