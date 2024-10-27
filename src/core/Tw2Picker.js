@@ -26,9 +26,7 @@ export class Tw2Picker
     _clearColor = vec4.create();
     _buffer = new Uint8Array(4);
     _lastCoords = vec2.create();
-
     _pickableObjects = [];
-    _pickHistory = {};
 
 
     /**
@@ -73,12 +71,9 @@ export class Tw2Picker
         this._renderTarget.ReadPixels(this._buffer, coords[0], coords[1], 1, 1);
         const id = ((this._buffer[0] << 8) | (this._buffer[1] & 0xff)) - 1;
 
-        if (id === -1) return null;
+        tw2._readPixels = this._buffer;
 
-        if (this._pickHistory[id])
-        {
-            return this._pickHistory[id];
-        }
+        if (id === -1) return null;
 
         for (let i = 0; i < this._pickableObjects.length; i++)
         {
@@ -95,15 +90,18 @@ export class Tw2Picker
                     type: this._buffer[2],
                     typeName: getKeyFromValue(PickingBlueChannel, this._buffer[2], null),
                     alpha: this._buffer[3],
-                    path
+                    path,
+                    color: Array.from(this._buffer)
                 };
-                this._pickHistory[id] = result;
                 return result;
             }
         }
 
         return null;
     }
+
+    transparent = false;
+    additive = false;
 
     /**
      * Prepares picking
@@ -128,9 +126,12 @@ export class Tw2Picker
 
         ac.Clear();
         ac.GetObjectArrayBatches(objects, RM_OPAQUE, this.technique);
-        ac.GetObjectArrayBatches(objects, RM_TRANSPARENT, this.technique);      // Why is this here?
-        ac.GetObjectArrayBatches(objects, RM_ADDITIVE, this.technique);
-
+        if (this.transparent) ac.GetObjectArrayBatches(objects, RM_TRANSPARENT, this.technique);      // Why is this here?
+        if (this.additive)
+        {
+            throw new Error("There is something wrong here, you should fix it!");
+            //ac.GetObjectArrayBatches(objects, RM_ADDITIVE, this.technique);
+        }
         if (this.usePickable) ac.GetObjectArrayBatches(objects, RM_PICKABLE);
         rt.Update(tw2.width, tw2.height, true);
 
