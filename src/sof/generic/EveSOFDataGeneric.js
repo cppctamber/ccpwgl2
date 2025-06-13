@@ -34,6 +34,9 @@ export class EveSOFDataGeneric extends meta.Model
     @meta.list()
     hullCategories = [];
 
+    @meta.list()
+    hullCategoriesData = [];
+
     @meta.list("EveSOFDataGenericString")
     materialPrefixes = [];
 

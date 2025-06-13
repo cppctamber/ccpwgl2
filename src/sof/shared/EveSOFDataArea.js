@@ -7,76 +7,46 @@ export class EveSOFDataArea extends meta.Model
 {
 
     @meta.struct("EveSOFDataAreaMaterial")
-    Black = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Blue = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Booster = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Cyan = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Darkhull = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Fire = null;
+    Primary = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
     Glass = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
-    Green = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Hull = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Killmark = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Monument = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Orange = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Ornament = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Primary = null;
+    Sails = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
     Reactor = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
-    Red = null;
+    Darkhull = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
     Rock = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
-    Sails = null;
+    Monument = null;
+
+    @meta.struct("EveSOFDataAreaMaterial")
+    Ornament = null;
 
     @meta.struct("EveSOFDataAreaMaterial")
     SimplePrimary = null;
 
-    @meta.struct("EveSOFDataAreaMaterial")
-    Secondary = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Tertiary = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    White = null;
-
-    @meta.struct("EveSOFDataAreaMaterial")
-    Yellow = null;
-
-    @meta.isPrivate
-    _typesByIndex = [];
+    /**
+     * SOF Area types
+     */
+    static Types = [
+        "Primary",
+        "Glass",
+        "Sails",
+        "Reactor",
+        "Darkhull",
+        "Rock",
+        "Monument",
+        "Ornament",
+        "SimplePrimary"
+    ];
 
     /**
      * Gets a type by it's index
@@ -86,7 +56,7 @@ export class EveSOFDataArea extends meta.Model
      */
     GetTypeByIndex(type)
     {
-        const name = this._typesByIndex[type];
+        const name = this.constructor.Types[type];
         return this.hasOwnProperty(name) ? this[name] : null;
     }
 
@@ -117,47 +87,6 @@ export class EveSOFDataArea extends meta.Model
     }
 
     /**
-     * Optional method which receives the property and value written to the parent object
-     * @param {String} property
-     * @param {Object} value
-     * @param {Object} parent
-     */
-    static onAfterBlackPropertyReader(property, value, parent)
-    {
-        if (value instanceof EveSOFDataAreaMaterial)
-        {
-            value.name = property;
-            parent._typesByIndex.push(property);
-        }
-    }
-
-    static Types = [
-        "Black",
-        "Blue",
-        "Booster",
-        "Cyan",
-        "Darkhull",
-        "Fire",
-        "Glass",
-        "Green",
-        "Hull",
-        "Killmark",
-        "Monument",
-        "Orange",
-        "Ornament",
-        "Primary",
-        "Reactor",
-        "Red",
-        "Rock",
-        "Sails",
-        "SimplePrimary",
-        "Secondary",
-        "Tertiary",
-        "White",
-        "Yellow"
-    ];
-
-    /**
      * Merges two data areas
      * @param {EveSOFDataArea} a
      * @param {EveSOFDataArea} b
@@ -166,12 +95,19 @@ export class EveSOFDataArea extends meta.Model
      */
     static combine(a, b, out)
     {
+        return a;
+
+        /*
+
+        // No need to combine anymore
         out = out || new this();
         if (!a) return out;
         out._typesByIndex.splice(0);
         a._typesByIndex.forEach(type => out._typesByIndex.push(type));
         this.Types.forEach(type => out[type] = EveSOFDataAreaMaterial.combine(a[type], b ? b[type] : null, out[type]));
         return out;
+
+         */
     }
 
 }

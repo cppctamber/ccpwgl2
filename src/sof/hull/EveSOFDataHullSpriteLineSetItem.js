@@ -49,6 +49,9 @@ export class EveSOFDataHullSpriteLineSetItem extends meta.Model
     @meta.quaternion
     rotation = quat.create();
 
+    @meta.float
+    saturation = 0;
+
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 

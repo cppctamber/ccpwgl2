@@ -50,8 +50,16 @@ export class EveSOFData extends meta.Model
 {
 
     @meta.boolean
-    @meta.uiDescription("Custom property")
-    enableChildren = false;
+    @meta.uiDescription("Custom property for debugging")
+    enableChildren = true;
+
+    @meta.boolean
+    @meta.uiDescription("Custom property for debugging")
+    enableSof6 = true;
+
+    @meta.string
+    @meta.uiDescription("Custom property for debugging")
+    fallbackMaterialName = "";
 
     @meta.list("EveSOFDataFaction")
     faction = [];
@@ -231,7 +239,7 @@ export class EveSOFData extends meta.Model
                 {
                     name: "Additive effect",
                     effect: {
-                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.sm_hi",
+                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             FresnelFactors: [ 2.5, 12, 0, 0 ],
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
@@ -252,7 +260,7 @@ export class EveSOFData extends meta.Model
                 {
                     name: "Transparent effect",
                     effect: {
-                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.sm_hi",
+                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
                             TextureScroll1: [ 0, 0, 0, 0 ],
@@ -724,11 +732,15 @@ export class EveSOFData extends meta.Model
     /**
      * Gets a material
      * @param {String} name
+     * @param {String} [fallback=this.fallbackMaterialName] an optional material name to fallback to
      * @returns {EveSOFDataMaterial|null}
      */
-    GetMaterial(name)
+    GetMaterial(name, fallback=this.fallbackMaterialName)
     {
-        return findElementByPropertyValue(this.material, "name", name, ErrSOFMaterialNotFound);
+        let material = findElementByPropertyValue(this.material, "name", name);
+        if (material) return material;
+        if (!fallback) throw ErrSOFMaterialNotFound({ name });
+        return findElementByPropertyValue(this.material, "name", fallback, ErrSOFMaterialNotFound);
     }
 
     /**
@@ -1596,6 +1608,17 @@ export class EveSOFData extends meta.Model
                     area.effect.SetTextures({ AoMap: params.AoMap || "cdn:/graphics/shared_texture/global/white.png" });
                 }
 
+                // Handle Environments who's values are multiplied by 10
+                if (area.effect.effectFilePath.toLowerCase().includes("quadenvironmentv5"))
+                {
+                    const { DetailData } = area.effect.parameters;
+                    if (DetailData)
+                    {
+                        vec4.multiply(DetailData.value, DetailData.value, [ 0.1,0.1,0.1,0.1 ]);
+                    }
+                }
+
+
                 // Reuse parameters that are the same
                 if (options.simplifyParameters)
                 {
@@ -1798,11 +1821,6 @@ export class EveSOFData extends meta.Model
 
     }
 
-    /**
-     * Debugging sof6
-     * @type {boolean}
-     */
-    enableSof6 = false;
 
     /**
      *
@@ -2773,17 +2791,28 @@ export class EveSOFData extends meta.Model
             const set = new EveLocatorSets();
             set.name = srcSet.name;
 
-            srcSet.locators.forEach(srcItem =>
+            if ("locators" in srcSet)
             {
-                const locator = new EveLocatorSetItem();
-                locator.boneIndex = srcItem.boneIndex;
-                vec3.copy(locator.scaling, srcItem.scaling);
-                vec3.copy(locator.position, srcItem.position);
-                quat.copy(locator.rotation, srcItem.rotation);
-                set.locators.push(locator);
-            });
 
-            obj.locatorSets.push(set);
+                srcSet.locators.forEach(srcItem =>
+                {
+                    const locator = new EveLocatorSetItem();
+                    locator.boneIndex = srcItem.boneIndex;
+                    vec3.copy(locator.scaling, srcItem.scaling);
+                    vec3.copy(locator.position, srcItem.position);
+                    quat.copy(locator.rotation, srcItem.rotation);
+                    set.locators.push(locator);
+                });
+
+                obj.locatorSets.push(set);
+            }
+            else
+            {
+                tw2.Log({
+                    name: "Space object factory - Locator Groups",
+                    message: "Locator groups not supported yet"
+                });
+            }
         });
 
     }
@@ -2911,7 +2940,18 @@ export class EveSOFData extends meta.Model
             message: "Child objects partially implemented"
         });
 
-        const effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
+        let effects;
+
+        if (data.enableSof6 && sof.hull.sof6)
+        {
+            effects = sof.hull.childSets
+                .filter(x=>sof.faction.HasVisibilityGroup(x.visibilityGroup))
+                .flatMap(x=>x.items);
+        }
+        else
+        {
+            effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
+        }
 
         // Remove all children except temp trig spheres
         for (let i = 0; i < obj.effectChildren.length; i++)
@@ -2925,23 +2965,33 @@ export class EveSOFData extends meta.Model
 
         for (let i = 0; i < effects.length; i++)
         {
-            const effect = await tw2.Fetch(effects[i].redFilePath);
-
-            // Disable curve sets for now
-            effect.Traverse(x =>
+            try
             {
-                if (x.struct.curveSets)
+                const effect = await tw2.Fetch(effects[i].redFilePath);
+
+                // Disable curve sets for now
+                effect.Traverse(x =>
                 {
-                    x.struct.curveSets.forEach(x => x.Stop());
-                }
-            });
+                    if (x.struct.curveSets)
+                    {
+                        x.struct.curveSets.forEach(x => x.Stop());
+                    }
+                });
 
-            quat.copy(effect.rotation, effects[i].rotation);
-            vec3.copy(effect.translation, effects[i].translation);
-            vec3.copy(effect.scaling, effects[i].scaling);
-            effect.UpdateValues();
+                quat.copy(effect.rotation, effects[i].rotation);
+                vec3.copy(effect.translation, effects[i].translation);
+                vec3.copy(effect.scaling, effects[i].scaling);
+                effect.UpdateValues();
 
-            obj.effectChildren.push(effect);
+                obj.effectChildren.push(effect);
+            }
+            catch(err)
+            {
+                tw2.Debug({
+                    name: "Space object factor",
+                    message: `Failed to fetch child effect: ${effects[i].redFilePath}`
+                });
+            }
         }
 
 

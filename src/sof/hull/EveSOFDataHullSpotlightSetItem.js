@@ -28,6 +28,9 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
     light = null;
 
     @meta.float
+    saturation = 0;
+
+    @meta.float
     spriteIntensity = 0;
 
     @meta.vector3

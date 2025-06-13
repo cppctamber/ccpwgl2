@@ -31,6 +31,9 @@ export class EveSOFDataHullLightSetSpotLight extends meta.Model
     noiseFrequency = 0;
 
     @meta.float
+    noiseOctaves = 0;
+
+    @meta.float
     outerAngle = 0;
 
     @meta.vector3

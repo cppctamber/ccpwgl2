@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { vec2, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullPlaneSet")
@@ -10,6 +11,9 @@ export class EveSOFDataHullPlaneSet extends meta.Model
 
     @meta.uint
     atlasSize = 0;
+
+    @meta.vector2
+    atlasAspectRatio = vec2.create();
 
     @meta.list("EveSOFDataHullPlaneSetItem")
     items = [];

@@ -39,4 +39,7 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     @meta.vector3
     position = vec3.create();
 
+    @meta.float
+    saturation = 0;
+
 }

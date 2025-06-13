@@ -5,6 +5,10 @@ import { meta } from "utils";
 export class EveSOFDataGenericDecalShader extends meta.Model
 {
 
+
+    @meta.boolean
+    additive = true; // Unknown default value
+
     @meta.list("EveSOFDataTexture")
     defaultTextures = [];
 
