@@ -31,6 +31,6 @@ export * from "./EveSOFDataHullSpriteLineSet";
 export * from "./EveSOFDataHullSpriteLineSetItem";
 export * from "./EveSOFDataHullSpriteSet";
 export * from "./EveSOFDataHullSpriteSetItem";
-
+export * from "./EveSOFDataMultiHullDecalIndexBuffers";
 
 

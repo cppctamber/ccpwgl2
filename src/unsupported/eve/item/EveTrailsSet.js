@@ -117,7 +117,7 @@ export class EveTrailsSet extends meta.Model
      * Default trail effect
      * @type {string}
      */
-    static defaultTrailEffect = "cdn:/graphics/effect.gles2/managed/space/booster/volumetrictrails.sm_hi";
+    static defaultTrailEffect = "cdn:/graphics/effect.gles2/managed/space/booster/volumetrictrails.fx";
 
     /**
      * Default geometry res path

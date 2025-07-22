@@ -16,4 +16,8 @@ export class AudEmitter extends meta.Model
     @meta.float
     maxNormalizedScalingFactor=1;
 
+    @meta.notImplemented
+    @meta.float
+    minNormalizedScalingFactor
+
 }

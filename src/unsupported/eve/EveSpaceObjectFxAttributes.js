@@ -9,4 +9,7 @@ import { meta } from "utils";
 export class EveSpaceObjectFxAttributes
 {
 
+    @meta.struct()
+    source = null;
+
 }

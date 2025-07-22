@@ -22,7 +22,7 @@ export class Tr2CurveColorMixer extends Tw2ColorCurve
     @meta.float
     saturation = 0.0;
 
-    @meta.vector4
-    lerpValue = vec4.create();
+    @meta.float
+    lerpValue = 0.0;
 
 }

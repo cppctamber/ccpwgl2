@@ -22,6 +22,9 @@ export class Tr2SpotLight extends meta.Model
     @meta.float
     innerRadius = 0;
 
+    @meta.string
+    flags = "";
+
     @meta.float
     noiseAmplitude = 0;
 

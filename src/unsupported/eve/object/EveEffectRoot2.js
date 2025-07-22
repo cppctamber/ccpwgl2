@@ -56,4 +56,20 @@ export class EveEffectRoot2 extends EveObject
     @meta.vector3
     translation = vec3.create();
 
+
+    Update(dt)
+    {
+        // do nothing
+    }
+
+    GetBatches(mode, accumulator)
+    {
+        // do nothing
+    }
+
+    UpdateViewDependentData()
+    {
+        // do nothing
+    }
+
 }

@@ -1,14 +1,88 @@
 import { meta } from "utils";
 import { EveChildModifier } from "./EveChildModifier";
-import { modifyHalo } from "unsupported";
-import { vec3, quat, mat4 } from "math";
+import { vec3, vec4, quat, mat4 } from "math";
 import { device } from "global";
+
 
 
 @meta.notImplemented
 @meta.type("EveChildModifierCameraOrientedRotationConstrained")
 export class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier
 {
+
+    static createRotationMatrix(out, q)
+    {
+        const
+            normal = vec3.normalize(vec3.alloc(), q),
+            sinAngle = Math.sin(q[3]),
+            cosAngle = Math.cos(q[3]);
+
+        out[0] = (1 - cosAngle) * normal[0] * normal[0] + cosAngle;
+        out[4] = (1 - cosAngle) * normal[0] * normal[1] - sinAngle * normal[2];
+        out[8] = (1 - cosAngle) * normal[0] * normal[2] + sinAngle * normal[1];
+        out[12] = 0;
+
+        out[1] = (1 - cosAngle) * normal[1] * normal[0] + sinAngle * normal[2];
+        out[5] = (1 - cosAngle) * normal[1] * normal[1] + cosAngle;
+        out[9] = (1 - cosAngle) * normal[1] * normal[2] - sinAngle * normal[0];
+        out[13] = 0;
+
+        out[2] = (1 - cosAngle) * normal[2] * normal[0] - sinAngle * normal[1];
+        out[6] = (1 - cosAngle) * normal[2] * normal[1] + sinAngle * normal[0];
+        out[10] = (1 - cosAngle) * normal[2] * normal[2] + cosAngle;
+        out[14] = 0;
+
+        out[3] = 0;
+        out[7] = 0;
+        out[11] = 0;
+        out[15] = 1;
+
+        vec3.unalloc(normal);
+        return out;
+    }
+
+    static getViewPosition(device, out)
+    {
+        return device.GetEyePosition(out);
+    }
+
+
+    ApplyTransform(transform)
+    {
+
+        const
+            vec3_0 = vec3.alloc(),
+            vec4_0 = vec4.alloc(),
+            translation = vec3.alloc(),
+            rotation = quat.alloc(),
+            rotationMatrix = mat4.alloc();
+
+        mat4.decompose(transform, rotation, translation, vec3_0);
+        this.constructor.createRotationMatrix(rotationMatrix, rotation);
+
+        this.constructor.getViewPosition(device, vec3_0);
+        vec4_0[0] = vec3_0[0] - translation[0];
+        vec4_0[1] = vec3_0[1] - translation[1];
+        vec4_0[2] = vec3_0[2] - translation[2];
+        vec4_0[3] = 0;
+        vec4.transformMat4(vec4_0, vec4_0, rotationMatrix);
+
+        vec4_0[3] = Math.atan2(vec4_0[0], vec4_0[2]);
+        vec4_0[0] = 0;
+        vec4_0[1] = 1;
+        vec4_0[2] = 0;
+        this.constructor.createRotationMatrix(rotationMatrix, vec4_0);
+
+        mat4.multiply(transform, rotationMatrix, transform);
+
+        vec3.unalloc(vec3_0);
+        vec3.unalloc(translation);
+        quat.unalloc(rotation);
+        vec4.unalloc(vec4_0);
+        mat4.unalloc(rotationMatrix);
+
+        return transform;
+    }
 
     Modify(parent, perObjectData, parentTransform)
     {

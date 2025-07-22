@@ -45,6 +45,9 @@ export class EveChildEffectPropagator extends EveChild
     @meta.float
     randScaleMax = 0;
 
+    @meta.float
+    randScaleMin = 0;
+
     @meta.boolean
     replayAfterDelay = false;
 

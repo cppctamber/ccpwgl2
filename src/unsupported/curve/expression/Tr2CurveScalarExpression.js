@@ -17,16 +17,16 @@ export class Tr2CurveScalarExpression extends Tw2CurveExpression
     expression = "";
 
     @meta.float
-    @meta.todo("Figure out the default value")
-    input1 = -1;
+    input1 = 0;
 
     @meta.float
-    @meta.todo("Figure out the default value")
-    input2 = -1;
+    input2 = 0;
 
     @meta.float
-    @meta.todo("Figure out the default value")
-    input3 = -1;
+    input3 = 0;
+
+    @meta.float
+    input4 = 0;
 
     @meta.float
     @meta.isPrivate

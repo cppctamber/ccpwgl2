@@ -31,6 +31,9 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     @meta.list()
     indexBuffers = [];
 
+    @meta.list("EveSOFDataMultiHullDecalIndexBuffers")
+    multiHullIndexBuffers = [];
+
     @meta.uint
     glowColorType = 0;
 
@@ -64,6 +67,8 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     // Backwards compatibility with old sofs
     @meta.uint16Array
     indexBuffer = null;
+
+
 
     /**
      * Gets the decals index buffer array
