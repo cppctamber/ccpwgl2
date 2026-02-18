@@ -17,32 +17,11 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
 
 
     _knots = null;
-    _mat3Buffer = null;
-    _quatBuffer = null;
+    _buffer = null;
 
 
     /**
-     * Gets the curve type
-     * @return {number}
-     */
-    GetType()
-    {
-        const size = this.GetControlSize();
-        switch (size)
-        {
-            case 4:
-                return Gr2Curve2.Type.ROTATION;
-
-            case 9:
-                return Gr2Curve2.Type.SCALE_SHEAR;
-
-            default:
-                throw new ErrGr2CurveDataControlSizeInvalid({ size });
-        }
-    }
-
-    /**
-     * Gets component count
+     * Gets control size
      * @return {number}
      */
     GetControlSize()
@@ -70,6 +49,39 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
     }
 
     /**
+     * Gets a vec3 buffer
+     * @return {Float32Array}
+     */
+    GetVec3Buffer()
+    {
+        if (this.GetControlSize() !== 3) throw new ErrGr2CurveDataControlSizeInvalid({ size: this.GetControlSize(), expected: 3 });
+        if (!this._buffer) this.RebuildBuffer();
+        return this._buffer;
+    }
+
+    /**
+     * Gets a quat buffer
+     * @return {Float32Array}
+     */
+    GetQuatBuffer()
+    {
+        if (this.GetControlSize() !== 4) throw new ErrGr2CurveDataControlSizeInvalid({ size: this.GetControlSize(), expected: 4 });
+        if (!this._buffer) this.RebuildBuffer();
+        return this._buffer;
+    }
+
+    /**
+     * Gets a mat3 buffer
+     * @return {Float32Array}
+     */
+    GetMat3Buffer()
+    {
+        if (this.GetControlSize() !== 9) throw new ErrGr2CurveDataControlSizeInvalid({ size: this.GetControlSize(), expected: 9 });
+        if (!this._buffer) this.RebuildBuffer();
+        return this._buffer;
+    }
+
+    /**
      * Rebuilds knots
      */
     RebuildKnots()
@@ -77,68 +89,17 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
         this._knots = Gr2Curve2.GetKnotsFromControlWithOneOverKnotScaleTrunc(
             this.knotsControls,
             this.GetKnotCount(),
-            this.oneOverKnotScaleTrunc,
+            this.oneOverKnotScaleTrunc
         );
     }
 
     /**
-     * Gets mat3 buffer
-     * @return {Float32Array}
+     * Rebuilds the buffer
      */
-    GetMat3Buffer()
+    RebuildBuffer()
     {
-        if (this.GetType() === Gr2Curve2.Type.SCALE_SHEAR)
-        {
-            if (!this._mat3Buffer) this.RebuildMat3Buffer();
-            return this._mat3Buffer;
-        }
-
-        super.GetMat3Buffer();
-    }
-
-    /**
-     * Gets quat buffer
-     * @return {Float32Array}
-     */
-    GetQuatBuffer()
-    {
-        if (this.GetType() === Gr2Curve2.Type.ROTATION)
-        {
-            if (!this._quatBuffer) this.RebuildQuatBuffer();
-            return this._quatBuffer;
-        }
-
-        super.GetQuatBuffer();
-    }
-
-    /**
-     * Rebuilds mat3 buffer
-     */
-    RebuildMat3Buffer()
-    {
-        if (this.GetType() !== Gr2Curve2.Type.SCALE_SHEAR)
-        {
-            this._mat3Buffer = null;
-        }
-        else
-        {
-            this._mat3Buffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), 9, this.controlScaleOffsets);
-        }
-    }
-
-    /**
-     * Rebuilds the quat buffer
-     */
-    RebuildQuatBuffer()
-    {
-        if (this.GetType() !== Gr2Curve2.Type.ROTATION)
-        {
-            this._quatBuffer = null;
-        }
-        else
-        {
-            this._quatBuffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), 4, this.controlScaleOffsets);
-        }
+        const dim = this.GetControlSize();
+        this._buffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), dim, this.controlScaleOffsets);
     }
 
     /**
@@ -149,23 +110,22 @@ export class Gr2CurveDataDaK16uC16u extends Gr2Curve2
 
 }
 
-
 /**
- * Gets buffer from controls for DaK curves
+ * Gets a buffer from controls for DaK curves
  * @param {TypedArray} controls
  * @param {Number} count
  * @param {Number} dimension
- * @param {TypedArray} offset
+ * @param {Float32Array} scaleOffsets
  * @return {Float32Array}
  */
-function rebuildBuffer(controls, count, dimension, offset)
+function rebuildBuffer(controls, count, dimension, scaleOffsets)
 {
     let out = new Float32Array(count * dimension);
     for (let i = 0; i < count; i++)
     {
-        for (let x = 0; x < 9; x++)
+        for (let x = 0; x < dimension; x++)
         {
-            out[i * dimension + x] = controls[count + i * dimension + x] * offset[x] + offset[dimension + x];
+            out[i * dimension + x] = controls[count + i * dimension + x] * scaleOffsets[x] + scaleOffsets[dimension + x];
         }
     }
     return out;

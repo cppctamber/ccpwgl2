@@ -38,24 +38,23 @@ export class Gr2Curve2 extends meta.Model
         return this.GetKnots()[this.GetKnotCount() - 1];
     }
 
+
     /**
-     * Gets the knot count
-     * @returns {Number}
+     * Gets knot count
+     * @return {number}
      */
-    @meta.abstract
     GetKnotCount()
     {
-
+        throw new ErrFeatureNotImplemented({ feature: "GetKnotCount" });
     }
 
     /**
      * Gets knots
-     * @returns {Float32Array}
+     * @return {Float32Array}
      */
-    @meta.abstract
     GetKnots()
     {
-
+        throw new ErrFeatureNotImplemented({ feature: "GetKnots" });
     }
 
     /**
@@ -121,6 +120,28 @@ export class Gr2Curve2 extends meta.Model
         curve.knots = Array.from(this.GetKnots());
         curve.controls = Array.from(controls);
 
+        if (Gr2Curve2.VALIDATE)
+        {
+            const issues = Gr2Curve2.ValidateDecodedCurve(curve.knots, curve.controls, curve.dimension);
+
+            // Controls count sanity check (uses instance degree)
+            const expectedControlPoints = Math.max(0, curve.knots.length - curve.degree - 1);
+            const controlPoints = curve.controls.length / curve.dimension;
+
+            if (controlPoints !== expectedControlPoints)
+            {
+                issues.push(`Control point count mismatch: expected ${expectedControlPoints} got ${controlPoints}`);
+            }
+
+            if (issues.length)
+            {
+                // Keep this cheap and explicit; only runs when VALIDATE is enabled
+                // eslint-disable-next-line no-console
+                console.warn("Granny curve validation issues", { format: curve.format, dimension: curve.dimension, degree: curve.degree, issues });
+            }
+        }
+
+
         if (purge)
         {
             let wasPurged = false;
@@ -146,6 +167,7 @@ export class Gr2Curve2 extends meta.Model
                     i--;
                 }
             }
+
 
             if (wasPurged)
             {
@@ -198,6 +220,54 @@ export class Gr2Curve2 extends meta.Model
     }
 
     /**
+     * Enables lightweight curve validation (off by default)
+     * Set true during debugging to catch exporter/decoder mismatches.
+     * @type {boolean}
+     */
+    static VALIDATE = true;
+
+    /**
+     * Validates a decoded curve
+     * @param {Array<number>} knots
+     * @param {Array<number>} controls
+     * @param {number} dimension
+     * @return {string[]} issues
+     */
+    static ValidateDecodedCurve(knots, controls, dimension)
+    {
+        const issues = [];
+
+        if (!Number.isFinite(dimension) || dimension <= 0) issues.push(`Invalid dimension "${dimension}"`);
+        if (!Array.isArray(knots)) issues.push("Knots is not an array");
+        if (!Array.isArray(controls)) issues.push("Controls is not an array");
+
+        if (Array.isArray(knots))
+        {
+            if (knots.length === 0) issues.push("Knots is empty");
+            for (let i = 0; i < knots.length; i++)
+            {
+                const k = knots[i];
+                if (!Number.isFinite(k)) { issues.push(`Knot[${i}] is not finite`); break; }
+                if (i > 0 && k < knots[i - 1]) { issues.push(`Knots are not monotonic at index ${i - 1}->${i}`); break; }
+            }
+        }
+
+        if (Array.isArray(controls) && Number.isFinite(dimension) && dimension > 0)
+        {
+            if (controls.length % dimension !== 0) issues.push(`Controls length (${controls.length}) is not divisible by dimension (${dimension})`);
+
+            // Expected control points: knotCount * dimension for degree 1, or (knotCount - degree - 1) * dimension for bsplines.
+            // We can't know the exact expectation for every format here, but we can at least ensure we have enough controls.
+            if (Array.isArray(knots) && knots.length && this.prototype && this.prototype.degree !== undefined)
+            {
+                // no-op: degree is per-instance, validation is done in CreateTw2GeometryCurve with instance degree
+            }
+        }
+
+        return issues;
+    }
+
+    /**
      * Curve type
      * @type {{ROTATION: number, POSITION: number, SCALE_SHEAR: number}}
      */
@@ -230,32 +300,15 @@ export class ErrGr2CurveDataDimensionInvalid extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Invalid dimension for granny curve (%dimension%)");
+        super(data, "Invalid granny curve data dimension");
     }
 }
-
-export class ErrGr2CurveDataControlSizeInvalid extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Granny control size is invalid (%size%)");
-    }
-}
-
 
 export class ErrGr2CurveDataVec3NotSupported extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Granny curve doesn't provide vec3 data");
-    }
-}
-
-export class ErrGr2CurveDataRotationNotSupported extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Granny curve doesn't provide rotation data");
+        super(data, "Granny curve data does not support vec3");
     }
 }
 
@@ -263,7 +316,7 @@ export class ErrGr2CurveDataQuatNotSupported extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Granny curve doesn't provide quat data");
+        super(data, "Granny curve data does not support quaternions");
     }
 }
 
@@ -271,6 +324,22 @@ export class ErrGr2CurveDataMat3NotSupported extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Granny curve doesn't provide mat3 data");
+        super(data, "Granny curve data does not support matrices");
+    }
+}
+
+export class ErrGr2CurveDataRotationNotSupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Granny curve data does not support rotation");
+    }
+}
+
+export class ErrGr2CurveDataControlSizeInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Granny curve data has invalid control size");
     }
 }

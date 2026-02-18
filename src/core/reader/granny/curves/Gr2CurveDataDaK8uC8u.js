@@ -9,6 +9,10 @@ export class Gr2CurveDataDaK8uC8u extends Gr2CurveDataDaK16uC16u
     @meta.uint8Array
     knotsControls = new Uint8Array(0);
 
+    get KnotsControls()
+    {
+        return this.knotsControls;
+    }
 
     /**
      * GR2 curve data format

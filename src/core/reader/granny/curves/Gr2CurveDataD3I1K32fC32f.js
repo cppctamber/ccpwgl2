@@ -22,12 +22,12 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
 
 
     /**
-     * Gets the knot count
+     * Gets knot count
      * @return {number}
      */
     GetKnotCount()
     {
-        return this.knotsControls / 2;
+        return this.knotsControls.length / 2;
     }
 
     /**
@@ -41,7 +41,7 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
     }
 
     /**
-     * Gets points
+     * Gets a vec3 buffer
      * @return {Float32Array}
      */
     GetVec3Buffer()
@@ -55,10 +55,15 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
      */
     RebuildKnots()
     {
-        this._knots = Gr2Curve2.GetKnotsFromControl(
-            this.controls,
-            this.GetKnotCount()
-        );
+        this._knots = new Float32Array(this.GetKnotCount());
+        const out = this._knots;
+        const count = this.GetKnotCount();
+        const src = this.knotsControls;
+
+        for (let i = 0; i < count; i++)
+        {
+            out[i] = src[i];
+        }
     }
 
     /**
@@ -66,7 +71,12 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
      */
     RebuildVec3Buffer()
     {
-        this._buffer = rebuildBuffer(this.knotsControls, this.GetKnotCount(), this.controlScales, this.controlOffsets);
+        this._buffer = rebuildBuffer(
+            this.knotsControls,
+            this.GetKnotCount(),
+            this.controlScales,
+            this.controlOffsets
+        );
     }
 
     /**
@@ -79,25 +89,26 @@ export class Gr2CurveDataD3I1K32fC32f extends Gr2Curve2
 
 
 /**
- * Rebuilds vec3 buffers
- * @param {TypedArray} controls
- * @param {Number} count
- * @param {vec3} scale
- * @param {vec3} offset
+ * Shared helper used by D3I1K32fC32f and D3I1k16uC16u
+ * Controls are stored as: [knots...][scalarControls...]
+ *
+ * @param {TypedArray} knotsControls
+ * @param {number} count
+ * @param {Float32Array|Array<number>} controlScales vec3 scale
+ * @param {Float32Array|Array<number>} controlOffsets vec3 offset
  * @return {Float32Array}
  */
-export function rebuildBuffer(controls, count, scale, offset)
+export function rebuildBuffer(knotsControls, count, controlScales, controlOffsets)
 {
     const out = new Float32Array(count * 3);
+
     for (let i = 0; i < count; i++)
     {
-        for (let x = 0; x < 3; x++)
-        {
-            out[i * 3 + x] = controls[count + i] * scale[x] + offset[x];
-        }
+        const v = knotsControls[count + i];
+        out[i * 3] = v * controlScales[0] + controlOffsets[0];
+        out[i * 3 + 1] = v * controlScales[1] + controlOffsets[1];
+        out[i * 3 + 2] = v * controlScales[2] + controlOffsets[2];
     }
+
     return out;
 }
-
-
-

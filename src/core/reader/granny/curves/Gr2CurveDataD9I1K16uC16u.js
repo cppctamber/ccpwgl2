@@ -29,7 +29,7 @@ export class Gr2CurveDataD9I1K16uC16u extends Gr2Curve2
      */
     GetKnotCount()
     {
-        return this.knotsControls / 2;
+        return this.knotsControls.length / 2;
     }
 
     /**
@@ -88,21 +88,21 @@ export class Gr2CurveDataD9I1K16uC16u extends Gr2Curve2
 
         for (let i = 0; i < count; i++)
         {
-            let scale = controls[count + i] * scale + offset;
-            out[i * 9 ] = scale;
+            const s = controls[count + i] * scale + offset;
+            out[i * 9] = s;
             out[i * 9 + 1] = 0;
             out[i * 9 + 2] = 0;
             out[i * 9 + 3] = 0;
-            out[i * 9 + 4] = scale;
+            out[i * 9 + 4] = s;
             out[i * 9 + 5] = 0;
             out[i * 9 + 6] = 0;
             out[i * 9 + 7] = 0;
-            out[i * 9 + 8] = scale;
+            out[i * 9 + 8] = s;
         }
     }
 
     /**
-     * Gr2 curve data format
+     * Gr2 format
      * @type {number}
      */
     static format = 12;

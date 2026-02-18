@@ -1,6 +1,5 @@
 import { ErrGr2CurveDataRotationNotSupported, Gr2Curve2 } from "./Gr2Curve2";
 import { meta } from "utils";
-import { vec3 } from "math";
 
 
 @meta.type("Gr2CurveDataD9I3K16uC16u")
@@ -10,11 +9,11 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
     @meta.uint
     oneOverKnotScaleTrunc = 0;
 
-    @meta.vector3
-    controlScale = vec3.create();
+    @meta.float32Array
+    controlScales = new Float32Array(3);
 
-    @meta.float
-    controlOffset = vec3.create();
+    @meta.float32Array
+    controlOffsets = new Float32Array(3);
 
     @meta.uint16Array
     knotsControls = new Uint16Array(0);
@@ -30,7 +29,7 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
      */
     GetKnotCount()
     {
-        return this.knotsControls / 4;
+        return this.knotsControls.length / 4;
     }
 
     /**
@@ -81,12 +80,12 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
         const
             count = this.GetKnotCount(),
             controls = this.knotsControls,
-            offset = this.controlOffset,
-            scale = this.controlScale;
+            scale = this.controlScales,
+            offset = this.controlOffsets;
 
         this._mat3Buffer = new Float32Array(count * 9);
-
         const out = this._mat3Buffer;
+
         for (let i = 0; i < count; i++)
         {
             out[i * 9] = controls[count + i * 3] * scale[0] + offset[0];
@@ -102,7 +101,7 @@ export class Gr2CurveDataD9I3K16uC16u extends Gr2Curve2
     }
 
     /**
-     * Gr2 curve data format
+     * Gr2 format
      * @type {number}
      */
     static format = 13;

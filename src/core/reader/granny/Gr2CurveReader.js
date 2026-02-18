@@ -35,6 +35,8 @@ export class Gr2CurveReader
         this.formats.set(18, curves.Gr2CurveDataD3I1K8uC8u);
     }
 
+    static LOGGING = false;
+
     /**
      * Sets a format
      * @param {Number} format
@@ -53,6 +55,7 @@ export class Gr2CurveReader
     Get(format)
     {
         const Ctor = this.formats.get(format);
+        if (Gr2CurveReader.LOGGING) console.dir({ format });
         if (Ctor) return Ctor;
         throw new ErrGr2CurveDataFormatUnsupported({ format });
     }
@@ -62,7 +65,7 @@ export class Gr2CurveReader
      * @param {Object} json
      * @return {Gr2Curve}
      */
-    CreateCurveFromJSON(json)
+    _CreateCurveFromJSON(json)
     {
         const Ctor = this.Get(json.format);
         return Ctor.from(json);
@@ -79,6 +82,27 @@ export class Gr2CurveReader
     {
         const item = this.CreateCurveFromJSON(json);
         return item.CreateTw2GeometryCurve(dimension, purge);
+    }
+
+    CreateCurveFromJSON(json)
+    {
+        const Ctor = this.Get(json.format);
+        const curve = Ctor.from(json);
+
+        // quick sanity checks
+        if (curve.GetKnotCount && curve.GetKnotCount() !== (curve.GetKnots?.()?.length ?? curve._knots?.length ?? curve.knots?.length ?? 0))
+        {
+            console.warn("KnotCount mismatch", json.format, curve.GetKnotCount(), curve.GetKnots?.()?.length);
+        }
+
+        const k = curve.GetKnots?.() ?? curve.knots;
+        if (k && k.length)
+        {
+            const last = k[k.length - 1];
+            if (!Number.isFinite(last)) console.warn("Non-finite duration", json.format, last);
+        }
+
+        return curve;
     }
 
 }

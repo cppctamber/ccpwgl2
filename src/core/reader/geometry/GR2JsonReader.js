@@ -19,6 +19,7 @@ import {
     Tw2GeometryTransformTrack
 } from "core/geometry";
 import { isString } from "utils";
+import { packTangents } from "math/vertex";
 
 
 const VertexTypes = {
@@ -49,9 +50,10 @@ export class GR2JsonReader
         firstMeshOnly: true,
         aoGenerate: true,
         aoResolution: 512,
-        aoBias: 0.01,
+        aoBias: 0.5,
         aoSamples: 256,
-        aoIndexed: false
+        aoIndexed: false,
+        packTangents: false
     };
 
     /**
@@ -67,8 +69,61 @@ export class GR2JsonReader
         {
             // Temp fix invalid numbers
             // Remove this to increase performance
-            data = JSON.parse(data.replaceAll("-nan(ind)", "0"));
+            data = JSON.parse(data
+                .replaceAll("-nan(ind)", "0")
+                .replaceAll("-inf", "0")
+                .replaceAll("inf", "0")
+            );
         }
+
+        /**
+         * Recursively normalizes known Granny keys to camelCase
+         */
+        function normalizeGrannyKeys(obj)
+        {
+            if (!obj || typeof obj !== "object") return obj;
+
+            // Handle arrays
+            if (Array.isArray(obj))
+            {
+                for (let i = 0; i < obj.length; i++)
+                {
+                    obj[i] = normalizeGrannyKeys(obj[i]);
+                }
+                return obj;
+            }
+
+            // Normalize current object keys
+            const keyMap = {
+                // Curve casing fixes
+                "ControlScaleOffsets": "controlScaleOffsets",
+                "KnotsControls": "knotsControls",
+                "scaleshear": "scaleShear",
+                "ScaleShear": "scaleShear"
+            };
+
+            for (const key of Object.keys(obj))
+            {
+                const value = obj[key];
+                const normalizedKey = keyMap[key];
+
+                if (normalizedKey && normalizedKey !== key)
+                {
+                    obj[normalizedKey] = value;
+                    delete obj[key];
+                }
+            }
+
+            // Recurse into values
+            for (const key of Object.keys(obj))
+            {
+                obj[key] = normalizeGrannyKeys(obj[key]);
+            }
+
+            return obj;
+        }
+
+        data = normalizeGrannyKeys(data);
 
         const { models = [], meshes = [], animations = [] } = data;
         const { gl } = device;
@@ -133,6 +188,36 @@ export class GR2JsonReader
                     }
                 }
             }
+
+            if (options.packTangents)
+            {
+                const
+                    normals = vertexElements.find(x=>x.usage === Tw2VertexElement.Type.NORMAL),
+                    tangents = vertexElements.find(x=>x.usage === Tw2VertexElement.Type.TANGENT),
+                    bitangents = vertexElements.find(x=>x.usage === Tw2VertexElement.Type.BINORMAL) ||
+                        vertexElements.find(x => x.usage === Tw2VertexElement.Type.BITANGENT);
+
+                // Check if we can pack and do it
+                if (normals && tangents && bitangents)
+                {
+                    const packedTangents = packTangents(
+                        normals.data,
+                        tangents.data,
+                        bitangents.data,
+                        false,            // flipZ
+                        false,   // enforcePositiveY
+                        false,   // orthonormalize
+                        true   // quantizeUNorm8  <-- this matches the JSON look
+                    );
+                    tangents.data = packedTangents;
+                    console.log("Tangents packed");
+                }
+                else
+                {
+                    console.error("Could not pack tangents");
+                }
+            }
+
 
             // Index buffer
             let indexLength = 0;
@@ -406,6 +491,7 @@ export class GR2JsonReader
                     track.name = transformTracks[iTT].name;
                     track.orientation = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].orientation, 4);
                     track.position = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].position, 3);
+
                     track.scaleShear = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].scaleShear, 9);
                     // TODO: Why do some root objects have non-identity scaleshears
                     if (track.name.toUpperCase() === "ROOT") mat3.identity(track.scaleShear.controls);
