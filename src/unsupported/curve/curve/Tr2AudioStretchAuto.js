@@ -3,7 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2AudioStretchAuto", "Tr2AudioStretchAuto")
-export class AudEventCurve extends meta.Model
+export class Tr2AudioStretchAuto extends meta.Model
 {
 
     @meta.struct()
