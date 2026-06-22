@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec2, vec3, vec4, quat, mat4 } from "math";
+import { vec3, vec4, quat, mat4 } from "math";
 import {
     Tw2BatchAccumulator,
     Tw2RawData,
@@ -8,7 +8,7 @@ import {
     Tw2BatchAccumulator2,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter
+    Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
 
@@ -29,7 +29,7 @@ export class EveSpaceScene extends meta.Model
 
     @meta.notImplemented
     @meta.boolean
-    enableShadows = false;
+    enableShadows = true;
 
     @meta.path
     @meta.isPrivate
@@ -141,10 +141,6 @@ export class EveSpaceScene extends meta.Model
     selfShadowOnly = false;
 
     @meta.notImplemented
-    @meta.struct("Tr2ShLightingManager")
-    shLightingManager = null;
-
-    @meta.notImplemented
     @meta.float
     @meta.todo("Identify ps/vs frame data")
     shadowFadeThreshold = 0;
@@ -152,7 +148,11 @@ export class EveSpaceScene extends meta.Model
     @meta.notImplemented
     @meta.float
     @meta.todo("Identify ps/vs frame data")
-    shadowThreshold = 0;
+    shadowThreshold = 50000;
+
+    @meta.notImplemented
+    @meta.struct("Tr2ShLightingManager")
+    shLightingManager = null;
 
     @meta.notImplemented
     @meta.struct("EveStarField")
@@ -188,6 +188,7 @@ export class EveSpaceScene extends meta.Model
         backgroundObjects: true,
         backgroundTexture: true,
         clearColor: true,
+        customPasses: true,
         debug: false,
         distortion: true,
         distortionPreview: false,
@@ -207,17 +208,13 @@ export class EveSpaceScene extends meta.Model
     @meta.color
     selectorColor = vec4.fromValues(0.5, 0.3, 0.0, 1.0);
 
-    @meta.vector2
-    shadowCameraRange = vec2.fromValues(1,0);
+    @meta.boolean
+    normalCalculation = true;
 
-    @meta.float
-    shadowLightness = 0;
+    @meta.path
+    backgroundTexturePath = "";
 
-    _shadowView = mat4.create();
-    _shadowProjection = mat4.create();
-    _shadowViewProjection = mat4.create();
-    _shadowMapSettings = vec4.fromValues(1, 1, 0, 0);
-    _shadowMapRes = null;
+    _backgroundTexture = null;
 
     _localTransform = mat4.create();
     _accumulator = new Tw2BatchAccumulator();
@@ -228,8 +225,6 @@ export class EveSpaceScene extends meta.Model
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
 
-    _perFrameCustomSceneVSData = Tw2RawData.from(EveSpaceScene.customScenePerFrameData.vs);
-    _perFrameCustomScenePSData = Tw2RawData.from(EveSpaceScene.customScenePerFrameData.ps);
 
     _envMapRes = null;
     _envMap1Res = null;
@@ -242,6 +237,79 @@ export class EveSpaceScene extends meta.Model
     _distortionAccumulator = null;
     _distortionPostProcess = null;
     _depthRendered = false;
+    _customPasses = [];
+
+    // ----------------------------------------------------------------------------[ Shadow ]---------------------- //
+
+    @meta.boolean
+    _enableShadowDebugging = false;
+
+    @meta.boolean
+    _enableShadowAutoSettings = false;
+
+    @meta.matrix4
+    _shadowView = mat4.create();
+
+    @meta.matrix4
+    _shadowProjection = mat4.create();
+
+    @meta.matrix4
+    _shadowViewProjection = mat4.create();
+
+    @meta.vector4
+    _shadowMapSettings = vec4.fromValues(1, 1, 0, 0);
+
+    @meta.struct("Tw2TextureRes")
+    _shadowMapRes = null;
+
+    _perFrameShadowVS = Tw2RawData.from(EveSpaceScene.perFrameShadowData.vs);
+    _perFrameShadowPS = Tw2RawData.from(EveSpaceScene.perFrameShadowData.ps);
+
+    // ---------------- Shadow Map Settings ------------ //
+
+    @meta.float
+    _shadowMapOffsetX = 0;
+
+    @meta.float
+    _shadowMapOffsetY = 0;
+
+    @meta.float
+    _shadowDepthBias = 0;
+
+    // ---------------- Shadow Camera Settings ----------- //
+
+    @meta.float
+    _shadowCameraNear = 1; // <= 0 to enable shadows
+
+    @meta.float
+    _shadowCameraFar = 2; // for shadows on use 1
+
+    @meta.float
+    _shadowMinimumVisibility = 0.0;
+
+    get objectsByDistance()
+    {
+        const
+            out = [],
+            cameraWorldPosition = vec3.alloc(),
+            objectWorldPosition = vec3.alloc();
+
+        mat4.getTranslation(cameraWorldPosition, device.viewInverse);
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].GetWorldTranslation(objectWorldPosition);
+            const distance = vec3.distance(cameraWorldPosition, objectWorldPosition);
+            out.push({ distance, object: this.objects[i] });
+        }
+
+        vec3.unalloc(cameraWorldPosition);
+        vec3.unalloc(objectWorldPosition);
+
+        return out
+            .sort((a, b) => b.distance - a.distance)
+            .map(x => x.object);
+    }
 
     /**
      * Alias for postprocess
@@ -612,7 +680,28 @@ export class EveSpaceScene extends meta.Model
         device.gl.depthRange(0, 0.9);
     }
 
-    _customPass = null;
+
+    /**
+     * Adds a custom pass
+     * @param {Function} pass
+     */
+    AddCustomPass(pass)
+    {
+        if (!this._customPasses.includes(pass))
+        {
+            this._customPasses.push(pass);
+        }
+    }
+
+    /**
+     * Removes a custom pass
+     * @param {Function} pass
+     */
+    RemoveCustomPass(pass)
+    {
+        const index = this._customPasses.indexOf(pass);
+        if (index !== -1) this._customPasses.splice(index, 1);
+    }
 
     /**
      * Updates children's view dependent data and renders them
@@ -686,21 +775,34 @@ export class EveSpaceScene extends meta.Model
 
         if (show.objects)
         {
-            for (let i = 0; i < this.objects.length; ++i)
+
+            for (let i = 0; i < this.objects.length; i++)
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
                     this.objects[i].UpdateViewDependentData(this._localTransform, dt);
                 }
+            }
 
-                this.objects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
-                this.objects[i].GetBatches(d.RM_DECAL, this._accumulator);
-                this.objects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
-                this.objects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+            const objects = this.objectsByDistance;
+            for (let i = 0; i < objects.length; ++i)
+            {
+                if (show.customPasses)
+                {
+                    for (let x = 0; x < this._customPasses.length; x++)
+                    {
+                        this._customPasses[x](dt, this, objects[i]);
+                    }
+                }
+
+                objects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
+                objects[i].GetBatches(d.RM_DECAL, this._accumulator);
+                objects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
+                objects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
 
                 if (show.distortionPreview)
                 {
-                    this.objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
+                    objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
                 }
             }
         }
@@ -744,17 +846,20 @@ export class EveSpaceScene extends meta.Model
             // TODO: Implement shadow effect
         }
 
+        /*
+        if (this.visible.customPasses)
+        {
+            this.RenderCustomPasses(dt);
+        }
+
+         */
+
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
             {
                 this.lensflares[i].UpdateOccluders(); // World transform applied here?
             }
-        }
-
-        if (this._customPass)
-        {
-            this._customPass(dt, this);
         }
 
         if (this.postprocess)
@@ -767,13 +872,7 @@ export class EveSpaceScene extends meta.Model
 
     }
 
-    @meta.boolean
-    normalCalculation = true;
 
-    _backgroundTexture = null;
-    
-    @meta.path
-    backgroundTexturePath = "";
 
     /**
      * Renders depth
@@ -814,9 +913,16 @@ export class EveSpaceScene extends meta.Model
         // Todo: Include planets
         let depthTexture;
 
+        let objectsOrderedByDistance;
+
         if (this.normalCalculation)
         {
-            if (this.visible.objects) this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Normal");
+            if (this.visible.objects)
+            {
+                if (!objectsOrderedByDistance) objectsOrderedByDistance = this.objectsByDistance;
+                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Normal");
+            }
+
             if (this.visible.backgroundObjects) this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Normal");
 
             depthTexture = tw2.GetVariable("EveSpaceSceneNormalMap");
@@ -832,12 +938,14 @@ export class EveSpaceScene extends meta.Model
         {
             if (this.visible.objects)
             {
-                this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_DEPTH, "Main");
-                this._depthAccumulator.GetObjectArrayBatches(this.objects, RM_OPAQUE, "Depth");
+                if (!objectsOrderedByDistance) objectsOrderedByDistance = this.objectsByDistance;
+                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_DEPTH, "Main");
+                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Depth");
             }
 
             if (this.visible.backgroundObjects)
             {
+                // That will teach you! Get ordered by distance...
                 this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
                 this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Depth");
             }
@@ -890,7 +998,7 @@ export class EveSpaceScene extends meta.Model
 
             this._distortionEffect = this._distortionEffect || Tw2Effect.from({
                 name: "Distortion",
-                effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.sm_hi",
+                effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
                 parameters: {
                     MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
                 },
@@ -922,7 +1030,7 @@ export class EveSpaceScene extends meta.Model
 
         if (this.visible.objects)
         {
-            this._distortionAccumulator.GetObjectArrayBatches(this.objects, RM_DISTORTION, "Main");
+            this._distortionAccumulator.GetObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, "Main");
         }
 
         if (this.visible.backgroundObjects)
@@ -950,6 +1058,17 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Get normalized sun direction
+     * @param {vec3} out
+     */
+    GetPerFrameSunDirection(out)
+    {
+        vec3.copy(out, this.sunDirection);
+        vec3.negate(out, out);
+        return vec3.normalize(out, out);
+    }
+
+    /**
      * Applies view projection frame data
      */
     UpdateViewProjectionFrameData()
@@ -958,20 +1077,14 @@ export class EveSpaceScene extends meta.Model
 
         const
             d = device,
-            sunDir = EveSpaceScene.global.vec3_0,
             vs = this._perFrameVS,
             ps = this._perFramePS;
 
         d.perFrameVSData = vs;
         d.perFramePSData = ps;
 
-        d.perFrameCustomSceneVSData = this._perFrameCustomSceneVSData;
-        d.perFrameCustomScenePSData = this._perFrameCustomScenePSData;
 
-        // Sun direction
-        vec3.transformMat4(sunDir, this.sunDirection, this._localTransform);
-        vec3.negate(sunDir, sunDir);
-        vec3.normalize(sunDir, sunDir);
+        const sunDir = this.GetPerFrameSunDirection(EveSpaceScene.global.vec3_0);
 
         vs.Set("SunData.DirWorld", [ sunDir[0], sunDir[1], sunDir[2], 0 ]);
         vs.Set("TargetResolution", d.targetResolution);
@@ -987,8 +1100,72 @@ export class EveSpaceScene extends meta.Model
         ps.Set("ViewMat", d.viewTranspose);
         ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
         ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+
+        this.UpdateShadow();
     }
 
+    UpdateShadow()
+    {
+        if (this.enableShadows)
+        {
+            device.perFrameShadowPSData = this._perFrameShadowPS;
+            device.perFrameShadowVSData = this._perFrameShadowVS;
+            this.UpdateShadowMatrices();
+
+            const shadowViewTranspose = mat4.transpose(EveSpaceScene.global.mat4_0, this._shadowView);
+            const shadowViewProjectionTranspose = mat4.transpose(EveSpaceScene.global.mat4_1, this._shadowViewProjection);
+
+            this._perFrameVS.Set("ShadowViewMat", shadowViewTranspose);
+            this._perFrameVS.Set("ShadowViewProjectionMat", shadowViewProjectionTranspose);
+
+            this._perFrameShadowVS.Set("ShadowView", shadowViewTranspose);
+            this._perFrameShadowVS.Set("ShadowViewProjection", shadowViewProjectionTranspose);
+            this._perFrameShadowVS.Set("ShadowNearFar", [ device.nearPlane, device.farPlane || 1, 0, 0 ]);
+
+        }
+
+        // Use scene values by default
+        const shadowMapSettings = [
+                this._shadowMapOffsetX,
+                this._shadowMapOffsetY,
+                this._shadowDepthBias,
+                this.shadowFadeThreshold
+            ],
+            shadowCameraRange = [
+                this._shadowCameraNear,
+                this._shadowCameraFar,
+                this._shadowMinimumVisibility,
+                0
+            ];
+
+        // For debugging, we'll guess the correct values
+        if (this._enableShadowAutoSettings)
+        {
+            shadowMapSettings[0] = this.enableShadows ? 0 : 0;
+            shadowMapSettings[1] = this.enableShadows ? 0 : 0;
+            shadowMapSettings[2] = this.enableShadows ? 0 : 0;
+            shadowMapSettings[3] = this.enableShadows ? 0 : 0;
+
+            shadowCameraRange[0] = this.enableShadows ? 0 : 1; // Switches on/off shadows
+            shadowCameraRange[1] = this.enableShadows ? this._shadowCameraFar : 1;
+            shadowCameraRange[2] = this._shadowMinimumVisibility;
+        }
+
+        this._perFramePS.Set("ShadowMapSettings", shadowMapSettings);
+        this._perFramePS.Set("ShadowCameraRange", shadowCameraRange);
+
+    }
+
+    /**
+     * Updates shadow matrices
+     * TODO: Replace the identity fallback with directional shadow fitting.
+     */
+    UpdateShadowMatrices()
+    {
+        mat4.identity(this._shadowView);
+        mat4.identity(this._shadowProjection);
+        mat4.identity(this._shadowViewProjection);
+    }
     /**
      * Applies per frame data
      */
@@ -1048,22 +1225,6 @@ export class EveSpaceScene extends meta.Model
         vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         vs.Set("EnvMapRotationMat", envMapTransform);
 
-        // Shadows
-        if (this.enableShadows)
-        {
-            mat4.multiply(this._shadowViewProjection, this._shadowProjection, this._shadowView);
-            vs.Set("ShadowViewMat", mat4.transpose(g.mat4_0, this._shadowView));
-            vs.Set("ShadowViewProjectionMat", mat4.transpose(g.mat4_1, this._shadowViewProjection));
-        }
-
-        ps.Set("ShadowMapSettings", this._shadowMapSettings); // TODO: Identify source of this information
-        ps.Set("ShadowCameraRange", [
-            this.shadowCameraRange[0],
-            this.shadowCameraRange[1],
-            this.shadowLightness,
-            0
-        ]);
-
         ps.Set("EnvMapRotationMat", envMapTransform);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
@@ -1072,6 +1233,9 @@ export class EveSpaceScene extends meta.Model
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
 
         let envMap = this.GetEmptyTexture(),
+            // These are texture res not texture parameters
+            // We may have done something fancy here, rather than being explicit
+            // it looks like we've allowed textureRes OR texture parameters
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
@@ -1109,7 +1273,7 @@ export class EveSpaceScene extends meta.Model
         if (!path)
         {
             scene[pathProperty] = "";
-            scene[pathProperty] = null;
+            scene[targetObjectProperty] = null;
             return true;
         }
 
@@ -1126,26 +1290,15 @@ export class EveSpaceScene extends meta.Model
         return false;
     }
 
-    /**
-     * Per frame custom scene data
-     * @type {{ps , vs}}
-     */
-    static customScenePerFrameData = {
+
+    static perFrameShadowData = {
         vs: [
-            [ "LightSourceWorld0", [ 1000, 100, 100, 1 ] ],
-            [ "LightSourceWorld1", [ -1000, -100, -100, 1 ] ],
-            [ "LightSourceWorld2", [ 0, -1000, 100, 1 ] ],
-            [ "LightSourceWorld3", [ 0, 1000, -100, 1 ] ]
+            [ "ShadowViewProjection", 16 ],          // cb1[0..3] rows, used for gl_Position
+            [ "ShadowView", 16 ],                   // cb1[4..7] rows, used for texcoord3 + clipZ row at cb1[6]
+            [ "ShadowNearFar", 4 ],                 // cb1[8] : x=near, y=far, z/w unused
         ],
         ps: [
-            [ "LightSource0Diffuse", [ 1, 0, 0, 0 ] ],
-            [ "LightSource0Specular", 4 ],
-            [ "LightSource1Diffuse", [ 0, 1, 0, 0 ] ],
-            [ "LightSource1Specular", 4 ],
-            [ "LightSource2Diffuse", [ 0, 0, 1, 0 ] ],
-            [ "LightSource2Specular", 4 ],
-            [ "LightSource3Diffuse", [ 1, 1, 0, 0 ] ],
-            [ "LightSource3Specular", 4 ],
+
         ]
     };
 
@@ -1167,7 +1320,15 @@ export class EveSpaceScene extends meta.Model
             [ "ViewportSize", 2 ],
             [ "TargetResolution", 4 ],
             [ "ShadowMapSettings", 4 ],
-            [ "ShadowCameraRange", 4 ], // shadow camera range, shadow camera range, shadow lightness. unused
+            // shadow atlas offset x (high)
+            // shadow atlas offset y (high)
+            // shadow depth bias (very high)
+            // shadow fade threshold (medium-high)
+            [ "ShadowCameraRange", 4 ],
+            // shadow camera range (very high) - shadow enable/ mode switch : 0 shadows on, 1 no shadows
+            // shadow depth normalisation max (high)
+            // shadow minimum shadow visibility (very high) - 0: full darkness, 0.2 - 0.4 soft, lifted shadows
+            // unused (correct)
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
             [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1

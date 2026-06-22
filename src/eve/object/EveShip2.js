@@ -3,7 +3,7 @@ import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
-import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
+import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet, EveAnnotationSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
@@ -93,6 +93,7 @@ export class EveShip2 extends EveObject
 
     @meta.plain
     visible = {
+        annotations: true,
         banners: true,
         boosters: true,
         children: true,
@@ -116,6 +117,39 @@ export class EveShip2 extends EveObject
     weeksSinceCleaned = 0;
 
     // Testing...
+
+    @meta.struct()
+    sofFactionColorSet = null;
+
+    /**
+     * TODO: Remove this it is a helper function only
+     * Updates colors from a color set
+     * @param {Number} colorType
+     * @param {Vec4} color
+     * @returns {boolean} - true if updated
+     */
+    UpdateColorType(colorType, color)
+    {
+        let updated = false;
+
+        if (this.mesh && this.mesh.UpdateColorType)
+        {
+            this.mesh.UpdateColorType(colorType, color);
+        }
+
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i].UpdateColorType)
+            {
+                if (this.attachments[i].UpdateColorType(colorType, color))
+                {
+                    updated = true;
+                }
+            }
+        }
+        return updated;
+    }
+
     _enableCurves = false;
     _pixelSizeAcross = 0;
 
@@ -130,6 +164,45 @@ export class EveShip2 extends EveObject
     {
         this.RebuildBoosterSet();
         super.Initialize();
+    }
+
+    /**
+     * Gets the parent bone index of a model's bone index
+     * @param {Number} modelIndex
+     * @param {Number} boneIndex
+     * @returns {number} -1 for none
+     */
+    GetAnimationBoneIndexParentIndex(modelIndex, boneIndex)
+    {
+        if (!this.animation || !this.animation.models[modelIndex] || !this.animation.models[boneIndex].bones[boneIndex])
+        {
+            throw new ReferenceError(`Invalid bone ${boneIndex} for model index ${modelIndex}`);
+        }
+        return this.animation.models[modelIndex].bones[boneIndex].GetParentBoneIndex();
+    }
+
+    /**
+     * Gets the model count for the space object
+     * @returns {Number}
+     */
+    GetAnimationModelCount()
+    {
+        return this.animation ? this.animation.models.length : 0;
+    }
+
+    /**
+     * Gets the space object's bone count
+     * - Note that the root bone will count as one
+     * @parameter {Number} modelIndex
+     * @returns {Number}
+     */
+    GetAnimationModelIndexBoneCount(modelIndex)
+    {
+        if (!this.animation || !this.animation.models[modelIndex])
+        {
+            throw new ReferenceError(`Invalid model index ${modelIndex}`);
+        }
+        return this.animation.models[modelIndex].bones.length;
     }
 
     /**
@@ -267,6 +340,75 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * TODO: Remove this helper function
+     * Gets items by color type
+     * @param {Number} colorType
+     * @param {Array<*>} out
+     * @returns {Array<*>}
+     */
+    GetItemByColorType(colorType, out=[])
+    {
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i].GetItemByColorType)
+            {
+                this.attachments[i].GetItemByColorType(colorType, out);
+            }
+        }
+
+        for (let i = 0; i < this.decals.length; i++)
+        {
+            if (this.decals[i].colorType === colorType && !out.includes(this.decals[i]))
+            {
+                out.push(this.decals[i]);
+            }
+        }
+
+        if (this.mesh && this.mesh.GetItemByColorType)
+        {
+            this.mesh.GetItemByColorType(colorType, out);
+        }
+
+        return out;
+    }
+
+    /**
+     * TODO: Remove this, it is no longer relevant
+     * Gets items by group index
+     * @param {Number} colorType
+     * @param {Array<*>} out
+     * @returns {Array<*>}
+     */
+    GetItemByGroupIndex(groupIndex, out=[])
+    {
+        for (let i = 0; i < this.attachments.length; i++)
+        {
+            if (this.attachments[i].GetItemByGroupIndex)
+            {
+                this.attachments[i].GetItemByGroupIndex(groupIndex, out);
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Decides if we want to rebuild bounds from child objects
+     * @type {boolean}
+     */
+    rebuildBoundsFromChildren = false;
+
+    /*
+
+        Eve engine doesn't rebuild bounds like we do here
+        If we need to rebuild bounds for a hull, for using in something like Intersection tests
+        We should be storing it separately to the actual hull's bounds
+        This will remove confusion when we're reverse engineering stuff
+        TODO: Change all bound calculations to be separate from the base hull bounds
+
+     */
+
+    /**
      * Fires when bounds need rebuilding
      */
     OnRebuildBounds()
@@ -274,7 +416,7 @@ export class EveShip2 extends EveObject
 
         if (this.animation && this.animation.animations.length)
         {
-            console.warn("Rebuilding bounds on animated meshes not yet supported");
+            //console.warn("Rebuilding bounds on animated meshes not yet supported");
         }
 
         if (!this.mesh || !this.mesh.IsGood())
@@ -315,8 +457,9 @@ export class EveShip2 extends EveObject
         };
 
         unionFromArrayItems(this.attachments);
-        unionFromArrayItems(this.effectChildren);
-        unionFromArrayItems(this.children);
+
+        if (this.rebuildBoundsFromChildren) unionFromArrayItems(this.effectChildren);
+        if (this.rebuildBoundsFromChildren) unionFromArrayItems(this.children);
 
         sph3.fromBox3(this._boundingSphere, this._boundingBox);
         this._boundsDirty = false;
@@ -771,6 +914,8 @@ export class EveShip2 extends EveObject
             !this.shadowEffect.IsGood()
         ) return false;
 
+        // Temporarily change cb1[0]
+
         const { mesh } = this;
 
         for (let i = 0; i < mesh.opaqueAreas.length; i++)
@@ -786,6 +931,8 @@ export class EveShip2 extends EveObject
             batch.start = area.index;
             batch.count = area.count;
             batch.effect = this.shadowEffect;
+            batch.effect._isShadowEffect = true;
+
             accumulator.Commit(batch);
         }
 
@@ -815,11 +962,12 @@ export class EveShip2 extends EveObject
 
         if (res)
         {
-            // Should this just throw an error?
+            // TODO: Throw an error
             if (this.meshIndex > res.meshes.length)
             {
                 this.meshIndex = res.meshes.length - 1;
             }
+            // TODO: Why are we doing this? Must assume the data is correct
             this.mesh.SetMeshIndex(this.meshIndex);
 
             if (show.mesh)
@@ -903,6 +1051,13 @@ export class EveShip2 extends EveObject
                         }
                         break;
 
+                    case EveAnnotationSet:
+                        if (show.annotations)
+                        {
+                            item.GetBatches(mode, accumulator, this._perObjectData);
+                        }
+                        break;
+
                     default:
                         if (item.GetBatches)
                         {
@@ -969,6 +1124,7 @@ export class EveShip2 extends EveObject
         mat4.copy(this._parentTransform, parentTransform);
         mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
+
         // Enabling curves overrides rotation and translation
         if (this._enableCurves && this.rotationCurve || this.translationCurve)
         {
@@ -986,16 +1142,17 @@ export class EveShip2 extends EveObject
         this.RebuildTransforms({ force: true, skipUpdate: true });
 
         const res = this.mesh && this.mesh.IsGood() ? this.mesh.geometryResource : null;
-
         if (res)
         {
-            // Should this just throw an error?
+            // What is this, this doesn't look standard
+            // We can probably remove this.
             if (this.meshIndex > res.meshes.length)
             {
                 this.meshIndex = res.meshes.length - 1;
             }
             this.mesh.SetMeshIndex(this.meshIndex);
 
+            // If we have animations, check if they're loaded
             if (this.animation)
             {
                 if (!this.animation.HasGeometryResource(res))
@@ -1029,18 +1186,15 @@ export class EveShip2 extends EveObject
             }
         }
 
-
-        for (let i = 0; i < this.children.length; ++i)
-        {
-            this.children[i].UpdateViewDependentData(this._worldTransform);
-        }
-
+        // Update shader transforms
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-
         const invWorldMat = this._perObjectData.vs.Get("InvWorldMat");
-        mat4.invert(invWorldMat, this._worldTransform);
+        if (!mat4.invert(invWorldMat, this._worldTransform)) mat4.identity(invWorldMat);
         mat4.transpose(invWorldMat, invWorldMat);
 
+        // Update bounding ellipsoid (Used for some effects and maybe collsions?)
+        // - Similar as the clip data, we should only have to update this on first load
+        // - and then whenever the bounds get updated
         const
             center = this._perObjectData.vs.Get("EllipsoidCenter"),
             radii = this._perObjectData.vs.Get("EllipsoidRadii");
@@ -1063,15 +1217,35 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        // Setup per frame ship data
+        // - Should bounding sphere radius be squared?
         const shipData = this._perObjectData.ps.Get("Shipdata");
-        shipData[0] = this.visible.boosters ? this.boosterGain : 0;
-        shipData[1] = this.activationStrength; //Math.max(Math.min(this.activationStrength, 1.0), 0.0);
-        shipData[2] = EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt);
-        // Unscaled bounding sphere radius
-        shipData[3] = this.boundingSphereRadius;
+        shipData[0] = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1.0), 0.0);
+        shipData[1] = Math.max(Math.min(this.activationStrength, 1.0), 0.0);
+        shipData[2] = Math.max(EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0);
+        shipData[3] = this.boundingSphereRadius * this.boundingSphereRadius;
 
-        // Copy
         this._perObjectData.vs.Set("Shipdata", shipData);
+        this._perObjectData.ps.Set("Shipdata", shipData);
+
+        // Setup per frame clip data
+        // - We only have to update this if the bounding sphere changes
+        // - This is unlikely to happen so we probably should only set it up once.
+        // - We need to set clip data, but can't guarantee bounding sphere center is correct yet
+
+        const clipData = [
+            this.boundingSphereCenter[0],
+            this.boundingSphereCenter[1],
+            this.boundingSphereCenter[2],
+            // CCP shaders expect a signed sphere term here.
+            -this.boundingSphereRadius * this.boundingSphereRadius
+        ];
+
+        this._perObjectData.vs.Set("Clipdata1", clipData);
+        this._perObjectData.ps.Set("Clipdata1", clipData);
+
+        const clipStrength = Math.max(Math.min(this.clip, 1.0), 0.0);
+        this._perObjectData.ps.SetIndex("Miscdata", 0, clipStrength);
 
         // Is this correct?
         const id = mat4.identity(EveObject.global.mat4_0);
@@ -1084,8 +1258,16 @@ export class EveShip2 extends EveObject
             this.customMasks[i].UpdatePerObjectData(id, this._perObjectData, i, this.visible.customMasks);
         }
 
+        // Custom Mask Blending
+        this._perObjectData.ps.SetIndex("CustomMaskBlending", 2, this.customMasksSwapped ? 1 : 0);
+        this._perObjectData.ps.SetIndex("CustomMaskBlending", 3, this.customMaskBlendMode);
+
+        // Custom scaler for sprites
+        // - Note that ccp doesn't do this however we want to do this
+        // - incase we want to scale the scene down, e.g. for Virtual Reality/ Mixed Reality projections
         this._spriteScale = mat4.maxScaleOnAxis(this._worldTransform);
 
+        // Collect our bones
         let bones = null;
         if (this.animation && this.animation.models[this.meshIndex])
         {
@@ -1095,6 +1277,11 @@ export class EveShip2 extends EveObject
                 console.dir({ msg: "Invalid bones", bones });
                 bones = null;
             }
+        }
+
+        for (let i = 0; i < this.children.length; ++i)
+        {
+            this.children[i].UpdateViewDependentData(this._worldTransform, dt);
         }
 
         for (let i = 0; i < this.attachments.length; i++)
@@ -1110,8 +1297,18 @@ export class EveShip2 extends EveObject
             this.boosters.UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
         }
 
+        for (let i = 0; i < this.decals.length; i++)
+        {
+            this.decals[i].UpdateViewDependentData(this._worldTransform);
+        }
 
     }
+
+    @meta.boolean
+    customMasksSwapped = false;
+
+    @meta.uint
+    customMaskBlendMode = 0;
 
     @meta.float
     activationStrength = 1.0;
@@ -1120,13 +1317,13 @@ export class EveShip2 extends EveObject
      * The level to use when dirt is off
      * @type {number}
      */
-    static DIRT_OFF_LEVEL = 5.0;
+    //static DIRT_OFF_LEVEL = 5.0;
 
     /**
      * Age modifier
      * @type {number}
      */
-    static DIRT_AGE_MODIFIER = 0.01;
+    //static DIRT_AGE_MODIFIER = 0.01;
 
     /**
      * Gets dirt level from weeks since cleaned
@@ -1136,8 +1333,9 @@ export class EveShip2 extends EveObject
      */
     static getDirtLevelFromWeeks(weeks, isDisabled)
     {
-        weeks *= this.DIRT_AGE_MODIFIER;
-        if (isDisabled || isNaN(weeks)) return this.DIRT_OFF_LEVEL;
+        //weeks *= this.DIRT_AGE_MODIFIER;
+        //if (isDisabled || isNaN(weeks)) return this.DIRT_OFF_LEVEL;
+        if (isDisabled || isNaN(weeks)) return 0;
         return (0.7 - 1.0 / (Math.pow(Math.max(weeks, 0.0), 0.65) + (1.0 / 2.7)));
     }
 
@@ -1147,40 +1345,40 @@ export class EveShip2 extends EveObject
      */
     static perObjectData = {
         vs: [
-            [ "WorldMat", 16 ],
-            [ "WorldMatLast", 16 ],
-            [ "InvWorldMat", 16 ],
-            [ "Shipdata", [
-                0,     // booster gain / dirt
+            [ "WorldMat", 16 ],      // cb3[0..3], used by normal and shadow/depth VS
+            [ "WorldMatLast", 16 ],  // cb3[4..7], previous frame world matrix
+            [ "InvWorldMat", 16 ],   // cb3[8..11], inverse world matrix
+            [ "Shipdata", [       // cb3[12]
+                0,     // booster gain ?
                 1,     // activation
-                0,     // Should be dirt?
-                1      // effect scale?
+                0,     // Dirt strength and shared with boosters for booster strength
+                1      // effect scale - might be clip scale?
             ] ],
-            [ "Clipdata1", 4 ], // Some sort of effect data - center(vec3), signed squared size
-            [ "EllipsoidRadii", 4 ],
-            [ "EllipsoidCenter", 4 ],
-            [ "CustomMaskMatrix0", mat4.create() ],
-            [ "CustomMaskMatrix1", mat4.create() ],
-            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ],
-            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ],
-            [ "JointMat", 696 ]
+            [ "Clipdata1", 4 ],   // cb3[13], shared clip sphere data
+            [ "EllipsoidRadii", 4 ], // cb3[14]
+            [ "EllipsoidCenter", 4 ], // cb3[15]
+            [ "CustomMaskMatrix0", mat4.create() ], // cb3[16..19]
+            [ "CustomMaskMatrix1", mat4.create() ], // cb3[20..23]
+            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ], // cb3[24],  mirror, unused, unused, unused
+            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ], // cb3[25],  mirror, unused, unused, unused
+            [ "JointMat", 696 ]  // cb3[26..199], used by skinned shadow/depth VS
         ],
         ps: [
-            [ "Shipdata", [
-                0, // booster strength
-                1, // activation
-                0, // dirt level
-                1  // bounding sphere radius
+            [ "Shipdata", [       // cb4[0]
+                0,     // booster gain ?
+                1,     // activation
+                0,     // Dirt strength and shared with boosters for booster strength
+                1      // effect scale - might be clip scale?
             ] ],
-            [ "Clipdata1", 4 ],     // Some sort of effect data - center(vec3), signed squared size
-            [ "Miscdata", 4 ],      // clip sphere center, dissolve radius with a sign
+            [ "Clipdata1", 4 ],     // cb4[1], shared clip sphere data, read by shadow/depth PS
+            [ "Miscdata", 4 ],      // cb4[2], .x is shared clip strength, read by shadow/depth PS
             [ "ShLighting", 4 * 7 ],
-            [ "CustomMaskMaterialID0", 4 ],
-            [ "CustomMaskMaterialID1", 4 ],
-            [ "CustomMaskTarget0", 4 ],
-            [ "CustomMaskTarget1", 4 ],
-            [ "CustomMaskClamps", 4 ], // Unused
-            [ "Screensize", 4 ]        // Unused
+            [ "CustomMaskMaterialID0", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
+            [ "CustomMaskMaterialID1", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
+            [ "CustomMaskTarget0", 4 ], // Material Layer Masking
+            [ "CustomMaskTarget1", 4 ], // Material Layer Masking
+            [ "CustomMaskBlending", 4 ], // Unused - incorrect name - this is a custom name
+            [ "Screensize", 4 ]        // Unused - need to confirm
         ]
     };
 

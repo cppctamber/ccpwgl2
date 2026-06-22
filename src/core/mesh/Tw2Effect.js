@@ -117,6 +117,9 @@ export class Tw2Effect extends meta.Model
     @meta.string
     defaultTechnique = "Main";
 
+    @meta.boolean
+    _isShadowEffect = false;
+
     _isAttached = false;
 
     //resources
@@ -250,7 +253,10 @@ export class Tw2Effect extends meta.Model
             if (this.effectFilePath)
             {
                 // Auto shader replacement
-                if (getPathExtension(this.effectFilePath) !== "sm_json") this.effectFilePath = Tw2Effect.getOverriddenShaderPath(this.effectFilePath);
+                if (Tw2Effect.USE_SHADER_OVERRIDES && getPathExtension(this.effectFilePath) !== "sm_json")
+                {
+                    this.effectFilePath = Tw2Effect.getOverriddenShaderPath(this.effectFilePath);
+                }
                 // Auto fx quality
                 if (getPathExtension(this.effectFilePath) === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
 
@@ -263,6 +269,8 @@ export class Tw2Effect extends meta.Model
             this.BindParameters(opt);
         }
     }
+
+    static USE_SHADER_OVERRIDES = true;
 
     /**
      * Temporary handler for unpacked textures
@@ -783,8 +791,18 @@ export class Tw2Effect extends meta.Model
         // Fragment constants
         if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
 
-        if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
-        if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
+        // Surely a better way to do this...
+        if (this._isShadowEffect)
+        {
+            if (d.perFrameShadowVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameShadowVSData.data);
+            if (d.perFrameShadowPSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFrameShadowPSData.data);
+        }
+        else
+        {
+            if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
+            if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
+        }
+
         const pod = d.perObjectData;
         if (pod)
         {
@@ -793,11 +811,6 @@ export class Tw2Effect extends meta.Model
             if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
         }
 
-        if (d.perFrameCustomSceneVSData && cbh[8]) gl.uniform4fv(cbh[8], d.perFrameCustomSceneVSData.data);
-        if (d.perFrameCustomScenePSData && cbh[9]) gl.uniform4fv(cbh[9], d.perFrameCustomScenePSData.data);
-
-        //if (d.perFrameCustomObjectVSData && cbh[10]) gl.uniform4fv(cbh[10], d.perFrameCustomObjectVSData.data);
-        //if (d.perFrameCustomObjectVSData && cbh[11]) gl.uniform4fv(cbh[11], d.perFrameCustomObjectVSData.data);
 
     }
 

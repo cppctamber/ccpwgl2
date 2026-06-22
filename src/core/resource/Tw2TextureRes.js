@@ -451,7 +451,7 @@ export class Tw2TextureRes extends Tw2Resource
                 return true;
 
             default:
-                throw new ErrResourceFormatUnsupported({ format: extension });
+                break;
         }
 
         resMan.AddPendingLoad(path);

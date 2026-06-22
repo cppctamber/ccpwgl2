@@ -248,6 +248,7 @@ export const config = {
         "LensflareFxDirectionScale": [ 0, 0, 0, 0 ],
 
         // Custom
+        "g_pixel_adjustment": [ 0.05, 1, 1, 1 ],
         "g_wreckShaderAdjustments": [ 1.1, 3.0, 0.1, 0 ],
         "g_banner": [
             1.0, // Brightness
