@@ -7,6 +7,9 @@ import { vec4 } from "math/vec4";
 export class EveChildInheritProperties extends meta.Model
 {
 
+    @meta.struct
+    source = null;
+
     /*
 
         These should all be references to a hull's faction's colours

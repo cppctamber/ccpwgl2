@@ -1,6 +1,6 @@
 import { generateID } from "../utils/uuid";
 import { getMetadata, hasMetadata } from "../utils/reflect";
-import { isArray, isFunction, isObjectObject } from "../utils/type";
+import { isArray, isFunction, isNumber, isObjectObject, isString } from "../utils/type";
 import { propTypes } from "./ModelPropertyTypes";
 import { tw2 } from "global/tw2";
 
@@ -619,6 +619,67 @@ export class Model
     }
 
     /**
+     * Gets a prop's type
+     * @param {String} prop
+     * @returns {Number|null}
+     */
+    GetPropType(prop)
+    {
+        return this.constructor.getPropType(this, prop);
+    }
+
+    /**
+     * Checks if a property is private
+     * @param {String} prop
+     * @returns {boolean}
+     */
+    IsPropPrivate(prop)
+    {
+        return this.constructor.IsPropPrivate(this, prop);
+    }
+
+    /**
+     * Gets the class's type name
+     * @returns {String|null}
+     */
+    GetClassName()
+    {
+        return this.constructor.GetClassName(this);
+    }
+
+    /**
+     * Gets the classes CCP name
+     * @returns {String|null}
+     */
+    GetCCPName()
+    {
+        return this.constructor.getClassCCPName(this);
+    }
+
+    static getClassCCPName(obj)
+    {
+        const ccp = getMetadata("ccp", obj.constructor);
+        return ccp ? ccp : this.getClassName(obj);
+    }
+
+    static getClassName(obj)
+    {
+        const type = getMetadata("type", obj);
+        return isString(type) ? type : null;
+    }
+
+    static getPropType(obj, prop)
+    {
+        const type = getMetadata("type", obj, prop);
+        return isNumber(type) ? type : null;
+    }
+
+    static isPropPrivate(obj, prop)
+    {
+        return !!getMetadata("isPrivate", obj, prop);
+    }
+
+    /**
      *
      * @param a
      * @param b
@@ -909,6 +970,11 @@ export class Model
         }
 
         return item;
+    }
+
+    static is(obj)
+    {
+        return obj instanceof this;
     }
 
 }

@@ -46,6 +46,10 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     brightness = 0;
 
+    @meta.notImplemented
+    @meta.float
+    castsShadows = false;
+
     @meta.color
     color = vec4.create();
 
