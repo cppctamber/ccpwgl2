@@ -73,8 +73,9 @@ export class Tw2EventEmitter
                 // options as an array/ arguments
                 if (isArray(listener))
                 {
-                    listener = listener[0];
-                    context = listener[1];
+                    const arr = listener;
+                    listener = arr[0];
+                    context = arr[1];
                 }
 
                 if (!isFunction(listener))

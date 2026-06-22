@@ -15,6 +15,7 @@ export class Tw2Model
     @meta.isPrivate
     bonesByName = {};
 
-    // Todo: Initialize: build bones by name
+    // TODO: Review how bones by index should be initialized and maintained
+    bonesByIndex = [];
 
 }

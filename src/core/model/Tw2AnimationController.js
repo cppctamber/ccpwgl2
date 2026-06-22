@@ -159,6 +159,24 @@ export class Tw2AnimationController extends meta.Model
     }
 
     /**
+     * Checks if an animation exists
+     * @param name
+     * @returns {boolean}
+     * @constructor
+     */
+    HasAnimation(name)
+    {
+        for (let i = 0; i < this.animations.length; i++)
+        {
+            if (this.animations[i].name === name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Plays a specific animation by it's name
      * @param {String} name - Animation's Name
      * @param {Object} options
