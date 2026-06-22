@@ -160,7 +160,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Attaches a texture res
-     * @param {Tw2TextureRes|Tw2VideoRes} res
+     * @param {Tw2TextureRes} res
      * @return {boolean}
      */
     AttachTextureRes(res)
@@ -170,7 +170,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Sets the texture's resource manually
-     * @param {Tw2TextureRes|Tw2VideoRes|null} res
+     * @param {Tw2TextureRes|null} res
      * @param {Boolean}  [isAttached]
      * @returns {Boolean}
      */

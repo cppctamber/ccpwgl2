@@ -6,15 +6,19 @@ import * as sof from "./sof";
 import * as unsupported from "./unsupported";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
-
+import { tw2BatchSorter } from "core/batch";
 
 /**
  * Register global configurations
  */
 export const config = {
 
+
     // Enables library debugging
     debug: false,
+
+    // Sets the default render batch sorter
+    renderBatchSorter: tw2BatchSorter,
 
     // The paths in the black files must be changed
     black: {
@@ -25,12 +29,14 @@ export const config = {
         // Replace dds extension  with pngs
         "dds": path =>
         {
-            if (path.split(".").pop() === "dds" && path.includes("_cube"))
+
+            if (path.includes("_cube"))
             {
                 return path.replace(".dds", ".qube");
             }
 
             return path.replace(".dds", ".png");
+
         },
 
         // Replace gr2 extension with gr2_json
@@ -48,7 +54,7 @@ export const config = {
         // destination alpha operations and compositing with the page. If the value is false,
         // no alpha buffer is available.
         // - Disabled by default due to issues with artifacts in ccpwgl
-        alpha: false,
+        alpha: true,
 
         // If the value is true, the drawing buffer has a depth buffer of at least 16 bits. If the value is false,
         // no depth buffer is available.
@@ -72,7 +78,7 @@ export const config = {
         // the drawing buffer are cleared to their default values. All elements of the drawing buffer (color, depth
         // and stencil) are cleared. If the value is true the buffers will not be cleared and will preserve their
         // values until cleared or overwritten by the author.
-        preserveDrawingBuffer: false,
+        preserveDrawingBuffer: true,
 
         // Provides a hint to the user agent indicating what configuration of GPU is suitable for this WebGL context.
         // This may influence which GPU is used in a system with multiple GPUs. For example, a dual-GPU system might
@@ -100,7 +106,7 @@ export const config = {
         // Defines the default texture quality (HIGH, MEDIUM, LOW) - Doesn't work with CDN resources yet
         "textureQuality": DeviceTextureQuality.HIGH,
 
-        // Defines the default shader quality (HIGH or LOW)
+        // Defines the default shader quality (DEPTH, HIGH or LOW)
         "shaderQuality": DeviceShaderQuality.HIGH,
 
         // Enables antialiasing (can affect performance)
@@ -124,11 +130,11 @@ export const config = {
 
         // Keeps a copy of vertex data in geometry
         // Geometry loaded when false will not store vertex data after this is enabled
-        "systemMirror": false,
+        "systemMirror": true,
 
         // Enables auto purging of resources that aren't used
         // If set to false resources must be manually removed when no longer required
-        "autoPurgeResources": false,
+        "autoPurgeResources": true,
 
         // The amount of time to wait before purging an unused resource
         "purgeTime": 60,
@@ -176,10 +182,11 @@ export const config = {
     paths: {
 
         // The last ccpwgl path to be updated by ccp
+        // This no longer exists :(
         "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
 
         // Local resource server (not provided with this library)
-        "cdn": "http://localhost:3000/",
+        "cdn": "http://127.0.0.1:3000/",
 
     },
 
@@ -194,12 +201,16 @@ export const config = {
         "cake": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,
         "png": core.Tw2TextureRes,
+        "jpg": core.Tw2TextureRes,
+        "jpeg": core.Tw2TextureRes,
+        "webp": core.Tw2TextureRes,
+        "avif": core.Tw2TextureRes,
         "dds": core.Tw2TextureRes,
         "cube": core.Tw2TextureRes,
         "qube": core.Tw2TextureRes,
         "tga" : core.Tw2TextureRes,
-        "mp4": core.Tw2VideoRes,
-        "webm": core.Tw2VideoRes,
+        "mp4": core.Tw2TextureRes,
+        "webm": core.Tw2TextureRes,
         "black": core.Tw2LoadingObject,
         "red": core.Tw2LoadingObject,
         "mp3": core.Tw2AudioRes,
@@ -254,6 +265,12 @@ export const config = {
             0.0,
             0.0,
             0.0
+        ],
+        "g_pixel_adjustment": [
+            0.5,
+            1.0,
+            1.0,
+            1.0
         ],
         "g_transparent_background": [ 0, 0.3, 0, 0 ],
         "EveSpaceSceneDepthMap": "",
