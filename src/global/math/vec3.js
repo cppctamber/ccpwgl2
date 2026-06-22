@@ -26,6 +26,14 @@ vec3.unalloc = function (a)
     pool.freeType(a);
 };
 
+vec3.unallocMany = function(arr)
+{
+    for (let i = 0; i < arr.length; i++)
+    {
+        pool.freeType(arr[i]);
+    }
+};
+
 /**
  * X_AXIS
  * @type {vec3}
@@ -479,9 +487,11 @@ vec3.fromSpherical = function (out, spherical, center)
         theta = spherical[1],
         radius = spherical[2];
 
-    out[0] = radius * Math.sin(phi) * Math.sin(theta);
-    out[1] = radius * Math.cos(theta);
-    out[2] = radius * Math.cos(phi) * Math.sin(theta);
+    const sinPhi = Math.sin(phi);
+
+    out[0] = radius * sinPhi * Math.sin(theta); // x
+    out[1] = radius * Math.cos(phi);            // y
+    out[2] = radius * sinPhi * Math.cos(theta); // z
 
     if (center)
     {
@@ -492,6 +502,8 @@ vec3.fromSpherical = function (out, spherical, center)
 
     return out;
 };
+
+
 
 /**
  * Gets spherical coordinates from a vector
