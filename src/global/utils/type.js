@@ -210,7 +210,7 @@ export function isObjectObject(a)
  */
 export function isPlain(a)
 {
-    if (!isObject(a) || !isObjectObject)
+    if (!isObject(a) || !isObjectObject(a))
     {
         return false;
     }
@@ -307,7 +307,7 @@ export function isTag(a, tag)
  */
 export function isTr2OrTri(string)
 {
-    return string && string.indexOf("Tr2") === 0 || string.indexOf("Tri") === 0;
+    return !!(string && (string.indexOf("Tr2") === 0 || string.indexOf("Tri") === 0));
 }
 
 /**

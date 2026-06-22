@@ -7,7 +7,9 @@ const
     vec3_1 = vec3.create(),
     vec3_2 = vec3.create(),
     quat_0 = quat.create(),
-    mat4_0 = mat4.create();
+    mat4_0 = mat4.create(),
+    sph3_0 = sph3.create(),
+    box3_0 = box3.create();
 
 
 @meta.type("Tw2Transform")
@@ -113,6 +115,28 @@ export class Tw2Transform extends meta.Model
     }
 
     /**
+     * Gets the object's world bounding sphere's radius
+     * @param {Boolean} [force]
+     * @returns {Number}
+     */
+    GetWorldBoundingSphereRadius(force)
+    {
+        const result = this.GetWorldBoundingSphere(sph3_0, force);
+        return result ? result[3] : 0;
+    }
+
+    /**
+     * Gets the object's local bounding sphere's radius
+     * @param {Boolean} [force]
+     * @returns {Number}
+     */
+    GetBoundingSphereRadius(force)
+    {
+        const result = this.GetBoundingSphere(sph3_0, force);
+        return result ? result[3] : 0;
+    }
+
+    /**
      * Gets a bounding sphere
      * @param {sph3} out
      * @param {Boolean} [force]
@@ -171,18 +195,17 @@ export class Tw2Transform extends meta.Model
      */
     GetOffsetFromBoundsCenter(out, centerOffset = [ 0, 0, 0 ])
     {
-        const bb = box3.create();
         // Fallback to mesh bounds
-        if (!this.GetBoundingBox(bb))
+        if (!this.GetBoundingBox(box3_0))
         {
             const res = this.wrapped.mesh.geometryResource;
-            box3.fromBounds(bb, res.minBounds, res.maxBounds);
+            box3.fromBounds(box3_0, res.minBounds, res.maxBounds);
         }
 
         vec3.set(out,
-            -0.5 * (bb[0] + bb[3]) + centerOffset[0],
-            -0.5 * (bb[1] + bb[4]) + centerOffset[1],
-            -0.5 * (bb[2] + bb[5]) + centerOffset[2]
+            -0.5 * (box3_0[0] + box3_0[3]) + centerOffset[0],
+            -0.5 * (box3_0[1] + box3_0[4]) + centerOffset[1],
+            -0.5 * (box3_0[2] + box3_0[5]) + centerOffset[2]
         );
         return out;
     }
@@ -235,26 +258,26 @@ export class Tw2Transform extends meta.Model
                 mat4.multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
             }
 
-            if (this["_localTranspose"])
+            if (this._localTranspose)
             {
-                mat4.transpose(this["_localTranspose"], this._localTransform);
+                mat4.transpose(this._localTranspose, this._localTransform);
             }
 
-            if (this["_localInverse"])
+            if (this._localInverse)
             {
-                mat4.invert(this["_localInverse"], this._localTransform);
+                mat4.invert(this._localInverse, this._localTransform);
             }
 
-            if (this["_localInverseTranspose"])
+            if (this._localInverseTranspose)
             {
-                if (this["_localInverse"])
+                if (this._localInverse)
                 {
-                    mat4.transpose(this["_localInverseTranspose"], this["_localInverse"]);
+                    mat4.transpose(this._localInverseTranspose, this._localInverse);
                 }
                 else
                 {
-                    mat4.invert(this["_localInverseTranspose"], this._localTransform);
-                    mat4.transpose(this["_localInverseTranspose"], this["_localInverseTranspose"]);
+                    mat4.invert(this._localInverseTranspose, this._localTransform);
+                    mat4.transpose(this._localInverseTranspose, this._localInverseTranspose);
                 }
             }
 
@@ -267,47 +290,47 @@ export class Tw2Transform extends meta.Model
             return false;
         }
 
-        if (this["_parentTransform"])
+        if (this._parentTransform)
         {
-            mat4.multiply(this._worldTransform, this["_parentTransform"], this._localTransform);
+            mat4.multiply(this._worldTransform, this._parentTransform, this._localTransform);
         }
         else
         {
             mat4.copy(this._worldTransform, this._localTransform);
         }
 
-        if (this["_worldInverse"])
+        if (this._worldInverse)
         {
-            mat4.invert(this["_worldInverse"], this._worldTransform);
+            mat4.invert(this._worldInverse, this._worldTransform);
         }
 
-        if (this["_worldTranspose"])
+        if (this._worldTranspose)
         {
-            mat4.transpose(this["_worldTranspose"], this._worldTransform);
+            mat4.transpose(this._worldTranspose, this._worldTransform);
         }
 
-        if (this["_worldInverseTranspose"])
+        if (this._worldInverseTranspose)
         {
-            if (this["_worldTranspose"])
+            if (this._worldTranspose)
             {
-                mat4.invert(this["_worldInverseTranspose"], this["_worldTranspose"]);
+                mat4.invert(this._worldInverseTranspose, this._worldTranspose);
             }
             else
             {
-                mat4.invert(this["_worldInverseTranspose"], this["_worldTransform"]);
-                mat4.transpose(this["_worldInverseTranspose"], this["_worldInverseTranspose"]);
+                mat4.invert(this._worldInverseTranspose, this._worldTransform);
+                mat4.transpose(this._worldInverseTranspose, this._worldInverseTranspose);
             }
         }
 
         // Refactor all methods to use the same optional callback
-        if (this["_onWorldTransformModified"])
+        if (this._onWorldTransformModified)
         {
-            this["_onWorldTransformModified"](this._worldTransform);
+            this._onWorldTransformModified(this._worldTransform);
         }
 
-        if (this["OnWorldTransformModified"])
+        if (this.OnWorldTransformModified)
         {
-            this["OnWorldTransformModified"](this._worldTransform);
+            this.OnWorldTransformModified(this._worldTransform);
         }
 
         if (!skipUpdate)
@@ -326,22 +349,34 @@ export class Tw2Transform extends meta.Model
      */
     SetParentTransform(m)
     {
+        // If they're the same reference, do nothing
+        if (m === this._parentTransform) return this;
+
         // Clear
-        if (!m && this["_parentTransform"])
+        if (!m)
         {
-            this["_parentTransform"] = null;
-            this._rebuildWorld = true;
+            // Pretty sure this should never be used
+            // Users shouldn't be clearing this
+            if (this._parentTransform)
+            {
+                this._parentTransform = null;
+                this._rebuildWorld = true;
+            }
+            return this;
         }
+
         // Set new parent
-        else if (!this["_parentTransform"])
+        if (!this._parentTransform)
         {
-            this["_parentTransform"] = mat4.clone(m);
+            this._parentTransform = mat4.clone(m);
             this._rebuildWorld = true;
+            return this;
         }
+
         // Update parent
-        else if (!mat4.equals(m, this["_parentTransform"]))
+        if (!mat4.equals(m, this._parentTransform))
         {
-            mat4.copy(this["_parentTransform"], m);
+            mat4.copy(this._parentTransform, m);
             this._rebuildWorld = true;
         }
 
@@ -367,7 +402,7 @@ export class Tw2Transform extends meta.Model
     GetWorldInverseTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_worldInverse"]) return mat4.copy(out, this["_worldInverse"]);
+        if (this._worldInverse) return mat4.copy(out, this._worldInverse);
         return mat4.invert(out, this._worldTransform);
     }
 
@@ -379,7 +414,7 @@ export class Tw2Transform extends meta.Model
     GetWorldTransposeTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_worldTranspose"]) return mat4.copy(out, this["_worldTranspose"]);
+        if (this._worldTranspose) return mat4.copy(out, this._worldTranspose);
         return mat4.transpose(out, this._worldTransform);
     }
 
@@ -391,8 +426,8 @@ export class Tw2Transform extends meta.Model
     GetWorldInverseTransposeTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_worldInverseTranspose"]) return mat4.copy(out, this["_worldInverseTranspose"]);
-        if (this["_worldInverse"]) return mat4.transpose(out, this["_worldInverse"]);
+        if (this._worldInverseTranspose) return mat4.copy(out, this._worldInverseTranspose);
+        if (this._worldInverse) return mat4.transpose(out, this._worldInverse);
         mat4.invert(out, this._worldTransform);
         return mat4.transpose(out, out);
     }
@@ -422,6 +457,34 @@ export class Tw2Transform extends meta.Model
     {
         this.RebuildTransforms();
         return mat4.getRotation(out, this._worldTransform);
+    }
+
+    /**
+     * Gets the world forward vector from rotation (avoids scale/shear in the matrix)
+     * @param {vec3} out
+     * @param {boolean} [flip] - Sets negative z axis (common for cameras)
+     * @returns {vec3} out
+     */
+    GetWorldForward(out, flip)
+    {
+        this.GetWorldRotation(quat_0);
+        vec3.set(vec3_1, 0, 0, flip ? -1 : 1);
+        vec3.transformQuat(out, vec3_1, quat_0);
+        return vec3.normalize(out, out);
+    }
+
+    /**
+     * Gets the world forward vector from rotation (avoids scale/shear in the matrix)
+     * @param {vec3} out
+     * @param {boolean} [flip] - Sets negative z axis (common for cameras)
+     * @returns {vec3} out
+     */
+    GetForward(out, flip)
+    {
+        this.GetRotation(quat_0);
+        vec3.set(vec3_1, 0, 0, flip ? -1 : 1);
+        vec3.transformQuat(out, vec3_1, quat_0);
+        return vec3.normalize(out, out);
     }
 
     /**
@@ -512,9 +575,9 @@ export class Tw2Transform extends meta.Model
     {
         this.RebuildTransforms();
 
-        if (this["_worldInverse"])
+        if (this._worldInverse)
         {
-            return vec3.transformMat4(out, v, this["_worldInverse"]);
+            return vec3.transformMat4(out, v, this._worldInverse);
         }
 
         mat4.invert(mat4_0, this._worldTransform);
@@ -554,7 +617,7 @@ export class Tw2Transform extends meta.Model
     GetTransposeTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_localTranspose"]) return mat4.copy(out, this["_localTranspose"]);
+        if (this._localTranspose) return mat4.copy(out, this._localTranspose);
         return mat4.transpose(out, this._localTransform);
     }
 
@@ -566,7 +629,7 @@ export class Tw2Transform extends meta.Model
     GetInverseTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_localInverse"]) return mat4.copy(out, this["_localInverse"]);
+        if (this._localInverse) return mat4.copy(out, this._localInverse);
         return mat4.invert(out, this._localTransform);
     }
 
@@ -578,8 +641,8 @@ export class Tw2Transform extends meta.Model
     GetInverseTransposeTransform(out)
     {
         this.RebuildTransforms();
-        if (this["_localInverseTranspose"]) return mat4.copy(out, this["_localInverseTranspose"]);
-        if (this["_localInverse"]) return mat4.transpose(out, this["_localInverse"]);
+        if (this._localInverseTranspose) return mat4.copy(out, this._localInverseTranspose);
+        if (this._localInverse) return mat4.transpose(out, this._localInverse);
         mat4.invert(out, this._localTransform);
         return mat4.transpose(out, out);
     }
@@ -678,12 +741,12 @@ export class Tw2Transform extends meta.Model
     /**
      * Gets the local rotation as a euler
      * @param {vec3} out
-     * @returns {vec3}
+     * @returns {vec3} out
      */
     GetEulerInDegrees(out)
     {
-        vec3.euler.fromQuat(vec3_0, this.GetRotation(quat_0));
-        return vec3.degrees(vec3_0, vec3_0);
+        vec3.euler.fromQuat(out, this.GetRotation(quat_0));
+        return vec3.degrees(out, out);
     }
 
     /**
@@ -883,13 +946,11 @@ export class Tw2Transform extends meta.Model
 
         if (flip)
         {
-            mat4.lookAtGLFixed(mat4_0, mat4_0, this.translation, v, vec3.Y_AXIS);
-            //mat4.lookAtGL(mat4_0, this.translation, v, vec3.Y_AXIS);
+            mat4.setLookRotation(mat4_0, mat4_0, this.translation, v, vec3.Y_AXIS);
         }
         else
         {
-            mat4.lookAtGLFixed(mat4_0, mat4_0, v, this.translation, vec3.Y_AXIS);
-            //mat4.lookAtGL(mat4_0, v, this.translation, vec3.Y_AXIS);
+            mat4.setLookRotation(mat4_0, mat4_0, v, this.translation, vec3.Y_AXIS);
         }
 
         mat4.getRotation(this.rotation, mat4_0);
@@ -898,12 +959,7 @@ export class Tw2Transform extends meta.Model
         return this;
     }
 
-    /**
-     * Look at standard
-     * @param {vec3} v
-     * @param {Boolean} flip
-     * @returns {Tw2Transform}
-     */
+    /*
     LookAt2(v, flip)
     {
         this.RebuildTransforms();
@@ -914,6 +970,8 @@ export class Tw2Transform extends meta.Model
         this._rebuildLocal = true;
         return this;
     }
+
+     */
 
     /**
      * Local rotation to look at a world coordinate
@@ -1293,7 +1351,7 @@ export class Tw2Transform extends meta.Model
     {
         if ("r" in obj)
         {
-            return new Float32Array([ obj.r, obj.g, obj.b, "a" in obj.a ? obj.a : 1 ]);
+            return new Float32Array([ obj.r, obj.g, obj.b, "a" in obj ? obj.a : 1 ]);
         }
         else if ("x" in obj)
         {
@@ -1305,6 +1363,6 @@ export class Tw2Transform extends meta.Model
         }
     }
 
-    static global = { vec3_0, vec3_1, vec3_2, quat_0, mat4_0 };
+    static global = { vec3_0, vec3_1, vec3_2, quat_0, mat4_0, box3_0 };
 
 }

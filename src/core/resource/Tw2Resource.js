@@ -217,9 +217,18 @@ export class Tw2Resource extends Tw2Notifications
     {
         let wasGood = this.HasLoaded();
 
+        /*
         if (!this._errors.includes(err))
         {
             this._errors.unshift(err);
+        }
+         */
+
+        // Add bounds
+        if (!this._errors.includes(err))
+        {
+            this._errors.unshift(err);
+            if (this._errors.length > 20) this._errors.length = 20;
         }
 
         this._SetState(Tw2Resource.State.ERROR);
@@ -320,6 +329,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     _SetState(state)
     {
+
         if (this._state !== Tw2Resource.State.ERROR)
         {
             //this._lastState = this._state;
@@ -327,6 +337,26 @@ export class Tw2Resource extends Tw2Notifications
             return true;
         }
         return false;
+
+        /*
+        // Do not turn this on unless you want resman to keep trying to
+        // load broken stuff.
+
+        // Allow leaving ERROR only for terminal cleanup states
+        if (this._state === Tw2Resource.State.ERROR)
+        {
+            if (state === Tw2Resource.State.UNLOADED || state === Tw2Resource.State.PURGED)
+            {
+                this._state = state;
+                return true;
+            }
+            return false;
+        }
+
+        this._state = state;
+        return true;
+
+         */
     }
 
     /**

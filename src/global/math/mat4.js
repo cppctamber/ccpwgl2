@@ -151,131 +151,176 @@ mat4.fromMat3 = function (out, m)
     return out;
 };
 
-/**
- * Generates a look-at matrix with the given eye position, focal point, and up axis from a left handed coordinate system
- *
- * @param {mat4} out - mat4 frustum matrix will be written into
- * @param {vec3} eye - Position of the viewer
- * @param {vec3} center - Point the viewer is looking at
- * @param {vec3} up - vec3 pointing up
- * @returns {mat4} out
- */
-mat4.lookAtGL = function (out, eye, center, up)
+// D3D ortho, depth maps to [0..1]
+mat4.orthoD3D = function(out, l, r, b, t, n, f)
 {
     const
-        vec3_0 = pool.allocF32(3), //x
-        vec3_1 = pool.allocF32(3), //y
-        vec3_2 = pool.allocF32(3); //z
+        lr = 1 / (r - l),
+        bt = 1 / (t - b),
+        nf = 1 / (f - n);
 
-    vec3.subtract(vec3_2, eye, center);
-
-    if (vec3.squaredLength(vec3_2) === 0)
-    {
-        vec3_2[2] = 1;
-    }
-
-    vec3.normalize(vec3_2, vec3_2);
-    vec3.cross(vec3_0, up, vec3_2);
-
-    if (vec3.squaredLength(vec3_0) === 0)
-    {
-        if (Math.abs(up[2]) === 1)
-        {
-            vec3_2[0] += 0.0001;
-        }
-        else
-        {
-            vec3_2[2] += 0.0001;
-        }
-        vec3.normalize(vec3_2, vec3_2);
-        vec3.cross(vec3_0, up, vec3_2);
-    }
-
-    vec3.normalize(vec3_0, vec3_0);
-    vec3.cross(vec3_1, vec3_2, vec3_0);
-
-    out[0] = vec3_0[0];
-    out[1] = vec3_0[1];
-    out[2] = vec3_0[2];
+    out[0] = 2 * lr;
+    out[4] = 0;
+    out[8] = 0;
+    out[12] = -(r + l) * lr;
+    out[1] = 0;
+    out[5] = 2 * bt;
+    out[9] = 0;
+    out[13] = -(t + b) * bt;
+    out[2] = 0;
+    out[6] = 0;
+    out[10] = nf;
+    out[14] = -n * nf;
     out[3] = 0;
-    out[4] = vec3_1[0];
-    out[5] = vec3_1[1];
-    out[6] = vec3_1[2];
     out[7] = 0;
-    out[8] = vec3_2[0];
-    out[9] = vec3_2[1];
-    out[10] = vec3_2[2];
     out[11] = 0;
-    out[12] = 0;
-    out[13] = 0;
-    out[14] = 0;
     out[15] = 1;
-
-    pool.freeType(vec3_0);
-    pool.freeType(vec3_1);
-    pool.freeType(vec3_2);
-
     return out;
 };
 
 /**
- * Generates a look-at matrix with the given eye position, focal point, and up axis from a left handed coordinate system
+ * Left-handed look-at (D3D-style): +Z forward
+ * Column-major (gl-matrix style)
+ */
+mat4.lookAtD3D = function (out, eye, center, up)
+{
+    const x = pool.allocF32(3);
+    const y = pool.allocF32(3);
+    const z = pool.allocF32(3);
+
+    // z = forward = normalize(center - eye)   (LH)
+    vec3.subtract(z, center, eye);
+
+    if (vec3.squaredLength(z) === 0)
+    {
+        z[2] = 1;
+    }
+
+    vec3.normalize(z, z);
+
+    // x = normalize(cross(up, z))
+    vec3.cross(x, up, z);
+
+    if (vec3.squaredLength(x) === 0)
+    {
+        // nudge z slightly if up is parallel
+        if (Math.abs(up[2]) === 1) z[0] += 0.0001;
+        else z[2] += 0.0001;
+
+        vec3.normalize(z, z);
+        vec3.cross(x, up, z);
+    }
+
+    vec3.normalize(x, x);
+
+    // y = cross(z, x)
+    vec3.cross(y, z, x);
+
+    // Rotation (axes in columns)
+    out[0] = x[0]; out[1] = x[1]; out[2]  = x[2];  out[3]  = 0;
+    out[4] = y[0]; out[5] = y[1]; out[6]  = y[2];  out[7]  = 0;
+    out[8] = z[0]; out[9] = z[1]; out[10] = z[2];  out[11] = 0;
+
+    // Translation
+    out[12] = -vec3.dot(x, eye);
+    out[13] = -vec3.dot(y, eye);
+    out[14] = -vec3.dot(z, eye);
+    out[15] = 1;
+
+    pool.freeType(x);
+    pool.freeType(y);
+    pool.freeType(z);
+
+    return out;
+
+    // After calling lookAtD3D(out, eye, center, up):
+    // Transform center by out and it should land on +Z axis (x≈0, y≈0, z>0).
+    // Transform eye by out and it should land at the origin (0,0,0).
+};
+
+/**
+ * Builds a rotation-only look-at basis
+ * OpenGL / RH convention
+ * −Z is forward
+ * Does NOT touch translation
+ * Copies translation (and row 3) from an existing matrix
+ * Safe for column-major, gl-matrix layout
  *
- * @param {mat4} out - mat4 frustum matrix will be written into
- * @param {mat4} m - matrix
+ * @param {mat4} out - result
+ * @param {mat4} m - source matrix
  * @param {vec3} eye - Position of the viewer
  * @param {vec3} center - Point the viewer is looking at
  * @param {vec3} up - vec3 pointing up
  * @returns {mat4} out
  */
-mat4.lookAtGLFixed = function (out, m, eye, center, up)
+mat4.setLookRotation = function (out, m, eye, center, up)
 {
     const
-        vec3_0 = pool.allocF32(3), //x
-        vec3_1 = pool.allocF32(3), //y
-        vec3_2 = pool.allocF32(3); //z
+        x = pool.allocF32(3),
+        y = pool.allocF32(3),
+        z = pool.allocF32(3),
+        u = pool.allocF32(3); // safeUp
 
-    vec3.subtract(vec3_2, eye, center);
+    // z axis = eye - center  (camera backward); -z is forward
+    vec3.subtract(z, eye, center);
 
-    if (vec3.squaredLength(vec3_2) === 0)
+    if (vec3.squaredLength(z) === 0)
     {
-        vec3_2[2] = 1;
+        // arbitrary (back)
+        z[2] = 1;
+    }
+    vec3.normalize(z, z);
+
+    // Pick a stable up if the provided up is too aligned with z
+    vec3.copy(u, up);
+
+    // if |dot(up, z)| is ~1 then up × z is unstable
+    const dz = Math.abs(u[0] * z[0] + u[1] * z[1] + u[2] * z[2]);
+    if (dz > 0.9995)
+    {
+        // choose an alternate up axis that is not parallel to z
+        // try Z axis first, then X axis if needed
+        u[0] = 0; u[1] = 0; u[2] = 1;
+        const dz2 = Math.abs(u[0] * z[0] + u[1] * z[1] + u[2] * z[2]);
+        if (dz2 > 0.9995)
+        {
+            u[0] = 1; u[1] = 0; u[2] = 0;
+        }
     }
 
-    vec3.normalize(vec3_2, vec3_2);
-    vec3.cross(vec3_0, up, vec3_2);
+    // x = up × z
+    vec3.cross(x, u, z);
 
-    if (vec3.squaredLength(vec3_0) === 0)
+    // Still degenerate? (can happen if 'up' was zero-length etc.)
+    if (vec3.squaredLength(x) === 0)
     {
-        if (Math.abs(up[2]) === 1)
+        // fall back to a guaranteed-not-parallel up using z's dominant axis
+        if (Math.abs(z[1]) < 0.999)
         {
-            vec3_2[0] += 0.0001;
+            u[0] = 0; u[1] = 1; u[2] = 0;
         }
         else
         {
-            vec3_2[2] += 0.0001;
+            u[0] = 1; u[1] = 0; u[2] = 0;
         }
-        vec3.normalize(vec3_2, vec3_2);
-        vec3.cross(vec3_0, up, vec3_2);
+        vec3.cross(x, u, z);
     }
 
-    vec3.normalize(vec3_0, vec3_0);
-    vec3.cross(vec3_1, vec3_2, vec3_0);
+    vec3.normalize(x, x);
 
-    out[0] = vec3_0[0];
-    out[1] = vec3_0[1];
-    out[2] = vec3_0[2];
-    out[4] = vec3_1[0];
-    out[5] = vec3_1[1];
-    out[6] = vec3_1[2];
-    out[8] = vec3_2[0];
-    out[9] = vec3_2[1];
-    out[10] = vec3_2[2];
+    // y = z × x
+    vec3.cross(y, z, x);
 
+    // write rotation (columns)
+    out[0]  = x[0]; out[1]  = x[1]; out[2]  = x[2];
+    out[4]  = y[0]; out[5]  = y[1]; out[6]  = y[2];
+    out[8]  = z[0]; out[9]  = z[1]; out[10] = z[2];
+
+    // copy the rest
     if (out !== m)
     {
-        out[3] = m[3];
-        out[7] = m[7];
+        out[3]  = m[3];
+        out[7]  = m[7];
         out[11] = m[11];
         out[12] = m[12];
         out[13] = m[13];
@@ -283,13 +328,13 @@ mat4.lookAtGLFixed = function (out, m, eye, center, up)
         out[15] = m[15];
     }
 
-    pool.freeType(vec3_0);
-    pool.freeType(vec3_1);
-    pool.freeType(vec3_2);
+    pool.freeType(x);
+    pool.freeType(y);
+    pool.freeType(z);
+    pool.freeType(u);
 
     return out;
 };
-
 
 /**
  * Gets a mat4's maximum column axis scale
