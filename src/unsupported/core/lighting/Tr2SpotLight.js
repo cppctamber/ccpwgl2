@@ -13,7 +13,11 @@ export class Tr2SpotLight extends meta.Model
     @meta.float
     brightness = 0;
 
-    @meta.vector4
+    @meta.notImplemented
+    @meta.float
+    castsShadows = false;
+
+    @meta.color
     color = vec4.fromValues(0,0,0,1);
 
     @meta.float
@@ -31,7 +35,7 @@ export class Tr2SpotLight extends meta.Model
     @meta.float
     noiseFrequency = 0;
 
-    @meta.uint
+    @meta.float
     noiseOctaves = 0;
 
     @meta.path

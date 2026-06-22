@@ -117,7 +117,7 @@ function setStruct(type)
     propTypes.set(type, {
         is(value)
         {
-            if (!isPlain(value)) return false;
+            //if (!isPlain(value) || value !== null) return false;
             // TODO:  Handle struct type checking...
             return true;
         },
@@ -128,6 +128,9 @@ function setStruct(type)
         },
         set: (a, key, value, opt) =>
         {
+            // TODO: Use this at your own risk you muppet
+            if (opt && opt.skipObjects) return false;
+
             notImplemented();
             /*
             // Delete
@@ -186,8 +189,12 @@ propTypes.set(Type.PT_STRUCT_LIST, {
         }
         return out;
     },
-    set: (a, key, value, options) =>
+    set: (a, key, value, opt) =>
     {
+
+        // TODO: Use this at your own risk you numpty
+        if (opt && opt.skipObjects) return false;
+
         notImplemented();
         /*
         if (value === null)

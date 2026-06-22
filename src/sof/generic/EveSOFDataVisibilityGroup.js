@@ -8,4 +8,7 @@ export class EveSOFDataVisibilityGroup extends meta.Model
     @meta.string
     name = "";
 
+    @meta.string
+    description = "";
+
 }

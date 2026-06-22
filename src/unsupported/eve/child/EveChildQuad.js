@@ -28,6 +28,9 @@ export class EveChildQuad extends EveChild
     @meta.matrix4
     localTransform = mat4.create();
 
+    @meta.boolean
+    staticTransform = true;
+
     @meta.float
     minScreenSize = 0;
 

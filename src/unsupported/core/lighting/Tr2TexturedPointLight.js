@@ -13,6 +13,10 @@ export class Tr2TexturedPointLight extends meta.Model
     @meta.float
     brightness = 0;
 
+    @meta.notImplemented
+    @meta.float
+    castsShadows = false;
+
     @meta.vector4
     color = vec4.fromValues(0,0,0,1);
 
