@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, quat, vec4, mat4 } from "math";
+import { vec3, quat, mat4 } from "math";
 
 
 @meta.type("EveLocatorSetItem")
@@ -10,13 +10,13 @@ export class EveLocatorSetItem extends meta.Model
     @meta.uint
     boneIndex = -1;
 
-    @meta.vector3
+    @meta.translation
     position = vec3.create();
 
-    @meta.quaternion
+    @meta.rotation
     rotation = quat.create();
 
-    @meta.vector3
+    @meta.scaling
     scaling = vec3.fromValues(1,1,1);
 
     _bone = null;
@@ -83,9 +83,10 @@ export class EveLocatorSetItem extends meta.Model
     static blackStruct(r)
     {
         const item = new EveLocatorSetItem();
-        vec3.copy(item.position,r.ReadF32Array(3));
-        vec4.copy(item.rotation, r.ReadF32Array(4));
-        item.boneIndex = r.ReadF32Array(1) * 255 - 1;
+        vec3.copy(item.position, r.ReadF32Array(3));
+        quat.copy(item.rotation, r.ReadF32Array(4));
+        item.boneIndex = r.ReadU32() - 1;
+        vec3.copy(item.scaling, r.ReadF32Array(3));
         return item;
     }
 

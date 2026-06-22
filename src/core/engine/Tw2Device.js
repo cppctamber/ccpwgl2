@@ -1,5 +1,5 @@
 import { num, vec3, vec4, mat4 } from "math";
-import { assignIfExists, get, isNumber, isString } from "utils";
+import { assignIfExists, get, isString } from "utils";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Effect } from "../mesh/Tw2Effect";
@@ -96,6 +96,11 @@ export class Tw2Device extends Tw2EventEmitter
     viewProjectionInverse = mat4.create();
     _viewProjectionDirty = true;
 
+    // Must be updated per frame externally
+    // Do this in the update loop
+    nearPlane = 0;
+    farPlane = 1;
+
     viewportWidth = 0;
     viewportHeight = 0;
     viewportAspect = 0;
@@ -116,8 +121,8 @@ export class Tw2Device extends Tw2EventEmitter
 
     perFrameVSData = null;
     perFramePSData = null;
-    perFrameCustomSceneVSData = null;
-    perFrameCustomScenePSData = null;
+    perFrameShadowVSData = null;
+    perFrameShadowPSData = null;
 
     pickDepth = 16;
 
@@ -300,6 +305,21 @@ export class Tw2Device extends Tw2EventEmitter
         };
 
 
+    }
+
+    /**
+     * Sets camera near/far (world units)
+     * @param {number} nearPlane
+     * @param {number} farPlane
+     */
+    SetNearFar(nearPlane, farPlane)
+    {
+        // keep sane
+        const n = Math.max(1e-3, Number(nearPlane) || 1e-3);
+        const f = Number(farPlane) || 0;
+
+        this.nearPlane = n;
+        this.farPlane = (f > n) ? f : 0;
     }
 
     /**

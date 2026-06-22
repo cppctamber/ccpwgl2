@@ -233,7 +233,7 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             default:
-                this._extension = extension;
+                break;
         }
 
         const format = Tw2TextureRes.GetFormat(extension);

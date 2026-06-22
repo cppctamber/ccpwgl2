@@ -3,7 +3,7 @@ import { meta } from "utils";
 import { mat4, vec3, sph3, box3 } from "math";
 import { Tw2Transform } from "core/Tw2Transform";
 import { EvePlaneSet } from "eve";
-import { Tw2TextureParameter, Tw2VideoRes } from "core";
+import { Tw2TextureParameter } from "core";
 
 
 export class EveObject extends Tw2Transform
@@ -14,6 +14,9 @@ export class EveObject extends Tw2Transform
 
     @meta.boolean
     display = true;
+
+    @meta.float
+    clip = 1.0;
 
     _lod = 3;
 
@@ -69,6 +72,7 @@ export class EveObject extends Tw2Transform
 
     /**
      * Finds planeSets with names that include billboard
+     * TODO: why is this here, this looks like a specific helper function.
      * @param out
      * @returns {*[]}
      * @constructor
@@ -88,7 +92,7 @@ export class EveObject extends Tw2Transform
                         if (
                             parameters.hasOwnProperty(key) &&
                             parameters[key] instanceof Tw2TextureParameter &&
-                            parameters[key].textureRes instanceof Tw2VideoRes &&
+                            parameters[key].textureRes._runtime &&
                             !out.includes(parameters[key])
                         )
                         {
