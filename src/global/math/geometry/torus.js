@@ -1,4 +1,4 @@
-import { toJSON } from "../vertex";
+import { toJSON } from "./json";
 import { vec3 } from "math";
 
 

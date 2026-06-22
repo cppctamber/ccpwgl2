@@ -1,5 +1,5 @@
 import { vec3 } from "../vec3";
-import { toJSON } from "../vertex";
+import { toJSON } from "./json";
 
 /**
  * Creates a sphere

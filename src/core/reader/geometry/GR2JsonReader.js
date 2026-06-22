@@ -1,5 +1,5 @@
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
-import { ErrFeatureNotImplemented } from "core/Tw2Error";
+import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
 import { Gr2CurveReader } from "core/reader/granny";
 import { vec3, quat, mat4, box3, mat3 } from "math";
 import { GL_FLOAT } from "constant/gl";
@@ -11,6 +11,7 @@ import {
     //Tw2BlendShapeData,
     Tw2GeometryAnimation,
     Tw2GeometryBone,
+    Tw2GeometryCurve,
     Tw2GeometryMesh,
     Tw2GeometryMeshArea,
     Tw2GeometryModel,
@@ -76,54 +77,7 @@ export class GR2JsonReader
             );
         }
 
-        /**
-         * Recursively normalizes known Granny keys to camelCase
-         */
-        function normalizeGrannyKeys(obj)
-        {
-            if (!obj || typeof obj !== "object") return obj;
-
-            // Handle arrays
-            if (Array.isArray(obj))
-            {
-                for (let i = 0; i < obj.length; i++)
-                {
-                    obj[i] = normalizeGrannyKeys(obj[i]);
-                }
-                return obj;
-            }
-
-            // Normalize current object keys
-            const keyMap = {
-                // Curve casing fixes
-                "ControlScaleOffsets": "controlScaleOffsets",
-                "KnotsControls": "knotsControls",
-                "scaleshear": "scaleShear",
-                "ScaleShear": "scaleShear"
-            };
-
-            for (const key of Object.keys(obj))
-            {
-                const value = obj[key];
-                const normalizedKey = keyMap[key];
-
-                if (normalizedKey && normalizedKey !== key)
-                {
-                    obj[normalizedKey] = value;
-                    delete obj[key];
-                }
-            }
-
-            // Recurse into values
-            for (const key of Object.keys(obj))
-            {
-                obj[key] = normalizeGrannyKeys(obj[key]);
-            }
-
-            return obj;
-        }
-
-        data = normalizeGrannyKeys(data);
+        data = GR2JsonReader.NormalizeGrannyKeys(data);
 
         const { models = [], meshes = [], animations = [] } = data;
         const { gl } = device;
@@ -461,6 +415,55 @@ export class GR2JsonReader
 
         const curveReader = new Gr2CurveReader();
 
+
+        /**
+         * Handles different gr2_json curve variants
+         * @param {*} json
+         * @param {*} dimension
+         * @param {String} name
+         * @returns {Tw2GeometryCurve}
+         */
+        function CreateCurve(json, dimension, name)
+        {
+            if (!json) throw new ErrGr2JsonCurveDataInvalid({ name });
+
+            if (json.uncompressed)
+            {
+                const { knots, controls } = json.uncompressed;
+                if (!Array.isArray(knots) || !Array.isArray(controls))
+                {
+                    throw new ErrGr2JsonCurveDataInvalid({ name });
+                }
+
+                const curve = new Tw2GeometryCurve();
+                curve.format = json.source?.format ?? json.format;
+                curve.dimension = json.uncompressed.dimension ?? dimension;
+                curve.degree = json.source?.degree ?? json.degree ?? 0;
+                curve.knots = Array.from(knots);
+                curve.controls = Array.from(controls);
+                return curve;
+            }
+
+            if (json.format !== undefined)
+            {
+                return curveReader.CreateTw2GeometryCurveFromJSON(json, dimension);
+            }
+
+            if (json.source && json.compressed)
+            {
+                return curveReader.CreateTw2GeometryCurveFromJSON(
+                    {
+                        ...json.source,
+                        ...json.compressed
+                    },
+                    dimension
+                );
+            }
+
+            throw new ErrGr2JsonCurveDataInvalid({ name });
+        }
+
+
         for (let iA = 0; iA < animations.length; iA++)
         {
             const srcA = animations[iA];
@@ -489,10 +492,10 @@ export class GR2JsonReader
                 {
                     const track = new Tw2GeometryTransformTrack();
                     track.name = transformTracks[iTT].name;
-                    track.orientation = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].orientation, 4);
-                    track.position = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].position, 3);
+                    track.orientation = CreateCurve(transformTracks[iTT].orientation, 4, "orientation");
+                    track.position = CreateCurve(transformTracks[iTT].position, 3, "position");
+                    track.scaleShear = CreateCurve(transformTracks[iTT].scaleShear, 9, "scaleShear");
 
-                    track.scaleShear = curveReader.CreateTw2GeometryCurveFromJSON(transformTracks[iTT].scaleShear, 9);
                     // TODO: Why do some root objects have non-identity scaleshears
                     if (track.name.toUpperCase() === "ROOT") mat3.identity(track.scaleShear.controls);
 
@@ -534,6 +537,45 @@ export class GR2JsonReader
         }
     }
 
+    static NormalizeGrannyKeys(obj)
+    {
+        if (!obj || typeof obj !== "object") return obj;
+
+        if (Array.isArray(obj))
+        {
+            for (let i = 0; i < obj.length; i++)
+            {
+                obj[i] = GR2JsonReader.NormalizeGrannyKeys(obj[i]);
+            }
+            return obj;
+        }
+
+        const keyMap = {
+            controlscaleoffsets: "controlScaleOffsets",
+            knotscontrols: "knotsControls",
+            scaleshear: "scaleShear"
+        };
+
+        for (const key of Object.keys(obj))
+        {
+            const value = obj[key];
+            const normalizedKey = keyMap[key.toLowerCase()];
+
+            if (normalizedKey && normalizedKey !== key)
+            {
+                obj[normalizedKey] = value;
+                delete obj[key];
+            }
+        }
+
+        for (const key of Object.keys(obj))
+        {
+            obj[key] = GR2JsonReader.NormalizeGrannyKeys(obj[key]);
+        }
+
+        return obj;
+    }
+
     /**
      * Request response type
      * @type {string}
@@ -546,4 +588,13 @@ export class GR2JsonReader
      */
     static extension = "gr2_json";
 
+}
+
+
+export class ErrGr2JsonCurveDataInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid GR2 json curve data (%name%): expected uncompressed, legacy flat, or source + compressed curve data");
+    }
 }
