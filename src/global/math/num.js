@@ -5,6 +5,7 @@ num.RAD2DEG = 180 / Math.PI;
 num.DEG2RAD = Math.PI / 180;
 num.TWO_PI = Math.PI * 2;
 num.PI = Math.PI;
+num.INV_TWO_PI = 1 / num.TWO_PI;
 
 /**
  * biCumulative
@@ -470,6 +471,27 @@ num.roundToZero = function (a)
 num.step = num.greaterThan;
 
 /**
+ * Force positive number (excluding 0)
+ * @param {Number} s
+ * @returns {Number}
+ */
+num.strictPositive = function (s)
+{
+    return Math.max(num.EPSILON, Math.abs(s));
+};
+
+/**
+ * Force negative number (excluding 0)
+ * @param {Number} s
+ * @returns {Number}
+ */
+num.strictNegative = function (s)
+{
+    return -Math.max(num.EPSILON, Math.abs(s));
+};
+
+
+/**
  *
  * @param a
  * @param min
@@ -645,5 +667,7 @@ num.linearFromSRGB = function (a)
  */
 num.srgbFromLinear = function (a)
 {
-    return (a < 0.0031308) ? a * 12.92 : 1.055 * (Math.pow(a, 0.41666)) - 0.055;
+    return (a < 0.0031308)
+        ? a * 12.92
+        : 1.055 * Math.pow(a, 1.0 / 2.4) - 0.055;
 };

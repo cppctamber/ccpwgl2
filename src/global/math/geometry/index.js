@@ -4,3 +4,4 @@ export * from "./plane";
 export * from "./shape";
 export * from "./sphere";
 export * from "./torus";
+export * from "./json";

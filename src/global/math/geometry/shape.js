@@ -1,6 +1,6 @@
 import { toArray } from "utils";
 import { isShapeClockWise, triangulateShape } from "./helpers/misc";
-import { toJSON } from "../vertex";
+import { toJSON } from "./json";
 
 /**
  * Creates a shape

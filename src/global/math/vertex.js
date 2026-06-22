@@ -1,73 +1,213 @@
-import { vec2, vec3 } from "math";
-import { isArray, toArray } from "utils";
+import { num, vec2, vec3, vec4 } from "math";
 
 
-export function calculateNormals(indices, positions)
+/**
+ * EXPERIMENTAL: Packs one tangent basis into the angular vec4 format used by
+ * some EVE quad/packed-tangent shaders.
+ *
+ * The input basis is normal/tangent/bitangent in object space. The output
+ * stores tangent and bitangent azimuth/elevation angles normalized to 0..1,
+ * with elevation signs chosen so the shader can reconstruct the intended
+ * normal direction.
+ *
+ * This is currently only used as a GR2 debug/conversion helper and should not
+ * be treated as a final tangent-space implementation.
+ *
+ * @param {Float32Array|vec4} out Destination packed tangent, length 4
+ * @param {Array<number>|TypedArray|vec3} normal Source normal, length 3
+ * @param {Array<number>|TypedArray|vec3} tangent Source tangent xyz, length 3
+ * @param {Array<number>|TypedArray|vec3} bitangent Source bitangent xyz, length 3
+ * @param {Boolean} flipZ Flips tangent/bitangent z before packing
+ * @param {Boolean} enforcePositiveY Forces tangent elevation to be positive
+ * @param {Boolean} quantizeUNorm8 Quantizes packed values to 8-bit UNORM steps
+ * @returns {Float32Array|vec4} The destination packed tangent
+ */
+function packTangent(out, normal, tangent, bitangent, flipZ, enforcePositiveY, quantizeUNorm8)
 {
-    const normals = [];
+    const
+        n = vec3.normalize(vec3.alloc(), normal),
+        t = vec3.normalize(vec3.alloc(), tangent),
+        b = vec3.normalize(vec3.alloc(), bitangent),
+        temp = vec3.alloc();
 
-    for (let i = 0; i < positions.length; i++)
+    if (vec3.dot(vec3.cross(temp, n, t), b) < 0)
     {
-        normals[i] = 0.0;
+        vec3.negate(b, b);
     }
 
-    const
-        pA = vec3.create(),
-        pB = vec3.create(),
-        pC = vec3.create();
+    out[0] = Math.atan2(t[1], t[0]);
+    out[2] = Math.atan2(b[1], b[0]);
 
     const
-        nA = vec3.create(),
-        nB = vec3.create(),
-        nC = vec3.create();
+        tangentZ = flipZ ? -t[2] : t[2],
+        bitangentZ = flipZ ? -b[2] : b[2],
+        tangentElevation = Math.acos(num.clamp(tangentZ, -1, 1)),
+        bitangentElevation = Math.acos(num.clamp(bitangentZ, -1, 1));
 
-    const
-        cb = vec3.create(),
-        ab = vec3.create();
+    vec3.cross(temp, t, b);
+    vec3.normalize(temp, temp);
+    vec3.negate(temp, temp);
 
-    for (let i = 0, il = indices.length; i < il; i += 3)
+    const needsFlip = vec3.dot(temp, n) < 0;
+
+    if (enforcePositiveY)
     {
-        const vA = indices[i + 0];
-        const vB = indices[i + 1];
-        const vC = indices[i + 2];
-
-        vec3.fromArray(pA, positions, vA);
-        vec3.fromArray(pB, positions, vB);
-        vec3.fromArray(pC, positions, vC);
-
-        vec3.subtract(cb, pC, pB);
-        vec3.subtract(ab, pA, pB);
-        vec3.cross(cb, cb, ab);
-
-        vec3.fromArray(nA, normals, vA);
-        vec3.fromArray(nB, normals, vB);
-        vec3.fromArray(nC, normals, vC);
-
-        vec3.add(nA, nA, cb);
-        vec3.add(nB, nB, cb);
-        vec3.add(nC, nC, cb);
-
-        normals[vA+0] = nA[0];
-        normals[vA+1] = nA[1];
-        normals[vA+2] = nB[2];
-        normals[vB+0] = nB[0];
-        normals[vB+1] = nB[1];
-        normals[vB+2] = nB[2];
-        normals[vC+0] = nB[0];
-        normals[vC+1] = nB[1];
-        normals[vC+2] = nB[2];
+        out[1] = num.strictPositive(tangentElevation);
+        out[3] = needsFlip ? num.strictPositive(bitangentElevation) : num.strictNegative(bitangentElevation);
+    }
+    else if (needsFlip)
+    {
+        out[1] = num.strictPositive(tangentElevation);
+        out[3] = num.strictPositive(bitangentElevation);
+    }
+    else
+    {
+        out[1] = num.strictNegative(tangentElevation);
+        out[3] = num.strictPositive(bitangentElevation);
     }
 
-    for (let i = 0, il = normals.length; i < il; i+=3)
+    out[0] = (out[0] + num.PI) * num.INV_TWO_PI;
+    out[1] = (out[1] + num.PI) * num.INV_TWO_PI;
+    out[2] = (out[2] + num.PI) * num.INV_TWO_PI;
+    out[3] = (out[3] + num.PI) * num.INV_TWO_PI;
+
+    if (quantizeUNorm8)
     {
-        vec3.fromArray(cb, normals, i);
-        vec3.normalize(cb, cb);
-        normals[i+0] = cb[0];
-        normals[i+1] = cb[1];
-        normals[i+2] = cb[2];
+        out[0] = Math.round(num.clamp(out[0], 0, 1) * 255) / 255;
+        out[1] = Math.round(num.clamp(out[1], 0, 1) * 255) / 255;
+        out[2] = Math.round(num.clamp(out[2], 0, 1) * 255) / 255;
+        out[3] = Math.round(num.clamp(out[3], 0, 1) * 255) / 255;
     }
 
-    return normals;
+    vec3.unalloc(temp);
+    vec3.unalloc(b);
+    vec3.unalloc(t);
+    vec3.unalloc(n);
+
+    return out;
+}
+
+
+/**
+ * EXPERIMENTAL: Orthonormalizes a tangent basis around the source normal.
+ *
+ * The normal is normalized and preserved, the tangent is Gram-Schmidt
+ * orthogonalized against that normal, and the bitangent is rebuilt from the
+ * adjusted basis while preserving the original bitangent handedness where
+ * possible.
+ *
+ * This can visibly change tangent islands, so callers must opt in.
+ *
+ * @param {Float32Array|vec3} outNormal Destination normal, length 3
+ * @param {Float32Array|vec3} outTangent Destination tangent, length 3
+ * @param {Float32Array|vec3} outBitangent Destination bitangent, length 3
+ * @param {Array<number>|TypedArray|vec3} normal Source normal, length 3
+ * @param {Array<number>|TypedArray|vec3} tangent Source tangent, length 3
+ * @param {Array<number>|TypedArray|vec3} bitangent Source bitangent, length 3
+ * @returns {void}
+ */
+function orthonormalizeTBN(outNormal, outTangent, outBitangent, normal, tangent, bitangent)
+{
+    const
+        n = vec3.normalize(vec3.alloc(), normal),
+        t = vec3.alloc(),
+        b = vec3.alloc(),
+        temp = vec3.alloc();
+
+    vec3.scale(temp, n, vec3.dot(n, tangent));
+    vec3.subtract(t, tangent, temp);
+
+    if (vec3.dot(t, t) < num.EPSILON * num.EPSILON)
+    {
+        if (Math.abs(n[2]) < 0.999)
+        {
+            vec3.set(temp, 0, 0, 1);
+        }
+        else
+        {
+            vec3.set(temp, 0, 1, 0);
+        }
+
+        vec3.cross(t, temp, n);
+    }
+
+    vec3.normalize(t, t);
+    vec3.cross(b, n, t);
+
+    if (vec3.dot(b, bitangent) < 0)
+    {
+        vec3.negate(t, t);
+        vec3.cross(b, n, t);
+    }
+
+    vec3.copy(outNormal, n);
+    vec3.copy(outTangent, t);
+    vec3.copy(outBitangent, b);
+
+    vec3.unalloc(temp);
+    vec3.unalloc(b);
+    vec3.unalloc(t);
+    vec3.unalloc(n);
+}
+
+
+/**
+ * EXPERIMENTAL: Packs vertex normal/tangent/bitangent arrays into the packed
+ * quad tangent format used by some GR2-derived EVE assets.
+ *
+ * This accepts normal arrays with 3 floats per vertex and tangent/bitangent
+ * arrays with either 3 or 4 floats per vertex. Tangent/bitangent w components
+ * are ignored. The return value is a Float32Array with 4 packed values per
+ * vertex, suitable for replacing the tangent vertex element during debug GR2
+ * conversion.
+ *
+ * @param {Array<number>|TypedArray} normals Normal data, 3 floats per vertex
+ * @param {Array<number>|TypedArray} tangents Tangent data, 3 or 4 floats per vertex
+ * @param {Array<number>|TypedArray} bitangents Bitangent data, 3 or 4 floats per vertex
+ * @param {Boolean} [flipZ=false] Flips tangent/bitangent z before packing
+ * @param {Boolean} [enforcePositiveY=false] Forces tangent elevation to be positive
+ * @param {Boolean} [orthonormalize=false] Orthonormalizes each basis before packing
+ * @param {Boolean} [quantizeUNorm8=false] Quantizes packed values to 8-bit UNORM steps
+ * @returns {Float32Array} Packed tangents, 4 floats per vertex
+ */
+export function packTangents(normals, tangents, bitangents, flipZ = false, enforcePositiveY = false, orthonormalize = false, quantizeUNorm8 = false)
+{
+    const
+        count = normals.length / 3,
+        tangentStride = tangents.length / count === 3 ? 3 : 4,
+        bitangentStride = bitangents.length / count === 3 ? 3 : 4,
+        packedTangents = new Float32Array(count * 4),
+        normal = vec3.alloc(),
+        tangent = vec3.alloc(),
+        bitangent = vec3.alloc(),
+        packedTangent = vec4.alloc();
+
+    for (let i = 0; i < count; i++)
+    {
+        vec3.fromArray(normal, normals, i * 3);
+        vec3.fromArray(tangent, tangents, i * tangentStride);
+        vec3.fromArray(bitangent, bitangents, i * bitangentStride);
+
+        if (orthonormalize)
+        {
+            orthonormalizeTBN(normal, tangent, bitangent, normal, tangent, bitangent);
+        }
+
+        packTangent(packedTangent, normal, tangent, bitangent, flipZ, enforcePositiveY, quantizeUNorm8);
+
+        const offset = i * 4;
+        packedTangents[offset] = packedTangent[0];
+        packedTangents[offset + 1] = packedTangent[1];
+        packedTangents[offset + 2] = packedTangent[2];
+        packedTangents[offset + 3] = packedTangent[3];
+    }
+
+    vec4.unalloc(packedTangent);
+    vec3.unalloc(bitangent);
+    vec3.unalloc(tangent);
+    vec3.unalloc(normal);
+
+    return packedTangents;
 }
 
 
@@ -77,59 +217,54 @@ export function calculateNormals(indices, positions)
  * @param {Array|TypedArray} positions
  * @returns {Array} normals
  */
-export function _calculateNormals(indices, positions)
+export function calculateNormals(indices, positions)
 {
-    const normals = [];
+    const
+        normals = new Array(positions.length).fill(0),
+        pA = vec3.create(),
+        pB = vec3.create(),
+        pC = vec3.create(),
+        cb = vec3.create(),
+        ab = vec3.create();
 
-    for (let i = 0; i < indices.length; i+=3)
+    for (let i = 0; i < indices.length; i += 3)
     {
         const
-            i0 = indices[i + 0],
-            i1 = indices[i + 1],
-            i2 = indices[i + 2],
+            a = indices[i] * 3,
+            b = indices[i + 1] * 3,
+            c = indices[i + 2] * 3;
 
-            a0 = positions[i0 * 3 + 0],
-            a1 = positions[i0 * 3 + 1],
-            a2 = positions[i0 * 3 + 2],
+        vec3.fromArray(pA, positions, a);
+        vec3.fromArray(pB, positions, b);
+        vec3.fromArray(pC, positions, c);
 
-            b0 = positions[i1 * 3 + 0],
-            b1 = positions[i1 * 3 + 1],
-            b2 = positions[i1 * 3 + 2],
+        vec3.subtract(cb, pC, pB);
+        vec3.subtract(ab, pA, pB);
+        vec3.cross(cb, cb, ab);
 
-            c0 = positions[i2 * 3 + 0],
-            c1 = positions[i2 * 3 + 1],
-            c2 = positions[i2 * 3 + 2];
+        normals[a] += cb[0];
+        normals[a + 1] += cb[1];
+        normals[a + 2] += cb[2];
+        normals[b] += cb[0];
+        normals[b + 1] += cb[1];
+        normals[b + 2] += cb[2];
+        normals[c] += cb[0];
+        normals[c + 1] += cb[1];
+        normals[c + 2] += cb[2];
+    }
 
-        const
-            ax = c0 - b0,
-            ay = c1 - b1,
-            az = c2 - b2,
-            bx = a0 - c0,
-            by = a1 - c1,
-            bz = a2 - c2;
-
-        // Get cross product
-        let x = ay * bz - az * by,
-            y = az * bx - ax * bz,
-            z = ax * by - ay * bx;
-
-        // Normalize
-        let len = x * x + y * y + z * z;
-        if (len > 0)
-        {
-            len = 1 / Math.sqrt(len);
-            normals[i0 * 3 + 0] = x * len;
-            normals[i0 * 3 + 1] = y * len;
-            normals[i0 * 3 + 2] = z * len;
-        }
-        else
-        {
-            throw new Error("Normalization error");
-        }
+    for (let i = 0; i < normals.length; i += 3)
+    {
+        vec3.fromArray(cb, normals, i);
+        vec3.normalize(cb, cb);
+        normals[i] = cb[0];
+        normals[i + 1] = cb[1];
+        normals[i + 2] = cb[2];
     }
 
     return normals;
 }
+
 
 /**
  * Calculates tangents
@@ -143,24 +278,19 @@ export function _calculateNormals(indices, positions)
  */
 export function calculateTangents(indices, positions, uvs, areas, normals)
 {
-
     if (!indices || !positions || !uvs || !indices.length || !positions.length || !uvs.length)
     {
         console.dir({ indices, positions, uvs, areas, normals });
         throw new Error("Invalid inputs");
     }
 
-    // based on http://www.terathon.com/code/tangent.html
-    // (per vertex tangents)
-
     if (!normals || !normals.length)
     {
         normals = calculateNormals(indices, positions);
     }
 
-    const tangents = [];
-
     const
+        tangents = [],
         nVertices = positions.length / 3,
         tan1 = [],
         tan2 = [];
@@ -198,8 +328,6 @@ export function calculateTangents(indices, positions, uvs, areas, normals)
         vec2.subtract(uvC, uvC, uvA);
 
         const r = 1.0 / (uvB[0] * uvC[1] - uvC[0] * uvB[1]);
-
-        // silently ignore degenerate uv triangles having coincident or colinear vertices
         if (!isFinite(r)) return;
 
         vec3.copy(sdir, vB);
@@ -223,26 +351,16 @@ export function calculateTangents(indices, positions, uvs, areas, normals)
 
     if (!areas || areas.length === 0)
     {
-        areas[0] = {
-            start: 0,
-            count: indices.length
-        };
+        areas = [ { start: 0, count: indices.length } ];
     }
 
-    for (let i = 0, il = areas.length; i < il; ++i)
+    for (let i = 0; i < areas.length; ++i)
     {
-        const
-            area = areas[i],
-            start = area.start,
-            count = area.count;
+        const { start, count } = areas[i];
 
-        for (let j = start, jl = start + count; j < jl; j += 3)
+        for (let j = start; j < start + count; j += 3)
         {
-            handleTriangle(
-                indices[j + 0],
-                indices[j + 1],
-                indices[j + 2]
-            );
+            handleTriangle(indices[j], indices[j + 1], indices[j + 2]);
         }
     }
 
@@ -259,16 +377,14 @@ export function calculateTangents(indices, positions, uvs, areas, normals)
 
         const t = tan1[v];
 
-        // Gram-Schmidt orthogonalize
         vec3.copy(tmp, t);
         vec3.multiplyScalar(n, n, vec3.dot(n, t));
         vec3.subtract(tmp, tmp, n);
         vec3.normalize(tmp, tmp);
 
-        // Calculate handedness
         vec3.cross(tmp2, n2, t);
-        const test = vec3.dot(tmp2, tan2[v]);
-        const w = test < 0.0
+
+        const w = vec3.dot(tmp2, tan2[v]) < 0
             ? -calculateTangents.handedness
             : calculateTangents.handedness;
 
@@ -278,16 +394,13 @@ export function calculateTangents(indices, positions, uvs, areas, normals)
         tangents[v * 4 + 3] = w;
     }
 
-    for (let i = 0, il = areas.length; i < il; ++i)
+    for (let i = 0; i < areas.length; ++i)
     {
-        const
-            area = areas[i],
-            start = area.start,
-            count = area.count;
+        const { start, count } = areas[i];
 
-        for (let j = start, jl = start + count; j < jl; j += 3)
+        for (let j = start; j < start + count; j += 3)
         {
-            handleVertex(indices[j + 0]);
+            handleVertex(indices[j]);
             handleVertex(indices[j + 1]);
             handleVertex(indices[j + 2]);
         }
@@ -297,96 +410,3 @@ export function calculateTangents(indices, positions, uvs, areas, normals)
 }
 
 calculateTangents.handedness = 1.0;
-
-
-/**
- * Converts index and buffer data to json
- * @param {Array|TypedArray} indices
- * @param {Array|TypedArray} positions
- * @param {Array|TypedArray} uvs
- * @param {Array|Object} [areas]
- * @param {Array|TypedArray} [normals]
- * @param {Array|TypedArray} [tangents]
- * @throw If required data is not provided
- * @returns {Object}
- */
-export function toJSON(indices, positions, uvs, normals, areas, tangents)
-{
-
-    if (!indices || !positions || !uvs || !indices.length || !positions.length || !uvs.length)
-    {
-        throw new Error("Invalid inputs");
-    }
-
-    areas = areas || { start: 0, count: indices.length };
-    areas = toArray(areas);
-
-    if (!normals || !normals.length)
-    {
-        normals = calculateNormals(indices, positions);
-    }
-
-    if (!tangents || !tangents.length)
-    {
-        tangents = calculateTangents(indices, positions, uvs, areas, normals);
-    }
-
-    return {
-        meshes: [ {
-            name,
-            vertex: {
-                position: positions,
-                texcoord0: uvs,
-                tangent: tangents,
-                normal: normals,
-                texcoord1: null,
-                binormal: null,
-                blendIndice: null,
-                blendWeight: null
-            },
-            indices: areas.map(area =>
-            {
-                return {
-                    bytesPerIndex: area.bytesPerIndex || 2,
-                    start: area.start,
-                    count: area.count,
-                    faces: indices.slice(area.start, area.count)
-                };
-            })
-        } ]
-    };
-}
-
-export function toContainer(tw2, json, name="", autoCreateMeshAreas={})
-{
-    const
-        container = new tw2.EveChildMesh(),
-        mesh = container.mesh = new tw2.Tw2Mesh(),
-        res = mesh.geometryResource = new tw2.Tw2GeometryRes;
-
-    container.name = name;
-    res.UpdateFromJSON(json);
-    res.OnPrepared();
-
-    Object
-        .keys(autoCreateMeshAreas)
-        .forEach(areaName =>
-        {
-            const effect = autoCreateMeshAreas[areaName] || {};
-            for (let m = 0; m < res.meshes.length; m++)
-            {
-                for (let a = 0; a < res.meshes[m].areas.length; a++)
-                {
-                    const meshArea = new tw2.Tw2MeshArea();
-                    meshArea.meshIndex = m;
-                    meshArea.index = a;
-                    meshArea.effect = tw2.Tw2Effect.from(effect);
-                    mesh[areaName].push(meshArea);
-                }
-            }
-        });
-
-    return container;
-}
-
-// https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2020/ENU/Maya-Modeling/files/GUID-71B1F48B-52C7-46D2-ADE8-F920AC0DD3F9-htm.html

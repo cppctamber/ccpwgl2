@@ -112,6 +112,22 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
     /**
+     * Reloads the geometry
+     * @param {*} log
+     */
+    Reload(log)
+    {
+        if (this._custom)
+        {
+            this.UpdateFromJSON(this._custom.factory(this._custom.options));
+        }
+        else
+        {
+            super.Reload(log);
+        }
+    }
+
+    /**
      * Clears system mirror if not required
      */
     ClearSystemMirrorIfNotRequired()
@@ -313,6 +329,10 @@ export class Tw2GeometryRes extends Tw2Resource
         }
         else
         {
+            if ((this.path || "").toUpperCase().includes("_PACKED_TS"))
+            {
+                options = Object.assign({}, options, { packTangents: true });
+            }
             Reader.Prepare(data, this, options);
         }
 
@@ -886,7 +906,7 @@ export class Tw2GeometryRes extends Tw2Resource
     /**
      * Updates the geometry res from json
      * @param {Object} json
-     * @param {Object} extensionOptions - options for the geometry reader
+     * @param {Object} [extensionOptions] - options for the geometry reader
      */
     UpdateFromJSON(json, extensionOptions)
     {

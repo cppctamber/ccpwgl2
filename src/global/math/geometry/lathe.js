@@ -1,5 +1,5 @@
 import { vec2, vec3, num } from "math";
-import { toJSON } from "math/vertex";
+import { toJSON } from "./json";
 
 /**
  * Creates a lathe

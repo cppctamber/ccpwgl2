@@ -1,4 +1,4 @@
-import { toJSON } from "../vertex";
+import { toJSON } from "./json";
 
 /**
  * Creates a plane
