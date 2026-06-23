@@ -116,6 +116,13 @@ export class Tw2Library extends Tw2EventEmitter
     _customResourceHandler = null;
 
     /**
+     * Capability processing options
+     * @type {Boolean|Object}
+     * @private
+     */
+    _capabilityOptions = {};
+
+    /**
      * Alias for device.dt
      * @returns {number}
      */
@@ -244,6 +251,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {Boolean} [opt.debug]                     - toggles debug mode
      * @param {Function} [opt.resourceHandler]          - An optional resource handler
      * @param {Object} [opt.events]                     - Optional event listener config
+     * @param {Boolean|Object} [opt.capabilities]        - Capability processing options, or false to disable
      * @param {Object} [opt.black]                      - Configuration for black file extension handling
      * @param {Object} [opt.variableTypes]
      * @param {Object} [opt.constructors]
@@ -259,7 +267,7 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities = {}, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities = this._capabilityOptions, ...options } = opt;
 
         this.Register(options);
 
@@ -425,6 +433,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {Boolean} opt.debug
      * @param {Function} opt.resourceHandler
      * @param {Object} opt.black
+     * @param {Boolean|Object} opt.capabilities
      * @param {Object} opt.variableTypes
      * @param {Object} opt.constructors
      * @param {Object} opt.variables
@@ -441,6 +450,7 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (opt.events) this.AddEvents(opt.events);
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
+        if (opt.capabilities !== undefined) this._capabilityOptions = opt.capabilities;
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
         if (opt.black) this.RegisterBlackPathHandlers(opt.black);
         if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
