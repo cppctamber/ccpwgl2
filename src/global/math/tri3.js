@@ -167,9 +167,9 @@ tri3.getBaryCentricCoordinates = function(out, a, point)
         by = a[4] - a[1],
         bz = a[5] - a[2],
 
-        cx = point[0] - ax,
-        cy = point[1] - ay,
-        cz = point[2] - az;
+        cx = point[0] - a[0],
+        cy = point[1] - a[1],
+        cz = point[2] - a[2];
 
     let dot00 = ax * ax + ay * ay + az * az,
         dot01 = ax * bx + ay * by + az * bz,
@@ -559,12 +559,12 @@ tri3.toVertices = function(a, v1, v2, v3)
     v1[0] = a[0];
     v1[1] = a[1];
     v1[2] = a[2];
-    v2[0] = a[0];
-    v2[1] = a[1];
-    v2[2] = a[2];
-    v3[0] = a[0];
-    v3[1] = a[1];
-    v3[2] = a[2];
+    v2[0] = a[3];
+    v2[1] = a[4];
+    v2[2] = a[5];
+    v3[0] = a[6];
+    v3[1] = a[7];
+    v3[2] = a[8];
     return a;
 };
 

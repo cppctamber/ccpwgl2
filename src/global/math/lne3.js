@@ -186,7 +186,7 @@ lne3.equalsStartEnd = box3.equalsBounds;
  * @param {lne3} b
  * @returns {boolean}
  */
-lne3.exactEquals = box3.equals;
+lne3.exactEquals = box3.exactEquals;
 
 /**
  * Checks for exact equality between a lne3 and components

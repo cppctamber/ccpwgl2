@@ -1,5 +1,7 @@
-import { vec2 } from "gl-matrix";
+import { vec2 as glVec2 } from "gl-matrix";
 import { pool } from "global/math/pool";
+
+const vec2 = { ...glVec2 };
 
 export { vec2 };
 

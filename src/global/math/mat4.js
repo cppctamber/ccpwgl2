@@ -1,5 +1,9 @@
-import { mat4, vec3 } from "gl-matrix";
+import { mat4 as glMat4, vec3 as glVec3 } from "gl-matrix";
 import { pool } from "math/pool";
+
+const
+    mat4 = { ...glMat4 },
+    vec3 = { ...glVec3 };
 
 export { mat4 };
 

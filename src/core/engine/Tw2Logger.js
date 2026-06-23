@@ -54,7 +54,15 @@ export class Tw2Logger extends Tw2EventEmitter
         if (!opt) return;
         if ("events" in opt) this.AddEvents(opt.events);
         assignIfExists(this, opt, [ "name", "display", "history", "throttle" ]);
-        assignIfExists(this.visible, opt.visible, [ "log", "info", "debug", "warn", "error" ]);
+
+        if (opt.visible)
+        {
+            assignIfExists(this.visible, opt.visible, [ "log", "info", "debug", "warn", "error" ]);
+            if (opt.visible.warning !== undefined)
+            {
+                this.visible.warn = opt.visible.warning;
+            }
+        }
     }
 
     /**
@@ -115,6 +123,35 @@ export class Tw2Logger extends Tw2EventEmitter
      */
     Add(type = "log", log)
     {
+        log = this.NormalizeLog(type, log);
+
+        if (log._logged) return log;
+
+        this.ApplyVisibility(log);
+        this.ApplyThrottle(log);
+
+        if (!log.hide || this._debugMode)
+        {
+            this.Output(log);
+        }
+
+        this.PushHistory(log);
+
+        log._logged = true;
+
+        this.EmitEvent("any", log);
+        this.EmitEvent(log.type, log);
+        return log;
+    }
+
+    /**
+     * Normalizes an incoming log payload
+     * @param {String} type
+     * @param {*} log
+     * @returns {eventLog}
+     */
+    NormalizeLog(type, log)
+    {
         if (!log)
         {
             log = { message: "" };
@@ -128,88 +165,104 @@ export class Tw2Logger extends Tw2EventEmitter
             log = { message: log.message, err: log };
         }
 
-        if (log._logged) return log;
-
-        // Normalize logs
-        log.type = type.toLowerCase();
+        log.type = Tw2Logger.NormalizeType(type);
         log.name = log.name || "Logger";
         log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
+        return log;
+    }
 
-        if (!Tw2Logger.LogType[log.type.toUpperCase()])
-        {
-            log.type = "log";
-        }
-
-        // Set visibility
+    /**
+     * Applies log visibility settings
+     * @param {eventLog} log
+     */
+    ApplyVisibility(log)
+    {
         if (!this._debugMode && (!this.display || !this.visible[log.type]))
         {
             log.hide = true;
         }
+    }
 
-        // Throttle excessive output
+    /**
+     * Applies duplicate message throttling
+     * @param {eventLog} log
+     */
+    ApplyThrottle(log)
+    {
         if (!this.throttle || this._debugMode)
         {
             this._throttled = null;
+            return;
         }
-        else
+
+        if (log.hide) return;
+
+        if (!this._throttled) this._throttled = {};
+        if (!this._throttled[log.type]) this._throttled[log.type] = [];
+
+        const throttled = this._throttled[log.type];
+        if (!throttled.includes(log.message))
         {
-            if (!log.hide)
-            {
-                if (!this._throttled) this._throttled = {};
-                if (!this._throttled[log.type]) this._throttled[log.type] = [];
-                const t = this._throttled[log.type];
-                if (!t.includes(log.message))
-                {
-                    t.unshift(log.message);
-                    t.splice(this.throttle);
-                }
-                else
-                {
-                    log.hide = true;
-                }
-            }
+            throttled.unshift(log.message);
+            throttled.splice(this.throttle);
+            return;
         }
 
-        // Output to the console
-        if (!log.hide || this._debugMode)
+        log.hide = true;
+    }
+
+    /**
+     * Outputs a log to the console
+     * @param {eventLog} log
+     */
+    Output(log)
+    {
+        let subMessage = "";
+        if (log.path && !log.message.includes(log.path)) subMessage += `'${log.path}' `;
+        if (log.time) subMessage += `in ${log.time.toFixed(3)} secs `;
+        if (log.detail) subMessage += `(${log.detail}) `;
+
+        const
+            header = `${this.name} ${log.name}:`,
+            consoleType = Tw2Logger.ConsoleType[log.type] || "log";
+
+        if (log.err || log.data)
         {
-            // Optional details
-            let subMessage = "";
-            if (log.path && !log.message.includes(log.path)) subMessage += `'${log.path}' `;
-            if (log.time) subMessage += `in ${log.time.toFixed(3)} secs `;
-            if (log.detail) subMessage += `(${log.detail}) `;
-
-            let header = `${this.name} ${log.name}:`;
-            if (log.err || log.data)
-            {
-                console.group(header, log.message, subMessage);
-                if (log.err) console.error(log.err.stack || log.err.toString());
-                if (log.data) console.debug(JSON.stringify(log.data, null, 4));
-                console.groupEnd();
-            }
-            else
-            {
-                console[log.type](header, log.message, subMessage);
-            }
+            console.group(header, log.message, subMessage);
+            if (log.err) console.error(log.err.stack || log.err.toString());
+            if (log.data) console.debug(JSON.stringify(log.data, null, 4));
+            console.groupEnd();
+            return;
         }
 
-        // Manage log history
+        console[consoleType](header, log.message, subMessage);
+    }
+
+    /**
+     * Pushes a log into history
+     * @param {eventLog} log
+     */
+    PushHistory(log)
+    {
         const logsToKeep = this._debugMode ? 1000 : this.history;
         if (logsToKeep)
         {
             this._logs.unshift(log);
             this._logs.splice(logsToKeep);
-        }
-        else
-        {
-            this._logs.splice(0);
+            return;
         }
 
-        log._logged = true;
+        this._logs.splice(0);
+    }
 
-        this.EmitEvent("any", log);
-        this.EmitEvent(log.type, log);
-        return log;
+    /**
+     * Normalizes a log type
+     * @param {String} type
+     * @returns {String}
+     */
+    static NormalizeType(type)
+    {
+        return Tw2Logger.LogType[String(type).toUpperCase()] || "log";
     }
 
     /**
@@ -223,6 +276,18 @@ export class Tw2Logger extends Tw2EventEmitter
         INFO: "info",
         LOG: "log",
         DEBUG: "debug"
+    };
+
+    /**
+     * Console method per log type
+     * @type {*}
+     */
+    static ConsoleType = {
+        error: "error",
+        warn: "warn",
+        info: "info",
+        log: "log",
+        debug: "debug"
     };
 
 }

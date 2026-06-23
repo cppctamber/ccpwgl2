@@ -1,6 +1,8 @@
-import { vec4 } from "gl-matrix";
+import { vec4 as glVec4 } from "gl-matrix";
 import { num } from "./num";
 import { pool } from "math/pool";
+
+const vec4 = { ...glVec4 };
 
 /**
  * Vector 4

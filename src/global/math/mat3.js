@@ -1,5 +1,7 @@
-import { mat3 } from "gl-matrix";
+import { mat3 as glMat3 } from "gl-matrix";
 import { pool } from "./pool";
+
+const mat3 = { ...glMat3 };
 
 export { mat3 };
 

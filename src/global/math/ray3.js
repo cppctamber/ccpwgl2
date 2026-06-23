@@ -930,6 +930,9 @@ ray3.translate = function (out, a, v)
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];
     out[2] = a[2] + v[2];
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
     return out;
 };
 
@@ -957,7 +960,7 @@ ray3.fromEvent = function (ray, viewProjectionInverse, event, mouse, pixel, css)
         cX = mX - rect.left,
         cY = mY - rect.top,
         pX = cX * el.width / el.clientWidth,
-        pY = el.height - cY * el.height / el.clientWidth - 1;
+        pY = el.height - cY * el.height / el.clientHeight - 1;
 
     // Should this be a param?
     viewPort[0] = 0;

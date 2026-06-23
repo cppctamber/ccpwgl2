@@ -1,7 +1,9 @@
-import { quat } from "gl-matrix";
+import { quat as glQuat } from "gl-matrix";
 import { vec3 } from "./vec3";
 import { num } from "./num";
 import { pool } from "global/math/pool";
+
+const quat = { ...glQuat };
 
 export { quat };
 
@@ -33,7 +35,7 @@ quat.unalloc = function(a)
  */
 quat.fromUnitVectors = function(out, from, to)
 {
-    let r = vec3.dot(from ,to);
+    let r = vec3.dot(from, to) + 1;
     if (r < num.EPSILON)
     {
         r = 0;

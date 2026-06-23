@@ -503,6 +503,8 @@ box3.fromBounds = function (out, min, max)
     return out;
 };
 
+box3.from = box3.fromBounds;
+
 
 /**
  * Sets a box3 from position and size
@@ -532,9 +534,13 @@ box3.fromPositionSize = function (out, position, size)
  */
 box3.fromPoints = function (out, points)
 {
-    box3.empty(out);
+    if (!points.length) return box3.empty(out);
 
-    for (let i = 0; i < points.length; i++)
+    out[0] = out[3] = points[0][0];
+    out[1] = out[4] = points[0][1];
+    out[2] = out[5] = points[0][2];
+
+    for (let i = 1; i < points.length; i++)
     {
         out[0] = Math.min(out[0], points[i][0]);
         out[1] = Math.min(out[1], points[i][1]);
@@ -546,6 +552,8 @@ box3.fromPoints = function (out, points)
 
     return out;
 };
+
+box3.setPoints = box3.fromPoints;
 
 /**
  * Sets a box3 from a sphere's components
@@ -815,28 +823,29 @@ box3.intersectsBounds = function (a, min, max)
  */
 box3.intersectsNormalConstant = function (a, normal, constant)
 {
-    let tMin, tMax;
+    let tMin = 0,
+        tMax = 0;
 
     if (normal[0] > 0)
     {
-        tMin = normal[0] * a[0];
-        tMax = normal[0] * a[3];
+        tMin += normal[0] * a[0];
+        tMax += normal[0] * a[3];
     }
     else
     {
-        tMin = normal[0] * a[3];
-        tMax = normal[0] * a[0];
+        tMin += normal[0] * a[3];
+        tMax += normal[0] * a[0];
     }
 
     if (normal[1] > 0)
     {
-        tMin = normal[1] * a[1];
-        tMax = normal[1] * a[4];
+        tMin += normal[1] * a[1];
+        tMax += normal[1] * a[4];
     }
     else
     {
-        tMin = normal[1] * a[4];
-        tMax = normal[1] * a[1];
+        tMin += normal[1] * a[4];
+        tMax += normal[1] * a[1];
     }
 
     if (normal[2] > 0)
@@ -933,7 +942,7 @@ box3.intersectsSph3 = function (a, sphere)
  */
 box3.isEmpty = function (a)
 {
-    if (a[0] + a[1] + a[2] + a[0] + a[1] + a[2] === 0) return true;
+    if (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] === 0) return true;
     return (a[3] < a[0]) || (a[4] < a[1]) || (a[5] < a[2]);
 };
 
@@ -1165,21 +1174,27 @@ box3.transformMat4 = function (out, a, m)
     if (box3.isEmpty(a)) return box3.empty(out);
 
     const
-        vec3_0 = vec3.alloc(),
-        vec3_1 = vec3.alloc(),
-        vec3_2 = vec3.alloc(),
-        vec3_3 = vec3.alloc();
+        ax = a[0],
+        ay = a[1],
+        az = a[2],
+        bx = a[3],
+        by = a[4],
+        bz = a[5],
+        point = vec3.alloc();
 
-    vec3.set(vec3_0, a[0], a[1], a[2]);
-    vec3.set(vec3_1, a[3], a[4], a[5]);
-    vec3.transformMat4(vec3_2, vec3_0, m);
-    vec3.transformMat4(vec3_3, vec3_1, m);
-    box3.fromBounds(out, vec3_2, vec3_3);
+    out[0] = out[1] = out[2] = Infinity;
+    out[3] = out[4] = out[5] = -Infinity;
 
-    vec3.unalloc(vec3_0);
-    vec3.unalloc(vec3_1);
-    vec3.unalloc(vec3_2);
-    vec3.unalloc(vec3_3);
+    for (let i = 0; i < 8; i++)
+    {
+        point[0] = i & 1 ? bx : ax;
+        point[1] = i & 2 ? by : ay;
+        point[2] = i & 4 ? bz : az;
+        vec3.transformMat4(point, point, m);
+        box3.addPoint(out, out, point);
+    }
+
+    vec3.unalloc(point);
 
     return out;
 };

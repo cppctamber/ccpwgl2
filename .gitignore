@@ -33,3 +33,6 @@ shaders/
 
 # wrapped client implementation should stay local for now
 src/wrapped/
+
+# experimental rollup build output
+dist/rollup/

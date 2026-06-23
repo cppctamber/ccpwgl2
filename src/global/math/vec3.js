@@ -1,7 +1,11 @@
-import { vec3, mat4 } from "gl-matrix";
+import { vec3 as glVec3, mat4 as glMat4 } from "gl-matrix";
 import { num } from "./num";
 import { pool } from "./pool";
 import { vec4 } from "./vec4";
+
+const
+    vec3 = { ...glVec3 },
+    mat4 = { ...glMat4 };
 
 /**
  * Vector 3
@@ -815,7 +819,7 @@ vec3.toHexA = function (linear, linearAlpha = 1)
         num.hexFromLinear(linear[0]) +
         num.hexFromLinear(linear[1]) +
         num.hexFromLinear(linear[2]) +
-        num.hexFromColor(linearAlpha);
+        num.hexFromLinear(linearAlpha);
 };
 
 /**
@@ -963,8 +967,8 @@ vec3.fromMat3Column = function (out, m, index)
 vec3.fromSRGB = function (out, srgb)
 {
     out[0] = num.linearFromSRGB(srgb[0]);
-    out[1] = num.linearFromSRGB(srgb[0]);
-    out[2] = num.linearFromSRGB(srgb[0]);
+    out[1] = num.linearFromSRGB(srgb[1]);
+    out[2] = num.linearFromSRGB(srgb[2]);
     return out;
 };
 
@@ -977,8 +981,8 @@ vec3.fromSRGB = function (out, srgb)
 vec3.toSRGB = function (out, linear)
 {
     out[0] = num.srgbFromLinear(linear[0]);
-    out[1] = num.srgbFromLinear(linear[0]);
-    out[2] = num.srgbFromLinear(linear[0]);
+    out[1] = num.srgbFromLinear(linear[1]);
+    out[2] = num.srgbFromLinear(linear[2]);
     return out;
 };
 

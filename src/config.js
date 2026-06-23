@@ -185,7 +185,7 @@ export const config = {
         // Controls visibility for console outputs based on type
         "visible": {
             "error": true,
-            "warning": false,
+            "warn": false,
             "log": false,
             "info": false,
             "debug": false

@@ -77,7 +77,12 @@ export class Tw2RenderTarget
      */
     IsGood()
     {
-        return !!(this._frameBuffer && this._texture && this._texture.IsGood() && !this.hasDepth || this._renderBuffer);
+        return !!(
+            this._frameBuffer &&
+            this._texture &&
+            this._texture.IsGood() &&
+            (!this.hasDepth || this._renderBuffer)
+        );
     }
 
     /**
@@ -104,10 +109,6 @@ export class Tw2RenderTarget
             gl.deleteFramebuffer(this._frameBuffer);
             this._frameBuffer = null;
         }
-
-        this.hasDepth = false;
-        this.width = 0;
-        this.height = 0;
     }
 
     /**
@@ -176,6 +177,14 @@ export class Tw2RenderTarget
         if (hasDepth)
         {
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._renderBuffer);
+        }
+
+        const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+        if (status !== gl.FRAMEBUFFER_COMPLETE)
+        {
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            throw new ReferenceError(`Invalid render target framebuffer: ${status}`);
         }
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
@@ -252,12 +261,16 @@ export class Tw2RenderTarget
     {
         if (!this.IsGood()) return false;
 
-        const { gl, width, height } = tw2;
+        const { gl } = tw2;
+        const
+            prevViewport = gl.getParameter(gl.VIEWPORT),
+            prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
         func(this);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, width, height);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, prevFramebuffer);
+        gl.viewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
         return true;
     }
 

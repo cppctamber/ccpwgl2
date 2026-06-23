@@ -214,6 +214,8 @@ sph3.fromBounds = function(out, min, max)
  */
 sph3.fromPositionRadius = pln.fromNormalConstant;
 
+sph3.from = sph3.fromPositionRadius;
+
 /**
  * Sets a sphere from a mat4's translation and a given radius
  *
@@ -304,6 +306,7 @@ sph3.union = function(out, a, b)
  */
 sph3.unionPositionRadius = function(out, a, position, radius)
 {
+    if (!sph3_0) sph3_0 = sph3.create();
     return sph3.union(out, a, sph3.fromPositionRadius(sph3_0, position, radius));
 };
 
@@ -454,8 +457,8 @@ sph3.intersectsPln = function(a, p)
  */
 sph3.intersectsNormalConstant = function(a, n, c)
 {
-    let dot = a[0] * n[0] + a[1] * n[1] + a[2] * n[2];
-    return Math.abs(dot - c) <= a[3];
+    let distance = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
+    return Math.abs(distance) <= a[3];
 };
 
 /**
@@ -570,7 +573,7 @@ sph3.squaredDistanceToPoint = function(a, p)
         y = p[1] - a[1],
         z = p[2] - a[2];
 
-    return (x * x + y * y + z * z) - a[3];
+    return (x * x + y * y + z * z) - a[3] * a[3];
 };
 
 /**
@@ -651,5 +654,6 @@ sph3.translate = function(out, a, v)
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];
     out[2] = a[2] + v[2];
+    out[3] = a[3];
     return out;
 };

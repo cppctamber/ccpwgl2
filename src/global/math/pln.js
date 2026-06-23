@@ -100,7 +100,7 @@ pln.distanceToPoint = function(a, p)
  */
 pln.distanceToPositionRadius = function(a, position, radius)
 {
-    return (a[0] * position[0] + a[1] * position[1] + a[2] * position[2]) - radius;
+    return (a[0] * position[0] + a[1] * position[1] + a[2] * position[2]) + a[3] - radius;
 };
 
 /**
@@ -112,7 +112,7 @@ pln.distanceToPositionRadius = function(a, position, radius)
  */
 pln.distanceToSph3 = function(a, sphere)
 {
-    return (a[0] * sphere[0] + a[1] * sphere[1] + a[2] * sphere[2]) - sphere[3];
+    return (a[0] * sphere[0] + a[1] * sphere[1] + a[2] * sphere[2]) + a[3] - sphere[3];
 };
 
 /**
@@ -343,7 +343,7 @@ pln.getIntersectLne3 = function(out, a, l)
         throw new Error("Denominator error");
     }
 
-    let t = ((lsx * a[0] + lsy * a[1] + lsz * a[2]) + a[3]) / den;
+    let t = -((lsx * a[0] + lsy * a[1] + lsz * a[2]) + a[3]) / den;
 
     if (t < 0 || t > 1)
     {
@@ -476,8 +476,8 @@ pln.intersectsLne3 = function(a, l)
  */
 pln.intersectsPositionRadius = function(a, position, radius)
 {
-    let dot = position[0] * a[0] + position[1] * a[1] + position[2] * a[2];
-    return Math.abs(dot - a[3]) <= radius;
+    let distance = position[0] * a[0] + position[1] * a[1] + position[2] * a[2] + a[3];
+    return Math.abs(distance) <= radius;
 };
 
 /**
@@ -489,8 +489,8 @@ pln.intersectsPositionRadius = function(a, position, radius)
  */
 pln.intersectsSph3 = function(a, s)
 {
-    let dot = s[0] * a[0] + s[1] * a[1] + s[2] * a[2];
-    return Math.abs(dot - a[3]) <= s[3];
+    let distance = s[0] * a[0] + s[1] * a[1] + s[2] * a[2] + a[3];
+    return Math.abs(distance) <= s[3];
 };
 
 /**
