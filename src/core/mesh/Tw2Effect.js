@@ -614,7 +614,7 @@ export class Tw2Effect extends meta.Model
                                     }
                                     else
                                     {
-                                        stage.parameter.push({ parameter, constantBuffer, offset, size });
+                                        stage.parameters.push({ parameter, constantBuffer, offset, size });
                                     }
                                 }
                             }
