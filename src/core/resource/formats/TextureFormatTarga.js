@@ -448,7 +448,23 @@ function detectVerticalAtlas(width, height)
 
 export class TextureFormatTarga
 {
+    static formatName = "targa";
+
     static exts = [ "tga" ];
+
+    static GetSupport()
+    {
+        return {
+            supported: true,
+            partial: false,
+            declared: true,
+            verified: true,
+            fallback: "png",
+            formats: {
+                tga: { declared: true, verified: true }
+            }
+        };
+    }
 
     /**
      * @param {Tw2TextureRes} res

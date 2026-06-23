@@ -4,9 +4,11 @@ import "reflect-metadata";
 
 import { config } from "./config";
 import { tw2 } from "./global";
+import { shaders as deprecatedShaders } from "./toDeprecate/shaders";
 
 tw2.Register(config);
 
 export { tiny } from "./wrapped";
+export { deprecatedShaders };
 export { tw2, tw2 as CCPWGL };
 

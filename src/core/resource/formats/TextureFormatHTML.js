@@ -112,7 +112,26 @@ export class Tw2TextureResHTMLRuntime
  */
 export class TextureFormatHTML
 {
+    static formatName = "html";
+
     static exts = [ "html" ];
+
+    static GetSupport()
+    {
+        const hasDocument = typeof document !== "undefined";
+
+        return {
+            supported: hasDocument,
+            partial: false,
+            declared: hasDocument,
+            verified: hasDocument,
+            fallback: null,
+            formats: {
+                html: { declared: hasDocument, verified: hasDocument }
+            },
+            reason: hasDocument ? null : "document_unavailable"
+        };
+    }
 
     static CreateRuntime()
     {

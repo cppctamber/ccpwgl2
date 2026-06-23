@@ -4,6 +4,8 @@ import { VolumeAtlas } from "../transforms/VolumeAtlas";
 
 export const TextureFormatImage =
     {
+        formatName: "image",
+
         exts: [
             "png",
             "cube",
@@ -36,6 +38,26 @@ export const TextureFormatImage =
 
             image.src = path;
             return true;
+        },
+
+        GetSupport()
+        {
+            return {
+                supported: true,
+                partial: false,
+                declared: true,
+                verified: true,
+                fallback: null,
+                formats: {
+                    png: { declared: true, verified: true },
+                    cube: { declared: true, verified: true },
+                    qube: { declared: true, verified: true },
+                    jpg: { declared: true, verified: true },
+                    jpeg: { declared: true, verified: true },
+                    webp: { declared: true, verified: true },
+                    avif: { declared: true, verified: true }
+                }
+            };
         },
 
         Prepare(res, gl, data)

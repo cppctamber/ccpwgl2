@@ -3,8 +3,7 @@ import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
-import { Tw2Resource } from "core/resource";
-import { getOverriddenShaderPath } from "../../../shaders";
+import { Tw2EffectRes, Tw2Resource } from "core/resource";
 import { Tw2SamplerOverride } from "core/sampler";
 
 
@@ -279,7 +278,22 @@ export class Tw2Effect extends meta.Model
      */
     static getOverriddenShaderPath(path)
     {
-        return this.UNPACKED_TEXTURES ? getOverriddenShaderPath(path) : path;
+        if (!this.UNPACKED_TEXTURES) return path;
+
+        const override = tw2.shaders.GetShaderOverride(path);
+        if (!override) return path;
+
+        tw2.Debug({
+            name: "Shader override",
+            message: `Replaced '${path}' with '${override.path}'`
+        });
+
+        if (!tw2.resMan.motherLode.Has(override.path))
+        {
+            Tw2EffectRes.fromJSON(override.shader);
+        }
+
+        return override.path;
     }
 
     /**

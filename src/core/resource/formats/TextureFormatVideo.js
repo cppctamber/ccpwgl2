@@ -157,11 +157,32 @@ export class VideoRuntime
  */
 export class TextureFormatVideo
 {
+    static formatName = "video";
+
     static exts = [
         "mp4",
         "webm",
         "ogg"
     ];
+
+    static GetSupport()
+    {
+        const hasVideo = typeof document !== "undefined" && !!document.createElement("video").canPlayType;
+
+        return {
+            supported: hasVideo,
+            partial: false,
+            declared: hasVideo,
+            verified: hasVideo,
+            fallback: null,
+            formats: {
+                mp4: { declared: hasVideo, verified: hasVideo },
+                webm: { declared: hasVideo, verified: hasVideo },
+                ogg: { declared: hasVideo, verified: hasVideo }
+            },
+            reason: hasVideo ? null : "video_element_unavailable"
+        };
+    }
 
     /**
      * Creates/returns a VideoRuntime and attaches it to res._runtime.

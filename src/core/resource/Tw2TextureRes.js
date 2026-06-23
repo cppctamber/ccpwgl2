@@ -53,6 +53,12 @@ export class Tw2TextureRes extends Tw2Resource
 
     _isSRGB = false;
 
+    /**
+     * Debug-only source metadata
+     * @type {Object|null}
+     */
+    _debugInfo = null;
+
     // =========================
     // Helpers
     // =========================
@@ -90,6 +96,7 @@ export class Tw2TextureRes extends Tw2Resource
         this._volumeAxis = "y";
         this._volumeSlices = 1;
         this._useNoMipFilter = false;
+        this._debugInfo = null;
 
         const format = Tw2TextureRes.GetFormat(this._extension);
         if (!format) throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -198,6 +205,7 @@ export class Tw2TextureRes extends Tw2Resource
         this._isVolumeAtlas = false;
         this._volumeAxis = "y";
         this._volumeSlices = 1;
+        this._debugInfo = null;
     }
 
     _ClearRuntime()
@@ -316,15 +324,28 @@ export class Tw2TextureRes extends Tw2Resource
     /** @type {Map<string, {exts:string[], Load:function, Prepare:function}>} */
     static _formats = new Map();
 
+    /** @type {Array<{exts:string[], Load:function, Prepare:function}>} */
+    static _formatHandlers = [];
+
     /**
      * Registers a texture format handler
-     * @param {{exts:string[], Load:(res:Tw2TextureRes, path:string, ext?:string)=>boolean, Prepare:(res:Tw2TextureRes, gl:WebGLRenderingContext, data:any)=>void}} handler
+     * @param {{formatName?:string, exts:string[], Load:(res:Tw2TextureRes, path:string, ext?:string)=>boolean, Prepare:(res:Tw2TextureRes, gl:WebGLRenderingContext, data:any)=>void, GetSupport?:(gl:WebGLRenderingContext)=>Object}} handler
      */
     static RegisterFormat(handler)
     {
-        for (const ext of handler.exts)
+        if (!handler || !Array.isArray(handler.exts) || !handler.Load || !handler.Prepare)
         {
-            this._formats.set(ext, handler);
+            throw new TypeError("Invalid texture format handler");
+        }
+
+        if (!this._formatHandlers.includes(handler))
+        {
+            this._formatHandlers.push(handler);
+        }
+
+        for (let i = 0; i < handler.exts.length; i++)
+        {
+            this._formats.set(this.NormalizeExtension(handler.exts[i]), handler);
         }
     }
 
@@ -335,7 +356,101 @@ export class Tw2TextureRes extends Tw2Resource
      */
     static GetFormat(ext)
     {
-        return this._formats.get(ext) ?? null;
+        return this._formats.get(this.NormalizeExtension(ext)) ?? null;
+    }
+
+    /**
+     * Gets registered texture format handlers
+     * @returns {Array<{name:String, exts:String[]}>}
+     */
+    static GetFormats()
+    {
+        const out = [];
+        for (let i = 0; i < this._formatHandlers.length; i++)
+        {
+            const handler = this._formatHandlers[i];
+            out.push({
+                name: this.GetHandlerName(handler),
+                exts: handler.exts.map(ext => this.NormalizeExtension(ext))
+            });
+        }
+        return out;
+    }
+
+    /**
+     * Gets finite texture format support metadata
+     * @param {WebGLRenderingContext} [gl]
+     * @param {Object} [opt]
+     * @returns {Object}
+     */
+    static GetFormatSupport(gl = device.gl, opt)
+    {
+        const out = {};
+        for (let i = 0; i < this._formatHandlers.length; i++)
+        {
+            const support = this.GetHandlerSupport(this._formatHandlers[i], gl, opt);
+            out[support.name] = support;
+        }
+        return out;
+    }
+
+    /**
+     * Gets normalized handler support metadata
+     * @param {*} handler
+     * @param {WebGLRenderingContext} gl
+     * @param {Object} [opt]
+     * @returns {Object}
+     */
+    static GetHandlerSupport(handler, gl, opt)
+    {
+        const name = this.GetHandlerName(handler);
+        const raw = handler.GetSupport ? handler.GetSupport(gl, opt) : null;
+        return this.NormalizeFormatSupport(handler, raw, name);
+    }
+
+    /**
+     * Normalizes format support metadata
+     * @param {*} handler
+     * @param {*} support
+     * @param {String} name
+     * @returns {Object}
+     */
+    static NormalizeFormatSupport(handler, support, name)
+    {
+        support = support || { supported: true, declared: true, verified: true };
+
+        return {
+            name,
+            exts: handler.exts.map(ext => this.NormalizeExtension(ext)),
+            supported: !!support.supported,
+            partial: !!support.partial,
+            declared: support.declared !== undefined ? !!support.declared : !!support.supported,
+            verified: support.verified !== undefined ? !!support.verified : !!support.supported,
+            pending: !!support.pending,
+            fallback: support.fallback ?? null,
+            formats: support.formats || {},
+            reason: support.reason || null
+        };
+    }
+
+    /**
+     * Gets a format handler's stable name
+     * @param {*} handler
+     * @returns {String}
+     */
+    static GetHandlerName(handler)
+    {
+        return handler.formatName || handler.name || this.NormalizeExtension(handler.exts[0]);
+    }
+
+    /**
+     * Normalizes a texture extension
+     * @param {String} ext
+     * @returns {String}
+     */
+    static NormalizeExtension(ext)
+    {
+        return (ext || "").replace(/^\./, "").toLowerCase();
     }
 
 }

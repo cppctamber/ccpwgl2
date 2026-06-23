@@ -24,6 +24,12 @@ export class Tw2Library extends Tw2EventEmitter
     const = consts;
 
     /**
+     * Shader definition store
+     * @type {Tw2ShaderStore}
+     */
+    shaders = new stores.Tw2ShaderStore();
+
+    /**
      * Default render batch sorter
      * @type {Function|null}
      */
@@ -411,6 +417,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
         if (opt.extensions) this.extensions.Register(opt.extensions);
         if (opt.renderBatchSorter !== undefined) this.renderBatchSorter = opt.renderBatchSorter;
+        if (opt.shaders) this.RegisterShaders(opt.shaders);
 
         if (opt.logger) this.logger.Register(opt.logger);
         if (opt.resMan) this.resMan.Register(opt.resMan);
@@ -418,6 +425,28 @@ export class Tw2Library extends Tw2EventEmitter
 
         // Shortcut to device.glParams
         if (opt.glParams) this.device.Register({ glParams: opt.glParams });
+    }
+
+    /**
+     * Registers shader definitions
+     * @param {Object|Array<Object>} shaders
+     * @returns {Tw2Library}
+     */
+    RegisterShaders(shaders)
+    {
+        this.shaders.RegisterShaders(shaders);
+        return this;
+    }
+
+    /**
+     * Registers a shader definition
+     * @param {Object} shader
+     * @returns {Tw2Library}
+     */
+    RegisterShader(shader)
+    {
+        this.shaders.RegisterShader(shader);
+        return this;
     }
 
     /**
@@ -792,6 +821,46 @@ export class Tw2Library extends Tw2EventEmitter
     GetDeviceExtension(name)
     {
         return this.device.GetExtension(name);
+    }
+
+    /**
+     * Gets the registered texture resource constructor
+     * @returns {Function|null}
+     */
+    GetTextureResourceConstructor()
+    {
+        const extensions = [ "png", "dds", "tga", "mp4", "html" ];
+
+        for (let i = 0; i < extensions.length; i++)
+        {
+            if (this.extensions.Has(extensions[i]))
+            {
+                return this.extensions.Get(extensions[i]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the finite list of registered texture formats
+     * @returns {Array}
+     */
+    GetTextureFormats()
+    {
+        const TextureRes = this.GetTextureResourceConstructor();
+        return TextureRes && TextureRes.GetFormats ? TextureRes.GetFormats() : [];
+    }
+
+    /**
+     * Gets texture format support metadata
+     * @param {Object} [opt]
+     * @returns {Object}
+     */
+    GetTextureFormatSupport(opt)
+    {
+        const TextureRes = this.GetTextureResourceConstructor();
+        return TextureRes && TextureRes.GetFormatSupport ? TextureRes.GetFormatSupport(this.device.gl, opt) : {};
     }
 
     /**
