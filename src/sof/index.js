@@ -1,4 +1,3 @@
-export * from "./legacy";
 export * from "./faction";
 export * from "./generic";
 export * from "./hull";

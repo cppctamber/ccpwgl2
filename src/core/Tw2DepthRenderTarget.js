@@ -25,6 +25,8 @@ export class Tw2DepthRenderTarget
     _depthTexture = null;
     _colorTexture = null;
     _frameBuffer = null;
+    _prevViewport = null;
+    _prevFramebuffer = null;
 
     /**
      * Identifies if the depth texture is an attachment
@@ -152,9 +154,10 @@ export class Tw2DepthRenderTarget
      */
     Update(targetWidth, targetHeight, precision=this.precision)
     {
+        if (precision === true || precision === false) precision = this.precision;
         if (this.width !== targetWidth || this.height !== targetHeight || this.precision !== precision)
         {
-            this.Create(targetWidth, targetHeight);
+            this.Create(targetWidth, targetHeight, precision);
             return true;
         }
         return false;
@@ -381,8 +384,8 @@ export class Tw2DepthRenderTarget
         const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
-        tw2.ClearBufferBits(color, depth, stencil);
         if (clearColor) tw2.SetClearColor(clearColor);
+        tw2.ClearBufferBits(color, depth, stencil);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, tw2.width, tw2.height);
     }
@@ -396,13 +399,17 @@ export class Tw2DepthRenderTarget
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
         const { gl } = tw2;
+
+        this._prevViewport = gl.getParameter(gl.VIEWPORT);
+        this._prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
 
         if (clearOptions)
         {
-            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
             if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
+            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
         }
     }
 
@@ -412,9 +419,16 @@ export class Tw2DepthRenderTarget
     Unset()
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
-        const { gl, width, height } = tw2;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, width, height);
+        const { gl } = tw2;
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._prevFramebuffer);
+        if (this._prevViewport)
+        {
+            gl.viewport(this._prevViewport[0], this._prevViewport[1], this._prevViewport[2], this._prevViewport[3]);
+        }
+
+        this._prevFramebuffer = null;
+        this._prevViewport = null;
     }
 
     /**

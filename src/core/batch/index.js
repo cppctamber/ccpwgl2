@@ -5,3 +5,4 @@ export * from "./Tw2GeometryBatch";
 export * from "./Tw2GeometryLineBatch";
 export * from "./Tw2RenderBatch";
 export * from "./Tw2InstancedMeshBatch";
+export { tw2BatchSorter } from "./Tw2BatchSorter";

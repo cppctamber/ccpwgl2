@@ -102,6 +102,30 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
+     * Updates a color type to a color
+     * TODO: Replace this with something better :>
+     * @param {Number} colorType
+     * @param {vec4} color
+     * @returns {boolean}
+     */
+    UpdateColorType(colorType, color)
+    {
+        let updated = false;
+
+        const areas = this.GetItemByColorType(colorType);
+        for (let i = 0; i < areas.length; i++)
+        {
+            if (areas[i].effect && areas[i].effect.parameters.GeneralGlowColor)
+            {
+                areas[i].effect.parameters.GeneralGlowColor.SetValue(color);
+                updated = true;
+            }
+        }
+
+        return updated;
+    }
+
+    /**
      * Gets mesh areas by their color type
      * @param {Number} colorType
      * @param {Array<*>} [out=[]]
@@ -113,7 +137,19 @@ export class Tw2Mesh extends meta.Model
         {
             for (let i = 0; i < area.length; i++)
             {
-                if (area[i].colorType === colorType && !out.includes(area[i]))
+                if ("colorType" in area[i])
+                {
+                    if (area[i].colorType === colorType && !out.includes(area[i]))
+                    {
+                        out.push(area[i]);
+                    }
+                }
+                else if (
+                    "_sofMeta" in area[i] &&
+                    area[i]._sofMeta.areaData &&
+                    area[i]._sofMeta.areaData.colorType === colorType &&
+                    !out.includes(area[i])
+                )
                 {
                     out.push(area[i]);
                 }
@@ -510,7 +546,7 @@ export class Tw2Mesh extends meta.Model
             batch.renderMode = mode;
             batch.perObjectData = perObjectData;
             batch.geometryRes = mesh.geometryResource;
-            batch.meshIx = mesh.meshIndex;              //area.meshIndex;
+            batch.meshIx = area.meshIndex;
             batch.start = area.index;
             batch.count = area.count;
             batch.effect = area.effect;

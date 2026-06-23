@@ -267,12 +267,6 @@ export const config = {
             0.0,
             0.0
         ],
-        "g_pixel_adjustment": [
-            0.5,
-            1.0,
-            1.0,
-            1.0
-        ],
         "g_transparent_background": [ 0, 0.3, 0, 0 ],
         "EveSpaceSceneDepthMap": "",
         "EveSpaceSceneNormalMap": "",
