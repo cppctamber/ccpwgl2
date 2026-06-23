@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { device } from "global";
+import { device, tw2 } from "global";
 
 import {
     Tw2Resource,
@@ -20,11 +20,9 @@ export class Tw2TextureRes extends Tw2Resource
     texture = null;
 
     /**
-     * Canvas attachment
-     * @type {null|Tw2TextureResHTMLAttachment}
+     * Runtime texture source state, such as HTML canvas/video handlers
+     * @type {Object|null}
      */
-    attachment = null;
-
     _runtime = null;
 
     _currentSampler = 0;
@@ -395,6 +393,30 @@ export class Tw2TextureRes extends Tw2Resource
     }
 
     /**
+     * Records texture format support into a capability store
+     * @param {*} [store]
+     * @param {WebGLRenderingContext} [gl]
+     * @param {Object} [opt]
+     * @returns {Object}
+     */
+    static RecordCapabilities(store = tw2.capabilities, gl = device.gl, opt)
+    {
+        const data = this.GetFormatSupport(gl, opt);
+
+        if (store)
+        {
+            store.SetReport(this.Capability.FORMATS, data, {
+                name: this.Capability.FORMATS,
+                category: "texture",
+                label: "Texture formats",
+                description: "Registered texture formats and their current browser/WebGL support"
+            });
+        }
+
+        return data;
+    }
+
+    /**
      * Gets normalized handler support metadata
      * @param {*} handler
      * @param {WebGLRenderingContext} gl
@@ -453,6 +475,10 @@ export class Tw2TextureRes extends Tw2Resource
         return (ext || "").replace(/^\./, "").toLowerCase();
     }
 
+    static Capability = {
+        FORMATS: "texture.formats"
+    };
+
 }
 
 Tw2Resource.prototype.DoCustomLoad = null;
@@ -462,3 +488,5 @@ Tw2TextureRes.RegisterFormat(TextureFormatImage);
 Tw2TextureRes.RegisterFormat(TextureFormatTarga);
 Tw2TextureRes.RegisterFormat(TextureFormatVideo);
 Tw2TextureRes.RegisterFormat(TextureFormatHTML);
+Tw2TextureRes.RecordCapabilities();
+tw2.OnEvent("context_created", () => Tw2TextureRes.RecordCapabilities());

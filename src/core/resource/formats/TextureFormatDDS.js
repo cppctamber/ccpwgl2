@@ -129,7 +129,7 @@ export const TextureFormatDDS =
 
     Load(res, path)
     {
-        resMan.Fetch(path, "arraybuffer")
+        resMan.FetchRaw(path, "arraybuffer")
             .then(response =>
             {
                 res.OnLoaded();

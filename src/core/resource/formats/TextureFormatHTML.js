@@ -1,6 +1,5 @@
 // formats/TextureFormatHTML.js
 //
-// TextureFormat-style replacement for Tw2TextureResHTMLAttachment.
 // - Registered in Tw2TextureRes via the static format registry
 // - Works as a "dynamic" texture source: canvas/img/video/any element
 // - Uses a runtime object on the resource (res._runtime) to update per frame

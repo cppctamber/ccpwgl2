@@ -34,6 +34,7 @@ module.exports = {
             "state": path.resolve(__dirname, "./src/state"),
             "wrapped": path.resolve(__dirname, "./src/wrapped"),
             "unsupported": path.resolve(__dirname, "./src/unsupported"),
+            "api": path.resolve(__dirname, "./src/api"),
 
             // We'll fix these later
             "global" : path.resolve(__dirname, "./src/global"),

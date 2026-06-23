@@ -8,11 +8,48 @@ export class Tw2LoadingObject extends Tw2Resource
 {
 
     path = "";
+    url = "";
+    responseType = null;
+    targetResource = null;
+    loader = null;
+
     _view = null;
     _inPrepare = null;
     _objects = [];
     _constructor = null;
     _requestResponseType = "arraybuffer";
+
+    /**
+     * Configures the loading object as an internal raw resource load task
+     * @param {Tw2Resource} res
+     * @param {String} url
+     * @param {String|Function|null} responseType
+     * @param {*} loader
+     * @returns {Tw2LoadingObject}
+     */
+    ConfigureRawLoad(res, url, responseType, loader)
+    {
+        this.path = res.path;
+        this.url = url;
+        this.responseType = responseType;
+        this.targetResource = res;
+        this.loader = loader;
+        return this;
+    }
+
+    /**
+     * Starts an internal raw data load
+     * @returns {Promise<*>}
+     */
+    StartRawLoad()
+    {
+        if (!this.loader || !this.loader.Fetch)
+        {
+            throw new ReferenceError("Invalid resource loader");
+        }
+
+        return this.loader.Fetch(this.url, this.responseType, this);
+    }
 
     /**
      * Adds a child object

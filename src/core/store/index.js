@@ -4,6 +4,7 @@ export * from "./Tw2VariableTypeStore";
 export * from "./Tw2VariableStore";
 export * from "./Tw2ResourcePathStore";
 export * from "./Tw2SchemaStore";
+export * from "./Tw2CapabilityStore";
 export * from "./Tw2ResourceDynamicPathStore";
 export * from "./Tw2ResourceExtensionStore";
 export * from "./Tw2ShaderStore";

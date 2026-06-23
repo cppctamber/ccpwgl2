@@ -3,7 +3,7 @@ import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "utils";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, isString } from "utils";
 
 
 
@@ -12,6 +12,9 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     motherLode = new Tw2MotherLode();
     maxPrepareTime = 0.05;
+    maxConcurrentLoads = 8;
+    useWorkerLoading = false;
+    workerLoaderUrl = null;
     autoPurgeResources = true;
     activeFrame = 0;
     purgeTime = 30;
@@ -22,6 +25,8 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     _prepareBudget = 0;
     _prepareQueue = [];
+    _loadQueue = [];
+    _activeLoads = [];
     _purgeTime = 0;
     _purgeFrame = 0;
     _purgeFrameLimit = 1000;
@@ -31,6 +36,9 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     _autoReload = [];
     minimumAutoReloadSeconds = 1;
+    _mainThreadLoader = null;
+    _workerLoader = null;
+    loader = null;
 
     /**
      * Temporary
@@ -65,7 +73,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     get pendingLoads()
     {
-        return this._pendingLoads.length;
+        return this._pendingLoads.length + this._loadQueue.length;
     }
 
     /**
@@ -76,6 +84,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         super();
         this.tw2 = tw2;
+        this._mainThreadLoader = new Tw2MainThreadResourceLoader(this);
+        this._workerLoader = new Tw2WorkerResourceLoader(this);
+        this.loader = this._mainThreadLoader;
     }
 
     /**
@@ -90,12 +101,23 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         assignIfExists(this, opt, [
             "maxPrepareTime",
+            "maxConcurrentLoads",
+            "workerLoaderUrl",
             "autoPurgeResources",
             "purgeTime",
             "maxWatchedTime",
             "maxWatchedCount",
             "maxWatchedUpdateTime"
         ]);
+
+        if (opt.useWorkerLoading !== undefined)
+        {
+            this.UseWorkerLoading(opt.useWorkerLoading);
+        }
+        else if (opt.workerLoading !== undefined)
+        {
+            this.UseWorkerLoading(opt.workerLoading);
+        }
 
         if (opt.systemMirror !== undefined)
         {
@@ -314,7 +336,9 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Tick()
     {
-        if (this._prepareQueue.length === 0 && this._pendingLoads.length === 0)
+        this.PumpLoadQueue();
+
+        if (this._prepareQueue.length === 0 && this.pendingLoads === 0)
         {
             if (this._noLoadFrames < 2)
             {
@@ -380,6 +404,68 @@ export class Tw2ResMan extends Tw2EventEmitter
         }
 
         return true;
+    }
+
+    /**
+     * Enables/disables worker backed raw resource loading
+     * @param {Boolean} bool
+     * @returns {Boolean} true if the worker loader is active
+     */
+    UseWorkerLoading(bool)
+    {
+        this.useWorkerLoading = !!bool;
+
+        if (!this.useWorkerLoading)
+        {
+            this.loader = this._mainThreadLoader;
+            return false;
+        }
+
+        if (this._workerLoader.Enable(this.workerLoaderUrl))
+        {
+            this.loader = this._workerLoader;
+            return true;
+        }
+
+        this.useWorkerLoading = false;
+        this.loader = this._mainThreadLoader;
+        return false;
+    }
+
+    /**
+     * Pumps queued raw load tasks up to the configured concurrency limit
+     */
+    PumpLoadQueue()
+    {
+        while (this._loadQueue.length && this._activeLoads.length < this.maxConcurrentLoads)
+        {
+            const task = this._loadQueue.shift();
+            this._activeLoads.push(task);
+
+            task.StartRawLoad()
+                .then(response =>
+                {
+                    const res = task.targetResource;
+                    if (!res || res.HasErrored()) return;
+
+                    res.OnLoaded();
+                    this.Queue(res, response);
+                })
+                .catch(err =>
+                {
+                    const res = task.targetResource;
+                    if (res) res.OnError(err);
+                })
+                .finally(() =>
+                {
+                    const index = this._activeLoads.indexOf(task);
+                    if (index !== -1)
+                    {
+                        this._activeLoads.splice(index, 1);
+                    }
+                    this.PumpLoadQueue();
+                });
+        }
     }
 
     /**
@@ -493,6 +579,30 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Fetches a resource or loading object
+     * @param {String} path
+     * @param {String|Function} [responseType] Deprecated raw fetch compatibility
+     * @returns {Promise<Tw2Resource|Object|*>}
+     */
+    async Fetch(path, responseType)
+    {
+        if (responseType !== undefined)
+        {
+            return this.FetchRaw(path, responseType);
+        }
+
+        path = Tw2ResMan.NormalizePath(path);
+        const ext = getPathExtension(path);
+
+        if (this.tw2.extensions.IsLoadingObject(ext))
+        {
+            return this.FetchObject(path);
+        }
+
+        return this.FetchResource(path);
+    }
+
+    /**
      * Loads a resource
      * TODO: Create a res object for each quality level rather than just one
      * @param {Tw2Resource|*} res
@@ -524,16 +634,7 @@ export class Tw2ResMan extends Tw2EventEmitter
                 return res;
             }
 
-            this.Fetch(url, res.requestResponseType)
-                .then(response =>
-                {
-                    res.OnLoaded();
-                    this.Queue(res, response);
-                })
-                .catch(err =>
-                {
-                    res.OnError(err);
-                });
+            this.QueueLoad(res, url, res.requestResponseType);
         }
         catch (err)
         {
@@ -541,6 +642,22 @@ export class Tw2ResMan extends Tw2EventEmitter
         }
 
         return res;
+    }
+
+    /**
+     * Queues a raw resource load
+     * @param {Tw2Resource} res
+     * @param {String} url
+     * @param {String|Function|null} responseType
+     * @returns {Tw2LoadingObject}
+     */
+    QueueLoad(res, url, responseType)
+    {
+        const task = new Tw2LoadingObject();
+        task.ConfigureRawLoad(res, url, responseType, this.loader);
+        this._loadQueue.push(task);
+        this.PumpLoadQueue();
+        return task;
     }
 
     /**
@@ -566,12 +683,12 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Fetches cache
+     * Fetches raw data
      * @param {String} url
      * @param {String|Function} responseType
      * @returns {Promise}
      */
-    async Fetch(url, responseType)
+    async FetchRaw(url, responseType)
     {
         this.AddPendingLoad(url);
 
@@ -705,4 +822,316 @@ export class ErrHTTPStatus extends Tw2Error
     {
         super(data, "%statusText=Communication status error while loading resource% (%status%)");
     }
+}
+
+
+export class Tw2MainThreadResourceLoader
+{
+    /**
+     * Constructor
+     * @param {Tw2ResMan} resMan
+     */
+    constructor(resMan)
+    {
+        this.resMan = resMan;
+    }
+
+    /**
+     * Fetches raw resource data
+     * @param {String} url
+     * @param {String|Function|null} responseType
+     * @returns {Promise<*>}
+     */
+    Fetch(url, responseType)
+    {
+        return this.resMan.FetchRaw(url, responseType);
+    }
+}
+
+
+export class Tw2WorkerResourceLoader
+{
+    /**
+     * Constructor
+     * @param {Tw2ResMan} resMan
+     */
+    constructor(resMan)
+    {
+        this.resMan = resMan;
+        this.worker = null;
+        this.url = null;
+        this._nextId = 1;
+        this._pending = new Map();
+        this._failed = false;
+    }
+
+    /**
+     * Enables the worker
+     * @param {String|null} [workerUrl]
+     * @returns {Boolean}
+     */
+    Enable(workerUrl)
+    {
+        if (this.worker) return true;
+        if (this._failed) return false;
+        if (typeof Worker === "undefined") return false;
+
+        try
+        {
+            this.url = workerUrl || this.constructor.CreateObjectUrl();
+            this.worker = new Worker(this.url);
+            this.worker.onmessage = event => this.OnMessage(event.data);
+            this.worker.onerror = err => this.OnWorkerError(err);
+            return true;
+        }
+        catch (err)
+        {
+            this.Disable(err);
+            return false;
+        }
+    }
+
+    /**
+     * Disables the worker and rejects pending worker requests
+     * @param {*} [err]
+     */
+    Disable(err)
+    {
+        if (this.worker)
+        {
+            this.worker.terminate();
+            this.worker = null;
+        }
+
+        if (this.url && this.url.indexOf("blob:") === 0 && typeof URL !== "undefined" && URL.revokeObjectURL)
+        {
+            URL.revokeObjectURL(this.url);
+        }
+
+        this.url = null;
+        this._failed = !!err;
+
+        if (err)
+        {
+            this._pending.forEach(request =>
+            {
+                this.resMan.RemovePendingLoad(request.url);
+                request.reject(this.constructor.NormalizeError(err));
+            });
+            this._pending.clear();
+        }
+    }
+
+    /**
+     * Fetches raw resource data
+     * @param {String} url
+     * @param {String|Function|null} responseType
+     * @returns {Promise<*>}
+     */
+    Fetch(url, responseType)
+    {
+        if (!this.CanFetch(responseType))
+        {
+            return this.resMan._mainThreadLoader.Fetch(url, responseType);
+        }
+
+        if (!this.Enable(this.resMan.workerLoaderUrl))
+        {
+            return this.resMan._mainThreadLoader.Fetch(url, responseType);
+        }
+
+        this.resMan.AddPendingLoad(url);
+
+        return new Promise((resolve, reject) =>
+        {
+            const id = this._nextId++;
+            this._pending.set(id, { url, resolve, reject });
+
+            try
+            {
+                this.worker.postMessage({ id, url, responseType });
+            }
+            catch (err)
+            {
+                this._pending.delete(id);
+                this.resMan.RemovePendingLoad(url);
+                reject(err);
+            }
+        });
+    }
+
+    /**
+     * Checks if a response type can be loaded in the worker
+     * @param {*} responseType
+     * @returns {Boolean}
+     */
+    CanFetch(responseType)
+    {
+        return isString(responseType)
+            && this.constructor.ResponseTypes.includes(responseType);
+    }
+
+    /**
+     * Handles worker messages
+     * @param {*} data
+     */
+    OnMessage(data)
+    {
+        const request = data && this._pending.get(data.id);
+        if (!request) return;
+
+        this._pending.delete(data.id);
+        this.resMan.RemovePendingLoad(request.url);
+
+        if (data.ok)
+        {
+            request.resolve(data.result);
+        }
+        else
+        {
+            request.reject(this.constructor.NormalizeError(data.error));
+        }
+    }
+
+    /**
+     * Handles worker errors
+     * @param {*} err
+     */
+    OnWorkerError(err)
+    {
+        this.Disable(err);
+        this.resMan.UseWorkerLoading(false);
+    }
+
+    /**
+     * Creates a worker object url
+     * @returns {String}
+     */
+    static CreateObjectUrl()
+    {
+        if (typeof Blob === "undefined" || typeof URL === "undefined" || !URL.createObjectURL)
+        {
+            throw new ReferenceError("Worker object urls are not supported");
+        }
+
+        const blob = new Blob([ `(${Tw2ResourceLoaderWorker.toString()}());` ], { type: "application/javascript" });
+        return URL.createObjectURL(blob);
+    }
+
+    /**
+     * Normalizes worker errors
+     * @param {*} error
+     * @returns {Error}
+     */
+    static NormalizeError(error)
+    {
+        if (error instanceof Error) return error;
+
+        if (error && (error.name === "ErrHTTPStatus" || error.status !== undefined))
+        {
+            return new ErrHTTPStatus({
+                status: error.status,
+                statusText: error.statusText || error.message,
+                json: error.json
+            });
+        }
+
+        const err = new Error(error && error.message || "Worker resource load failed");
+        err.name = error && error.name || "WorkerResourceLoadError";
+
+        if (error)
+        {
+            err.status = error.status;
+            err.statusText = error.statusText;
+            err.json = error.json;
+        }
+
+        return err;
+    }
+
+    static ResponseTypes = [ "arraybuffer", "text", "json", "blob" ];
+}
+
+
+/**
+ * Data-only worker body for resource fetches
+ */
+function Tw2ResourceLoaderWorker()
+{
+    self.onmessage = function(event)
+    {
+        const data = event.data;
+
+        fetch(data.url)
+            .then(function(response)
+            {
+                if (!response.ok)
+                {
+                    return response.text()
+                        .then(function(text)
+                        {
+                            let statusText = response.statusText;
+                            let json = null;
+
+                            try
+                            {
+                                json = JSON.parse(text);
+                                statusText = json.message || json.msg || json.error || json.err || statusText;
+                            }
+                            catch (err)
+                            {
+                                statusText = statusText || "Failed to fetch resource";
+                            }
+
+                            throw {
+                                name: "ErrHTTPStatus",
+                                message: statusText,
+                                status: response.status,
+                                statusText,
+                                json
+                            };
+                        });
+                }
+
+                switch (data.responseType)
+                {
+                    case "arraybuffer":
+                        return response.arrayBuffer();
+
+                    case "text":
+                        return response.text();
+
+                    case "json":
+                        return response.json();
+
+                    case "blob":
+                        return response.blob();
+
+                    default:
+                        throw {
+                            name: "ErrResourceLoaderType",
+                            message: "Invalid fetch type: " + data.responseType
+                        };
+                }
+            })
+            .then(function(result)
+            {
+                const transfer = result instanceof ArrayBuffer ? [ result ] : [];
+                self.postMessage({ id: data.id, ok: true, result }, transfer);
+            })
+            .catch(function(err)
+            {
+                self.postMessage({
+                    id: data.id,
+                    ok: false,
+                    error: {
+                        name: err && err.name || "WorkerResourceLoadError",
+                        message: err && err.message || String(err),
+                        status: err && err.status,
+                        statusText: err && err.statusText,
+                        json: err && err.json
+                    }
+                });
+            });
+    };
 }

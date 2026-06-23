@@ -19,7 +19,7 @@ export class Tw2Library extends Tw2EventEmitter
 
     math = math;
 
-    util = util;
+    util = { ...util };
 
     const = consts;
 
@@ -70,6 +70,12 @@ export class Tw2Library extends Tw2EventEmitter
      * @type {Tw2ConstructorStore}
      */
     constructors = new stores.Tw2ConstructorStore();
+
+    /**
+     * Capability report store
+     * @type {Tw2CapabilityStore}
+     */
+    capabilities = new stores.Tw2CapabilityStore(this);
 
     /**
      * Logger
@@ -225,6 +231,7 @@ export class Tw2Library extends Tw2EventEmitter
         });
 
         this.constructors.OnEvent("stored", ({ key, value }) => this.constructor.prototype[key] = value);
+
     }
 
     /**
@@ -275,7 +282,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (!sof.resFiles)
         {
             this.Log({ type: "Space Object Factory", message: "Loading resource files" });
-            sof.resFiles = await this.resMan.Fetch(this.GetURL(this.constructor.resFileIndexResPath), "json");
+            sof.resFiles = await this.resMan.FetchRaw(this.GetURL(this.constructor.resFileIndexResPath), "json");
             sof.resFiles.sort((a, b) => a.localeCompare(b));
         }
 
@@ -824,46 +831,6 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Gets the registered texture resource constructor
-     * @returns {Function|null}
-     */
-    GetTextureResourceConstructor()
-    {
-        const extensions = [ "png", "dds", "tga", "mp4", "html" ];
-
-        for (let i = 0; i < extensions.length; i++)
-        {
-            if (this.extensions.Has(extensions[i]))
-            {
-                return this.extensions.Get(extensions[i]);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets the finite list of registered texture formats
-     * @returns {Array}
-     */
-    GetTextureFormats()
-    {
-        const TextureRes = this.GetTextureResourceConstructor();
-        return TextureRes && TextureRes.GetFormats ? TextureRes.GetFormats() : [];
-    }
-
-    /**
-     * Gets texture format support metadata
-     * @param {Object} [opt]
-     * @returns {Object}
-     */
-    GetTextureFormatSupport(opt)
-    {
-        const TextureRes = this.GetTextureResourceConstructor();
-        return TextureRes && TextureRes.GetFormatSupport ? TextureRes.GetFormatSupport(this.device.gl, opt) : {};
-    }
-
-    /**
      * Manually adds a resource
      * @param {String} resPath
      * @param {Tw2Resource} resource
@@ -950,15 +917,7 @@ export class Tw2Library extends Tw2EventEmitter
             }
             else if (util.isString(value))
             {
-                const ext = util.getPathExtension(value);
-                if (this.extensions.IsLoadingObject(ext))
-                {
-                    result = await this.resMan.FetchObject(value);
-                }
-                else
-                {
-                    result = await this.resMan.FetchResource(value);
-                }
+                result = await this.resMan.Fetch(value);
             }
         }
 
