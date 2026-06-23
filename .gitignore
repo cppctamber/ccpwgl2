@@ -22,4 +22,10 @@ node_modules/
 
 # developement
 _dev/
+_internal/
+_review/
 _res/
+twitch_emotes/
+
+# legacy local resources
+res/
