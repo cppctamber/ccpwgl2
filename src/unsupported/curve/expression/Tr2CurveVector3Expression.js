@@ -23,6 +23,18 @@ export class Tr2CurveVector3Expression extends Tw2CurveExpression
     @meta.expression
     expressionZ = "";
 
+    @meta.float
+    input1 = 0;
+
+    @meta.float
+    input2 = 0;
+
+    @meta.float
+    input3 = 0;
+
+    @meta.float
+    input4 = 0;
+
     @meta.vector3
     @meta.isPrivate
     currentValue = vec3.create();

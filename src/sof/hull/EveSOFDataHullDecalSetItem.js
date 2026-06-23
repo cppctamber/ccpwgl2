@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { meta, isArray } from "utils";
 import { quat, vec3 } from "math";
 import { Tw2Error } from "core";
 import { FilterMode, MipFilterMode, WrapMode } from "constant";
@@ -76,15 +76,57 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
      */
     GetIndexBuffers()
     {
+        const getIndexBuffer = value =>
+        {
+            if (!value) return null;
+            if (isArray(value) || ArrayBuffer.isView(value)) return value;
+            if (isArray(value.indexBuffer) || ArrayBuffer.isView(value.indexBuffer)) return value.indexBuffer;
+            if (isArray(value.indexes) || ArrayBuffer.isView(value.indexes)) return value.indexes;
+            return null;
+        };
+
+        const getIndexBuffersFromList = values =>
+        {
+            const out = [];
+            for (let i = 0; i < values.length; i++)
+            {
+                const buffer = getIndexBuffer(values[i]);
+                if (buffer) out.push(buffer);
+            }
+            return out;
+        };
+
         // Provide backwards compatibility for older SOF
         if (this.indexBuffer)
         {
             return [ this.indexBuffer ];
         }
-        else if (this.indexBuffers)
+        else if (this.indexBuffers && this.indexBuffers.length)
         {
-            return this.indexBuffers.map(x => x.indexBuffer);
+            return getIndexBuffersFromList(this.indexBuffers);
         }
+        else if (this.multiHullIndexBuffers && this.multiHullIndexBuffers.length)
+        {
+            const indexBuffers = [];
+            for (let i = 0; i < this.multiHullIndexBuffers.length; i++)
+            {
+                const multiHullItem = this.multiHullIndexBuffers[i];
+                if (isArray(multiHullItem) || ArrayBuffer.isView(multiHullItem))
+                {
+                    indexBuffers.push(multiHullItem);
+                    continue;
+                }
+                if (multiHullItem && multiHullItem.indexBuffers && multiHullItem.indexBuffers.length)
+                {
+                    indexBuffers.push(...getIndexBuffersFromList(multiHullItem.indexBuffers));
+                    continue;
+                }
+                const buffer = getIndexBuffer(multiHullItem);
+                if (buffer) indexBuffers.push(buffer);
+            }
+            return indexBuffers;
+        }
+
         // Throw an error?
         return null;
     }

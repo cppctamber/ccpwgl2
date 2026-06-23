@@ -392,7 +392,15 @@ export class EveSpaceObjectDecal extends meta.Model
     Render(batch, technique)
     {
         const
-            mesh = batch._geometryRes.meshes[this._parentMeshIndex],
+            mesh = batch._geometryRes && batch._geometryRes.meshes ? batch._geometryRes.meshes[this._parentMeshIndex] : null,
+            indexBuffer = this.GetCurrentIndexBuffer();
+
+        if (!mesh || !indexBuffer || !mesh.indexes || !mesh.areas || !mesh.areas[0])
+        {
+            return false;
+        }
+
+        const
             bkIB = mesh.indexes,
             bkStart = mesh.areas[0].start,
             bkCount = mesh.areas[0].count,
@@ -403,7 +411,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;
-        mesh.areas[0].count = this.GetCurrentIndexBuffer().length;
+        mesh.areas[0].count = indexBuffer.length;
         mesh.indexType = device.gl.UNSIGNED_INT;
 
         let rendered = batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);

@@ -12,4 +12,5 @@ export * from "./EveChildProceduralContainer";
 export * from "./EveChildQuad";
 export * from "./EveChildSpherePin";
 export * from "./EveChildLineSet";
+export * from "./EveChildSmartLightSet";
 export * from "./EveLineChildContainer";

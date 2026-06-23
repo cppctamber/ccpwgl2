@@ -7,6 +7,7 @@ export * from "./type";
 export * from "./uuid";
 export * from "./url";
 export * from "./reflect";
+export * from "./api";
 
 import * as meta from "../meta";
 export { meta };
