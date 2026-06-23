@@ -1,4 +1,4 @@
-export class Tw2MainThreadResourceLoader
+export class Tw2ResManMainThreadLoader
 {
     /**
      * Constructor

@@ -1,6 +1,6 @@
 import { Tw2MotherLode } from "./Tw2MotherLode";
-import { Tw2MainThreadResourceLoader } from "./Tw2MainThreadResourceLoader";
-import { Tw2WorkerResourceLoader } from "./Tw2WorkerResourceLoader";
+import { Tw2ResManMainThreadLoader } from "./Tw2ResManMainThreadLoader";
+import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
@@ -86,8 +86,8 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         super();
         this.tw2 = tw2;
-        this._mainThreadLoader = new Tw2MainThreadResourceLoader(this);
-        this._workerLoader = new Tw2WorkerResourceLoader(this);
+        this._mainThreadLoader = new Tw2ResManMainThreadLoader(this);
+        this._workerLoader = new Tw2ResManWorkerLoader(this);
         this.loader = this._mainThreadLoader;
     }
 

@@ -2,7 +2,7 @@ import { isString } from "utils";
 import { ErrHTTPStatus } from "./Tw2ResMan";
 
 
-export class Tw2WorkerResourceLoader
+export class Tw2ResManWorkerLoader
 {
     /**
      * Constructor
