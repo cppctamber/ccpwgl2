@@ -24,6 +24,12 @@ export class Tw2Library extends Tw2EventEmitter
     const = consts;
 
     /**
+     * Default render batch sorter
+     * @type {Function|null}
+     */
+    renderBatchSorter = null;
+
+    /**
      * Variable type store
      * @type {Tw2VariableTypeStore}
      */
@@ -188,6 +194,12 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Current SOF data
+     * @type {null|EveSOFData}
+     */
+    eveSof = null;
+
+    /**
      * Constructor
      */
     constructor()
@@ -207,19 +219,6 @@ export class Tw2Library extends Tw2EventEmitter
         });
 
         this.constructors.OnEvent("stored", ({ key, value }) => this.constructor.prototype[key] = value);
-
-        let eveSof;
-        Object.defineProperty(this, "eveSof", {
-            get: () =>
-            {
-                if (!eveSof)
-                {
-                    const Constructor = this.GetClass("EveSOF");
-                    eveSof = new Constructor(this);
-                }
-                return eveSof;
-            }
-        });
     }
 
     /**
@@ -242,10 +241,12 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {Object} [opt.logger]                     - Optional logger config
      * @param {Object} [opt.resMan]                     - Optional resource manager config
      * @param {Object} [opt.device]                     - Optional device config
+     * @param {Object} [opt.sof]                        - Optional SOF runtime config
+     * @returns {Promise<void>}
      */
-    Initialize(opt = {})
+    async Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas3d, canvas2d, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, ...options } = opt;
 
         this.Register(options);
 
@@ -264,7 +265,30 @@ export class Tw2Library extends Tw2EventEmitter
 
             this.device.RequestAnimationFrame(tick);
         }
+
+        if (!sof.resFiles)
+        {
+            this.Log({ type: "Space Object Factory", message: "Loading resource files" });
+            sof.resFiles = await this.resMan.Fetch(this.GetURL(this.constructor.resFileIndexResPath), "json");
+            sof.resFiles.sort((a, b) => a.localeCompare(b));
+        }
+
+        this.Log({ type: "Space Object Factory", message: "Loading space object factory data" });
+        this.eveSof = await this.resMan.FetchObject(this.constructor.spaceObjectFactoryResPath);
+        this.eveSof.Register(sof);
     }
+
+    /**
+     * Remote path to the current res file index
+     * @type {String}
+     */
+    static resFileIndexResPath = "cdn:/resfiles";
+
+    /**
+     * Remote path to the current SOF data black file
+     * @type {String}
+     */
+    static spaceObjectFactoryResPath = "cdn:/dx9/model/spaceobjectfactory/data.black";
 
     /**
      * Start frame
@@ -386,6 +410,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.paths) this.paths.Register(opt.paths);
         if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
         if (opt.extensions) this.extensions.Register(opt.extensions);
+        if (opt.renderBatchSorter !== undefined) this.renderBatchSorter = opt.renderBatchSorter;
 
         if (opt.logger) this.logger.Register(opt.logger);
         if (opt.resMan) this.resMan.Register(opt.resMan);
@@ -694,7 +719,19 @@ export class Tw2Library extends Tw2EventEmitter
         if (color) bits |= this.device.gl.COLOR_BUFFER_BIT;
         if (depth) bits |= this.device.gl.DEPTH_BUFFER_BIT;
         if (stencil) bits |= this.device.gl.STENCIL_BUFFER_BIT;
-        this.device.gl.clear(bits);
+
+        if (depth)
+        {
+            const current = this.device.gl.getParameter(this.device.gl.DEPTH_WRITEMASK);
+            this.device.gl.depthMask(true);
+            this.device.gl.clear(bits);
+            if (!current) this.device.gl.depthMask(false);
+        }
+        else
+        {
+            this.device.gl.clear(bits);
+        }
+
         return this;
     }
 
@@ -840,7 +877,7 @@ export class Tw2Library extends Tw2EventEmitter
         {
             if (util.isDNA(value))
             {
-                result = await this.eveSof.FetchObject(value);
+                result = await this.eveSof.Build(value);
             }
             else if (util.isString(value))
             {

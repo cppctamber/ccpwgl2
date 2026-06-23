@@ -14,6 +14,9 @@ export class EveChildMesh extends EveChild
     @meta.boolean
     display = true;
 
+    @meta.boolean
+    castShadow = false;
+
     @meta.list()
     lights = [];
 
@@ -56,6 +59,10 @@ export class EveChildMesh extends EveChild
     @meta.vector3
     translation = vec3.create();
 
+    @meta.notImplemented
+    @meta.boolean
+    updateAnimation = true;
+
     @meta.boolean
     useSRT = true;
 
@@ -66,6 +73,8 @@ export class EveChildMesh extends EveChild
     @meta.notImplemented
     reflectionMode = -1;
 
+    _hasBone = false;
+    _boneTransform = null;
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
@@ -91,25 +100,66 @@ export class EveChildMesh extends EveChild
      */
     Update(dt, parentTransform, perObjectData)
     {
+        mat4.copy(this._worldTransformLast, this._worldTransform);
+
         if (this.useSRT)
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 
+        // The object or a modifier can set a bone
+        this._hasBone = false;
+
+        // Get bone transform
+        // This may be unnecessary if there is a bone modifier
+        if (this.boneIndex > -1)
+        {
+            const
+                bones = perObjectData.Get("JointMat"),
+                offset = this.boneIndex;
+
+            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
+            {
+                if (!this._boneTransform) this._boneTransform = mat4.create();
+                mat4.fromJointMatIndex(this._boneTransform, bones, offset);
+                this._hasBone = true;
+            }
+        }
+
         // TODO: Figure out how this should work
+        let updatedWorld = false;
         if (this.transformModifiers.length)
         {
             for (let i = 0; i < this.transformModifiers.length; i++)
             {
-                if ("Modify" in this.transformModifiers[i])
+                if ("ApplyTransform" in this.transformModifiers[i])
                 {
-                    this.transformModifiers[i].Modify(this, perObjectData);
+                    this.transformModifiers[i].ApplyTransform(this.localTransform);
+                }
+                else if ("Modify" in this.transformModifiers[i])
+                {
+                    if (this.transformModifiers[i].Modify(this, perObjectData, parentTransform))
+                    {
+                        updatedWorld = true;
+                    }
                 }
             }
         }
 
-        mat4.copy(this._worldTransformLast, this._worldTransform);
-        mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+        if (!this._hasBone) this._boneTransform = null;
+
+        if (!updatedWorld)
+        {
+            if (this._hasBone)
+            {
+                mat4.multiply(this._worldTransform, this._boneTransform, this.localTransform);
+                mat4.multiply(this._worldTransform, parentTransform, this._worldTransform);
+            }
+            else
+            {
+                mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+            }
+        }
     }
 
     /**

@@ -22,6 +22,8 @@ export class Tw2RenderTarget
     _frameBuffer = null;
     _renderBuffer = null;
     _texture = null;
+    _prevViewport = null;
+    _prevFramebuffer = null;
 
     /**
      * Gets the render target's texture res
@@ -195,8 +197,8 @@ export class Tw2RenderTarget
         const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
-        tw2.ClearBufferBits(color, depth, stencil);
         if (clearColor) tw2.SetClearColor(clearColor);
+        tw2.ClearBufferBits(color, depth, stencil);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, tw2.width, tw2.height);
     }
@@ -209,13 +211,17 @@ export class Tw2RenderTarget
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
         const { gl } = tw2;
+
+        this._prevViewport = gl.getParameter(gl.VIEWPORT);
+        this._prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
 
         if (clearOptions)
         {
-            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
             if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
+            tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
         }
     }
 
@@ -225,8 +231,16 @@ export class Tw2RenderTarget
     Unset()
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
-        tw2.gl.bindFramebuffer(tw2.gl.FRAMEBUFFER, null);
-        tw2.gl.viewport(0, 0, tw2.width, tw2.height);
+        const { gl } = tw2;
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._prevFramebuffer);
+        if (this._prevViewport)
+        {
+            gl.viewport(this._prevViewport[0], this._prevViewport[1], this._prevViewport[2], this._prevViewport[3]);
+        }
+
+        this._prevFramebuffer = null;
+        this._prevViewport = null;
     }
 
     /**

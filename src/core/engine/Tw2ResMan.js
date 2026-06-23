@@ -56,7 +56,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             message: "resMan.systemMirror is deprecated, use resMan.GetSystemMirror instead "
         });
 
-        return this._systemMirror = false;
+        return this._systemMirror;
     }
 
     /**
@@ -150,7 +150,11 @@ export class Tw2ResMan extends Tw2EventEmitter
         // If debug is true, turn system mirror on
         if (bool)
         {
-            this.systemMirror = bool;
+            this.SetSystemMirror(bool)
+                .catch(err =>
+                {
+                    throw err;
+                });
         }
     }
 
@@ -161,7 +165,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     GetDebugMode(bool)
     {
-        return this.systemMirror;
+        return this._systemMirror;
     }
 
     /**

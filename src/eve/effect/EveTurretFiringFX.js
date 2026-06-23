@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
+import { EveStretch } from "./EveStretch";
 
 
 class EvePerMuzzleData
@@ -124,7 +125,16 @@ export class EveTurretFiringFX extends meta.Model
         this._firingDuration = this.GetCurveDuration();
         for (let i = 0; i < this.stretch.length; ++i)
         {
-            this._perMuzzleData[i] = new EvePerMuzzleData();
+            if (this.stretch[i] instanceof EveStretch)
+            {
+                this._perMuzzleData[i] = new EvePerMuzzleData();
+            }
+            // Todo: Implement Stretch2 effects
+            else
+            {
+                this.stretch.splice(i, 1);
+                i--;
+            }
         }
 
         const data = this._perMuzzleData;

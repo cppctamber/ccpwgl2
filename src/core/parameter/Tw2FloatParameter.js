@@ -51,6 +51,9 @@ export class Tw2FloatParameter extends Tw2Parameter
      */
     SetValue(value, opt)
     {
+        if (isArrayLike(value)) value = value[0];
+        if (!Number.isFinite(value)) value = 0;
+
         if (!this.EqualsValue(value))
         {
             this.value = value;

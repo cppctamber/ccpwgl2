@@ -172,9 +172,12 @@ export class EveSOFData extends meta.Model
         },
 
         texturePath: {
-            noise: "res:/Texture/global/noise.dds.0.png",
-            noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
-            whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
+            noise: "cdn:/Texture/global/noise.dds",
+            noise32: "cdn:/Texture/Global/noise32cube_volume.dds",
+            whiteSharp: "cdn:/Texture/Particle/whitesharp.dds",
+            //noise: "res:/Texture/global/noise.dds.0.png",
+            //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
+            //whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
             hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.dds",
             hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.dds",
             hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.dds",
@@ -861,7 +864,7 @@ export class EveSOFData extends meta.Model
                     }
                     catch (err)
                     {
-                        console.dir({ err, m, i });
+                        //console.dir({ err, m, i });
                     }
                 }
             }
@@ -1181,7 +1184,7 @@ export class EveSOFData extends meta.Model
                 const color = sof.faction.colorSet[colorName];
                 if (color)
                 {
-                    console.log(`Updating ${i} ${colorName}`);
+                    //console.log(`Updating ${i} ${colorName}`);
                     obj.UpdateColorType(i, color);
                 }
             }
@@ -1236,13 +1239,13 @@ export class EveSOFData extends meta.Model
         if (sof.raceOverride)
         {
             sof.race = EveSOFDataRace.combine(sof.race, sof.raceOverride);
-            console.dir(sof.race);
+            //console.dir(sof.race);
         }
 
         if (sof.factionOverride)
         {
             sof.faction = EveSOFDataFaction.combine(sof.faction, sof.factionOverride);
-            console.dir(sof.faction);
+            //console.dir(sof.faction);
         }
     }
 
@@ -1277,7 +1280,7 @@ export class EveSOFData extends meta.Model
             //ext = getPathExtension(layer.textureResFilePath);
 
             // Todo: figure out why there are solid white textures that are visible
-            mask.display = !layer.textureResFilepath || layer.textureResFilepath.includes("solid_white");
+            mask.display = !layer.textureResFilePath || layer.textureResFilePath.includes("solid_white");
             mask.materialIndex = layer.materialSource;
             mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
             vec4.set(mask.targetMaterials,
@@ -1614,7 +1617,8 @@ export class EveSOFData extends meta.Model
                     const { DetailData } = area.effect.parameters;
                     if (DetailData)
                     {
-                        vec4.multiply(DetailData.value, DetailData.value, [ 0.1,0.1,0.1,0.1 ]);
+                        DetailData.x *= 0.1;
+                        DetailData.y *= 0.1;
                     }
                 }
 
@@ -2010,7 +2014,7 @@ export class EveSOFData extends meta.Model
                         spriteColor: color
                     });
 
-                    console.dir({ colorType: item.colorType, color });
+                    //console.dir({ colorType: item.colorType, color });
                 }
                 else
                 {
@@ -2237,8 +2241,8 @@ export class EveSOFData extends meta.Model
 
         hull.decalSets.forEach(srcSet =>
         {
-            const setVisible = !srcSet.visibilityGroup || faction.HasVisibilityGroup(srcSet.visibilityGroup);
-            console.log(srcSet.name, setVisible ? "visible" : "not visible");
+            const setVisible = faction.HasVisibilityGroup(srcSet.visibilityGroup);
+            //console.log(srcSet.name, setVisible ? "visible" : "not visible");
             if (!setVisible) return;
 
             srcSet.items.forEach(srcItem =>
@@ -2256,17 +2260,17 @@ export class EveSOFData extends meta.Model
                 if (usage === 6 && !faction.HasLogoType(logoType))
                 {
 
-                    console.dir({
-                        usage: 6,
-                        factionHasLogoType: faction.HasLogoType(logoType)
-                    });
+                    //console.dir({
+                    //    usage: 6,
+                    //    factionHasLogoType: faction.HasLogoType(logoType)
+                    //});
 
                     itemVisible = false;
                 }
 
                 if (!itemVisible)
                 {
-                    console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType ${logoType}, usage ${usage})`);
+                    //console.log("Decal", srcSet.name, ">", srcItem.name || srcSet.indexOf(srcItem), "not visible", `(logoType ${logoType}, usage ${usage})`);
                     //return;
                 }
 
@@ -2308,7 +2312,7 @@ export class EveSOFData extends meta.Model
                         break;
                 }
 
-                // TODO: Handle usage as that dicates where textures come from.
+                // TODO: Handle usage as that dictates where textures come from.
 
                 // Factions don't necessarily contain the default information for a decal
                 // So don't bother overwriting if it doesn't exist
@@ -2609,7 +2613,7 @@ export class EveSOFData extends meta.Model
      */
     static SetupInstancedMesh(data, obj, sof, options)
     {
-        console.log("Creating instanced meshes");
+        //console.log("Creating instanced meshes");
         // TODO: Update if there are any changes
         if (obj.mesh && obj.mesh.constructor === Tw2InstancedMesh)
         {
@@ -2618,7 +2622,7 @@ export class EveSOFData extends meta.Model
 
         if (!sof.hull.instancedMeshes || !sof.hull.instancedMeshes.length)
         {
-            console.log("No instanced meshes found...");
+            //console.log("No instanced meshes found...");
             return;
         }
 
@@ -2638,7 +2642,7 @@ export class EveSOFData extends meta.Model
         container.name = "Instanced meshes";
         obj.effectChildren.push(container);
 
-        console.dir(container);
+        //console.dir(container);
 
         for (let h = 0; h < instancedMeshes.length; h++)
         {
