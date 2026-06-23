@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { device, tw2 } from "global";
+import { device } from "global";
 
 import {
     Tw2Resource,
@@ -397,18 +397,28 @@ export class Tw2TextureRes extends Tw2Resource
      * @param {*} [store]
      * @returns {*}
      */
-    static RegisterCapabilities(store = tw2.capabilities)
+    static GetCapabilityProvider()
+    {
+        return {
+            key: this.Capability.FORMATS,
+            name: this.Capability.FORMATS,
+            category: "texture",
+            label: "Texture formats",
+            description: "Registered texture formats and their current browser/WebGL support",
+            resolve: ({ tw2 }, opt) => this.GetFormatSupport(tw2.device.gl, opt)
+        };
+    }
+
+    /**
+     * Registers texture capability providers
+     * @param {*} store
+     * @returns {*}
+     */
+    static RegisterCapabilities(store)
     {
         if (store)
         {
-            store.Register({
-                key: this.Capability.FORMATS,
-                name: this.Capability.FORMATS,
-                category: "texture",
-                label: "Texture formats",
-                description: "Registered texture formats and their current browser/WebGL support",
-                resolve: ({ tw2 }, opt) => this.GetFormatSupport(tw2.device.gl, opt)
-            });
+            store.Register(this.GetCapabilityProvider());
         }
 
         return store;
@@ -486,4 +496,3 @@ Tw2TextureRes.RegisterFormat(TextureFormatImage);
 Tw2TextureRes.RegisterFormat(TextureFormatTarga);
 Tw2TextureRes.RegisterFormat(TextureFormatVideo);
 Tw2TextureRes.RegisterFormat(TextureFormatHTML);
-Tw2TextureRes.RegisterCapabilities();

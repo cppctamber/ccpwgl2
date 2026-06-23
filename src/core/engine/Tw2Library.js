@@ -267,15 +267,17 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities = this._capabilityOptions, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities, ...options } = opt;
 
         this.Register(options);
 
+        if (capabilities !== undefined) this.RegisterCapabilities(capabilities);
+
         this.device.Create({ canvas, canvas3d, canvas2d, glParams });
 
-        if (capabilities !== false)
+        if (this._capabilityOptions !== false)
         {
-            await this.ProcessCapabilities(capabilities);
+            await this.ProcessCapabilities(this._capabilityOptions);
         }
 
         if (render)
@@ -450,7 +452,7 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (opt.events) this.AddEvents(opt.events);
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
-        if (opt.capabilities !== undefined) this._capabilityOptions = opt.capabilities;
+        if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
         if (opt.black) this.RegisterBlackPathHandlers(opt.black);
         if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
@@ -468,6 +470,46 @@ export class Tw2Library extends Tw2EventEmitter
 
         // Shortcut to device.glParams
         if (opt.glParams) this.device.Register({ glParams: opt.glParams });
+    }
+
+    /**
+     * Registers capability configuration
+     * @param {Boolean|Object} opt
+     */
+    RegisterCapabilities(opt)
+    {
+        if (opt === false)
+        {
+            this._capabilityOptions = false;
+            return;
+        }
+
+        if (opt === true)
+        {
+            this._capabilityOptions = {};
+            return;
+        }
+
+        if (!opt) return;
+
+        if (opt.providers)
+        {
+            this.capabilities.Register(opt.providers);
+        }
+
+        if (opt.process === false)
+        {
+            this._capabilityOptions = false;
+        }
+        else if (opt.process === true || opt.process === undefined)
+        {
+            const { providers, process, ...processOptions } = opt;
+            this._capabilityOptions = processOptions;
+        }
+        else
+        {
+            this._capabilityOptions = opt.process;
+        }
     }
 
     /**

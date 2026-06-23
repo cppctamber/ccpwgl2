@@ -20,11 +20,19 @@ export const config = {
     // Sets the default render batch sorter
     renderBatchSorter: tw2BatchSorter,
 
-    // Processes registered capability providers during initialization
-    // - true: process all registered providers
-    // - false: skip automatic processing
-    // - { keys: "texture.formats" } or { keys: [ ... ] }: process selected providers
-    capabilities: true,
+    // Registers and processes capability providers during initialization
+    capabilities: {
+
+        // Processes all registered providers by default
+        // - false: skip automatic processing
+        // - { keys: "texture.formats" } or { keys: [ ... ] }: process selected providers
+        process: true,
+
+        providers: [
+            core.Tw2TextureRes.GetCapabilityProvider()
+        ]
+
+    },
 
     // The paths in the black files must be changed
     black: {
