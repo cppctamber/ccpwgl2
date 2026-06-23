@@ -27,19 +27,19 @@ export class EveBanner extends meta.Model
     @meta.boolean
     display = true;
 
-    @meta.vector3
+    @meta.translation
     position = vec3.create();
 
-    @meta.quaternion
+    @meta.rotation
     rotation = quat.create();
 
-    @meta.vector3
+    @meta.scaling
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
     usage = 0;
 
-    @meta.matrix4
+    @meta.localTransform
     transform = mat4.create();
 
     @meta.struct()
@@ -229,21 +229,27 @@ export class EveBanner extends meta.Model
         return sph3.transformMat4(out, out, this._worldTransform);
     }
 
+    _maxScale = null;
+
     /**
      * Fits the banner to the current image map
      */
-    FitToImageSize(baseWidth)
+    FitToImageSize(baseWidth = this._maxScale)
     {
+        if (!baseWidth)
+        {
+            baseWidth = this._maxScale = Math.max(this.scaling[0], this.scaling[1], this.scaling[2]);
+        }
+
         const
             { ImageMap: { textureRes: { _height = 0, _width = 0 } = {} } = {} } = this.effect.parameters,
             aspect = _height / _width;
 
         if (aspect)
         {
-            baseWidth = baseWidth || Math.min(this.scaling[0], this.scaling[1], this.scaling[2]);
-            this.scaling[0] = baseWidth;
-            this.scaling[1] = baseWidth * aspect;
-            this.scaling[2] = baseWidth;
+            this.scaling[0] = this._maxScale;
+            this.scaling[1] = this._maxScale * aspect;
+            this.scaling[2] = this._maxScale;
             this.UpdateValues();
         }
     }
@@ -314,7 +320,11 @@ export class EveBanner extends meta.Model
      */
     IsGood()
     {
-        return !!(this._geometryResource && this._geometryResource.IsGood());
+        return !!this.effect
+            && this.effect.IsGood()
+            && !!this._geometryResource
+            && this._geometryResource.IsGood()
+            && this._geometryResource.meshes[0];
     }
 
     /**
@@ -328,7 +338,15 @@ export class EveBanner extends meta.Model
 
         mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
 
-        this._bone = !bones || this.boneIndex === -1 ? null : bones[this.boneIndex] || null;
+        if (this.boneIndex !== -1 && bones)
+        {
+            this._bone = bones.find(x => x.index === this.boneIndex) || null;
+        }
+        else
+        {
+            this._bone = null;
+        }
+
         if (this._bone)
         {
             mat4.multiply(this._worldTransform, this._bone.offsetTransform, this.transform);
@@ -364,7 +382,7 @@ export class EveBanner extends meta.Model
             return false;
         }
 
-        if (!this.display || !this.IsGood() || !this.effect || !this.effect.IsGood()) return false;
+        if (!this.display || !this.IsGood()) return false;
 
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
         this._perObjectData.ps = perObjectData.ps;
@@ -405,7 +423,7 @@ export class EveBanner extends meta.Model
     static defaultBannerEffect = {
         effectFilePath: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx",
         parameters: {
-            Color: [ 0, 0, 0, 1 ],
+            BaseColor: [ 0, 0, 0, 1 ],
             Layer1Transform: [ 1.5, 1.5, 0, 0 ],
             Layer2Transform: [ 1, 0.5, 0, 0 ],
             LayerScroll: [ 10, 10, 1, -0.20000000298023224 ]

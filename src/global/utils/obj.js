@@ -131,6 +131,19 @@ export function assignIfExists(dest, src, attrs, skipIfDestUndefined)
 }
 
 /**
+ * Gets an override object's property value, falling back to the default object's property value
+ * @param {*} overrideObj
+ * @param {String} prop
+ * @param {*} defaultObj
+ * @returns {*}
+ */
+export function __get(overrideObj, prop, defaultObj)
+{
+    const value = overrideObj ? overrideObj[prop] : null;
+    return value !== null && value !== undefined && value !== "" ? value : defaultObj[prop];
+}
+
+/**
  * Gets a source's property value if it exists else returns a default value
  * @param {*} src
  * @param {String|string[]} prop

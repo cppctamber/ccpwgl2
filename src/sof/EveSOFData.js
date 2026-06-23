@@ -1277,12 +1277,12 @@ export class EveSOFData extends meta.Model
 
         if (layer)
         {
-            //ext = getPathExtension(layer.textureResFilePath);
+            const textureResFilePath = layer.textureResFilePath || EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
 
-            // Todo: figure out why there are solid white textures that are visible
-            mask.display = !layer.textureResFilePath || layer.textureResFilePath.includes("solid_white");
+            mask.display = textureResFilePath !== EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH
+                && !textureResFilePath.includes("solid_white");
             mask.materialIndex = layer.materialSource;
-            mask.parameters.PatternMaskMap.SetValue(layer.textureResFilePath);
+            mask.parameters.PatternMaskMap.SetValue(textureResFilePath);
             vec4.set(mask.targetMaterials,
                 layer.isTargetMtl1 ? 1 : 0,
                 layer.isTargetMtl2 ? 1 : 0,
@@ -1771,7 +1771,7 @@ export class EveSOFData extends meta.Model
                         ImageMap = opt.defaultVerticalImageMap;
                         break;
 
-                    case EveSOFDataHullBannerSetItem.usage.HORIZONTAL_BANNER:
+                    case EveSOFDataHullBannerSetItem.Usage.HORIZONTAL_BANNER:
                         ImageMap = opt.defaultHorizontalImageMap;
                         break;
 

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, quat, mat4, tri3 } from "math";
+import { vec3, quat, mat4 } from "math";
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
@@ -29,6 +29,15 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.boolean
     pickable = true;
 
+    @meta.uint
+    meshIndex = 0;
+
+    @meta.uint
+    logoType = -1;
+
+    @meta.uint
+    colorType = -1;
+
     @meta.struct("Tw2Effect")
     pickEffect = null;
 
@@ -49,6 +58,7 @@ export class EveSpaceObjectDecal extends meta.Model
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
     _parentMeshIndex = 0;
     _parentGeometryRes = null;
+    _parentTransform = null;
     _rawIndexBuffers = [];
 
     /**
@@ -85,6 +95,40 @@ export class EveSpaceObjectDecal extends meta.Model
     {
         //this.Rebuild();
         this.UpdateValues();
+        this._parentMeshIndex = this.meshIndex;
+    }
+
+    /**
+     * Per frame update
+     * @param {mat4} parentTransform
+     */
+    UpdateViewDependentData(parentTransform)
+    {
+        this._parentTransform = parentTransform;
+    }
+
+    /**
+     * Gets the world transform
+     * @param {mat4} out
+     * @returns {mat4} out
+     */
+    GetWorldTransform(out)
+    {
+        return mat4.multiply(out, this._localTransform, this._parentTransform);
+    }
+
+    /**
+     * Gets the world direction
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
+    GetWorldDirection(out)
+    {
+        const mat4_0 = mat4.alloc();
+        this.GetWorldTransform(mat4_0);
+        vec3.set(out, mat4_0[8], mat4_0[9], mat4_0[10]);
+        mat4.unalloc(mat4_0);
+        return vec3.normalize(out, out);
     }
 
     /**
@@ -245,7 +289,7 @@ export class EveSpaceObjectDecal extends meta.Model
         {
             this._indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indexes), gl.STATIC_DRAW);
         }
 
         this._dirty = false;
@@ -273,8 +317,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
         this._parentGeometryRes = geometryRes;
 
-        // Handle mesh index changes
-        if (this._parentMeshIndex !== meshIndex)
+        if (EveSpaceObjectDecal.enableParentMeshIndex && this._parentMeshIndex !== meshIndex)
         {
             this._parentMeshIndex = meshIndex;
             this._dirty = true;
@@ -296,6 +339,7 @@ export class EveSpaceObjectDecal extends meta.Model
 
             case device.RM_PICKABLE:
                 effect = this.pickable ? this.pickEffect : null;
+                if (effect && effect.parameters && "ObjectId" in effect.parameters) effect.parameters["ObjectId"].x = this._id;
                 break;
         }
 
@@ -331,7 +375,9 @@ export class EveSpaceObjectDecal extends meta.Model
         batch._geometryRes = geometryRes;
         batch.perObjectData = this._perObjectData;
         batch.geometryProvider = this;
-        batch.meshIx = meshIndex;
+        batch.meshIx = this._parentMeshIndex || 0;
+        batch.meshIndex = this._parentMeshIndex || 0;
+        batch.meshAreaIndex = this.meshIndex;
         batch.renderMode = mode;
         batch.effect = effect;
         accumulator.Commit(batch);
@@ -346,7 +392,7 @@ export class EveSpaceObjectDecal extends meta.Model
     Render(batch, technique)
     {
         const
-            mesh = batch._geometryRes.meshes[batch.meshIx],
+            mesh = batch._geometryRes.meshes[this._parentMeshIndex],
             bkIB = mesh.indexes,
             bkStart = mesh.areas[0].start,
             bkCount = mesh.areas[0].count,
@@ -358,7 +404,7 @@ export class EveSpaceObjectDecal extends meta.Model
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;
         mesh.areas[0].count = this.GetCurrentIndexBuffer().length;
-        mesh.indexType = device.gl.UNSIGNED_SHORT;
+        mesh.indexType = device.gl.UNSIGNED_INT;
 
         let rendered = batch._geometryRes.RenderAreas(0, 0, 1, batch.effect, technique);
 
@@ -377,9 +423,17 @@ export class EveSpaceObjectDecal extends meta.Model
      * @param opt
      * @returns {boolean} true if updated
      */
-    static set(item, values, opt)
+    static set(item, values, opt = {})
     {
+        opt.skipObjects = true;
         let updated = super.set(item, values, opt);
+
+        if (values.meshIndex !== undefined && item._parentMeshIndex !== item.meshIndex)
+        {
+            item._parentMeshIndex = item.meshIndex;
+            item._dirty = true;
+            updated = true;
+        }
 
         if (values.indexBuffers)
         {
@@ -398,25 +452,26 @@ export class EveSpaceObjectDecal extends meta.Model
             item.SetIndexBuffer(values.indexBuffer, 0);
         }
 
-        if (values.decalEffect)
+        const effect = values.decalEffect || values.effect;
+        if (effect)
         {
-            if (values.decalEffect instanceof Tw2Effect)
+            if (effect instanceof Tw2Effect)
             {
-                if (values.decalEffect !== values.decalEffect)
+                if (effect !== item.decalEffect)
                 {
                     if (!item.decalEffect) item.decalEffect = new Tw2Effect();
-                    item.decalEffect.SetValues(values.decalEffect.GetValues());
+                    item.decalEffect.SetValues(effect.GetValues());
                     updated = true;
                 }
             }
             else if (!item.decalEffect)
             {
-                item.decalEffect = Tw2Effect.from(values.decalEffect);
+                item.decalEffect = Tw2Effect.from(effect);
                 updated = true;
             }
             else
             {
-                if (item.decalEffect.SetValues(values.decalEffect)) updated = true;
+                if (item.decalEffect.SetValues(effect)) updated = true;
             }
         }
 
@@ -482,6 +537,8 @@ export class EveSpaceObjectDecal extends meta.Model
             [ "shipData", 12 ]
         ]
     };
+
+    static enableParentMeshIndex = false;
 
 }
 

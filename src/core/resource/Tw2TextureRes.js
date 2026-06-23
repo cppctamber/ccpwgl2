@@ -236,6 +236,8 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
         }
 
+        this._extension = extension;
+
         const format = Tw2TextureRes.GetFormat(extension);
         if (!format) throw new ErrResourceFormatUnsupported({ format: extension });
 

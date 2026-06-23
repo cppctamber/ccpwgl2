@@ -3,7 +3,7 @@ import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { Tw2PerObjectData } from "core/data";
 import { Tw2AnimationController } from "core/model";
-import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet, EveAnnotationSet } from "eve/item";
+import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
@@ -1046,13 +1046,6 @@ export class EveShip2 extends EveObject
 
                     case EveBanner:
                         if (show.banners)
-                        {
-                            item.GetBatches(mode, accumulator, this._perObjectData);
-                        }
-                        break;
-
-                    case EveAnnotationSet:
-                        if (show.annotations)
                         {
                             item.GetBatches(mode, accumulator, this._perObjectData);
                         }

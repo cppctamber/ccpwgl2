@@ -1,5 +1,5 @@
 
-import { RM_ANY, RM_OPAQUE, RM_ADDITIVE, RM_DEPTH, RM_PICKABLE, RM_EMISSIVE, RM_DISTORTION, RM_TRANSPARENT, RM_DECAL } from "constant";
+import { RM_ANY, RM_OPAQUE, RM_ADDITIVE, RM_DEPTH, RM_PICKABLE, RM_DISTORTION, RM_TRANSPARENT, RM_DECAL } from "constant";
 
 const SortOrder = {
     [RM_ANY] : 0,
@@ -8,9 +8,8 @@ const SortOrder = {
     [RM_DECAL] : 3,
     [RM_TRANSPARENT] : 4,
     [RM_ADDITIVE] : 5,
-    [RM_EMISSIVE] : 6,
-    [RM_DISTORTION] : 7,
-    [RM_PICKABLE] : 8
+    [RM_DISTORTION] : 6,
+    [RM_PICKABLE] : 7
 };
 
 /**
