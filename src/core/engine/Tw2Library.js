@@ -259,11 +259,16 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities = {}, ...options } = opt;
 
         this.Register(options);
 
         this.device.Create({ canvas, canvas3d, canvas2d, glParams });
+
+        if (capabilities !== false)
+        {
+            await this.ProcessCapabilities(capabilities);
+        }
 
         if (render)
         {
@@ -289,6 +294,27 @@ export class Tw2Library extends Tw2EventEmitter
         this.Log({ type: "Space Object Factory", message: "Loading space object factory data" });
         this.eveSof = await this.resMan.FetchObject(this.constructor.spaceObjectFactoryResPath);
         this.eveSof.Register(sof);
+    }
+
+    /**
+     * Processes registered capability providers
+     * @param {Object} [opt]
+     * @returns {Promise<Object>}
+     */
+    async ProcessCapabilities(opt = {})
+    {
+        const context = {
+            tw2: this,
+            capabilities: this.capabilities,
+            opt
+        };
+
+        this.EmitEvent("pre_capability_process", context);
+
+        const reports = await this.capabilities.Process(context, opt);
+
+        this.EmitEvent("post_capability_process", reports, context);
+        return reports;
     }
 
     /**

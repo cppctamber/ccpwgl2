@@ -393,27 +393,25 @@ export class Tw2TextureRes extends Tw2Resource
     }
 
     /**
-     * Records texture format support into a capability store
+     * Registers texture capability providers
      * @param {*} [store]
-     * @param {WebGLRenderingContext} [gl]
-     * @param {Object} [opt]
-     * @returns {Object}
+     * @returns {*}
      */
-    static RecordCapabilities(store = tw2.capabilities, gl = device.gl, opt)
+    static RegisterCapabilities(store = tw2.capabilities)
     {
-        const data = this.GetFormatSupport(gl, opt);
-
         if (store)
         {
-            store.SetReport(this.Capability.FORMATS, data, {
+            store.Register({
+                key: this.Capability.FORMATS,
                 name: this.Capability.FORMATS,
                 category: "texture",
                 label: "Texture formats",
-                description: "Registered texture formats and their current browser/WebGL support"
+                description: "Registered texture formats and their current browser/WebGL support",
+                resolve: ({ tw2 }, opt) => this.GetFormatSupport(tw2.device.gl, opt)
             });
         }
 
-        return data;
+        return store;
     }
 
     /**
@@ -488,5 +486,4 @@ Tw2TextureRes.RegisterFormat(TextureFormatImage);
 Tw2TextureRes.RegisterFormat(TextureFormatTarga);
 Tw2TextureRes.RegisterFormat(TextureFormatVideo);
 Tw2TextureRes.RegisterFormat(TextureFormatHTML);
-Tw2TextureRes.RecordCapabilities();
-tw2.OnEvent("context_created", () => Tw2TextureRes.RecordCapabilities());
+Tw2TextureRes.RegisterCapabilities();

@@ -1,4 +1,4 @@
-import { isPlain, isString } from "utils";
+import { isArray, isFunction, isPlain, isString } from "utils";
 import { Tw2GenericStore, STORE } from "./Tw2GenericStore";
 
 
@@ -52,6 +52,74 @@ export class Tw2CapabilityStore extends Tw2GenericStore
             out[key] = this.constructor.FormatReport(entry);
         });
         return out;
+    }
+
+    /**
+     * Registers capability providers or keyed entries
+     * @param {Object|Array} value
+     */
+    Register(value)
+    {
+        if (isArray(value))
+        {
+            for (let i = 0; i < value.length; i++)
+            {
+                this.Register(value[i]);
+            }
+            return;
+        }
+
+        if (value && value.key)
+        {
+            this.Set(value.key, value);
+            return;
+        }
+
+        super.Register(value);
+    }
+
+    /**
+     * Processes registered capability providers
+     * @param {Object} context
+     * @param {Object} [opt]
+     * @returns {Promise<Object>}
+     */
+    async Process(context, opt = {})
+    {
+        opt = isPlain(opt) ? opt : {};
+
+        const keys = isString(opt.keys) ? [ opt.keys ] : opt.keys || null;
+        const entries = this.List();
+
+        for (let i = 0; i < entries.length; i++)
+        {
+            const { key, entry } = entries[i];
+            if (keys && !keys.includes(key)) continue;
+            if (!isFunction(entry.resolve)) continue;
+
+            this.SetReport(key, Object.assign({}, isPlain(entry.data) ? entry.data : {}, {
+                pending: true
+            }));
+
+            try
+            {
+                const data = await entry.resolve(context, opt);
+                this.SetReport(key, data, { pending: false });
+            }
+            catch (err)
+            {
+                this.SetReport(key, {
+                    supported: false,
+                    declared: false,
+                    verified: false,
+                    pending: false,
+                    reason: err && err.message || String(err),
+                    error: err
+                });
+            }
+        }
+
+        return this.GetReports();
     }
 
     /**
@@ -143,7 +211,8 @@ export class Tw2CapabilityStore extends Tw2GenericStore
             label: key,
             description: "",
             tags: [],
-            data: null
+            data: null,
+            resolve: null
         }, value);
     }
 
@@ -154,7 +223,7 @@ export class Tw2CapabilityStore extends Tw2GenericStore
      */
     static isValue(value)
     {
-        return !!(value && (isPlain(value) || isString(value.name)));
+        return !!(value && (isPlain(value) || isString(value.name) || isFunction(value.resolve)));
     }
 
     static storeName = "Capability";
