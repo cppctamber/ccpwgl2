@@ -45,6 +45,71 @@ export const PT_INT32_ARRAY = 87;
 export const PT_FLOAT32_ARRAY = 88;
 export const PT_FLOAT64_ARRAY = 89;
 
+// Normalized aliases for property types.
+export const PT_UINT8 = PT_BYTE;
+export const PT_UINT32 = PT_UINT;
+export const PT_UINT16 = PT_USHORT;
+export const PT_FLOAT32 = PT_FLOAT;
+
+export const PT_OBJECT = PT_STRUCT;
+export const PT_RAW_OBJECT = PT_STRUCT_RAW;
+export const PT_LIST = PT_STRUCT_LIST;
+export const PT_JS_OBJECT = PT_PLAIN;
+export const PT_JS_ARRAY = PT_ARRAY;
+
+/**
+ * Normalized property type names keyed by PT value.
+ * These names are for schema/meta readability only; PT values remain the runtime contract.
+ */
+export const PT_NAME = Object.freeze({
+    [PT_UNKNOWN]: "unknown",
+    [PT_BOOLEAN]: "boolean",
+    [PT_ENUM]: "enums",
+    [PT_STRING]: "string",
+    [PT_PATH]: "path",
+    [PT_EXPRESSION]: "expression",
+    [PT_BYTE]: "uint8",
+    [PT_UINT]: "uint32",
+    [PT_USHORT]: "uint16",
+    [PT_FLOAT]: "float32",
+    [PT_STRUCT]: "object",
+    [PT_STRUCT_RAW]: "rawObject",
+    [PT_STRUCT_LIST]: "list",
+    [PT_PLAIN]: "jsObject",
+    [PT_ARRAY]: "jsArray",
+    [PT_VECTOR]: "vector",
+    [PT_VECTOR2]: "vector2",
+    [PT_VECTOR3]: "vector3",
+    [PT_VECTOR4]: "vector4",
+    [PT_COLOR]: "color",
+    [PT_QUATERNION]: "quaternion",
+    [PT_MATRIX3]: "matrix3",
+    [PT_MATRIX4]: "matrix4",
+    [PT_TRANSLATION]: "translation",
+    [PT_SCALING]: "scaling",
+    [PT_ROTATION]: "rotation",
+    [PT_UINT8_ARRAY]: "uint8Array",
+    [PT_UINT8_CLAMPED_ARRAY]: "uint8ClampedArray",
+    [PT_UINT16_ARRAY]: "uint16Array",
+    [PT_UINT32_ARRAY]: "uint32Array",
+    [PT_INT8_ARRAY]: "int8Array",
+    [PT_INT16_ARRAY]: "int16Array",
+    [PT_INT32_ARRAY]: "int32Array",
+    [PT_FLOAT32_ARRAY]: "float32Array",
+    [PT_FLOAT64_ARRAY]: "float64Array"
+});
+
+/**
+ * Gets a normalized property type name from a PT value.
+ * @param {Number} type
+ * @returns {String|null}
+ */
+export function getPropertyTypeName(type)
+{
+    type = Number(type);
+    return Object.prototype.hasOwnProperty.call(PT_NAME, type) ? PT_NAME[type] : null;
+}
+
 /**
  * Property type constants map.
  * @typedef {Object} PropertyTypeConstants
@@ -57,14 +122,23 @@ export const PT = Object.freeze({
     PATH: PT_PATH,
     EXPRESSION: PT_EXPRESSION,
     BYTE: PT_BYTE,
+    UINT8: PT_UINT8,
     UINT: PT_UINT,
+    UINT32: PT_UINT32,
     USHORT: PT_USHORT,
+    UINT16: PT_UINT16,
     FLOAT: PT_FLOAT,
+    FLOAT32: PT_FLOAT32,
     STRUCT: PT_STRUCT,
+    OBJECT: PT_OBJECT,
     STRUCT_RAW: PT_STRUCT_RAW,
+    RAW_OBJECT: PT_RAW_OBJECT,
     STRUCT_LIST: PT_STRUCT_LIST,
+    LIST: PT_LIST,
     PLAIN: PT_PLAIN,
+    JS_OBJECT: PT_JS_OBJECT,
     ARRAY: PT_ARRAY,
+    JS_ARRAY: PT_JS_ARRAY,
     VECTOR: PT_VECTOR,
     VECTOR2: PT_VECTOR2,
     VECTOR3: PT_VECTOR3,

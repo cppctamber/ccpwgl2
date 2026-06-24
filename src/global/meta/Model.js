@@ -629,6 +629,26 @@ export class Model
     }
 
     /**
+     * Gets a prop's normalized type name
+     * @param {String} prop
+     * @returns {String|null}
+     */
+    GetPropTypeName(prop)
+    {
+        return this.constructor.getPropTypeName(this, prop);
+    }
+
+    /**
+     * Gets a prop's black reader helper type
+     * @param {String} prop
+     * @returns {String|null}
+     */
+    GetPropBlackReaderType(prop)
+    {
+        return this.constructor.getPropBlackReaderType(this, prop);
+    }
+
+    /**
      * Checks if a property is private
      * @param {String} prop
      * @returns {boolean}
@@ -672,6 +692,18 @@ export class Model
     {
         const type = getMetadata("type", obj, prop);
         return isNumber(type) ? type : null;
+    }
+
+    static getPropTypeName(obj, prop)
+    {
+        const type = getMetadata("propertyTypeName", obj, prop);
+        return isString(type) ? type : null;
+    }
+
+    static getPropBlackReaderType(obj, prop)
+    {
+        const type = getMetadata("blackReaderType", obj, prop);
+        return isString(type) ? type : null;
     }
 
     static isPropPrivate(obj, prop)

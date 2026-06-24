@@ -14,12 +14,14 @@ const METADATA_VERSION = "1.0.0";
 
 const ccpMetadata = {
     ...coreMetadata,
-    type: (...args) => type.createTypeDecorator("ccp", ...args)
+    type: (...args) => type.createTypeDecorator("ccp", ...args),
+    define: (...args) => type.createTypeDecorator("ccp", ...args)
 };
 
 const wglMetadata = {
     ...coreMetadata,
-    type: (...args) => type.createTypeDecorator("wgl", ...args)
+    type: (...args) => type.createTypeDecorator("wgl", ...args),
+    define: (...args) => type.createTypeDecorator("wgl", ...args)
 };
 
 const ccp = createMetaNamespace(ccpMetadata, "ccp", { version: METADATA_VERSION });

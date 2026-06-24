@@ -38,7 +38,8 @@ import {
     PT_UINT32_ARRAY,
     PT_ROTATION,
     PT_TRANSLATION,
-    PT_SCALING
+    PT_SCALING,
+    getPropertyTypeName
 } from "constant";
 
 
@@ -54,6 +55,7 @@ const typeHandler = function({ target, property }, type, ...typesOf)
     if (type !== undefined)
     {
         defineMetadata("type", type, target, property);
+        defineMetadata("propertyTypeName", getPropertyTypeName(type), target, property);
     }
 
     if (typesOf[0])
@@ -106,6 +108,8 @@ export const type = createDecorator({
         typeHandler(options, type, typesOf);
     }
 });
+
+export const define = type;
 
 /**
  * Creates a property type decorator
@@ -204,6 +208,7 @@ export const list = createDecorator({
             const struct = typesOf.shift();
 
             defineMetadata("black", readers.structList(struct), target, property);
+            defineMetadata("blackReaderType", "structList", target, property);
 
             // Try to guess type from struct
             if (hasMetadata("type", struct))
@@ -217,7 +222,7 @@ export const list = createDecorator({
 });
 
 /**
- * Plain from struct list property type
+ * Black reader helper that reindexes a list into a plain object
  * @type {Function}
  */
 export const fromList = createDecorator({
@@ -235,6 +240,7 @@ export const fromList = createDecorator({
         }
 
         defineMetadata("black", readers.fromList(options), target, property);
+        defineMetadata("blackReaderType", "fromList", target, property);
 
         // Try to guess type from struct
         if (options.struct && hasMetadata("type", options.struct))
@@ -256,7 +262,7 @@ export const fromList = createDecorator({
  */
 export function createTypeDecorator(namespace, name, ...opts)
 {
-    const decorator = type(name, ...opts);
+    const decorator = define(name, ...opts);
     return function(...args)
     {
         const rv = decorator(...args);
@@ -285,6 +291,7 @@ function createObjectType(propertyType)
                 const struct = typesOf.shift();
 
                 defineMetadata("black", readers.struct(struct), target, property);
+                defineMetadata("blackReaderType", "struct", target, property);
 
                 // Try to guess type from struct
                 if (hasMetadata("type", struct))
@@ -308,5 +315,5 @@ export const struct = createObjectType(PT_STRUCT);
  * Raw structure property type
  * @type {Function}
  */
-export const raw = createObjectType(PT_STRUCT_RAW);
+export const rawObject = createObjectType(PT_STRUCT_RAW);
 

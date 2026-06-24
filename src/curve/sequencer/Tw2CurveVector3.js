@@ -11,13 +11,13 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     @meta.string
     name = "";
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     x = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     y = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     z = null;
 
     @meta.vector3

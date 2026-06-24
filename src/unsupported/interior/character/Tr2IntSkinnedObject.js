@@ -5,7 +5,7 @@ import { meta } from "utils";
 export class Tr2IntSkinnedObject extends meta.Model
 {
 
-    @meta.raw()
+    @meta.rawObject()
     transform = null;
 
     @meta.struct()

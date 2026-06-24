@@ -11,16 +11,16 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     @meta.string
     name = "";
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     r = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     g = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     b = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     a = null;
 
     @meta.color

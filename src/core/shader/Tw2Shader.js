@@ -9,10 +9,8 @@ import { Tw2ShaderTechnique } from "./Tw2ShaderTechnique";
 export class Tw2Shader
 {
 
-    @meta.plain
     techniques = {};
 
-    @meta.plain
     annotations = {};
 
     /**

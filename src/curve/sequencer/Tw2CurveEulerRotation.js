@@ -11,13 +11,13 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     @meta.string
     name = "";
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     pitch = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     roll = null;
 
-    @meta.raw("Tr2CurveScalar")
+    @meta.rawObject("Tr2CurveScalar")
     yaw = null;
 
     @meta.quaternion

@@ -13,7 +13,7 @@ export class EveSOFDataGeneric extends meta.Model
     @meta.list("EveSOFDataGenericShader")
     areaShaders = [];
 
-    @meta.raw("EveSOFDataGenericShader")
+    @meta.rawObject("EveSOFDataGenericShader")
     bannerShader = null;
 
     @meta.struct("EveSOFDataGenericDamage")
