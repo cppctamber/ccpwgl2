@@ -403,7 +403,7 @@ export class EveShip2 extends EveObject
         Eve engine doesn't rebuild bounds like we do here
         If we need to rebuild bounds for a hull, for using in something like Intersection tests
         We should be storing it separately to the actual hull's bounds
-        This will remove confusion when we're reverse engineering stuff
+        This will remove confusion when we're comparing behavior
         TODO: Change all bound calculations to be separate from the base hull bounds
 
      */
