@@ -1,5 +1,6 @@
 
-
+// PT values have no actual meaning in and of themselves.
+// They're unique short codes for property types, used to keep serialized data compact.
 
 export const PT_UNKNOWN = 0;
 export const PT_BOOLEAN = 1;
@@ -33,11 +34,6 @@ export const PT_MATRIX4 = 71;
 export const PT_TRANSLATION = 72;
 export const PT_SCALING = 73;
 export const PT_ROTATION = 74;
-export const PT_LOCAL_TRANSFORM = 75;
-export const PT_ROTATION_TRANSFORM = 76;
-export const PT_WORLD_TRANSFORM = 77;
-export const PT_PARENT_WORLD_TRANSFORM = 78;
-export const PT_PARENT_LOCAL_TRANSFORM = 79;
 
 export const PT_UINT8_ARRAY = 81;
 export const PT_UINT8_CLAMPED_ARRAY = 82;
@@ -49,49 +45,44 @@ export const PT_INT32_ARRAY = 87;
 export const PT_FLOAT32_ARRAY = 88;
 export const PT_FLOAT64_ARRAY = 89;
 
-export const VectorConstructors = {
-    [PT_VECTOR2]: Float32Array,
-    [PT_VECTOR3]: Float32Array,
-    [PT_VECTOR4]: Float32Array,
-    [PT_QUATERNION]: Float32Array,
-    [PT_COLOR]: Float32Array,
-    [PT_MATRIX3]: Float32Array,
-    [PT_MATRIX4]: Float32Array,
-    [PT_FLOAT32_ARRAY] : Float32Array,
-    [PT_FLOAT64_ARRAY] : Float64Array,
-    [PT_UINT8_ARRAY] : Uint8Array,
-    [PT_UINT8_CLAMPED_ARRAY] : Uint8ClampedArray,
-    [PT_UINT16_ARRAY] : Uint16Array,
-    [PT_UINT32_ARRAY] : Uint32Array,
-    [PT_INT8_ARRAY] : Int8Array,
-    [PT_INT16_ARRAY] : Int16Array,
-    [PT_INT32_ARRAY] : Int32Array,
-    [PT_ROTATION]: Float32Array,
-    [PT_TRANSLATION]: Float32Array,
-    [PT_SCALING]: Float32Array,
-    [PT_ROTATION_TRANSFORM]: Float32Array,
-    [PT_LOCAL_TRANSFORM]: Float32Array,
-    [PT_WORLD_TRANSFORM]: Float32Array,
-    [PT_PARENT_LOCAL_TRANSFORM]: Float32Array,
-    [PT_PARENT_WORLD_TRANSFORM]: Float32Array
-};
-
-export const VectorLengths = {
-    [PT_VECTOR2] : 2,
-    [PT_VECTOR3] : 3,
-    [PT_VECTOR4] : 4,
-    [PT_QUATERNION] : 4,
-    [PT_COLOR] : 4,
-    [PT_MATRIX3] : 9,
-    [PT_MATRIX4] : 16,
-    [PT_ROTATION]: 4,
-    [PT_TRANSLATION]: 3,
-    [PT_SCALING]: 3,
-    [PT_ROTATION_TRANSFORM]: 16,
-    [PT_LOCAL_TRANSFORM]: 16,
-    [PT_WORLD_TRANSFORM]: 16,
-    [PT_PARENT_LOCAL_TRANSFORM]:16,
-    [PT_PARENT_WORLD_TRANSFORM]:16
-};
-
-
+/**
+ * Property type constants map.
+ * @typedef {Object} PropertyTypeConstants
+ */
+export const PT = Object.freeze({
+    UNKNOWN: PT_UNKNOWN,
+    BOOLEAN: PT_BOOLEAN,
+    ENUM: PT_ENUM,
+    STRING: PT_STRING,
+    PATH: PT_PATH,
+    EXPRESSION: PT_EXPRESSION,
+    BYTE: PT_BYTE,
+    UINT: PT_UINT,
+    USHORT: PT_USHORT,
+    FLOAT: PT_FLOAT,
+    STRUCT: PT_STRUCT,
+    STRUCT_RAW: PT_STRUCT_RAW,
+    STRUCT_LIST: PT_STRUCT_LIST,
+    PLAIN: PT_PLAIN,
+    ARRAY: PT_ARRAY,
+    VECTOR: PT_VECTOR,
+    VECTOR2: PT_VECTOR2,
+    VECTOR3: PT_VECTOR3,
+    VECTOR4: PT_VECTOR4,
+    COLOR: PT_COLOR,
+    QUATERNION: PT_QUATERNION,
+    MATRIX3: PT_MATRIX3,
+    MATRIX4: PT_MATRIX4,
+    TRANSLATION: PT_TRANSLATION,
+    SCALING: PT_SCALING,
+    ROTATION: PT_ROTATION,
+    UINT8_ARRAY: PT_UINT8_ARRAY,
+    UINT8_CLAMPED_ARRAY: PT_UINT8_CLAMPED_ARRAY,
+    UINT16_ARRAY: PT_UINT16_ARRAY,
+    UINT32_ARRAY: PT_UINT32_ARRAY,
+    INT8_ARRAY: PT_INT8_ARRAY,
+    INT16_ARRAY: PT_INT16_ARRAY,
+    INT32_ARRAY: PT_INT32_ARRAY,
+    FLOAT32_ARRAY: PT_FLOAT32_ARRAY,
+    FLOAT64_ARRAY: PT_FLOAT64_ARRAY
+});

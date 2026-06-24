@@ -39,7 +39,7 @@ export class EveBanner extends meta.Model
     @meta.uint
     usage = 0;
 
-    @meta.localTransform
+    @meta.matrix4
     transform = mat4.create();
 
     @meta.struct()

@@ -37,13 +37,8 @@ import {
     PT_VECTOR,
     PT_MATRIX3,
     PT_ROTATION,
-    PT_ROTATION_TRANSFORM,
-    PT_LOCAL_TRANSFORM,
     PT_TRANSLATION,
-    PT_SCALING,
-    PT_WORLD_TRANSFORM,
-    PT_PARENT_WORLD_TRANSFORM,
-    PT_PARENT_LOCAL_TRANSFORM
+    PT_SCALING
 } from "constant/type";
 
 let Types;
@@ -86,12 +81,7 @@ function getReaderFromType(type)
             [PT_MATRIX3]: indexBuffer,
             [PT_SCALING] : vector3,
             [PT_TRANSLATION] : vector3,
-            [PT_ROTATION] : vector4,
-            [PT_LOCAL_TRANSFORM]: matrix,
-            [PT_ROTATION_TRANSFORM]: matrix,
-            [PT_WORLD_TRANSFORM]: matrix,
-            [PT_PARENT_WORLD_TRANSFORM]: matrix,
-            [PT_PARENT_LOCAL_TRANSFORM]: matrix
+            [PT_ROTATION] : vector4
         };
     }
 

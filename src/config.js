@@ -4,6 +4,16 @@ import * as eve from "./eve";
 import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
+import { PT } from "constant/type";
+import WglArray from "global/meta/types/WglArray";
+import WglBoolean from "global/meta/types/WglBoolean";
+import WglNumber from "global/meta/types/WglNumber";
+import WglPlain from "global/meta/types/WglPlain";
+import WglStruct from "global/meta/types/WglStruct";
+import WglStructList from "global/meta/types/WglStructList";
+import WglString from "global/meta/types/WglString";
+import WglUnknown from "global/meta/types/WglUnknown";
+import WglVector from "global/meta/types/WglVector";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
 import { tw2BatchSorter } from "core/batch";
@@ -252,6 +262,120 @@ export const config = {
         "matrix4": core.Tw2Matrix4Parameter
     },
 
+    propertyTypes: {
+        [PT.UNKNOWN]: WglUnknown,
+
+        [PT.BOOLEAN]: WglBoolean,
+        [PT.ENUM]: WglPlain,
+
+        [PT.STRING]: WglString,
+        [PT.PATH]: WglString,
+        [PT.EXPRESSION]: WglString,
+        [PT.BYTE]: WglNumber,
+        [PT.UINT]: WglNumber,
+        [PT.USHORT]: WglNumber,
+        [PT.FLOAT]: WglNumber,
+
+        [PT.STRUCT]: WglStruct,
+        [PT.STRUCT_RAW]: WglStruct,
+        [PT.STRUCT_LIST]: WglStructList,
+        [PT.PLAIN]: WglPlain,
+        [PT.ARRAY]: WglArray,
+
+        [PT.VECTOR]: {
+            type: WglVector,
+            ctor: Float32Array
+        },
+        [PT.VECTOR2]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 2
+        },
+        [PT.VECTOR3]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 3
+        },
+        [PT.VECTOR4]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 4
+        },
+        [PT.COLOR]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 4
+        },
+        [PT.QUATERNION]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 4
+        },
+        [PT.MATRIX3]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 9
+        },
+        [PT.MATRIX4]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 16
+        },
+
+        [PT.TRANSLATION]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 3
+        },
+        [PT.SCALING]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 3
+        },
+        [PT.ROTATION]: {
+            type: WglVector,
+            ctor: Float32Array,
+            length: 4
+        },
+
+        [PT.UINT8_ARRAY]: {
+            type: WglVector,
+            ctor: Uint8Array
+        },
+        [PT.UINT8_CLAMPED_ARRAY]: {
+            type: WglVector,
+            ctor: Uint8ClampedArray
+        },
+        [PT.UINT16_ARRAY]: {
+            type: WglVector,
+            ctor: Uint16Array
+        },
+        [PT.UINT32_ARRAY]: {
+            type: WglVector,
+            ctor: Uint32Array
+        },
+        [PT.INT8_ARRAY]: {
+            type: WglVector,
+            ctor: Int8Array
+        },
+        [PT.INT16_ARRAY]: {
+            type: WglVector,
+            ctor: Int16Array
+        },
+        [PT.INT32_ARRAY]: {
+            type: WglVector,
+            ctor: Int32Array
+        },
+        [PT.FLOAT32_ARRAY]: {
+            type: WglVector,
+            ctor: Float32Array
+        },
+        [PT.FLOAT64_ARRAY]: {
+            type: WglVector,
+            ctor: Float64Array
+        }
+    },
+
     variables: {
         "WorldMat": mat4.create(),
         "ViewMat": mat4.create(),
@@ -287,3 +411,4 @@ export const config = {
         "SelectorColor": [ 0.5, 0.25, 0.0, 1.0 ]
     }
 };
+

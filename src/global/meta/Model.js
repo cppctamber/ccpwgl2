@@ -1,9 +1,9 @@
 import { generateID } from "../utils/uuid";
 import { getMetadata, hasMetadata } from "../utils/reflect";
 import { isArray, isFunction, isNumber, isObjectObject, isString } from "../utils/type";
-import { propTypes } from "./ModelPropertyTypes";
 import { tw2 } from "global/tw2";
 
+const getPropType = (type) => tw2 && tw2.propertyTypes && tw2.propertyTypes.Get(type);
 
 // TODO: Identify why Model can't extend * without webpack having a fit
 
@@ -635,7 +635,7 @@ export class Model
      */
     IsPropPrivate(prop)
     {
-        return this.constructor.IsPropPrivate(this, prop);
+        return this.constructor.isPropPrivate(this, prop);
     }
 
     /**
@@ -644,7 +644,7 @@ export class Model
      */
     GetClassName()
     {
-        return this.constructor.GetClassName(this);
+        return this.constructor.getClassName(this);
     }
 
     /**
@@ -664,7 +664,7 @@ export class Model
 
     static getClassName(obj)
     {
-        const type = getMetadata("type", obj);
+        const type = getMetadata("type", obj.constructor);
         return isString(type) ? type : null;
     }
 
@@ -747,7 +747,7 @@ export class Model
             {
                 const
                     type = getMetadata("type", item, key),
-                    handler = propTypes.get(type);
+                    handler = getPropType(type);
 
                 if (!handler)
                 {
@@ -877,7 +877,7 @@ export class Model
 
                     const
                         type = getMetadata("type", item, key),
-                        handler = propTypes.get(type);
+                        handler = getPropType(type);
 
                     if (!handler)
                     {

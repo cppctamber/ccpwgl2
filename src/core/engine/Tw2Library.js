@@ -7,6 +7,7 @@ import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
 import * as math from "math";
 import * as util from "utils";
+import { registerPropertyTypes } from "global/meta/types";
 import * as stores from "core/store";
 import { isFunction, isString } from "utils";
 import { isArray } from "utils";
@@ -46,6 +47,12 @@ export class Tw2Library extends Tw2EventEmitter
      * @type {Tw2VariableStore}
      */
     variables = new stores.Tw2VariableStore(this.variableTypes);
+
+    /**
+     * Model property type store
+     * @type {Tw2PropertyTypeStore}
+     */
+    propertyTypes = new stores.Tw2PropertyTypeStore();
 
     /**
      * Resource prefix:path store
@@ -257,6 +264,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {Object} [opt.constructors]
      * @param {Object} [opt.variables]
      * @param {Object} [opt.paths]
+     * @param {Object} [opt.propertyTypes]
      * @param {Object} [opt.dynamicPaths]
      * @param {Object} [opt.extensions]
      * @param {Object} [opt.logger]                     - Optional logger config
@@ -461,6 +469,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.paths) this.paths.Register(opt.paths);
         if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
         if (opt.extensions) this.extensions.Register(opt.extensions);
+        if (opt.propertyTypes) registerPropertyTypes(this.propertyTypes, opt.propertyTypes);
         if (opt.renderBatchSorter !== undefined) this.renderBatchSorter = opt.renderBatchSorter;
         if (opt.shaders) this.RegisterShaders(opt.shaders);
 
