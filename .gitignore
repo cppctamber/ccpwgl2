@@ -30,6 +30,8 @@ twitch_emotes/
 # legacy local resources
 res/
 shaders/
+_shaders/
+_twitch_emotes/
 
 # wrapped client implementation should stay local for now
 src/wrapped/
