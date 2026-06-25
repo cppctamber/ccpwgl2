@@ -438,7 +438,9 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Registers library opt
+     * Register is the library bootstrap/configuration entrypoint.
+     * It applies only keys that are explicitly provided.
+     * A future decorator/metadata system may annotate values that are not safe to mutate after init.
      * @param {*} opt
      * @param {Boolean} opt.debug
      * @param {Function} opt.resourceHandler

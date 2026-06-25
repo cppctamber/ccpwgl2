@@ -219,3 +219,17 @@ Those belong in a runtime/wrapper layer above the engine.
 `Tw2ResMan*` names are implementation pieces owned by `Tw2ResMan`.
 
 Browser/application glue should generally avoid `Tw2*` naming unless it becomes a core engine contract.
+
+## Register contract
+
+In this codebase, `Register(...)` is the bootstrap/configuration entrypoint for engine classes.
+
+- It is intentionally a **partial assignment** API: only properties present in the input are applied.
+- It may include validation and side effects (for example, mode switches or loader creation).
+- Some classes have properties that are only valid before initialization, while others can be updated at runtime.
+
+Current status:
+
+- We are tracking potential unsafe-at-runtime options by convention inside each class implementation.
+- A future step is to add optional decorator/metadata annotations to declare register keys that are **not** safe to change after initialization.
+- Any such metadata would remain opt-in and only needed for non-default cases.

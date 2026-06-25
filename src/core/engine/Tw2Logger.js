@@ -46,7 +46,9 @@ export class Tw2Logger extends Tw2EventEmitter
     }
 
     /**
-     * Sets the logger's properties
+     * Register is the logger configuration entrypoint.
+     * It is a partial setter; only provided values are applied.
+     * A future decorator/metadata system may mark options that cannot be changed safely after init.
      * @param {*} [opt]
      */
     Register(opt)

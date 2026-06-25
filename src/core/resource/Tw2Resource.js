@@ -152,7 +152,7 @@ export class Tw2Resource extends Tw2Notifications
             });
         }
 
-        if (this.IsPurged() || this.IsUnloaded())
+        if (this.IsPurged() || this.IsUnloaded() || this.HasErrored())
         {
             resMan.LoadResource(this, log);
         }
@@ -329,23 +329,13 @@ export class Tw2Resource extends Tw2Notifications
      */
     _SetState(state)
     {
-
-        if (this._state !== Tw2Resource.State.ERROR)
-        {
-            //this._lastState = this._state;
-            this._state = state;
-            return true;
-        }
-        return false;
-
-        /*
         // Do not turn this on unless you want resman to keep trying to
         // load broken stuff.
 
         // Allow leaving ERROR only for terminal cleanup states
         if (this._state === Tw2Resource.State.ERROR)
         {
-            if (state === Tw2Resource.State.UNLOADED || state === Tw2Resource.State.PURGED)
+            if (state === Tw2Resource.State.UNLOADED || state === Tw2Resource.State.PURGED || state === Tw2Resource.State.REQUESTED)
             {
                 this._state = state;
                 return true;
@@ -355,8 +345,6 @@ export class Tw2Resource extends Tw2Notifications
 
         this._state = state;
         return true;
-
-         */
     }
 
     /**

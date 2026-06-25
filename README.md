@@ -9,5 +9,14 @@ Warning
 ======
 The resource files required for this library to work are no longer available, RIP.
 
+Local review notes
+=================
+
+If you are changing resource system code (`src/core/resource/*`, `src/core/engine/Tw2ResMan*`), check:
+
+- `.agents/resource-review-protocol.md`
+- `_review/resource-system-review/` notes (latest first)
+
+This repo ignores `_review` and `.agents` from git; keep these notes as the current operational context for agent handoffs.
 
 

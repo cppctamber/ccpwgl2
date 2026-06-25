@@ -192,9 +192,9 @@ export class Tw2MotherLode
             {
                 w.total = res.total;
                 w.pending = res.pending;
-                for (let i = 0; i < w.onProgress.length; i++)
+                for (let p = 0; p < w.onProgress.length; p++)
                 {
-                    w.onProgress[i](res, w.object);
+                    w.onProgress[p](res, w.object);
                 }
             }
 
@@ -225,7 +225,7 @@ export class Tw2MotherLode
             }
 
             // Limit how many can be watched at once
-            if (maxWatchedCount && i > maxWatchedCount)
+            if (maxWatchedCount > 0 && i >= maxWatchedCount - 1)
             {
                 return;
             }
@@ -409,7 +409,7 @@ export class Tw2MotherLode
                     detail = "unloaded";
                 }
                 // good but inactive
-                else if (res.HasLoaded() && (curFrame - res.activeFrame) % frameLimit >= frameDistance)
+                else if (res.HasLoaded() && (curFrame - res.activeFrame) >= frameDistance)
                 {
                     if (res.Unload({ hide: true, detail: "inactivity" }))
                     {

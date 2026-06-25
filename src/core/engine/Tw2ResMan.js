@@ -5,42 +5,78 @@ import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
-import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "utils";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, normalizeResourcePath } from "utils";
 
 
 
 export class Tw2ResMan extends Tw2EventEmitter
 {
-
+    /** Resource cache and lifecycle root owned by this manager. */
     motherLode = new Tw2MotherLode();
+    /** Max seconds per frame spent preparing loaded resources. */
     maxPrepareTime = 0.05;
+    /** Maximum number of in-flight raw loads at once. */
     maxConcurrentLoads = 8;
+    /** Whether to use worker loader for raw fetch/parse operations. */
     useWorkerLoading = false;
+    /** Worker script URL used when worker loading is enabled. */
     workerLoaderUrl = null;
+    /** Auto purge resources when they are no longer watched. */
     autoPurgeResources = true;
+    /** Monotonic frame counter used by purge scheduling. */
     activeFrame = 0;
+    /** Seconds a resource can stay unused before purge triggers, minimum threshold. */
     purgeTime = 30;
 
+    /** Max milliseconds spent updating watched objects per frame. */
     maxWatchedUpdateTime = 0.05;
+    /** Max number of watched objects processed per update pass. */
     maxWatchedCount = 0;
+    /** Max wall time in seconds watched updates can run. */
     maxWatchedTime = 240;
-
-    _prepareBudget = 0;
-    _prepareQueue = [];
-    _loadQueue = [];
-    _activeLoads = [];
-    _purgeTime = 0;
-    _purgeFrame = 0;
-    _purgeFrameLimit = 1000;
-    _pendingLoads = [];
-    _noLoadFrames = 0;
-    _systemMirror = false;
-
-    _autoReload = [];
+    /** Minimum seconds between watched-update sweeps (0 = every frame). */
+    minimumWatchUpdate = 0;
+    /** Minimum seconds between automatic resource reload checks. */
     minimumAutoReloadSeconds = 1;
+    /** Maximum number of auto-reloads started per tick. 0 means unlimited. */
+    maxAutoReloadsPerTick = 0;
+
+    /** Remaining prepare time for current tick (seconds). */
+    _prepareBudget = 0;
+    /** Queue of resources waiting to run Prepare(). */
+    _prepareQueue = [];
+    /** Index of next _prepareQueue item to process. */
+    _prepareQueueHead = 0;
+    /** Queue of raw-load tasks waiting for worker/main-thread fetch. */
+    _loadQueue = [];
+    /** Index of next raw-load task in _loadQueue. */
+    _loadQueueHead = 0;
+    /** Active raw-load tasks currently processing. */
+    _activeLoads = new Set();
+    /** Time accumulator for purge cadence, in seconds. */
+    _purgeTime = 0;
+    /** Frame counter used for periodic purge window checks. */
+    _purgeFrame = 0;
+    /** Frame interval threshold before purge runs. */
+    _purgeFrameLimit = 1000;
+    /** Set of in-flight fetch urls currently awaiting FetchRaw resolution. */
+    _pendingLoads = new Set();
+    /** Prevents enqueuing duplicate raw-load requests for same resource. */
+    _queuedLoads = new Set();
+    /** Consecutive-frame counter used by IsLoading(). */
+    _noLoadFrames = 0;
+    /** Backing field for system mirror toggle. */
+    _systemMirror = false;
+    /** Timestamp for next watch sweep when minimumWatchUpdate > 0. */
+    _nextWatchUpdate = 0;
+    /** Resources currently configured for auto-reload, keyed by resource instance. */
+    _autoReload = new Map();
+    /** Main-thread raw loader strategy instance. */
     _mainThreadLoader = null;
+    /** Worker raw loader strategy instance. */
     _workerLoader = null;
-    loader = null;
+    /** Active raw loader strategy used by QueueLoad(). */
+    _loader = null;
 
     /**
      * Temporary
@@ -75,7 +111,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     get pendingLoads()
     {
-        return this._pendingLoads.length + this._loadQueue.length;
+        return this._pendingLoads.size + (this._loadQueue.length - this._loadQueueHead);
     }
 
     /**
@@ -88,11 +124,19 @@ export class Tw2ResMan extends Tw2EventEmitter
         this.tw2 = tw2;
         this._mainThreadLoader = new Tw2ResManMainThreadLoader(this);
         this._workerLoader = new Tw2ResManWorkerLoader(this);
-        this.loader = this._mainThreadLoader;
+        this._loader = this._mainThreadLoader;
     }
 
     /**
-     * Sets resource manager options
+     * Sets resource manager options.
+     * Register is a partial config setter: only provided values are applied.
+     * Runtime-safe values are updated directly here; bootstrap-only validation/switches are handled via
+     * dedicated methods when needed.
+     *
+     * Note:
+     * - A future metadata/decorator system may explicitly mark options that are not safe to change after
+     *   initialization.
+     *
      * @param {*} [opt]
      */
     Register(opt)
@@ -107,9 +151,12 @@ export class Tw2ResMan extends Tw2EventEmitter
             "workerLoaderUrl",
             "autoPurgeResources",
             "purgeTime",
+            "minimumAutoReloadSeconds",
+            "maxAutoReloadsPerTick",
             "maxWatchedTime",
             "maxWatchedCount",
-            "maxWatchedUpdateTime"
+            "maxWatchedUpdateTime",
+            "minimumWatchUpdate"
         ]);
 
         if (opt.useWorkerLoading !== undefined)
@@ -309,24 +356,24 @@ export class Tw2ResMan extends Tw2EventEmitter
         // Remove
         if (!seconds)
         {
-            this._autoReload.splice(this._autoReload.indexOf(res), 1);
+            this._autoReload.delete(res);
             return false;
         }
 
         const
             ms = Math.max(this.minimumAutoReloadSeconds, seconds) * 1000,
-            found = this._autoReload.find(x => x.res === res);
+            found = this._autoReload.get(res);
 
         // Update
         if (found)
         {
             found.ms = ms;
-            found.last = 0;
+            found.last = this.tw2.now;
         }
         // Add
         else
         {
-            this._autoReload.push({ res, ms, last: 0 });
+            this._autoReload.set(res, { ms, last: this.tw2.now });
         }
 
         return true;
@@ -340,7 +387,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         this.PumpLoadQueue();
 
-        if (this._prepareQueue.length === 0 && this.pendingLoads === 0)
+        if (this._prepareQueue.length === this._prepareQueueHead && this.pendingLoads === 0)
         {
             if (this._noLoadFrames < 2)
             {
@@ -355,11 +402,10 @@ export class Tw2ResMan extends Tw2EventEmitter
         this._prepareBudget = this.maxPrepareTime;
 
         const startTime = this.tw2.now;
-        while (this._prepareQueue.length)
+        while (this._prepareQueue.length > this._prepareQueueHead)
         {
-            const [ res, data, xml ] = this._prepareQueue[0];
-
-            this._prepareQueue.shift();
+            const [ res, data, xml ] = this._prepareQueue[this._prepareQueueHead];
+            this._prepareQueueHead += 1;
 
             try
             {
@@ -374,19 +420,32 @@ export class Tw2ResMan extends Tw2EventEmitter
             }
         }
 
-        for (let i = 0; i < this._autoReload.length; i++)
+        this._compactQueues();
+
+        let reloadCount = 0;
+        for (const [ res, reload ] of this._autoReload)
         {
-            if (startTime - this._autoReload[i].last >= this._autoReload[i].ms)
+            if (this.maxAutoReloadsPerTick > 0 && reloadCount >= this.maxAutoReloadsPerTick)
             {
-                this._autoReload[i].last = startTime;
-                this._autoReload[i].res.Reload({
+                break;
+            }
+
+            if (startTime - reload.last >= reload.ms)
+            {
+                reload.last = startTime;
+                reloadCount += 1;
+                res.Reload({
                     hide: true,
                     message: "Auto reload"
                 });
             }
         }
 
-        this.motherLode.UpdateWatched(this.maxWatchedUpdateTime, this.maxWatchedCount, this.maxWatchedTime);
+        if (!this.minimumWatchUpdate || this.tw2.now >= this._nextWatchUpdate)
+        {
+            this.motherLode.UpdateWatched(this.maxWatchedUpdateTime, this.maxWatchedCount, this.maxWatchedTime);
+            this._nextWatchUpdate = this.minimumWatchUpdate > 0 ? this.tw2.now + (this.minimumWatchUpdate * 1000) : 0;
+        }
 
         this._purgeTime += this.tw2.dt;
 
@@ -419,18 +478,18 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         if (!this.useWorkerLoading)
         {
-            this.loader = this._mainThreadLoader;
+            this._loader = this._mainThreadLoader;
             return false;
         }
 
         if (this._workerLoader.Enable(this.workerLoaderUrl))
         {
-            this.loader = this._workerLoader;
+            this._loader = this._workerLoader;
             return true;
         }
 
         this.useWorkerLoading = false;
-        this.loader = this._mainThreadLoader;
+        this._loader = this._mainThreadLoader;
         return false;
     }
 
@@ -439,20 +498,35 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     PumpLoadQueue()
     {
-        while (this._loadQueue.length && this._activeLoads.length < this.maxConcurrentLoads)
+        while (this._loadQueue.length > this._loadQueueHead && this._activeLoads.size < this.maxConcurrentLoads)
         {
-            const task = this._loadQueue.shift();
-            this._activeLoads.push(task);
+            const task = this._loadQueue[this._loadQueueHead];
+            this._loadQueueHead += 1;
+            this._activeLoads.add(task);
 
-            task.StartRawLoad()
-                .then(response =>
-                {
-                    const res = task.targetResource;
-                    if (!res || res.HasErrored()) return;
+            let request;
+            try
+            {
+                request = task.StartRawLoad();
+            }
+            catch (err)
+            {
+                this._activeLoads.delete(task);
+                this._queuedLoads.delete(task.targetResource);
+                this._compactQueues();
+                this.PumpLoadQueue();
+                if (task.targetResource) task.targetResource.OnError(err);
+                continue;
+            }
 
-                    res.OnLoaded();
-                    this.Queue(res, response);
-                })
+            request.then(response =>
+            {
+                const res = task.targetResource;
+                if (!res || res.HasErrored()) return;
+
+                res.OnLoaded();
+                this.Queue(res, response);
+            })
                 .catch(err =>
                 {
                     const res = task.targetResource;
@@ -460,11 +534,9 @@ export class Tw2ResMan extends Tw2EventEmitter
                 })
                 .finally(() =>
                 {
-                    const index = this._activeLoads.indexOf(task);
-                    if (index !== -1)
-                    {
-                        this._activeLoads.splice(index, 1);
-                    }
+                    this._activeLoads.delete(task);
+                    this._queuedLoads.delete(task.targetResource);
+                    this._compactQueues();
                     this.PumpLoadQueue();
                 });
         }
@@ -479,6 +551,24 @@ export class Tw2ResMan extends Tw2EventEmitter
     Queue(res, response, meta)
     {
         this._prepareQueue.push([ res, response, meta ]);
+    }
+
+    /**
+     * Compacts queue arrays by removing consumed items
+     */
+    _compactQueues()
+    {
+        if (this._loadQueueHead > 256 && this._loadQueueHead > this._loadQueue.length * 0.5)
+        {
+            this._loadQueue = this._loadQueue.slice(this._loadQueueHead);
+            this._loadQueueHead = 0;
+        }
+
+        if (this._prepareQueueHead > 256 && this._prepareQueueHead > this._prepareQueue.length * 0.5)
+        {
+            this._prepareQueue = this._prepareQueue.slice(this._prepareQueueHead);
+            this._prepareQueueHead = 0;
+        }
     }
 
     /**
@@ -619,6 +709,10 @@ export class Tw2ResMan extends Tw2EventEmitter
         {
             return res;
         }
+        if (res.HasLoaded() || this._queuedLoads.has(res))
+        {
+            return res;
+        }
 
         try
         {
@@ -655,8 +749,14 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     QueueLoad(res, url, responseType)
     {
+        if (this._queuedLoads.has(res))
+        {
+            return null;
+        }
+
         const task = new Tw2LoadingObject();
-        task.ConfigureRawLoad(res, url, responseType, this.loader);
+        task.ConfigureRawLoad(res, url, responseType, this._loader);
+        this._queuedLoads.add(res);
         this._loadQueue.push(task);
         this.PumpLoadQueue();
         return task;
@@ -668,7 +768,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     AddPendingLoad(url)
     {
-        this._pendingLoads.push(url);
+        this._pendingLoads.add(url);
     }
 
     /**
@@ -677,11 +777,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     RemovePendingLoad(url)
     {
-        const index = this._pendingLoads.indexOf(url);
-        if (index !== -1)
-        {
-            this._pendingLoads.splice(index, 1);
-        }
+        this._pendingLoads.delete(url);
     }
 
     /**
@@ -781,9 +877,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     static NormalizePath(path)
     {
-        path = path.toLowerCase();
-        path = path.replace("\\", "/");
-        return path;
+        return normalizeResourcePath(path);
     }
 
     /**

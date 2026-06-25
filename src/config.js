@@ -163,18 +163,38 @@ export const config = {
         // The amount of time to wait before purging an unused resource
         "purgeTime": 60,
 
+        // The amount of parallel raw loads allowed at once
+        "maxConcurrentLoads": 8,
+
         // The maximum time for preparing resources per frame
         "maxPrepareTime": 0.05,
 
+        // Optional worker loader url, defaults to null
+        "workerLoaderUrl": null,
+
+        // Toggles using worker-backed raw loads
+        "useWorkerLoading": false,
+        // Alternate alias for backwards compatibility; prefer useWorkerLoading
+        "workerLoading": false,
+
         // Objects who have child resources can be optionally watched to monitor their load progress
-        // The max frames an object can be watched for, before it is forced to resolve
-        "maxWatchedFramed": 500,
+        // The max time in seconds an object can be watched for, before it is forced to resolve
+        "maxWatchedTime": 240,
 
         // The maximum objects to watch per frame
         "maxWatchedCount": 10,
 
         // The maximum time to monitor watched objects
-        "maxWatchTime": 0.05
+        "maxWatchedUpdateTime": 0.05,
+
+        // The minimum time between watched updates in seconds; 0 means every frame
+        "minimumWatchUpdate": 0,
+
+        // Minimum time between automatic reload checks in seconds
+        "minimumAutoReloadSeconds": 1,
+
+        // Maximum number of auto-reloads processed per tick; 0 means unlimited
+        "maxAutoReloadsPerTick": 0
 
     },
 

@@ -333,8 +333,14 @@ export class Tw2Device extends Tw2EventEmitter
 
 
     /**
-     * Registers options
-     * Todo: Add custom render states
+     * Registers options.
+     * Register is the configuration entrypoint and applies only explicitly provided keys.
+     * Device settings are partially bootstrap-only (for example, some values are validated against
+     * `gl` state, and changes after context creation are rejected).
+     *
+     * Note:
+     * - A future metadata/decorator system may be used to mark options that must only be changed before init.
+     *
      * @param {*} [opt]
      * @param {Number} opt.textureQuality
      * @param {Number} opt.shaderQuality

@@ -45,6 +45,18 @@ for (let i = 0; i < split.length; i++)
 }
 
 /**
+ * Normalizes a resource path key
+ * @param {String} path
+ * @returns {String}
+ */
+export function normalizeResourcePath(path)
+{
+    path = path.toLowerCase();
+    path = path.replace(/\\/g, "/");
+    return path;
+}
+
+/**
  * Gets the url as an object
  * @param {Boolean|Function} operator
  * @returns {*}
