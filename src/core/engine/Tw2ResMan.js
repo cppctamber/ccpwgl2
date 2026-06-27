@@ -425,6 +425,12 @@ export class Tw2ResMan extends Tw2EventEmitter
         let reloadCount = 0;
         for (const [ res, reload ] of this._autoReload)
         {
+            if (res.HasErrored())
+            {
+                this._autoReload.delete(res);
+                continue;
+            }
+
             if (this.maxAutoReloadsPerTick > 0 && reloadCount >= this.maxAutoReloadsPerTick)
             {
                 break;
@@ -709,7 +715,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         {
             return res;
         }
-        if (res.HasLoaded() || this._queuedLoads.has(res))
+        if (res.HasRequested() || this._queuedLoads.has(res))
         {
             return res;
         }
@@ -718,7 +724,10 @@ export class Tw2ResMan extends Tw2EventEmitter
         {
             const url = this.tw2.GetURL(res.path);
 
-            res.OnRequested(eventLog);
+            if (!res.OnRequested(eventLog))
+            {
+                return res;
+            }
 
             if (res.DoCustomLoad && res.DoCustomLoad(url, getPathExtension(url)))
             {

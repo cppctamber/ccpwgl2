@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat4, box3, sph3, tri3, vec3, ray3, lne3, num } from "math";
+import { mat4, box3, sph3, tri3, vec2, vec3, vec4, ray3, lne3, num } from "math";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 import { ErrIndexBounds, Tw2Error } from "core/Tw2Error";
@@ -257,7 +257,40 @@ export class Tw2GeometryMesh
             count = area.count / 3,
             start = area.start / 3 / this.indexData.BYTES_PER_ELEMENT;
 
-        const { pointLocal, tri3_0, vec3_0, vec3_1, vec3_2, lne3_0 } = Tw2GeometryMesh.global;
+        const
+            hasNormal = !!this.GetUsageDeclaration(Tw2VertexElement.Type.NORMAL, 0),
+            hasUv = !!this.GetUsageDeclaration(Tw2VertexElement.Type.TEXCOORD, 0),
+            hasBlendWeights = !!this.GetUsageDeclaration(Tw2VertexElement.Type.BLENDWEIGHT, 0),
+            hasBlendIndices = !!this.GetUsageDeclaration(Tw2VertexElement.Type.BLENDINDICE, 0);
+
+        const {
+            pointLocal,
+            pointWorld,
+            barycentric,
+            normalLocal,
+            normalWorld,
+            tri3_0,
+            vec3_0,
+            vec3_1,
+            vec3_2,
+            vec3_3,
+            vec3_4,
+            vec3_5,
+            vec3_6,
+            vec3_7,
+            vec3_8,
+            vec2_0,
+            vec2_1,
+            vec2_2,
+            vec2_3,
+            vec4_0,
+            vec4_1,
+            vec4_2,
+            vec4_3,
+            vec4_4,
+            vec4_5,
+            lne3_0
+        } = Tw2GeometryMesh.global;
 
         //console.log("Intersecting area faces...");
 
@@ -276,30 +309,76 @@ export class Tw2GeometryMesh
             tri3.fromVertices(tri3_0, vec3_0, vec3_1, vec3_2);
             if (ray3.getIntersectTri3(pointLocal, cache.rayLocal, tri3_0, ray.DoBackfaceCulling()))
             {
-                vec3.transformMat4(vec3_0, pointLocal, worldTransform);
+                vec3.transformMat4(pointWorld, pointLocal, worldTransform);
 
-                const distance = vec3.squaredDistance(ray.ray, vec3_0);
-
-                console.log("Intersected area face " + index + " at distance " + distance + " at point " + Array.from(vec3_0));
+                const distance = vec3.squaredDistance(ray.ray, pointWorld);
 
                 if (distance > ray.nearSquared && distance < ray.farSquared)
                 {
-                    if (ray.DoFindClosestEdge()) tri3.getClosestEdgeToPoint(lne3_0, tri3_0, vec3_0, debug);
-                    if (ray.DoFindClosestVertex()) tri3.getClosestVertexToPoint(vec3_1, tri3_0, vec3_0, debug);
+                    tri3.getBaryCentricCoordinates(barycentric, tri3_0, pointLocal);
+                    tri3.getNormal(normalLocal, tri3_0);
+                    vec3.transformMat4(vec3_6, vec3_0, worldTransform);
+                    vec3.transformMat4(vec3_7, vec3_1, worldTransform);
+                    vec3.transformMat4(vec3_8, vec3_2, worldTransform);
+                    tri3.getNormalFromVertices(normalWorld, vec3_6, vec3_7, vec3_8);
+
+                    if (ray.DoFindClosestEdge()) tri3.getClosestEdgeToPoint(lne3_0, tri3_0, pointLocal, debug);
+                    if (ray.DoFindClosestVertex()) tri3.getClosestVertexToPoint(vec3_3, tri3_0, pointLocal, debug);
 
                     const faceIntersect = {
                         name: area.name,
                         distance: distance,
-                        point: vec3.clone(vec3_0),
+                        distanceSquared: distance,
+                        point: vec3.clone(pointWorld),
+                        pointLocal: vec3.clone(pointLocal),
+                        normal: vec3.clone(normalWorld),
+                        normalLocal: vec3.clone(normalLocal),
+                        barycentric: vec3.clone(barycentric),
                         item: this,
                         areaIndex,
                         faceIndex: index,
-                        positionIndices: this.GetFaceVertexIndices([], index),
-                        edgeStartIndex: debug.vertexIndices[debug.edgeStart],
-                        edgeEndIndex: debug.vertexIndices[debug.edgeEnd],
-                        vertexIndex: debug.vertexIndices[debug.closest],
                         isGeometryFace: true,
                     };
+
+                    faceIntersect.positionIndices = this.GetFaceVertexIndices([], index);
+                    faceIntersect.vertexIndices = faceIntersect.positionIndices;
+                    faceIntersect.edgeStartIndex = debug.vertexIndices[debug.edgeStart];
+                    faceIntersect.edgeEndIndex = debug.vertexIndices[debug.edgeEnd];
+                    faceIntersect.vertexIndex = debug.vertexIndices[debug.closest];
+
+                    if (hasNormal)
+                    {
+                        this.GetFaceVertexElements(vec3_3, vec3_4, vec3_5, index, Tw2VertexElement.Type.NORMAL, 0);
+                        Tw2GeometryMesh.InterpolateVectors(faceIntersect.normalLocal, barycentric, vec3_3, vec3_4, vec3_5);
+                        vec3.normalize(faceIntersect.normalLocal, faceIntersect.normalLocal);
+                        Tw2GeometryMesh.TransformNormalMat4(faceIntersect.normal, faceIntersect.normalLocal, worldTransform);
+                    }
+
+                    if (hasUv)
+                    {
+                        this.GetFaceVertexElements(vec2_0, vec2_1, vec2_2, index, Tw2VertexElement.Type.TEXCOORD, 0);
+                        Tw2GeometryMesh.InterpolateVectors(vec2_3, barycentric, vec2_0, vec2_1, vec2_2);
+                        faceIntersect.uv = vec2.clone(vec2_3);
+                    }
+
+                    if (hasBlendIndices)
+                    {
+                        this.GetFaceVertexElements(vec4_0, vec4_1, vec4_2, index, Tw2VertexElement.Type.BLENDINDICE, 0);
+                        if (hasBlendWeights)
+                        {
+                            this.GetFaceVertexElements(vec4_3, vec4_4, vec4_5, index, Tw2VertexElement.Type.BLENDWEIGHT, 0);
+                        }
+                        else
+                        {
+                            vec4.set(vec4_3, 1, 0, 0, 0);
+                            vec4.set(vec4_4, 1, 0, 0, 0);
+                            vec4.set(vec4_5, 1, 0, 0, 0);
+                        }
+
+                        const boneIndex = Tw2GeometryMesh.GetDominantBoneIndex(barycentric, vec4_0, vec4_1, vec4_2, vec4_3, vec4_4, vec4_5);
+                        faceIntersect.boneIndex = boneIndex;
+                        faceIntersect.bone = ray.bones && boneIndex > -1 ? ray.bones[boneIndex] || null : null;
+                    }
 
                     intersects.push(faceIntersect);
                     internalIntersects.push(faceIntersect);
@@ -665,6 +744,94 @@ export class Tw2GeometryMesh
     }
 
     /**
+     * Gets a dominant bone index from interpolated blend data
+     * @param {vec3} barycentric
+     * @param {vec4} indices0
+     * @param {vec4} indices1
+     * @param {vec4} indices2
+     * @param {vec4} weights0
+     * @param {vec4} weights1
+     * @param {vec4} weights2
+     * @returns {Number}
+     */
+    static GetDominantBoneIndex(barycentric, indices0, indices1, indices2, weights0, weights1, weights2)
+    {
+        const weights = Object.create(null);
+        for (let i = 0; i < 4; i++)
+        {
+            Tw2GeometryMesh.AddBoneWeight(weights, indices0[i], weights0[i] * barycentric[0]);
+            Tw2GeometryMesh.AddBoneWeight(weights, indices1[i], weights1[i] * barycentric[1]);
+            Tw2GeometryMesh.AddBoneWeight(weights, indices2[i], weights2[i] * barycentric[2]);
+        }
+
+        let
+            bestIndex = -1,
+            bestWeight = 0;
+
+        for (let key in weights)
+        {
+            if (Object.prototype.hasOwnProperty.call(weights, key) && weights[key] > bestWeight)
+            {
+                bestWeight = weights[key];
+                bestIndex = Number(key);
+            }
+        }
+
+        return bestIndex;
+    }
+
+    /**
+     * Adds a bone weight
+     * @param {Object} weights
+     * @param {Number} index
+     * @param {Number} weight
+     */
+    static AddBoneWeight(weights, index, weight)
+    {
+        if (weight <= 0) return;
+        index = Math.round(index);
+        weights[index] = (weights[index] || 0) + weight;
+    }
+
+    /**
+     * Interpolates vectors with barycentric weights
+     * @param {Array|TypedArray} out
+     * @param {vec3} barycentric
+     * @param {Array|TypedArray} v0
+     * @param {Array|TypedArray} v1
+     * @param {Array|TypedArray} v2
+     * @returns {Array|TypedArray}
+     */
+    static InterpolateVectors(out, barycentric, v0, v1, v2)
+    {
+        for (let i = 0; i < out.length; i++)
+        {
+            out[i] = v0[i] * barycentric[0] + v1[i] * barycentric[1] + v2[i] * barycentric[2];
+        }
+        return out;
+    }
+
+    /**
+     * Transforms a normal by a mat4's upper-left 3x3
+     * @param {vec3} out
+     * @param {vec3} n
+     * @param {mat4} m
+     * @returns {vec3}
+     */
+    static TransformNormalMat4(out, n, m)
+    {
+        const
+            x = n[0],
+            y = n[1],
+            z = n[2];
+
+        out[0] = x * m[0] + y * m[4] + z * m[8];
+        out[1] = x * m[1] + y * m[5] + z * m[9];
+        out[2] = x * m[2] + y * m[6] + z * m[10];
+        return vec3.normalize(out, out);
+    }
+
+    /**
      * Gets midpoint position and normal for an array of face indices
      * @param {vec3} outMidpoint
      * @param {vec3} outNormal
@@ -887,9 +1054,29 @@ export class Tw2GeometryMesh
     static global = {
         tri3_0: tri3.create(),
         pointLocal: vec3.create(),
+        pointWorld: vec3.create(),
+        barycentric: vec3.create(),
+        normalLocal: vec3.create(),
+        normalWorld: vec3.create(),
         vec3_0: vec3.create(),
         vec3_1: vec3.create(),
         vec3_2: vec3.create(),
+        vec3_3: vec3.create(),
+        vec3_4: vec3.create(),
+        vec3_5: vec3.create(),
+        vec3_6: vec3.create(),
+        vec3_7: vec3.create(),
+        vec3_8: vec3.create(),
+        vec2_0: vec2.create(),
+        vec2_1: vec2.create(),
+        vec2_2: vec2.create(),
+        vec2_3: vec2.create(),
+        vec4_0: vec4.create(),
+        vec4_1: vec4.create(),
+        vec4_2: vec4.create(),
+        vec4_3: vec4.create(),
+        vec4_4: vec4.create(),
+        vec4_5: vec4.create(),
         box3_0: box3.create(),
         lne3_0: lne3.create()
     };

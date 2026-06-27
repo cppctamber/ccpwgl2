@@ -62,7 +62,7 @@ export class Tw2Resource extends Tw2Notifications
      */
     HasErrored()
     {
-        return this._state === Tw2Resource.State.ERROR;
+        return this._state === Tw2Resource.State.ERROR || this._errors.length > 0;
     }
 
     /**
@@ -153,7 +153,7 @@ export class Tw2Resource extends Tw2Notifications
             });
         }
 
-        if (this.IsPurged() || this.IsUnloaded() || this.HasErrored())
+        if (this.IsPurged() || this.IsUnloaded())
         {
             resMan.LoadResource(this, log);
         }
@@ -232,12 +232,12 @@ export class Tw2Resource extends Tw2Notifications
             if (this._errors.length > 20) this._errors.length = 20;
         }
 
-        this._SetState(Tw2Resource.State.ERROR);
-
         if (wasGood)
         {
             this.Unload({ hide: true, detail: "errored" });
         }
+
+        this._SetState(Tw2Resource.State.ERROR);
 
         resMan.OnPathEvent(this.path, "error", err, this.suppressLogging);
         this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
@@ -256,7 +256,9 @@ export class Tw2Resource extends Tw2Notifications
             this._requested = Date.now();
             resMan.OnPathEvent(this.path, stateName.toLowerCase(), log,this.suppressLogging);
             this.UpdateNotifications(Tw2Resource.Callback[stateName]);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -333,14 +335,21 @@ export class Tw2Resource extends Tw2Notifications
         // Do not turn this on unless you want resman to keep trying to
         // load broken stuff.
 
-        // Allow leaving ERROR only for terminal cleanup states
-        if (this._state === Tw2Resource.State.ERROR)
+        // Allow leaving errored resources only for terminal cleanup states
+        if (this.HasErrored())
         {
-            if (state === Tw2Resource.State.UNLOADED || state === Tw2Resource.State.PURGED || state === Tw2Resource.State.REQUESTED)
+            if (state === Tw2Resource.State.UNLOADED || state === Tw2Resource.State.PURGED)
             {
                 this._state = state;
                 return true;
             }
+
+            if (state === Tw2Resource.State.ERROR)
+            {
+                this._state = state;
+                return true;
+            }
+
             return false;
         }
 

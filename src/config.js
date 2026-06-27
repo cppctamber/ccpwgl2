@@ -69,7 +69,12 @@ export const config = {
 
             if (path.includes("_cube"))
             {
-                return isSupported ? path : path.replace(".dds", ".qube");
+                const supportsBC6H = isSupported &&
+                    support.dds.formats &&
+                    support.dds.formats.bc6h &&
+                    support.dds.formats.bc6h.declared;
+
+                return supportsBC6H ? path : path.replace(".dds", ".qube");
             }
 
             return isSupported ? path : path.replace(".dds", ".png");

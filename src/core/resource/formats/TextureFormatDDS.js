@@ -74,6 +74,8 @@ const DXGI =
     BC4_SNORM: 81,
     BC5_UNORM: 83,
     BC5_SNORM: 84,
+    BC6H_UF16: 95,
+    BC6H_SF16: 96,
     BC7_UNORM: 98,
     BC7_UNORM_SRGB: 99
 };
@@ -99,6 +101,8 @@ const DXGI_NAME =
     [DXGI.BC4_SNORM]: "BC4_SNORM",
     [DXGI.BC5_UNORM]: "BC5_UNORM",
     [DXGI.BC5_SNORM]: "BC5_SNORM",
+    [DXGI.BC6H_UF16]: "BC6H_UF16",
+    [DXGI.BC6H_SF16]: "BC6H_SF16",
     [DXGI.BC7_UNORM]: "BC7_UNORM",
     [DXGI.BC7_UNORM_SRGB]: "BC7_UNORM_SRGB"
 };
@@ -115,7 +119,9 @@ const GL_COMPRESSED =
     COMPRESSED_SIGNED_RG_RGTC2_EXT: 0x8DBE,
 
     COMPRESSED_RGBA_BPTC_UNORM_EXT: 0x8E8C,
-    COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT: 0x8E8D
+    COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT: 0x8E8D,
+    COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT: 0x8E8E,
+    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT: 0x8E8F
 };
 
 
@@ -180,6 +186,7 @@ export const TextureFormatDDS =
                 bc3SRGB: { declared: hasS3TC && hasS3TCSRGB, verified: false },
                 bc4: { declared: hasRGTC, verified: false },
                 bc5: { declared: hasRGTC, verified: false },
+                bc6h: { declared: hasBPTC, verified: false },
                 bc7: { declared: hasBPTC, verified: false },
                 bc7SRGB: { declared: hasBPTC, verified: false }
             }
@@ -605,6 +612,13 @@ export const TextureFormatDDS =
                 this.SetCompressed(info, info.name, 16, dxgiFormat === DXGI.BC5_SNORM
                     ? this.GetExtConstant(extensions.rgtc, "COMPRESSED_SIGNED_RG_RGTC2_EXT")
                     : this.GetExtConstant(extensions.rgtc, "COMPRESSED_RG_RGTC2_EXT"));
+                return;
+
+            case DXGI.BC6H_UF16:
+            case DXGI.BC6H_SF16:
+                this.SetCompressed(info, info.name, 16, dxgiFormat === DXGI.BC6H_SF16
+                    ? this.GetExtConstant(extensions.bptc, "COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT")
+                    : this.GetExtConstant(extensions.bptc, "COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT"));
                 return;
 
             case DXGI.BC7_UNORM:

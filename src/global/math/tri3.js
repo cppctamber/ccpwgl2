@@ -284,7 +284,7 @@ tri3.getClosestEdgeToPoint = (function()
                     
                 default:
                     debug.edgeStart = 2;
-                    debug.edgeEnd = 1;
+                    debug.edgeEnd = 0;
                     break;
             }
         }

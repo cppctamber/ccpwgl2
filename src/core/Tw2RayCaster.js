@@ -308,7 +308,7 @@ export class Tw2RayCaster
      */
     IntersectSph3(sphere, world)
     {
-        sph3_0 = sph3_0 = sph3.create();
+        sph3_0 = sph3_0 || sph3.create();
         sph3.transformMat4(sph3_0, sphere, world);
         return this.IntersectWorldSph3(sph3_0);
     }
