@@ -5,6 +5,10 @@ import { EveChild } from "./EveChild";
 
 
 @meta.type("EveChildMesh", true)
+@meta.define({
+    wgl: "EveChildMesh",
+    ccp: true
+})
 export class EveChildMesh extends EveChild
 {
 

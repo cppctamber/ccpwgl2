@@ -27,6 +27,7 @@ const Interpolation = {
  * @property {number} interpolation
  */
 @meta.type("Tw2ScalarKey")
+@meta.wgl.define("Tw2ScalarKey")
 export class Tw2ScalarKey extends Tw2CurveKey
 {
 
@@ -46,6 +47,7 @@ export class Tw2ScalarKey extends Tw2CurveKey
 
 
 @meta.type("Tw2ScalarCurve")
+@meta.wgl.define("Tw2ScalarCurve")
 export class Tw2ScalarCurve extends Tw2Curve
 {
 

@@ -30,6 +30,10 @@ class AudEvent
  * Todo: update with bone offset?
  */
 @meta.type("EveTurretSetItem")
+@meta.define({
+    wgl: "EveTurretSetItem",
+    ccp: true
+})
 export class EveTurretSetItem extends EveObjectSetItem
 {
 
@@ -122,6 +126,10 @@ export class EveTurretSetItem extends EveObjectSetItem
 
 
 @meta.type("EveTurretSet", true)
+@meta.define({
+    wgl: "EveTurretSet",
+    ccp: true
+})
 @meta.stage(1)
 export class EveTurretSet extends EveObjectSet
 {

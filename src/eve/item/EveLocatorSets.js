@@ -3,6 +3,10 @@ import { vec3, quat, mat4 } from "math";
 
 
 @meta.type("EveLocatorSetItem")
+@meta.define({
+    wgl: "EveLocatorSetItem",
+    ccp: true
+})
 @meta.stage(1)
 export class EveLocatorSetItem extends meta.Model
 {
@@ -95,6 +99,10 @@ export class EveLocatorSetItem extends meta.Model
 
 
 @meta.type("EveLocatorSets")
+@meta.define({
+    wgl: "EveLocatorSets",
+    ccp: true
+})
 export class EveLocatorSets extends meta.Model
 {
 

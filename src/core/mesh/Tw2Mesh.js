@@ -14,6 +14,10 @@ import { sph3 } from "math/sph3";
 
 
 @meta.type("Tw2Mesh", "Tr2Mesh")
+@meta.define({
+    wgl: "Tw2Mesh",
+    ccp: "Tr2Mesh"
+})
 export class Tw2Mesh extends meta.Model
 {
 

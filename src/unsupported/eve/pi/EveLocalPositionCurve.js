@@ -9,6 +9,10 @@ import { vec3 } from "math";
  */
 @meta.notImplemented
 @meta.type("EveLocalPositionCurve")
+@meta.define({
+    wgl: "EveLocalPositionCurve",
+    ccp: true
+})
 export class EveLocalPositionCurve extends meta.Model
 {
 

@@ -4,6 +4,7 @@ import { vec3, vec4, quat } from "math";
 
 @meta.notImplemented
 @meta.type("Tr2SpotLight")
+@meta.ccp.define("Tr2SpotLight")
 export class Tr2SpotLight extends meta.Model
 {
 

@@ -13,6 +13,7 @@ const
 
 
 @meta.type("Tw2Transform")
+@meta.wgl.define("Tw2Transform")
 export class Tw2Transform extends meta.Model
 {
 

@@ -3,6 +3,7 @@ import { Tw2Curve } from "curve";
 
 
 @meta.type("Tw2CurveExpression")
+@meta.wgl.define("Tw2CurveExpression")
 export class Tw2CurveExpression extends Tw2Curve
 {
 

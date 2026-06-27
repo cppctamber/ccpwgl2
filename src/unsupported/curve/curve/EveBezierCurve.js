@@ -5,6 +5,10 @@ import { vec3, quat }  from "math";
 
 @meta.notImplemented
 @meta.type("EveBezierCurve")
+@meta.define({
+    wgl: "EveBezierCurve",
+    ccp: true
+})
 export class EveBezierCurve extends Tw2Curve
 {
 

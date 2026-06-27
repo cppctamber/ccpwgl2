@@ -4,6 +4,10 @@ import { Tw2Parameter } from "./Tw2Parameter";
 
 
 @meta.type("Tw2VariableParameter", "TriVariableParameter")
+@meta.define({
+    wgl: "Tw2VariableParameter",
+    ccp: "TriVariableParameter"
+})
 export class Tw2VariableParameter extends Tw2Parameter
 {
 

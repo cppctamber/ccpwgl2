@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("AudEmitter", true)
+@meta.define({
+    wgl: "AudEmitter",
+    ccp: true
+})
 export class AudEmitter extends meta.Model
 {
 

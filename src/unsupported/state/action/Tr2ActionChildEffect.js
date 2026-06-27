@@ -4,6 +4,7 @@ import { Tw2Action } from "./Tw2Action";
 
 @meta.notImplemented
 @meta.type("Tr2ActionChildEffect")
+@meta.ccp.define("Tr2ActionChildEffect")
 export class Tr2ActionChildEffect extends Tw2Action
 {
 

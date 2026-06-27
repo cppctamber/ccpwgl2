@@ -15,6 +15,10 @@ import { meta } from "utils";
  */
 @meta.notImplemented
 @meta.type("EveTacticalOverlay")
+@meta.define({
+    wgl: "EveTacticalOverlay",
+    ccp: true
+})
 export class EveTacticalOverlay extends meta.Model
 {
 

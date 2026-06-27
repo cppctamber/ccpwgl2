@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("Tw2GeometryMeshBinding")
+@meta.wgl.define("Tw2GeometryMeshBinding")
 export class Tw2GeometryMeshBinding
 {
 

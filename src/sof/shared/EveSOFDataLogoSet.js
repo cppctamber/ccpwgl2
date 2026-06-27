@@ -4,6 +4,10 @@ import { EveSOFDataLogo } from "./EveSOFDataLogo";
 
 
 @meta.type("EveSOFDataLogoSet")
+@meta.define({
+    wgl: "EveSOFDataLogoSet",
+    ccp: true
+})
 export class EveSOFDataLogoSet extends meta.Model
 {
 

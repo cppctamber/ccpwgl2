@@ -3,6 +3,10 @@ import { tw2 } from "global";
 
 
 @meta.type("EveSOFDataFactionVisibilityGroupSet")
+@meta.define({
+    wgl: "EveSOFDataFactionVisibilityGroupSet",
+    ccp: true
+})
 export class EveSOFDataFactionVisibilityGroupSet extends meta.Model
 {
 

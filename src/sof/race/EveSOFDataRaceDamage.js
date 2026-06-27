@@ -3,6 +3,10 @@ import { EveSOFDataParameter, EveSOFDataTexture } from "sof";
 
 
 @meta.type("EveSOFDataRaceDamage")
+@meta.define({
+    wgl: "EveSOFDataRaceDamage",
+    ccp: true
+})
 export class EveSOFDataRaceDamage extends meta.Model
 {
 

@@ -4,6 +4,10 @@ import { Tw2Error } from "core";
 
 
 @meta.type("EveSOFDataFactionColorSet")
+@meta.define({
+    wgl: "EveSOFDataFactionColorSet",
+    ccp: true
+})
 export class EveSOFDataFactionColorSet extends meta.Model
 {
 

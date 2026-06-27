@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2PPFilmGrainEffect")
+@meta.ccp.define("Tr2PPFilmGrainEffect")
 export class Tr2PPFilmGrainEffect
 {
 

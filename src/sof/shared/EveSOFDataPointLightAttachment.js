@@ -3,6 +3,10 @@ import { vec3, quat } from "math";
 
 
 @meta.type("EveSOFDataPointLightAttachment")
+@meta.define({
+    wgl: "EveSOFDataPointLightAttachment",
+    ccp: true
+})
 export class EveSOFDataPointLightAttachment extends meta.Model
 {
 

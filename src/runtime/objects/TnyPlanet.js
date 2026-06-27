@@ -5,6 +5,7 @@ import { TnySpaceObject } from "./TnySpaceObject";
 
 
 @meta.tny.type("TnyPlanet")
+@meta.tny.define("TnyPlanet")
 export class TnyPlanet extends TnySpaceObject
 {
 

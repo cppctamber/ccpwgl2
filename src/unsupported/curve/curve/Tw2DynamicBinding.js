@@ -4,6 +4,7 @@ import { meta } from "utils";
 // Pretty sure this just traverses the path, and then returns a normal binding.
 
 @meta.type("Tr2DynamicBinding", "Tr2DynamicBinding")
+@meta.ccp.define("Tr2DynamicBinding")
 export class Tr2DynamicBinding extends meta.Model
 {
 

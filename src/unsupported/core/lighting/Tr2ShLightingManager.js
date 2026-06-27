@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2ShLightingManager")
+@meta.ccp.define("Tr2ShLightingManager")
 export class Tr2ShLightingManager extends meta.Model
 {
 

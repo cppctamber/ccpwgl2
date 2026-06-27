@@ -4,6 +4,10 @@ import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
 @meta.type("Tw2ParticleAttractorForce", "Tr2ParticleAttractorForce")
+@meta.define({
+    wgl: "Tw2ParticleAttractorForce",
+    ccp: "Tr2ParticleAttractorForce"
+})
 export class Tw2ParticleAttractorForce extends Tw2ParticleForce
 {
 

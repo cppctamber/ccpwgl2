@@ -3,6 +3,10 @@ import { quat, vec3, mat4 } from "math";
 
 
 @meta.type("EveSOFDataTransform")
+@meta.define({
+    wgl: "EveSOFDataTransform",
+    ccp: true
+})
 export class EveSOFDataTransform extends meta.Model
 {
 

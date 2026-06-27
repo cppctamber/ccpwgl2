@@ -20,6 +20,7 @@ const Interpolation = {
 
 
 @meta.type("Tw2CurveScalarKey")
+@meta.wgl.define("Tw2CurveScalarKey")
 @meta.todo("Figure out how this basic curve works!")
 export class Tw2CurveScalarKey extends Tw2CurveKey
 {
@@ -66,6 +67,7 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
 
 @meta.notImplemented
 @meta.type("Tr2CurveScalar")
+@meta.ccp.define("Tr2CurveScalar")
 export class Tr2CurveScalar extends Tw2Curve
 {
 

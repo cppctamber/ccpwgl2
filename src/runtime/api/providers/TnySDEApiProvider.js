@@ -3,6 +3,7 @@ import { resMan } from "global";
 
 
 @meta.tny.type("TnySDEApiProvider")
+@meta.tny.define("TnySDEApiProvider")
 export class TnySDEApiProvider
 {
 

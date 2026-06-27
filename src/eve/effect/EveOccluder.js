@@ -5,6 +5,10 @@ import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
 @meta.type("EveOccluder")
+@meta.define({
+    wgl: "EveOccluder",
+    ccp: true
+})
 export class EveOccluder extends meta.Model
 {
 

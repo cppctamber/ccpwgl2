@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2PPLutEffect")
+@meta.ccp.define("Tr2PPLutEffect")
 export class Tr2PPLutEffect
 {
 

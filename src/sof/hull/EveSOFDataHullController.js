@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataHullController")
+@meta.define({
+    wgl: "EveSOFDataHullController",
+    ccp: true
+})
 export class EveSOFDataHullController extends meta.Model
 {
 

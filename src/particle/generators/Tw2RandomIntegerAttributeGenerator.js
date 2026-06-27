@@ -5,6 +5,10 @@ import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
 @meta.type("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator")
+@meta.define({
+    wgl: "Tw2RandomIntegerAttributeGenerator",
+    ccp: "Tr2RandomIntegerAttributeGenerator"
+})
 export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 

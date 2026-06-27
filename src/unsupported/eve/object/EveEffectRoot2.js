@@ -5,6 +5,10 @@ import { EveObject } from "eve/object/EveObject";
 
 @meta.notImplemented
 @meta.type("EveEffectRoot2")
+@meta.define({
+    wgl: "EveEffectRoot2",
+    ccp: true
+})
 export class EveEffectRoot2 extends EveObject
 {
 

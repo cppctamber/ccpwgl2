@@ -4,6 +4,10 @@ import { EveSOFDataBoosterShape } from "sof";
 
 
 @meta.type("EveSOFDataBooster")
+@meta.define({
+    wgl: "EveSOFDataBooster",
+    ccp: true
+})
 export class EveSOFDataBooster extends meta.Model
 {
 

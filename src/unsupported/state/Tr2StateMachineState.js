@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2StateMachineState")
+@meta.ccp.define("Tr2StateMachineState")
 export class Tr2StateMachineState extends meta.Model
 {
 

@@ -18,6 +18,10 @@ import { vec3, vec4 } from "math";
  */
 @meta.notImplemented
 @meta.type("EveConnector")
+@meta.define({
+    wgl: "EveConnector",
+    ccp: true
+})
 export class EveConnector extends meta.Model
 {
 

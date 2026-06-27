@@ -5,6 +5,7 @@ import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
 
 
 @meta.type("Gr2Curve2")
+@meta.wgl.define("Gr2Curve2")
 export class Gr2Curve2 extends meta.Model
 {
 

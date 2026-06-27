@@ -4,6 +4,10 @@ import { EveSOFDataFaction } from "sof";
 
 
 @meta.type("EveSOFDataAreaRewire")
+@meta.define({
+    wgl: "EveSOFDataAreaRewire",
+    ccp: true
+})
 export class EveSOFDataAreaRewire extends meta.Model
 {
 

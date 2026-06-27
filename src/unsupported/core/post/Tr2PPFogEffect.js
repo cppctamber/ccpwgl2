@@ -4,6 +4,7 @@ import { vec3, vec4 } from "math";
 
 @meta.notImplemented
 @meta.type("Tr2PPFogEffect")
+@meta.ccp.define("Tr2PPFogEffect")
 export class Tr2PPFogEffect
 {
 

@@ -3,6 +3,10 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("EveAnimationStateMachine")
+@meta.define({
+    wgl: "EveAnimationStateMachine",
+    ccp: true
+})
 export class EveAnimationStateMachine
 {
 

@@ -3,6 +3,7 @@ import { vec3, mat4, pln, box3 } from "math";
 
 
 @meta.type("Tw2Frustum")
+@meta.wgl.define("Tw2Frustum")
 export class Tw2Frustum
 {
 

@@ -24,6 +24,10 @@ import { quat, vec3 } from "math";
  */
 @meta.notImplemented
 @meta.type("EveCamera")
+@meta.define({
+    wgl: "EveCamera",
+    ccp: true
+})
 export class EveCamera extends meta.Model
 {
 

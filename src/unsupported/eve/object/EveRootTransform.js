@@ -5,6 +5,10 @@ import { EveObject } from "eve/object/EveObject";
 
 @meta.notImplemented
 @meta.type("EveRootTransform")
+@meta.define({
+    wgl: "EveRootTransform",
+    ccp: true
+})
 export class EveRootTransform extends EveObject
 {
 

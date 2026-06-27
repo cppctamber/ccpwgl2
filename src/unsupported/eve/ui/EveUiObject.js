@@ -10,6 +10,10 @@ import { meta } from "utils";
  */
 @meta.notImplemented
 @meta.type("EveUiObject")
+@meta.define({
+    wgl: "EveUiObject",
+    ccp: true
+})
 export class EveUiObject extends meta.Model
 {
 

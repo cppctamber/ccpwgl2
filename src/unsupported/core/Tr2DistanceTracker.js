@@ -4,6 +4,7 @@ import { vec3 } from "math";
 
 @meta.notImplemented
 @meta.type("Tr2DistanceTracker")
+@meta.ccp.define("Tr2DistanceTracker")
 export class Tr2DistanceTracker extends meta.Model
 {
 

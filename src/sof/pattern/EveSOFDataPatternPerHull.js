@@ -3,6 +3,10 @@ import { EveSOFDataPatternTransform } from "./EveSOFDataPatternTransform";
 
 
 @meta.type("EveSOFDataPatternPerHull")
+@meta.define({
+    wgl: "EveSOFDataPatternPerHull",
+    ccp: true
+})
 export class EveSOFDataPatternPerHull extends meta.Model
 {
 

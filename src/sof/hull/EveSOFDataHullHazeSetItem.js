@@ -3,6 +3,10 @@ import { quat, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullHazeSetItem")
+@meta.define({
+    wgl: "EveSOFDataHullHazeSetItem",
+    ccp: true
+})
 export class EveSOFDataHullHazeSetItem extends meta.Model
 {
 

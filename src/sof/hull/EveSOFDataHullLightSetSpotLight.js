@@ -3,6 +3,10 @@ import { vec3, vec4, quat } from "math";
 
 
 @meta.type("EveSOFDataHullLightSetSpotLight")
+@meta.define({
+    wgl: "EveSOFDataHullLightSetSpotLight",
+    ccp: true
+})
 export class EveSOFDataHullLightSetSpotLight extends meta.Model
 {
 

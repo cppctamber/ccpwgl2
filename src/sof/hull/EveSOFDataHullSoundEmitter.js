@@ -3,6 +3,10 @@ import { vec3, quat } from "math";
 
 
 @meta.type("EveSOFDataHullSoundEmitter")
+@meta.define({
+    wgl: "EveSOFDataHullSoundEmitter",
+    ccp: true
+})
 export class EveSOFDataHullSoundEmitter extends meta.Model
 {
 

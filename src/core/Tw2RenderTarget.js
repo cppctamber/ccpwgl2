@@ -4,6 +4,7 @@ import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
 @meta.type("Tw2RenderTarget")
+@meta.wgl.define("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
 

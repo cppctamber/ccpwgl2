@@ -9,6 +9,10 @@ import { mat4, vec3, vec4 } from "math";
 
 @meta.notImplemented
 @meta.type("EveTrailSet")
+@meta.define({
+    wgl: "EveTrailSet",
+    ccp: true
+})
 export class EveTrailsSet extends meta.Model
 {
 

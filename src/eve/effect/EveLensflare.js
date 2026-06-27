@@ -7,6 +7,10 @@ import { EveOccluder } from "./EveOccluder";
 
 
 @meta.type("EveLensflare")
+@meta.define({
+    wgl: "EveLensflare",
+    ccp: true
+})
 export class EveLensflare extends meta.Model
 {
 

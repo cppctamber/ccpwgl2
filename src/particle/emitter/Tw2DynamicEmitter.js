@@ -3,6 +3,10 @@ import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
 @meta.type("Tw2DynamicEmitter", "Tr2DynamicEmitter")
+@meta.define({
+    wgl: "Tw2DynamicEmitter",
+    ccp: "Tr2DynamicEmitter"
+})
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
 

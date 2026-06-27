@@ -6,6 +6,10 @@ import { Tw2AnimationController } from "core/model";
 
 @meta.notImplemented
 @meta.type("EveStation2")
+@meta.define({
+    wgl: "EveStation2",
+    ccp: true
+})
 export class EveStation2 extends EveShip2
 {
 

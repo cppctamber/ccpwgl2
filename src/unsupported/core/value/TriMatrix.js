@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("TriMatrix")
+@meta.ccp.define("TriMatrix")
 @meta.todo("Should this default to a identity matrix?")
 export class TriMatrix extends meta.Model
 {

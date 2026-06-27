@@ -3,6 +3,7 @@ import { Tw2SamplerState } from "./Tw2SamplerState";
 
 
 @meta.type("Tw2SamplerOverride")
+@meta.wgl.define("Tw2SamplerOverride")
 export class Tw2SamplerOverride extends meta.Model
 {
 

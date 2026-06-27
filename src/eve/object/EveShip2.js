@@ -11,6 +11,10 @@ import { RM_OPAQUE } from "constant";
 
 
 @meta.type("EveShip2")
+@meta.define({
+    wgl: "EveShip2",
+    ccp: true
+})
 @meta.stage(2)
 export class EveShip2 extends EveObject
 {

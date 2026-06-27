@@ -5,6 +5,10 @@ import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
 @meta.type("EveSpaceObjectDecal", true)
+@meta.define({
+    wgl: "EveSpaceObjectDecal",
+    ccp: true
+})
 export class EveSpaceObjectDecal extends meta.Model
 {
 

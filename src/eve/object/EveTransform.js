@@ -21,6 +21,10 @@ const Modifier = {
 
 
 @meta.type("EveTransform")
+@meta.define({
+    wgl: "EveTransform",
+    ccp: true
+})
 export class EveTransform extends EveObject
 {
 

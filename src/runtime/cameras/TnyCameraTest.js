@@ -4,6 +4,7 @@ import { WrappedTestCamera } from "wrapped/WrappedTestCamera";
 
 
 @meta.tny.type("TnyCameraTest")
+@meta.tny.define("TnyCameraTest")
 export class TnyCameraTest extends meta.Model
 {
 

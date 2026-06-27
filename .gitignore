@@ -38,3 +38,7 @@ src/wrapped/
 
 # experimental rollup build output
 dist/rollup/
+
+# local experiments
+src/experiments/
+

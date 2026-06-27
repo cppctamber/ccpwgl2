@@ -4,6 +4,7 @@ import { Tw2Curve } from "curve";
 
 
 @meta.type("Tw2MayaEulerRotationCurve")
+@meta.wgl.define("Tw2MayaEulerRotationCurve")
 export class Tw2MayaEulerRotationCurve extends Tw2Curve
 {
 

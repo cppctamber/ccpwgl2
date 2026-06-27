@@ -22,6 +22,7 @@ const Interpolation = {
 
 
 @meta.type("Tw2QuaternionKey")
+@meta.wgl.define("Tw2QuaternionKey")
 export class Tw2QuaternionKey extends Tw2CurveKey
 {
 
@@ -42,6 +43,7 @@ export class Tw2QuaternionKey extends Tw2CurveKey
 
 
 @meta.type("Tw2RotationCurve")
+@meta.wgl.define("Tw2RotationCurve")
 export class Tw2RotationCurve extends Tw2Curve
 {
 

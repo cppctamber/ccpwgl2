@@ -4,6 +4,7 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 
 @meta.type("Tw2Torque")
+@meta.wgl.define("Tw2Torque")
 export class Tw2Torque extends Tw2CurveKey
 {
 
@@ -20,6 +21,7 @@ export class Tw2Torque extends Tw2CurveKey
 
 
 @meta.type("Tw2RigidOrientation")
+@meta.wgl.define("Tw2RigidOrientation")
 export class Tw2RigidOrientation extends Tw2Curve
 {
 

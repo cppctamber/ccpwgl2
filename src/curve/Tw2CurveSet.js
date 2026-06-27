@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("Tw2CurveSet", "TriCurveSet")
+@meta.define({
+    wgl: "Tw2CurveSet",
+    ccp: "TriCurveSet"
+})
 export class Tw2CurveSet extends meta.Model
 {
 

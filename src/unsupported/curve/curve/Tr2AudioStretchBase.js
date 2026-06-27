@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2AudioStretchBase", "Tr2AudioStretchBase")
+@meta.ccp.define("Tr2AudioStretchBase")
 export class Tr2AudioStretchBase extends meta.Model
 {
 

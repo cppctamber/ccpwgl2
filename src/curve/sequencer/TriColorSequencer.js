@@ -4,6 +4,7 @@ import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 
 @meta.type("TriColorSequencer")
+@meta.ccp.define("TriColorSequencer")
 @meta.todo("Make backwards compatible with old Tw2ColorSequencer")
 @meta.stage(2)
 export class TriColorSequencer extends Tw2CurveSequencer

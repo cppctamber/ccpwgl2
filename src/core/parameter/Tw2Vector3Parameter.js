@@ -4,6 +4,7 @@ import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
 @meta.type("Tw2Vector3Parameter")
+@meta.wgl.define("Tw2Vector3Parameter")
 export class Tw2Vector3Parameter extends Tw2VectorParameter
 {
 

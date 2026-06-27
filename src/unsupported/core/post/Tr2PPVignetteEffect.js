@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2PPVignetteEffect")
+@meta.ccp.define("Tr2PPVignetteEffect")
 export class Tr2PPVignetteEffect
 {
 

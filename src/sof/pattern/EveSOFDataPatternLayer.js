@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataPatternLayer")
+@meta.define({
+    wgl: "EveSOFDataPatternLayer",
+    ccp: true
+})
 export class EveSOFDataPatternLayer extends meta.Model
 {
 

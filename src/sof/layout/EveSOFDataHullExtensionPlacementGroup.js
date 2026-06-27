@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataHullExtensionPlacementGroup")
+@meta.define({
+    wgl: "EveSOFDataHullExtensionPlacementGroup",
+    ccp: true
+})
 export class EveSOFDataHullExtensionPlacementGroup extends meta.Model
 {
 

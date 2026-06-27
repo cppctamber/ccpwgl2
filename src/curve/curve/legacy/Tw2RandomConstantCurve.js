@@ -3,6 +3,7 @@ import { Tw2Curve } from "../Tw2Curve";
 
 
 @meta.type("Tw2RandomConstantCurve")
+@meta.wgl.define("Tw2RandomConstantCurve")
 export class Tw2RandomConstantCurve extends Tw2Curve
 {
 

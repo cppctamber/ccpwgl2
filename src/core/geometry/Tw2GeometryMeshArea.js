@@ -3,6 +3,7 @@ import { box3, sph3, vec3 } from "math";
 
 
 @meta.type("Tw2GeometryMeshArea")
+@meta.wgl.define("Tw2GeometryMeshArea")
 export class Tw2GeometryMeshArea
 {
 

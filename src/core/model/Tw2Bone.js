@@ -3,6 +3,7 @@ import { mat4 } from "math";
 
 
 @meta.type("Tw2Bone")
+@meta.wgl.define("Tw2Bone")
 export class Tw2Bone
 {
 

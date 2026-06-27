@@ -4,6 +4,7 @@ import { TnySpaceObject } from "./TnySpaceObject";
 
 
 @meta.tny.type("TnyShip")
+@meta.tny.define("TnyShip")
 export class TnyShip extends TnySpaceObject
 {
 

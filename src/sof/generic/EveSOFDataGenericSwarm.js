@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataGenericShader")
+@meta.define({
+    wgl: "EveSOFDataGenericShader",
+    ccp: true
+})
 export class EveSOFDataGenericSwarm extends meta.Model
 {
 

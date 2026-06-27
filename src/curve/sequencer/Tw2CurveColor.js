@@ -4,6 +4,10 @@ import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 
 @meta.type("Tw2CurveColor", "Tr2CurveColor")
+@meta.define({
+    wgl: "Tw2CurveColor",
+    ccp: "Tr2CurveColor"
+})
 @meta.stage(2)
 export class Tw2CurveColor extends Tw2CurveSequencer
 {

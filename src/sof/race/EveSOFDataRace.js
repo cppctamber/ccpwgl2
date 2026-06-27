@@ -4,6 +4,10 @@ import { EveSOFDataRaceDamage } from "./EveSOFDataRaceDamage";
 
 
 @meta.type("EveSOFDataRace")
+@meta.define({
+    wgl: "EveSOFDataRace",
+    ccp: true
+})
 export class EveSOFDataRace extends meta.Model
 {
 

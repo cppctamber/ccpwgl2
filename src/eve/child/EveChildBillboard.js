@@ -6,6 +6,10 @@ import { EveChild } from "./EveChild";
 
 
 @meta.type("EveChildBillboard")
+@meta.define({
+    wgl: "EveChildBillboard",
+    ccp: true
+})
 @meta.todo("Deprecated?")
 export class EveChildBillboard extends EveChild
 {

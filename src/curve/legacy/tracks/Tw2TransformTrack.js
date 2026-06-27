@@ -4,6 +4,7 @@ import { curve, vec3, quat, mat4 } from "math";
 
 
 @meta.type("Tw2TransformTrack")
+@meta.wgl.define("Tw2TransformTrack")
 export class Tw2TransformTrack
 {
 

@@ -4,6 +4,7 @@ import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
 @meta.type("Tr2ParticleVortexForce")
+@meta.ccp.define("Tr2ParticleVortexForce")
 @meta.notImplemented
 export class Tr2ParticleVortexForce extends Tw2ParticleForce
 {

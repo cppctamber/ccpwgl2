@@ -3,6 +3,7 @@ import { Tw2Curve, Tw2CurveKey } from "curve";
 
 
 @meta.type("Tr2ScalarExprKey")
+@meta.ccp.define("Tr2ScalarExprKey")
 export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
@@ -39,6 +40,7 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
 
 @meta.notImplemented
 @meta.type("Tr2ScalarExprKeyCurve")
+@meta.ccp.define("Tr2ScalarExprKeyCurve")
 export class Tr2ScalarExprKeyCurve extends Tw2Curve
 {
 

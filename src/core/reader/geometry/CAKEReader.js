@@ -8,6 +8,7 @@ import { Tw2Error } from "core/Tw2Error";
  * Todo: Deprecate this class (replaced by the gr2_json format)
  */
 @meta.type("Tw2CakeReader")
+@meta.wgl.define("Tw2CakeReader")
 export class CAKEReader
 {
 

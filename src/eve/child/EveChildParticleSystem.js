@@ -5,6 +5,10 @@ import { EveChild } from "./EveChild";
 
 
 @meta.type("EveChildParticleSystem", true)
+@meta.define({
+    wgl: "EveChildParticleSystem",
+    ccp: true
+})
 @meta.stage(1)
 export class EveChildParticleSystem extends EveChild
 {

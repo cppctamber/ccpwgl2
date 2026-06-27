@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2PPDynamicExposureEffect")
+@meta.ccp.define("Tr2PPDynamicExposureEffect")
 export class Tr2PPDynamicExposureEffect
 {
 

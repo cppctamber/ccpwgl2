@@ -5,6 +5,10 @@ import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
 @meta.type("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator")
+@meta.define({
+    wgl: "Tw2SphereShapeAttributeGenerator",
+    ccp: "Tr2SphereShapeAttributeGenerator"
+})
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 

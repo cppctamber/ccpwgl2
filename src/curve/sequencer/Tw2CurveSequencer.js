@@ -3,6 +3,7 @@ import { Tw2Curve } from "../curve/Tw2Curve";
 
 
 @meta.type("Tw2CurveSequencer")
+@meta.wgl.define("Tw2CurveSequencer")
 export class Tw2CurveSequencer extends Tw2Curve
 {
     /**

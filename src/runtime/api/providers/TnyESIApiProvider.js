@@ -60,6 +60,7 @@ function applyAliases(item, aliases)
 
 
 @meta.tny.type("TnyESIApiProvider")
+@meta.tny.define("TnyESIApiProvider")
 export class TnyESIApiProvider
 {
 

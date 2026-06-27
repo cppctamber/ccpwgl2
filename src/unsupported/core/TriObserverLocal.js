@@ -3,6 +3,7 @@ import { vec3 } from "math";
 
 @meta.notImplemented
 @meta.type("TriObserverLocal")
+@meta.ccp.define("TriObserverLocal")
 export class TriObserverLocal extends meta.Model
 {
 

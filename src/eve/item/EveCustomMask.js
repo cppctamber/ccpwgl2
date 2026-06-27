@@ -5,6 +5,10 @@ import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
 
 
 @meta.type("EveCustomMask")
+@meta.define({
+    wgl: "EveCustomMask",
+    ccp: true
+})
 @meta.stage(1)
 export class EveCustomMask extends Tw2Transform
 {

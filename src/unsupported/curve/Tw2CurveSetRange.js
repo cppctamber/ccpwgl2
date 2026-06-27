@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tw2CurveSetRange")
+@meta.wgl.define("Tw2CurveSetRange")
 export class Tw2CurveSetRange extends meta.Model
 {
 

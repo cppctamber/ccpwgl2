@@ -5,6 +5,7 @@ import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 @meta.notImplemented
 @meta.type("Tr2CurveVector3Expression")
+@meta.ccp.define("Tr2CurveVector3Expression")
 export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 

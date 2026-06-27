@@ -1,5 +1,5 @@
 import { generateID } from "../utils/uuid";
-import { getMetadata, hasMetadata } from "../utils/reflect";
+import { getMetadata, getOwnMetadata, hasMetadata } from "../utils/reflect";
 import { isArray, isFunction, isNumber, isObjectObject, isString } from "../utils/type";
 import { tw2 } from "global/tw2";
 
@@ -676,16 +676,70 @@ export class Model
         return this.constructor.getClassCCPName(this);
     }
 
+    /**
+     * Gets a class definition
+     * @param {String} namespace
+     * @returns {?Object}
+     */
+    GetClassDefinition(namespace)
+    {
+        return this.constructor.getClassDefinition(this, namespace);
+    }
+
+    /**
+     * Gets a class definition name
+     * @param {String} namespace
+     * @returns {?String}
+     */
+    GetClassDefinitionName(namespace)
+    {
+        return this.constructor.getClassDefinitionName(this, namespace);
+    }
+
+    /**
+     * Gets class definitions
+     * @returns {?Object}
+     */
+    GetClassDefinitions()
+    {
+        return this.constructor.getClassDefinitions(this);
+    }
+
+    static getConstructor(obj)
+    {
+        return isFunction(obj) ? obj : obj.constructor;
+    }
+
     static getClassCCPName(obj)
     {
-        const ccp = getMetadata("ccp", obj.constructor);
+        const ccpDefinition = this.getClassDefinitionName(obj, "ccp");
+        if (ccpDefinition) return ccpDefinition;
+
+        const ccp = getMetadata("ccp", this.getConstructor(obj));
         return ccp ? ccp : this.getClassName(obj);
     }
 
     static getClassName(obj)
     {
-        const type = getMetadata("type", obj.constructor);
+        const type = getMetadata("type", this.getConstructor(obj));
         return isString(type) ? type : null;
+    }
+
+    static getClassDefinitions(obj)
+    {
+        return getOwnMetadata("definitions", this.getConstructor(obj)) || null;
+    }
+
+    static getClassDefinition(obj, namespace)
+    {
+        const definitions = this.getClassDefinitions(obj);
+        return definitions && definitions.namespaces ? definitions.namespaces[namespace] || null : null;
+    }
+
+    static getClassDefinitionName(obj, namespace)
+    {
+        const definition = this.getClassDefinition(obj, namespace);
+        return definition && isString(definition.name) ? definition.name : null;
     }
 
     static getPropType(obj, prop)

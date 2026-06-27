@@ -4,6 +4,7 @@ import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
 @meta.type("Tw2XYZScalarSequencer")
+@meta.wgl.define("Tw2XYZScalarSequencer")
 export class Tw2XYZScalarSequencer extends Tw2CurveSequencer
 {
 

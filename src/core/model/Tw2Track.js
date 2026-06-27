@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("Tw2Track")
+@meta.wgl.define("Tw2Track")
 export class Tw2Track
 {
 

@@ -5,6 +5,10 @@ import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
 @meta.type("Tw2StaticEmitter", "Tr2StaticEmitter")
+@meta.define({
+    wgl: "Tw2StaticEmitter",
+    ccp: "Tr2StaticEmitter"
+})
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 

@@ -11,6 +11,10 @@ import {
 
 
 @meta.type("EveMeshOverlayEffect")
+@meta.define({
+    wgl: "EveMeshOverlayEffect",
+    ccp: true
+})
 export class EveMeshOverlayEffect extends meta.Model
 {
 

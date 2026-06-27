@@ -38,6 +38,10 @@ const readers = {
  * @property {Boolean} _boundsDirty
  */
 @meta.type("Tw2GeometryRes", "TriGeometryRes")
+@meta.define({
+    wgl: "Tw2GeometryRes",
+    ccp: "TriGeometryRes"
+})
 export class Tw2GeometryRes extends Tw2Resource
 {
 

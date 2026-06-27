@@ -11,6 +11,7 @@ import { Tw2ShaderAnnotation } from "core/shader/Tw2ShaderAnnotation";
 
 
 @meta.type("Tw2ShaderStage")
+@meta.wgl.define("Tw2ShaderStage")
 export class Tw2ShaderStage
 {
 

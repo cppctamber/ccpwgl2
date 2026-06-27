@@ -5,6 +5,10 @@ import { EveChild } from "eve/child";
 
 @meta.notImplemented
 @meta.type("EveChildExplosion")
+@meta.define({
+    wgl: "EveChildExplosion",
+    ccp: true
+})
 export class EveChildExplosion extends EveChild
 {
 

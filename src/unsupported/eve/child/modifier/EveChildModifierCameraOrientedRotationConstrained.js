@@ -7,6 +7,10 @@ import { device } from "global";
 
 @meta.notImplemented
 @meta.type("EveChildModifierCameraOrientedRotationConstrained")
+@meta.define({
+    wgl: "EveChildModifierCameraOrientedRotationConstrained",
+    ccp: true
+})
 export class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier
 {
 

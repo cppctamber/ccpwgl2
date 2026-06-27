@@ -5,6 +5,7 @@ import { ErrHTTPRequest } from "core/engine";
 
 
 @meta.type("Tw2AudioRes")
+@meta.wgl.define("Tw2AudioRes")
 export class Tw2AudioRes extends Tw2Resource
 {
 

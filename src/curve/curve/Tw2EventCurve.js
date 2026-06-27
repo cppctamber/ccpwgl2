@@ -9,6 +9,10 @@ const Extrapolation = {
 
 
 @meta.type("Tw2EventKey", "TriEventKey")
+@meta.define({
+    wgl: "Tw2EventKey",
+    ccp: "TriEventKey"
+})
 export class Tw2EventKey extends Tw2CurveKey
 {
 
@@ -22,6 +26,10 @@ export class Tw2EventKey extends Tw2CurveKey
 
 
 @meta.type("Tw2EventCurve", "TriEventCurve")
+@meta.define({
+    wgl: "Tw2EventCurve",
+    ccp: "TriEventCurve"
+})
 export class Tw2EventCurve extends Tw2Curve
 {
 

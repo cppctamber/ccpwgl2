@@ -4,6 +4,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2CurveScalarExpression")
+@meta.ccp.define("Tr2CurveScalarExpression")
 export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {
 

@@ -3,6 +3,7 @@ import { Tw2Error } from "core/Tw2Error";
 
 
 @meta.type("Tw2ShaderPermutation")
+@meta.wgl.define("Tw2ShaderPermutation")
 export class Tw2ShaderPermutation
 {
 

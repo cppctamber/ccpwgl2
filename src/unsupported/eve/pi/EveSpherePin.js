@@ -20,6 +20,10 @@ import { vec3, vec4 } from "math";
  */
 @meta.notImplemented
 @meta.type("EveSpherePin")
+@meta.define({
+    wgl: "EveSpherePin",
+    ccp: true
+})
 export class EveSpherePin extends meta.Model
 {
 

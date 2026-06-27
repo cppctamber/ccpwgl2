@@ -4,6 +4,10 @@ import { vec3 } from "math";
 
 
 @meta.type("Tw2CurveVector3", "Tr2CurveVector3")
+@meta.define({
+    wgl: "Tw2CurveVector3",
+    ccp: "Tr2CurveVector3"
+})
 @meta.stage(2)
 export class Tw2CurveVector3 extends Tw2CurveSequencer
 {

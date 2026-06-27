@@ -3,6 +3,10 @@ import { EveSpaceObject } from "./EveSpaceObject";
 
 
 @meta.type("EveShip")
+@meta.define({
+    wgl: "EveShip",
+    ccp: true
+})
 export class EveShip extends EveSpaceObject
 {
 

@@ -3,6 +3,7 @@ import { Gr2Curve2 } from "./Gr2Curve2";
 
 
 @meta.type("Gr2CurveOld")
+@meta.wgl.define("Gr2CurveOld")
 export class Gr2CurveDataOld extends Gr2Curve2
 {
 

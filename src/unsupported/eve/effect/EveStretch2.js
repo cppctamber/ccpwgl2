@@ -3,6 +3,10 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("EveStretch2")
+@meta.define({
+    wgl: "EveStretch2",
+    ccp: true
+})
 export class EveStretch2 extends meta.Model
 {
 

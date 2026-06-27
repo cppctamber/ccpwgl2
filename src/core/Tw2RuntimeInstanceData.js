@@ -5,6 +5,10 @@ import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleEleme
 
 
 @meta.type("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
+@meta.define({
+    wgl: "Tw2RuntimeInstanceData",
+    ccp: "Tr2RuntimeInstanceData"
+})
 export class Tw2RuntimeInstanceData extends meta.Model
 {
 

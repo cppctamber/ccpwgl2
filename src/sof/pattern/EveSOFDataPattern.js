@@ -5,6 +5,10 @@ import { EveSOFDataPatternPerHull } from "./EveSOFDataPatternPerHull";
 
 
 @meta.type("EveSOFDataPattern")
+@meta.define({
+    wgl: "EveSOFDataPattern",
+    ccp: true
+})
 export class EveSOFDataPattern extends meta.Model
 {
 

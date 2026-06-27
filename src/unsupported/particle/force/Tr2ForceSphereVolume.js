@@ -3,6 +3,7 @@ import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
 @meta.type("Tr2ForceSphereVolume")
+@meta.ccp.define("Tr2ForceSphereVolume")
 @meta.notImplemented
 export class Tr2ForceSphereVolume extends Tw2ParticleForce
 {

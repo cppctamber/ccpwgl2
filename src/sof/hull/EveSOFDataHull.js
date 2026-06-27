@@ -3,6 +3,10 @@ import { vec3, vec4 } from "math";
 
 
 @meta.type("EveSOFDataHull")
+@meta.define({
+    wgl: "EveSOFDataHull",
+    ccp: true
+})
 export class EveSOFDataHull extends meta.Model
 {
 

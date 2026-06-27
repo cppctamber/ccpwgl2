@@ -4,6 +4,7 @@ import { vec3, vec4, quat } from "math";
 
 @meta.notImplemented
 @meta.type("Tr2TexturedPointLight")
+@meta.ccp.define("Tr2TexturedPointLight")
 export class Tr2TexturedPointLight extends meta.Model
 {
 

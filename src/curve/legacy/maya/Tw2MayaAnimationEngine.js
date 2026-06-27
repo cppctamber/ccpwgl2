@@ -4,6 +4,7 @@ import { ErrFeatureNotImplemented } from "core";
 
 
 @meta.type("Tw2MayaAnimationEngine")
+@meta.wgl.define("Tw2MayaAnimationEngine")
 export class Tw2MayaAnimationEngine
 {
 

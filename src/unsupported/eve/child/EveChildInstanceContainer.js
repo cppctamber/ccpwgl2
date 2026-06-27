@@ -4,6 +4,10 @@ import { vec3,  mat4 } from "math";
 
 @meta.notImplemented
 @meta.type("EveChildInstanceContainer")
+@meta.define({
+    wgl: "EveChildInstanceContainer",
+    ccp: true
+})
 export class EveChildInstanceContainer extends meta.Model
 {
 

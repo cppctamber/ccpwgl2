@@ -47,6 +47,10 @@ export class EveBoosterBatch extends Tw2RenderBatch
 
 
 @meta.type("EveBoosterSetItem")
+@meta.define({
+    wgl: "EveBoosterSetItem",
+    ccp: true
+})
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
@@ -143,6 +147,10 @@ export class EveBoosterSetItem extends EveObjectSetItem
  */
 
 @meta.type("EveBoosterSet", true)
+@meta.define({
+    wgl: "EveBoosterSet",
+    ccp: true
+})
 export class EveBoosterSet extends EveObjectSet
 {
 

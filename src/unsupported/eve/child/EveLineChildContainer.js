@@ -5,6 +5,10 @@ import { vec4, quat } from "math";
 
 @meta.notImplemented
 @meta.type("EveLineChildContainer", true)
+@meta.define({
+    wgl: "EveLineChildContainer",
+    ccp: true
+})
 export class EveLineChildContainer extends EveChild
 {
 

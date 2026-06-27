@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 
 @meta.tny.type("TnyResService")
+@meta.tny.define("TnyResService")
 export class TnyResService extends meta.Model
 {
 

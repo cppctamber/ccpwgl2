@@ -5,6 +5,10 @@ import { EveChildModifier } from "./EveChildModifier";
 
 @meta.notImplemented
 @meta.type("EveChildModifierSRT")
+@meta.define({
+    wgl: "EveChildModifierSRT",
+    ccp: true
+})
 export class EveChildModifierSRT extends EveChildModifier
 {
 

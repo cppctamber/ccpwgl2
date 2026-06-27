@@ -4,6 +4,7 @@ import { Tw2ParticleEmitter } from "particle/emitter/Tw2ParticleEmitter";
 
 
 @meta.type("Tr2GpuUniqueEmitter")
+@meta.ccp.define("Tr2GpuUniqueEmitter")
 @meta.notImplemented
 export class Tr2GpuUniqueEmitter extends Tw2ParticleEmitter
 {

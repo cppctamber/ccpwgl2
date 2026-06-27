@@ -5,6 +5,7 @@ import { meta } from "utils";
 
 
 @meta.tny.type("TnyClient")
+@meta.tny.define("TnyClient")
 export class TnyClient extends meta.Model
 {
 

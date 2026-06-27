@@ -4,6 +4,7 @@ import { Tw2Curve } from "curve";
 
 
 @meta.type("Tw2MayaVector3Curve")
+@meta.wgl.define("Tw2MayaVector3Curve")
 export class Tw2MayaVector3Curve extends Tw2Curve
 {
 

@@ -2,6 +2,10 @@ import { meta } from "utils";
 
 
 @meta.type("EveSOFDataGenericVariant")
+@meta.define({
+    wgl: "EveSOFDataGenericVariant",
+    ccp: true
+})
 export class EveSOFDataGenericVariant extends meta.Model
 {
 

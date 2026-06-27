@@ -14,6 +14,10 @@ import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
 
 
 @meta.type("EveSpaceScene")
+@meta.define({
+    wgl: "EveSpaceScene",
+    ccp: true
+})
 export class EveSpaceScene extends meta.Model
 {
 

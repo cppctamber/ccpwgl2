@@ -6,6 +6,10 @@ import { vec3 } from "math";
 
 @meta.notImplemented
 @meta.type("EveChildEffectPropagator", true)
+@meta.define({
+    wgl: "EveChildEffectPropagator",
+    ccp: true
+})
 export class EveChildEffectPropagator extends EveChild
 {
 

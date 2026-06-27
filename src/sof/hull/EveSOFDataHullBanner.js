@@ -3,6 +3,10 @@ import { quat, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullBanner")
+@meta.define({
+    wgl: "EveSOFDataHullBanner",
+    ccp: true
+})
 export class EveSOFDataHullBanner extends meta.Model
 {
 

@@ -4,6 +4,7 @@ import { vec3, vec4 } from "math";
 
 @meta.notImplemented
 @meta.type("Tr2InteriorLightSource")
+@meta.ccp.define("Tr2InteriorLightSource")
 export class Tr2InteriorLightSource extends meta.Model
 {
 

@@ -1,6 +1,10 @@
 import { meta } from "utils";
 
 @meta.type("EveSOFDataHullExtensionPlacementDistributionRandomChance")
+@meta.define({
+    wgl: "EveSOFDataHullExtensionPlacementDistributionRandomChance",
+    ccp: true
+})
 export class EveSOFDataHullExtensionPlacementDistributionRandomChance extends meta.Model
 {
 

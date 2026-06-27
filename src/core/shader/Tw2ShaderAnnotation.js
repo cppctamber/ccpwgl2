@@ -24,6 +24,7 @@ export class Tw2ShaderAnnotationComponent
 
 
 @meta.type("Tw2ShaderAnnotation")
+@meta.wgl.define("Tw2ShaderAnnotation")
 export class Tw2ShaderAnnotation
 {
 

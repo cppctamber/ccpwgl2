@@ -1,6 +1,10 @@
 import { meta } from "utils";
 
 @meta.type("EveSOFDataHullSpotlightSet")
+@meta.define({
+    wgl: "EveSOFDataHullSpotlightSet",
+    ccp: true
+})
 export class EveSOFDataHullSpotlightSet extends meta.Model
 {
 

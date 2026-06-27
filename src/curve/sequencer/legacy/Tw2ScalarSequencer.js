@@ -9,6 +9,7 @@ const Operator = {
 
 
 @meta.type("Tw2ScalarSequencer")
+@meta.wgl.define("Tw2ScalarSequencer")
 export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
 

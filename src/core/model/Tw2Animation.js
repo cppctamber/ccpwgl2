@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("Tw2Animation")
+@meta.wgl.define("Tw2Animation")
 export class Tw2Animation extends meta.Model
 {
 

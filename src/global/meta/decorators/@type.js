@@ -1,6 +1,6 @@
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import { isFunction, isPlain, isString, isArray } from "../../utils/type";
-import { defineMetadata, getMetadata, hasMetadata } from "../../utils/reflect";
+import { defineMetadata, getMetadata, getOwnMetadata, hasMetadata } from "../../utils/reflect";
 import { createDecorator } from "../../utils/decorator";
 
 import {
@@ -41,6 +41,180 @@ import {
     PT_SCALING,
     getPropertyTypeName
 } from "constant";
+
+const DEFINITION_NAMESPACES = Object.freeze([ "ccp", "wgl", "tny" ]);
+
+
+/**
+ * Checks if a namespace can be used in class definitions
+ * @param {String} namespace
+ * @returns {Boolean}
+ */
+function isDefinitionNamespace(namespace)
+{
+    return DEFINITION_NAMESPACES.includes(namespace);
+}
+
+
+/**
+ * Gets a constructor name for error messages
+ * @param {Function} target
+ * @returns {String}
+ */
+function getTargetName(target)
+{
+    return target && target.name ? target.name : "<anonymous>";
+}
+
+
+/**
+ * Checks if two definition maps match exactly
+ * @param {Object} a
+ * @param {Object} b
+ * @returns {Boolean}
+ */
+function isSameDefinitionMap(a, b)
+{
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (let i = 0; i < aKeys.length; i++)
+    {
+        const key = aKeys[i];
+        if (!b[key] || a[key].name !== b[key].name) return false;
+    }
+
+    return true;
+}
+
+
+/**
+ * Normalizes class definition options
+ * @param {Object|String} definitions
+ * @param {String} [exclusiveNamespace]
+ * @returns {{exclusive: Boolean, namespaces: Object}}
+ */
+function normalizeDefinitions(definitions, exclusiveNamespace)
+{
+    const namespaces = {};
+
+    if (exclusiveNamespace)
+    {
+        if (!isDefinitionNamespace(exclusiveNamespace))
+        {
+            throw new ReferenceError("Unknown metadata namespace: " + exclusiveNamespace);
+        }
+
+        if (!isString(definitions) || !definitions)
+        {
+            throw new TypeError("Class definition name must be a non-empty string");
+        }
+
+        namespaces[exclusiveNamespace] = { name: definitions };
+        return { exclusive: true, namespaces };
+    }
+
+    if (!isPlain(definitions))
+    {
+        throw new TypeError("Class definitions must be a plain object");
+    }
+
+    const keys = Object.keys(definitions);
+    if (!keys.length)
+    {
+        throw new TypeError("Class definitions cannot be empty");
+    }
+
+    let primaryName = null;
+    let primaryCount = 0;
+
+    for (let i = 0; i < keys.length; i++)
+    {
+        const namespace = keys[i];
+        if (!isDefinitionNamespace(namespace))
+        {
+            throw new ReferenceError("Unknown metadata namespace: " + namespace);
+        }
+
+        const value = definitions[namespace];
+        if (value === false || value === null || value === undefined)
+        {
+            continue;
+        }
+
+        if (isString(value))
+        {
+            if (!value)
+            {
+                throw new TypeError("Class definition name must be a non-empty string");
+            }
+            namespaces[namespace] = { name: value };
+            primaryName = value;
+            primaryCount++;
+            continue;
+        }
+
+        if (value !== true)
+        {
+            throw new TypeError("Class definition values must be strings, true, or false");
+        }
+    }
+
+    for (let i = 0; i < keys.length; i++)
+    {
+        const namespace = keys[i];
+        if (definitions[namespace] !== true) continue;
+
+        if (primaryCount !== 1)
+        {
+            throw new ReferenceError("Class definition true shorthand requires exactly one string-valued namespace");
+        }
+
+        namespaces[namespace] = { name: primaryName };
+    }
+
+    if (!Object.keys(namespaces).length)
+    {
+        throw new TypeError("Class definitions cannot be empty");
+    }
+
+    return { exclusive: false, namespaces };
+}
+
+
+/**
+ * Defines class definitions
+ * @param {Function} target
+ * @param {Object|String} definitions
+ * @param {String} [exclusiveNamespace]
+ */
+function defineClassDefinitions(target, definitions, exclusiveNamespace)
+{
+    const next = normalizeDefinitions(definitions, exclusiveNamespace);
+    const existing = getOwnMetadata("definitions", target);
+
+    if (existing)
+    {
+        const same = existing.exclusive === next.exclusive &&
+            isSameDefinitionMap(existing.namespaces, next.namespaces);
+
+        if (same) return;
+
+        throw new ReferenceError("Class definitions are already frozen for " + getTargetName(target));
+    }
+
+    defineMetadata("definitions", {
+        frozen: true,
+        exclusive: next.exclusive,
+        namespaces: next.namespaces
+    }, target);
+
+    if (exclusiveNamespace)
+    {
+        defineMetadata("_namespace", exclusiveNamespace, target);
+    }
+}
 
 
 /**
@@ -109,7 +283,12 @@ export const type = createDecorator({
     }
 });
 
-export const define = type;
+export const define = createDecorator({
+    ctor({ target }, definitions)
+    {
+        defineClassDefinitions(target, definitions);
+    }
+});
 
 /**
  * Creates a property type decorator
@@ -262,7 +441,7 @@ export const fromList = createDecorator({
  */
 export function createTypeDecorator(namespace, name, ...opts)
 {
-    const decorator = define(name, ...opts);
+    const decorator = type(name, ...opts);
     return function(...args)
     {
         const rv = decorator(...args);
@@ -271,6 +450,31 @@ export function createTypeDecorator(namespace, name, ...opts)
             defineMetadata("_namespace", namespace, args[0]);
         }
         return rv;
+    };
+}
+
+
+/**
+ * Creates a class definition decorator with namespace metadata
+ * @param {String} namespace
+ * @param {String} name
+ * @returns {Function}
+ */
+export function createDefinitionDecorator(namespace, name)
+{
+    return function(target, property)
+    {
+        if (property)
+        {
+            throw new TypeError("Decorator doesn't support properties");
+        }
+
+        defineClassDefinitions(target, name, namespace);
+
+        if (target && isFunction(target))
+        {
+            defineMetadata("_namespace", namespace, target);
+        }
     };
 }
 

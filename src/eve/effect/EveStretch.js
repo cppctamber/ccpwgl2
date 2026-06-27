@@ -4,6 +4,10 @@ import { Tw2Float } from "core";
 
 
 @meta.type("EveStretch")
+@meta.define({
+    wgl: "EveStretch",
+    ccp: true
+})
 export class EveStretch extends meta.Model
 {
 

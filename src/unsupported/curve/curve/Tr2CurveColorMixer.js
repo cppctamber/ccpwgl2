@@ -4,6 +4,7 @@ import { vec4 } from "math";
 
 
 @meta.type("Tr2CurveColorMixer")
+@meta.ccp.define("Tr2CurveColorMixer")
 export class Tr2CurveColorMixer extends Tw2ColorCurve
 {
 

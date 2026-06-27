@@ -4,6 +4,7 @@ import { Tw2Transform } from "core/Tw2Transform";
 
 
 @meta.tny.type("TnySpaceObject")
+@meta.tny.define("TnySpaceObject")
 export class TnySpaceObject extends Tw2Transform
 {
 

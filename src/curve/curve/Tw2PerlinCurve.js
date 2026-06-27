@@ -4,6 +4,10 @@ import { Tw2Curve } from "./Tw2Curve";
 
 
 @meta.type("Tw2PerlinCurve", "TriPerlinCurve")
+@meta.define({
+    wgl: "Tw2PerlinCurve",
+    ccp: "TriPerlinCurve"
+})
 export class Tw2PerlinCurve extends Tw2Curve
 {
 

@@ -3,6 +3,7 @@ import { meta } from "utils";
 
 
 @meta.type("Gr2CurveDataDaKeyframes32f")
+@meta.wgl.define("Gr2CurveDataDaKeyframes32f")
 export class Gr2CurveDataDaKeyframes32f extends Gr2Curve2
 {
 

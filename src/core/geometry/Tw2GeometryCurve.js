@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 
 @meta.type("Tw2GeometryCurve")
+@meta.wgl.define("Tw2GeometryCurve")
 export class Tw2GeometryCurve
 {
 

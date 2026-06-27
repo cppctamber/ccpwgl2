@@ -34,6 +34,7 @@ export class EvePointLightBatch extends Tw2RenderBatch
 
 @meta.notImplemented
 @meta.type("Tr2PointLight")
+@meta.ccp.define("Tr2PointLight")
 export class Tr2PointLight extends meta.Model
 {
 

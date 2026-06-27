@@ -3,6 +3,10 @@ import { Tw2CurveKey, Tw2Curve } from "curve";
 
 
 @meta.type("AudEventKey")
+@meta.define({
+    wgl: "AudEventKey",
+    ccp: true
+})
 export class AudEventKey extends Tw2CurveKey
 {
 
@@ -17,6 +21,10 @@ export class AudEventKey extends Tw2CurveKey
 
 @meta.notImplemented
 @meta.type("AudEventCurve")
+@meta.define({
+    wgl: "AudEventCurve",
+    ccp: true
+})
 export class AudEventCurve extends Tw2Curve
 {
 

@@ -6,6 +6,10 @@ import { meta } from "utils";
  */
 @meta.notImplemented
 @meta.type("EveSpaceObjectFxAttributes")
+@meta.define({
+    wgl: "EveSpaceObjectFxAttributes",
+    ccp: true
+})
 export class EveSpaceObjectFxAttributes
 {
 

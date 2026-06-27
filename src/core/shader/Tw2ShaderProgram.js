@@ -5,6 +5,7 @@ import { ErrShaderLink } from "./Tw2Shader";
 
 
 @meta.type("Tw2ShaderProgram")
+@meta.wgl.define("Tw2ShaderProgram")
 export class Tw2ShaderProgram
 {
 

@@ -4,6 +4,10 @@ import { Tw2Parameter } from "./Tw2Parameter";
 
 
 @meta.type("Tw2TransformParameter", "Tr2TransformParameter")
+@meta.define({
+    wgl: "Tw2TransformParameter",
+    ccp: "Tr2TransformParameter"
+})
 export class Tw2TransformParameter extends Tw2Parameter
 {
 

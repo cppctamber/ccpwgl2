@@ -6,6 +6,10 @@ import { RM_ADDITIVE } from "constant";
 
 
 @meta.type("EveBanner")
+@meta.define({
+    wgl: "EveBanner",
+    ccp: true
+})
 @meta.notImplemented
 export class EveBanner extends meta.Model
 {

@@ -4,6 +4,10 @@ import { tw2 } from "global/tw2";
 
 
 @meta.type("EveSOFDataGeneric")
+@meta.define({
+    wgl: "EveSOFDataGeneric",
+    ccp: true
+})
 export class EveSOFDataGeneric extends meta.Model
 {
 

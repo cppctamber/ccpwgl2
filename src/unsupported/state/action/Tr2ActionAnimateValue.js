@@ -4,6 +4,7 @@ import { Tw2Action } from "./Tw2Action";
 
 @meta.notImplemented
 @meta.type("Tr2ActionAnimateValue")
+@meta.ccp.define("Tr2ActionAnimateValue")
 export class Tr2ActionAnimateValue extends Tw2Action
 {
 

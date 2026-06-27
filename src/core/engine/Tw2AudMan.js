@@ -14,6 +14,7 @@ import { isPrivate } from "global/meta";
  * @property {Boolean} _dirty
  */
 @meta.type("Tw2AudMan")
+@meta.wgl.define("Tw2AudMan")
 export class Tw2AudMan extends Tw2EventEmitter
 {
 

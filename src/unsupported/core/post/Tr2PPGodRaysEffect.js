@@ -2,6 +2,7 @@ import { meta } from "utils";
 
 @meta.notImplemented
 @meta.type("Tr2PPGodRaysEffect")
+@meta.ccp.define("Tr2PPGodRaysEffect")
 export class Tr2PPGodRaysEffect
 {
 

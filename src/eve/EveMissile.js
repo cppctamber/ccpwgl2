@@ -5,6 +5,10 @@ import { EveObject } from "./object/EveObject";
 
 
 @meta.type("EveMissileWarhead")
+@meta.define({
+    wgl: "EveMissileWarhead",
+    ccp: true
+})
 @meta.stage(2)
 export class EveMissileWarhead extends meta.Model
 {
@@ -237,6 +241,10 @@ export class EveMissileWarhead extends meta.Model
 
 
 @meta.type("EveMissile")
+@meta.define({
+    wgl: "EveMissile",
+    ccp: true
+})
 @meta.stage(2)
 export class EveMissile extends meta.Model
 {

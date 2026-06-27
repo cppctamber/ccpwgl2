@@ -4,6 +4,10 @@ import { quat } from "math";
 
 @meta.notImplemented
 @meta.type("EveCameraFxAttributes", true)
+@meta.define({
+    wgl: "EveCameraFxAttributes",
+    ccp: true
+})
 export class EveCameraFxAttributes extends meta.Model
 {
 

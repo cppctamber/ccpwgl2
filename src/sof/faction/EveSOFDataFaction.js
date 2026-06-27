@@ -7,6 +7,10 @@ import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound, EveSOFDataArea, EveS
 
 
 @meta.type("EveSOFDataFaction")
+@meta.define({
+    wgl: "EveSOFDataFaction",
+    ccp: true
+})
 export class EveSOFDataFaction extends meta.Model
 {
 

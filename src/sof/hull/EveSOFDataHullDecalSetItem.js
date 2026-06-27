@@ -19,6 +19,10 @@ const Usage = {
 
 
 @meta.type("EveSOFDataHullDecalSetItem")
+@meta.define({
+    wgl: "EveSOFDataHullDecalSetItem",
+    ccp: true
+})
 export class EveSOFDataHullDecalSetItem extends meta.Model
 {
 

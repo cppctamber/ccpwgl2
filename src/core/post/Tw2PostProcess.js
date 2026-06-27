@@ -7,6 +7,10 @@ import { RM_OPAQUE } from "constant";
 
 
 @meta.type("Tw2PostProcess", "Tr2PostProcess")
+@meta.define({
+    wgl: "Tw2PostProcess",
+    ccp: "Tr2PostProcess"
+})
 export class Tw2PostProcess extends meta.Model
 {
 
