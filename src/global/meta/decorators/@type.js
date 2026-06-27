@@ -68,6 +68,25 @@ function getTargetName(target)
 
 
 /**
+ * Adds a property to a constructor metadata list
+ * @param {*} target
+ * @param {String} name
+ * @param {String} property
+ */
+function addConstructorProperty(target, name, property)
+{
+    let properties = getMetadata(name, target.constructor);
+    properties = properties ? Array.from(properties) : [];
+    if (!properties.includes(property))
+    {
+        properties.push(property);
+        properties.sort();
+        defineMetadata(name, properties, target.constructor);
+    }
+}
+
+
+/**
  * Checks if two definition maps match exactly
  * @param {Object} a
  * @param {Object} b
@@ -230,6 +249,7 @@ const typeHandler = function({ target, property }, type, ...typesOf)
     {
         defineMetadata("type", type, target, property);
         defineMetadata("propertyTypeName", getPropertyTypeName(type), target, property);
+        addConstructorProperty(target, "properties", property);
     }
 
     if (typesOf[0])
@@ -247,25 +267,11 @@ const typeHandler = function({ target, property }, type, ...typesOf)
     {
         case PT_STRUCT_RAW:
         case PT_STRUCT:
-            let structs = getMetadata("structs", target.constructor);
-            structs = structs ? Array.from(structs) : [];
-            if (!structs.includes(property))
-            {
-                structs.push(property);
-                structs.sort();
-            }
-            defineMetadata("structs", structs, target.constructor);
+            addConstructorProperty(target, "structs", property);
             break;
 
         case PT_STRUCT_LIST:
-            let structLists = getMetadata("structLists", target.constructor);
-            structLists = structLists ? Array.from(structLists) : [];
-            if (!structLists.includes(property))
-            {
-                structLists.push(property);
-                structLists.sort();
-            }
-            defineMetadata("structLists", structLists, target.constructor);
+            addConstructorProperty(target, "structLists", property);
             break;
     }
 

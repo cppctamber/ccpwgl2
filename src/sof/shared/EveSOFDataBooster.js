@@ -93,6 +93,7 @@ export class EveSOFDataBooster extends meta.Model
      * Alias for `warpHalpColor` (ccp typo)
      * @returns {vec4}
      */
+    @meta.alias("warpHalpColor")
     get warpHaloColor()
     {
         return this.warpHalpColor;

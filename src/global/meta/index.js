@@ -3,6 +3,7 @@ import * as type from "./decorators/@type";
 import * as ui from "./decorators/@ui";
 import { createMetaNamespace } from "./decorators/namespace";
 import { Model as BaseModel } from "./Model";
+import { Tw2Schema } from "./Tw2Schema";
 
 const coreMetadata = {
     ...type,
@@ -37,3 +38,4 @@ const tny = createMetaNamespace(tnyMetadata, "tny", { version: METADATA_VERSION 
 export * from "./decorators";
 export { ccp, wgl, tny };
 export { BaseModel as Model };
+export { Tw2Schema };

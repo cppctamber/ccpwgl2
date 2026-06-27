@@ -150,6 +150,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
      * Alias for ccp not following their normal casing
      * @returns {vec4}
      */
+    @meta.alias("PrimaryAttackFX")
     get PrimaryAttackFx()
     {
         return this.PrimaryAttackFX;
@@ -159,6 +160,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
      * Alias for ccp not following their normal casing
      * @returns {vec4}
      */
+    @meta.alias("PrimarySiegeFX")
     get PrimarySiegeFx()
     {
         return this.PrimarySiegeFX;
@@ -168,6 +170,7 @@ export class EveSOFDataFactionColorSet extends meta.Model
      * Alias for ccp not following their normal casing
      * @returns {vec4}
      */
+    @meta.alias("PrimaryDockedFX")
     get PrimaryDockedFx()
     {
         return this.PrimaryDockedFX;

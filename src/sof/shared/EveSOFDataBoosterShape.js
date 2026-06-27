@@ -32,6 +32,7 @@ export class EveSOFDataBoosterShape extends meta.Model
      * Alias for noiseAmplitureEnd
      * @returns {vec4}
      */
+    @meta.alias("noiseAmplitureEnd")
     get noiseAmplitudeEnd()
     {
         return this.noiseAmplitureEnd;
@@ -41,6 +42,7 @@ export class EveSOFDataBoosterShape extends meta.Model
      * Alias for noiseAmplitureStart
      * @returns {vec4}
      */
+    @meta.alias("noiseAmplitureStart")
     get noiseAmplitudeStart()
     {
         return this.noiseAmplitureStart;

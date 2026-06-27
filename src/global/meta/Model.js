@@ -1,6 +1,6 @@
 import { generateID } from "../utils/uuid";
-import { getMetadata, getOwnMetadata, hasMetadata } from "../utils/reflect";
-import { isArray, isFunction, isNumber, isObjectObject, isString } from "../utils/type";
+import { isArray, isFunction, isObjectObject, isString } from "../utils/type";
+import { Tw2Schema } from "./Tw2Schema";
 import { tw2 } from "global/tw2";
 
 const getPropType = (type) => tw2 && tw2.propertyTypes && tw2.propertyTypes.Get(type);
@@ -385,44 +385,49 @@ export class Model
 
         let childOpt;
 
-        if (hasMetadata("structLists", this.constructor))
+        const
+            schema = Tw2Schema.Get(this.constructor),
+            structLists = schema.GetStructLists(),
+            structs = schema.GetStructs();
+
+        if (structLists.length)
         {
-            const structLists = getMetadata("structLists", this.constructor);
             structLists.forEach(property =>
             {
-                if (getMetadata("isPrivate", this, property)) return;
+                const key = property.name;
+                if (property.isPrivate) return;
 
-                for (let i = 0; i < this[property].length; i++)
+                for (let i = 0; i < this[key].length; i++)
                 {
-                    if (this[property][i])
+                    if (this[key][i])
                     {
-                        if (this[property][i].Destroy)
+                        if (this[key][i].Destroy)
                         {
-                            this[property][i].Destroy({ controller: opt.controller });
+                            this[key][i].Destroy({ controller: opt.controller });
                         }
                         updated = true;
                     }
                 }
 
-                this[property].splice(0);
+                this[key].splice(0);
             });
         }
 
-        if (hasMetadata("structs", this.constructor))
+        if (structs.length)
         {
-            const structs = getMetadata("structs", this.constructor);
             structs.forEach(property =>
             {
-                if (getMetadata("isPrivate", this, property)) return;
+                const key = property.name;
+                if (property.isPrivate) return;
 
-                if (this[property])
+                if (this[key])
                 {
-                    if (this[property].Destroy)
+                    if (this[key].Destroy)
                     {
                         childOpt = childOpt || { controller: opt.controller };
-                        this[property].Destroy(childOpt);
+                        this[key].Destroy(childOpt);
                     }
-                    this[property] = null;
+                    this[key] = null;
                     updated = true;
                 }
             });
@@ -447,16 +452,21 @@ export class Model
      */
     PerChild(func, includeEmpty)
     {
-        if (hasMetadata("structs", this.constructor))
+        const
+            schema = Tw2Schema.Get(this.constructor),
+            structs = schema.GetStructs(),
+            structLists = schema.GetStructLists();
+
+        if (structs.length)
         {
-            const structs = getMetadata("structs", this.constructor);
             for (let i = 0; i < structs.length; i++)
             {
                 const
-                    key = structs[i],
+                    property = structs[i],
+                    key = property.name,
                     struct = this[key];
 
-                if (getMetadata("isPrivate", this, key))
+                if (property.isPrivate)
                 {
                     continue;
                 }
@@ -470,16 +480,16 @@ export class Model
             }
         }
 
-        if (hasMetadata("structLists", this.constructor))
+        if (structLists.length)
         {
-            const structLists = getMetadata("structLists", this.constructor);
             for (let i = 0; i < structLists.length; i++)
             {
                 const
-                    key = structLists[i],
-                    array = this[structLists[i]];
+                    property = structLists[i],
+                    key = property.name,
+                    array = this[key];
 
-                if (getMetadata("isPrivate", this, key))
+                if (property.isPrivate)
                 {
                     continue;
                 }
@@ -715,54 +725,53 @@ export class Model
         const ccpDefinition = this.getClassDefinitionName(obj, "ccp");
         if (ccpDefinition) return ccpDefinition;
 
-        const ccp = getMetadata("ccp", this.getConstructor(obj));
+        const ccp = Tw2Schema.Get(this.getConstructor(obj)).GetCCP();
         return ccp ? ccp : this.getClassName(obj);
     }
 
     static getClassName(obj)
     {
-        const type = getMetadata("type", this.getConstructor(obj));
+        const type = Tw2Schema.Get(this.getConstructor(obj)).GetType();
         return isString(type) ? type : null;
     }
 
     static getClassDefinitions(obj)
     {
-        return getOwnMetadata("definitions", this.getConstructor(obj)) || null;
+        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitions();
     }
 
     static getClassDefinition(obj, namespace)
     {
-        const definitions = this.getClassDefinitions(obj);
-        return definitions && definitions.namespaces ? definitions.namespaces[namespace] || null : null;
+        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinition(namespace);
     }
 
     static getClassDefinitionName(obj, namespace)
     {
-        const definition = this.getClassDefinition(obj, namespace);
-        return definition && isString(definition.name) ? definition.name : null;
+        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitionName(namespace);
     }
 
     static getPropType(obj, prop)
     {
-        const type = getMetadata("type", obj, prop);
-        return isNumber(type) ? type : null;
+        const property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+        return property ? property.type : null;
     }
 
     static getPropTypeName(obj, prop)
     {
-        const type = getMetadata("propertyTypeName", obj, prop);
-        return isString(type) ? type : null;
+        const property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+        return property ? property.propertyTypeName : null;
     }
 
     static getPropBlackReaderType(obj, prop)
     {
-        const type = getMetadata("blackReaderType", obj, prop);
-        return isString(type) ? type : null;
+        const property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+        return property ? property.blackReaderType : null;
     }
 
     static isPropPrivate(obj, prop)
     {
-        return !!getMetadata("isPrivate", obj, prop);
+        const property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+        return !!(property && property.isPrivate);
     }
 
     /**
@@ -797,7 +806,9 @@ export class Model
      */
     static get(item, out = {}, opt = {})
     {
-        if (!hasMetadata("type", this))
+        const schema = Tw2Schema.Get(this);
+
+        if (!schema.GetType())
         {
             throw new ReferenceError("No meta type defined");
         }
@@ -815,32 +826,34 @@ export class Model
             return result;
         }
 
-        out = {
-            __type: getMetadata("type", item.constructor),
-            __id: item._id
-        };
+        out = out || {};
+        for (const key in out)
+        {
+            if (out.hasOwnProperty(key))
+            {
+                Reflect.deleteProperty(out, key);
+            }
+        }
+
+        out.__type = schema.GetType();
+        out.__id = item._id;
 
         opt._ids.set(item, [ out ]);
 
         for (const key in item)
         {
-            if (
-                item.hasOwnProperty(key) &&
-                hasMetadata("type", item, key) &&
-                !getMetadata("isPrivate", item, key) &&
-                !getMetadata("alias", item, key)
-            )
+            if (item.hasOwnProperty(key))
             {
-                const
-                    type = getMetadata("type", item, key),
-                    handler = getPropType(type);
-
-                if (!handler)
+                const property = schema.GetProperty(key, item);
+                if (property && !property.isPrivate && !property.alias)
                 {
-                    throw new TypeError("Unknown type: " + type);
+                    const handler = getPropType(property.type);
+                    if (!handler)
+                    {
+                        throw new TypeError("Unknown type: " + property.type);
+                    }
+                    out[key] = handler.get(item, key, opt);
                 }
-
-                out[key] = handler.get(item, key, opt);
             }
         }
 
@@ -892,7 +905,10 @@ export class Model
             throw new ReferenceError("Invalid constructor");
         }
 
-        const constructorType = getMetadata("type", this);
+        const
+            schema = Tw2Schema.Get(this),
+            constructorType = schema.GetType();
+
         if (!constructorType)
         {
             throw new ReferenceError("No meta type defined");
@@ -928,6 +944,7 @@ export class Model
                 if (values.hasOwnProperty(key))
                 {
                     const value = values[key];
+                    let property = schema.GetProperty(key, item);
 
                     /** DEBUGGING START **/
                     if (values[key] === undefined)
@@ -938,7 +955,7 @@ export class Model
                         continue;
                     }
 
-                    if (getMetadata("isPrivate", item, key))
+                    if (property && property.isPrivate)
                     {
                         skipped = skipped || {};
                         skipped.private = skipped.private || [];
@@ -947,12 +964,22 @@ export class Model
                     }
 
                     // Allow aliasing
-                    if (hasMetadata("alias", item, key))
+                    const alias = schema.GetAliasTarget(key, item);
+                    if (alias)
                     {
-                        key = getMetadata("alias", item, key);
+                        key = alias;
+                        property = schema.GetProperty(key, item);
                     }
 
-                    if (!hasMetadata("type", item, key))
+                    if (property && property.isPrivate)
+                    {
+                        skipped = skipped || {};
+                        skipped.private = skipped.private || [];
+                        skipped.private.push(key);
+                        continue;
+                    }
+
+                    if (!property)
                     {
                         skipped = skipped || {};
                         skipped.noType = skipped.noType || [];
@@ -962,7 +989,7 @@ export class Model
                     /** DEBUGGING END **/
 
                     const
-                        type = getMetadata("type", item, key),
+                        type = property.type,
                         handler = getPropType(type);
 
                     if (!handler)
@@ -1031,7 +1058,7 @@ export class Model
 
         let item;
 
-        if (values && values.__type && getMetadata("type", this) !== values.__type)
+        if (values && values.__type && Tw2Schema.Get(this).GetType() !== values.__type)
         {
             throw new ReferenceError("Unexpected constructor " + values.__type);
         }

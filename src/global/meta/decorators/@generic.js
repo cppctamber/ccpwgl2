@@ -3,6 +3,25 @@ import { defineMetadata, getMetadata, hasMetadata } from "../../utils/reflect";
 import { createDecorator } from "../../utils/decorator";
 
 
+/**
+ * Adds a property to a constructor metadata list
+ * @param {*} target
+ * @param {String} name
+ * @param {String} property
+ */
+function addConstructorProperty(target, name, property)
+{
+    let properties = getMetadata(name, target.constructor);
+    properties = properties ? Array.from(properties) : [];
+    if (!properties.includes(property))
+    {
+        properties.push(property);
+        properties.sort();
+        defineMetadata(name, properties, target.constructor);
+    }
+}
+
+
 export const abstract = createDecorator({
     noArgs: true,
     ctor({ target })
@@ -54,6 +73,7 @@ export const alias = createDecorator({
     property({ target, property }, alias)
     {
         defineMetadata("alias", alias, target, property);
+        addConstructorProperty(target, "aliases", property);
     }
 });
 
