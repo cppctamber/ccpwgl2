@@ -32,7 +32,7 @@ export class EveShip extends EveSpaceObject
         }
 
         this.visible.boosters = true;
-        this.visible.firingEffect = true;
+        this.visible.firingEffects = true;
     }
 
     /**

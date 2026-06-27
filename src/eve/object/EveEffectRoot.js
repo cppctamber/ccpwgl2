@@ -102,7 +102,7 @@ export class EveEffectRoot extends EveObject
     {
         this._lod = 3;
 
-        for (let i = 0; i < this.children.length; i++)
+        for (let i = 0; i < this.effectChildren.length; i++)
         {
             if (this.effectChildren[i].ResetLod)
             {
@@ -119,7 +119,7 @@ export class EveEffectRoot extends EveObject
     {
         this._lod = 3;
 
-        for (let i = 0; i < this.children.length; i++)
+        for (let i = 0; i < this.effectChildren.length; i++)
         {
             if (this.effectChildren[i].UpdateLod)
             {

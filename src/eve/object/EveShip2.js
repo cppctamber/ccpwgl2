@@ -178,7 +178,7 @@ export class EveShip2 extends EveObject
      */
     GetAnimationBoneIndexParentIndex(modelIndex, boneIndex)
     {
-        if (!this.animation || !this.animation.models[modelIndex] || !this.animation.models[boneIndex].bones[boneIndex])
+        if (!this.animation || !this.animation.models[modelIndex] || !this.animation.models[modelIndex].bones[boneIndex])
         {
             throw new ReferenceError(`Invalid bone ${boneIndex} for model index ${modelIndex}`);
         }
@@ -571,7 +571,7 @@ export class EveShip2 extends EveObject
      */
     FindMeshBoneByName(boneName, meshIndex)
     {
-        return this.animation ? this.animation.FindMeshBoneByName(name, meshIndex) : null;
+        return this.animation ? this.animation.FindMeshBoneByName(boneName, meshIndex) : null;
     }
 
     /**
@@ -1123,7 +1123,7 @@ export class EveShip2 extends EveObject
 
 
         // Enabling curves overrides rotation and translation
-        if (this._enableCurves && this.rotationCurve || this.translationCurve)
+        if (this._enableCurves && (this.rotationCurve || this.translationCurve))
         {
             if (this.rotationCurve)
             {
