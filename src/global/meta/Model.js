@@ -852,7 +852,7 @@ export class Model
                     {
                         throw new TypeError("Unknown type: " + property.type);
                     }
-                    out[key] = handler.get(item, key, opt);
+                    out[key] = handler.Get(item, key, opt);
                 }
             }
         }
@@ -998,9 +998,9 @@ export class Model
                     }
 
                     // Delete
-                    if (value === null && handler.delete)
+                    if (value === null && handler.Delete)
                     {
-                        if (handler.delete(item, key, options))
+                        if (handler.Delete(item, key, options))
                         {
                             updated = true;
                         }
@@ -1008,17 +1008,17 @@ export class Model
                         continue;
                     }
 
-                    if (!handler.is(value))
+                    if (!handler.Is(value))
                     {
                         throw new TypeError(`${constructorType} > Unexpected value type for property: ${key}`);
                     }
 
-                    if (handler.equals(value, item[key]))
+                    if (handler.Equals(value, item[key]))
                     {
                         continue;
                     }
 
-                    if (handler.set(item, key, value, options) !== false)
+                    if (handler.Set(item, key, value, options) !== false)
                     {
                         updated = true;
                     }

@@ -13,7 +13,7 @@ export class Tw2PropertyTypeStore extends Tw2GenericStore
      */
     static isValue(value)
     {
-        return !!value && isFunction(value.get) && isFunction(value.set) && isFunction(value.is);
+        return !!value && isFunction(value.Get) && isFunction(value.Set) && isFunction(value.Is);
     }
 
     /**

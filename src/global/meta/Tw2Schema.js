@@ -1,7 +1,7 @@
 import { getMetadata, getOwnMetadata } from "../utils/reflect";
 import { isArray, isNumber, isString } from "../utils/type";
 
-const CACHE = new WeakMap();
+const CACHE = new Map();
 
 /**
  * Cached constructor metadata schema

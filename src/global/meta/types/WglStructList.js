@@ -1,19 +1,19 @@
 import { isArray, isEqual, isNoU } from "../../utils/type";
-import WglPropertyType from "./WglPropertyType";
+import WglPropertyType from "../WglPropertyType";
 
 export default class WglStructList extends WglPropertyType
 {
-    is(value)
+    Is(value)
     {
         return isArray(value);
     }
 
-    delete(a, key, opt)
+    Delete(a, key, opt)
     {
-        return this.set(a, key, null, opt);
+        return this.Set(a, key, null, opt);
     }
 
-    get(a, key, options)
+    Get(a, key, options)
     {
         const list = a[key] || [];
         const len = list.length;
@@ -35,7 +35,7 @@ export default class WglStructList extends WglPropertyType
         return out;
     }
 
-    set(a, key, value, opt)
+    Set(a, key, value, opt)
     {
         if (opt && opt.skipObjects)
         {

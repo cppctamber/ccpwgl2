@@ -7,16 +7,24 @@ import * as unsupported from "./unsupported";
 import { PT } from "constant/type";
 import WglArray from "global/meta/types/WglArray";
 import WglBoolean from "global/meta/types/WglBoolean";
-import WglNumber from "global/meta/types/WglNumber";
+import WglExpression from "global/meta/types/WglExpression";
+import WglFloat32 from "global/meta/types/WglFloat32";
+import WglPath from "global/meta/types/WglPath";
 import WglPlain from "global/meta/types/WglPlain";
 import WglStruct from "global/meta/types/WglStruct";
 import WglStructList from "global/meta/types/WglStructList";
 import WglString from "global/meta/types/WglString";
+import WglTypedArray from "global/meta/types/WglTypedArray";
+import WglUInt8 from "global/meta/types/WglUInt8";
+import WglUInt16 from "global/meta/types/WglUInt16";
+import WglUInt32 from "global/meta/types/WglUInt32";
 import WglUnknown from "global/meta/types/WglUnknown";
 import WglVector from "global/meta/types/WglVector";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
 import { tw2BatchSorter } from "core/batch";
+
+const typedArray = ctor => ({ type: WglTypedArray, ctor });
 
 /**
  * Register global configurations
@@ -289,12 +297,12 @@ export const config = {
         [PT.ENUM]: WglPlain,
 
         [PT.STRING]: WglString,
-        [PT.PATH]: WglString,
-        [PT.EXPRESSION]: WglString,
-        [PT.BYTE]: WglNumber,
-        [PT.UINT]: WglNumber,
-        [PT.USHORT]: WglNumber,
-        [PT.FLOAT]: WglNumber,
+        [PT.PATH]: WglPath,
+        [PT.EXPRESSION]: WglExpression,
+        [PT.BYTE]: WglUInt8,
+        [PT.UINT]: WglUInt32,
+        [PT.USHORT]: WglUInt16,
+        [PT.FLOAT]: WglFloat32,
 
         [PT.STRUCT]: WglStruct,
         [PT.STRUCT_RAW]: WglStruct,
@@ -358,42 +366,15 @@ export const config = {
             length: 4
         },
 
-        [PT.UINT8_ARRAY]: {
-            type: WglVector,
-            ctor: Uint8Array
-        },
-        [PT.UINT8_CLAMPED_ARRAY]: {
-            type: WglVector,
-            ctor: Uint8ClampedArray
-        },
-        [PT.UINT16_ARRAY]: {
-            type: WglVector,
-            ctor: Uint16Array
-        },
-        [PT.UINT32_ARRAY]: {
-            type: WglVector,
-            ctor: Uint32Array
-        },
-        [PT.INT8_ARRAY]: {
-            type: WglVector,
-            ctor: Int8Array
-        },
-        [PT.INT16_ARRAY]: {
-            type: WglVector,
-            ctor: Int16Array
-        },
-        [PT.INT32_ARRAY]: {
-            type: WglVector,
-            ctor: Int32Array
-        },
-        [PT.FLOAT32_ARRAY]: {
-            type: WglVector,
-            ctor: Float32Array
-        },
-        [PT.FLOAT64_ARRAY]: {
-            type: WglVector,
-            ctor: Float64Array
-        }
+        [PT.UINT8_ARRAY]: typedArray(Uint8Array),
+        [PT.UINT8_CLAMPED_ARRAY]: typedArray(Uint8ClampedArray),
+        [PT.UINT16_ARRAY]: typedArray(Uint16Array),
+        [PT.UINT32_ARRAY]: typedArray(Uint32Array),
+        [PT.INT8_ARRAY]: typedArray(Int8Array),
+        [PT.INT16_ARRAY]: typedArray(Int16Array),
+        [PT.INT32_ARRAY]: typedArray(Int32Array),
+        [PT.FLOAT32_ARRAY]: typedArray(Float32Array),
+        [PT.FLOAT64_ARRAY]: typedArray(Float64Array)
     },
 
     variables: {

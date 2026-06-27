@@ -1,19 +1,19 @@
 import { isObject as isObjectLike, isPlain } from "../../utils/type";
-import WglPropertyType from "./WglPropertyType";
+import WglPropertyType from "../WglPropertyType";
 
 export default class WglPlain extends WglPropertyType
 {
-    is(value)
+    Is(value)
     {
         return isPlain(value);
     }
 
-    get(a, key)
+    Get(a, key)
     {
         return Object.assign({}, a[key]);
     }
 
-    set(a, key, value)
+    Set(a, key, value)
     {
         if (!a[key])
         {

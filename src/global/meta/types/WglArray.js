@@ -1,24 +1,24 @@
 import { isArray, isEqual } from "../../utils/type";
-import WglPropertyType from "./WglPropertyType";
+import WglPropertyType from "../WglPropertyType";
 
 export default class WglArray extends WglPropertyType
 {
-    is(value)
+    Is(value)
     {
         return isArray(value);
     }
 
-    equals(a, b)
+    Equals(a, b)
     {
         return isEqual(a, b);
     }
 
-    get(a, key)
+    Get(a, key)
     {
         return a[key] ? Array.from(a[key]) : [];
     }
 
-    set(a, key, value)
+    Set(a, key, value)
     {
         if (!isArray(a[key]))
         {

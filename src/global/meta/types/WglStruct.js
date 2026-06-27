@@ -1,24 +1,24 @@
-import WglPropertyType from "./WglPropertyType";
+import WglPropertyType from "../WglPropertyType";
 import { isNoU } from "../../utils/type";
 
 export default class WglStruct extends WglPropertyType
 {
-    is(value)
+    Is(value)
     {
         return isNoU(value) || typeof value === "object";
     }
 
-    delete(a, key, opt)
+    Delete(a, key, opt)
     {
-        return this.set(a, key, null, opt);
+        return this.Set(a, key, null, opt);
     }
 
-    get(a, key, options)
+    Get(a, key, options)
     {
         return a[key] === null ? null : a[key].GetValues({}, options);
     }
 
-    set(a, key, value, opt)
+    Set(a, key, value, opt)
     {
         if (opt && opt.skipObjects)
         {

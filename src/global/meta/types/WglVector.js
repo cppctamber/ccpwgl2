@@ -1,5 +1,5 @@
 import { isVector, isVectorEqual } from "../../utils/type";
-import WglPropertyType from "./WglPropertyType";
+import WglPropertyType from "../WglPropertyType";
 
 const getArray = (a, key) => a[key] ? Array.from(a[key]) : [];
 
@@ -12,22 +12,22 @@ export default class WglVector extends WglPropertyType
         this.length = length;
     }
 
-    is(value)
+    Is(value)
     {
         return this.length ? isVector(value, this.length) : isVector(value);
     }
 
-    equals(a, b)
+    Equals(a, b)
     {
         return isVectorEqual(a, b);
     }
 
-    get(a, key)
+    Get(a, key)
     {
         return getArray(a, key);
     }
 
-    set(a, key, value)
+    Set(a, key, value)
     {
         if (!a[key] || a[key].constructor !== this.Constructor || a[key].length !== value.length)
         {
