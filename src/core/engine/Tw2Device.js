@@ -785,11 +785,16 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Gets the device's target resolution
-     * @param {vec4} [out=vec4.create()]
+     * @param {vec4} out
      * @returns {vec4} out
      */
-    GetTargetResolution(out = vec4.create())
+    GetTargetResolution(out)
     {
+        if (!out)
+        {
+            throw new TypeError("GetTargetResolution requires an output vector");
+        }
+
         const aspectRatio = this.projection[0] ? this.projection[5] / this.projection[0] : 0.0;
         let aspectAdjustment = 1.0;
         if (aspectRatio > 1.6) aspectAdjustment = aspectRatio / 1.6;
@@ -803,11 +808,16 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * GetEyePosition
-     * @param {vec3} [out=vec3.create()]
+     * @param {vec3} out
      * @return {vec3}
      */
-    GetEyePosition(out = vec3.create())
+    GetEyePosition(out)
     {
+        if (!out)
+        {
+            throw new TypeError("GetEyePosition requires an output vector");
+        }
+
         return vec3.copy(out, this.eyePosition);
     }
 

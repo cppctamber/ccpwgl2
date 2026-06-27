@@ -213,8 +213,13 @@ export class EveTransform extends EveObject
      * Per frame update
      * @param {mat4} parentTransform
      */
-    UpdateViewDependentData(parentTransform=mat4.create())
+    UpdateViewDependentData(parentTransform)
     {
+        if (!parentTransform)
+        {
+            throw new TypeError("parentTransform is required");
+        }
+
         mat4.copy(this._parentTransform, parentTransform);
         this.RebuildTransforms({ force: true, skipUpdate: true });
 

@@ -184,12 +184,17 @@ export class EveSOFDataFactionColorSet extends meta.Model
     /**
      * Gets a color type
      * @param {Number} type
-     * @param {vec4} [out=vec4.create()]
+     * @param {vec4} out
      * @param {Number} [fallback] - Optional fallback colour
      * @return {vec4} out
      */
-    Get(type, out = vec4.create(), fallback)
+    Get(type, out, fallback)
     {
+        if (!out)
+        {
+            throw new TypeError("Get requires an output vector");
+        }
+
         if (!this.Has(type))
         {
             if (fallback !== undefined && this.Has(fallback))

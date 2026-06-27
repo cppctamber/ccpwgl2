@@ -233,3 +233,9 @@ Current status:
 - We are tracking potential unsafe-at-runtime options by convention inside each class implementation.
 - A future step is to add optional decorator/metadata annotations to declare register keys that are **not** safe to change after initialization.
 - Any such metadata would remain opt-in and only needed for non-default cases.
+
+## Library goals / follow-ups
+
+- Enforce required `out` parameter contract for new/updated numeric-write APIs that fill typed arrays or typed-array-like values.
+- Set a naming convention for optional-out helpers (`opt`) only if it is not already used for options-style inputs; otherwise prefer explicit names.
+- Review all configuration parameters in public docs/code and migrate to `options` when the value is a generic options bag to avoid confusion with optional output helpers.
