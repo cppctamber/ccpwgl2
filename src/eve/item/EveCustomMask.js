@@ -1,6 +1,6 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
-import { Tw2TextureParameter, Tw2Vector4Parameter, Tw2Transform, Tw2Effect } from "core";
+import { Tw2TextureParameter, Tw2Vector4Parameter, WglTransform, Tw2Effect } from "core";
 import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
 
 
@@ -10,7 +10,7 @@ import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
     ccp: true
 })
 @meta.stage(1)
-export class EveCustomMask extends Tw2Transform
+export class EveCustomMask extends WglTransform
 {
 
     @meta.string

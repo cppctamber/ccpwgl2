@@ -1,12 +1,12 @@
 /* eslint no-unused-vars:0 */
 import { meta } from "utils";
 import { mat4, vec3, sph3, box3 } from "math";
-import { Tw2Transform } from "core/Tw2Transform";
+import { WglTransform } from "core/WglTransform";
 import { EvePlaneSet } from "eve";
 import { Tw2TextureParameter } from "core";
 
 
-export class EveObject extends Tw2Transform
+export class EveObject extends WglTransform
 {
 
     @meta.string

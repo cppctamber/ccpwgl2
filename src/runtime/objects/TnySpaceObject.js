@@ -1,11 +1,11 @@
 import { meta } from "utils";
 import { box3, mat4, sph3, vec3 } from "math";
-import { Tw2Transform } from "core/Tw2Transform";
+import { WglTransform } from "core/WglTransform";
 
 
 @meta.tny.type("TnySpaceObject")
 @meta.tny.define("TnySpaceObject")
-export class TnySpaceObject extends Tw2Transform
+export class TnySpaceObject extends WglTransform
 {
 
     @meta.struct()

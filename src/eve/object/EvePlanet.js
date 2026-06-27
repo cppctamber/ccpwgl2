@@ -301,7 +301,9 @@ export class EvePlanet extends EveObject
             }
         }
 
-        let originalEffect = getMainEffect(this.highDetail.children[0]),
+        const planet = this.highDetail.children[0];
+
+        let originalEffect = planet ? getMainEffect(planet) : null,
             resPath = "cdn:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
 
         if (originalEffect)
@@ -310,10 +312,10 @@ export class EvePlanet extends EveObject
             copyParameters(effectHeight, originalEffect);
         }
 
-        for (let i = 0; i < this.highDetail.children[0].children.length; ++i)
+        for (let i = 0; planet && i < planet.children.length; ++i)
         {
-            let effect = getMainEffect(this.highDetail.children[0].children[i]);
-            if (effect) copyParameters(effectHeight, originalEffect);
+            let effect = getMainEffect(planet.children[i]);
+            if (effect) copyParameters(effectHeight, effect);
         }
 
         effectHeight.SetParameters({

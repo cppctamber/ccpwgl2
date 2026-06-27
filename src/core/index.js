@@ -22,5 +22,5 @@ export * from "./Tw2RenderTarget";
 export * from "./Tw2Error";
 export * from "./Tw2EventEmitter";
 export * from "./Tw2RayCaster";
-export * from "./Tw2Transform";
+export * from "./WglTransform";
 export * from "./Tw2Picker";

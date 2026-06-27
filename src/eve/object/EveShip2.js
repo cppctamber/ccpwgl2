@@ -105,6 +105,7 @@ export class EveShip2 extends EveObject
         decals: true,
         dirt: true,
         effectChildren: true,
+        firingEffects: true,
         hazeSets: true,
         killmarks: true,
         lineSets: true,
@@ -769,7 +770,11 @@ export class EveShip2 extends EveObject
         const existingTurretSet = this.GetTurretSetByLocatorName(turretSet.locatorName);
         if (existingTurretSet === turretSet) return false;
 
-        this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
+        if (existingTurretSet)
+        {
+            this.attachments.splice(this.attachments.indexOf(existingTurretSet), 1);
+        }
+
         this.attachments.push(turretSet);
         this.RebuildTurretSet(turretSet);
         return true;
@@ -967,7 +972,7 @@ export class EveShip2 extends EveObject
         if (res)
         {
             // TODO: Throw an error
-            if (this.meshIndex > res.meshes.length)
+            if (this.meshIndex >= res.meshes.length)
             {
                 this.meshIndex = res.meshes.length - 1;
             }
@@ -980,7 +985,8 @@ export class EveShip2 extends EveObject
             }
         }
 
-        let doFiringEffects = show.firingEffect;
+        const showFiringEffects = show.firingEffect !== undefined ? show.firingEffect : show.firingEffects;
+        let doFiringEffects = showFiringEffects;
 
         if (this._lod > 1)
         {
@@ -995,7 +1001,7 @@ export class EveShip2 extends EveObject
                         if (show.turretSets)
                         {
                             doFiringEffects = false;
-                            item.GetBatches(mode, accumulator, this._perObjectData, show.firingEffect);
+                            item.GetBatches(mode, accumulator, this._perObjectData, showFiringEffects);
                         }
                         break;
 
@@ -1143,7 +1149,7 @@ export class EveShip2 extends EveObject
         {
             // What is this, this doesn't look standard
             // We can probably remove this.
-            if (this.meshIndex > res.meshes.length)
+            if (this.meshIndex >= res.meshes.length)
             {
                 this.meshIndex = res.meshes.length - 1;
             }

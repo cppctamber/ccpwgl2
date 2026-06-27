@@ -14,7 +14,7 @@ const
 
 @meta.type("Tw2Transform")
 @meta.wgl.define("Tw2Transform")
-export class Tw2Transform extends meta.Model
+export class WglTransform extends meta.Model
 {
 
     @meta.string
@@ -1052,7 +1052,7 @@ export class Tw2Transform extends meta.Model
     /**
      * Translates the object
      * @param {vec3} v
-     * @returns {Tw2Transform}
+     * @returns {WglTransform}
      */
     Translate(v)
     {
@@ -1268,7 +1268,7 @@ export class Tw2Transform extends meta.Model
 
     /**
      * Sets an object from values
-     * @param {Tw2Transform} a
+     * @param {WglTransform} a
      * @param {Object} [values]
      * @param {Object} [opt]
      * @returns {boolean}
@@ -1311,7 +1311,7 @@ export class Tw2Transform extends meta.Model
 
     /**
      * Gets the classes values
-     * @param {Tw2Transform} a
+     * @param {WglTransform} a
      * @param {Object} [out={}]
      * @param {Object} [opt]
      * @returns {Object}
@@ -1367,3 +1367,5 @@ export class Tw2Transform extends meta.Model
     static global = { vec3_0, vec3_1, vec3_2, quat_0, mat4_0, box3_0 };
 
 }
+
+export { WglTransform as Tw2Transform };
