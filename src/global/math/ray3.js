@@ -13,6 +13,18 @@ import { mat3 } from "math/mat3";
 export const ray3 = {};
 
 /**
+ * Allocates a pooled ray3
+ * @returns {Float32Array|ray3}
+ */
+ray3.alloc = box3.alloc;
+
+/**
+ * Unallocates a pooled ray3
+ * @param {ray3|Float32Array} a
+ */
+ray3.unalloc = box3.unalloc;
+
+/**
  * Gets a subarray of a ray3's origin vector
  * @property {box3} a
  * @returns {TypedArray}

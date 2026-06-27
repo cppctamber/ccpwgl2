@@ -16,6 +16,18 @@ let sph3_0 = null;
 let box3_0 = null;
 
 /**
+ * Allocates a pooled sph3
+ * @returns {Float32Array|sph3}
+ */
+sph3.alloc = vec4.alloc;
+
+/**
+ * Unallocates a pooled sph3
+ * @param {sph3|Float32Array} a
+ */
+sph3.unalloc = vec4.unalloc;
+
+/**
  * Returns a subarray containing the position component of the sph3
  * - Why does webpack fail to resolve this if referencing pln.normal?
  *

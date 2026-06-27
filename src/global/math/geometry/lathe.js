@@ -34,8 +34,6 @@ export function createLathe(options)
     // helper variables
     const
         inverseSegments = 1.0 / segments,
-        uv = vec2.alloc(),
-        vertex = vec3.alloc(),
         normal = vec3.alloc(),
         curNormal = vec3.alloc(),
         prevNormal = vec3.alloc();
@@ -114,8 +112,6 @@ export function createLathe(options)
         }
     }
 
-    vec2.unalloc(uv);
-    vec3.unalloc(vertex);
     vec3.unalloc(normal);
     vec3.unalloc(curNormal);
     vec3.unalloc(prevNormal);

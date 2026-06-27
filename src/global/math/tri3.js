@@ -2,6 +2,7 @@ import { vec3 } from "./vec3";
 import { mat3 } from "./mat3";
 import { pln } from "./pln";
 import { lne3 } from "./lne3";
+import { pool } from "./pool";
 
 /**
  * 3d Triangle
@@ -10,6 +11,24 @@ import { lne3 } from "./lne3";
  */
 
 export const tri3 = {};
+
+/**
+ * Allocates a pooled tri3
+ * @returns {Float32Array|tri3}
+ */
+tri3.alloc = function()
+{
+    return pool.allocF32(9);
+};
+
+/**
+ * Unallocates a pooled tri3
+ * @param {tri3|Float32Array} a
+ */
+tri3.unalloc = function(a)
+{
+    pool.freeType(a);
+};
 
 /**
  * Gets a subarray of a tri3's first vertex
