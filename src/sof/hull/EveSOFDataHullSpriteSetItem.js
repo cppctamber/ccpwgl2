@@ -16,7 +16,7 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     @meta.float
     blinkRate = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = 0;
 
     @meta.uint
@@ -25,7 +25,7 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     @meta.float
     falloff = 0;
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.float

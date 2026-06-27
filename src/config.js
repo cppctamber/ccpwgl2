@@ -9,6 +9,7 @@ import WglArray from "global/meta/types/WglArray";
 import WglBoolean from "global/meta/types/WglBoolean";
 import WglExpression from "global/meta/types/WglExpression";
 import WglFloat32 from "global/meta/types/WglFloat32";
+import WglInt32 from "global/meta/types/WglInt32";
 import WglInt64 from "global/meta/types/WglInt64";
 import WglPath from "global/meta/types/WglPath";
 import WglPlain from "global/meta/types/WglPlain";
@@ -68,7 +69,8 @@ export const config = {
                 return path.replace(".dds", ".qube");
             }
 
-            return path.replace(".dds", ".png");
+            const support = core.Tw2TextureRes.GetFormatSupport();
+            return support.dds && support.dds.supported ? path : path.replace(".dds", ".png");
 
         },
 
@@ -305,6 +307,7 @@ export const config = {
         [PT.USHORT]: WglUInt16,
         [PT.FLOAT]: WglFloat32,
         [PT.INT64]: WglInt64,
+        [PT.INT32]: WglInt32,
 
         [PT.STRUCT]: WglStruct,
         [PT.STRUCT_RAW]: WglStruct,

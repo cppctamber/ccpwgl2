@@ -10,7 +10,7 @@ import { mat4, vec3 } from "math";
 export class EveSOFDataHullSpotlightSetItem extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     boneIndex = 0;
 
     @meta.boolean
@@ -25,7 +25,7 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
     @meta.float
     flareIntensity = 0;
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.struct()

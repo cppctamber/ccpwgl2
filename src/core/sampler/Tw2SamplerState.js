@@ -52,7 +52,7 @@ export class Tw2SamplerState extends meta.Model
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     registerIndex = -1;
 
     @meta.uint

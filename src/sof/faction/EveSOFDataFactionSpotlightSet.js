@@ -19,7 +19,7 @@ export class EveSOFDataFactionSpotlightSet extends meta.Model
     @meta.color
     flareColor = vec4.create();
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.color

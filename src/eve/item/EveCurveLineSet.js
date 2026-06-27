@@ -350,7 +350,7 @@ export class EveCurveLineSet extends EveObjectSet
 
     /* CCPWGL only */
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.boolean

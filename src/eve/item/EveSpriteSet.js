@@ -62,7 +62,7 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.float
     blinkRate = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.color
@@ -86,12 +86,12 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.color
     warpColor = vec4.create();
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     // ccpwgl only
 
-    @meta.uint
+    @meta.int32
     colorType = -1;
 
     _bone = null;

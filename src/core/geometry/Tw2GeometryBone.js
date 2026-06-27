@@ -10,7 +10,7 @@ export class Tw2GeometryBone
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     parentIndex = -1;
 
     @meta.vector3

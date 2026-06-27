@@ -16,10 +16,10 @@ export class Tw2ShaderStageTexture
     @meta.uint
     isSRGB = 0;
 
-    @meta.uint
+    @meta.int32
     registerIndex = -1;
 
-    @meta.uint
+    @meta.int32
     type = -1;
 
     /**

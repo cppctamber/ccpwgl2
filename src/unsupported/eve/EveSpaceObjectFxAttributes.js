@@ -24,7 +24,7 @@ export class EveSpaceObjectFxAttributes extends meta.Model
     generatedShapeEllipsoidRadius = vec3.create();
     activeTurretCount = 0;
     parentWorldTranslation = vec3.create();
-    parentWorldRotation = quat.create();
+    parentWorldRotation = quat.fromValues(0, 0, 0, 0);
     ship = 0;
     childParent = 0;
     killCount = 0;

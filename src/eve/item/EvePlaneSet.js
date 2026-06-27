@@ -44,7 +44,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.color
@@ -74,7 +74,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     // Not implemented
@@ -101,7 +101,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
 
     // ccpwgl only
 
-    @meta.uint
+    @meta.int32
     colorType = -1;
 
     _localTransform = mat4.create();

@@ -10,7 +10,7 @@ import { quat, vec3 } from "math";
 export class EveSOFDataHullHazeSetItem extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.boolean

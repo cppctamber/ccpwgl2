@@ -9,7 +9,7 @@ import { meta } from "utils";
 export class EveSOFDataHullController extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     buildFilter = -1;
 
     @meta.path

@@ -21,7 +21,7 @@ export class Tw2VertexElement
     @meta.uint
     type = null;
 
-    @meta.uint
+    @meta.int32
     usage = -1;
 
     @meta.uint

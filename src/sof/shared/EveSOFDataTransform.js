@@ -10,7 +10,7 @@ import { quat, vec3, mat4 } from "math";
 export class EveSOFDataTransform extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.vector3

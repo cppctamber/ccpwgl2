@@ -25,7 +25,7 @@ export class EveBanner extends meta.Model
     @meta.notImplemented
     angleY = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.boolean

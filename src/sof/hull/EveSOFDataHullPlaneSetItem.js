@@ -19,7 +19,7 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     @meta.uint
     blinkMode = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = 0;
 
     @meta.color
@@ -31,7 +31,7 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     @meta.float
     dutyCycle = 0;
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.float

@@ -13,7 +13,7 @@ export class EveSOFDataHullLightSetItem extends meta.Model
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.float

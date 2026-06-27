@@ -69,7 +69,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.boolean
     boosterGainInfluence = false;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.color
@@ -81,7 +81,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.color
     flareColor = vec4.create();
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.color
@@ -104,7 +104,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.float
     spriteIntensity = 0;
 
-    @meta.uint
+    @meta.int32
     colorType = -1;
 
     _bone = null;

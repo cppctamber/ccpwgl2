@@ -19,7 +19,7 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
     @meta.float
     angleY = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.struct()
@@ -34,7 +34,7 @@ export class EveSOFDataHullBannerSetItem extends meta.Model
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.uint
+    @meta.int32
     usage = -1;
 
     //@meta.string

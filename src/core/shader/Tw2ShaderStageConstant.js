@@ -22,7 +22,7 @@ export class Tw2ShaderStageConstant
     @meta.todo("Why is this here?")
     isSRGB = false;
 
-    @meta.uint
+    @meta.int32
     offset = -1;
 
     @meta.uint

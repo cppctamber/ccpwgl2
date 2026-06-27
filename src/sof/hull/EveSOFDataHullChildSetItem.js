@@ -25,7 +25,7 @@ export class EveSOFDataHullChildSetItem extends meta.Model
     @meta.quaternion
     rotation = quat.create();
 
-    @meta.uint
+    @meta.int32
     buildFilter = -1;
 
 }

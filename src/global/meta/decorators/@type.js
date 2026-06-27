@@ -11,6 +11,7 @@ import {
     PT_ENUM,
     PT_EXPRESSION,
     PT_FLOAT,
+    PT_INT32,
     PT_INT64,
     PT_MATRIX3,
     PT_MATRIX4,
@@ -326,9 +327,16 @@ export const path = create(PT_PATH);
 export const expression = create(PT_EXPRESSION);
 export const float = create(PT_FLOAT);
 export const int64 = create(PT_INT64);
+export const int32 = create(PT_INT32);
 export const uint = create(PT_UINT);
 export const ushort = create(PT_USHORT);
 export const byte = create(PT_BYTE);
+
+export const float32 = float;
+export const uint32 = uint;
+export const uint16 = ushort;
+export const uint8 = byte;
+
 export const array = create(PT_ARRAY);
 export const vector2 = create(PT_VECTOR2);
 export const vector3 = create(PT_VECTOR3);

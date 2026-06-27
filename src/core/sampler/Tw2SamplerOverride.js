@@ -13,33 +13,33 @@ export class Tw2SamplerOverride extends meta.Model
     @meta.boolean
     enable = true;
 
-    @meta.uint
+    @meta.int32
     addressUMode = -1;
 
-    @meta.uint
+    @meta.int32
     addressVMode = -1;
 
-    @meta.uint
+    @meta.int32
     addressWMode = -1;
 
-    @meta.uint
+    @meta.int32
     filterMode = -1;
 
-    @meta.uint
+    @meta.int32
     mipFilterMode = -1;
 
-    @meta.uint
+    @meta.int32
     magFilterMode = -1;
 
     @meta.notImplemented
-    @meta.uint
+    @meta.int32
     lodBias = -1;
 
     @meta.notImplemented
-    @meta.uint
+    @meta.int32
     maxMipLevel = -1;
 
-    @meta.uint
+    @meta.int32
     maxAnisotropy = -1;
 
     _sampler = null;

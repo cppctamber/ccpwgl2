@@ -12,7 +12,7 @@ import { mat4 } from "math";
 export class EveChildModifierAttachToBone extends EveChildModifier
 {
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     /**

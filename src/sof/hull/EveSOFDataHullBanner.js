@@ -22,7 +22,7 @@ export class EveSOFDataHullBanner extends meta.Model
     @meta.float
     angleZ = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.struct()

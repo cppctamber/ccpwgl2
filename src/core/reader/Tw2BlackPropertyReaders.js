@@ -12,6 +12,7 @@ import {
     PT_EXPRESSION,
     PT_BYTE,
     PT_INT64,
+    PT_INT32,
     PT_UINT,
     PT_USHORT,
     PT_FLOAT,
@@ -55,6 +56,7 @@ function getReaderFromType(type)
             [PT_EXPRESSION]: string,
             [PT_BYTE]: byte,
             [PT_INT64]: int64,
+            [PT_INT32]: int32,
             [PT_UINT]: uint,
             [PT_USHORT]: ushort,
             [PT_FLOAT]: float,
@@ -370,23 +372,6 @@ export function ushort(reader)
 }
 
 /**
- * Reads an uint
- * TODO: What to do with the maximum number 4294967295 and 2147483648 ??
- * @param {Tw2BlackBinaryReader} reader
- * @returns {Number}
- */
-export function uint(reader)
-{
-    const value = reader.ReadU32();
-    return value in uint.transforms ? uint.transforms[value] : value;
-}
-
-uint.transforms = {
-    4294967295: -1,
-    2147483648: -1
-};
-
-/**
  * Reads a byte
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Number}
@@ -404,6 +389,26 @@ export function byte(reader)
 export function int64(reader)
 {
     return reader.ReadI64();
+}
+
+/**
+ * Reads a signed int32
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {Number}
+ */
+export function int32(reader)
+{
+    return reader.ReadI32();
+}
+
+/**
+ * Reads an uint
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {Number}
+ */
+export function uint(reader)
+{
+    return reader.ReadU32();
 }
 
 /**

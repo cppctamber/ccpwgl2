@@ -19,7 +19,7 @@ export class EveChildContainer extends EveChild
     @meta.boolean
     alwaysOn = false;
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.notImplemented
@@ -33,7 +33,7 @@ export class EveChildContainer extends EveChild
     display = true;
 
     @meta.notImplemented
-    @meta.uint
+    @meta.int32
     displayFilter = -1;
 
     @meta.notImplemented

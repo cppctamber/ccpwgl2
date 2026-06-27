@@ -19,7 +19,7 @@ export class EveSOFDataHullSpriteLineSetItem extends meta.Model
     @meta.float
     blinkRate = 0;
 
-    @meta.uint
+    @meta.int32
     boneIndex = 0;
 
     @meta.uint

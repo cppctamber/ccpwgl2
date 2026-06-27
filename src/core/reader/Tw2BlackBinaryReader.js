@@ -290,6 +290,17 @@ export class Tw2BlackBinaryReader
      *
      * @returns {number}
      */
+    ReadI32()
+    {
+        let value = this.data.getInt32(this.cursor, true);
+        this.cursor += 4;
+        return value;
+    }
+
+    /**
+     *
+     * @returns {number}
+     */
     ReadI64()
     {
         const

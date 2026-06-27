@@ -12,7 +12,7 @@ export class EveSOFDataFactionChild extends meta.Model
     @meta.string
     name = "";
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     @meta.boolean

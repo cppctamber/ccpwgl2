@@ -16,7 +16,7 @@ export class EveSOFDataFactionPlaneSet extends meta.Model
     @meta.color
     color = vec4.create();
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
 }

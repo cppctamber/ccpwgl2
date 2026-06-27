@@ -21,13 +21,13 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.boolean
     display = true;
 
-    @meta.uint
+    @meta.int32
     groupIndex = -1;
 
     //@meta.uint16Array
     //indexBuffer = [];
 
-    @meta.uint
+    @meta.int32
     parentBoneIndex = -1;
 
     @meta.boolean
@@ -36,10 +36,10 @@ export class EveSpaceObjectDecal extends meta.Model
     @meta.uint
     meshIndex = 0;
 
-    @meta.uint
+    @meta.int32
     logoType = -1;
 
-    @meta.uint
+    @meta.int32
     colorType = -1;
 
     @meta.struct("Tw2Effect")

@@ -11,7 +11,7 @@ import { vec3, quat, mat4 } from "math";
 export class EveLocatorSetItem extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     boneIndex = -1;
 
     @meta.translation
@@ -89,8 +89,8 @@ export class EveLocatorSetItem extends meta.Model
         const item = new EveLocatorSetItem();
         vec3.copy(item.position, r.ReadF32Array(3));
         quat.copy(item.rotation, r.ReadF32Array(4));
-        item.boneIndex = r.ReadU32() - 1;
         vec3.copy(item.scaling, r.ReadF32Array(3));
+        item.boneIndex = r.ReadI32();
         return item;
     }
 

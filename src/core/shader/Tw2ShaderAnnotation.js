@@ -10,7 +10,7 @@ export class Tw2ShaderAnnotationComponent
     @meta.string
     description = "";
 
-    @meta.uint
+    @meta.int32
     index = -1;
 
     @meta.float

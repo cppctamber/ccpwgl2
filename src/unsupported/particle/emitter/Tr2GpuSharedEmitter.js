@@ -102,7 +102,7 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
     @meta.float
     turbulenceAmplitude = 0;
 
-    @meta.float
+    @meta.uint
     turbulenceFrequency = 0;
 
     @meta.float

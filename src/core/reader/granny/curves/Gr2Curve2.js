@@ -9,7 +9,7 @@ import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
 export class Gr2Curve2 extends meta.Model
 {
 
-    @meta.uint
+    @meta.int32
     dimension = -1;
 
     @meta.uint
