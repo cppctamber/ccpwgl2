@@ -63,16 +63,21 @@ export const config = {
         // Replace dds extension  with pngs
         "dds": path =>
         {
+            const
+                support = core.Tw2TextureRes.GetFormatSupport(),
+                isSupported = support.dds && support.dds.supported;
 
             if (path.includes("_cube"))
             {
-                return path.replace(".dds", ".qube");
+                return isSupported ? path : path.replace(".dds", ".qube");
             }
 
-            const support = core.Tw2TextureRes.GetFormatSupport();
-            return support.dds && support.dds.supported ? path : path.replace(".dds", ".png");
+            return isSupported ? path : path.replace(".dds", ".png");
 
         },
+
+        // PNG skyboxes are backed by legacy ".cube" image strips
+        "png": path => path.includes("_cube") ? path.replace(".png", ".qube") : path,
 
         // Replace gr2 extension with gr2_json
 
@@ -315,61 +320,18 @@ export const config = {
         [PT.PLAIN]: WglPlain,
         [PT.ARRAY]: WglArray,
 
-        [PT.VECTOR]: {
-            type: WglVector,
-            ctor: Float32Array
-        },
-        [PT.VECTOR2]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 2
-        },
-        [PT.VECTOR3]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 3
-        },
-        [PT.VECTOR4]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 4
-        },
-        [PT.COLOR]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 4
-        },
-        [PT.QUATERNION]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 4
-        },
-        [PT.MATRIX3]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 9
-        },
-        [PT.MATRIX4]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 16
-        },
+        [PT.VECTOR]: { type: WglVector,ctor: Float32Array },
+        [PT.VECTOR2]: { type: WglVector,ctor: Float32Array, length: 2 },
+        [PT.VECTOR3]: { type: WglVector, ctor: Float32Array, length: 3 },
+        [PT.VECTOR4]: { type: WglVector, ctor: Float32Array, length: 4 },
+        [PT.COLOR]: { type: WglVector, ctor: Float32Array, length: 4 },
+        [PT.QUATERNION]: { type: WglVector, ctor: Float32Array, length: 4 },
+        [PT.MATRIX3]: { type: WglVector, ctor: Float32Array, length: 9 },
+        [PT.MATRIX4]: { type: WglVector, ctor: Float32Array, length: 16 },
 
-        [PT.TRANSLATION]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 3
-        },
-        [PT.SCALING]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 3
-        },
-        [PT.ROTATION]: {
-            type: WglVector,
-            ctor: Float32Array,
-            length: 4
-        },
+        [PT.TRANSLATION]: { type: WglVector, ctor: Float32Array, length: 3 },
+        [PT.SCALING]: { type: WglVector, ctor: Float32Array, length: 3 },
+        [PT.ROTATION]: { type: WglVector, ctor: Float32Array,length: 4 },
 
         [PT.UINT8_ARRAY]: typedArray(Uint8Array),
         [PT.UINT8_CLAMPED_ARRAY]: typedArray(Uint8ClampedArray),
