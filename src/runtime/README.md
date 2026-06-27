@@ -30,4 +30,9 @@ They should wrap existing reader-resolved objects until a concrete translation n
 - `objects/` contains provisional front-facing object wrappers over existing EVE objects.
 - `cameras/TnyCameraTest.js` wraps `WrappedTestCamera`; other wrapped camera experiments are not promoted here.
 
+Not yet implemented:
+
+- Multiple views, scissor rendering, and offscreen target orchestration.
+- Front-facing slot/turret/launcher/overlay helpers comparable to the temporary `src/wrapped` slot workflow.
+
 Expect these classes to move, split, or gain stricter contracts before this folder is treated as stable.
