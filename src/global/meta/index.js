@@ -24,9 +24,16 @@ const wglMetadata = {
     define: (...args) => type.createTypeDecorator("wgl", ...args)
 };
 
+const tnyMetadata = {
+    ...coreMetadata,
+    type: (...args) => type.createTypeDecorator("tny", ...args),
+    define: (...args) => type.createTypeDecorator("tny", ...args)
+};
+
 const ccp = createMetaNamespace(ccpMetadata, "ccp", { version: METADATA_VERSION });
 const wgl = createMetaNamespace(wglMetadata, "wgl", { version: METADATA_VERSION });
+const tny = createMetaNamespace(tnyMetadata, "tny", { version: METADATA_VERSION });
 
 export * from "./decorators";
-export { ccp, wgl };
+export { ccp, wgl, tny };
 export { BaseModel as Model };

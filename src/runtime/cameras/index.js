@@ -1,0 +1,1 @@
+export { TnyCameraTest } from "./TnyCameraTest";
