@@ -16,6 +16,9 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
     @meta.float
     input3 = -1;
 
+    @meta.float
+    input4 = 0;
+
     @meta.uint
     interpolation = 0;
 

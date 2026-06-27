@@ -72,6 +72,12 @@ export class EveChildContainer extends EveChild
     @meta.boolean
     staticTransform = false;
 
+    @meta.boolean
+    useStaticRotation = false;
+
+    @meta.boolean
+    useStaticScale = false;
+
     @meta.notImplemented
     @meta.list("EveChildModifier")
     transformModifiers = [];

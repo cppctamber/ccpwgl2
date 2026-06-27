@@ -40,7 +40,7 @@ export class EveChildParticleSystem extends EveChild
     particleSystems = [];
 
     @meta.uint
-    reflectionMode = 0;
+    reflectionMode = 3;
 
     @meta.quaternion
     rotation = quat.create();

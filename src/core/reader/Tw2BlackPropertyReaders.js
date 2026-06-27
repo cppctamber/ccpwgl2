@@ -11,6 +11,7 @@ import {
     PT_STRING,
     PT_EXPRESSION,
     PT_BYTE,
+    PT_INT64,
     PT_UINT,
     PT_USHORT,
     PT_FLOAT,
@@ -53,6 +54,7 @@ function getReaderFromType(type)
             [PT_STRING]: string,
             [PT_EXPRESSION]: string,
             [PT_BYTE]: byte,
+            [PT_INT64]: int64,
             [PT_UINT]: uint,
             [PT_USHORT]: ushort,
             [PT_FLOAT]: float,
@@ -392,6 +394,16 @@ uint.transforms = {
 export function byte(reader)
 {
     return reader.ReadU8();
+}
+
+/**
+ * Reads a signed int64 as a Number.
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {Number}
+ */
+export function int64(reader)
+{
+    return reader.ReadI64();
 }
 
 /**

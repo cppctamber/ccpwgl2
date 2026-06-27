@@ -17,6 +17,9 @@ export class EveChildInstanceContainer extends meta.Model
     @meta.vector3
     scaling = vec3.fromValues(1,1,1);
 
+    @meta.boolean
+    useStaticRotation = false;
+
     //@meta.matrix4
     //localTransform = mat4.create()
 

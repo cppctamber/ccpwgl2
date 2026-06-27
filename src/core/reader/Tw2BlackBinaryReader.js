@@ -288,6 +288,20 @@ export class Tw2BlackBinaryReader
 
     /**
      *
+     * @returns {number}
+     */
+    ReadI64()
+    {
+        const
+            low = this.ReadU32(),
+            high = this.ReadU32(),
+            value = high * 0x100000000 + low;
+
+        return high >= 0x80000000 ? value - 0x10000000000000000 : value;
+    }
+
+    /**
+     *
      * @param n
      * @returns {Uint32Array}
      */

@@ -17,19 +17,19 @@ export class EveChildEffectPropagator extends EveChild
     name = "";
 
     @meta.float
-    completeness = 0;
+    completeness = 1;
 
     @meta.float
-    durationPerEffect = 0;
+    durationPerEffect = 3;
 
     @meta.struct("Tw2Effect")
     effect = null;
 
     @meta.vector3
-    effectScaling = vec3.create();
+    effectScaling = vec3.fromValues(1, 1, 1);
 
     @meta.float
-    frequency = 0;
+    frequency = 1;
 
     @meta.struct()
     localLocators = null;
@@ -43,14 +43,26 @@ export class EveChildEffectPropagator extends EveChild
     @meta.float
     maxLifeTime = 0;
 
+    @meta.int64
+    numTriggers = 10;
+
+    @meta.float
+    range = 500;
+
+    @meta.float
+    minRangeThreshold = 0;
+
+    @meta.float
+    ClosenessPreference = 0.25;
+
     @meta.uint
     propagationType = 0;
 
     @meta.float
-    randScaleMax = 0;
+    randScaleMax = 1;
 
     @meta.float
-    randScaleMin = 0;
+    randScaleMin = 1;
 
     @meta.boolean
     replayAfterDelay = false;
@@ -61,14 +73,14 @@ export class EveChildEffectPropagator extends EveChild
     @meta.float
     stopToClearDelay = 0;
 
-    @meta.uint
-    stopAfterNumTriggers = 0;
+    @meta.float
+    stopAfterNumTriggers = -1;
 
     @meta.boolean
     trigger = false;
 
-    @meta.struct()
-    triggerMethood = null;
+    @meta.uint
+    triggerMethood = 0;
 
     @meta.vector3
     triggerSphereOffset = vec3.create();
@@ -94,7 +106,7 @@ export class EveChildEffectPropagator extends EveChild
      */
     set triggerMethod(struct)
     {
-        this.triggerMethod = struct;
+        this.triggerMethood = struct;
     }
 
 }

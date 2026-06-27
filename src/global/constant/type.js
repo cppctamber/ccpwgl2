@@ -14,6 +14,7 @@ export const PT_BYTE = 20;
 export const PT_UINT = 21;
 export const PT_USHORT = 22;
 export const PT_FLOAT = 23;
+export const PT_INT64 = 24;
 
 export const PT_STRUCT = 30;
 export const PT_STRUCT_RAW = 31;
@@ -72,6 +73,7 @@ export const PT_NAME = Object.freeze({
     [PT_UINT]: "uint32",
     [PT_USHORT]: "uint16",
     [PT_FLOAT]: "float32",
+    [PT_INT64]: "int64",
     [PT_STRUCT]: "object",
     [PT_STRUCT_RAW]: "rawObject",
     [PT_STRUCT_LIST]: "list",
@@ -129,6 +131,7 @@ export const PT = Object.freeze({
     UINT16: PT_UINT16,
     FLOAT: PT_FLOAT,
     FLOAT32: PT_FLOAT32,
+    INT64: PT_INT64,
     STRUCT: PT_STRUCT,
     OBJECT: PT_OBJECT,
     STRUCT_RAW: PT_STRUCT_RAW,

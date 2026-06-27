@@ -75,7 +75,7 @@ export class EveChildMesh extends EveChild
 
     @meta.uint
     @meta.notImplemented
-    reflectionMode = -1;
+    reflectionMode = 3;
 
     _hasBone = false;
     _boneTransform = null;
