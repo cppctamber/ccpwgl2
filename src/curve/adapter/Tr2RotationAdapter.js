@@ -2,58 +2,20 @@ import { meta } from "utils";
 import { quat } from "math";
 
 
-function IsOutput(value)
-{
-    return value && typeof value.length === "number";
-}
-
-function ResolveSampleArgs(a, b, fallback)
-{
-    if (IsOutput(a))
-    {
-        return { out: a, time: b, usesStart: true };
-    }
-    return { time: a, out: IsOutput(b) ? b : fallback, usesStart: false };
-}
-
-function SampleCurve(curve, out, time, update)
-{
-    if (!curve)
-    {
-        return null;
-    }
-
-    if (update && curve.Update)
-    {
-        return curve.Update(time, out) || out;
-    }
-
-    if (curve.GetValueAt)
-    {
-        return curve.GetValueAt(time, out) || out;
-    }
-
-    if (curve.GetValue)
-    {
-        return curve.GetValue(time, out) || out;
-    }
-
-    return null;
-}
-
-
 @meta.ccp.define("Tr2RotationAdapter")
 export class Tr2RotationAdapter extends meta.Model
 {
-    @meta.struct()
-    curve = null;
-
     @meta.quaternion
     value = quat.create();
 
+    @meta.struct()
+    curve = null;
+
+    @meta.private
     @meta.quaternion
     currentValue = quat.create();
 
+    @meta.private
     @meta.float
     timeScale = 1;
 
@@ -98,21 +60,19 @@ export class Tr2RotationAdapter extends meta.Model
 
         if (this.curve)
         {
-            return SampleCurve(this.curve, args.out, this.GetLocalTime(args.time, args.usesStart), false);
+            return SampleCurve(this.curve, args.out, this.GetLocalTime(args.time, args.usesStart), false) || args.out;
         }
         return quat.copy(args.out, this.value);
     }
 
     GetValueDotAt(a, b)
     {
-        const args = ResolveSampleArgs(a, b, quat.create());
-        return quat.identity(args.out);
+        return quat.identity(ResolveSampleArgs(a, b, quat.create()).out);
     }
 
     GetValueDoubleDotAt(a, b)
     {
-        const args = ResolveSampleArgs(a, b, quat.create());
-        return quat.identity(args.out);
+        return quat.identity(ResolveSampleArgs(a, b, quat.create()).out);
     }
 
     RandomizeStart(range = 60)
@@ -135,4 +95,43 @@ export class Tr2RotationAdapter extends meta.Model
     {
         return usesStart ? (time - this.start + this.offset) / this.timeScale : time / this.timeScale;
     }
+}
+
+function IsOutput(value)
+{
+    return value && typeof value.length === "number";
+}
+
+function ResolveSampleArgs(a, b, fallback)
+{
+    if (IsOutput(a))
+    {
+        return { out: a, time: b, usesStart: true };
+    }
+    return { time: a, out: IsOutput(b) ? b : fallback, usesStart: false };
+}
+
+function SampleCurve(curve, out, time, update)
+{
+    if (!curve)
+    {
+        return null;
+    }
+
+    if (update && curve.Update)
+    {
+        return curve.Update(time, out) || out;
+    }
+
+    if (curve.GetValueAt)
+    {
+        return curve.GetValueAt(time, out) || out;
+    }
+
+    if (curve.GetValue)
+    {
+        return curve.GetValue(time, out) || out;
+    }
+
+    return null;
 }

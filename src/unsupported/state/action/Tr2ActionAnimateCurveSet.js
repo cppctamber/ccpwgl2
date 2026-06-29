@@ -12,6 +12,6 @@ export class Tr2ActionAnimateCurveSet extends Tw2Action
     curveSet = null;
 
     @meta.string
-    value = "";
+    value = "StateTime()";
 
 }

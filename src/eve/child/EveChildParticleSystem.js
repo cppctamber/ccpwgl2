@@ -117,6 +117,14 @@ export class EveChildParticleSystem extends EveChild
         mat4.copy(this._worldTransformLast, this._worldTransform);
         mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
 
+        for (let i = 0; i < this.particleSystems.length; ++i)
+        {
+            if (this.particleSystems[i].UpdateTransform)
+            {
+                this.particleSystems[i].UpdateTransform(this._worldTransform);
+            }
+        }
+
         for (let i = 0; i < this.particleEmitters.length; ++i)
         {
             this.particleEmitters[i].Update(dt);

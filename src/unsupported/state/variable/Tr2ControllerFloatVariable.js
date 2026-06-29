@@ -13,8 +13,8 @@ export class Tr2ControllerFloatVariable
     @meta.float
     defaultValue = 0;
 
-    @meta.enums()
-    enumValues = {};
+    @meta.string
+    enumValues = "";
 
     @meta.uint
     variableType = 0;
@@ -22,22 +22,84 @@ export class Tr2ControllerFloatVariable
     @meta.float
     value = 0;
 
-    /**
-     * Gets enums as a string
-     * @returns {string}
-     */
-    GetEnumsAsString()
+    _destination = null;
+    _dirtyMaskDestination = null;
+    _dirtyMask = 0;
+
+    Initialize()
     {
-        let str = [];
-        for (const string in this.enumValues)
+        this.value = this.defaultValue;
+        return true;
+    }
+
+    OnModified()
+    {
+        this.ApplyDestination(this.value);
+        return true;
+    }
+
+    GetName()
+    {
+        return this.name;
+    }
+
+    GetValue()
+    {
+        return this.value;
+    }
+
+    SetValue(value)
+    {
+        this.value = value;
+        this.ApplyDestination(value);
+    }
+
+    SetDestinationBuffer(buffer)
+    {
+        this._destination = buffer;
+        this.ApplyDestination(this.value);
+    }
+
+    SetDirtyMask(maskDestination, mask)
+    {
+        this._dirtyMaskDestination = maskDestination;
+        this._dirtyMask = mask;
+    }
+
+    ApplyDestination(value)
+    {
+        if (this._destination)
         {
-            if (this.enumValues.hasOwnProperty(string))
+            if (typeof this._destination === "function")
             {
-                str.push(`${string}=${this.enumValues[string]}`);
+                this._destination(value);
+            }
+            else if ("value" in this._destination)
+            {
+                this._destination.value = value;
+            }
+            else
+            {
+                this._destination[0] = value;
             }
         }
 
-        return str.sort().join(",");
+        if (this._dirtyMaskDestination)
+        {
+            if ("value" in this._dirtyMaskDestination)
+            {
+                this._dirtyMaskDestination.value |= this._dirtyMask;
+            }
+            else
+            {
+                this._dirtyMaskDestination[0] |= this._dirtyMask;
+            }
+        }
+    }
+
+    GetEnumsAsString()
+    {
+        return this.enumValues;
     }
 
 }

@@ -12,11 +12,13 @@ export class Tr2QuaternionLerpCurve extends meta.Model
     length = 0;
 
     @meta.quaternion
-    value = quat.create();
+    value = quat.fromValues(0, 0, 0, 1);
 
+    @meta.notOwned
     @meta.struct()
     startCurve = null;
 
+    @meta.notOwned
     @meta.struct()
     endCurve = null;
 

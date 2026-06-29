@@ -2,61 +2,23 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-function IsOutput(value)
-{
-    return value && typeof value.length === "number";
-}
-
-function ResolveSampleArgs(a, b, fallback)
-{
-    if (IsOutput(a))
-    {
-        return { out: a, time: b, usesStart: true };
-    }
-    return { time: a, out: IsOutput(b) ? b : fallback, usesStart: false };
-}
-
-function SampleCurve(curve, out, time, update)
-{
-    if (!curve)
-    {
-        return null;
-    }
-
-    if (update && curve.Update)
-    {
-        return curve.Update(time, out) || out;
-    }
-
-    if (curve.GetValueAt)
-    {
-        return curve.GetValueAt(time, out) || out;
-    }
-
-    if (curve.GetValue)
-    {
-        return curve.GetValue(time, out) || out;
-    }
-
-    return null;
-}
-
-
 @meta.ccp.define("Tr2TranslationAdapter")
 export class Tr2TranslationAdapter extends meta.Model
 {
-    @meta.quaternion
-    rotationOffset = quat.create();
+    @meta.vector3
+    value = vec3.create();
 
     @meta.struct()
     curve = null;
 
-    @meta.vector3
-    value = vec3.create();
+    @meta.quaternion
+    rotationOffset = quat.create();
 
+    @meta.private
     @meta.vector3
     currentValue = vec3.create();
 
+    @meta.private
     @meta.float
     timeScale = 1;
 
@@ -102,7 +64,7 @@ export class Tr2TranslationAdapter extends meta.Model
 
         if (this.curve)
         {
-            return SampleCurve(this.curve, args.out, this.GetLocalTime(args.time, args.usesStart), false);
+            return SampleCurve(this.curve, args.out, this.GetLocalTime(args.time, args.usesStart), false) || args.out;
         }
         return vec3.copy(args.out, this.value);
     }
@@ -130,14 +92,12 @@ export class Tr2TranslationAdapter extends meta.Model
 
     GetValueDoubleDotAt(a, b)
     {
-        const args = ResolveSampleArgs(a, b, vec3.create());
-        return vec3.set(args.out, 0, 0, 0);
+        return vec3.set(ResolveSampleArgs(a, b, vec3.create()).out, 0, 0, 0);
     }
 
     InterpolatedPosition(a, b)
     {
-        const args = ResolveSampleArgs(a, b, vec3.create());
-        return vec3.copy(args.out, this.currentValue);
+        return vec3.copy(ResolveSampleArgs(a, b, vec3.create()).out, this.currentValue);
     }
 
     RandomizeStart(range = 60)
@@ -160,4 +120,43 @@ export class Tr2TranslationAdapter extends meta.Model
     {
         return usesStart ? (time - this.start + this.offset) / this.timeScale : time / this.timeScale;
     }
+}
+
+function IsOutput(value)
+{
+    return value && typeof value.length === "number";
+}
+
+function ResolveSampleArgs(a, b, fallback)
+{
+    if (IsOutput(a))
+    {
+        return { out: a, time: b, usesStart: true };
+    }
+    return { time: a, out: IsOutput(b) ? b : fallback, usesStart: false };
+}
+
+function SampleCurve(curve, out, time, update)
+{
+    if (!curve)
+    {
+        return null;
+    }
+
+    if (update && curve.Update)
+    {
+        return curve.Update(time, out) || out;
+    }
+
+    if (curve.GetValueAt)
+    {
+        return curve.GetValueAt(time, out) || out;
+    }
+
+    if (curve.GetValue)
+    {
+        return curve.GetValue(time, out) || out;
+    }
+
+    return null;
 }

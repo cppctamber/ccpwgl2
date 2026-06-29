@@ -40,12 +40,12 @@ export class Tr2CurveConstant extends meta.Model
 
     GetValueDotAt(time, out = [ 0, 0, 0 ])
     {
-        return FillVector(out, 0, 0, 0, out.length > 3 ? 0 : undefined);
+        return FillVector(out, 0, 0, 0, out.length > 3 ? 1 : undefined);
     }
 
     GetValueDoubleDotAt(time, out = [ 0, 0, 0 ])
     {
-        return FillVector(out, 0, 0, 0, out.length > 3 ? 0 : undefined);
+        return FillVector(out, 0, 0, 0, out.length > 3 ? 1 : undefined);
     }
 
     InterpolatedPosition(out = [ 0, 0, 0 ])

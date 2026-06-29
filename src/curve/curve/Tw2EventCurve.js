@@ -72,7 +72,7 @@ export class Tw2EventCurve extends meta.Model
     @meta.uint
     extrapolation = 0;
 
-    @meta.list(Tw2EventKey)
+    @meta.list("Tw2EventKey", "TriEventKey")
     keys = [];
 
     @meta.struct()

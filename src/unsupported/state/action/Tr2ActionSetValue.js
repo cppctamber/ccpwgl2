@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { Tr2BindingPoint } from "../controller";
 import { Tw2Action } from "./Tw2Action";
 
 
@@ -14,13 +15,51 @@ export class Tr2ActionSetValue extends Tw2Action
     @meta.boolean
     delayBinding = false;
 
+    @meta.notOwned
     @meta.struct()
     destination = null;
 
-    @meta.path
+    @meta.string
     path = "";
 
     @meta.string
     value = "";
 
+    _bindingPoint = null;
+
+    GetBindingPoint()
+    {
+        if (!this._bindingPoint)
+        {
+            this._bindingPoint = new Tr2BindingPoint();
+        }
+
+        this._bindingPoint.path = this.path;
+        this._bindingPoint.object = this.destination;
+        this._bindingPoint.attribute = this.attribute;
+        return this._bindingPoint;
+    }
+
+    LinkDestination(controllerOrRoots, owner)
+    {
+        return this.GetBindingPoint().Link(controllerOrRoots, owner);
+    }
+
+    Unlink()
+    {
+        if (this._bindingPoint)
+        {
+            this._bindingPoint.Unlink();
+        }
+    }
+
+    IsBindingValid()
+    {
+        return !!(this._bindingPoint && this._bindingPoint.IsValid());
+    }
+
+    GetDestination(controllerOrRoots, owner)
+    {
+        return this.GetBindingPoint().GetBoundObject(controllerOrRoots, owner);
+    }
 }

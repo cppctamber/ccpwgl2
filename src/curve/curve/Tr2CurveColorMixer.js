@@ -8,9 +8,13 @@ export class Tr2CurveColorMixer extends meta.Model
     @meta.string
     name = "";
 
+    @meta.private
+    @meta.notOwned
     @meta.struct()
     startCurve = null;
 
+    @meta.private
+    @meta.notOwned
     @meta.struct()
     endCurve = null;
 
@@ -29,9 +33,12 @@ export class Tr2CurveColorMixer extends meta.Model
     @meta.float
     brightness = 1;
 
+    @meta.private
     @meta.color
     currentValue = vec4.fromValues(0, 0, 0, 1);
 
+    @meta.private
+    @meta.color
     convertedLinearValue = vec4.fromValues(0, 0, 0, 1);
 
     UpdateValue(time)

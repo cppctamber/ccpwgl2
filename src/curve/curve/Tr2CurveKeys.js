@@ -45,6 +45,19 @@ export class Tr2CurveScalarKey extends Tr2CurveKey
         if (options) this.SetValues(options);
     }
 
+    static blackStruct(reader)
+    {
+        return new Tr2CurveScalarKey({
+            time: reader.ReadF32(),
+            value: reader.ReadF32(),
+            leftTangent: reader.ReadF32(),
+            rightTangent: reader.ReadF32(),
+            id: reader.ReadU16(),
+            interpolation: reader.ReadU8(),
+            tangentType: reader.ReadU8()
+        });
+    }
+
     SetValues(options, opt)
     {
         super.SetValues(options, opt);
@@ -84,6 +97,18 @@ export class Tr2CurveColorKey extends Tr2CurveKey
 
     @meta.uint
     tangentType = 0;
+
+    static blackStruct(reader)
+    {
+        const item = new Tr2CurveColorKey();
+        item.time = reader.ReadF32();
+        item.value = vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.leftTangent = vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.rightTangent = vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.interpolation = reader.ReadU32();
+        item.tangentType = reader.ReadU32();
+        return item;
+    }
 }
 
 
@@ -103,6 +128,18 @@ export class Tr2CurveVector2Key extends Tr2CurveKey
 
     @meta.uint
     tangentType = 0;
+
+    static blackStruct(reader)
+    {
+        const item = new Tr2CurveVector2Key();
+        item.time = reader.ReadF32();
+        item.value = vec2.fromValues(reader.ReadF32(), reader.ReadF32());
+        item.leftTangent = vec2.fromValues(reader.ReadF32(), reader.ReadF32());
+        item.rightTangent = vec2.fromValues(reader.ReadF32(), reader.ReadF32());
+        item.interpolation = reader.ReadU32();
+        item.tangentType = reader.ReadU32();
+        return item;
+    }
 }
 
 
@@ -122,6 +159,18 @@ export class Tr2CurveVector3Key extends Tr2CurveKey
 
     @meta.uint
     tangentType = 0;
+
+    static blackStruct(reader)
+    {
+        const item = new Tr2CurveVector3Key();
+        item.time = reader.ReadF32();
+        item.value = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.leftTangent = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.rightTangent = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.interpolation = reader.ReadU32();
+        item.tangentType = reader.ReadU32();
+        return item;
+    }
 }
 
 
@@ -141,6 +190,18 @@ export class Tr2CurveEulerRotationKey extends Tr2CurveKey
 
     @meta.uint
     tangentType = 0;
+
+    static blackStruct(reader)
+    {
+        const item = new Tr2CurveEulerRotationKey();
+        item.time = reader.ReadF32();
+        item.value = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.leftTangent = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.rightTangent = vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+        item.interpolation = reader.ReadU32();
+        item.tangentType = reader.ReadU32();
+        return item;
+    }
 }
 
 
@@ -159,6 +220,16 @@ export class Tr2CurveQuaternionKey extends Tr2CurveKey
     {
         super();
         if (options) this.SetValues(options);
+    }
+
+    static blackStruct(reader)
+    {
+        return new Tr2CurveQuaternionKey({
+            time: reader.ReadF32(),
+            value: quat.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32()),
+            id: reader.ReadU16(),
+            interpolation: reader.ReadU16()
+        });
     }
 
     SetValues(options, opt)

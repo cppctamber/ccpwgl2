@@ -8,9 +8,11 @@ export class Tr2CurveCombiner extends meta.Model
     @meta.string
     name = "";
 
+    @meta.notOwned
     @meta.list()
     curves = [];
 
+    @meta.private
     @meta.vector3
     currentValue = vec3.create();
 

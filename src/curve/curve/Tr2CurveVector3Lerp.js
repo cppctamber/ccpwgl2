@@ -14,18 +14,22 @@ export class Tr2CurveVector3Lerp extends meta.Model
     @meta.string
     name = "";
 
+    @meta.private
     @meta.vector3
     initialValue = vec3.create();
 
+    @meta.private
     @meta.vector3
     currentValue = vec3.create();
 
     @meta.float
     curveStartTime = 1;
 
+    @meta.private
     @meta.uint
     startInterpolation = Tr2CurveVector3LerpKeyInterpolation.HERMITE;
 
+    @meta.notOwned
     @meta.struct()
     curve = null;
 

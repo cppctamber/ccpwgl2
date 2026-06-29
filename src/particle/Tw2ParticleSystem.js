@@ -30,7 +30,7 @@ import { Tw2ParticleElement } from "./element";
  * @property {Array} _buffers                                   -
  * @property {Tw2VertexDeclaration} _declaration                - Instance declaration
  * @property {Array<Tw2ParticleElement>} _elements              -
- * @property {Array} _instanceStride                            -
+ * @property {Array} _instanceStride                            - Instance stride in floats
  * @property {Boolean} _isValid                                 - Identifies that the particle system is good
  * @property {Float32Array} _distancesBuffer                    -
  * @property {Float32Array} _sortedBuffer                       -
@@ -109,6 +109,7 @@ export class Tw2ParticleSystem extends meta.Model
     _stdElements = [ null, null, null, null ];
     _vb = null;
     _vertexStride = [ null, null ];
+    _worldTransform = mat4.create();
 
 
     /**
@@ -204,8 +205,8 @@ export class Tw2ParticleSystem extends meta.Model
             this._elements[i].vertexStride = this._vertexStride[bufferIndex];
         }
 
-        this._instanceStride[0] = this._vertexStride[0] * 4;
-        this._instanceStride[1] = this._vertexStride[1] * 4;
+        this._instanceStride[0] = this._vertexStride[0];
+        this._instanceStride[1] = this._vertexStride[1];
 
         for (let i = 0; i < this._elements.length; ++i)
         {
@@ -219,7 +220,7 @@ export class Tw2ParticleSystem extends meta.Model
             this._buffers[0] = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
             this._vb = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-            gl.bufferData(gl.ARRAY_BUFFER, this._buffers[0].length, gl.DYNAMIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, this._buffers[0].byteLength, gl.DYNAMIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
 
@@ -467,7 +468,8 @@ export class Tw2ParticleSystem extends meta.Model
     _Sort()
     {
         const
-            eye = mat4.multiply(Tw2ParticleSystem.global.mat4_0, device.projection, device.view), //device.viewInverse;
+            invWorld = mat4.invert(Tw2ParticleSystem.global.mat4_0, this._worldTransform),
+            eye = vec3.transformMat4(Tw2ParticleSystem.global.vec3_1, device.eyePosition, invWorld || mat4.identity(Tw2ParticleSystem.global.mat4_0)),
             position = this.GetElement(Tw2ParticleElement.Type.POSITION),
             count = this._aliveCount,
             distances = this._distancesBuffer;
@@ -519,6 +521,42 @@ export class Tw2ParticleSystem extends meta.Model
         }
 
         this._sortedIndexes.sort(sortItems);
+    }
+
+    /**
+     * Updates view dependent data
+     */
+    UpdateViewDependentData()
+    {
+        if (this.requiresSorting)
+        {
+            this._Sort();
+        }
+    }
+
+    /**
+     * Updates the world transform
+     * @param {mat4} worldTransform
+     */
+    UpdateTransform(worldTransform)
+    {
+        if (!this._worldTransform)
+        {
+            this._worldTransform = mat4.create();
+        }
+        mat4.copy(this._worldTransform, worldTransform);
+    }
+
+    /**
+     * Sorts particles
+     */
+    SortParticles()
+    {
+        if (this.requiresSorting)
+        {
+            this._Sort();
+            this._bufferDirty = true;
+        }
     }
 
     /**
@@ -579,7 +617,7 @@ export class Tw2ParticleSystem extends meta.Model
      */
     GetInstanceStride()
     {
-        return this._instanceStride[0];
+        return this._instanceStride[0] * 4;
     }
 
     /**
@@ -596,10 +634,11 @@ export class Tw2ParticleSystem extends meta.Model
      */
     static init()
     {
-        if (Tw2ParticleElement.global) return;
+        if (Tw2ParticleSystem.global) return;
 
         Tw2ParticleSystem.global = {
             vec3_0: vec3.create(),
+            vec3_1: vec3.create(),
             mat4_0: mat4.create()
         };
     }

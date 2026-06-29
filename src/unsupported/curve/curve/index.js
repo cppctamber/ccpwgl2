@@ -1,6 +1,11 @@
 export * from "./AudEventCurve";
-export * from "./EveBezierCurve";
 export * from "./Tr2BoneMatrixCurve";
+export * from "./Tr2FollowCurve";
+export * from "./Tr2FollowCurveKey";
+export * from "./Tr2GrannyEventTrack";
+export * from "./Tr2GrannyTrack";
+export * from "./Tr2GrannyTransformTrack";
+export * from "./Tr2GrannyVectorTrack";
 export {
     Tr2CurveConstant,
     Tr2CurveScalar,

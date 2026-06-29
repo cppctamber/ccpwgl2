@@ -9,6 +9,8 @@ export * from "./Tr2CurveConstant";
 export * from "./Tr2CurveCombiner";
 export * from "./Tr2CurveColorMixer";
 export * from "./Tr2CurveVector3Lerp";
+export * from "./Tr2CurveRandomAxisRotation";
+export * from "./Tr2DistanceTracker";
 export * from "./Tr2QuaternionLerpCurve";
 export * from "./Tr2ScalarFader";
 export * from "./legacy";

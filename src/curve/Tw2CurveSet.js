@@ -19,7 +19,7 @@ export class Tw2CurveSet extends meta.Model
     @meta.struct()
     driver = null;
 
-    @meta.list("TriCurveSetRange")
+    @meta.list("Tr2CurveSetRange", "Tw2CurveSetRange")
     ranges = [];
 
     @meta.float
