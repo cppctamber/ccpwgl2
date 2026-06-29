@@ -124,9 +124,9 @@ export class Tw2Effect extends meta.Model
     _isShadowEffect = false;
 
     _isAttached = false;
-
-    //resources
-    //constParameters
+    _adapters = [];
+    _effectResAdapters = [];
+    _syncEffectResAdapters = true;
 
     /**
      * Identifies if the effect res has been manually attached
@@ -144,6 +144,123 @@ export class Tw2Effect extends meta.Model
     get res()
     {
         return this.effectRes;
+    }
+
+    /**
+     * Adds an effect adapter.
+     * @param {Object} adapter Adapter with optional lifecycle callbacks
+     * @returns {Object} The adapter
+     */
+    AddAdapter(adapter)
+    {
+        if (!adapter)
+        {
+            throw new Error("Invalid effect adapter");
+        }
+
+        if (!this._adapters.includes(adapter))
+        {
+            this._adapters.push(adapter);
+        }
+
+        return adapter;
+    }
+
+    /**
+     * Removes an effect adapter.
+     * @param {Object} adapter Adapter to remove
+     * @returns {boolean} True if removed
+     */
+    RemoveAdapter(adapter)
+    {
+        const index = this._adapters.indexOf(adapter);
+        if (index === -1)
+        {
+            return false;
+        }
+
+        this._adapters.splice(index, 1);
+        return true;
+    }
+
+    /**
+     * Removes all effect adapters.
+     * @returns {number} Number of removed adapters
+     */
+    ClearAdapters()
+    {
+        const count = this._adapters.length;
+        this._adapters.splice(0);
+        this._effectResAdapters.splice(0);
+        this._syncEffectResAdapters = false;
+        return count;
+    }
+
+    /**
+     * Gets registered effect adapters.
+     * @returns {Array<Object>} Adapters
+     */
+    GetAdapters()
+    {
+        return this._adapters.slice();
+    }
+
+    /**
+     * Runs an adapter lifecycle hook.
+     * @param {String} name Hook name
+     * @param {Object} context Mutable draw context
+     * @returns {Boolean} True if a hook ran
+     * @private
+     */
+    _RunAdapterHook(name, context)
+    {
+        let ran = false;
+        for (let i = 0; i < this._adapters.length; i++)
+        {
+            const fn = this._adapters[i]?.[name];
+            if (fn)
+            {
+                fn.call(this._adapters[i], context);
+                ran = true;
+            }
+        }
+        return ran;
+    }
+
+    /**
+     * Syncs adapters provided by the current effect resource.
+     * @returns {Array<Object>} Active resource adapters
+     * @private
+     */
+    _SyncEffectResAdapters()
+    {
+        for (let i = 0; i < this._effectResAdapters.length; i++)
+        {
+            this.RemoveAdapter(this._effectResAdapters[i]);
+        }
+        this._effectResAdapters.splice(0);
+
+        if (!this._syncEffectResAdapters)
+        {
+            return this._effectResAdapters;
+        }
+
+        let adapters = [];
+        if (this.effectRes?.GetEffectAdapters)
+        {
+            adapters = this.effectRes.GetEffectAdapters(this) || [];
+        }
+        if (!adapters.length && this.effectRes?.CreateEffectAdapters)
+        {
+            adapters = this.effectRes.CreateEffectAdapters(this) || [];
+        }
+
+        for (let i = 0; i < adapters.length; i++)
+        {
+            this._effectResAdapters.push(this.AddAdapter(adapters[i]));
+        }
+
+        return this._effectResAdapters;
     }
 
     /**
@@ -211,6 +328,7 @@ export class Tw2Effect extends meta.Model
             this._RemoveEffectRes();
             this._isAttached = !!isAttached;
             this.effectRes = res;
+            this._syncEffectResAdapters = true;
             // TODO: Need to delay one frame
             res.RegisterNotification(this);
             return true;
@@ -228,6 +346,11 @@ export class Tw2Effect extends meta.Model
         const res = this.effectRes;
         if (res)
         {
+            for (let i = 0; i < this._effectResAdapters.length; i++)
+            {
+                this.RemoveAdapter(this._effectResAdapters[i]);
+            }
+            this._effectResAdapters.splice(0);
             this.effectRes = null;
             this.shader = null;
             this._isAttached = false;
@@ -749,6 +872,8 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        this._SyncEffectResAdapters();
+
         if (!opt || !opt.skipEvents)
         {
             this.EmitEvent("modified", this, opt);
@@ -776,15 +901,35 @@ export class Tw2Effect extends meta.Model
             return;
         }
 
-        this.shader.ApplyPass(technique, pass, this.techniques[technique][pass].state);
-
         const
             p = this.techniques[technique][pass],
             rp = this.shader.techniques[technique].passes[pass],
             d = device,
             gl = d.gl;
 
-        const program = (d.IsAlphaTestEnabled() && rp.shadowShaderProgram) ? rp.shadowShaderProgram : rp.shaderProgram;
+        let program = (d.IsAlphaTestEnabled() && rp.shadowShaderProgram) ? rp.shadowShaderProgram : rp.shaderProgram;
+        const context = {
+            effect: this,
+            effectRes: this.effectRes,
+            technique,
+            pass,
+            passState: p,
+            renderPass: rp,
+            stages: p.stages,
+            program,
+            gl,
+            device: d,
+            perObjectData: null,
+            constantBufferHandles: program.constantBufferHandles
+        };
+
+        this._RunAdapterHook("OnBeforeApplyPass", context);
+        this.shader.ApplyPass(technique, pass, p.state);
+
+        program = (d.IsAlphaTestEnabled() && rp.shadowShaderProgram) ? rp.shadowShaderProgram : rp.shaderProgram;
+        context.program = program;
+        context.constantBufferHandles = program.constantBufferHandles;
+        this._RunAdapterHook("OnAfterApplyPass", context);
 
         for (let i = 0; i < 2; ++i)
         {
@@ -802,6 +947,8 @@ export class Tw2Effect extends meta.Model
                 tex.parameter.Apply(tex.slot, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
             }
         }
+
+        this._RunAdapterHook("OnAfterApplyParameters", context);
 
         const cbh = program.constantBufferHandles;
         // vertex constants
@@ -821,7 +968,10 @@ export class Tw2Effect extends meta.Model
             if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
         }
 
+        this._RunAdapterHook("OnAfterPerFrameData", context);
+
         const pod = d.perObjectData;
+        context.perObjectData = pod;
         if (pod)
         {
             if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
@@ -829,6 +979,8 @@ export class Tw2Effect extends meta.Model
             if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
         }
 
+        this._RunAdapterHook("OnAfterPerObjectData", context);
+        this._RunAdapterHook("OnBeforeDraw", context);
 
     }
 
@@ -1024,12 +1176,17 @@ export class Tw2Effect extends meta.Model
 
         if (options)
         {
+            const normalizedOptions = Tw2Effect.normalizeOptions(options);
             // TODO: Check if options and current options are the same
-            a.options = Object.assign(options);
+            a.options = normalizedOptions;
 
             if (a.effectRes)
             {
-                a.shader = a.effectRes.GetShader(options);
+                a.shader = a.effectRes.GetShader(a.options);
+                if (a.shader)
+                {
+                    a.BindParameters({ controller: a.effectRes, skipEvents: opt.skipEvents });
+                }
             }
 
             updated = true;
@@ -1077,8 +1234,78 @@ export class Tw2Effect extends meta.Model
         out.parameters = a.GetParameters();
         out.textures = a.GetTextures();
         out.overrides = a.GetOverrides();
-        out.options = Object.assign(a.options);
+        out.options = Object.assign({}, a.options);
+        out.permutations = a.GetPermutations();
         return out;
+    }
+
+    /**
+     * Normalizes effect options to the object shape expected by GetShader
+     * @param {Object|Array<{name: string, value: string}>} [options]
+     * @returns {Object}
+     */
+    static normalizeOptions(options)
+    {
+        if (!options)
+        {
+            return {};
+        }
+
+        if (Array.isArray(options))
+        {
+            const out = {};
+            for (let i = 0; i < options.length; i++)
+            {
+                const option = options[i];
+                if (option && option.name)
+                {
+                    out[option.name] = option.value;
+                }
+            }
+            return out;
+        }
+
+        return Object.assign({}, options);
+    }
+
+    /**
+     * Gets effect permutation metadata from the effect resource
+     * @returns {Array}
+     */
+    GetPermutations()
+    {
+        if (!this.effectRes || !Array.isArray(this.effectRes.permutations))
+        {
+            return [];
+        }
+
+        return this.effectRes.permutations.map((permutation) => ({
+            name: permutation.name,
+            options: Tw2Effect.getPermutationOptions(permutation.options),
+            defaultOption: permutation.defaultOption,
+            description: permutation.description || "",
+            type: permutation.type
+        }));
+    }
+
+    /**
+     * Gets a plain option list from a permutation option store
+     * @param {Array|Object} [options]
+     * @returns {Array}
+     */
+    static getPermutationOptions(options)
+    {
+        if (!options)
+        {
+            return [];
+        }
+
+        if (Array.isArray(options))
+        {
+            return Array.from(options);
+        }
+
+        return Object.keys(options).sort((a, b) => options[a] - options[b]);
     }
 
     /**

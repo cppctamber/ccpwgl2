@@ -101,15 +101,15 @@ export class Tw2SamplerOverride extends meta.Model
     static blackStruct(r)
     {
         const item = new this();
-        item.mipFilter = r.ReadU16();
+        item.mipFilterMode = r.ReadU16();
         item.maxAnisotropy = r.ReadU16();
         item.name = r.ReadStringU16();
         item.maxMipLevel = r.ReadU16();
-        item.addressU = r.ReadU16();
-        item.addressV = r.ReadU16();
-        item.addressW = r.ReadU16();
-        item.filter = r.ReadU16();
-        item.loadBias = r.ReadF32();
+        item.addressUMode = r.ReadU16();
+        item.addressVMode = r.ReadU16();
+        item.addressWMode = r.ReadU16();
+        item.filterMode = r.ReadU16();
+        item.lodBias = r.ReadF32();
         return item;
     }
 }
