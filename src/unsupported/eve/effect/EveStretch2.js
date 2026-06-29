@@ -13,9 +13,11 @@ export class EveStretch2 extends meta.Model
     @meta.string
     name = "";
 
+    @meta.notOwned
     @meta.struct()
     destinationEmitter = null;
 
+    @meta.notOwned
     @meta.struct()
     destinationLight = null;
 
@@ -25,9 +27,11 @@ export class EveStretch2 extends meta.Model
     @meta.struct("Tw2CurveSet")
     loop = null;
 
+    @meta.notOwned
     @meta.struct()
     sourceEmitter = null;
 
+    @meta.notOwned
     @meta.struct()
     sourceLight = null;
 

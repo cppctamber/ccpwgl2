@@ -28,6 +28,9 @@ export class EveSOFDataHullBanner extends meta.Model
     @meta.struct()
     lightOverride = null;
 
+    @meta.boolean
+    maintainAspectRatio = false;
+
     @meta.vector3
     position = vec3.create();
 

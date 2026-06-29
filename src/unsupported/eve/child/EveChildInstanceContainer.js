@@ -8,7 +8,7 @@ import { vec3,  mat4 } from "math";
     wgl: "EveChildInstanceContainer",
     ccp: true
 })
-export class EveChildInstanceContainer extends meta.Model
+export class EveChildInstanceContainer
 {
 
     @meta.struct()
@@ -22,5 +22,52 @@ export class EveChildInstanceContainer extends meta.Model
 
     //@meta.matrix4
     //localTransform = mat4.create()
+
+    get isEffectChild()
+    {
+        return true;
+    }
+
+    UpdateLod()
+    {
+
+    }
+
+    ResetLod()
+    {
+
+    }
+
+    Update()
+    {
+
+    }
+
+    GetResources(out = [])
+    {
+        return out;
+    }
+
+    GetBatches()
+    {
+        return false;
+    }
+
+    SetControllerVariable()
+    {
+
+    }
+
+    HandleControllerEvent()
+    {
+
+    }
+
+    StartControllers()
+    {
+
+    }
+
+    static __isEffectChild = true;
 
 }

@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { EveSOFDataParameter, EveSOFDataTexture } from "sof";
+import { EveSOFDataParameter, EveSOFDataTexture } from "../shared";
 
 
 @meta.type("EveSOFDataRaceDamage")

@@ -37,6 +37,12 @@ export class EveSOFDataArea extends meta.Model
     @meta.struct("EveSOFDataAreaMaterial")
     SimplePrimary = null;
 
+    @meta.struct("EveSOFDataAreaMaterial")
+    Wreck = null;
+
+    @meta.struct("EveSOFDataAreaMaterial")
+    Turret = null;
+
     /**
      * SOF Area types
      */
@@ -49,7 +55,9 @@ export class EveSOFDataArea extends meta.Model
         "Rock",
         "Monument",
         "Ornament",
-        "SimplePrimary"
+        "SimplePrimary",
+        "Wreck",
+        "Turret"
     ];
 
     /**

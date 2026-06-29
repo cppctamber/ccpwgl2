@@ -28,4 +28,7 @@ export class EveSOFDataHullChildSetItem extends meta.Model
     @meta.int32
     buildFilter = -1;
 
+    @meta.int32
+    lowestLodVisible = -1;
+
 }

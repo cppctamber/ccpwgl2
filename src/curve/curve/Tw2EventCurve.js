@@ -1,145 +1,270 @@
-import { Tw2CurveKey, Tw2Curve } from "./Tw2Curve";
 import { meta } from "utils";
+import { Tr2CurveKey } from "./Tr2CurveKeys";
 
 
-const Extrapolation = {
+const Tw2EventCurveExtrapolation = {
     NONE: 0,
-    CYCLE: 3
+    CYCLE: 1
 };
 
 
-@meta.type("Tw2EventKey", "TriEventKey")
 @meta.define({
     wgl: "Tw2EventKey",
     ccp: "TriEventKey"
 })
-export class Tw2EventKey extends Tw2CurveKey
+export class Tw2EventKey extends Tr2CurveKey
 {
+    @meta.string
+    value = "";
 
-    @meta.float
-    time = 0;
+    callable = null;
+    callableArgs = null;
 
-    @meta.ushort
-    value = 0;
+    constructor(options)
+    {
+        super();
+        if (options) this.SetValues(options);
+    }
 
+    SetValues(options, opt)
+    {
+        const { callable, callableArgs, ...values } = options || {};
+        if (values.value === null || values.value === undefined) values.value = "";
+
+        super.SetValues(values, opt);
+
+        if (options && "callable" in options) this.callable = callable;
+        if (options && "callableArgs" in options) this.callableArgs = callableArgs;
+        return this;
+    }
+
+    ToDefinition()
+    {
+        return {
+            time: this.time,
+            value: this.value
+        };
+    }
 }
 
 
-@meta.type("Tw2EventCurve", "TriEventCurve")
 @meta.define({
     wgl: "Tw2EventCurve",
     ccp: "TriEventCurve"
 })
-export class Tw2EventCurve extends Tw2Curve
+export class Tw2EventCurve extends meta.Model
 {
-
     @meta.string
     name = "";
 
+    @meta.float
+    length = 0;
+
+    @meta.float
+    time = 0;
+
+    @meta.float
+    localTime = 0;
+
+    @meta.string
+    value = "";
+
     @meta.uint
-    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.list("Tw2EventKey")
+    @meta.list(Tw2EventKey)
     keys = [];
 
-    @meta.ushort
-    @meta.isPrivate
-    value = 0;
+    @meta.struct()
+    eventListener = null;
 
+    _currentKeyIndex = 0;
 
-    _time = 0;
-    _currentKey = 0;
-    _length = 0;
-
-
-    /**
-     * Sorts the curve's keys
-     */
-    Sort()
+    Initialize()
     {
-        if (this.keys.length)
-        {
-            this.keys.sort(Tw2Curve.Compare);
-            this._length = this.keys[this.keys.length - 1].time;
-        }
+        this.Sort();
+        return true;
     }
 
-    /**
-     * Gets the curve's length
-     * @returns {number}
-     */
-    GetLength()
-    {
-        return this._length;
-    }
-
-    /**
-     * Gets a value at the given time
-     * @param {number} time
-     */
     UpdateValue(time)
     {
-        if (this._length <= 0)
+        if (this.length === 0)
         {
-            return this.value;
+            return;
         }
 
-        let before = this._time;
-        this._time = time;
-        if (this._time < before)
+        const before = this.time;
+        this.time = time;
+        const rewound = this.time < before;
+
+        if (this.extrapolation === Tw2EventCurveExtrapolation.CYCLE || this.extrapolation === "cycle")
         {
-            this._currentKey = 0;
+            const localNow = PositiveModulo(this.time, this.length);
+            if (rewound || localNow < this.localTime)
+            {
+                this._currentKeyIndex = 0;
+            }
+            this.localTime = localNow;
+        }
+        else
+        {
+            if (rewound)
+            {
+                this._currentKeyIndex = 0;
+            }
+            this.localTime = this.time;
         }
 
-        if (this.extrapolation === Tw2EventCurve.Extrapolation.CYCLE)
+        while (this._currentKeyIndex < this.keys.length && this.localTime >= this.keys[this._currentKeyIndex].time)
         {
-            let now = this._time % this._length;
-            if (now < before) this._currentKey = 0;
-            this._time = now;
-        }
-
-        while (this._currentKey < this.keys.length && this._time >= this.keys[this._currentKey].time)
-        {
-            this.value = this.keys[this._currentKey].value;
-            ++this._currentKey;
+            this.FireKey(this.keys[this._currentKeyIndex]);
+            this._currentKeyIndex++;
         }
     }
 
-    /**
-     * The curve's key dimension
-     * @type {number}
-     */
-    static dimension = 1;
+    Update(time)
+    {
+        this.UpdateValue(time);
+        return this.value;
+    }
 
-    /**
-     * The curve's output dimension
-     * @type {number}
-     */
-    static outputDimension = 1;
+    GetLength()
+    {
+        return this.length;
+    }
 
-    /**
-     * The curve's current value property
-     * @type {String}
-     */
-    static valueProperty = "value";
+    Length()
+    {
+        return this.length;
+    }
 
-    /**
-     * The curve's type
-     * @type {number}
-     */
-    static curveType = Tw2Curve.Type.CURVE;
+    Sort()
+    {
+        this.keys = this.keys
+            .map((key, index) => ({ key: key instanceof Tw2EventKey ? key : new Tw2EventKey(key), index }))
+            .sort((a, b) => Tw2EventKey.Compare(a.key, b.key) || a.index - b.index)
+            .map(entry => entry.key);
+        this._currentKeyIndex = 0;
+        this.length = this.keys.length ? this.keys[this.keys.length - 1].time : 0;
+        return this;
+    }
 
-    /**
-     * The curve's key constructor
-     * @type {Tw2EventKey}
-     */
-    static Key = Tw2EventKey;
+    AddKey(time, eventName)
+    {
+        const key = new Tw2EventKey({
+            time,
+            value: eventName
+        });
+        this.InsertKey(key);
+        return key;
+    }
 
-    /**
-     * Extrapolation types
-     * @type {{NONE: number, CYCLE: number}}
-     */
-    static Extrapolation = Extrapolation;
+    AddCallableKey(time, callable, args)
+    {
+        const key = new Tw2EventKey({
+            time,
+            callable,
+            callableArgs: Array.isArray(args) ? args : args === undefined ? [] : [ args ]
+        });
+        this.InsertKey(key);
+        return key;
+    }
 
+    InsertKey(key)
+    {
+        this.keys.push(key instanceof Tw2EventKey ? key : new Tw2EventKey(key));
+        this.Sort();
+    }
+
+    RemoveKey(index)
+    {
+        if (index >= 0 && index < this.keys.length)
+        {
+            this.keys.splice(index, 1);
+            this.Sort();
+        }
+    }
+
+    GetKeyCount()
+    {
+        return this.keys.length;
+    }
+
+    GetKeyTime(index)
+    {
+        return this.keys[index] ? this.keys[index].time : 0;
+    }
+
+    GetKeyValue(index)
+    {
+        return this.keys[index] ? this.keys[index].value : "";
+    }
+
+    SetKeyTime(index, time)
+    {
+        if (this.keys[index])
+        {
+            this.keys[index].time = time;
+            this.Sort();
+        }
+    }
+
+    SetKeyValue(index, value)
+    {
+        if (this.keys[index])
+        {
+            this.keys[index].value = value || "";
+        }
+    }
+
+    GetCallableKeyValue(index)
+    {
+        return this.keys[index] ? this.keys[index].callable : null;
+    }
+
+    GetCallableKeyArgs(index)
+    {
+        return this.keys[index] ? this.keys[index].callableArgs : null;
+    }
+
+    FireKey(key)
+    {
+        this.value = key.value || "";
+
+        if (typeof key.callable === "function")
+        {
+            const args = Array.isArray(key.callableArgs) ? key.callableArgs : key.callableArgs === undefined || key.callableArgs === null ? [] : [ key.callableArgs ];
+            key.callable(...args);
+            return;
+        }
+
+        if (this.eventListener && this.value)
+        {
+            if (typeof this.eventListener.HandleEvent === "function")
+            {
+                this.eventListener.HandleEvent(this.value);
+            }
+            else if (typeof this.eventListener.handleEvent === "function")
+            {
+                this.eventListener.handleEvent(this.value);
+            }
+            else if (typeof this.eventListener.OnEvent === "function")
+            {
+                this.eventListener.OnEvent(this.value);
+            }
+            else if (typeof this.eventListener === "function")
+            {
+                this.eventListener(this.value);
+            }
+        }
+    }
+
+}
+
+export { Tw2EventKey as TriEventKey, Tw2EventCurve as TriEventCurve };
+
+function PositiveModulo(value, length)
+{
+    const result = value % length;
+    return result < 0 ? result + length : result;
 }

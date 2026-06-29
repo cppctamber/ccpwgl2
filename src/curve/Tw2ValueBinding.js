@@ -39,6 +39,7 @@ export class Tw2ValueBinding extends meta.Model
     @meta.string
     destinationAttribute = "";
 
+    @meta.notOwned
     @meta.struct()
     destinationObject = null;
 
@@ -51,6 +52,7 @@ export class Tw2ValueBinding extends meta.Model
     @meta.string
     sourceAttribute = "";
 
+    @meta.notOwned
     @meta.struct()
     sourceObject = null;
 

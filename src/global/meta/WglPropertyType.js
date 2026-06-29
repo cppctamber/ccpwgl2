@@ -88,6 +88,34 @@ export default class WglPropertyType
     }
 
     /**
+     * Checks whether a struct property owns its assigned object.
+     * @param {*} target
+     * @param {String} property
+     * @returns {Boolean}
+     */
+    static isOwnedStruct(target, property)
+    {
+        return getMetadata("isOwned", target, property) !== false;
+    }
+
+    /**
+     * Destroys a struct value when its property owns it.
+     * @param {*} value
+     * @param {Object} opt
+     * @param {*} target
+     * @param {String} property
+     */
+    static destroyStruct(value, opt, target, property)
+    {
+        if (!value || !value.Destroy || !this.isOwnedStruct(target, property))
+        {
+            return;
+        }
+
+        value.Destroy({ skipEvents: true, ...opt });
+    }
+
+    /**
      * Checks whether a value is permitted for a struct/list based on metadata.
      * @param {*} value
      * @param {{constructors: Function[], typeNames: string[]}} spec
@@ -225,8 +253,13 @@ export default class WglPropertyType
      * @param {Number} start
      * @param {Object} opt
      */
-    static destroyItems(array, start, opt)
+    static destroyItems(array, start, opt, target, property)
     {
+        if (target && property && !this.isOwnedStruct(target, property))
+        {
+            return;
+        }
+
         for (let i = start; i < array.length; i++)
         {
             const item = array[i];

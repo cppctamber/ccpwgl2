@@ -1,6 +1,37 @@
 import { defineMetadata } from "../../utils/reflect";
 import { createDecorator } from "../../utils/decorator";
 
+const uiKeys = {
+    name: "uiName",
+    desc: "uiDescription",
+    description: "uiDescription",
+    group: "uiGroup",
+    widget: "uiWidget",
+    icon: "uiIcon",
+    components: "uiComponents",
+    minValue: "uiValueMin",
+    valueMin: "uiValueMin",
+    maxValue: "uiValueMax",
+    valueMax: "uiValueMax",
+    step: "uiValueStep",
+    valueStep: "uiValueStep",
+    disabled: "uiDisabled",
+    hidden: "uiHidden"
+};
+
+export const ui = createDecorator({
+    handler({ target, property }, options)
+    {
+        for (const key in options)
+        {
+            if (options.hasOwnProperty(key) && uiKeys[key])
+            {
+                defineMetadata(uiKeys[key], options[key], target, property);
+            }
+        }
+    }
+});
+
 export const uiGroup = createDecorator({
     property({ target, property }, group)
     {
@@ -9,14 +40,16 @@ export const uiGroup = createDecorator({
 });
 
 export const uiDescription = createDecorator({
-    property({ target, property }, description)
+    handler({ target, property }, description)
     {
         defineMetadata("uiDescription", description, target, property);
     }
 });
 
+export const uiDesc = uiDescription;
+
 export const uiName = createDecorator({
-    property({ target, property }, name)
+    handler({ target, property }, name)
     {
         defineMetadata("uiName", name, target, property);
     }
@@ -54,6 +87,13 @@ export const uiWidget = createDecorator({
     property({ target, property }, widget)
     {
         defineMetadata("uiWidget",widget, target, property);
+    }
+});
+
+export const uiIcon = createDecorator({
+    handler({ target, property }, icon)
+    {
+        defineMetadata("uiIcon", icon, target, property);
     }
 });
 

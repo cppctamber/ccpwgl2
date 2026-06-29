@@ -25,6 +25,18 @@ export class EveSOFDataSpotLightAttachment extends meta.Model
     @meta.float
     outerAngleMultiplier = 0.0;
 
+    @meta.float
+    noiseAmplitude = 0.0;
+
+    @meta.float
+    noiseFrequency = 0.0;
+
+    @meta.int32
+    noiseOctaves = 0;
+
+    @meta.path
+    lightProfilePath = "";
+
     @meta.vector3
     translation = vec3.create();
 
@@ -33,6 +45,11 @@ export class EveSOFDataSpotLightAttachment extends meta.Model
 
 }
 
+@meta.type("EveSOFDataSpotlightAttachment")
+@meta.define({
+    wgl: "EveSOFDataSpotlightAttachment",
+    ccp: true
+})
 export class EveSOFDataSpotlightAttachment extends EveSOFDataSpotLightAttachment
 {
 

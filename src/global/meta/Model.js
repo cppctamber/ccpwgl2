@@ -401,7 +401,7 @@ export class Model
                 {
                     if (this[key][i])
                     {
-                        if (this[key][i].Destroy)
+                        if (property.isOwned && this[key][i].Destroy)
                         {
                             this[key][i].Destroy({ controller: opt.controller });
                         }
@@ -422,7 +422,7 @@ export class Model
 
                 if (this[key])
                 {
-                    if (this[key].Destroy)
+                    if (property.isOwned && this[key].Destroy)
                     {
                         childOpt = childOpt || { controller: opt.controller };
                         this[key].Destroy(childOpt);

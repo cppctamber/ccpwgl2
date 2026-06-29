@@ -1,22 +1,28 @@
 import { meta } from "utils";
 
 
-@meta.notImplemented
-@meta.type("Tw2CurveSetRange")
-@meta.wgl.define("Tw2CurveSetRange")
+@meta.define({
+    wgl: "Tw2CurveSetRange",
+    ccp: "TriCurveSetRange"
+})
 export class Tw2CurveSetRange extends meta.Model
 {
-
     @meta.string
     name = "";
 
     @meta.float
-    endTime = 0;
+    startTime = 0;
+
+    @meta.float
+    endTime = 1;
 
     @meta.boolean
     looped = false;
 
-    @meta.float
-    startTime = 0;
-
+    GetDuration()
+    {
+        return this.endTime - this.startTime;
+    }
 }
+
+export { Tw2CurveSetRange as TriCurveSetRange };

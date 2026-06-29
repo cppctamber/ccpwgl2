@@ -1,6 +1,6 @@
 import { __get, isNoU, meta } from "utils";
 import { vec4 } from "math";
-import { EveSOFDataBoosterShape } from "sof";
+import { EveSOFDataBoosterShape } from "./EveSOFDataBoosterShape";
 
 
 @meta.type("EveSOFDataBooster")
@@ -10,6 +10,9 @@ import { EveSOFDataBoosterShape } from "sof";
 })
 export class EveSOFDataBooster extends meta.Model
 {
+
+    @meta.vector4
+    scale = vec4.fromValues(1, 1, 1, 1);
 
     @meta.color
     glowColor = vec4.create();
@@ -40,6 +43,9 @@ export class EveSOFDataBooster extends meta.Model
 
     @meta.float
     lightFlickerFrequency = 0;
+
+    @meta.float
+    lightOffset = 0;
 
     @meta.float
     lightRadius = 0;
@@ -120,6 +126,7 @@ export class EveSOFDataBooster extends meta.Model
         out = out || new this();
         if (!a && !b) return out;
         if (!a) a = out;
+        vec4.copy(out.scale, __get(b, "scale", a));
         vec4.copy(out.glowColor, __get(b, "glowColor", a));
         out.glowScale = __get(b, "glowScale", a);
         out.gradient0ResPath = __get(b, "gradient0ResPath", a);
@@ -130,6 +137,7 @@ export class EveSOFDataBooster extends meta.Model
         vec4.copy(out.lightColor, __get(b, "lightColor", a));
         out.lightFlickerAmplitude = __get(b, "lightFlickerAmplitude", a);
         out.lightFlickerFrequency = __get(b, "lightFlickerFrequency", a);
+        out.lightOffset = __get(b, "lightOffset", a);
         out.lightRadius = __get(b, "lightRadius", a);
         vec4.copy(out.lightWarpColor, __get(b, "lightWarpColor", a));
         out.lightWarpRadius = __get(b, "lightWarpRadius", a);

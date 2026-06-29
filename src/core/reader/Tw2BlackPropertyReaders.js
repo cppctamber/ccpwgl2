@@ -224,6 +224,56 @@ export function rawObject(reader)
 }
 
 /**
+ * Reads and skips an unsupported object while preserving reference alignment
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {?Object}
+ */
+export function skippedObject(reader)
+{
+    const id = reader.ReadU32();
+
+    if (id === 0)
+    {
+        return null;
+    }
+
+    if (reader.references.has(id))
+    {
+        return reader.references.get(id);
+    }
+
+    const
+        objectReader = reader.ReadBinaryReader(reader.ReadU32()),
+        result = {
+            _type: objectReader.ReadStringU16(),
+            _blackSkipped: true
+        };
+
+    reader.references.set(id, result);
+    objectReader.cursor = objectReader.data.byteLength;
+    objectReader.ExpectEnd("skipped object did not read to end");
+    return result;
+}
+
+/**
+ * Reads and skips an array of unsupported objects
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {Array}
+ */
+export function skippedObjectArray(reader)
+{
+    const
+        result = [],
+        count = reader.ReadU32();
+
+    for (let i = 0; i < count; i++)
+    {
+        result[i] = skippedObject(reader);
+    }
+    return result;
+}
+
+/**
  * Reads an array
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Array} out

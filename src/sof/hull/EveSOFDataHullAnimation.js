@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { quat } from "math";
+import { quat, vec3 } from "math";
 
 
 @meta.type("EveSOFDataHullAnimation")
@@ -22,6 +22,12 @@ export class EveSOFDataHullAnimation extends meta.Model
     @meta.quaternion
     endRotationValue = quat.create();
 
+    @meta.float
+    endTranslationTime = 0;
+
+    @meta.vector3
+    endTranslationValue = vec3.create();
+
     @meta.uint
     id = 0;
 
@@ -33,5 +39,11 @@ export class EveSOFDataHullAnimation extends meta.Model
 
     @meta.quaternion
     startRotationValue = quat.create();
+
+    @meta.float
+    startTranslationTime = 0;
+
+    @meta.vector3
+    startTranslationValue = vec3.create();
 
 }

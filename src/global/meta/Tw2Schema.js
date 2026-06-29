@@ -10,6 +10,41 @@ export class Tw2Schema
 {
 
     /**
+     * Reads optional ui metadata
+     * @param {*} target
+     * @param {String} name
+     * @returns {?Object}
+     */
+    static CreateUI(target, name)
+    {
+        const ui = {
+            name: getMetadata("uiName", target, name) || null,
+            description: getMetadata("uiDescription", target, name) || null,
+            group: getMetadata("uiGroup", target, name) || null,
+            widget: getMetadata("uiWidget", target, name) || null,
+            icon: getMetadata("uiIcon", target, name) || null,
+            components: getMetadata("uiComponents", target, name) || null,
+            valueMin: getMetadata("uiValueMin", target, name),
+            valueMax: getMetadata("uiValueMax", target, name),
+            valueStep: getMetadata("uiValueStep", target, name),
+            isDisabled: !!getMetadata("uiDisabled", target, name),
+            isHidden: !!getMetadata("uiHidden", target, name)
+        };
+
+        return ui.name !== null ||
+            ui.description !== null ||
+            ui.group !== null ||
+            ui.widget !== null ||
+            ui.icon !== null ||
+            ui.components !== null ||
+            ui.valueMin !== undefined ||
+            ui.valueMax !== undefined ||
+            ui.valueStep !== undefined ||
+            ui.isDisabled ||
+            ui.isHidden ? ui : null;
+    }
+
+    /**
      * Gets a cached constructor schema
      * @param {Function} Constructor
      * @returns {Tw2Schema}
@@ -70,7 +105,9 @@ export class Tw2Schema
             propertyTypeName: getMetadata("propertyTypeName", prototype, name) || null,
             blackReaderType: getMetadata("blackReaderType", prototype, name) || null,
             alias: isString(alias) ? alias : null,
+            ui: Tw2Schema.CreateUI(prototype, name),
             isPrivate: !!getMetadata("isPrivate", prototype, name),
+            isOwned: getMetadata("isOwned", prototype, name) !== false,
             isStruct: false,
             isStructList: false
         };
@@ -98,7 +135,9 @@ export class Tw2Schema
             propertyTypeName: getMetadata("propertyTypeName", target, name) || null,
             blackReaderType: getMetadata("blackReaderType", target, name) || null,
             alias: isString(alias) ? alias : null,
+            ui: Tw2Schema.CreateUI(target, name),
             isPrivate: !!getMetadata("isPrivate", target, name),
+            isOwned: getMetadata("isOwned", target, name) !== false,
             isStruct: false,
             isStructList: false
         };
@@ -138,6 +177,7 @@ export class Tw2Schema
         this._type = getMetadata("type", Constructor);
         this._ccp = getMetadata("ccp", Constructor);
         this._definitions = getOwnMetadata("definitions", Constructor) || null;
+        this._ui = Tw2Schema.CreateUI(Constructor) || null;
         this._properties = [];
         this._propertiesByName = new Map();
         this._structs = [];
@@ -219,6 +259,15 @@ export class Tw2Schema
     }
 
     /**
+     * Gets cached class ui metadata
+     * @returns {?Object}
+     */
+    GetUI()
+    {
+        return this._ui;
+    }
+
+    /**
      * Gets a class definition
      * @param {String} namespace
      * @returns {?Object}
@@ -256,6 +305,18 @@ export class Tw2Schema
     GetStructLists()
     {
         return this._structLists;
+    }
+
+    /**
+     * Gets a property's cached ui metadata
+     * @param {String} name
+     * @param {*} target
+     * @returns {?Object}
+     */
+    GetPropertyUI(name, target)
+    {
+        const property = this.GetResolvedProperty(name, target);
+        return property ? property.ui : null;
     }
 
     /**

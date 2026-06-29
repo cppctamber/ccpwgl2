@@ -14,6 +14,7 @@ export class Tr2ExternalParameter extends Tw2Parameter
     @meta.string
     destinationAttribute = "";
 
+    @meta.notOwned
     @meta.struct()
     destinationObject = null;
 

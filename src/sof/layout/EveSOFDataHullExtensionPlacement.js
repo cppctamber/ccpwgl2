@@ -17,13 +17,13 @@ export class EveSOFDataHullExtensionPlacement extends meta.Model
     enabled = true;
 
     @meta.boolean
-    extendsBoundingSphere = false;
+    extendsBoundingSphere = true;
 
     @meta.boolean
     extendsBoundingEllipsoid = false;
 
     @meta.boolean
-    extendsShieldEllipsoid = false;
+    extendsShieldEllipsoid = true;
 
     @meta.string
     locatorSetName = "";
@@ -33,6 +33,9 @@ export class EveSOFDataHullExtensionPlacement extends meta.Model
 
     @meta.boolean
     isInstanced = true;
+
+    @meta.boolean
+    isShared = false;
 
     @meta.struct("EveSOFDNADescriptor")
     descriptor = null;

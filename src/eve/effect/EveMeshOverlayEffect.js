@@ -63,7 +63,7 @@ export class EveMeshOverlayEffect extends meta.Model
     {
         if (this.update && this.curveSet)
         {
-            this.curveSet.Update(dt);
+            this.curveSet.UpdateDelta(dt);
         }
     }
 

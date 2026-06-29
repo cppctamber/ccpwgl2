@@ -4,6 +4,8 @@ export * from "./EveSOFDataArea";
 export * from "./EveSOFDataAreaMaterial";
 export * from "./EveSOFDataBooster";
 export * from "./EveSOFDataBoosterShape";
+export * from "./EveSOFDataBlink";
+export * from "./EveSOFDataBlinkType";
 export * from "./EveSOFDataDecalIndexBuffer";
 export * from "./EveSOFDataInstancedMesh";
 export * from "./EveSOFDataLogo";

@@ -26,7 +26,7 @@ export class EveSOFDataHull extends meta.Model
     @meta.desc("Deprecated")
     banners = [];
 
-    @meta.list("EveSofDataHullBannerSet")
+    @meta.list("EveSOFDataHullBannerSet")
     bannerSets = [];
 
     @meta.struct("EveSOFDataHullBooster")
@@ -107,6 +107,9 @@ export class EveSOFDataHull extends meta.Model
 
     @meta.path
     modelRotationCurvePath = "";
+
+    @meta.path
+    modelTranslationCurvePath = "";
 
     @meta.list("EveSOFDataHullArea")
     opaqueAreas = [];

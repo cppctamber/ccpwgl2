@@ -15,9 +15,6 @@ export class EveSOFDataFaction extends meta.Model
 {
 
     @meta.string
-    override = null;
-
-    @meta.string
     name = "";
 
     @meta.struct("EveSOFDataArea")
@@ -35,6 +32,12 @@ export class EveSOFDataFaction extends meta.Model
 
     @meta.string
     defaultPatternLayer1MaterialName = "";
+
+    @meta.string
+    defaultPatternLayer2MaterialName = "";
+
+    @meta.string
+    defaultPatternName = "";
 
     @meta.string
     description = "";
@@ -298,6 +301,8 @@ export class EveSOFDataFaction extends meta.Model
         out.colorSet = EveSOFDataFactionColorSet.combine(a.colorSet, b.colorSet, out.colorSet);
         out.defaultPattern = b.defaultPattern || a.defaultPattern || "";
         out.defaultPatternLayer1MaterialName = b.defaultPatternLayer1MaterialName || a.defaultPatternLayer1MaterialName || "";
+        out.defaultPatternLayer2MaterialName = b.defaultPatternLayer2MaterialName || a.defaultPatternLayer2MaterialName || "";
+        out.defaultPatternName = b.defaultPatternName || a.defaultPatternName || "";
         out.description = b.description || a.description || "";
         out.logoSet = EveSOFDataLogoSet.combine(a.logoSet, b.logoSet, out.logoSet);
         out.materialUsageMtl1 = isNoU(b.materialUsageMtl1) ? a.materialUsageMtl1 : b.materialUsageMtl1;

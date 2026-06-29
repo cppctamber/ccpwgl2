@@ -16,6 +16,17 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     @meta.float
     blinkPhase = 0;
 
+    @meta.alias("phase")
+    get phase()
+    {
+        return this.blinkPhase;
+    }
+
+    set phase(value)
+    {
+        this.blinkPhase = value;
+    }
+
     @meta.uint
     blinkMode = 0;
 

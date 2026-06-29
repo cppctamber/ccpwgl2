@@ -39,8 +39,7 @@ import {
 
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
-import { EveSOFDataFaction, EveSOFDataFactionColorSet } from "sof/faction";
-import { EveSOFDataRace } from "sof/race";
+import { EveSOFDataFactionColorSet } from "sof/faction";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 
@@ -85,12 +84,6 @@ export class EveSOFData extends meta.Model
 
     @meta.list("EveSOFDataRace")
     race = [];
-
-    @meta.list("EveSOFDataFaction")
-    factionOverride = [];
-
-    @meta.list("EveSOFDataRace")
-    raceOverride = [];
 
     /**
      * Temporary build options
@@ -533,66 +526,6 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Gets an override faction by its name
-     * @param {string} name
-     * @returns {EveSOFDataFactionOverride|null}
-     */
-    GetFactionOverride(name)
-    {
-        return findElementByPropertyValue(this.factionOverride, "name", name, ErrSOFFactionOverrideNotFound);
-    }
-
-    /**
-     * Gets a list of override faction names
-     * @param {Array} [out=[]]
-     * @returns {Array<String>}
-     */
-    GetFactionOverrideNames(out)
-    {
-        return EveSOFData.GetNames(this.factionOverride, out);
-    }
-
-    /**
-     * Checks if an override faction exists
-     * @param {String} name
-     * @returns {boolean}
-     */
-    HasFactionOverride(name)
-    {
-        return !!findElementByPropertyValue(this.factionOverride, "name", name);
-    }
-
-    /**
-     * Gets an override race by its name
-     * @param {string} name
-     * @returns {EveSOFDataRaceOverride|null}
-     */
-    GetRaceOverride(name)
-    {
-        return findElementByPropertyValue(this.raceOverride, "name", name, ErrSOFRaceOverrideNotFound);
-    }
-
-    /**
-     * Gets a list of override race names
-     * @param {Array} [out=[]]
-     * @returns {Array<String>}
-     */
-    GetRaceOverrideNames(out)
-    {
-        return EveSOFData.GetNames(this.raceOverride, out);
-    }
-
-    /**
-     * Checks if an override race exists
-     * @param {String} name
-     * @returns {boolean}
-     */
-    HasRaceOverride(name)
-    {
-        return !!findElementByPropertyValue(this.raceOverride, "name", name);
-    }
-
-    /**
      * Gets a hull by its name
      * @param {String} name
      * @returns {EveSOFDataHull|null}
@@ -920,36 +853,7 @@ export class EveSOFData extends meta.Model
             //resPathInsert = "none";
         }
 
-        const o = commands["OVERRIDE"];
-        let factionOverride = null,
-            raceOverride = null;
-
-        if (o)
-        {
-            if (o[0] && o[0].toUpperCase() !== "NONE")
-            {
-                factionOverride = this.GetFactionOverride(o[0]);
-                //const { override } = factionOverride;
-                //if (override !== parts[1]) throw new Error(`Invalid override faction source: ${parts[1]}`);
-                //const sourceFaction = this.GetFaction(override);
-                //faction = EveSOFDataFaction.combine(sourceFaction, factionOverride);
-                //faction.overridden = true;
-                //console.dir(faction);
-            }
-
-            if (o[1] && o[1].toUpperCase() !== "NONE")
-            {
-                raceOverride = this.GetRaceOverride(o[1]);
-                //const { override } = raceOverride;
-                //if (override !== parts[2]) throw new Error(`Invalid override race source: ${parts[2]}`);
-                //const sourceRace = this.GetRace(override);
-                //race = EveSOFDataRace.combine(sourceRace, raceOverride);
-                //race.overridden = true;
-                //console.dir(race);
-            }
-        }
-
-        return { hull, faction, race, area, resPathInsert, pattern, dna, factionOverride, raceOverride };
+        return { hull, faction, race, area, resPathInsert, pattern, dna };
     }
 
     /**
@@ -960,16 +864,13 @@ export class EveSOFData extends meta.Model
      */
     StringifyDNA(options)
     {
-        let { hull, faction, race, area, resPathInsert, pattern, factionOverride, raceOverride } = options;
+        let { hull, faction, race, area, resPathInsert, pattern } = options;
 
 
         if (isObject(hull)) hull = hull.name;
         if (isObject(faction)) faction = faction.name;
         if (isObject(race)) race = race.name;
         if (isObject(pattern)) pattern = pattern.name;
-        if (isObject(raceOverride)) raceOverride = raceOverride.name;
-        if (isObject(factionOverride)) factionOverride = factionOverride.name;
-
         if (!hull || !faction || !race)
         {
             throw new ReferenceError("Invalid dna object");
@@ -1004,11 +905,6 @@ export class EveSOFData extends meta.Model
                 const patternString = `;${area.patternMaterial1 || "none"};${area.patternMaterial2 || "none"}`.toLowerCase();
                 if (patternString !== ";none;none") str += patternString;
             }
-        }
-
-        if (raceOverride || factionOverride)
-        {
-            str += `:override?${factionOverride || "none"};${raceOverride || "none"}`;
         }
 
         return str.toLowerCase();
@@ -1167,10 +1063,6 @@ export class EveSOFData extends meta.Model
             }
         }
 
-        // Custom
-        this.SetupSOFOverrides(...args);
-
-
         // TODO: DELETE THIS WHEN TESTING FINISHED!
         if (obj._sofFactionColorSetHandler && obj.sofFactionColorSet)
         {
@@ -1230,29 +1122,6 @@ export class EveSOFData extends meta.Model
 
         return obj;
     }
-
-    /**
-     * Custom overrides
-     * @param {EveSOFData} data
-     * @param {EveStation2|EveShip2} obj
-     * @param {Object} sof
-     * @param {Object} [options={}]
-     */
-    static SetupSOFOverrides(data, obj, sof, options)
-    {
-        if (sof.raceOverride)
-        {
-            sof.race = EveSOFDataRace.combine(sof.race, sof.raceOverride);
-            //console.dir(sof.race);
-        }
-
-        if (sof.factionOverride)
-        {
-            sof.faction = EveSOFDataFaction.combine(sof.faction, sof.factionOverride);
-            //console.dir(sof.faction);
-        }
-    }
-
 
     /**
      * Sets up a custom mask (or empties it)
@@ -3382,38 +3251,5 @@ export class ErrSOFResPathInsertInvalid extends Tw2Error
     constructor(data)
     {
         super(data, "Resource path insert is invalid for hull (%hull%:%resPathInsert%)");
-    }
-}
-
-/**
- * Fires when a sof override is not found
- */
-export class ErrSOFOverrideNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Override not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof override faction is not found
- */
-export class ErrSOFFactionOverrideNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Override Faction not found (%name%)");
-    }
-}
-
-/**
- * Fires when a sof override race is not found
- */
-export class ErrSOFRaceOverrideNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Override Race not found (%name%)");
     }
 }

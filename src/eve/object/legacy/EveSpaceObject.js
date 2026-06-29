@@ -520,7 +520,7 @@ export class EveSpaceObject extends EveObject
 
             for (let i = 0; i < this.curveSets.length; ++i)
             {
-                this.curveSets[i].Update(dt);
+                this.curveSets[i].UpdateDelta(dt);
             }
 
             for (let i = 0; i < this.overlayEffects.length; ++i)

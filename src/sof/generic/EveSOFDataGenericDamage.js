@@ -26,6 +26,9 @@ export class EveSOFDataGenericDamage extends meta.Model
     armorParticleColor3 = vec4.create();
 
     @meta.float
+    armorParticleColorMidPoint = 0.5;
+
+    @meta.float
     armorParticleDrag = 0;
 
     @meta.vector2
@@ -46,8 +49,8 @@ export class EveSOFDataGenericDamage extends meta.Model
     @meta.float
     armorParticleTurbulenceAmplitude = 0;
 
-    @meta.float
-    armorParticleTurbulenceFrequency = 0;
+    @meta.uint
+    armorParticleTurbulenceFrequency = 1;
 
     @meta.float
     armorParticleVelocityStretchRotation = 0;
@@ -56,16 +59,16 @@ export class EveSOFDataGenericDamage extends meta.Model
     armorShader = "";
 
     @meta.float
-    flickerPerlinAlpha = 0;
+    flickerPerlinAlpha = 1.1;
 
     @meta.float
-    flickerPerlinBeta = 0;
+    flickerPerlinBeta = 2;
 
     @meta.uint
-    flickerPerlinN = 0;
+    flickerPerlinN = 3;
 
     @meta.float
-    flickerPerlinSpeed = 0;
+    flickerPerlinSpeed = 1;
 
     @meta.path
     shieldGeometryResFilePath = "";

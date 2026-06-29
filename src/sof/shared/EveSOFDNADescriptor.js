@@ -15,6 +15,12 @@ export class EveSOFDNADescriptor extends meta.Model
     layout = "";
 
     @meta.string
+    seed = "";
+
+    @meta.string
+    pattern = "";
+
+    @meta.string
     race = "";
 
     @meta.string

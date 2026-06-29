@@ -87,6 +87,14 @@ export const readOnly = createDecorator({
     }
 });
 
+export const notOwned = createDecorator({
+    noArgs: true,
+    property({ target, property })
+    {
+        defineMetadata("isOwned", false, target, property);
+    }
+});
+
 export const isPrivate = createDecorator({
     noArgs: true,
     property({ target, property })

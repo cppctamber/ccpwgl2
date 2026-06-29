@@ -209,7 +209,7 @@ export class EveChildContainer extends EveChild
 
         for (let i = 0; i < this.curveSets.length; i++)
         {
-            this.curveSets[i].Update(dt);
+            this.curveSets[i].UpdateDelta(dt);
         }
 
         for (let i = 0; i < this.objects.length; i++)

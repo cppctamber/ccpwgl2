@@ -26,6 +26,27 @@ export class EveSOFDataGeneric extends meta.Model
     @meta.path
     decalShaderLocation = "";
 
+    @meta.float
+    decalMinScreenSizeStandard = 0;
+
+    @meta.float
+    decalMinScreenSizeKillcounter = 0;
+
+    @meta.float
+    decalMinScreenSizeHole = 0;
+
+    @meta.float
+    decalMinScreenSizeCylindrical = 0;
+
+    @meta.float
+    decalMinScreenSizeGlowCylindrical = 0;
+
+    @meta.float
+    decalMinScreenSizeGlowStandard = 0;
+
+    @meta.float
+    decalMinScreenSizeLogo = 0;
+
     @meta.list("EveSOFDataGenericDecalShader")
     decalShaders = [];
 
@@ -57,7 +78,13 @@ export class EveSOFDataGeneric extends meta.Model
     resPathDefaultCorp = "";
 
     @meta.string
+    shaderPrefix = "";
+
+    @meta.string
     shaderPrefixAnimated = "";
+
+    @meta.uint
+    turretAreaType = 0;
 
     @meta.struct("EveSOFDataGenericSwarm")
     swarm = null;
@@ -181,7 +208,7 @@ export class EveSOFDataGeneric extends meta.Model
      */
     GetShaderPrefix(isAnimated)
     {
-        return isAnimated ? this.shaderPrefixAnimated : "";
+        return isAnimated ? this.shaderPrefixAnimated : this.shaderPrefix;
     }
 
     /**

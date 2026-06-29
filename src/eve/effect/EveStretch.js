@@ -23,6 +23,7 @@ export class EveStretch extends meta.Model
     @meta.struct()
     dest = null;
 
+    @meta.notOwned
     @meta.struct()
     destObject = null;
 
@@ -48,6 +49,7 @@ export class EveStretch extends meta.Model
     @meta.list("Tr2PointLight")
     sourceLights = [];
 
+    @meta.notOwned
     @meta.struct()
     sourceObject = null;
 
@@ -278,7 +280,7 @@ export class EveStretch extends meta.Model
     {
         for (let i = 0; i < this.curveSets.length; ++i)
         {
-            this.curveSets[i].Update(dt);
+            this.curveSets[i].UpdateDelta(dt);
         }
 
         this._time += dt;

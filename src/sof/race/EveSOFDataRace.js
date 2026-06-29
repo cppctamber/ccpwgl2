@@ -12,13 +12,16 @@ export class EveSOFDataRace extends meta.Model
 {
 
     @meta.string
-    override = null;
-
-    @meta.string
     name = "";
 
     @meta.struct("EveSOFDataBooster")
     booster = null;
+
+    @meta.uint
+    hullPrimaryHeatColorType = 6;
+
+    @meta.uint
+    hullReactorHeatColorType = 9;
 
     @meta.struct("EveSOFDataRaceDamage")
     damage = null;
@@ -36,6 +39,8 @@ export class EveSOFDataRace extends meta.Model
         out = out || new this();
         out.name = b.name;
         out.booster = EveSOFDataBooster.combine(a ? a.booster : null, b ? b.booster : null, out.booster);
+        out.hullPrimaryHeatColorType = b && b.hullPrimaryHeatColorType !== undefined ? b.hullPrimaryHeatColorType : a && a.hullPrimaryHeatColorType !== undefined ? a.hullPrimaryHeatColorType : out.hullPrimaryHeatColorType;
+        out.hullReactorHeatColorType = b && b.hullReactorHeatColorType !== undefined ? b.hullReactorHeatColorType : a && a.hullReactorHeatColorType !== undefined ? a.hullReactorHeatColorType : out.hullReactorHeatColorType;
         out.damage = EveSOFDataRaceDamage.combine(a ? a.damage : null, b ? b.damage : null, out.damage);
         return out;
     }

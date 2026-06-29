@@ -22,11 +22,17 @@ export class EveSOFDataGenericHullDamage extends meta.Model
     @meta.color
     hullParticleColor2 = vec4.create();
 
+    @meta.color
+    hullParticleColor3 = vec4.create();
+
     @meta.float
-    hullParticleColorMidpoint = 0;
+    hullParticleColorMidpoint = 0.5;
 
     @meta.float
     hullParticleDrag = 0;
+
+    @meta.float
+    hullParticleInnerAngle = 0;
 
     @meta.vector2
     hullParticleMinMaxLifeTime = vec2.create();
@@ -46,7 +52,10 @@ export class EveSOFDataGenericHullDamage extends meta.Model
     @meta.float
     hullParticleTurbulenceAmplitude = 0;
 
+    @meta.uint
+    hullParticleTurbulenceFrequency = 1;
+
     @meta.float
-    hullParticleTurbulenceFrequency = 0;
+    hullParticleVelocityStretchRotation = 0;
 
 }

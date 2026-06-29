@@ -20,6 +20,7 @@ export class Tr2DynamicBinding extends meta.Model
     @meta.string
     sourceAttribute = "";
 
+    @meta.notOwned
     @meta.struct()
     sourceObject = null;
 

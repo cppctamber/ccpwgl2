@@ -15,7 +15,7 @@ export class EveSOFDataHullExtensionPlacementGroup extends meta.Model
     @meta.boolean
     enabled = true;
 
-    @meta.list("EveSOFDataDistributionDepletionCount")
+    @meta.list("EveSOFDataDistributionDepletionCounter")
     depletionCounters = [];
 
     @meta.list()

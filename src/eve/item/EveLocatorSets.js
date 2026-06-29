@@ -107,9 +107,11 @@ export class EveLocatorSets extends meta.Model
 {
 
     @meta.string
+    @meta.ui({ desc: "The unique name of this set of locators" })
     name = "";
 
     @meta.list(EveLocatorSetItem)
+    @meta.ui({ desc: "List of all the locators of this set" })
     locators = [];
 
     /**

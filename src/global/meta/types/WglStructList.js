@@ -54,7 +54,7 @@ export default class WglStructList extends WglPropertyType
                 return false;
             }
 
-            this.constructor.destroyItems(a[key], 0, opt);
+            this.constructor.destroyItems(a[key], 0, opt, a, key);
             a[key].splice(0);
             return true;
         }
@@ -68,9 +68,14 @@ export default class WglStructList extends WglPropertyType
         for (let i = 0; i < value.length; i++)
         {
             const item = value[i];
+            const currentItem = current[i];
 
             if (isNoU(item))
             {
+                if (currentItem !== item)
+                {
+                    this.constructor.destroyStruct(currentItem, opt, a, key);
+                }
                 out.push(item);
                 continue;
             }
@@ -82,12 +87,20 @@ export default class WglStructList extends WglPropertyType
                     throw new TypeError(`Unexpected struct item type for ${key}`);
                 }
 
+                if (currentItem !== item)
+                {
+                    this.constructor.destroyStruct(currentItem, opt, a, key);
+                }
                 out.push(item);
                 continue;
             }
 
             if (!isTypedStructList)
             {
+                if (currentItem !== item)
+                {
+                    this.constructor.destroyStruct(currentItem, opt, a, key);
+                }
                 out.push(item);
                 continue;
             }
@@ -103,7 +116,6 @@ export default class WglStructList extends WglPropertyType
                 throw new ReferenceError(`Unknown struct list constructor for ${key}`);
             }
 
-            const currentItem = current[i];
             if (currentItem && this.constructor.isModelInstance(currentItem, constructor) && currentItem.SetValues)
             {
                 currentItem.SetValues(item, { ...opt, skipUpdate: true });
@@ -111,10 +123,7 @@ export default class WglStructList extends WglPropertyType
             }
             else
             {
-                if (currentItem && currentItem.Destroy)
-                {
-                    currentItem.Destroy({ skipEvents: true, ...opt });
-                }
+                this.constructor.destroyStruct(currentItem, opt, a, key);
                 out.push(this.constructor.fromStructValue(constructor, item, opt));
             }
         }
@@ -126,7 +135,7 @@ export default class WglStructList extends WglPropertyType
 
         if (out.length < current.length)
         {
-            this.constructor.destroyItems(current, out.length, opt);
+            this.constructor.destroyItems(current, out.length, opt, a, key);
         }
 
         current.splice(0, current.length, ...out);

@@ -24,6 +24,12 @@ export class EveSOFDataPattern extends meta.Model
     @meta.list("EveSOFDataPatternPerHull")
     projections = [];
 
+    @meta.list("EveSOFDataPatternApplicationGroup")
+    applicationGroups = [];
+
+    @meta.boolean
+    sof6 = false;
+
 
     /**
      * Checks if a pattern projection exists

@@ -15,6 +15,9 @@ export class EveSOFDataHullHazeSet extends meta.Model
     @meta.list("EveSOFDataHullHazeSetItem")
     items = [];
 
+    @meta.uint
+    hazeType = 0;
+
     @meta.string
     visibilityGroup = "";
 

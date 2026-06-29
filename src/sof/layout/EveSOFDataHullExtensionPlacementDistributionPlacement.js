@@ -20,7 +20,10 @@ export class EveSOFDataHullExtensionPlacementDistributionPlacement extends meta.
     centerBias = 0.0;
 
     @meta.float
-    completeness = 0.0;
+    completeness = 1.0;
+
+    @meta.struct("EveSOFDNADescriptor")
+    descriptor = null;
 
     @meta.list()
     distributionConditions = [];
@@ -41,10 +44,10 @@ export class EveSOFDataHullExtensionPlacementDistributionPlacement extends meta.
     placementBias = vec3.create();
 
     @meta.vector3
-    randomScaleMin = vec3.create();
+    randomScaleMin = vec3.fromValues(1, 1, 1);
 
     @meta.vector3
-    randomScaleMax = vec3.create();
+    randomScaleMax = vec3.fromValues(1, 1, 1);
 
     @meta.vector3
     randomRotationMaxSteps = vec3.create();

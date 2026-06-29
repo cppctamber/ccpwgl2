@@ -1,6 +1,6 @@
 import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import { isFunction, isPlain, isString, isArray } from "../../utils/type";
-import { defineMetadata, getMetadata, getOwnMetadata, hasMetadata } from "../../utils/reflect";
+import { defineMetadata, getMetadata, getOwnMetadata, hasMetadata, hasOwnMetadata } from "../../utils/reflect";
 import { createDecorator } from "../../utils/decorator";
 
 import {
@@ -230,6 +230,12 @@ function defineClassDefinitions(target, definitions, exclusiveNamespace)
         exclusive: next.exclusive,
         namespaces: next.namespaces
     }, target);
+
+    if (!hasOwnMetadata("type", target))
+    {
+        const firstNamespace = Object.keys(next.namespaces)[0];
+        defineMetadata("type", next.namespaces[firstNamespace].name, target);
+    }
 
     if (exclusiveNamespace)
     {

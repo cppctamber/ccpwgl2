@@ -37,6 +37,7 @@ export class EveConnector extends meta.Model
     @meta.color
     color = vec4.create();
 
+    @meta.notOwned
     @meta.struct()
     destObject = null;
 
@@ -49,6 +50,7 @@ export class EveConnector extends meta.Model
     @meta.float
     lineWidth = 0;
 
+    @meta.notOwned
     @meta.struct()
     sourceObject = null;
 

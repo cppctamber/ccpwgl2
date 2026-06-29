@@ -31,10 +31,7 @@ export default class WglStruct extends WglPropertyType
         if (value === null)
         {
             if (!current) return false;
-            if (current.Destroy)
-            {
-                current.Destroy({ skipEvents: true, ...opt });
-            }
+            this.constructor.destroyStruct(current, opt, a, key);
             a[key] = null;
             return true;
         }
@@ -51,10 +48,7 @@ export default class WglStruct extends WglPropertyType
                 return false;
             }
 
-            if (current && current.Destroy)
-            {
-                current.Destroy({ skipEvents: true, ...opt });
-            }
+            this.constructor.destroyStruct(current, opt, a, key);
 
             a[key] = value;
             return true;
@@ -76,10 +70,7 @@ export default class WglStruct extends WglPropertyType
             return current.SetValues(value, { ...opt, skipUpdate: true });
         }
 
-        if (current && current.Destroy)
-        {
-            current.Destroy({ skipEvents: true, ...opt });
-        }
+        this.constructor.destroyStruct(current, opt, a, key);
 
         a[key] = this.constructor.fromStructValue(constructor, value, opt);
         return true;

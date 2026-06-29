@@ -7,9 +7,11 @@ import { meta } from "utils";
 export class Tr2AudioStretchAuto extends meta.Model
 {
 
+    @meta.notOwned
     @meta.struct()
     sourceEmitter = null;
 
+    @meta.notOwned
     @meta.struct()
     destinationEmitter = null;
 

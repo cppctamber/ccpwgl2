@@ -1,117 +1,161 @@
 import { meta } from "utils";
-import { vec4 } from "math";
-import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
+import { num, vec4 } from "math";
+import { Tr2CurveScalar } from "../curve/Tr2CurveScalar";
+import { Tr2CurveColorKey } from "../curve/Tr2CurveKeys";
+import { Tr2CurveInterpolation, Tr2CurveTangentType } from "../curve/Tr2CurveMath";
 
 
-@meta.type("Tw2CurveColor", "Tr2CurveColor")
 @meta.define({
     wgl: "Tw2CurveColor",
     ccp: "Tr2CurveColor"
 })
-@meta.stage(2)
-export class Tw2CurveColor extends Tw2CurveSequencer
+export class Tw2CurveColor extends meta.Model
 {
-
     @meta.string
     name = "";
 
     @meta.rawObject("Tr2CurveScalar")
-    r = null;
+    r = new Tr2CurveScalar();
 
     @meta.rawObject("Tr2CurveScalar")
-    g = null;
+    g = new Tr2CurveScalar();
 
     @meta.rawObject("Tr2CurveScalar")
-    b = null;
+    b = new Tr2CurveScalar();
 
     @meta.rawObject("Tr2CurveScalar")
-    a = null;
+    a = new Tr2CurveScalar();
+
+    @meta.list(Tr2CurveColorKey)
+    keys = [];
 
     @meta.color
-    @meta.isPrivate
-    currentValue = vec4.create();
-
-    @meta.notImplemented
-    @meta.boolean
-    srgbOutput = false;
-
-    @meta.float
-    timeScale = 1;
+    currentValue = vec4.fromValues(0, 0, 0, 1);
 
     @meta.float
     timeOffset = 0;
 
-    /**
-     * Sorts the sequencer
-     */
-    Sort()
-    {
-        Tw2CurveSequencer.Sort2(this);
-    }
+    @meta.boolean
+    srgbOutput = false;
 
-    /**
-     * Gets sequencer length
-     * @returns {number}
-     */
-    GetLength()
-    {
-        return Tw2CurveSequencer.GetLengthFromProperties(this);
-    }
-
-    /**
-     * Updates the current value at the given time
-     * @param {number} time
-     */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.currentValue);
+        this.GetValue(time, this.currentValue);
     }
 
-    /**
-     * Gets a value at a specific time
-     * @param {Number} time
-     * @param {vec4} value
-     * @returns {vec4}
-     */
-    GetValueAt(time, value)
+    Update(time, out = this.currentValue)
     {
-        time = time / this.timeScale + this.timeOffset;
-
-        value[0] = this.r ? this.r.GetValueAt(time) : 0;
-        value[1] = this.g ? this.g.GetValueAt(time) : 0;
-        value[2] = this.b ? this.b.GetValueAt(time) : 0;
-        value[3] = this.a ? this.a.GetValueAt(time) : 0;
-        return value;
+        this.GetValue(time, this.currentValue);
+        if (out !== this.currentValue)
+        {
+            out[0] = this.currentValue[0];
+            out[1] = this.currentValue[1];
+            out[2] = this.currentValue[2];
+            out[3] = this.currentValue[3];
+        }
+        return out;
     }
 
-    /**
-     * The sequencer's curve input dimension
-     * @type {number}
-     */
-    static inputDimension = 1;
+    GetValueAt(time, out = [ 0, 0, 0, 1 ])
+    {
+        return this.GetValue(time, out);
+    }
 
-    /**
-     * The sequencer's output dimension
-     * @type {number}
-     */
-    static outputDimension = 4;
+    GetValue(time, out = [ 0, 0, 0, 1 ])
+    {
+        const t = time - this.timeOffset;
+        out[0] = GetScalarValue(this.r, t, 0);
+        out[1] = GetScalarValue(this.g, t, 0);
+        out[2] = GetScalarValue(this.b, t, 0);
+        out[3] = IsScalarEmpty(this.a) ? 1 : GetScalarValue(this.a, t, 1);
 
-    /**
-     * The sequencer's current value property
-     * @type {String}
-     */
-    static valueProperty = "currentValue";
+        if (this.srgbOutput)
+        {
+            out[0] = num.srgbFromLinear(Math.max(out[0], 0));
+            out[1] = num.srgbFromLinear(Math.max(out[1], 0));
+            out[2] = num.srgbFromLinear(Math.max(out[2], 0));
+            out[3] = Math.max(out[3], 0);
+        }
 
-    /**
-     * The sequencer's type
-     * @type {number}
-     */
-    static curveType = Tw2CurveSequencer.Type.SEQUENCER;
+        return out;
+    }
 
-    /**
-     * The sequencer's curve property names
-     * @type {?Array.<string>}
-     */
-    static childProperties = [ "r", "g", "b", "a" ];
+    Length()
+    {
+        return Math.max(
+            GetScalarLength(this.r),
+            GetScalarLength(this.g),
+            GetScalarLength(this.b),
+            GetScalarLength(this.a)
+        );
+    }
 
+    GetLength()
+    {
+        return this.Length();
+    }
+
+    Sort()
+    {
+        if (this.r && this.r.Sort) this.r.Sort();
+        if (this.g && this.g.Sort) this.g.Sort();
+        if (this.b && this.b.Sort) this.b.Sort();
+        if (this.a && this.a.Sort) this.a.Sort();
+    }
+
+    AddKey(time, value, interpolation = Tr2CurveInterpolation.HERMITE, leftTangent = [ 0, 0, 0, 0 ], rightTangent = [ 0, 0, 0, 0 ], tangentType = Tr2CurveTangentType.AUTO_CLAMP)
+    {
+        this.EnsureScalarChannels();
+        const v = value || [ 0, 0, 0, 1 ];
+        const lt = leftTangent || [ 0, 0, 0, 0 ];
+        const rt = rightTangent || [ 0, 0, 0, 0 ];
+        const alpha = v[3] === undefined ? 1 : v[3];
+
+        this.r.AddKey(time, v[0], interpolation, lt[0], rt[0], tangentType);
+        this.g.AddKey(time, v[1], interpolation, lt[1], rt[1], tangentType);
+        this.b.AddKey(time, v[2], interpolation, lt[2], rt[2], tangentType);
+        this.a.AddKey(time, alpha, interpolation, lt[3], rt[3], tangentType);
+
+        const key = new Tr2CurveColorKey();
+        key.time = time;
+        key.value = vec4.fromValues(v[0], v[1], v[2], alpha);
+        key.leftTangent = vec4.fromValues(lt[0], lt[1], lt[2], lt[3]);
+        key.rightTangent = vec4.fromValues(rt[0], rt[1], rt[2], rt[3]);
+        key.interpolation = interpolation;
+        key.tangentType = tangentType;
+        this.keys.push(key);
+        return key;
+    }
+
+    SetExtrapolation(extrapolation)
+    {
+        this.EnsureScalarChannels();
+        this.r.SetExtrapolation(extrapolation);
+        this.g.SetExtrapolation(extrapolation);
+        this.b.SetExtrapolation(extrapolation);
+        this.a.SetExtrapolation(extrapolation);
+    }
+
+    EnsureScalarChannels()
+    {
+        if (!this.r) this.r = new Tr2CurveScalar();
+        if (!this.g) this.g = new Tr2CurveScalar();
+        if (!this.b) this.b = new Tr2CurveScalar();
+        if (!this.a) this.a = new Tr2CurveScalar();
+    }
+}
+
+function GetScalarValue(curve, time, fallback)
+{
+    return curve && curve.GetValue ? curve.GetValue(time) : fallback;
+}
+
+function GetScalarLength(curve)
+{
+    return curve && curve.Length ? curve.Length() : 0;
+}
+
+function IsScalarEmpty(curve)
+{
+    return !curve || (curve.IsEmpty && curve.IsEmpty());
 }

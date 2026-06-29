@@ -6,5 +6,3 @@ export * from "./race";
 export * from "./shared";
 export * from "./layout";
 export * from "./EveSOFData";
-
-

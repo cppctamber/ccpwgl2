@@ -376,7 +376,7 @@ export class EveMissile extends meta.Model
 
         for (let i = 0; i < this.curveSets.length; ++i)
         {
-            this.curveSets[i].Update(dt);
+            this.curveSets[i].UpdateDelta(dt);
         }
 
         let checkDead = false;
