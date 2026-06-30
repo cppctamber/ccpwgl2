@@ -19,7 +19,7 @@ import {
     //GL_REPEAT,
     GL_SRC_ALPHA,
     GL_SRC_ALPHA_SATURATE,
-    GL_SRC_COLOR, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP,
+    GL_SRC_COLOR, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP,
     GL_ZERO
 } from "./gl";
 
@@ -211,14 +211,14 @@ export const MipFilterMode = {
 
 
 export const TEX_2D = 2;
-export const TEX_VOLUME =  3;  // 2D ARRAY
+export const TEX_VOLUME =  3;
 export const TEX_CUBE_MAP = 4;
 export const TEX_PROJECTION = 5;  // is this right?
 export const TEX_SHADOW_MAP = 5;  // is this right?
 
 export const TexTypeToGLTexture  = {
     [TEX_2D] : GL_TEXTURE_2D,
-    [TEX_VOLUME] : GL_TEXTURE_2D,
+    [TEX_VOLUME] : GL_TEXTURE_3D,
     [TEX_CUBE_MAP] : GL_TEXTURE_CUBE_MAP,
     [TEX_PROJECTION] : GL_TEXTURE_2D
 };

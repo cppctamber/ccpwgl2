@@ -184,9 +184,7 @@ export class Tw2DepthRenderTarget
         return !!(
             this._frameBuffer &&
             this._depthTexture &&
-            this._depthTexture.IsGood() &&
-            this._colorTexture &&
-            this._colorTexture.IsGood()
+            this._depthTexture.IsGood()
         );
     }
 
@@ -369,26 +367,6 @@ export class Tw2DepthRenderTarget
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.bindTexture(gl.TEXTURE_2D, null);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0);
-
-        const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-        if (status !== gl.FRAMEBUFFER_COMPLETE)
-        {
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-            const fallback = precision === 32 ? 24 : 16;
-            if (precision !== fallback)
-            {
-                tw2.Warning({
-                    name: "Depth precision",
-                    description: `Depth precision ${precision}BIT is not framebuffer complete, falling back to ${fallback}BIT`
-                });
-                this.Create(width, height, fallback);
-                return;
-            }
-
-            throw new ReferenceError(`Invalid depth framebuffer: ${status}`);
-        }
-
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 

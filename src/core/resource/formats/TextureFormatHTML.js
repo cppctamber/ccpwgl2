@@ -194,10 +194,12 @@ export class TextureFormatHTML
         switch (rt.target)
         {
             case TEX_2D:
-            case TEX_VOLUME:
                 res._target = gl.TEXTURE_2D;
                 res._isCube = false;
                 break;
+
+            case TEX_VOLUME:
+                throw new ErrResourceFormatNotImplemented({ format: "HTML->Volume" });
 
             case TEX_CUBE_MAP:
                 res._target = gl.TEXTURE_CUBE_MAP;

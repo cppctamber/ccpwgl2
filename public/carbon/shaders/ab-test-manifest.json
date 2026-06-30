@@ -1,0 +1,439 @@
+{
+  "generatedAt": "2026-06-29T12:26:35.489Z",
+  "kind": "ab2_t1_ab1_t2_carbon_converted_shader_test_set",
+  "note": "DX11 inputs are from shaderDiscovery res/graphics/effect.dx11. ccpwgl only receives converted CEWG test outputs.",
+  "shadowMappingNote": "GLES2 spaceobject/shadow shadow.sm_hi and skinned_shadow.sm_hi had no exact DX11 path in this corpus; mapped provisionally to managed/space/system/shadowdepth.sm_hi.",
+  "shaders": [
+    {
+      "name": "boostervolumetric",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "cdn:/graphics/effect.gles2/managed/space/booster/boostervolumetric.sm_hi",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/booster/boostervolumetric.sm_hi",
+      "convertedPath": "/public/carbon/shaders/boostervolumetric.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/boostervolumetric.sm_converted_hi",
+      "package": {
+        "bytes": 64571,
+        "permutationCount": 4,
+        "uniqueBodyCount": 2,
+        "uniqueShaderCount": 3,
+        "translatedShaderCount": 3,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 2,
+        "passedProgramCount": 0,
+        "failedProgramCount": 2
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "quadv5",
+      "hulls": [
+        "ab2_t1"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/quad/quadv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/quadv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/quadv5.sm_converted_hi",
+      "package": {
+        "bytes": 6794000,
+        "permutationCount": 480,
+        "uniqueBodyCount": 144,
+        "uniqueShaderCount": 80,
+        "translatedShaderCount": 80,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 672,
+        "passedProgramCount": 672,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "quadheatv5",
+      "hulls": [
+        "ab2_t1"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/v5/quad/quadheatv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/quad/quadheatv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/quadheatv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/quadheatv5.sm_converted_hi",
+      "package": {
+        "bytes": 5259595,
+        "permutationCount": 320,
+        "uniqueBodyCount": 96,
+        "uniqueShaderCount": 68,
+        "translatedShaderCount": 68,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 480,
+        "passedProgramCount": 480,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "shadowdepth",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "cdn:/graphics/effect.gles2/managed/space/spaceobject/shadow/shadow.sm_hi / skinned_shadow.sm_hi",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/system/shadowdepth.sm_hi",
+      "convertedPath": "/public/carbon/shaders/shadowdepth.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/shadowdepth.sm_converted_hi",
+      "package": {
+        "bytes": 21586,
+        "permutationCount": 2,
+        "uniqueBodyCount": 2,
+        "uniqueShaderCount": 3,
+        "translatedShaderCount": 3,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 2,
+        "passedProgramCount": 2,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "unpacked_fxbannerv5",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/unpacked_fxbannerv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/unpacked_fxbannerv5.sm_converted_hi",
+      "package": {
+        "bytes": 17666,
+        "permutationCount": 2,
+        "uniqueBodyCount": 1,
+        "uniqueShaderCount": 2,
+        "translatedShaderCount": 2,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 1,
+        "passedProgramCount": 1,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "planeglow",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "cdn:/graphics/effect.gles2/managed/space/spaceobject/fx/planeglow.sm_hi",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/fx/planeglow.sm_hi",
+      "convertedPath": "/public/carbon/shaders/planeglow.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/planeglow.sm_converted_hi",
+      "package": {
+        "bytes": 22740,
+        "permutationCount": 2,
+        "uniqueBodyCount": 1,
+        "uniqueShaderCount": 2,
+        "translatedShaderCount": 2,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 1,
+        "passedProgramCount": 0,
+        "failedProgramCount": 1
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "blinkinglightspool",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/fx/blinkinglightspool.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool.sm_hi",
+      "convertedPath": "/public/carbon/shaders/blinkinglightspool.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/blinkinglightspool.sm_converted_hi",
+      "package": {
+        "bytes": 14614,
+        "permutationCount": 1,
+        "uniqueBodyCount": 1,
+        "uniqueShaderCount": 2,
+        "translatedShaderCount": 2,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 1,
+        "passedProgramCount": 1,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "decalv5",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/decals/v5/decalv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/decals/v5/decalv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/decalv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/decalv5.sm_converted_hi",
+      "package": {
+        "bytes": 98065,
+        "permutationCount": 8,
+        "uniqueBodyCount": 4,
+        "uniqueShaderCount": 4,
+        "translatedShaderCount": 4,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 4,
+        "passedProgramCount": 4,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "decalcounterv5",
+      "hulls": [
+        "ab2_t1",
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/decals/v5/decalcounterv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/decals/v5/decalcounterv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/decalcounterv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/decalcounterv5.sm_converted_hi",
+      "package": {
+        "bytes": 62508,
+        "permutationCount": 8,
+        "uniqueBodyCount": 4,
+        "uniqueShaderCount": 4,
+        "translatedShaderCount": 4,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 4,
+        "passedProgramCount": 4,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    },
+    {
+      "name": "skinned_fxdirectionalv5",
+      "hulls": [
+        "ab1_t2"
+      ],
+      "sourceGles": "cdn:/graphics/effect.gles2/managed/space/spaceobject/v5/fx/skinned_fxdirectionalv5.sm_hi",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/fx/skinned_fxdirectionalv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/skinned_fxdirectionalv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/skinned_fxdirectionalv5.sm_converted_hi",
+      "package": {
+        "bytes": 51317,
+        "permutationCount": 4,
+        "uniqueBodyCount": 2,
+        "uniqueShaderCount": 8,
+        "translatedShaderCount": 5,
+        "failedShaderCount": 3,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 0,
+        "passedProgramCount": 0,
+        "failedProgramCount": 0
+      },
+      "failedShaders": [
+        {
+          "key": "dxbc_29291f5662ed678146d19cb0c99c0aec4004ceb8",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_7bd7e02aab07436be8cd6bb8add67970bb9684e6",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_bfd3a0b8b02b962f9e56962dac210a85a59e7312",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        }
+      ]
+    },
+    {
+      "name": "skinned_fxdistortionv5",
+      "hulls": [
+        "ab1_t2"
+      ],
+      "sourceGles": "cdn:/graphics/effect.gles2/managed/space/spaceobject/v5/fx/skinned_fxdistortionv5.sm_hi",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/fx/skinned_fxdistortionv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/skinned_fxdistortionv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/skinned_fxdistortionv5.sm_converted_hi",
+      "package": {
+        "bytes": 26782,
+        "permutationCount": 2,
+        "uniqueBodyCount": 1,
+        "uniqueShaderCount": 3,
+        "translatedShaderCount": 2,
+        "failedShaderCount": 1,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 0,
+        "passedProgramCount": 0,
+        "failedProgramCount": 0
+      },
+      "failedShaders": [
+        {
+          "key": "dxbc_ab0e206ace84947904bc81ffc0a9cc9d0104bf05",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        }
+      ]
+    },
+    {
+      "name": "skinned_quadv5",
+      "hulls": [
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/quad/skinned_quadv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/skinned_quadv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/skinned_quadv5.sm_converted_hi",
+      "package": {
+        "bytes": 4325001,
+        "permutationCount": 240,
+        "uniqueBodyCount": 72,
+        "uniqueShaderCount": 75,
+        "translatedShaderCount": 70,
+        "failedShaderCount": 5,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 0,
+        "passedProgramCount": 0,
+        "failedProgramCount": 0
+      },
+      "failedShaders": [
+        {
+          "key": "dxbc_ae93df2b4543c4715347699c1567f32b3fb0e260",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_7bd7e02aab07436be8cd6bb8add67970bb9684e6",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_d5cd0b1055ce93680e76ffceca4a3f6bfd563456",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_bfd3a0b8b02b962f9e56962dac210a85a59e7312",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_9a8087735bbaa157bf80869a06cf1c9123a025c1",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        }
+      ]
+    },
+    {
+      "name": "skinned_quadheatv5",
+      "hulls": [
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/spaceobject/v5/quad/skinned_quadheatv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/spaceobject/v5/quad/skinned_quadheatv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/skinned_quadheatv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/skinned_quadheatv5.sm_converted_hi",
+      "package": {
+        "bytes": 3464524,
+        "permutationCount": 160,
+        "uniqueBodyCount": 48,
+        "uniqueShaderCount": 63,
+        "translatedShaderCount": 58,
+        "failedShaderCount": 5,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 0,
+        "passedProgramCount": 0,
+        "failedProgramCount": 0
+      },
+      "failedShaders": [
+        {
+          "key": "dxbc_ae93df2b4543c4715347699c1567f32b3fb0e260",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_7bd7e02aab07436be8cd6bb8add67970bb9684e6",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_d5cd0b1055ce93680e76ffceca4a3f6bfd563456",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_bfd3a0b8b02b962f9e56962dac210a85a59e7312",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        },
+        {
+          "key": "dxbc_9a8087735bbaa157bf80869a06cf1c9123a025c1",
+          "stageName": "vertex",
+          "exitCode": 3221225477
+        }
+      ]
+    },
+    {
+      "name": "decalglowv5",
+      "hulls": [
+        "ab1_t2"
+      ],
+      "sourceGles": "manual:/graphics/effect.gles2/managed/space/decals/v5/decalglowv5.sm_json",
+      "sourceDx11": "res/graphics/effect.dx11/managed/space/decals/v5/decalglowv5.sm_hi",
+      "convertedPath": "/public/carbon/shaders/decalglowv5.sm_converted_hi",
+      "artifactPath": "artifacts/ab-shader-set/converted/decalglowv5.sm_converted_hi",
+      "package": {
+        "bytes": 66023,
+        "permutationCount": 8,
+        "uniqueBodyCount": 4,
+        "uniqueShaderCount": 4,
+        "translatedShaderCount": 4,
+        "failedShaderCount": 0,
+        "failedBodyCount": 0
+      },
+      "validation": {
+        "programCount": 4,
+        "passedProgramCount": 4,
+        "failedProgramCount": 0
+      },
+      "failedShaders": []
+    }
+  ]
+}

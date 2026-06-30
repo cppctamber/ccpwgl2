@@ -9,6 +9,7 @@ import { shaders as deprecatedShaders } from "./toDeprecate/shaders";
 
 tw2.util.api = api;
 tw2.Register(config);
+tw2.Register({ shaders: deprecatedShaders });
 
 export { tiny } from "./wrapped";
 export { deprecatedShaders };

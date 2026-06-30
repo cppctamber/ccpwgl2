@@ -360,6 +360,7 @@ export const config = {
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
         "EveSpaceSceneShadowMap": "",
+        "EveSpaceSceneCascadedShadowMap": "",
 
         "EnvMap1": "",
         "EnvMap2": "",

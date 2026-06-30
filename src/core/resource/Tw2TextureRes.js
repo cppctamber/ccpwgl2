@@ -148,7 +148,11 @@ export class Tw2TextureRes extends Tw2Resource
 
         if (!this.texture)
         {
-            const tex = this._target === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
+            const tex = this._target === gl.TEXTURE_CUBE_MAP
+                ? d.GetFallbackCubeMap()
+                : this._target === gl.TEXTURE_3D
+                    ? d.GetFallbackVolumeTexture()
+                    : d.GetFallbackTexture();
             gl.bindTexture(this._target, tex);
             return;
         }

@@ -103,6 +103,8 @@ export const isPrivate = createDecorator({
     }
 });
 
+export { isPrivate as private };
+
 export const desc = createDecorator({
     handler({ target, property }, description)
     {

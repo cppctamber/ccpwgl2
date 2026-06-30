@@ -50,7 +50,14 @@ const FOURCC =
     DXT5: 0x35545844,
     ATI1: 0x31495441,
     ATI2: 0x32495441,
-    DX10: 0x30315844
+    DX10: 0x30315844,
+
+    D3DFMT_R16F: 111,
+    D3DFMT_G16R16F: 112,
+    D3DFMT_A16B16G16R16F: 113,
+    D3DFMT_R32F: 114,
+    D3DFMT_G32R32F: 115,
+    D3DFMT_A32B32G32R32F: 116
 };
 
 const DXGI =
@@ -200,7 +207,7 @@ export const TextureFormatDDS =
 
         if (info.isVolume)
         {
-            this.PrepareVolumeAtlas(res, gl, arrayBuffer, info);
+            this.PrepareVolume3D(res, gl, arrayBuffer, info);
             return;
         }
 
@@ -271,6 +278,111 @@ export const TextureFormatDDS =
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, atlas.width, atlas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, atlas.bytes);
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
 
+        gl.bindTexture(res._target, null);
+    },
+
+    PrepareVolume3D(res, gl, arrayBuffer, info)
+    {
+        if (device.glVersion === 1 || !gl.texImage3D)
+        {
+            throw new ErrResourceFormatUnsupported({
+                format: "DDS",
+                reason: "Volume DDS requires WebGL2 texture3D support",
+                data: info
+            });
+        }
+
+        if (info.isCompressed)
+        {
+            throw new ErrResourceFormatUnsupported({
+                format: "DDS",
+                reason: "Compressed volume DDS not supported",
+                data: info
+            });
+        }
+
+        res._type = info.type ?? gl.UNSIGNED_BYTE;
+        res._format = info.format;
+        res._internalFormat = info.internalFormat;
+        res._target = gl.TEXTURE_3D;
+
+        res._mipCount = info.mipmaps;
+        res._hasMipMaps = info.mipmaps > 1;
+        res._isCube = false;
+
+        res._width = info.width;
+        res._height = info.height;
+        res._isPowerOfTwo = res.constructor.IsPowerOfTwo(info.width, info.height, info.depth);
+
+        res._isVolumeAtlas = false;
+        res._volumeAxis = "z";
+        res._volumeSlices = info.depth;
+
+        if (res._debugInfo)
+        {
+            res._debugInfo.output = {
+                target: "TEXTURE_3D",
+                type: "volume",
+                slices: info.depth,
+                width: info.width,
+                height: info.height,
+                depth: info.depth,
+                mipmaps: info.mipmaps
+            };
+        }
+
+        res.texture = gl.createTexture();
+        gl.bindTexture(res._target, res.texture);
+
+        const prevUnpack = gl.getParameter(gl.UNPACK_ALIGNMENT);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+        let offset = info.dataOffset;
+        let width = info.width;
+        let height = info.height;
+        let depth = info.depth;
+
+        for (let mip = 0; mip < info.mipmaps; mip++)
+        {
+            const slices = new Array(depth);
+            let totalElements = 0;
+
+            for (let z = 0; z < depth; z++)
+            {
+                const level = this.ReadUncompressedLevel(arrayBuffer, offset, width, height, info);
+                slices[z] = level.bytes;
+                totalElements += level.bytes.length;
+                offset += level.size;
+            }
+
+            const DataArray = slices[0] ? slices[0].constructor : Uint8Array;
+            const pixels = new DataArray(totalElements);
+            let targetOffset = 0;
+            for (const slice of slices)
+            {
+                pixels.set(slice, targetOffset);
+                targetOffset += slice.length;
+            }
+
+            gl.texImage3D(
+                gl.TEXTURE_3D,
+                mip,
+                info.internalFormat,
+                width,
+                height,
+                depth,
+                0,
+                info.format,
+                info.type ?? gl.UNSIGNED_BYTE,
+                pixels
+            );
+
+            width = Math.max(width >> 1, 1);
+            height = Math.max(height >> 1, 1);
+            depth = Math.max(depth >> 1, 1);
+        }
+
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
         gl.bindTexture(res._target, null);
     },
 
@@ -529,6 +641,30 @@ export const TextureFormatDDS =
             case FOURCC.ATI2:
                 this.SetCompressed(info, "ATI2/BC5_UNORM", 16, this.GetExtConstant(extensions.rgtc, "COMPRESSED_RG_RGTC2_EXT"));
                 return;
+
+            case FOURCC.D3DFMT_R16F:
+                this.SetLegacyFloat(info, "D3DFMT_R16F", gl, 1, 16);
+                return;
+
+            case FOURCC.D3DFMT_G16R16F:
+                this.SetLegacyFloat(info, "D3DFMT_G16R16F", gl, 2, 16);
+                return;
+
+            case FOURCC.D3DFMT_A16B16G16R16F:
+                this.SetLegacyFloat(info, "D3DFMT_A16B16G16R16F", gl, 4, 16);
+                return;
+
+            case FOURCC.D3DFMT_R32F:
+                this.SetLegacyFloat(info, "D3DFMT_R32F", gl, 1, 32);
+                return;
+
+            case FOURCC.D3DFMT_G32R32F:
+                this.SetLegacyFloat(info, "D3DFMT_G32R32F", gl, 2, 32);
+                return;
+
+            case FOURCC.D3DFMT_A32B32G32R32F:
+                this.SetLegacyFloat(info, "D3DFMT_A32B32G32R32F", gl, 4, 32);
+                return;
         }
 
         throw new ErrResourceFormatUnsupported({
@@ -647,6 +783,43 @@ export const TextureFormatDDS =
         info.clientSupport = true;
     },
 
+    SetLegacyFloat(info, name, gl, channels, bits)
+    {
+        if (device.glVersion < 2)
+        {
+            info.name = name;
+            info.clientSupport = false;
+            return;
+        }
+
+        const is32 = bits === 32;
+        const type = is32 ? gl.FLOAT : gl.HALF_FLOAT;
+
+        let format, internalFormat;
+        switch (channels)
+        {
+            case 1:
+                format = gl.RED;
+                internalFormat = is32 ? gl.R32F : gl.R16F;
+                break;
+
+            case 2:
+                format = gl.RG;
+                internalFormat = is32 ? gl.RG32F : gl.RG16F;
+                break;
+
+            default:
+                format = gl.RGBA;
+                internalFormat = is32 ? gl.RGBA32F : gl.RGBA16F;
+        }
+
+        this.SetUncompressed(info, name, format, internalFormat, channels * bits);
+        info.type = type;
+        info.isFloat = true;
+        info.floatBits = bits;
+        info.hasAlpha = channels === 4;
+    },
+
     SetDX10RGBA(info, gl, isSRGB, rOffset, gOffset, bOffset, aOffset)
     {
         const internalFormat = isSRGB && device.glVersion > 1 ? gl.SRGB8_ALPHA8 : gl.RGBA;
@@ -695,6 +868,15 @@ export const TextureFormatDDS =
         }
 
         const src = new Uint8Array(arrayBuffer, offset, srcSize);
+
+        if (info.isFloat)
+        {
+            const typed = info.floatBits === 32
+                ? new Float32Array(arrayBuffer, offset, srcSize >> 2)
+                : new Uint16Array(arrayBuffer, offset, srcSize >> 1);
+
+            return { bytes: typed, size: srcSize };
+        }
 
         if (bpp === 24)
         {

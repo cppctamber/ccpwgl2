@@ -9,6 +9,23 @@ import shaderOverrides from "./shaderOverrides";
 import { Tw2ShaderAnnotation } from "core/shader/Tw2ShaderAnnotation";
 
 
+const CHAR_CODE_CHUNK_SIZE = 0x8000;
+
+/**
+ * Converts bytes to a binary string without overflowing the JS argument stack.
+ * @param {Uint8Array|Array} bytes
+ * @returns {string}
+ */
+function BytesToString(bytes)
+{
+    let out = "";
+    for (let i = 0; i < bytes.length; i += CHAR_CODE_CHUNK_SIZE)
+    {
+        out += String.fromCharCode.apply(null, bytes.subarray(i, i + CHAR_CODE_CHUNK_SIZE));
+    }
+    return out;
+}
+
 
 @meta.type("Tw2ShaderStage")
 @meta.wgl.define("Tw2ShaderStage")
@@ -628,7 +645,7 @@ export class Tw2ShaderStage
         }
         else
         {
-            let source = shaderName + prefix + (isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
+            let source = shaderName + prefix + (isString(shaderCode) ? shaderCode : BytesToString(shaderCode));
             source = source.substr(0, source.length - 1);
             gl.shaderSource(shader, source);
             gl.compileShader(shader);

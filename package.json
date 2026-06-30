@@ -7,7 +7,8 @@
   "scripts": {
     "build": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "build:webpack": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack",
-    "build:rollup": "rollup -c rollup.config.mjs"
+    "build:rollup": "rollup -c rollup.config.mjs",
+    "test:carbon-pending": "node scripts/test-carbon-pending.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

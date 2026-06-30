@@ -137,6 +137,7 @@ export class Tw2Device extends Tw2EventEmitter
     _cameraQuadBuffer = null;
     _currentRenderMode = RM_ANY;
     _fallbackCube = null;
+    _fallbackVolume = null;
     _fallbackTexture = null;
     _blitEffect = null;
     _Date = Date;
@@ -243,7 +244,21 @@ export class Tw2Device extends Tw2EventEmitter
             },
             [RM_DISTORTION]: {
                 dirty: true,
-                states: Object.assign({}, transparentStates)
+                states: {
+                    [RS_CULLMODE]: CULL_NONE,
+                    [RS_ALPHABLENDENABLE]: 1,
+                    [RS_SRCBLEND]: BLEND_ONE,
+                    [RS_DESTBLEND]: BLEND_ONE,
+                    [RS_BLENDOP]: BLENDOP_ADD,
+                    [RS_ZENABLE]: 1,
+                    [RS_ZWRITEENABLE]: 0,
+                    [RS_ZFUNC]: CMP_LEQUAL,
+                    [RS_ALPHATESTENABLE]: 0,
+                    [RS_SLOPESCALEDEPTHBIAS]: 0,
+                    [RS_DEPTHBIAS]: 0,
+                    [RS_SEPARATEALPHABLENDENABLE]: 0,
+                    [RS_COLORWRITEENABLE]: 0xf
+                }
             },
             [RM_TRANSPARENT]: {
                 dirty: true,
@@ -891,6 +906,19 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Gets a fallback volume texture
+     * @returns {*}
+     */
+    GetFallbackVolumeTexture()
+    {
+        if (!this._fallbackVolume)
+        {
+            this._fallbackVolume = this.CreateSolidVolumeTexture();
+        }
+        return this._fallbackVolume;
+    }
+
+    /**
      * Creates a solid colored texture
      * @param {vec4|Array} [rgba] - The colour to create, if omitted defaults to completely transparent
      * @returns {WebGLTexture}
@@ -933,6 +961,28 @@ export class Tw2Device extends Tw2EventEmitter
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         //gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+        return texture;
+    }
+
+    /**
+     * Creates a solid colored 1x1x1 volume texture
+     * @param {vec4|Array} rgba
+     * @returns {WebGLTexture}
+     */
+    CreateSolidVolumeTexture(rgba = [ 0, 0, 0, 0 ])
+    {
+        const
+            gl = this.gl,
+            texture = this.gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_3D, texture);
+        gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, 1, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.bindTexture(gl.TEXTURE_3D, null);
         return texture;
     }
 

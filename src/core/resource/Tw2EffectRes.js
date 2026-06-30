@@ -5,6 +5,23 @@ import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { tw2 } from "global";
 
+const CHAR_CODE_CHUNK_SIZE = 0x8000;
+
+/**
+ * Converts bytes to a binary string without overflowing the JS argument stack.
+ * @param {Uint8Array} bytes
+ * @returns {string}
+ */
+function BytesToString(bytes)
+{
+    let out = "";
+    for (let i = 0; i < bytes.length; i += CHAR_CODE_CHUNK_SIZE)
+    {
+        out += String.fromCharCode.apply(null, bytes.subarray(i, i + CHAR_CODE_CHUNK_SIZE));
+    }
+    return out;
+}
+
 
 @meta.type("Tw2EffectRes")
 @meta.wgl.define("Tw2EffectRes")
@@ -76,14 +93,14 @@ export class Tw2EffectRes extends Tw2Resource
             reader.cursor = 2 * 4 + headerSize * 3 * 4;
             stringTableSize = reader.ReadUInt32();
             this.stringTableOffset = reader.cursor;
-            stringTable = String.fromCharCode.apply(null, reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
+            stringTable = BytesToString(reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
             reader.cursor = offset;
         }
         else
         {
             stringTableSize = reader.ReadUInt32();
             this.stringTableOffset = reader.cursor;
-            stringTable = String.fromCharCode.apply(null, reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
+            stringTable = BytesToString(reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
             reader.cursor += stringTableSize;
 
             const permutationCount = reader.ReadUInt8();
