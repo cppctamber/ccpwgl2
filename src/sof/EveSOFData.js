@@ -140,9 +140,7 @@ export class EveSOFData extends meta.Model
 
         effect: {
             sprite: null,
-            banner: null,
-            shadow: null,
-            shadowSkinned: null
+            banner: null
         },
 
         // Override standard materials
@@ -164,8 +162,7 @@ export class EveSOFData extends meta.Model
             boosterVolumetric: "cdn:/graphics/effect/managed/space/booster/boostervolumetric.fx",
             boosterGlow: "cdn:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
             spriteSet: "cdn:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-            banner: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx",
-            shadow: "cdn:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx"
+            banner: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
         },
 
         texturePath: {
@@ -479,23 +476,6 @@ export class EveSOFData extends meta.Model
                     MainIntensity: 1,
                     GradientMap: texturePath.whiteSharp
                 }
-            });
-        }
-
-        if (!effect.shadow)
-        {
-            // TODO: Implement shadows
-            effect.shadow = Tw2Effect.from({
-                name: "Shared shadow effect",
-                effectFilePath: effectPath.shadow
-            });
-        }
-
-        if (!effect.shadowSkinned)
-        {
-            effect.shadowSkinned = Tw2Effect.from({
-                name: "Shared shadow skinned effect",
-                effectFilePath: this.GetShaderPath(effectPath.shadow, true)
             });
         }
 
@@ -1104,7 +1084,6 @@ export class EveSOFData extends meta.Model
         // partial support
         await this.SetupChildren(...args);
         // Unsupported
-        await this.SetupShadows(...args);
         this.SetupHazeSets(...args);
         this.SetupSpriteLineSets(...args);
         this.SetupAudio(...args);
@@ -2633,24 +2612,6 @@ export class EveSOFData extends meta.Model
             container.objects.push(child);
         }
     }
-
-    /**
-     * Sets up shadow shader
-     * @param data
-     * @param obj
-     * @param sof
-     * @param options
-     * @return {Promise<void>}
-     * @constructor
-     */
-    static async SetupShadows(data, obj, sof, options)
-    {
-        if (!obj.shadowEffect)
-        {
-            obj.shadowEffect = sof.hull.isSkinned ? options.effect.shadowSkinned : options.effect.shadow;
-        }
-    }
-
 
     /**
      *

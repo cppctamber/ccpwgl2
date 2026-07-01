@@ -7,7 +7,6 @@ import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, Ev
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
-import { RM_OPAQUE } from "constant";
 
 
 @meta.type("EveShip2")
@@ -62,9 +61,6 @@ export class EveShip2 extends EveObject
     @meta.isPrivate
     rotationCurve = null;
 
-    @meta.struct("Tw2Effect")
-    shadowEffect = null;
-
     @meta.vector3
     @meta.isPrivate
     shapeEllipsoidCenter = vec3.create();
@@ -112,7 +108,6 @@ export class EveShip2 extends EveObject
         mesh: true,
         overlayEffects: true,
         planeSets: true,
-        shadows: true,
         spotlightSets: true,
         spriteSets: true,
         turretSets: true
@@ -905,47 +900,6 @@ export class EveShip2 extends EveObject
             // Handle bounds
         }
 
-    }
-
-    /**
-     * Gets a shadow batch
-     * @param accumulator
-     * @return {boolean}
-     */
-    GetShadowBatch(accumulator)
-    {
-        if (
-            !this.display ||
-            !this.visible.shadows ||
-            !this.mesh ||
-            !this.mesh.IsGood() ||
-            !this.shadowEffect ||
-            !this.shadowEffect.IsGood()
-        ) return false;
-
-        // Temporarily change cb1[0]
-
-        const { mesh } = this;
-
-        for (let i = 0; i < mesh.opaqueAreas.length; i++)
-        {
-            const area = mesh.opaqueAreas[i];
-            if (!area.display) continue;
-
-            const batch = new area.constructor.batchType();
-            batch.renderMode = RM_OPAQUE;
-            batch.perObjectData = this._perObjectData;
-            batch.geometryRes = mesh.geometryResource;
-            batch.meshIx = mesh.meshIndex; //area.meshIndex;
-            batch.start = area.index;
-            batch.count = area.count;
-            batch.effect = this.shadowEffect;
-            batch.effect._isShadowEffect = true;
-
-            accumulator.Commit(batch);
-        }
-
-        return true;
     }
 
     /**

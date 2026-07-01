@@ -5,3 +5,4 @@ export * from "./object";
 
 export * from "./EveMissile";
 export * from "./EveSpaceScene";
+export * from "./EveSpaceSceneShadowHandler";

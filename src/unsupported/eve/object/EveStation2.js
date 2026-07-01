@@ -68,9 +68,6 @@ export class EveStation2 extends EveShip2
     @meta.struct("Tr2RotationAdapter")
     rotationCurve = null;
 
-    @meta.struct("Tw2Effect")
-    shadowEffect = null;
-
     @meta.struct("Tr2TranslationAdapter")
     translationCurve = null;
 

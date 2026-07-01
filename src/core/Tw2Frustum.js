@@ -10,6 +10,9 @@ export class Tw2Frustum
     _halfWidthProjection = 1;
     _viewPos = null;
     _viewDir = null;
+    _viewProjection = mat4.create();
+    _viewProjectionInverse = mat4.create();
+    _clipNearZ = -1;
 
     /**
      * Frustum planes
@@ -26,8 +29,10 @@ export class Tw2Frustum
      * @param {Number} viewportSize
      * @param {mat4} [viewInverse] Optional viewInverse matrix
      * @param {mat4} [viewProjection] Optional viewProjection matrix
+     * @param {mat4} [viewProjectionInverse] Optional inverse view projection matrix
+     * @param {Number} [clipNearZ] Optional clip-space near z, defaults from projection matrix
      */
-    Initialize(view, proj, viewportSize, viewInverse, viewProjection)
+    Initialize(view, proj, viewportSize, viewInverse, viewProjection, viewProjectionInverse, clipNearZ)
     {
         const mat4_0 = Tw2Frustum.global.mat4_0;
 
@@ -36,12 +41,87 @@ export class Tw2Frustum
 
         const viewInv = viewInverse ? viewInverse : mat4.invert(mat4_0, view);
 
-        this._viewPos.set(viewInv.subarray(12, 14));
-        this._viewDir.set(viewInv.subarray(8, 10));
+        this._viewPos.set(viewInv.subarray(12, 15));
+        this._viewDir.set(viewInv.subarray(8, 11));
         this._halfWidthProjection = proj[0] * viewportSize * 0.5;
 
         const viewProj = viewProjection ? viewProjection : mat4.multiply(mat4_0, proj, view);
-        this.FromViewProjectionMatrix(viewProj);
+        this.FromViewProjectionMatrix(
+            viewProj,
+            viewProjectionInverse,
+            Number.isFinite(clipNearZ) ? clipNearZ : Tw2Frustum.GetProjectionClipNearZ(proj)
+        );
+    }
+
+    /**
+     * Gets the frustum's world-space near/far corners.
+     * @param {Array<vec3>} [out=[]]
+     * @returns {Array<vec3>} out
+     */
+    GetCorners(out = [])
+    {
+        this._EnsureCornerArray(out);
+
+        const
+            inv = this._viewProjectionInverse,
+            nearZ = this._clipNearZ,
+            xy = Tw2Frustum.global.cornerXY,
+            nearPoint = Tw2Frustum.global.vec3_0,
+            farPoint = Tw2Frustum.global.vec3_1;
+
+        for (let i = 0; i < 4; i++)
+        {
+            vec3.set(nearPoint, xy[i][0], xy[i][1], nearZ);
+            vec3.set(farPoint, xy[i][0], xy[i][1], 1);
+            vec3.transformMat4(out[i], nearPoint, inv);
+            vec3.transformMat4(out[i + 4], farPoint, inv);
+        }
+
+        return out;
+    }
+
+    /**
+     * Gets a world-space frustum split by distance from the camera near plane.
+     * @param {Array<vec3>} [out=[]]
+     * @param {Number} splitNear
+     * @param {Number} splitFar
+     * @param {Number} cameraNear
+     * @param {Number} cameraFar
+     * @returns {Array<vec3>} out
+     */
+    GetDistanceSplitCorners(out = [], splitNear, splitFar, cameraNear, cameraFar)
+    {
+        this._EnsureCornerArray(out);
+
+        const
+            full = Tw2Frustum.global.cornerCache,
+            n = Math.max(Number.isFinite(cameraNear) ? cameraNear : 1, 1e-3),
+            f = Math.max(Number.isFinite(cameraFar) ? cameraFar : splitFar, n + 1e-3),
+            range = Math.max(f - n, 1e-3),
+            nearT = Math.max(0, Math.min(1, (splitNear - n) / range)),
+            farT = Math.max(nearT, Math.min(1, (splitFar - n) / range));
+
+        this.GetCorners(full);
+
+        for (let i = 0; i < 4; i++)
+        {
+            vec3.lerp(out[i], full[i], full[i + 4], nearT);
+            vec3.lerp(out[i + 4], full[i], full[i + 4], farT);
+        }
+
+        return out;
+    }
+
+    _EnsureCornerArray(out)
+    {
+        for (let i = 0; i < 8; i++)
+        {
+            if (!out[i])
+            {
+                out[i] = vec3.create();
+            }
+        }
+        return out;
     }
 
     /**
@@ -155,10 +235,24 @@ export class Tw2Frustum
     /**
      * Sets the frustum from a projection matrix
      * @param {mat4} m
+     * @param {mat4} [inverse]
+     * @param {Number} [clipNearZ]
      * @return {Tw2Frustum}
      */
-    FromViewProjectionMatrix(m)
+    FromViewProjectionMatrix(m, inverse, clipNearZ = this._clipNearZ)
     {
+        mat4.copy(this._viewProjection, m);
+        this._clipNearZ = Number.isFinite(clipNearZ) ? clipNearZ : -1;
+
+        if (inverse)
+        {
+            mat4.copy(this._viewProjectionInverse, inverse);
+        }
+        else if (!mat4.invert(this._viewProjectionInverse, m))
+        {
+            mat4.identity(this._viewProjectionInverse);
+        }
+
         const
             planes = this._planes,
             m0 = m[0],
@@ -190,11 +284,34 @@ export class Tw2Frustum
     }
 
     /**
+     * Gets the projection's clip-space near z.
+     * @param {mat4} projection
+     * @returns {Number}
+     */
+    static GetProjectionClipNearZ(projection)
+    {
+        // D3D-style projections map depth to [0..1]; GL-style projections map [-1..1].
+        // In this codebase D3D ortho/projection matrices use a positive z scale or +w perspective term.
+        return projection && (projection[10] > 0 || projection[11] > 0) ? 0 : -1;
+    }
+
+    /**
      * Global and scratch variables
      */
     static global = {
         vec3_0: vec3.create(),
-        mat4_0: mat4.create()
+        vec3_1: vec3.create(),
+        mat4_0: mat4.create(),
+        cornerXY: [
+            [ -1, -1 ],
+            [ 1, -1 ],
+            [ 1, 1 ],
+            [ -1, 1 ]
+        ],
+        cornerCache: [
+            vec3.create(), vec3.create(), vec3.create(), vec3.create(),
+            vec3.create(), vec3.create(), vec3.create(), vec3.create()
+        ]
     };
 
 }

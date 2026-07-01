@@ -442,7 +442,8 @@ export class Tw2DepthRenderTarget
 
         const { gl } = tw2;
         const
-            prevViewport = gl.getParameter(gl.VIEWPORT),
+            fallbackViewport = new Float32Array([ 0, 0, tw2.width, tw2.height ]),
+            prevViewport = gl.getParameter(gl.VIEWPORT) || fallbackViewport,
             prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);

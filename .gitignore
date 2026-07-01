@@ -16,6 +16,7 @@ node_modules/
 
 # IDE
 .idea/
+.vscode/settings.json
 
 # dotenv environment variables file
 .env
@@ -41,4 +42,5 @@ dist/rollup/
 
 # local experiments
 src/experiments/
+public/carbon/
 

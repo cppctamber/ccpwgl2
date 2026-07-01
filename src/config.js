@@ -37,6 +37,9 @@ export const config = {
     // Enables library debugging
     debug: false,
 
+    // Enables experimental EveSpaceScene shadow rendering path
+    enableExperimentalShadows: false,
+
     // Sets the default render batch sorter
     renderBatchSorter: tw2BatchSorter,
 

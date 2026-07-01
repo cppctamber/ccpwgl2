@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
+import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import {
     Tw2BatchAccumulator,
     Tw2RawData,
@@ -10,7 +11,11 @@ import {
     Tw2Effect,
     Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
-import { RM_DEPTH, RM_DISTORTION, RM_OPAQUE } from "constant";
+import {
+    RM_DEPTH,
+    RM_DISTORTION,
+    RM_OPAQUE
+} from "constant";
 
 
 @meta.type("EveSpaceScene")
@@ -242,6 +247,7 @@ export class EveSpaceScene extends meta.Model
     _distortionPostProcess = null;
     _depthRendered = false;
     _customPasses = [];
+    shadowHandler = null;
 
     // ----------------------------------------------------------------------------[ Shadow ]---------------------- //
 
@@ -838,6 +844,12 @@ export class EveSpaceScene extends meta.Model
             }
         }
 
+        const shadowHandler = this.GetShadowHandler(false);
+        if (shadowHandler && show.shadow)
+        {
+            shadowHandler.RenderShadowPass(dt, this);
+        }
+
         this._accumulator.Render();
 
         if (this.starfield)
@@ -873,10 +885,37 @@ export class EveSpaceScene extends meta.Model
 
         this.RenderDepth(dt);
         this.RenderDistortion(dt);
+        if (shadowHandler)
+        {
+            shadowHandler.RenderDebug();
+        }
 
     }
 
+    /**
+     * Gets or creates the scene shadow handler.
+     * @param {Boolean} [create=true]
+     * @returns {EveSpaceSceneShadowHandler|null}
+     */
+    GetShadowHandler(create = true)
+    {
+        if (!tw2.enableExperimentalShadows)
+        {
+            return null;
+        }
 
+        if (!this.shadowHandler && create)
+        {
+            this.shadowHandler = new EveSpaceSceneShadowHandler(this);
+        }
+
+        if (this.shadowHandler)
+        {
+            this.shadowHandler.scene = this;
+        }
+
+        return this.shadowHandler;
+    }
 
     /**
      * Renders depth
@@ -1110,7 +1149,13 @@ export class EveSpaceScene extends meta.Model
 
     UpdateShadow()
     {
-        if (this.enableShadows)
+        const handler = this.GetShadowHandler();
+        if (handler)
+        {
+            return handler.ApplyPerFrameData(this);
+        }
+
+        if (this.enableShadows || !tw2.enableExperimentalShadows)
         {
             device.perFrameShadowPSData = this._perFrameShadowPS;
             device.perFrameShadowVSData = this._perFrameShadowVS;
@@ -1166,10 +1211,17 @@ export class EveSpaceScene extends meta.Model
      */
     UpdateShadowMatrices()
     {
+        const handler = this.GetShadowHandler();
+        if (handler)
+        {
+            return handler.UpdateMatrices(this);
+        }
+
         mat4.identity(this._shadowView);
         mat4.identity(this._shadowProjection);
         mat4.identity(this._shadowViewProjection);
     }
+
     /**
      * Applies per frame data
      */
@@ -1293,7 +1345,6 @@ export class EveSpaceScene extends meta.Model
 
         return false;
     }
-
 
     static perFrameShadowData = {
         vs: [

@@ -42,7 +42,4 @@ export class EveMobile extends EveObject
     @meta.list("TriObserverLocal")
     observers = [];
 
-    @meta.struct("Tw2Effect")
-    shadowEffect = null;
-
 }
