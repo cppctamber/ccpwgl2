@@ -92,6 +92,16 @@ export class TnySDEApiProvider
         return this.FetchJSON(`typesToSkins/${typeID}`, []);
     }
 
+    GetMoon(moonID)
+    {
+        return this.FetchJSON(`moons/${moonID}`, {});
+    }
+
+    GetPlanet(planetID)
+    {
+        return this.FetchJSON(`planets/${planetID}`, {});
+    }
+
     async GetSkinMaterialSetFromSkinID(skinID)
     {
         const skin = await this.GetSkin(skinID),

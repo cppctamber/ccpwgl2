@@ -292,14 +292,24 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("sde", "GetSkinMaterialSetFromSkinID", ...args);
     }
 
-    GetMoon(...args)
+    async GetMoon(moonID, params)
     {
-        return this.RequestFrom("esi", "GetMoon", ...args);
+        const esi = await this.RequestFrom("esi", "GetMoon", moonID, params);
+        if (this.sde && this.sde.GetMoon)
+        {
+            return Object.assign({}, esi, await this.sde.GetMoon(moonID));
+        }
+        return esi;
     }
 
-    GetPlanet(...args)
+    async GetPlanet(planetID, params)
     {
-        return this.RequestFrom("esi", "GetPlanet", ...args);
+        const esi = await this.RequestFrom("esi", "GetPlanet", planetID, params);
+        if (this.sde && this.sde.GetPlanet)
+        {
+            return Object.assign({}, esi, await this.sde.GetPlanet(planetID));
+        }
+        return esi;
     }
 
     GetSystem(...args)

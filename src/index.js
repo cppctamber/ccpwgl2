@@ -4,10 +4,10 @@ import "reflect-metadata";
 
 import { config } from "./config";
 import { tw2 } from "./global";
-import { api } from "api";
+import * as runtime from "./runtime";
 import { shaders as deprecatedShaders } from "./toDeprecate/shaders";
 
-tw2.util.api = api;
+tw2.runtime = runtime;
 tw2.Register(config);
 tw2.Register({ shaders: deprecatedShaders });
 

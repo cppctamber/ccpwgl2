@@ -8,7 +8,7 @@ const
     ESI_DATA_SOURCE = "tranquility",
     ESI_LANGUAGE = "en-us";
 
-const EsiRoute = {
+export const TnyESIRoute = {
     ALLIANCES: "alliances",
     CATEGORIES: "universe/categories",
     CHARACTERS: "characters",
@@ -142,51 +142,61 @@ export class TnyESIApiProvider
         return applyAliases(item, aliases);
     }
 
+    GetCollection(route, id, params, aliases = [])
+    {
+        if (id !== undefined && id !== null)
+        {
+            return this.GetRouteIDNormalized(route, id, params, aliases);
+        }
+
+        return this.GetRoute(route, params);
+    }
+
     GetCharacter(characterID, params)
     {
-        return this.GetRouteID(EsiRoute.CHARACTERS, characterID, params);
+        return this.GetRouteID(TnyESIRoute.CHARACTERS, characterID, params);
     }
 
     GetCharacterPortraits(characterID, params)
     {
-        return this.GetRouteID(EsiRoute.CHARACTERS, characterID, params, "portrait");
+        return this.GetRouteID(TnyESIRoute.CHARACTERS, characterID, params, "portrait");
     }
 
     GetCorporation(corporationID, params)
     {
-        return this.GetRouteID(EsiRoute.CORPORATIONS, corporationID, params);
+        return this.GetRouteID(TnyESIRoute.CORPORATIONS, corporationID, params);
     }
 
     GetCorporationLogos(corporationID, params)
     {
-        return this.GetRouteID(EsiRoute.CORPORATIONS, corporationID, params, "icons");
+        return this.GetRouteID(TnyESIRoute.CORPORATIONS, corporationID, params, "icons");
     }
 
     GetAlliance(allianceID, params)
     {
-        return this.GetRouteID(EsiRoute.ALLIANCES, allianceID, params);
+        return this.GetRouteID(TnyESIRoute.ALLIANCES, allianceID, params);
     }
 
     GetAllianceLogos(allianceID, params)
     {
-        return this.GetRouteID(EsiRoute.ALLIANCES, allianceID, params, "icons");
+        return this.GetRouteID(TnyESIRoute.ALLIANCES, allianceID, params, "icons");
     }
 
     GetType(typeID, params)
     {
-        return this.GetRouteID(EsiRoute.TYPES, typeID, params);
+        return this.GetRouteID(TnyESIRoute.TYPES, typeID, params);
     }
 
     GetCategory(categoryID, params)
     {
-        return this.GetRouteIDNormalized(EsiRoute.CATEGORIES, categoryID, params, [
+        return this.GetRouteIDNormalized(TnyESIRoute.CATEGORIES, categoryID, params, [
             [ "categoryId", "categoryID" ]
         ]);
     }
 
     GetGroup(groupID, params)
     {
-        return this.GetRouteIDNormalized(EsiRoute.GROUPS, groupID, params, [
+        return this.GetRouteIDNormalized(TnyESIRoute.GROUPS, groupID, params, [
             [ "categoryId", "categoryID" ],
             [ "groupId", "groupID" ]
         ]);
@@ -194,7 +204,7 @@ export class TnyESIApiProvider
 
     GetMarketGroup(marketGroupID, params)
     {
-        return this.GetRouteIDNormalized(EsiRoute.MARKET_GROUPS, marketGroupID, params, [
+        return this.GetRouteIDNormalized(TnyESIRoute.MARKET_GROUPS, marketGroupID, params, [
             [ "marketGroupId", "marketGroupID" ],
             [ "parentGroupId", "parentGroupID" ]
         ]);
@@ -202,7 +212,7 @@ export class TnyESIApiProvider
 
     GetGraphic(graphicID, params)
     {
-        return this.GetRouteID(EsiRoute.GRAPHICS, graphicID, params);
+        return this.GetRouteID(TnyESIRoute.GRAPHICS, graphicID, params);
     }
 
     async GetResPathFromGraphicID(graphicID, params)
@@ -222,17 +232,17 @@ export class TnyESIApiProvider
 
     GetMoon(moonID, params)
     {
-        return this.GetRouteID(EsiRoute.MOONS, moonID, params);
+        return this.GetRouteID(TnyESIRoute.MOONS, moonID, params);
     }
 
     GetPlanet(planetID, params)
     {
-        return this.GetRouteID(EsiRoute.PLANETS, planetID, params);
+        return this.GetRouteID(TnyESIRoute.PLANETS, planetID, params);
     }
 
     GetSystem(systemID, params)
     {
-        return this.GetRouteID(EsiRoute.SYSTEMS, systemID, params);
+        return this.GetRouteID(TnyESIRoute.SYSTEMS, systemID, params);
     }
 
 }

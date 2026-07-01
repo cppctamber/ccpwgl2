@@ -1,2 +1,2 @@
-export { TnyESIApiProvider } from "./TnyESIApiProvider";
+export { TnyESIApiProvider, TnyESIRoute } from "./TnyESIApiProvider";
 export { TnySDEApiProvider } from "./TnySDEApiProvider";
