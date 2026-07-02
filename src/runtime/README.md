@@ -29,6 +29,9 @@ They should wrap existing reader-resolved objects until a concrete translation n
 - `providers/TnyResService.js` is a placeholder provider boundary for future resource/path/fact services.
 - `objects/` contains provisional front-facing object wrappers over existing EVE objects.
 - `cameras/TnyCameraTest.js` wraps `WrappedTestCamera`; other wrapped camera experiments are not promoted here.
+- `debug/TnyRenderDebugOverlay.js` is an opt-in viewport helper for console debugging. It can install after a scene `Render` method and draw pass textures/reports in the bottom-left of the WebGL/canvas stack:
+  `window.__debugOverlay = tw2.runtime.TnyRenderDebugOverlay.Install({ scene: tiny.scene, mode: "all" })`.
+  Use `__debugOverlay.SetMode("depth" | "distortion" | "shadow" | "reports" | "all")` and `__debugOverlay.Uninstall()`.
 
 Not yet implemented:
 

@@ -40,6 +40,9 @@ export const config = {
     // Enables experimental EveSpaceScene shadow rendering path
     enableExperimentalShadows: false,
 
+    // Enables experimental Carbon-shaped render batch context
+    enableExperimentalBatchContext: false,
+
     // Sets the default render batch sorter
     renderBatchSorter: tw2BatchSorter,
 

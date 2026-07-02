@@ -372,6 +372,8 @@ export class EveTurretFiringFX extends meta.Model
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display || !this._isFiring) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
         let c = accumulator.length;
 

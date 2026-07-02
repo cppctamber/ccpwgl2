@@ -7,11 +7,13 @@ import {
     Tw2RawData,
     Tw2Frustum,
     Tw2BatchAccumulator2,
+    Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
     Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
+    RM_DECAL,
     RM_DEPTH,
     RM_DISTORTION,
     RM_OPAQUE
@@ -227,9 +229,14 @@ export class EveSpaceScene extends meta.Model
 
     _localTransform = mat4.create();
     _accumulator = new Tw2BatchAccumulator();
+    _batchContext = null;
+    _batchContextReport = null;
+    _depthContext = null;
     _emptyTexture = null;
     _frustum = new Tw2Frustum();
     _lodEnabled = false;
+    _perFrameSunDirection = vec3.create();
+    _hasPerFrameSunDirection = false;
 
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
@@ -242,8 +249,12 @@ export class EveSpaceScene extends meta.Model
     _internalEffect = null;
     _internalRenderTarget = null;
     _depthAccumulator = null;
+    _depthContext = null;
+    _depthContextReport = null;
     _depthTexture = null;
     _distortionAccumulator = null;
+    _distortionContext = null;
+    _distortionContextReport = null;
     _distortionPostProcess = null;
     _depthRendered = false;
     _customPasses = [];
@@ -624,9 +635,93 @@ export class EveSpaceScene extends meta.Model
         {
             if ("GetBatches" in objectArray[i])
             {
-                objectArray[i].GetBatches(mode, accumulator);
+                this.CollectObjectBatches(objectArray[i], mode, accumulator);
             }
         }
+    }
+
+    /**
+     * Gets or creates the experimental Carbon-shaped batch context
+     * @param {Boolean} [create=true]
+     * @returns {Tw2RenderBatchContext|null}
+     */
+    GetBatchContext(create = true)
+    {
+        if (!this._batchContext && create)
+        {
+            this._batchContext = new Tw2RenderBatchContext();
+            this._batchContext.AddWriter(this.GetBatchContextWriter());
+        }
+        return this._batchContext;
+    }
+
+    /**
+     * Gets the active batch context writer for resolve-per-object-data.
+     * This keeps the current legacy per-object buffer wiring while moving
+     * toward render-reason aware packet lookup.
+     * @returns {Object}
+     */
+    GetBatchContextWriter()
+    {
+        return {
+            name: "sourcePerObjectData",
+            CanWrite: (batch) =>
+            {
+                return !!(batch && !batch.perObjectData && batch.source && typeof batch.source.GetPerObjectData === "function");
+            },
+            ResolvePerObjectData: (batch, contextData) =>
+            {
+                const source = batch && batch.source;
+                if (!source || typeof source.GetPerObjectData !== "function")
+                {
+                    return null;
+                }
+
+                const context = contextData && typeof contextData === "object" ? contextData : {};
+                return source.GetPerObjectData(context.mode || batch.renderMode, context);
+            }
+        };
+    }
+
+    /**
+     * Collects an object's batches through either the legacy accumulator or the experimental context
+     * @param {*} object
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator|Tw2RenderBatchContext} [accumulator=this._accumulator]
+     * @returns {Boolean}
+     */
+    CollectObjectBatches(object, mode, accumulator = this._accumulator)
+    {
+        if (!object || typeof object.GetBatches !== "function") return false;
+
+        if (accumulator instanceof Tw2RenderBatchContext)
+        {
+            return accumulator.CollectObjectBatches(object, mode);
+        }
+
+        return object.GetBatches(mode, accumulator);
+    }
+
+    /**
+     * Renders collected batches
+     * @param {Tw2BatchAccumulator|Tw2RenderBatchContext} [accumulator=this._accumulator]
+     */
+    RenderCollectedBatches(accumulator = this._accumulator)
+    {
+        accumulator.Render();
+        if (accumulator instanceof Tw2RenderBatchContext)
+        {
+            this._batchContextReport = accumulator.GetReport();
+        }
+    }
+
+    /**
+     * Gets the last batch context report
+     * @returns {Object|Null}
+     */
+    GetBatchContextReport()
+    {
+        return this._batchContextReport;
     }
 
     /**
@@ -677,14 +772,18 @@ export class EveSpaceScene extends meta.Model
             if (this.planets[i].UpdateViewDependentData)
             {
                 this.planets[i].UpdateViewDependentData(this._localTransform, dt);
-                this.planets[i].GetBatches(device.RM_OPAQUE, accumulator);
-                this.planets[i].GetBatches(device.RM_DECAL, accumulator);
-                this.planets[i].GetBatches(device.RM_TRANSPARENT, accumulator);
-                this.planets[i].GetBatches(device.RM_ADDITIVE, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_OPAQUE, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_DECAL, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_TRANSPARENT, accumulator);
+                this.CollectObjectBatches(this.planets[i], device.RM_ADDITIVE, accumulator);
             }
         }
 
-        this._accumulator.Render();
+        accumulator.Render();
+        if (accumulator instanceof Tw2RenderBatchContext)
+        {
+            accumulator.Clear();
+        }
         device.SetProjection(tempProj, true);
         this.UpdateViewProjectionFrameData();
         device.gl.depthRange(0, 0.9);
@@ -730,6 +829,9 @@ export class EveSpaceScene extends meta.Model
         }
 
         this._accumulator.Clear();
+        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const mainAccumulator = useBatchContext ? this.GetBatchContext() : this._accumulator;
+        if (mainAccumulator !== this._accumulator) mainAccumulator.Clear();
 
         this.ApplyPerFrameData();
 
@@ -758,7 +860,7 @@ export class EveSpaceScene extends meta.Model
 
         if (show.planets)
         {
-            this.RenderPlanets(dt);
+            this.RenderPlanets(dt, mainAccumulator);
             this._accumulator.Clear();
         }
 
@@ -771,14 +873,14 @@ export class EveSpaceScene extends meta.Model
                     this.backgroundObjects[i].UpdateViewDependentData(this._localTransform, dt);
                 }
 
-                this.backgroundObjects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
-                this.backgroundObjects[i].GetBatches(d.RM_DECAL, this._accumulator);
-                this.backgroundObjects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
-                this.backgroundObjects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+                this.CollectObjectBatches(this.backgroundObjects[i], d.RM_OPAQUE, mainAccumulator);
+                this.CollectObjectBatches(this.backgroundObjects[i], d.RM_DECAL, mainAccumulator);
+                this.CollectObjectBatches(this.backgroundObjects[i], d.RM_TRANSPARENT, mainAccumulator);
+                this.CollectObjectBatches(this.backgroundObjects[i], d.RM_ADDITIVE, mainAccumulator);
 
                 if (show.distortionPreview)
                 {
-                    this.backgroundObjects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
+                    this.CollectObjectBatches(this.backgroundObjects[i], d.RM_DISTORTION, mainAccumulator);
                 }
             }
         }
@@ -805,14 +907,14 @@ export class EveSpaceScene extends meta.Model
                     }
                 }
 
-                objects[i].GetBatches(d.RM_OPAQUE, this._accumulator);
-                objects[i].GetBatches(d.RM_DECAL, this._accumulator);
-                objects[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
-                objects[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+                this.CollectObjectBatches(objects[i], d.RM_OPAQUE, mainAccumulator);
+                this.CollectObjectBatches(objects[i], d.RM_DECAL, mainAccumulator);
+                this.CollectObjectBatches(objects[i], d.RM_TRANSPARENT, mainAccumulator);
+                this.CollectObjectBatches(objects[i], d.RM_ADDITIVE, mainAccumulator);
 
                 if (show.distortionPreview)
                 {
-                    objects[i].GetBatches(d.RM_DISTORTION, this._accumulator);
+                    this.CollectObjectBatches(objects[i], d.RM_DISTORTION, mainAccumulator);
                 }
             }
         }
@@ -822,8 +924,8 @@ export class EveSpaceScene extends meta.Model
             for (let i = 0; i < this.lineSets.length; i++)
             {
                 this.lineSets[i].UpdateViewDependentData(this._localTransform, dt);
-                this.lineSets[i].GetBatches(d.RM_TRANSPARENT, this._accumulator);
-                this.lineSets[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+                this.CollectObjectBatches(this.lineSets[i], d.RM_TRANSPARENT, mainAccumulator);
+                this.CollectObjectBatches(this.lineSets[i], d.RM_ADDITIVE, mainAccumulator);
             }
         }
 
@@ -831,7 +933,7 @@ export class EveSpaceScene extends meta.Model
         {
             for (let i = 0; i < this.planets.length; ++i)
             {
-                this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, this._accumulator);
+                this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, mainAccumulator);
             }
         }
 
@@ -840,7 +942,7 @@ export class EveSpaceScene extends meta.Model
             for (let i = 0; i < this.lensflares.length; ++i)
             {
                 this.lensflares[i].PrepareRender(this.sunDirection);
-                this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._accumulator);
+                this.CollectObjectBatches(this.lensflares[i], d.RM_ADDITIVE, mainAccumulator);
             }
         }
 
@@ -850,7 +952,7 @@ export class EveSpaceScene extends meta.Model
             shadowHandler.RenderShadowPass(dt, this);
         }
 
-        this._accumulator.Render();
+        this.RenderCollectedBatches(mainAccumulator);
 
         if (this.starfield)
         {
@@ -918,6 +1020,26 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Gets or creates the shared internal depth/distortion render target
+     * @returns {Tw2DepthRenderTarget}
+     */
+    EnsureInternalRenderTarget()
+    {
+        if (!this._internalRenderTarget)
+        {
+            if (!tw2.HasVariable("EveSpaceSceneDepthMap")) tw2.SetVariable("EveSpaceSceneDepthMap", "");
+            const DepthTexture = tw2.GetVariable("EveSpaceSceneDepthMap");
+            this._internalRenderTarget = new Tw2DepthRenderTarget("InternalPasses", tw2.width, tw2.height, this.depthPrecision, DepthTexture);
+        }
+        else
+        {
+            this._internalRenderTarget.Create(tw2.width, tw2.height, this.depthPrecision);
+        }
+
+        return this._internalRenderTarget;
+    }
+
+    /**
      * Renders depth
      * @param {Number} dt
      * @param {Boolean} [force]
@@ -925,19 +1047,35 @@ export class EveSpaceScene extends meta.Model
      */
     RenderDepth(dt, force)
     {
+        if (tw2.enableExperimentalBatchContext)
+        {
+            return this.RenderDepthWithBatchContext(dt, force);
+        }
 
         if (!force && !this.depthCalculation || this._depthRendered)
         {
             return false;
         }
 
-        if (!this._depthAccumulator)
+        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+
+        const depthContext = useBatchContext ? this.GetDepthContext() : null;
+
+        if (!useBatchContext)
         {
-            this._depthAccumulator = new Tw2BatchAccumulator2();
+            if (!this._depthAccumulator)
+            {
+                this._depthAccumulator = new Tw2BatchAccumulator2();
+            }
+            else
+            {
+                this._depthAccumulator.Clear();
+            }
         }
-        else
+
+        if (depthContext)
         {
-            this._depthAccumulator.Clear();
+            depthContext.Clear();
         }
 
         if (!this._internalRenderTarget)
@@ -963,10 +1101,34 @@ export class EveSpaceScene extends meta.Model
             if (this.visible.objects)
             {
                 if (!objectsOrderedByDistance) objectsOrderedByDistance = this.objectsByDistance;
-                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Normal");
+
+                if (useBatchContext)
+                {
+                    depthContext.CollectObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, {
+                        techniqueFilter: "Normal",
+                        techniqueOverride: "Normal"
+                    });
+                }
+                else
+                {
+                    this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Normal");
+                }
             }
 
-            if (this.visible.backgroundObjects) this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Normal");
+            if (this.visible.backgroundObjects)
+            {
+                if (useBatchContext)
+                {
+                    depthContext.CollectObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, {
+                        techniqueFilter: "Normal",
+                        techniqueOverride: "Normal"
+                    });
+                }
+                else
+                {
+                    this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Normal");
+                }
+            }
 
             depthTexture = tw2.GetVariable("EveSpaceSceneNormalMap");
             if (!depthTexture.textureRes)
@@ -982,22 +1144,59 @@ export class EveSpaceScene extends meta.Model
             if (this.visible.objects)
             {
                 if (!objectsOrderedByDistance) objectsOrderedByDistance = this.objectsByDistance;
-                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_DEPTH, "Main");
-                this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Depth");
+
+                if (useBatchContext)
+                {
+                    depthContext.CollectObjectArrayBatches(objectsOrderedByDistance, RM_DEPTH, {
+                        techniqueFilter: "Main",
+                        techniqueOverride: "Main"
+                    });
+                    depthContext.CollectObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, {
+                        techniqueFilter: "Depth",
+                        techniqueOverride: "Depth"
+                    });
+                }
+                else
+                {
+                    this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_DEPTH, "Main");
+                    this._depthAccumulator.GetObjectArrayBatches(objectsOrderedByDistance, RM_OPAQUE, "Depth");
+                }
             }
 
             if (this.visible.backgroundObjects)
             {
-                // That will teach you! Get ordered by distance...
-                this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
-                this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Depth");
+                if (useBatchContext)
+                {
+                    // That will teach you! Get ordered by distance...
+                    depthContext.CollectObjectArrayBatches(this.backgroundObjects, RM_DEPTH, {
+                        techniqueFilter: "Main",
+                        techniqueOverride: "Main"
+                    });
+                    depthContext.CollectObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, {
+                        techniqueFilter: "Depth",
+                        techniqueOverride: "Depth"
+                    });
+                }
+                else
+                {
+                    // That will teach you! Get ordered by distance...
+                    this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DEPTH, "Main");
+                    this._depthAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_OPAQUE, "Depth");
+                }
             }
         }
 
         this._internalRenderTarget.SetCallUnset(() =>
         {
             tw2.ClearBufferBits(true, true, true);
-            this._depthAccumulator.Render();
+            if (useBatchContext && depthContext)
+            {
+                depthContext.Render();
+            }
+            else
+            {
+                this._depthAccumulator.Render();
+            }
             this._depthRendered = true;
 
             if (depthTexture)
@@ -1022,12 +1221,135 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Renders depth through the experimental Carbon-shaped batch context
+     * @param {Number} dt
+     * @param {Boolean} [force]
+     * @returns {boolean} true if completed
+     */
+    RenderDepthWithBatchContext(dt, force)
+    {
+        if (!force && !this.depthCalculation || this._depthRendered)
+        {
+            return false;
+        }
+
+        const depthContext = this.GetDepthContext();
+        depthContext.Clear();
+        this.EnsureInternalRenderTarget();
+
+        const { gl } = device;
+        let depthTexture = null;
+        let objectsOrderedByDistance = null;
+
+        const collect = (objects, mode, technique) =>
+        {
+            if (!objects || !objects.length) return;
+            depthContext.CollectObjectArrayBatches(objects, mode, {
+                techniqueFilter: technique,
+                techniqueOverride: technique,
+                renderReason: this.normalCalculation ? "NormalPass" : "DepthPass"
+            });
+        };
+
+        if (this.visible.objects)
+        {
+            objectsOrderedByDistance = this.objectsByDistance;
+        }
+
+        if (this.visible.objects)
+        {
+            collect(objectsOrderedByDistance, RM_OPAQUE, "Depth");
+            collect(objectsOrderedByDistance, RM_DECAL, "Depth");
+            collect(objectsOrderedByDistance, RM_DEPTH, "Main");
+        }
+
+        if (this.visible.backgroundObjects)
+        {
+            collect(this.backgroundObjects, RM_OPAQUE, "Depth");
+            collect(this.backgroundObjects, RM_DECAL, "Depth");
+            collect(this.backgroundObjects, RM_DEPTH, "Main");
+        }
+
+        if (this.normalCalculation)
+        {
+            depthTexture = tw2.GetVariable("EveSpaceSceneNormalMap");
+            if (!depthTexture.textureRes)
+            {
+                const res = new Tw2TextureRes();
+                res.suppressLogging = true;
+                res.Attach(gl.createTexture());
+                depthTexture.AttachTextureRes(res);
+            }
+        }
+
+        const rendered = this._internalRenderTarget.SetCallUnset(() =>
+        {
+            tw2.ClearBufferBits(true, true, true);
+            depthContext.Render();
+            this._depthRendered = true;
+
+            if (depthTexture)
+            {
+                gl.bindTexture(gl.TEXTURE_2D, depthTexture.textureRes.texture);
+                gl.copyTexImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    device.alphaBlendBackBuffer ? gl.RGBA : gl.RGB,
+                    0,
+                    0,
+                    device.viewportWidth,
+                    device.viewportHeight,
+                    0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+        });
+
+        this._depthContextReport = {
+            path: "experimental",
+            ok: rendered,
+            normalCalculation: !!this.normalCalculation,
+            ...depthContext.GetReport()
+        };
+
+        return this._depthRendered;
+    }
+
+    /**
+     * Gets or creates the experimental depth batch context
+     * @param {Boolean} [create=true]
+     * @returns {Tw2RenderBatchContext|null}
+     */
+    GetDepthContext(create = true)
+    {
+        if (create && !this._depthContext)
+        {
+            this._depthContext = new Tw2RenderBatchContext();
+            this._depthContext.AddWriter(this.GetBatchContextWriter());
+        }
+        return this._depthContext;
+    }
+
+    /**
+     * Gets the last experimental depth batch context report
+     * @returns {?Object}
+     */
+    GetDepthContextReport()
+    {
+        return this._depthContextReport;
+    }
+
+    /**
      * Renders distortion
      * @param {Number} dt
      * @returns {boolean} true if completed
      */
     RenderDistortion(dt)
     {
+        if (tw2.enableExperimentalBatchContext)
+        {
+            return this.RenderDistortionWithBatchContext(dt);
+        }
+
         if (!this.visible.distortion) return false;
 
         if (!this._distortionEffect || !this._distortionPostProcess || !this._internalRenderTarget)
@@ -1062,26 +1384,60 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
 
-        if (!this._distortionAccumulator)
+        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const distortionContext = useBatchContext ? this.GetDistortionContext() : null;
+
+        if (distortionContext)
         {
-            this._distortionAccumulator = new Tw2BatchAccumulator2();
+            distortionContext.Clear();
         }
         else
         {
-            this._distortionAccumulator.Clear();
+            if (!this._distortionAccumulator)
+            {
+                this._distortionAccumulator = new Tw2BatchAccumulator2();
+            }
+            else
+            {
+                this._distortionAccumulator.Clear();
+            }
         }
 
         if (this.visible.objects)
         {
-            this._distortionAccumulator.GetObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, "Main");
+            if (useBatchContext)
+            {
+                distortionContext.CollectObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, {
+                    techniqueFilter: "Main",
+                    techniqueOverride: "Main"
+                });
+            }
+            else
+            {
+                this._distortionAccumulator.GetObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, "Main");
+            }
         }
 
         if (this.visible.backgroundObjects)
         {
-            this._distortionAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DISTORTION, "Main");
+            if (useBatchContext)
+            {
+                distortionContext.CollectObjectArrayBatches(this.backgroundObjects, RM_DISTORTION, {
+                    techniqueFilter: "Main",
+                    techniqueOverride: "Main"
+                });
+            }
+            else
+            {
+                this._distortionAccumulator.GetObjectArrayBatches(this.backgroundObjects, RM_DISTORTION, "Main");
+            }
         }
 
-        if (!this._distortionAccumulator.length)
+        const hasDistortionBatches = useBatchContext
+            ? distortionContext.length > 0
+            : this._distortionAccumulator.length > 0;
+
+        if (!hasDistortionBatches)
         {
             return true;
         }
@@ -1094,10 +1450,149 @@ export class EveSpaceScene extends meta.Model
         this._internalRenderTarget.SetCallUnset(() =>
         {
             tw2.ClearBufferBits(true, false, true);
-            this._distortionAccumulator.Render();
+            if (useBatchContext)
+            {
+                distortionContext.Render();
+            }
+            else
+            {
+                this._distortionAccumulator.Render();
+            }
         });
 
         this._distortionPostProcess.Render(dt);
+    }
+
+    /**
+     * Prepares the distortion post process resources
+     * @returns {Boolean}
+     */
+    PrepareDistortionPass()
+    {
+        if (!this._internalRenderTarget)
+        {
+            this.EnsureInternalRenderTarget();
+        }
+
+        this._distortionEffect = this._distortionEffect || Tw2Effect.from({
+            name: "Distortion",
+            effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+            parameters: {
+                MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
+            },
+            textures: {
+                TexDistortion: ""
+            }
+        });
+
+        this._distortionEffect.parameters.TexDistortion.AttachTextureRes(this._internalRenderTarget.texture);
+        this._distortionPostProcess = this._distortionPostProcess || new Tw2PostProcess("Distortion");
+        this._distortionPostProcess.stages[0] = this._distortionEffect;
+
+        if (!this._distortionEffect.IsGood())
+        {
+            return false;
+        }
+
+        this._distortionEffect.parameters.MAX_DISTORTION_OFFSET.x = this.distortionOffset;
+        return true;
+    }
+
+    /**
+     * Renders distortion through the experimental Carbon-shaped batch context
+     * @param {Number} dt
+     * @returns {boolean} true if completed
+     */
+    RenderDistortionWithBatchContext(dt)
+    {
+        if (!this.visible.distortion) return false;
+
+        const distortionContext = this.GetDistortionContext();
+        distortionContext.Clear();
+
+        const options = {
+            techniqueFilter: "Main",
+            techniqueOverride: "Main",
+            renderReason: "DistortionPass"
+        };
+
+        if (this.visible.objects)
+        {
+            distortionContext.CollectObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, options);
+        }
+
+        if (this.visible.backgroundObjects)
+        {
+            distortionContext.CollectObjectArrayBatches(this.backgroundObjects, RM_DISTORTION, options);
+        }
+
+        const hasDistortionBatches = distortionContext.length > 0;
+        if (!hasDistortionBatches)
+        {
+            this._distortionContextReport = {
+                path: "experimental",
+                ok: true,
+                empty: true,
+                ...distortionContext.GetReport()
+            };
+            return true;
+        }
+
+        if (!this._depthRendered)
+        {
+            this.RenderDepth(dt, true);
+        }
+
+        if (!this.PrepareDistortionPass())
+        {
+            this._distortionContextReport = {
+                path: "experimental",
+                ok: false,
+                empty: false,
+                ...distortionContext.GetReport()
+            };
+            return false;
+        }
+
+        const rendered = this._internalRenderTarget.SetCallUnset(() =>
+        {
+            tw2.ClearBufferBits(true, false, true);
+            distortionContext.Render();
+        });
+
+        this._distortionContextReport = {
+            path: "experimental",
+            ok: rendered,
+            empty: false,
+            ...distortionContext.GetReport()
+        };
+
+        this._distortionPostProcess.Render(dt);
+        return true;
+    }
+
+    /**
+     * Gets or creates the experimental distortion batch context
+     * @param {Boolean} [create=true]
+     * @returns {Tw2RenderBatchContext|null}
+     */
+    GetDistortionContext(create = true)
+    {
+        if (create && !this._distortionContext)
+        {
+            this._distortionContext = new Tw2RenderBatchContext();
+            this._distortionContext.AddWriter(this.GetBatchContextWriter());
+        }
+        return this._distortionContext;
+    }
+
+    /**
+     * Gets the last experimental distortion batch context report
+     * @returns {?Object}
+     */
+    GetDistortionContextReport()
+    {
+        return this._distortionContextReport;
     }
 
     /**
@@ -1106,9 +1601,28 @@ export class EveSpaceScene extends meta.Model
      */
     GetPerFrameSunDirection(out)
     {
-        vec3.copy(out, this.sunDirection);
-        vec3.negate(out, out);
-        return vec3.normalize(out, out);
+        const lenSq = vec3.squaredLength(this.sunDirection);
+
+        if (Number.isFinite(lenSq) && lenSq > 1e-8)
+        {
+            vec3.copy(out, this.sunDirection);
+            vec3.negate(out, out);
+            vec3.normalize(out, out);
+            vec3.copy(this._perFrameSunDirection, out);
+            this._hasPerFrameSunDirection = true;
+            return out;
+        }
+
+        if (this._hasPerFrameSunDirection)
+        {
+            return vec3.copy(out, this._perFrameSunDirection);
+        }
+
+        vec3.set(out, -1, 1, -1);
+        vec3.normalize(out, out);
+        vec3.copy(this._perFrameSunDirection, out);
+        this._hasPerFrameSunDirection = true;
+        return out;
     }
 
     /**

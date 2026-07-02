@@ -65,15 +65,19 @@ export class EveCustomMask extends WglTransform
     }
 
     _worldInverseTranspose = mat4.create();
+    _customMaskData = vec4.create();
+    _customMaskMaterialID = vec4.create();
+    _perObjectDataBagOfStuff = {};
 
     /**
-     * Updates the parent's per object data
+     * Gets per object data source values as a bag of stuff
      * @param {mat4} parentTransform
-     * @param {Tw2PerObjectData} perObjectData
+     * @param {Object} [out={}]
      * @param {Number} index
      * @param {Boolean} visible
+     * @returns {Object}
      */
-    UpdatePerObjectData(parentTransform, perObjectData, index, visible)
+    GetPerObjectDataBagOfStuff(parentTransform, out = {}, index, visible)
     {
         this.SetParentTransform(parentTransform).RebuildTransforms();
         const targets = this.display && visible ? this.targetMaterials : vec4.ZERO;
@@ -90,10 +94,39 @@ export class EveCustomMask extends WglTransform
             if (addressWMode === 4) clampToBorderW = 1;
         }
 
-        perObjectData.ps.Set("CustomMaskTarget" + index, targets);
-        perObjectData.ps.Set("CustomMaskMaterialID" + index, [ this.materialIndex, clampToBorderU, clampToBorderV, clampToBorderW ]);
-        perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
-        perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
+        const materialID = this._customMaskMaterialID;
+        materialID[0] = this.materialIndex;
+        materialID[1] = clampToBorderU;
+        materialID[2] = clampToBorderV;
+        materialID[3] = clampToBorderW;
+
+        const customMaskData = this._customMaskData;
+        customMaskData[0] = 0;
+        customMaskData[1] = this.isMirrored ? 1 : 0;
+        customMaskData[2] = 0;
+        customMaskData[3] = 0;
+
+        out["customMaskTarget" + index] = targets;
+        out["customMaskMaterialID" + index] = materialID;
+        out["customMaskData" + index] = customMaskData;
+        out["customMaskMatrix" + index] = this._worldInverseTranspose;
+        return out;
+    }
+
+    /**
+     * Updates the parent's per object data
+     * @param {mat4} parentTransform
+     * @param {Tw2PerObjectData} perObjectData
+     * @param {Number} index
+     * @param {Boolean} visible
+     */
+    UpdatePerObjectData(parentTransform, perObjectData, index, visible)
+    {
+        const bag = this.GetPerObjectDataBagOfStuff(parentTransform, this._perObjectDataBagOfStuff, index, visible);
+        perObjectData.ps.Set("CustomMaskTarget" + index, bag["customMaskTarget" + index]);
+        perObjectData.ps.Set("CustomMaskMaterialID" + index, bag["customMaskMaterialID" + index]);
+        perObjectData.vs.Set("CustomMaskData" + index, bag["customMaskData" + index]);
+        perObjectData.vs.Set("CustomMaskMatrix" + index, bag["customMaskMatrix" + index]);
     }
 
     /**

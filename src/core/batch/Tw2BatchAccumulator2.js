@@ -90,7 +90,7 @@ export class Tw2BatchAccumulator2
                 {
                     if (!batch.HasTechnique(techniqueOverride))
                     {
-                        this._reroutedBatches.splice(i, 0);
+                        this._reroutedBatches.splice(i, 1);
                         i--;
                         continue;
                     }

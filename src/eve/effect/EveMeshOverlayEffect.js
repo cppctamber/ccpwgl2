@@ -78,6 +78,8 @@ export class EveMeshOverlayEffect extends meta.Model
     GetBatches(mode, accumulator, perObjectData, mesh)
     {
         if (!this.display || !mesh || !mesh.IsGood()) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
         const effects = this.GetEffects(mode);
         for (let i = 0; i < effects.length; i++)

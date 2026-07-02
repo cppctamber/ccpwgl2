@@ -407,6 +407,7 @@ export class EvePlaneSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this.effect && this.effect.IsGood() && this._indexBuffer && this._vertexBuffer && this._visibleItems.length)
         {
             const batch = new EvePlaneSetBatch();

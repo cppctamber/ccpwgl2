@@ -304,6 +304,7 @@ export class EveHazeSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._indexBuffer)
         {
             const batch = new EveHazeSetBatch();

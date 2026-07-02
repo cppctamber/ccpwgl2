@@ -498,6 +498,7 @@ export class EveSpotlightSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData, world)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count && this._visibleItems.length)
         {
             const batch = new EveSpotlightSetBatch();

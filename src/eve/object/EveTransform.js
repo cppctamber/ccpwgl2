@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { vec3, mat4, quat, box3, sph3 } from "math";
-import { Tw2PerObjectData } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { LodLevelPixels } from "constant/ccpwgl";
 import { device } from "global/tw2";
@@ -101,6 +101,7 @@ export class EveTransform extends EveObject
 
     _parentTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveTransform.perObjectData);
+    _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
 
     /**
      * Updates lod
@@ -266,6 +267,20 @@ export class EveTransform extends EveObject
     }
 
     /**
+     * Gets parent per object data
+     * @param {*} parentData
+     * @returns {Tw2PerObjectData|null}
+     */
+    GetParentPerObjectData(parentData)
+    {
+        if (!parentData) return null;
+        if (parentData.vs && parentData.ps) return parentData;
+        if (parentData.perObjectData) return parentData.perObjectData;
+        if (parentData.legacyPerObjectData) return parentData.legacyPerObjectData;
+        return GLESPerObjectDataEveSpaceObject.Pack(parentData, this._parentPerObjectData);
+    }
+
+    /**
      * Gets render batches for accumulation
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -275,6 +290,7 @@ export class EveTransform extends EveObject
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;
 
@@ -287,8 +303,9 @@ export class EveTransform extends EveObject
 
             if (perObjectData)
             {
-                this._perObjectData.vs = perObjectData.vs;
-                this._perObjectData.ps = perObjectData.ps;
+                const parentPerObjectData = this.GetParentPerObjectData(perObjectData);
+                this._perObjectData.vs = parentPerObjectData.vs;
+                this._perObjectData.ps = parentPerObjectData.ps;
             }
 
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);

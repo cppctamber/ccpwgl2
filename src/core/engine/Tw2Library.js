@@ -122,6 +122,12 @@ export class Tw2Library extends Tw2EventEmitter
     enableExperimentalShadows = false;
 
     /**
+     * Enables experimental Carbon-shaped render batch context
+     * @type {boolean}
+     */
+    enableExperimentalBatchContext = false;
+
+    /**
      * Custom resource handler
      * @type {Function}
      * @private
@@ -450,6 +456,7 @@ export class Tw2Library extends Tw2EventEmitter
      * @param {*} opt
      * @param {Boolean} opt.debug
      * @param {Boolean} opt.enableExperimentalShadows
+     * @param {Boolean} opt.enableExperimentalBatchContext
      * @param {Function} opt.resourceHandler
      * @param {Object} opt.black
      * @param {Boolean|Object} opt.capabilities
@@ -470,6 +477,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.events) this.AddEvents(opt.events);
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
         if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
+        if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
         if (opt.black) this.RegisterBlackPathHandlers(opt.black);

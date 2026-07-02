@@ -1,4 +1,5 @@
 export * from "./Tw2PerObjectData";
+export * from "./Tr2PerObjectData";
 export * from "./Tw2RawData";
 
 /**

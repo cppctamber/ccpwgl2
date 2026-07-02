@@ -156,10 +156,10 @@ export class EveChildContainer extends EveChild
         if (this.boneIndex > -1)
         {
             const
-                bones = perObjectData.Get("JointMat"),
+                bones = EveChild.GetJointMatrices(perObjectData),
                 offset = this.boneIndex;
 
-            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
+            if (bones && (bones[offset] || bones[offset + 4] || bones[offset + 8]))
             {
                 if (!this._boneTransform) this._boneTransform = mat4.create();
                 mat4.fromJointMatIndex(this._boneTransform, bones, offset);
@@ -235,6 +235,7 @@ export class EveChildContainer extends EveChild
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;
 

@@ -331,6 +331,7 @@ export class EveStretch extends meta.Model
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
 
         const c = accumulator.length;
 

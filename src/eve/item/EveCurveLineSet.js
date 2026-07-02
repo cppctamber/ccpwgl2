@@ -1557,6 +1557,7 @@ export class EveLinesContainer
      */
     GetBatches(mode, accumulator, perObjectData)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         for (let i = 0; i < this.lines.length; i++)
         {
             this.lines[i].GetBatches(mode, accumulator, perObjectData);

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { vec3, quat, mat4 } from "math";
-import { Tw2PerObjectData, Tw2RawData } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
@@ -82,6 +82,7 @@ export class EveChildMesh extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
+    _perObjectDataBagOfStuff = {};
 
 
     /**
@@ -119,10 +120,10 @@ export class EveChildMesh extends EveChild
         if (this.boneIndex > -1)
         {
             const
-                bones = perObjectData.Get("JointMat"),
+                bones = EveChild.GetJointMatrices(perObjectData),
                 offset = this.boneIndex;
 
-            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
+            if (bones && (bones[offset] || bones[offset + 4] || bones[offset + 8]))
             {
                 if (!this._boneTransform) this._boneTransform = mat4.create();
                 mat4.fromJointMatIndex(this._boneTransform, bones, offset);
@@ -176,29 +177,20 @@ export class EveChildMesh extends EveChild
     GetBatches(mode, accumulator, perObjectData)
     {
         if (!this.display || !this.mesh || this._lod < this.lowestLodVisible) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
         if (this.useSpaceObjectData)
         {
             if (!this._perObjectData)
             {
-                this._perObjectData = new Tw2PerObjectData();
-                this._perObjectData.vs = new Tw2RawData();
-                this._perObjectData.vs.data = new Float32Array(perObjectData.vs.data.length);
-
-                this._perObjectData.vs.data[33] = 1;
-                this._perObjectData.vs.data[35] = 1;
-
-                this._perObjectData.ps = new Tw2RawData();
-                this._perObjectData.ps.data = new Float32Array(perObjectData.ps.data.length);
-
-                this._perObjectData.ps.data[1] = 1;
-                this._perObjectData.ps.data[3] = 1;
+                this._perObjectData = new GLESPerObjectDataEveSpaceObject();
             }
 
-            this._perObjectData.vs.data.set(perObjectData.vs.data);
-            this._perObjectData.ps.data.set(perObjectData.ps.data);
-            mat4.transpose(this._perObjectData.vs.data, this._worldTransform);
-            mat4.transpose(this._perObjectData.vs.data.subarray(16), this._worldTransformLast);
+            GLESPerObjectDataEveSpaceObject.Pack(
+                this.GetPerObjectDataBagOfStuff(perObjectData, this._perObjectDataBagOfStuff),
+                this._perObjectData
+            );
         }
         else
         {
@@ -212,6 +204,46 @@ export class EveChildMesh extends EveChild
         }
 
         return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+    }
+
+    /**
+     * Gets the child mesh's temporary semantic-ish per-object values.
+     * Parent values are read as references and then this child overrides its own transforms.
+     * @param {Tw2PerObjectData} perObjectData
+     * @param {Object} [out]
+     * @returns {Object}
+     */
+    GetPerObjectDataBagOfStuff(perObjectData, out = {})
+    {
+        GLESPerObjectDataEveSpaceObject.Unpack(perObjectData, out);
+
+        if (out.boundingSphereRadius === undefined && out.boundingSphereRadiusSq !== undefined)
+        {
+            out.boundingSphereRadius = Math.sqrt(Math.abs(out.boundingSphereRadiusSq));
+        }
+
+        if (!out.boundingSphereCenter && out.clipSphereCenter)
+        {
+            out.boundingSphereCenter = out.clipSphereCenter;
+        }
+
+        delete out.shipData;
+        delete out.clipData;
+        delete out.clipData1;
+        delete out.boundingSphereRadiusSq;
+        delete out.clipSphereCenter;
+        delete out.clipSphereSignedRadiusSq;
+
+        out.source = this;
+        out.parentPerObjectData = perObjectData;
+        out.perObjectData = this._perObjectData;
+        out.legacyPerObjectData = this._perObjectData;
+        out.worldTransform = this._worldTransform;
+        out.worldTransformLast = this._worldTransformLast;
+        out.inverseWorldTransform = null;
+        out.inverseWorldTransformTranspose = null;
+
+        return out;
     }
 
 }

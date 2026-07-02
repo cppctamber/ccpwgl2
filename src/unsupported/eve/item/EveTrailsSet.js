@@ -95,6 +95,8 @@ export class EveTrailsSet extends meta.Model
     GetBatches(mode, accumulator, perObjectData)
     {
         if (mode !== RM_ADDITIVE || !this.display || !this.IsGood()) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
         this._perObjectData.ps = perObjectData.ps;

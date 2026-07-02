@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
-import { Tw2PerObjectData } from "core";
+import { GLESPerObjectDataEveMissileWarhead } from "core";
 import { EveObject } from "./object/EveObject";
 
 
@@ -65,7 +65,7 @@ export class EveMissileWarhead extends meta.Model
     warheadRadius = 0;
 
 
-    _perObjectData = Tw2PerObjectData.from(EveMissileWarhead.perObjectData);
+    _perObjectData = new GLESPerObjectDataEveMissileWarhead();
     _state = EveMissileWarhead.State.READY;
     _time = 0;
     _transform = mat4.create();
@@ -212,20 +212,7 @@ export class EveMissileWarhead extends meta.Model
      * Per object data
      * @type {*}
      */
-    static perObjectData = {
-        vs: [
-            [ "WorldMat", 16 ],
-            [ "WorldMatLast", 16 ],
-            [ "Shipdata", [ 0, 1, 0, -10 ] ],
-            [ "Clipdata1", 4 ],
-            [ "JointMat", 696 ]
-        ],
-        ps: [
-            [ "Shipdata", [ 0, 1, 0, 1 ] ],
-            [ "Clipdata1", 4 ],
-            [ "Clipdata2", 4 ],
-        ]
-    };
+    static perObjectData = GLESPerObjectDataEveMissileWarhead.layout;
 
     /**
      * Missile warhead states

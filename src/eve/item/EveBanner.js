@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { quat, vec3, mat4, box3, sph3 } from "math";
-import { Tw2PerObjectData, Tw2GeometryBatch, Tw2Effect } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2GeometryBatch, Tw2Effect } from "core";
 import { resMan } from "global";
 import { RM_ADDITIVE } from "constant";
 
@@ -69,6 +69,7 @@ export class EveBanner extends meta.Model
     _bone = null;
     _boundsDirty = true;
     _perObjectData = Tw2PerObjectData.from(EveBanner.perObjectData);
+    _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
     _geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
     _worldTransform = mat4.create();
 
@@ -373,6 +374,20 @@ export class EveBanner extends meta.Model
     }
 
     /**
+     * Gets parent per object data
+     * @param {*} parentData
+     * @returns {Tw2PerObjectData|null}
+     */
+    GetParentPerObjectData(parentData)
+    {
+        if (!parentData) return null;
+        if (parentData.vs && parentData.ps) return parentData;
+        if (parentData.perObjectData) return parentData.perObjectData;
+        if (parentData.legacyPerObjectData) return parentData.legacyPerObjectData;
+        return GLESPerObjectDataEveSpaceObject.Pack(parentData, this._parentPerObjectData);
+    }
+
+    /**
      * Gets render batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator|Tw2BatchAccumulator2} accumulator
@@ -387,9 +402,14 @@ export class EveBanner extends meta.Model
         }
 
         if (!this.display || !this.IsGood()) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
+
+        const parentPerObjectData = this.GetParentPerObjectData(perObjectData);
+        if (!parentPerObjectData || !parentPerObjectData.ps) return false;
 
         mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-        this._perObjectData.ps = perObjectData.ps;
+        this._perObjectData.ps = parentPerObjectData.ps;
 
         const batch = new Tw2GeometryBatch();
         batch.renderMode = mode;

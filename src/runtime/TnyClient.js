@@ -18,7 +18,6 @@ export class TnyClient extends meta.Model
     post = null;
     renderer = null;
     accumulator = new Tw2BatchAccumulator();
-
     constructor(options = {})
     {
         super();
@@ -401,6 +400,7 @@ export class TnyClient extends meta.Model
             return false;
         }
 
+        accumulator = this.accumulator;
         accumulator.Clear();
 
         for (let i = 0; i < this.objects.length; i++)

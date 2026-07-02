@@ -77,6 +77,27 @@ export class EveChild extends meta.Model
     };
 
     /**
+     * Gets joint matrices from temporary child update data or legacy packed per-object data.
+     * Prefer root bag/update params (`jointMatrices`) over packed GLES data (`vs.JointMat`).
+     * @param {Object|Tw2PerObjectData} parentData
+     * @returns {Float32Array|Array|null}
+     */
+    static GetJointMatrices(parentData)
+    {
+        if (!parentData) return null;
+        if (parentData.jointMatrices) return parentData.jointMatrices;
+        if (parentData.perObjectData) return this.GetJointMatrices(parentData.perObjectData);
+
+        const vs = parentData.vs;
+        if (vs && typeof vs.Has === "function" && vs.Has("JointMat"))
+        {
+            return vs.Get("JointMat");
+        }
+
+        return null;
+    }
+
+    /**
      * Per object data
      * @type {{ffe: *[]}}
      */

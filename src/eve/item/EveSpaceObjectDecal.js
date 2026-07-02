@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, quat, mat4 } from "math";
-import { Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
 @meta.type("EveSpaceObjectDecal", true)
@@ -60,6 +60,7 @@ export class EveSpaceObjectDecal extends meta.Model
     _localTransformInverse = mat4.create();
     _offsetTransform = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
+    _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
     _parentMeshIndex = 0;
     _parentGeometryRes = null;
     _parentTransform = null;
@@ -109,6 +110,60 @@ export class EveSpaceObjectDecal extends meta.Model
     UpdateViewDependentData(parentTransform)
     {
         this._parentTransform = parentTransform;
+    }
+
+    /**
+     * Updates the parent mesh index
+     * @param {Tw2GeometryRes} geometryRes
+     * @param {Number} [meshIndex=0]
+     * @returns {Number}
+     */
+    ResolveParentMeshIndex(geometryRes, meshIndex = 0)
+    {
+        const meshes = geometryRes && geometryRes.meshes;
+        if (!meshes || !meshes.length)
+        {
+            this._parentMeshIndex = 0;
+            return 0;
+        }
+
+        let index = this._parentMeshIndex;
+        if (EveSpaceObjectDecal.enableParentMeshIndex || index < 0 || index >= meshes.length)
+        {
+            index = meshIndex;
+        }
+
+        if (index < 0 || index >= meshes.length)
+        {
+            index = 0;
+        }
+
+        if (this._parentMeshIndex !== index)
+        {
+            this._parentMeshIndex = index;
+            this._dirty = true;
+        }
+
+        return index;
+    }
+
+    /**
+     * Gets parent per object data
+     * @param {*} parentData
+     * @returns {?Tw2PerObjectData}
+     */
+    GetParentPerObjectData(parentData)
+    {
+        if (!parentData) return null;
+        if (parentData.vs && parentData.ps) return parentData;
+
+        const perObjectData = parentData.perObjectData || parentData.legacyPerObjectData;
+        if (perObjectData && perObjectData.vs && perObjectData.ps)
+        {
+            return perObjectData;
+        }
+
+        return GLESPerObjectDataEveSpaceObject.Pack(parentData, this._parentPerObjectData);
     }
 
     /**
@@ -318,14 +373,11 @@ export class EveSpaceObjectDecal extends meta.Model
     GetBatches(mode, accumulator, perObjectData, geometryRes, counter = 0, meshIndex = 0)
     {
         if (!this.display || !geometryRes || !geometryRes.IsGood()) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
         this._parentGeometryRes = geometryRes;
-
-        if (EveSpaceObjectDecal.enableParentMeshIndex && this._parentMeshIndex !== meshIndex)
-        {
-            this._parentMeshIndex = meshIndex;
-            this._dirty = true;
-        }
+        this.ResolveParentMeshIndex(geometryRes, meshIndex);
 
         if (this._dirty)
         {
@@ -349,15 +401,18 @@ export class EveSpaceObjectDecal extends meta.Model
 
         if (!effect || !effect.IsGood()) return false;
 
+        const parentPerObjectData = this.GetParentPerObjectData(perObjectData);
+        if (!parentPerObjectData) return false;
+
         // Todo: Update to new bone method so it doesn't have to calculate every frame
         let hasBone;
         if (this.parentBoneIndex >= 0)
         {
             const
-                bones = perObjectData.vs.Get("JointMat"),
+                bones = perObjectData.jointMatrices || (parentPerObjectData.vs && parentPerObjectData.vs.Get("JointMat")),
                 offset = this.parentBoneIndex * 12;
 
-            if (bones[offset] || bones[offset + 4] || bones[offset + 8])
+            if (bones && (bones[offset] || bones[offset + 4] || bones[offset + 8]))
             {
                 if (!this._offsetTransform) this._offsetTransform = mat4.create();
                 mat4.fromJointMatIndex(this._offsetTransform, bones, this.parentBoneIndex);
@@ -367,13 +422,13 @@ export class EveSpaceObjectDecal extends meta.Model
         }
         if (!hasBone) this._offsetTransform = null;
 
-        this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
+        this._perObjectData.vs.Set("worldMatrix", parentPerObjectData.vs.Get("WorldMat"));
         mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
         mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
         mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
 
         this._perObjectData.ps.SetIndex("displayData", 0, counter);
-        this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
+        this._perObjectData.ps.Set("shipData", parentPerObjectData.ps.data);
 
         const batch = new Tw2ForwardingRenderBatch();
         batch._geometryRes = geometryRes;

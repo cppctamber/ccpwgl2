@@ -34,6 +34,118 @@ function test(name, fn)
     }
 }
 
+test("experimental batch context is exposed in config", () =>
+{
+    const configSource = read("src/config.js");
+    includes(configSource, "enableExperimentalBatchContext");
+    includes(configSource, "// Enables experimental Carbon-shaped render batch context");
+    includes(configSource, "enableExperimentalShadows");
+});
+
+test("experimental batch context is wired into Tw2Library", () =>
+{
+    const source = read("src/core/engine/Tw2Library.js");
+    includes(source, "enableExperimentalBatchContext = false;");
+    includes(source, "opt.enableExperimentalBatchContext");
+    includes(source, "Register(opt)");
+});
+
+test("batch context exports are available", () =>
+{
+    const source = read("src/core/batch/index.js");
+    includes(source, "Tw2RenderBatchContext");
+    includes(source, "Tw2RenderBatchAccumulator");
+    const contextSource = read("src/core/batch/Tw2RenderBatchContext.js");
+    includes(contextSource, "class Tw2RenderBatchContext");
+    includes(contextSource, "GetRenderPacket(object, mode, options = {})");
+    includes(contextSource, "GetCurrentRenderPacket()");
+    includes(contextSource, "GetObjectRenderPayload(object, mode, context = {})");
+    includes(contextSource, "NormalizeOptions(options = {})");
+    includes(contextSource, "CollectObjectBatches(object, modes, options = {})");
+    includes(contextSource, "ResolvePerObjectData(batch");
+    includes(contextSource, "if (batch && batch.perObjectData)");
+    includes(contextSource, "ShouldCommitBatch(batch, accumulator)");
+    const accumulatorSource = read("src/core/batch/Tw2RenderBatchAccumulator.js");
+    includes(accumulatorSource, "GetCurrentRenderPacket()");
+    includes(accumulatorSource, "GetCurrentPerObjectData()");
+});
+
+test("EveSpaceScene batches can be collected and rendered through context", () =>
+{
+    const source = read("src/eve/EveSpaceScene.js");
+    includes(source, "GetBatchContext(create = true)");
+    includes(source, "GetBatchContextWriter()");
+    includes(source, "AddWriter(this.GetBatchContextWriter())");
+    includes(source, "CollectObjectBatches(object, mode, accumulator = this._accumulator)");
+    includes(source, "RenderCollectedBatches(accumulator = this._accumulator)");
+    includes(source, "const useBatchContext = !!tw2.enableExperimentalBatchContext;");
+    includes(source, "!batch.perObjectData && batch.source");
+    includes(source, "_batchContext");
+});
+
+test("Depth pass supports experimental batch-context collection", () =>
+{
+    const source = read("src/eve/EveSpaceScene.js");
+    includes(source, "GetDepthContext(create = true)");
+    includes(source, "RenderDepthWithBatchContext(dt, force)");
+    includes(source, "GetDepthContextReport()");
+    includes(source, "const useBatchContext = !!tw2.enableExperimentalBatchContext;");
+    includes(source, "depthContext.Clear();");
+    includes(source, "collect(objectsOrderedByDistance, RM_DECAL, \"Depth\")");
+    notIncludes(source, "collect(objectsOrderedByDistance, RM_OPAQUE, \"Normal\")");
+    includes(source, "techniqueOverride: \"Main\"");
+});
+
+test("Distortion pass supports experimental batch-context collection", () =>
+{
+    const source = read("src/eve/EveSpaceScene.js");
+    includes(source, "GetDistortionContext(create = true)");
+    includes(source, "RenderDistortionWithBatchContext(dt)");
+    includes(source, "PrepareDistortionPass()");
+    includes(source, "GetDistortionContextReport()");
+    includes(source, "distortionContext.Clear();");
+    includes(source, "distortionContext.CollectObjectArrayBatches(this.objectsByDistance, RM_DISTORTION, {");
+    includes(source, "techniqueOverride: \"Main\"");
+    includes(source, "distortionContext.Render();");
+});
+
+test("runtime exposes render debug overlay helper", () =>
+{
+    const runtimeIndex = read("src/runtime/index.js");
+    const debugIndex = read("src/runtime/debug/index.js");
+    const overlaySource = read("src/runtime/debug/TnyRenderDebugOverlay.js");
+    includes(runtimeIndex, "export * from \"./debug\";");
+    includes(debugIndex, "TnyRenderDebugOverlay");
+    includes(overlaySource, "class TnyRenderDebugOverlay");
+    includes(overlaySource, "AddScenePasses(scene");
+    includes(overlaySource, "RenderTexture(texture)");
+    includes(overlaySource, "SetMode(mode = \"all\")");
+    includes(overlaySource, "static Install(options = {})");
+    includes(overlaySource, "labelPlacement = \"above\"");
+    includes(overlaySource, "GetSlotHeaderHeight(slot");
+});
+
+test("Picker supports experimental batch-context rendering", () =>
+{
+    const source = read("src/core/Tw2Picker.js");
+    includes(source, "this.GetContext()");
+    includes(source, "context.CollectObjectArrayBatches(objects, RM_OPAQUE, {");
+    includes(source, "RenderContext(context, this.technique, pickable);");
+    includes(source, "GetContext(create = true)");
+    includes(source, "RenderContext(context, technique = \"Main\"");
+    includes(source, "!batch.perObjectData && batch.source");
+});
+
+test("EveShip2 exposes per-object batch context hooks", () =>
+{
+    const source = read("src/eve/object/EveShip2.js");
+    includes(source, "GetPerObjectData(_mode, _context = {})");
+    includes(source, "GetRenderPayload(mode, _context = {})");
+    includes(source, "legacyPerObjectData: this._perObjectData");
+    includes(source, "GetBatchesForMode(mode, accumulator, perObjectData = this._perObjectData");
+    includes(source, "return this.GetBatches(mode, accumulator, perObjectData || this._perObjectData)");
+});
+
 test("TEX_VOLUME maps to GL_TEXTURE_3D", () =>
 {
     const source = read("src/global/constant/d3d.js");

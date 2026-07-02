@@ -1,7 +1,7 @@
 import { meta, assignIfExists } from "utils";
 import { device } from "global";
 import { vec3, vec4, mat4, box3, sph3 } from "math";
-import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
 import { EveSpriteSet } from "./EveSpriteSet";
@@ -23,10 +23,10 @@ export class EveBoosterBatch extends Tw2RenderBatch
     Commit(technique)
     {
         // ship data 2 is shared so return the value to what it was
-        const
-            shipData = this.perObjectData.ps.Get("Shipdata"),
-            originalValue = shipData[2];
+        const shipData = this.perObjectData.ps && this.perObjectData.ps.Get("Shipdata");
+        if (!shipData) return this.boosters.Render(technique);
 
+        const originalValue = shipData[2];
         shipData[2] = 0;
         let rv = this.boosters.Render(technique);
         shipData[2] = originalValue;
@@ -218,6 +218,8 @@ export class EveBoosterSet extends EveObjectSet
     _positions = null;
     _decl = Tw2VertexDeclaration.from(EveBoosterSet.vertexDeclarations);
     _perObjectData = Tw2PerObjectData.from(EveBoosterSet.perObjectData);
+    _parentPerObjectDataBagOfStuff = {};
+    _shipData = vec4.create();
     _locatorDirty = true;
 
     /**
@@ -463,6 +465,60 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
+     * Gets parent per object data as a bag of stuff
+     * @param {*} perObjectData
+     * @param {Object} [out={}]
+     * @returns {Object}
+     */
+    GetParentPerObjectDataBagOfStuff(perObjectData, out = {})
+    {
+        if (perObjectData && perObjectData.vs && perObjectData.ps)
+        {
+            GLESPerObjectDataEveSpaceObject.Unpack(perObjectData, out);
+            out.perObjectData = perObjectData;
+            out.legacyPerObjectData = perObjectData;
+            return out;
+        }
+
+        return perObjectData || out;
+    }
+
+    /**
+     * Gets parent ship data
+     * @param {Object} parentData
+     * @param {*} parentPerObjectData
+     * @param {vec4} out
+     * @returns {*}
+     */
+    GetParentShipData(parentData, parentPerObjectData, out)
+    {
+        if ("boosterGain" in parentData || "activationStrength" in parentData || "dirtLevel" in parentData || "weeksSinceCleaned" in parentData)
+        {
+            out[0] = parentData.boosterGain || 0;
+            out[1] = parentData.activationStrength || 0;
+            out[2] = parentData.dirtLevel || 0;
+            out[3] = parentData.boundingSphereRadiusSq ?? (
+                parentData.boundingSphereRadius !== undefined
+                    ? parentData.boundingSphereRadius * parentData.boundingSphereRadius
+                    : 1
+            );
+            return out;
+        }
+
+        const vs = parentPerObjectData && parentPerObjectData.vs;
+        if (vs && typeof vs.Has === "function" && vs.Has("Shipdata"))
+        {
+            return vs.Get("Shipdata");
+        }
+
+        out[0] = parentData.boosterGain || 0;
+        out[1] = parentData.activationStrength || 0;
+        out[2] = parentData.dirtLevel || 0;
+        out[3] = parentData.weeksSinceCleaned || 0;
+        return out;
+    }
+
+    /**
      * Unloads the booster's buffers
      * @param {Object} [opt]
      */
@@ -552,15 +608,21 @@ export class EveBoosterSet extends EveObjectSet
         {
             return false;
         }
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
-        const c = accumulator.length;
+        const
+            c = accumulator.length,
+            parentData = this.GetParentPerObjectDataBagOfStuff(perObjectData, this._parentPerObjectDataBagOfStuff),
+            parentPerObjectData = parentData.perObjectData || parentData.legacyPerObjectData || perObjectData,
+            shipData = this.GetParentShipData(parentData, parentPerObjectData, this._shipData);
 
         if (this.effect)
         {
             const batch = new EveBoosterBatch();
             mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._parentTransform);
-            this._perObjectData.vs.Set("Shipdata", perObjectData.vs.Get("Shipdata"));
-            this._perObjectData.ps = perObjectData.ps;
+            this._perObjectData.vs.Set("Shipdata", shipData);
+            this._perObjectData.ps.Set("Shipdata", shipData);
             batch.perObjectData = this._perObjectData;
             batch.boosters = this;
             batch.renderMode = device.RM_ADDITIVE;
@@ -575,7 +637,7 @@ export class EveBoosterSet extends EveObjectSet
                 accumulator,
                 perObjectData,
                 this._parentTransform,
-                perObjectData.vs.Get("Shipdata")[0],
+                shipData[0],
                 0
             );
         }
@@ -676,6 +738,9 @@ export class EveBoosterSet extends EveObjectSet
     static perObjectData = {
         vs: [
             [ "WorldMat", 16 ],
+            [ "Shipdata", 4 ]
+        ],
+        ps: [
             [ "Shipdata", 4 ]
         ]
     };

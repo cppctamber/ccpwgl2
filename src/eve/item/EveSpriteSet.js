@@ -425,6 +425,7 @@ export class EveSpriteSet extends EveObjectSet
      */
     GetBatches(mode, accumulator, perObjectData, world)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length)
         {
             const batch = new EveSpriteSetBatch();
@@ -450,6 +451,7 @@ export class EveSpriteSet extends EveObjectSet
      */
     GetBoosterGlowBatches(mode, accumulator, perObjectData, world, boosterGain, warpIntensity)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.display && mode === device.RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length)
         {
             const batch = new EveSpriteSetBatch();

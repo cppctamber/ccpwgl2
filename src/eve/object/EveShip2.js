@@ -1,7 +1,7 @@
 import { isArray, meta } from "utils";
 import { vec3, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
-import { Tw2PerObjectData } from "core/data";
+import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
@@ -154,8 +154,13 @@ export class EveShip2 extends EveObject
     _pixelSizeAcross = 0;
 
     _spriteScale = 1;
+    _ellipsoidCenter = vec3.create();
+    _ellipsoidRadii = vec3.create();
+    _jointMatrices = null;
     _parentTransform = mat4.create();
-    _perObjectData = Tw2PerObjectData.from(EveShip2.perObjectData);
+    _perObjectData = new GLESPerObjectDataEveSpaceObject();
+    _perObjectDataBagOfStuff = {};
+    _worldTransformLast = mat4.create();
 
     /**
      * Initializes the ship
@@ -873,9 +878,11 @@ export class EveShip2 extends EveObject
             }
         }
 
+        const perObjectDataBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
+
         for (let i = 0; i < this.children.length; i++)
         {
-            this.children[i].Update(dt, this._worldTransform);
+            this.children[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff);
 
             if (this.children[i]._boundsDirty)
             {
@@ -885,7 +892,7 @@ export class EveShip2 extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, this._perObjectData);
+            this.effectChildren[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff);
 
             if (this.effectChildren[i]._boundsDirty)
             {
@@ -906,11 +913,18 @@ export class EveShip2 extends EveObject
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData=this._perObjectData]
      * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator)
+    GetBatches(mode, accumulator, perObjectData = this._perObjectData)
     {
         if (!this.display || this._lod < 1) return false;
+        const hasExternalPerObjectData = perObjectData !== this._perObjectData;
+        const previousPerObjectData = this._perObjectData;
+        if (hasExternalPerObjectData)
+        {
+            this._perObjectData = perObjectData;
+        }
 
         const
             c = accumulator.length,
@@ -919,8 +933,7 @@ export class EveShip2 extends EveObject
 
         if (show.boosters && this.boosters)
         {
-            this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
-            this.boosters.GetBatches(mode, accumulator, this._perObjectData);
+            this.boosters.GetBatches(mode, accumulator, this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff));
         }
 
         if (res)
@@ -1068,7 +1081,131 @@ export class EveShip2 extends EveObject
             }
         }
 
-        return accumulator.length !== c;
+        const hasBatches = accumulator.length !== c;
+
+        if (hasExternalPerObjectData)
+        {
+            this._perObjectData = previousPerObjectData;
+        }
+
+        return hasBatches;
+    }
+
+    /**
+     * Gets per-object data for the batch context
+     * @param {Number} mode
+     * @param {Object} [context]
+     * @returns {Tw2PerObjectData}
+     */
+    GetPerObjectData(_mode, _context = {})
+    {
+        return this._perObjectData;
+    }
+
+    /**
+     * Gets a temporary semantic-ish bag of values used to build per-object data.
+     * Values may be references to object/raw arrays; treat the bag as read-only.
+     * @param {Object} [out]
+     * @returns {Object}
+     */
+    GetPerObjectDataBagOfStuff(out = {})
+    {
+        delete out.shipData;
+        delete out.clipData;
+        delete out.clipData1;
+        delete out.worldTransformTranspose;
+        delete out.worldTransformLastTranspose;
+        delete out.inverseWorldTransformTranspose;
+        delete out.shapeEllipsoidCenter;
+        delete out.shapeEllipsoidRadius;
+        delete out.boundingSphereRadiusSq;
+        delete out.clipSphereCenter;
+        delete out.clipSphereSignedRadiusSq;
+        delete out.jointMatrices;
+
+        const
+            boosterGain = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
+            activationStrength = Math.max(Math.min(this.activationStrength, 1), 0),
+            dirtLevel = Math.max(EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0);
+
+        out.source = this;
+        out.perObjectData = this._perObjectData;
+        out.legacyPerObjectData = this._perObjectData;
+        out.worldTransform = this._worldTransform;
+        out.worldTransformLast = this._worldTransformLast;
+        out.parentTransform = this._parentTransform;
+        out.boosterGain = boosterGain;
+        out.activationStrength = activationStrength;
+        out.dirtLevel = dirtLevel;
+        out.weeksSinceCleaned = this.weeksSinceCleaned;
+        out.boundingSphereCenter = this.boundingSphereCenter;
+        out.boundingSphereRadius = this.boundingSphereRadius;
+        out.shapeEllipsoidCenter = this.shapeEllipsoidCenter;
+        out.shapeEllipsoidRadius = this.shapeEllipsoidRadius;
+        out.ellipsoidCenter = this._ellipsoidCenter;
+        out.ellipsoidRadii = this._ellipsoidRadii;
+        out.customMasks = this.customMasks;
+        if (this._jointMatrices) out.jointMatrices = this._jointMatrices;
+        out.jointCount = 0;
+
+        if (out.jointMatrices && this.animation && this.animation.models[this.meshIndex])
+        {
+            const bones = this.animation.models[this.meshIndex].bones;
+            out.jointCount = isArray(bones) ? bones.length : 0;
+        }
+
+        return out;
+    }
+
+    /**
+     * Gets render payload for experimental batch contexts.
+     * The legacy per-object data is exposed explicitly as compatibility data;
+     * batch.perObjectData remains the final shader upload payload.
+     * @param {Number} mode
+     * @param {Object} [_context]
+     * @returns {Object}
+     */
+    GetRenderPayload(mode, _context = {})
+    {
+        const
+            mesh = this.mesh && this.mesh.IsGood() ? this.mesh : null,
+            geometryRes = mesh ? mesh.geometryResource : null,
+            meshIndex = mesh && typeof mesh.GetMeshIndex === "function" ? mesh.GetMeshIndex() : this.meshIndex,
+            vs = this._perObjectData && this._perObjectData.vs,
+            ps = this._perObjectData && this._perObjectData.ps;
+
+        return {
+            source: this,
+            mode,
+            legacyPerObjectData: this._perObjectData,
+            worldTransform: this._worldTransform,
+            parentTransform: this._parentTransform,
+            mesh,
+            geometryRes,
+            meshIndex,
+            lod: this._lod,
+            visible: this.visible,
+            boosterGain: this.boosterGain,
+            killCount: this.killCount,
+            clip: this.clip,
+            shipData: vs && vs.Get("Shipdata"),
+            jointMatrices: vs && vs.Get("JointMat"),
+            pixelShaderData: ps && ps.data
+        };
+    }
+
+    /**
+     * Gets render batches for a mode in the experimental batch context
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData=this._perObjectData]
+     * @param {*} [renderReason]
+     * @param {*} [renderPacket]
+     * @returns {Boolean}
+     */
+    GetBatchesForMode(mode, accumulator, perObjectData = this._perObjectData, _renderReason, _renderPacket)
+    {
+        return this.GetBatches(mode, accumulator, perObjectData || this._perObjectData);
     }
 
     /**
@@ -1079,7 +1216,7 @@ export class EveShip2 extends EveObject
     UpdateViewDependentData(parentTransform, dt)
     {
         mat4.copy(this._parentTransform, parentTransform);
-        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
+        mat4.copy(this._worldTransformLast, this._worldTransform);
 
 
         // Enabling curves overrides rotation and translation
@@ -1120,7 +1257,7 @@ export class EveShip2 extends EveObject
 
                 if (this.animation.animations.length)
                 {
-                    this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(this.meshIndex));
+                    this._jointMatrices = this.animation.GetBoneMatrices(this.meshIndex);
                 }
 
                 // Todo: Do bounds check on animations
@@ -1143,18 +1280,12 @@ export class EveShip2 extends EveObject
             }
         }
 
-        // Update shader transforms
-        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-        const invWorldMat = this._perObjectData.vs.Get("InvWorldMat");
-        if (!mat4.invert(invWorldMat, this._worldTransform)) mat4.identity(invWorldMat);
-        mat4.transpose(invWorldMat, invWorldMat);
-
         // Update bounding ellipsoid (Used for some effects and maybe collsions?)
         // - Similar as the clip data, we should only have to update this on first load
         // - and then whenever the bounds get updated
         const
-            center = this._perObjectData.vs.Get("EllipsoidCenter"),
-            radii = this._perObjectData.vs.Get("EllipsoidRadii");
+            center = this._ellipsoidCenter,
+            radii = this._ellipsoidRadii;
 
         if (this.shapeEllipsoidRadius[0] > 0)
         {
@@ -1174,50 +1305,18 @@ export class EveShip2 extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
-        // Setup per frame ship data
-        // - Should bounding sphere radius be squared?
-        const shipData = this._perObjectData.ps.Get("Shipdata");
-        shipData[0] = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1.0), 0.0);
-        shipData[1] = Math.max(Math.min(this.activationStrength, 1.0), 0.0);
-        shipData[2] = Math.max(EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0);
-        shipData[3] = this.boundingSphereRadius * this.boundingSphereRadius;
-
-        this._perObjectData.vs.Set("Shipdata", shipData);
-        this._perObjectData.ps.Set("Shipdata", shipData);
-
-        // Setup per frame clip data
-        // - We only have to update this if the bounding sphere changes
-        // - This is unlikely to happen so we probably should only set it up once.
-        // - We need to set clip data, but can't guarantee bounding sphere center is correct yet
-
-        const clipData = [
-            this.boundingSphereCenter[0],
-            this.boundingSphereCenter[1],
-            this.boundingSphereCenter[2],
-            // CCP shaders expect a signed sphere term here.
-            -this.boundingSphereRadius * this.boundingSphereRadius
-        ];
-
-        this._perObjectData.vs.Set("Clipdata1", clipData);
-        this._perObjectData.ps.Set("Clipdata1", clipData);
-
-        const clipStrength = Math.max(Math.min(this.clip, 1.0), 0.0);
-        this._perObjectData.ps.SetIndex("Miscdata", 0, clipStrength);
-
         // Is this correct?
         const id = mat4.identity(EveObject.global.mat4_0);
         id[12] = 0;
         id[13] = 0;
         id[14] = 0;
 
+        const customMaskBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            this.customMasks[i].UpdatePerObjectData(id, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].GetPerObjectDataBagOfStuff(id, customMaskBagOfStuff, i, this.visible.customMasks);
         }
-
-        // Custom Mask Blending
-        this._perObjectData.ps.SetIndex("CustomMaskBlending", 2, this.customMasksSwapped ? 1 : 0);
-        this._perObjectData.ps.SetIndex("CustomMaskBlending", 3, this.customMaskBlendMode);
+        GLESPerObjectDataEveSpaceObject.Pack(customMaskBagOfStuff, this._perObjectData);
 
         // Custom scaler for sprites
         // - Note that ccp doesn't do this however we want to do this
@@ -1300,43 +1399,6 @@ export class EveShip2 extends EveObject
      * Per object data
      * @type {{ps: ((string|number[])[]|(string|number)[])[], vs: ((string|number)[]|(string|number[])[])[]}}
      */
-    static perObjectData = {
-        vs: [
-            [ "WorldMat", 16 ],      // cb3[0..3], used by normal and shadow/depth VS
-            [ "WorldMatLast", 16 ],  // cb3[4..7], previous frame world matrix
-            [ "InvWorldMat", 16 ],   // cb3[8..11], inverse world matrix
-            [ "Shipdata", [       // cb3[12]
-                0,     // booster gain ?
-                1,     // activation
-                0,     // Dirt strength and shared with boosters for booster strength
-                1      // effect scale - might be clip scale?
-            ] ],
-            [ "Clipdata1", 4 ],   // cb3[13], shared clip sphere data
-            [ "EllipsoidRadii", 4 ], // cb3[14]
-            [ "EllipsoidCenter", 4 ], // cb3[15]
-            [ "CustomMaskMatrix0", mat4.create() ], // cb3[16..19]
-            [ "CustomMaskMatrix1", mat4.create() ], // cb3[20..23]
-            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ], // cb3[24],  mirror, unused, unused, unused
-            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ], // cb3[25],  mirror, unused, unused, unused
-            [ "JointMat", 696 ]  // cb3[26..199], used by skinned shadow/depth VS
-        ],
-        ps: [
-            [ "Shipdata", [       // cb4[0]
-                0,     // booster gain ?
-                1,     // activation
-                0,     // Dirt strength and shared with boosters for booster strength
-                1      // effect scale - might be clip scale?
-            ] ],
-            [ "Clipdata1", 4 ],     // cb4[1], shared clip sphere data, read by shadow/depth PS
-            [ "Miscdata", 4 ],      // cb4[2], .x is shared clip strength, read by shadow/depth PS
-            [ "ShLighting", 4 * 7 ],
-            [ "CustomMaskMaterialID0", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
-            [ "CustomMaskMaterialID1", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
-            [ "CustomMaskTarget0", 4 ], // Material Layer Masking
-            [ "CustomMaskTarget1", 4 ], // Material Layer Masking
-            [ "CustomMaskBlending", 4 ], // Unused - incorrect name - this is a custom name
-            [ "Screensize", 4 ]        // Unused - need to confirm
-        ]
-    };
+    static perObjectData = GLESPerObjectDataEveSpaceObject.layout;
 
 }

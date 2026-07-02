@@ -1,6 +1,6 @@
 import { device, tw2 } from "global";
 import { vec3, vec4, mat4 } from "math";
-import { Tw2BatchAccumulator, Tw2Effect, Tw2Frustum, Tw2PerObjectData, Tw2RawData, Tw2RenderTarget } from "core";
+import { Tw2BatchAccumulator, Tw2RenderBatchContext, Tw2Effect, Tw2Frustum, Tw2PerObjectData, Tw2RawData, Tw2RenderTarget } from "core";
 import { CMP_GREATEREQUAL, RM_OPAQUE, RS_ALPHAFUNC, RS_ALPHAREF, RS_ALPHATESTENABLE } from "constant";
 
 
@@ -36,12 +36,14 @@ export class EveSpaceSceneShadowHandler
     autoSettings = false;
 
     _accumulator = null;
+    _batchContext = null;
     _renderTarget = null;
     _mapRes = null;
     _frustum = new Tw2Frustum();
     _view = mat4.create();
     _projection = mat4.create();
     _viewProjection = mat4.create();
+    _lightUp = vec3.fromValues(0, 1, 0);
     _perFrameVS = Tw2RawData.from(EveSpaceSceneShadowHandler.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceSceneShadowHandler.perFrameData.ps);
     _frustumCorners = [
@@ -158,7 +160,17 @@ export class EveSpaceSceneShadowHandler
             return report;
         }
 
-        const accumulator = this._accumulator || (this._accumulator = new Tw2BatchAccumulator());
+        const useBatchContext = !!tw2.enableExperimentalBatchContext;
+        const accumulator = useBatchContext
+            ? this.GetBatchContext()
+            : (this._accumulator || (this._accumulator = new Tw2BatchAccumulator()));
+
+        if (!accumulator)
+        {
+            report.status = "no_batch_accumulator";
+            return report;
+        }
+
         accumulator.Clear();
 
         const shadowEffect = this.EnsureEffect(false);
@@ -205,6 +217,20 @@ export class EveSpaceSceneShadowHandler
         this.AttachVariables();
 
         return report;
+    }
+
+    /**
+     * Gets or creates the experimental batch context for shadow batches.
+     * @param {Boolean} [create=true]
+     * @returns {Tw2RenderBatchContext}
+     */
+    GetBatchContext(create = true)
+    {
+        if (!this._batchContext && create)
+        {
+            this._batchContext = new Tw2RenderBatchContext();
+        }
+        return this._batchContext;
     }
 
     /**
@@ -678,18 +704,18 @@ export class EveSpaceSceneShadowHandler
 
         if (!mesh.visible || mesh.visible.opaqueAreas !== false)
         {
-            this.CollectAreaBatches(mesh, mesh.opaqueAreas, accumulator, perObjectData, effect);
+            this.CollectAreaBatches(mesh, mesh.opaqueAreas, accumulator, perObjectData, effect, candidate);
         }
 
         if (!mesh.visible || mesh.visible.depthAreas !== false)
         {
-            this.CollectAreaBatches(mesh, mesh.depthAreas, accumulator, perObjectData, effect);
+            this.CollectAreaBatches(mesh, mesh.depthAreas, accumulator, perObjectData, effect, candidate);
         }
 
         return accumulator.length !== before;
     }
 
-    CollectAreaBatches(mesh, areas, accumulator, perObjectData, effect)
+    CollectAreaBatches(mesh, areas, accumulator, perObjectData, effect, source)
     {
         if (!areas || !areas.length || !mesh.geometryResource)
         {
@@ -720,6 +746,8 @@ export class EveSpaceSceneShadowHandler
             batch.count = area.count;
             batch.effect = effect;
             batch._isShadowEffect = true;
+            batch.source = source || batch.source;
+            batch.root = source || batch.root;
             accumulator.Commit(batch);
         }
 
@@ -805,12 +833,7 @@ export class EveSpaceSceneShadowHandler
         const depth = Math.max(radius * 2.5, 1);
 
         vec3.scaleAndAdd(eye, center, sunDir, depth);
-        vec3.set(up, 0, 1, 0);
-
-        if (Math.abs(vec3.dot(sunDir, up)) > 0.95)
-        {
-            vec3.set(up, 0, 0, 1);
-        }
+        this.GetStableLightUp(up, sunDir);
 
         mat4.lookAtD3D(this._view, eye, center, up);
 
@@ -853,6 +876,42 @@ export class EveSpaceSceneShadowHandler
 
         this.cameraNear = near;
         this.cameraFar = far;
+    }
+
+    GetStableLightUp(out, direction)
+    {
+        const current = this._lightUp;
+
+        let dot = vec3.dot(current, direction);
+        vec3.scaleAndAdd(out, current, direction, -dot);
+
+        if (vec3.squaredLength(out) < 1e-6)
+        {
+            const
+                ax = Math.abs(direction[0]),
+                ay = Math.abs(direction[1]),
+                az = Math.abs(direction[2]);
+
+            if (ax <= ay && ax <= az)
+            {
+                vec3.set(out, 1, 0, 0);
+            }
+            else if (ay <= az)
+            {
+                vec3.set(out, 0, 1, 0);
+            }
+            else
+            {
+                vec3.set(out, 0, 0, 1);
+            }
+
+            dot = vec3.dot(out, direction);
+            vec3.scaleAndAdd(out, out, direction, -dot);
+        }
+
+        vec3.normalize(out, out);
+        vec3.copy(current, out);
+        return out;
     }
 
     CollectBounds(minBounds, maxBounds)

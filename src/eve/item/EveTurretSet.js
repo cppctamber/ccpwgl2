@@ -2,6 +2,7 @@ import { meta } from "utils";
 import { tw2, device } from "global";
 import { vec3, vec4, quat, mat4, box3 } from "math";
 import {
+    GLESPerObjectDataEveSpaceObject,
     Tw2PerObjectData,
     Tw2VertexElement,
     Tw2AnimationController,
@@ -249,6 +250,7 @@ export class EveTurretSet extends EveObjectSet
     _inactiveAnimation = new Tw2AnimationController();
     _locatorDirty = true;
     _parentTransform = mat4.create();
+    _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _state = EveTurretSet.State.IDLE;
@@ -812,6 +814,20 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Gets parent per object data
+     * @param {*} parentData
+     * @returns {Tw2PerObjectData|null}
+     */
+    GetParentPerObjectData(parentData)
+    {
+        if (!parentData) return null;
+        if (parentData.vs && parentData.ps) return parentData;
+        if (parentData.perObjectData) return parentData.perObjectData;
+        if (parentData.legacyPerObjectData) return parentData.legacyPerObjectData;
+        return GLESPerObjectDataEveSpaceObject.Pack(parentData, this._parentPerObjectData);
+    }
+
+    /**
      * Gets turret set render batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -822,8 +838,13 @@ export class EveTurretSet extends EveObjectSet
     GetBatches(mode, accumulator, perObjectData, showFiringEffect)
     {
         if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return false;
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
+        if (!perObjectData) return false;
 
-        const c = accumulator.length;
+        const
+            c = accumulator.length,
+            parentPerObjectData = this.GetParentPerObjectData(perObjectData);
+        if (!parentPerObjectData) return false;
 
         if (mode === device.RM_OPAQUE && this.visible.turrets)
         {
@@ -831,7 +852,7 @@ export class EveTurretSet extends EveObjectSet
             if (transforms.length !== 0)
             {
                 this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
-                this._perObjectDataInactive.ps = perObjectData.ps;
+                this._perObjectDataInactive.ps = parentPerObjectData.ps;
 
                 const batch = new Tw2ForwardingRenderBatch();
                 batch.renderMode = mode;
@@ -847,7 +868,7 @@ export class EveTurretSet extends EveObjectSet
                     if (transforms.length !== 0)
                     {
                         this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
-                        this._perObjectDataActive.ps = perObjectData.ps;
+                        this._perObjectDataActive.ps = parentPerObjectData.ps;
 
                         const batch = new Tw2ForwardingRenderBatch();
                         batch.renderActive = true;
@@ -862,7 +883,7 @@ export class EveTurretSet extends EveObjectSet
 
         if (showFiringEffect && this.firingEffect && this.visible.firingEffects)
         {
-            this.firingEffect.GetBatches(mode, accumulator, perObjectData);
+            this.firingEffect.GetBatches(mode, accumulator, parentPerObjectData);
         }
 
         return accumulator.length !== c;
@@ -877,9 +898,10 @@ export class EveTurretSet extends EveObjectSet
      */
     GetFiringEffectBatches(mode, accumulator, perObjectData)
     {
+        perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
         if (this.firingEffect && this.display && this._visibleItems.length && this.visible.firingEffects)
         {
-            this.firingEffect.GetBatches(mode, accumulator, perObjectData);
+            this.firingEffect.GetBatches(mode, accumulator, this.GetParentPerObjectData(perObjectData));
             return true;
         }
         return false;
