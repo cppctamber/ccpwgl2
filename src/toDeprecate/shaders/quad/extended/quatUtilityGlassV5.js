@@ -59,7 +59,7 @@ export const quadUtilityGlassV5 = {
                     uniform sampler2D s10;  // HeatGlowNoiseMap
                     uniform sampler2D s11;  // DustNoiseMap
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[3];
 
                     void main()

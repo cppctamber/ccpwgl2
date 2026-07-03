@@ -67,7 +67,7 @@ export const quadUtilityDetailV5 = {
                     uniform sampler2D s12;  // Detail2Map
                     uniform sampler2D s13;  // Detail3Map
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[7];
 
                     vec4 getDetailMap(vec2 uv, sampler2D detailMap, vec4 detailData)

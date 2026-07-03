@@ -1,5 +1,5 @@
 import { constant, texture, vs, ps } from "./shared";
-import { clampToBorder } from "../shared/func";
+import { clampToBorder, customMaskBlendModes } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
@@ -105,8 +105,10 @@ export const quadV5 = {
                         uniform sampler2D s11;  // DustNoiseMap
 
                         uniform vec4 cb2[22];
-                        uniform vec4 cb4[14]; // We'll add blend modes back later <3
+                        uniform vec4 cb4[16];
                         uniform vec4 cb7[24];
+
+                        ${customMaskBlendModes}
 
                         vec3 stripColor(vec3 rgb, float amount)
                         {
@@ -267,12 +269,13 @@ export const quadV5 = {
                             r7=clampToBorder(s9,v6.xy,cb4[10].yz,c34.wwww);
 
                             r7=r7.xxxx*cb4[12];
-                            r4.w=mix(cb7[10].x,r3.w,r7.x);
 
                             // PatternMask2
                             r9=clampToBorder(s10,v6.zw,cb4[11].yz,c34.wwww);
 
                             r9=r9.xxxx*cb4[13];
+                            applyCustomMaskBlendMode(r7, r9);
+                            r4.w=mix(cb7[10].x,r3.w,r7.x);
                             r5.w=mix(r4.w,r3.z,r9.x);
                             r4.w=mix(cb7[11].x,r3.w,r7.y);
                             r10.x=mix(r4.w,r3.z,r9.y);

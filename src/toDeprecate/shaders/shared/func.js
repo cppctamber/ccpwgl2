@@ -241,6 +241,49 @@ export const saturate = `
 
 `;
 
+export const customMaskBlendModes = `
+
+    void applyCustomMaskBlendMode(inout vec4 layer1, inout vec4 layer2)
+    {
+        vec4 a = saturate(layer1);
+        vec4 b = saturate(layer2);
+
+        if (cb4[14].y > 0.5)
+        {
+            vec4 tmp = a;
+            a = b;
+            b = tmp;
+        }
+
+        vec4 srcA = a;
+        vec4 srcB = b;
+        float mode = floor(cb4[14].x + 0.5);
+
+        if (mode == 2.0)
+        {
+            a = saturate(srcA - srcB);
+            b = vec4(0.0);
+        }
+        else if (mode == 6.0)
+        {
+            a = srcA * (vec4(1.0) - srcB);
+            b = srcB * (vec4(1.0) - srcA);
+        }
+        else if (mode == 7.0)
+        {
+            b = srcB * srcA;
+        }
+        else if (mode == 8.0)
+        {
+            b = srcB * (vec4(1.0) - srcA);
+        }
+
+        layer1 = saturate(a);
+        layer2 = saturate(b);
+    }
+
+`;
+
 export const clampToBorder = `
 
     vec4 clampToBorder(sampler2D ts, vec2 uv)

@@ -40,7 +40,7 @@ export const quadExtendedPickingHeatV5 = {
                     uniform sampler2D s2; // PatternMask1Map
                     uniform sampler2D s3; // PatternMask2Map
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1];
 
                     void main()

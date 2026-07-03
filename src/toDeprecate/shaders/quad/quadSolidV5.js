@@ -33,7 +33,7 @@ const _quadExtendedPickingV5 = {
                     varying vec4 texcoord5;
                     varying vec4 texcoord6;
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1]; // ID OF OBJECT
 
                     void main()
@@ -85,7 +85,7 @@ export const quadSolidV5 = {
 
                     ${ps.header}
                     varying vec4 texcoord5;
-                    uniform vec4 cb4[15];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1];
 
                     void main()

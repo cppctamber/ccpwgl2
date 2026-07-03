@@ -40,7 +40,7 @@ export const quadExtendedPickingSailsV5 = {
                     uniform sampler2D s2; // GlowMap
                     uniform sampler2D s3; // SailsDetailMap
 
-                    uniform vec4 cb4[15];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[3];
 
                     void main(){

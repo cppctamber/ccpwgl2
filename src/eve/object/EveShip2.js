@@ -1121,6 +1121,7 @@ export class EveShip2 extends EveObject
         delete out.boundingSphereRadiusSq;
         delete out.clipSphereCenter;
         delete out.clipSphereSignedRadiusSq;
+        delete out.customMaskBlending;
         delete out.jointMatrices;
 
         const
@@ -1145,6 +1146,7 @@ export class EveShip2 extends EveObject
         out.ellipsoidCenter = this._ellipsoidCenter;
         out.ellipsoidRadii = this._ellipsoidRadii;
         out.customMasks = this.customMasks;
+
         if (this._jointMatrices) out.jointMatrices = this._jointMatrices;
         out.jointCount = 0;
 
@@ -1359,12 +1361,6 @@ export class EveShip2 extends EveObject
         }
 
     }
-
-    @meta.boolean
-    customMasksSwapped = false;
-
-    @meta.uint
-    customMaskBlendMode = 0;
 
     @meta.float
     activationStrength = 1.0;

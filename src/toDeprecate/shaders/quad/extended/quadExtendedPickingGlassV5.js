@@ -28,7 +28,7 @@ export const quadExtendedPickingGlassV5 = {
 
                     uniform sampler2D s0; // MaterialMap
 
-                    uniform vec4 cb4[15];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1];
 
                     void main(){

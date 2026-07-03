@@ -1141,6 +1141,7 @@ export class EveSOFData extends meta.Model
                 layer.isTargetMtl3 ? 1 : 0,
                 layer.isTargetMtl4 ? 1 : 0
             );
+            mask.blendMode = layer.blendMode || "overlay";
             pU = layer.projectionTypeU;
             pV = layer.projectionTypeV;
         }
@@ -1148,6 +1149,7 @@ export class EveSOFData extends meta.Model
         {
             mask.display = false;
             mask.materialIndex = 0;
+            mask.blendMode = "overlay";
             mask.parameters.PatternMaskMap.SetValue("cdn:/texture/projection/solid_white.png");
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
@@ -1177,6 +1179,37 @@ export class EveSOFData extends meta.Model
     }
 
     /**
+     * Gets a pattern's custom mask blend mode
+     * @param {Object} pattern
+     * @returns {String|Number}
+     */
+    static GetPatternBlendMode(pattern = {})
+    {
+        const values = [
+            pattern.skinr && pattern.skinr.blendMode,
+            pattern.skinr && pattern.skinr.blendModes && pattern.skinr.blendModes.layer2,
+            pattern.layer2 && pattern.layer2.blendMode,
+            pattern.skinr && pattern.skinr.blendModes && pattern.skinr.blendModes.layer1,
+            pattern.layer1 && pattern.layer1.blendMode
+        ];
+
+        let fallback = "overlay";
+
+        for (let i = 0; i < values.length; i++)
+        {
+            if (values[i] !== undefined && values[i] !== null && values[i] !== "")
+            {
+                if (EveCustomMask.GetBlendMode(values[i]) !== 0)
+                {
+                    return values[i];
+                }
+            }
+        }
+
+        return fallback;
+    }
+
+    /**
      *
      * @param {EveSOFData} data
      * @param {EveStation2|EveShip2} obj
@@ -1203,10 +1236,13 @@ export class EveSOFData extends meta.Model
         const
             patternMaterial1 = sof.area.patternMaterial1 ? data.GetMaterial(sof.area.patternMaterial1) : null,
             patternMaterial2 = sof.area.patternMaterial2 ? data.GetMaterial(sof.area.patternMaterial2) : null,
-            pattern = sof.pattern || {};
+            pattern = sof.pattern || {},
+            blendMode = this.GetPatternBlendMode(pattern);
 
         this.SetupCustomMask(obj.customMasks[0], pattern.layer1, pattern.transformLayer1, patternMaterial1);
         this.SetupCustomMask(obj.customMasks[1], pattern.layer2, pattern.transformLayer2, patternMaterial2);
+        obj.customMasks[0].blendMode = blendMode;
+        obj.customMasks[1].blendMode = blendMode;
     }
 
     /**

@@ -55,7 +55,7 @@ export const quadUtilitySailsV5 = {
                     uniform sampler2D s8;   // SailsDetailMap;
                     uniform sampler2D s9;   // DustNoiseMap
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[4];
 
                     void main()

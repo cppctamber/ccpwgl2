@@ -21,6 +21,9 @@ export class EveSOFDataPatternLayer extends meta.Model
     @meta.boolean
     isTargetMtl4 = true;
 
+    @meta.string
+    blendMode = "overlay";
+
     @meta.uint
     materialSource = 0;
 
@@ -55,6 +58,7 @@ export class EveSOFDataPatternLayer extends meta.Model
         this.isTargetMtl2 = false;
         this.isTargetMtl3 = false;
         this.isTargetMtl4 = false;
+        this.blendMode = "overlay";
         this.materialSource = 0;
         this.projectionTypeU = 0;
         this.projectionTypeV = 0;
@@ -100,6 +104,7 @@ export class EveSOFDataPatternLayer extends meta.Model
         this.isTargetMtl2 = !!customMask.targetMaterials[1];
         this.isTargetMtl3 = !!customMask.targetMaterials[2];
         this.isTargetMtl4 = !!customMask.targetMaterials[3];
+        this.blendMode = customMask.blendMode || "overlay";
         this.materialSource = customMask.materialIndex;
         this.SetFromTexture(customMask.parameters.PatternMaskMap);
     }

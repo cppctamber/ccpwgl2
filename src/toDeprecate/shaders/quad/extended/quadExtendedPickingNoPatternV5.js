@@ -33,7 +33,7 @@ export const quadExtendedPickingNoPatternV5 = {
                     uniform sampler2D s1; // MaterialMap
                     uniform sampler2D s2; // GlowMap
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1];
 
                     void main()

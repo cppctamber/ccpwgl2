@@ -41,7 +41,7 @@ export const quadExtendedPickingV5 = {
                     uniform sampler2D s3; // PatternMask1Map
                     uniform sampler2D s4; // PatternMask2Map
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[1]; // ID OF OBJECT
 
                     void main()

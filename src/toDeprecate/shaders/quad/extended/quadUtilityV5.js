@@ -57,7 +57,7 @@ export const quadUtilityV5 = {
                     uniform sampler2D s9;   // PatternMask2Map;
                     uniform sampler2D s10;  // DustNoiseMap
 
-                    uniform vec4 cb4[14];
+                    uniform vec4 cb4[16];
                     uniform vec4 cb7[3];
 
                     void main()
