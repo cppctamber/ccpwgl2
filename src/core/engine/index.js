@@ -5,4 +5,5 @@ export * from "./Tw2ResMan";
 export * from "./Tw2ResManMainThreadLoader";
 export * from "./Tw2ResManWorkerLoader";
 export * from "./Tw2Library";
+export * from "./Tw2InputMan";
 export * from "./Tw2AudMan";

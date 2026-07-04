@@ -2,6 +2,7 @@ import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
+import { Tw2InputMan } from "./Tw2InputMan";
 import { path } from "../reader/Tw2BlackPropertyReaders";
 import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
@@ -109,6 +110,12 @@ export class Tw2Library extends Tw2EventEmitter
     device = new Tw2Device(this);
 
     /**
+     * Input manager
+     * @type {Tw2InputMan}
+     */
+    input = new Tw2InputMan(this);
+
+    /**
      * Debug mode
      * @type {boolean}
      * @private
@@ -148,6 +155,15 @@ export class Tw2Library extends Tw2EventEmitter
     get dt()
     {
         return this.device.dt;
+    }
+
+    /**
+     * Alias for device.currentTime (accumulated absolute time, seconds)
+     * @returns {number}
+     */
+    get currentTime()
+    {
+        return this.device.currentTime;
     }
 
     /**
@@ -287,13 +303,18 @@ export class Tw2Library extends Tw2EventEmitter
      */
     async Initialize(opt = {})
     {
-        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities, ...options } = opt;
+        const { render, glParams, canvas, canvas3d, canvas2d, sof = {}, capabilities, input, ...options } = opt;
 
         this.Register(options);
 
         if (capabilities !== undefined) this.RegisterCapabilities(capabilities);
 
         this.device.Create({ canvas, canvas3d, canvas2d, glParams });
+
+        if (input !== false)
+        {
+            this.input.BindDevice(this.device, input || {});
+        }
 
         if (this._capabilityOptions !== false)
         {
@@ -367,6 +388,7 @@ export class Tw2Library extends Tw2EventEmitter
         this.device.Tick();
         this.resMan.Tick();
         if (this.audMan) this.audMan.Tick();
+        if (this.input) this.input.Update(this.device.dt);
         this.EmitEvent("start_frame", this.device.dt);
         this.EmitEvent("tick", this.device.dt);
     }
