@@ -125,7 +125,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     OnRebuiltByParent(parent)
     {
         this._parent = parent;
-        this._offsetTransform = parent ? parent.GetBone(this.boneIndex) : null;
+        this._bone = parent ? parent.GetBone(this.boneIndex) : null;
         this._dirty = false;
     }
 

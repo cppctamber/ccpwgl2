@@ -198,11 +198,8 @@ export class EveObjectSet extends meta.Model
      */
     GetBone(boneIndex)
     {
-        if (this._bones && this._bones[boneIndex])
-        {
-            return this._bones[boneIndex];
-        }
-        return null;
+        if (!this._bones || boneIndex === -1) return null;
+        return this._bones.find(x => x.index === boneIndex) || null;
     }
 
     /**
