@@ -3,7 +3,6 @@ import { resMan } from "global";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.notImplemented
 @meta.type("Tr2ActionChildEffect")
 @meta.ccp.define("Tr2ActionChildEffect")
 export class Tr2ActionChildEffect extends Tw2Action
@@ -28,6 +27,12 @@ export class Tr2ActionChildEffect extends Tw2Action
 
     _isStarted = false;
 
+    /**
+     * Starts the action, adding the child effect to the owner if required
+     * @param {Tr2Controller} controller
+     * @param {*} [owner]
+     * @returns {Boolean} true if the child effect exists or has been requested
+     */
     Start(controller, owner)
     {
         owner = this.GetTargetOwner(controller, owner);
@@ -45,46 +50,58 @@ export class Tr2ActionChildEffect extends Tw2Action
 
         resMan.GetObject(this.path, child =>
         {
-            if (!this._isStarted)
+            // The action may have been stopped, or restarted and resolved,
+            // while the object was loading
+            if (!this._isStarted || this._child || !child)
             {
                 return;
             }
 
-            if (!child) return;
-
-            this._child = child;
             if (this.childName)
             {
-                if (child.SetName) child.SetName(this.childName);
-                else child.name = this.childName;
+                child.name = this.childName;
             }
 
-            this.AddChild(owner, child);
-            if (child.StartControllers) child.StartControllers();
+            if (Tr2ActionChildEffect.AddChild(owner, child))
+            {
+                this._child = child;
+                if (child.StartControllers) child.StartControllers();
+            }
         });
 
         return true;
     }
 
+    /**
+     * Stops the action, removing the child effect from the owner if required
+     * @param {Tr2Controller} controller
+     * @param {*} [owner]
+     * @returns {Boolean} true if a child effect was removed
+     */
     Stop(controller, owner)
     {
         this._isStarted = false;
-        if (!this._child || !this.removeOnStop)
+
+        const child = this._child;
+        this._child = null;
+
+        if (!child || !this.removeOnStop)
         {
-            this._child = null;
             return false;
         }
 
         owner = this.GetTargetOwner(controller, owner);
-        if (owner)
-        {
-            this.RemoveChild(owner, this._child);
-        }
-
-        this._child = null;
-        return !!owner;
+        return owner ? Tr2ActionChildEffect.RemoveChild(owner, child) : false;
     }
 
+    /**
+     * Resolves the owner the child effect should be added to/removed from.
+     * When `targetAnotherOwner` is set, the target is a named effect child of
+     * the controller's owner (an EveChildContainer for example)
+     * @param {Tr2Controller} controller
+     * @param {*} [owner]
+     * @returns {*} the resolved owner, or null if it couldn't be found
+     */
     GetTargetOwner(controller, owner)
     {
         owner = owner || (controller && controller.GetOwner ? controller.GetOwner() : null);
@@ -93,115 +110,105 @@ export class Tr2ActionChildEffect extends Tw2Action
             return owner;
         }
 
-        if (owner.GetEffectChildByName)
-        {
-            const child = owner.GetEffectChildByName(this.targetAnotherOwner);
-            if (child) return child;
-        }
-
-        const effectChildren = owner.effectChildren || owner.children;
-        if (effectChildren)
-        {
-            for (let i = 0; i < effectChildren.length; i++)
-            {
-                if (effectChildren[i] && effectChildren[i].name === this.targetAnotherOwner)
-                {
-                    return effectChildren[i];
-                }
-            }
-        }
-
-        if (owner.GetParameterByName)
-        {
-            const parameter = owner.GetParameterByName(this.targetAnotherOwner);
-            if (parameter)
-            {
-                if (parameter.GetParameterObject) return parameter.GetParameterObject();
-                if (parameter.object) return parameter.object;
-                if (parameter.value) return parameter.value;
-            }
-        }
-
-        if (this.targetAnotherOwner === "SourceSpaceObject")
-        {
-            if (owner.GetSourceSpaceObject) return owner.GetSourceSpaceObject();
-            return owner.sourceSpaceObject || owner.sourceObject || owner.source || null;
-        }
-
-        if (this.targetAnotherOwner === "DestSpaceObject")
-        {
-            if (owner.GetDestSpaceObject) return owner.GetDestSpaceObject();
-            return owner.destSpaceObject || owner.destinationObject || owner.destination || owner.dest || null;
-        }
-
-        return null;
+        return Tr2ActionChildEffect.FindChildByName(owner, this.targetAnotherOwner);
     }
 
+    /**
+     * Finds this action's child effect on an owner by its child name
+     * @param {*} owner
+     * @returns {EveChild|null}
+     */
     FindChild(owner)
     {
-        if (!this.childName || !owner)
+        return this.childName ? Tr2ActionChildEffect.FindChildByName(owner, this.childName) : null;
+    }
+
+    /**
+     * Gets an owner's effect children list
+     * - Space objects (EveShip2, EveEffectRoot etc) store them in `effectChildren`
+     * - Child containers (EveChildContainer etc) store them in `objects`
+     * @param {*} owner
+     * @returns {Array|null}
+     */
+    static GetEffectChildren(owner)
+    {
+        if (!owner) return null;
+        if (Array.isArray(owner.effectChildren)) return owner.effectChildren;
+        if (Array.isArray(owner.objects)) return owner.objects;
+        return null;
+    }
+
+    /**
+     * Finds an effect child on an owner by name, recursing into child containers
+     * @param {*} owner
+     * @param {String} name
+     * @returns {EveChild|null}
+     */
+    static FindChildByName(owner, name)
+    {
+        const children = Tr2ActionChildEffect.GetEffectChildren(owner);
+        if (!children || !name)
         {
             return null;
         }
 
-        if (owner.GetEffectChildByName)
+        for (let i = 0; i < children.length; i++)
         {
-            return owner.GetEffectChildByName(this.childName);
-        }
+            const child = children[i];
+            if (!child) continue;
 
-        const effectChildren = owner.effectChildren || owner.children;
-        if (!effectChildren)
-        {
-            return null;
-        }
-
-        for (let i = 0; i < effectChildren.length; i++)
-        {
-            if (effectChildren[i] && effectChildren[i].name === this.childName)
+            if (child.name === name)
             {
-                return effectChildren[i];
+                return child;
+            }
+
+            if (Array.isArray(child.objects))
+            {
+                const found = Tr2ActionChildEffect.FindChildByName(child, name);
+                if (found) return found;
             }
         }
 
         return null;
     }
 
-    AddChild(owner, child)
+    /**
+     * Adds an effect child to an owner
+     * @param {*} owner
+     * @param {EveChild} child
+     * @returns {Boolean} true if the child was added
+     */
+    static AddChild(owner, child)
     {
-        if (owner.AddToEffectChildrenList)
+        const children = Tr2ActionChildEffect.GetEffectChildren(owner);
+        if (!children || children.includes(child))
         {
-            owner.AddToEffectChildrenList(child);
-            return true;
+            return false;
         }
 
-        if (owner.effectChildren && !owner.effectChildren.includes(child))
-        {
-            owner.effectChildren.push(child);
-            return true;
-        }
-
-        return false;
+        children.push(child);
+        if ("_boundsDirty" in owner) owner._boundsDirty = true;
+        return true;
     }
 
-    RemoveChild(owner, child)
+    /**
+     * Removes an effect child from an owner
+     * @param {*} owner
+     * @param {EveChild} child
+     * @returns {Boolean} true if the child was removed
+     */
+    static RemoveChild(owner, child)
     {
-        if (owner.RemoveFromEffectChildrenList)
+        const children = Tr2ActionChildEffect.GetEffectChildren(owner);
+        const index = children ? children.indexOf(child) : -1;
+        if (index === -1)
         {
-            owner.RemoveFromEffectChildrenList(child);
-            return true;
+            return false;
         }
 
-        if (owner.effectChildren)
-        {
-            const index = owner.effectChildren.indexOf(child);
-            if (index !== -1)
-            {
-                owner.effectChildren.splice(index, 1);
-                return true;
-            }
-        }
-
-        return false;
+        children.splice(index, 1);
+        if ("_boundsDirty" in owner) owner._boundsDirty = true;
+        return true;
     }
 
 }

@@ -232,7 +232,7 @@ export class Tw2AnimationController extends meta.Model
         {
             this._pendingCommands.push({
                 "func": this.StopAnimation,
-                "args": names
+                "args": [ names ]
             });
             return;
         }
@@ -278,7 +278,7 @@ export class Tw2AnimationController extends meta.Model
         {
             this._pendingCommands.push({
                 "func": this.StopAllAnimationsExcept,
-                "args": names
+                "args": [ names ]
             });
             return;
         }

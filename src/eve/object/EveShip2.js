@@ -7,6 +7,7 @@ import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, Ev
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
 import { LodLevelPixels } from "constant/ccpwgl";
+import { tw2 } from "global";
 
 
 @meta.type("EveShip2")
@@ -116,39 +117,11 @@ export class EveShip2 extends EveObject
     @meta.float
     weeksSinceCleaned = 0;
 
-    // Testing...
-
-    @meta.struct()
-    sofFactionColorSet = null;
-
     /**
-     * TODO: Remove this it is a helper function only
-     * Updates colors from a color set
-     * @param {Number} colorType
-     * @param {Vec4} color
-     * @returns {boolean} - true if updated
+     * Runtime animation controllers (attached by the space object factory)
+     * @type {Array<Tr2Controller>}
      */
-    UpdateColorType(colorType, color)
-    {
-        let updated = false;
-
-        if (this.mesh && this.mesh.UpdateColorType)
-        {
-            this.mesh.UpdateColorType(colorType, color);
-        }
-
-        for (let i = 0; i < this.attachments.length; i++)
-        {
-            if (this.attachments[i].UpdateColorType)
-            {
-                if (this.attachments[i].UpdateColorType(colorType, color))
-                {
-                    updated = true;
-                }
-            }
-        }
-        return updated;
-    }
+    controllers = [];
 
     _enableCurves = false;
     _pixelSizeAcross = 0;
@@ -837,6 +810,19 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Adds an animation controller
+     * @param {Tr2Controller} controller
+     */
+    AddController(controller)
+    {
+        if (controller && !this.controllers.includes(controller))
+        {
+            this.controllers.push(controller);
+            if (controller.Initialize) controller.Initialize(this);
+        }
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      */
@@ -898,6 +884,11 @@ export class EveShip2 extends EveObject
             {
                 this._boundsDirty = true;
             }
+        }
+
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            this.controllers[i].Update(dt);
         }
 
         if (this.animation)
@@ -1226,12 +1217,12 @@ export class EveShip2 extends EveObject
         {
             if (this.rotationCurve)
             {
-                this.rotationCurve.GetValueAt(dt, this.rotation);
+                this.rotationCurve.GetValueAt(tw2.currentTime, this.rotation);
             }
 
             if (this.translationCurve)
             {
-                this.translationCurve.GetValueAt(dt, this.translation);
+                this.translationCurve.GetValueAt(tw2.currentTime, this.translation);
             }
         }
 

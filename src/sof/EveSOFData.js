@@ -39,7 +39,6 @@ import {
 
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveSOFDataPatternLayer } from "sof/pattern";
-import { EveSOFDataFactionColorSet } from "sof/faction";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 
@@ -55,6 +54,10 @@ export class EveSOFData extends meta.Model
     @meta.boolean
     @meta.uiDescription("Custom property for debugging")
     enableChildren = true;
+
+    @meta.boolean
+    @meta.uiDescription("Custom property for debugging")
+    enableChildCurveSets = false;
 
     @meta.boolean
     @meta.uiDescription("Custom property for debugging")
@@ -1043,31 +1046,6 @@ export class EveSOFData extends meta.Model
             }
         }
 
-        // TODO: DELETE THIS WHEN TESTING FINISHED!
-        if (obj._sofFactionColorSetHandler && obj.sofFactionColorSet)
-        {
-            obj.sofFactionColorSet.OffEvent("modified", obj._sofFactionColorSetHandler);
-        }
-
-        // Temporary for controlling faction colors?
-        obj.sofFactionColorSet = sof.faction.colorSet;
-
-        obj._sofFactionColorSetHandler = () =>
-        {
-            for (let i = 0; i < EveSOFDataFactionColorSet.Type.length; i++)
-            {
-                const colorName = EveSOFDataFactionColorSet.Type[i];
-                const color = sof.faction.colorSet[colorName];
-                if (color)
-                {
-                    //console.log(`Updating ${i} ${colorName}`);
-                    obj.UpdateColorType(i, color);
-                }
-            }
-        };
-
-        obj.sofFactionColorSet.OnEvent("modified", obj._sofFactionColorSetHandler);
-
         // Supported
         this.SetupCustomMasks(...args);
         await this.SetupMesh(...args);
@@ -1087,10 +1065,10 @@ export class EveSOFData extends meta.Model
         this.SetupHazeSets(...args);
         this.SetupSpriteLineSets(...args);
         this.SetupAudio(...args);
-        this.SetupModelCurves(...args);
+        await this.SetupModelCurves(...args);
         this.SetupLights(...args);
         this.SetupObservers(...args);
-        this.SetupControllers(...args);
+        await this.SetupControllers(...args);
 
         // Temporarily add triglavian balls
         if (sof.hull.name.indexOf("tg") === 0 && !obj.effectChildren.find(x => x.name === "TempTrigSphereContainer"))
@@ -2698,9 +2676,45 @@ export class EveSOFData extends meta.Model
      * @param {Object} sof
      * @param {Object} [options={}]
      */
-    static SetupModelCurves(data, obj, sof, options)
+    static async SetupModelCurves(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Model curves not implemented" });
+        const { modelRotationCurvePath, modelTranslationCurvePath } = sof.hull;
+
+        if (modelRotationCurvePath)
+        {
+            try
+            {
+                obj.rotationCurve = await tw2.Fetch(modelRotationCurvePath);
+            }
+            catch (err)
+            {
+                tw2.Debug({
+                    name: "Space object factory",
+                    message: `Failed to fetch model rotation curve: ${modelRotationCurvePath}`
+                });
+            }
+        }
+
+        if (modelTranslationCurvePath)
+        {
+            try
+            {
+                obj.translationCurve = await tw2.Fetch(modelTranslationCurvePath);
+            }
+            catch (err)
+            {
+                tw2.Debug({
+                    name: "Space object factory",
+                    message: `Failed to fetch model translation curve: ${modelTranslationCurvePath}`
+                });
+            }
+        }
+
+        // ccpwgl-only gate: carbon applies model curves unconditionally when present
+        if (obj.rotationCurve || obj.translationCurve)
+        {
+            obj._enableCurves = true;
+        }
     }
 
     /**
@@ -2843,14 +2857,17 @@ export class EveSOFData extends meta.Model
             {
                 const effect = await tw2.Fetch(effects[i].redFilePath);
 
-                // Disable curve sets for now
-                effect.Traverse(x =>
+                // Disable curve sets for now (play as authored when enableChildCurveSets is set)
+                if (!data.enableChildCurveSets)
                 {
-                    if (x.struct.curveSets)
+                    effect.Traverse(x =>
                     {
-                        x.struct.curveSets.forEach(x => x.Stop());
-                    }
-                });
+                        if (x.struct.curveSets)
+                        {
+                            x.struct.curveSets.forEach(x => x.Stop());
+                        }
+                    });
+                }
 
                 quat.copy(effect.rotation, effects[i].rotation);
                 vec3.copy(effect.translation, effects[i].translation);
@@ -2858,6 +2875,11 @@ export class EveSOFData extends meta.Model
                 effect.UpdateValues();
 
                 obj.effectChildren.push(effect);
+
+                if (typeof effect.SetInheritProperties === "function")
+                {
+                    effect.SetInheritProperties(sof.faction.colorSet);
+                }
             }
             catch(err)
             {
@@ -2967,9 +2989,40 @@ export class EveSOFData extends meta.Model
      * @param {Object} sof
      * @param {Object} [options={}]
      */
-    static SetupControllers(data, obj, sof, options)
+    static async SetupControllers(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Animation controllers not implemented" });
+        const { controllers = [] } = sof.hull;
+        if (!controllers.length) return;
+
+        if (!obj.AddController)
+        {
+            tw2.Debug({
+                name: "Space object factory",
+                message: "Object does not support animation controllers"
+            });
+            return;
+        }
+
+        // EveSOFDataHullBuildFilter::STANDALONE
+        const STANDALONE = 1 << 0;
+
+        for (let i = 0; i < controllers.length; i++)
+        {
+            if ((controllers[i].buildFilter & STANDALONE) === 0) continue;
+
+            try
+            {
+                const controller = await tw2.Fetch(controllers[i].path);
+                obj.AddController(controller);
+            }
+            catch (err)
+            {
+                tw2.Debug({
+                    name: "Space object factory",
+                    message: `Failed to fetch controller: ${controllers[i].path}`
+                });
+            }
+        }
     }
 
     /**

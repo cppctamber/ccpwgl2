@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { Tr2ExpressionProgram } from "./expression/Tr2ExpressionProgram";
 
 
 @meta.type("Tr2StateMachineTransition")
@@ -13,6 +14,10 @@ export class Tr2StateMachineTransition extends meta.Model
     condition = "";
 
     _source = null;
+    _program = null;
+    _programSource = null;
+    _variableNames = [];
+    _functionNames = [];
 
     Link(state)
     {
@@ -35,9 +40,45 @@ export class Tr2StateMachineTransition extends meta.Model
     {
     }
 
-    CanTransition()
+    Compile()
     {
-        return !this.condition;
+        if (!this._program || this._programSource !== this.condition)
+        {
+            this._program = Tr2ExpressionProgram.Compile(this.condition, { emptyValue: 1 });
+            this._programSource = this.condition;
+            this._variableNames = this._program.GetVariableNames();
+            this._functionNames = this._program.GetFunctionNames();
+        }
+        return this._program;
+    }
+
+    CanTransition(controller, owner, stateMachine, dirtyVariables)
+    {
+        const program = this.Compile();
+        if (!program.IsValid())
+        {
+            return false;
+        }
+
+        if (dirtyVariables && dirtyVariables.size && this._variableNames.length && !this._functionNames.length)
+        {
+            let hasDirtyVariable = false;
+            for (let i = 0; i < this._variableNames.length; i++)
+            {
+                if (dirtyVariables.has(this._variableNames[i]))
+                {
+                    hasDirtyVariable = true;
+                    break;
+                }
+            }
+            if (!hasDirtyVariable)
+            {
+                return false;
+            }
+        }
+
+        const context = controller && controller.GetExpressionContext ? controller.GetExpressionContext(owner, stateMachine) : { controller, owner, stateMachine };
+        return program.EvaluateBoolean(context);
     }
 
     CanActivate(...args)
@@ -73,7 +114,7 @@ export class Tr2StateMachineTransition extends meta.Model
 
     IsConditionValid()
     {
-        return !this.condition;
+        return this.Compile().IsValid();
     }
 
     IsExpressionValid()

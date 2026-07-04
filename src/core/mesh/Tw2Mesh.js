@@ -106,30 +106,6 @@ export class Tw2Mesh extends meta.Model
     }
 
     /**
-     * Updates a color type to a color
-     * TODO: Replace this with something better :>
-     * @param {Number} colorType
-     * @param {vec4} color
-     * @returns {boolean}
-     */
-    UpdateColorType(colorType, color)
-    {
-        let updated = false;
-
-        const areas = this.GetItemByColorType(colorType);
-        for (let i = 0; i < areas.length; i++)
-        {
-            if (areas[i].effect && areas[i].effect.parameters.GeneralGlowColor)
-            {
-                areas[i].effect.parameters.GeneralGlowColor.SetValue(color);
-                updated = true;
-            }
-        }
-
-        return updated;
-    }
-
-    /**
      * Gets mesh areas by their color type
      * @param {Number} colorType
      * @param {Array<*>} [out=[]]

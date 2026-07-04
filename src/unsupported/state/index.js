@@ -1,5 +1,6 @@
 export * from "./action";
 export * from "./controller";
+export * from "./expression";
 export * from "./variable";
 export * from "./Tr2StateMachine";
 export * from "./Tr2StateMachineState";

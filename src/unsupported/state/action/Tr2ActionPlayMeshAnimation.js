@@ -3,9 +3,9 @@ import { ResolveBindingPath } from "../controller";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.notImplemented
 @meta.type("Tr2ActionPlayMeshAnimation")
 @meta.ccp.define("Tr2ActionPlayMeshAnimation")
+@meta.todo("Track masks/layers are not supported by Tw2AnimationController - the 'mask' field is currently ignored")
 export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 
@@ -55,6 +55,10 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
 
     _boundDestination = null;
 
+    _pendingDelay = 0;
+
+    _pendingAnimationController = null;
+
     Link(controller)
     {
         this._controller = controller || null;
@@ -68,6 +72,8 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
     {
         this._controller = null;
         this._boundDestination = null;
+        this._pendingDelay = 0;
+        this._pendingAnimationController = null;
     }
 
     HasDelayedBinding()
@@ -135,6 +141,8 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
             return false;
         }
 
+        this._controller = controller || this._controller;
+
         if (this.HasDelayedBinding())
         {
             this.LinkDestination(controller);
@@ -146,39 +154,66 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
             return false;
         }
 
-        if (this.mask && animationController.AddAnimationLayerWithTrackMask)
-        {
-            animationController.AddAnimationLayerWithTrackMask(this.mask, this.mask);
-        }
+        // Cancel any previously pending delayed play
+        this._pendingDelay = 0;
+        this._pendingAnimationController = null;
 
-        const layerName = this.mask || null;
-        const loops = Math.max(this.loops, 0);
-
-        if (animationController.PlayLayerAnimationByName)
+        if (this.delay > 0 && controller && controller.RegisterUpdateable)
         {
-            animationController.PlayLayerAnimationByName(
-                layerName,
-                this.animation,
-                this.playAction === Tr2ActionPlayMeshAnimation.PLAY,
-                loops,
-                this.delay,
-                this.speed,
-                false
-            );
+            this._pendingDelay = this.delay;
+            this._pendingAnimationController = animationController;
+            controller.RegisterUpdateable(this);
             return true;
         }
 
-        if (animationController.PlayAnimation)
+        return this.Play(animationController);
+    }
+
+    /**
+     * Per frame update, used only while a delayed play is pending
+     * @param {Number} dt
+     * @param {*} controller
+     */
+    Update(dt, controller = this._controller)
+    {
+        if (this._pendingDelay <= 0)
         {
-            animationController.PlayAnimation(this.animation, layerName, loops, this.delay, this.speed);
-            return true;
+            if (controller && controller.UnRegisterUpdateable)
+            {
+                controller.UnRegisterUpdateable(this);
+            }
+            return;
         }
 
-        return false;
+        this._pendingDelay -= dt;
+        if (this._pendingDelay <= 0)
+        {
+            const animationController = this._pendingAnimationController;
+            this._pendingDelay = 0;
+            this._pendingAnimationController = null;
+
+            if (controller && controller.UnRegisterUpdateable)
+            {
+                controller.UnRegisterUpdateable(this);
+            }
+
+            if (animationController)
+            {
+                this.Play(animationController);
+            }
+        }
     }
 
     Stop(controller, owner)
     {
+        // Cancel any pending delayed play
+        this._pendingDelay = 0;
+        this._pendingAnimationController = null;
+        if (controller && controller.UnRegisterUpdateable)
+        {
+            controller.UnRegisterUpdateable(this);
+        }
+
         if (!this.animation || this.stopAction === Tr2ActionPlayMeshAnimation.NONE)
         {
             return false;
@@ -190,31 +225,89 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
             return false;
         }
 
-        const layer = animationController.GetAnimationLayer ? animationController.GetAnimationLayer(this.mask || null) : null;
-        if (layer)
+        if (this.stopAction === Tr2ActionPlayMeshAnimation.ENQUEUE_STOP && animationController.GetAnimation)
         {
-            if (this.stopAction === Tr2ActionPlayMeshAnimation.STOP && layer.ClearAnimations)
+            const animation = animationController.GetAnimation(this.animation);
+            if (animation && animation.IsPlaying && animation.IsPlaying())
             {
-                layer.ClearAnimations();
-                return true;
-            }
-
-            if (this.stopAction === Tr2ActionPlayMeshAnimation.ENQUEUE_STOP && layer.EndAnimation)
-            {
-                layer.EndAnimation();
+                // Let the current pass finish, then stop naturally
+                animation.cycle = false;
                 return true;
             }
         }
 
         if (animationController.StopAnimation)
         {
-            animationController.StopAnimation(this.animation, this.mask || null, this.stopAction);
+            animationController.StopAnimation(this.animation);
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Plays the configured animation on a Tw2AnimationController
+     * @param {Tw2AnimationController} animationController
+     * @returns {Boolean}
+     */
+    Play(animationController)
+    {
+        if (!animationController || !animationController.PlayAnimation)
+        {
+            return false;
+        }
+
+        // PlayAnimation internally queues the command if the
+        // controller's geometry/animations haven't loaded yet
+        animationController.PlayAnimation(this.animation, this.GetPlayOptions());
+        return true;
+    }
+
+    /**
+     * Builds Tw2Animation.Play options from the action's serialized fields
+     * @returns {{cycle: Boolean, timeScale: Number, callback: (Function|undefined)}}
+     */
+    GetPlayOptions()
+    {
+        const options = {
+            cycle: this.loops !== 1,
+            timeScale: this.speed
+        };
+
+        // Tw2Animation only supports play-once or infinite cycling, so a
+        // finite loop count is implemented by disabling cycling once the
+        // second to last pass has completed (the "cycle" event fires each
+        // time a full pass completes)
+        if (this.loops > 1)
+        {
+            let remaining = this.loops - 1;
+            options.callback = animation =>
+            {
+                if (animation.IsFinished())
+                {
+                    return true;
+                }
+
+                remaining--;
+                if (remaining <= 0)
+                {
+                    animation.cycle = false;
+                    return true;
+                }
+
+                return false;
+            };
+        }
+
+        return options;
+    }
+
+    /**
+     * Resolves the destination's Tw2AnimationController
+     * @param {*} controller
+     * @param {*} [owner]
+     * @returns {Tw2AnimationController|null}
+     */
     GetAnimationController(controller, owner)
     {
         const destination = this.GetDestination(controller, owner);
@@ -228,7 +321,24 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
             return destination.GetAnimationController();
         }
 
-        return destination.animationController || null;
+        // EveShip2/EveSpaceObject expose their Tw2AnimationController as "animation"
+        if (destination.animation && destination.animation.PlayAnimation)
+        {
+            return destination.animation;
+        }
+
+        if (destination.animationController && destination.animationController.PlayAnimation)
+        {
+            return destination.animationController;
+        }
+
+        // The destination may be an animation controller itself
+        if (destination.PlayAnimation && destination.GetAnimation)
+        {
+            return destination;
+        }
+
+        return null;
     }
 
 }
