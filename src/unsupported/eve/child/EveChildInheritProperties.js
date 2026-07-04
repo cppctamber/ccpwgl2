@@ -141,4 +141,35 @@ export class EveChildInheritProperties extends meta.Model
     @meta.color
     SecondaryFx = vec4.create();
 
+    @meta.color
+    PrimaryWarpFx = vec4.create();
+
+    @meta.color
+    PrimaryAttackFx = vec4.create();
+
+    @meta.color
+    PrimarySiegeFx = vec4.create();
+
+    @meta.color
+    PrimaryDockedFx = vec4.create();
+
+    /**
+     * Copies a resolved faction colour set into these inherited properties.
+     * Port of CarbonEngine EveChildInheritProperties::SetProperties.
+     * @param {EveSOFDataFactionColorSet} colorSet
+     */
+    SetProperties(colorSet)
+    {
+        if (!colorSet) return;
+
+        for (const name in this)
+        {
+            const target = this[name];
+            if (target && target.length === 4 && colorSet[name] !== undefined)
+            {
+                vec4.copy(target, colorSet[name]);
+            }
+        }
+    }
+
 }

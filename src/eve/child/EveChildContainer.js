@@ -1,6 +1,7 @@
 import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
+import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 
 
 @meta.type("EveChildContainer", true)
@@ -223,6 +224,30 @@ export class EveChildContainer extends EveChild
             this.lights[i].Update(dt, this._worldTransform, perObjectData);
         }
         */
+    }
+
+    /**
+     * Applies a resolved faction colour set to this container's inherit properties
+     * and cascades it to child containers.
+     * Port of CarbonEngine EveChildContainer::SetInheritProperties.
+     * @param {EveSOFDataFactionColorSet} colorSet
+     */
+    SetInheritProperties(colorSet)
+    {
+        if (!this.inheritProperties)
+        {
+            this.inheritProperties = new EveChildInheritProperties();
+        }
+
+        this.inheritProperties.SetProperties(colorSet);
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (typeof this.objects[i].SetInheritProperties === "function")
+            {
+                this.objects[i].SetInheritProperties(colorSet);
+            }
+        }
     }
 
     /**
