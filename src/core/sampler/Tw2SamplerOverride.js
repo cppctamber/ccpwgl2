@@ -2,6 +2,15 @@ import { meta } from "utils";
 import { Tw2SamplerState } from "./Tw2SamplerState";
 
 
+/**
+ * NAMING DRIFT vs carbonengine/trinity (align later; Carbon names win):
+ * filterMode=minFilter, magFilterMode=magFilter, mipFilterMode=mipFilter,
+ * addressU/V/WMode=addressU/V/W, lodBias=mipLODBias. maxMipLevel is legacy
+ * D3D9 with no Carbon equivalent (Carbon uses minLOD/maxLOD). Serialized
+ * values use Trinity enum conventions (address 0=wrap/2=clamp 0-based,
+ * filter 3=anisotropic) — NOT D3D9's 1-based enums; check ResolveModes
+ * interprets them correctly before relying on overrides at draw time.
+ */
 @meta.type("Tw2SamplerOverride")
 @meta.wgl.define("Tw2SamplerOverride")
 export class Tw2SamplerOverride extends meta.Model
@@ -95,21 +104,40 @@ export class Tw2SamplerOverride extends meta.Model
 
     /**
      * Black reader
+     *
+     * Production struct is 56 bytes and follows Carbon's Sampler::Save field
+     * order exactly (carbonengine trinity/shadercompiler/EffectData.h:366):
+     * name, comparison, minFilter, magFilter, mipFilter, addressU, addressV,
+     * addressW, mipLODBias, maxAnisotropy, comparisonFunc, then a 3-dword
+     * tail (borderColor/minLOD/maxLOD — all zero in every specimen observed;
+     * split is provisional). Values use Trinity enum conventions as stored.
+     * Verified against res:/dx9/model/celestial/environment/rock/
+     * asteroidset_06/[size]/single/[lod]/fx/as6_breacheroidfx_01a.black
+     * (TQ build 3421648):
+     * DiffuseMapSampler = [comparison 0, min 3, mag 3, mip 1, aU 2, aV 2,
+     * aW 0, lodBias 0.0, maxAniso 4, compFunc 0, 0, 0, 0].
+     *
      * @param {Tw2BlackBinaryReader} r
      * @returns {Tw2SamplerOverride}
      */
     static blackStruct(r)
     {
         const item = new this();
-        item.mipFilterMode = r.ReadU16();
-        item.maxAnisotropy = r.ReadU16();
         item.name = r.ReadStringU16();
-        item.maxMipLevel = r.ReadU16();
-        item.addressUMode = r.ReadU16();
-        item.addressVMode = r.ReadU16();
-        item.addressWMode = r.ReadU16();
-        item.filterMode = r.ReadU16();
-        item.lodBias = r.ReadF32();
+        r.ExpectU16(0, "unknown content");
+        item.comparison = r.ReadU32();
+        item.filterMode = r.ReadU32();      // minFilter in Carbon terms
+        item.magFilterMode = r.ReadU32();
+        item.mipFilterMode = r.ReadU32();
+        item.addressUMode = r.ReadU32();
+        item.addressVMode = r.ReadU32();
+        item.addressWMode = r.ReadU32();
+        item.lodBias = r.ReadF32();         // mipLODBias
+        item.maxAnisotropy = r.ReadU32();
+        item.comparisonFunc = r.ReadU32();
+        item.borderColor = r.ReadU32();
+        item.minLOD = r.ReadF32();
+        item.maxLOD = r.ReadF32();
         return item;
     }
 }
