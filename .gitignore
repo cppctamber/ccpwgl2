@@ -44,3 +44,9 @@ dist/rollup/
 src/experiments/
 public/carbon/
 
+# scratch build/tooling output (e.g. parityCewgVsLegacy.js reports) - not source
+artifacts/
+
+# test fixtures containing real extracted CCP/EVE game assets (.black, .sm_hi,
+# and .webgl.cewg packages built from them) - not safe to commit
+test/fixtures/

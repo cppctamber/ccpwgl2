@@ -8,7 +8,14 @@
     "build": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "build:webpack": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "build:rollup": "rollup -c rollup.config.mjs",
-    "test:carbon-pending": "node scripts/test-carbon-pending.js"
+    "test:carbon-pending": "node scripts/test-carbon-pending.js",
+    "test:black-sampler-override": "node scripts/test-black-sampler-override.js",
+    "test:cewg-light-list": "node scripts/test-cewg-light-list.js",
+    "test:cewg-light-collector": "node scripts/test-cewg-light-collector.js",
+    "test:cewg-effect-res": "node scripts/test-cewg-effect-res.js",
+    "test:cewg-resource-binder": "node scripts/test-cewg-resource-binder.js",
+    "test:cewg-carbon-data": "node scripts/test-cewg-carbon-data.js",
+    "test:parity": "node scripts/parityCewgVsLegacy.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
@@ -43,6 +50,7 @@
     "eslint-loader": "^2.2.1",
     "geo-ambient-occlusion": "^3.0.4",
     "gl-matrix": "^3.4.1",
+    "playwright": "^1.61.1",
     "progress-bar-webpack-plugin": "^1.12.1",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "^0.13.7",
