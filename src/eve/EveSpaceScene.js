@@ -75,6 +75,9 @@ export class EveSpaceScene extends meta.Model
     @meta.list("EveObject")
     objects = [];
 
+    @meta.list("EveObject")
+    gizmoObjects = [];
+
     @meta.path
     @meta.isPrivate
     @meta.todo("Check case on this property")
@@ -210,6 +213,7 @@ export class EveSpaceScene extends meta.Model
         environmentDiffuse: true,
         environmentBlur: true,
         fog: true,
+        gizmoObjects: true,
         lensflares: true,
         lineSets: true,
         objects: true,
@@ -578,6 +582,14 @@ export class EveSpaceScene extends meta.Model
             if (funcName in this.objects[i])
             {
                 this.objects[i][funcName](...args);
+            }
+        }
+
+        for (let i = 0; i < this.gizmoObjects.length; i++)
+        {
+            if (funcName in this.gizmoObjects[i])
+            {
+                this.gizmoObjects[i][funcName](...args);
             }
         }
 
@@ -988,6 +1000,22 @@ export class EveSpaceScene extends meta.Model
             {
                 this.lensflares[i].PrepareRender(this.sunDirection);
                 this.CollectObjectBatches(this.lensflares[i], d.RM_ADDITIVE, mainAccumulator);
+            }
+        }
+
+        if (show.gizmoObjects)
+        {
+            for (let i = 0; i < this.gizmoObjects.length; i++)
+            {
+                if (this.gizmoObjects[i].UpdateViewDependentData)
+                {
+                    this.gizmoObjects[i].UpdateViewDependentData(this._localTransform, dt);
+                }
+
+                this.CollectObjectBatches(this.gizmoObjects[i], d.RM_OPAQUE, mainAccumulator);
+                this.CollectObjectBatches(this.gizmoObjects[i], d.RM_DECAL, mainAccumulator);
+                this.CollectObjectBatches(this.gizmoObjects[i], d.RM_TRANSPARENT, mainAccumulator);
+                this.CollectObjectBatches(this.gizmoObjects[i], d.RM_ADDITIVE, mainAccumulator);
             }
         }
 
