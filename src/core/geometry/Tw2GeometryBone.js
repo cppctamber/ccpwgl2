@@ -36,6 +36,11 @@ export class Tw2GeometryBone
     // reference
     boundingBox = null;
 
+    @meta.plain
+    @meta.isPrivate
+    // Raw granny ExtendedData (named per-bone data, e.g. { TrackMaskStance: 1 } track-mask weights)
+    extendedData = null;
+
 
     /**
      * Updates the Bone's transform

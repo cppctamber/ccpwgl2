@@ -443,7 +443,10 @@ export class Tw2ShaderStage
         for (let i = 0; i < inputCount; i++)
         {
             const
-                usage = reader.ReadUInt8(),
+                // v8 binaries use the legacy usage convention
+                // (BLENDWEIGHT=6/BLENDINDICES=7); the runtime speaks
+                // Trinity's (swapped) codes — translate at the gate.
+                usage = Tw2VertexElement.UsageFromCcpLegacy(reader.ReadUInt8()),
                 registerIndex = reader.ReadUInt8(), // unused
                 usageIndex = reader.ReadUInt8(),
                 usedMask = reader.ReadUInt8(); // unused

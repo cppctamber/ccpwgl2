@@ -1,4 +1,5 @@
-export { CAKEReader } from "./CAKEReader";
+export { WBGReader } from "./WbgReader";
+export { Gr2Reader } from "./Gr2Reader";
 export { GR2JsonReader } from "./GR2JsonReader";
 export { OBJReader } from "./OBJReader";
-export { WBGReader } from "./WbgReader";
+export { GltfReader } from "./GltfReader";

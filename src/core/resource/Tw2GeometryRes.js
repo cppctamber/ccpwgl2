@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { resMan, device } from "global";
 import { box3, sph3, vec3, vertex } from "math";
-import { Tw2BinaryReader, WBGReader, CAKEReader, OBJReader, GR2JsonReader } from "../reader";
+import { Tw2BinaryReader, WBGReader, Gr2Reader, OBJReader, GR2JsonReader, GltfReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
@@ -19,9 +19,10 @@ import {
 // Todo: Change to registration process
 const readers = {
     [OBJReader.extension.toLowerCase()]: OBJReader,
-    [CAKEReader.extension.toLowerCase()]: CAKEReader,
+    [Gr2Reader.extension.toLowerCase()]: Gr2Reader,
     [GR2JsonReader.extension.toLowerCase()]: GR2JsonReader,
-    [WBGReader.extension.toLowerCase()]: WBGReader
+    [WBGReader.extension.toLowerCase()]: WBGReader,
+    [GltfReader.extension.toLowerCase()]: GltfReader
 };
 
 /**
@@ -333,10 +334,6 @@ export class Tw2GeometryRes extends Tw2Resource
         }
         else
         {
-            if ((this.path || "").toUpperCase().includes("_PACKED_TS"))
-            {
-                options = Object.assign({}, options, { packTangents: true });
-            }
             Reader.Prepare(data, this, options);
         }
 
@@ -720,7 +717,9 @@ export class Tw2GeometryRes extends Tw2Resource
         for (let declIx = 0; declIx < declCount; ++declIx)
         {
             let element = new Tw2VertexElement();
-            element.usage = reader.ReadUInt8();
+            // .wbg files share the legacy GLES-v8 usage convention
+            // (BLENDWEIGHT=6/BLENDINDICES=7) — translate to Trinity codes.
+            element.usage = Tw2VertexElement.UsageFromCcpLegacy(reader.ReadUInt8());
             element.usageIndex = reader.ReadUInt8();
             element.fileType = reader.ReadUInt8();
             element.type = device.gl.FLOAT;

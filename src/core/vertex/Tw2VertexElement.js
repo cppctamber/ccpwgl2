@@ -92,6 +92,12 @@ export class Tw2VertexElement
 
     /**
      * Vertex element types
+     *
+     * Values follow Carbon/Trinity's Tr2VertexDefinition::UsageCode
+     * (carbonengine trinityal/Tr2VertexDefinition.h:17): BLENDINDICES=6,
+     * BLENDWEIGHTS=7. The legacy GLES-v8 shader binaries and .wbg
+     * geometry were authored with 6/7 swapped — their readers translate
+     * through UsageFromCcpLegacy so the runtime speaks Trinity only.
      * @type {*}
      */
     static Type = {
@@ -99,14 +105,28 @@ export class Tw2VertexElement
         COLOR: 1,
         NORMAL: 2,
         TANGENT: 3,
-        BINORMAL: 4,
-        TEXCOORD: 5,
-        BLENDWEIGHT: 6,
-        BLENDINDICES: 7,
-        // ALIASES
         BITANGENT: 4,
-        BLENDWEIGHTS: 6,
-        BLENDINDICE: 7,
+        TEXCOORD: 5,
+        BLENDINDICES: 6,
+        BLENDWEIGHTS: 7,
+        // ALIASES
+        BINORMAL: 4,
+        BLENDWEIGHT: 7,
+        BLENDINDICE: 6,
     };
+
+    /**
+     * Translates a legacy (GLES-v8 era) usage code into the Trinity
+     * usage codes the runtime uses: the old convention had
+     * BLENDWEIGHT=6/BLENDINDICES=7, Trinity has them swapped.
+     * @param {Number} usage
+     * @returns {Number}
+     */
+    static UsageFromCcpLegacy(usage)
+    {
+        if (usage === 6) return 7;
+        if (usage === 7) return 6;
+        return usage;
+    }
 
 }

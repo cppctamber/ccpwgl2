@@ -91,8 +91,8 @@ export const config = {
         "png": path => path.includes("_cube") ? path.replace(".png", ".qube") : path,
 
         // Replace gr2 extension with gr2_json
+        //"gr2": path => path.replace(".gr2", ".gr2_json"),
 
-        "gr2": path => path.replace(".gr2", ".gr2_json"),
         // Replace red extension with black (they're all black files)
         "red": path => path.replace(".red", ".black")
 
@@ -252,25 +252,27 @@ export const config = {
 
     paths: {
 
-        // The last ccpwgl path to be updated by ccp
-        // This no longer exists :(
-        "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-
         // Local resource server (not provided with this library)
         "cdn": "http://127.0.0.1:3000/",
 
     },
 
     extensions: {
+        
+        // Shader
         "sm_json": core.Tw2EffectRes,
         "sm_depth": core.Tw2EffectRes,
         "sm_hi": core.Tw2EffectRes,
         "sm_lo": core.Tw2EffectRes,
         "fx": core.Tw2EffectRes,
+
+        //Geometry
+        "gr2": core.Tw2GeometryRes,
         "gr2_json": core.Tw2GeometryRes,
         "wbg": core.Tw2GeometryRes,
-        "cake": core.Tw2GeometryRes,
         "obj": core.Tw2GeometryRes,
+
+        // Texture
         "png": core.Tw2TextureRes,
         "jpg": core.Tw2TextureRes,
         "jpeg": core.Tw2TextureRes,
@@ -282,8 +284,12 @@ export const config = {
         "tga" : core.Tw2TextureRes,
         "mp4": core.Tw2TextureRes,
         "webm": core.Tw2TextureRes,
+
+        // Object
         "black": core.Tw2LoadingObject,
         "red": core.Tw2LoadingObject,
+
+        // Audio
         "mp3": core.Tw2AudioRes,
         "wav": core.Tw2AudioRes,
         // Assumes audio...
