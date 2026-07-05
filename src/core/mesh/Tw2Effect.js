@@ -5,6 +5,7 @@ import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2EffectRes, Tw2Resource } from "core/resource";
 import { Tw2SamplerOverride } from "core/sampler";
+import { CewgResourceBinder } from "core/cewg/CewgResourceBinder";
 
 
 class TemporaryBinaryReader
@@ -956,8 +957,15 @@ export class Tw2Effect extends meta.Model
         // Fragment constants
         if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
 
+        // CEWG shaders were compiled against Carbon's DX11 b1-b4
+        // layouts — their per-frame/per-object uploads are packed by
+        // the binder instead of the raw GLES-shaped arrays below.
+        if (rp.isCewg)
+        {
+            CewgResourceBinder.Get(d).ApplyConstants(program, d);
+        }
         // Surely a better way to do this...
-        if (this._isShadowEffect)
+        else if (this._isShadowEffect)
         {
             if (d.perFrameShadowVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameShadowVSData.data);
             if (d.perFrameShadowPSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFrameShadowPSData.data);
@@ -972,7 +980,7 @@ export class Tw2Effect extends meta.Model
 
         const pod = d.perObjectData;
         context.perObjectData = pod;
-        if (pod)
+        if (pod && !rp.isCewg)
         {
             if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
             if (pod.ps && cbh[4]) gl.uniform4fv(cbh[4], pod.ps.data);
@@ -980,6 +988,17 @@ export class Tw2Effect extends meta.Model
         }
 
         this._RunAdapterHook("OnAfterPerObjectData", context);
+
+        // CEWG passes carry non-sampler bindings (bone UBO, light-list
+        // data textures, post-fx buffer textures) the legacy uniform
+        // upload above knows nothing about.
+        if (rp.isCewg)
+        {
+            const binder = CewgResourceBinder.Get(d);
+            binder.SetJointMatrices(pod && pod.vs && pod.vs.Has("JointMat") ? pod.vs.Get("JointMat") : null);
+            binder.ApplyPass(program, d);
+        }
+
         this._RunAdapterHook("OnBeforeDraw", context);
 
     }

@@ -86,10 +86,12 @@ export class Tw2ShaderProgram
         }
 
         // Collect used vertex declarations
+        // CEWG passes bind attributes by their emitted semantic names
+        // (in_POSITION0 etc.); the legacy positional attrN lookup is untouched.
         const { elements } = pass.stages[0].inputDefinition;
         for (let j = 0; j < elements.length; ++j)
         {
-            const attr = "attr" + j;
+            const attr = pass.isCewg && elements[j]._attr ? elements[j]._attr : "attr" + j;
             let location = gl.getAttribLocation(program.program, attr);
             if (location >= 0)
             {
@@ -127,6 +129,76 @@ export class Tw2ShaderProgram
             }
         }
 
+        if (pass.isCewg)
+        {
+            Tw2ShaderProgram.SetupCewgResources(program, pass, gl);
+        }
+
         return program;
+    }
+
+    /**
+     * Resolves a CEWG pass's non-sampler bindings against the linked
+     * program: structured UBOs (bones) get uniform-block binding points,
+     * structured/buffer data textures (sb#/bt#) get texture units above
+     * the legacy s0-15/vs0-15 range. The results are consumed at draw
+     * time by CewgResourceBinder.ApplyPass.
+     * @param {Tw2ShaderProgram} program
+     * @param {Tw2ShaderPass} pass
+     * @param {WebGL2RenderingContext} gl
+     */
+    static SetupCewgResources(program, pass, gl)
+    {
+        program.cewgUniformBlocks = [];
+        program.cewgDataTextures = [];
+
+        const seen = new Set();
+        let bindingPoint = 0;
+        let unit = 28; // keep in sync with CewgResourceBinder.FIRST_DATA_TEXTURE_UNIT
+
+        for (let s = 0; s < pass.stages.length; ++s)
+        {
+            const bindings = pass.stages[s].cewgBindings;
+            if (!bindings) continue;
+
+            for (let i = 0; i < bindings.length; ++i)
+            {
+                const binding = bindings[i];
+                const key = `${binding.kind}:${binding.name}`;
+                if (seen.has(key)) continue;
+
+                if (binding.kind === "structuredUbo")
+                {
+                    const blockIndex = gl.getUniformBlockIndex(program.program, binding.name + "Block");
+                    if (blockIndex === gl.INVALID_INDEX) continue;
+                    seen.add(key);
+                    gl.uniformBlockBinding(program.program, blockIndex, bindingPoint);
+                    program.cewgUniformBlocks.push({
+                        name: binding.name,
+                        bindingPoint,
+                        capacityElements: binding.capacityElements || 0,
+                        strideBytes: binding.strideBytes || 0,
+                        byteLength: (binding.capacityElements || 0) * (binding.strideBytes || 0)
+                    });
+                    bindingPoint++;
+                }
+                else if (binding.kind === "structuredTexture" || binding.kind === "bufferTexture")
+                {
+                    const location = gl.getUniformLocation(program.program, binding.name);
+                    if (!location) continue;
+                    seen.add(key);
+                    gl.uniform1i(location, unit);
+                    program.cewgDataTextures.push({
+                        name: binding.name,
+                        kind: binding.kind,
+                        unit,
+                        registerIndex: binding.registerIndex,
+                        strideBytes: binding.strideBytes || 0,
+                        width: binding.width || 0
+                    });
+                    unit++;
+                }
+            }
+        }
     }
 }

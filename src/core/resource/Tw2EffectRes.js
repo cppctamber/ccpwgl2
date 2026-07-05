@@ -4,6 +4,7 @@ import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { tw2 } from "global";
+import { Tw2CewgPackageReader, Tw2CewgShaderFactory } from "./Tw2CewgReader";
 
 const CHAR_CODE_CHUNK_SIZE = 0x8000;
 
@@ -42,6 +43,25 @@ export class Tw2EffectRes extends Tw2Resource
 
     _extension = null;
     _requestResponseType = null;
+
+    _cewg = null;
+    _cewgFactory = null;
+
+    /**
+     * Checks whether effect bytes are a CEWG package (translated DX11
+     * shaders). The first dword of the legacy WebGL binary is its version
+     * (2..8); CEWG's "CEWG" magic reads as a value far above 8, which is the
+     * agreed new-format discriminator.
+     * @param {ArrayBuffer} data
+     * @returns {boolean}
+     */
+    static IsCewgData(data)
+    {
+        const bytes = new Uint8Array(data, 0, Math.min(4, data.byteLength));
+        return bytes.length === 4
+            && bytes[0] === 0x43 && bytes[1] === 0x45   // "CE"
+            && bytes[2] === 0x57 && bytes[3] === 0x47;  // "WG"
+    }
 
 
     /**
@@ -232,6 +252,8 @@ export class Tw2EffectRes extends Tw2Resource
         this.version = 0;
         this.stringTable = "";
         this.shaders.splice(0);
+        this._cewg = null;
+        this._cewgFactory = null;
 
         switch(this._extension)
         {
@@ -239,7 +261,14 @@ export class Tw2EffectRes extends Tw2Resource
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                this.PrepareCCP(data);
+                if (Tw2EffectRes.IsCewgData(data))
+                {
+                    this.PrepareCEWG(data);
+                }
+                else
+                {
+                    this.PrepareCCP(data);
+                }
                 break;
 
             case "sm_json":
@@ -251,6 +280,57 @@ export class Tw2EffectRes extends Tw2Resource
         }
 
         this.OnPrepared();
+    }
+
+    /**
+     * Prepares a CEWG package (translated DX11 shaders)
+     * @param {ArrayBuffer} data
+     */
+    PrepareCEWG(data)
+    {
+        const reader = new Tw2CewgPackageReader();
+        if (!reader.Read(data))
+        {
+            this.OnError(reader.readError || new Error("Unable to read CEWG package"));
+            return;
+        }
+
+        const metadata = reader.GetJson("META");
+        const glslSet = reader.GetJson("GLSL");
+        const info = reader.GetJson("INFO");
+        if (!info || !metadata || !glslSet)
+        {
+            this.OnError(new Error("CEWG package must contain INFO, META and GLSL chunks"));
+            return;
+        }
+
+        this._cewg = { info, metadata, glslSet };
+        this._cewgFactory = new Tw2CewgShaderFactory(metadata, glslSet);
+        this.permutations = this._cewgFactory.permutations;
+        this.version = 9; // first post-v8 format
+    }
+
+    /**
+     * Gets/creates a shader for CEWG packages
+     * @param {Object.<string, string>} options - Permutation options
+     * @returns {Tw2Shader|null}
+     */
+    GetShaderCEWG(options)
+    {
+        try
+        {
+            const index = this._cewgFactory.ResolvePermutationIndex(options);
+            if (this.shaders[index])
+            {
+                return this.shaders[index];
+            }
+            return this.shaders[index] = this._cewgFactory.CreateShader(index, this.path);
+        }
+        catch (err)
+        {
+            this.OnError(err);
+            return null;
+        }
     }
 
     /**
@@ -271,7 +351,7 @@ export class Tw2EffectRes extends Tw2Resource
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                return this.GetShaderCCP(options);
+                return this._cewgFactory ? this.GetShaderCEWG(options) : this.GetShaderCCP(options);
 
             case "sm_json":
                 return this.GetShaderJSON(options);
