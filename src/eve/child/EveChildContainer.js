@@ -2,6 +2,7 @@ import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
+import { GetAverageAxisScale } from "unsupported/core/lighting/CewgLightMath";
 
 
 @meta.type("EveChildContainer", true)
@@ -224,6 +225,46 @@ export class EveChildContainer extends EveChild
             this.lights[i].Update(dt, this._worldTransform, perObjectData);
         }
         */
+    }
+
+    /**
+     * Collects this container's owned lights into a CewgLightCollector
+     *
+     * Additive hook: not called by any per-frame code yet (the render-loop /
+     * EveSpaceScene call site is separate scene-wiring work). For each
+     * populated light (i.e. one with the CEWG light API added in
+     * src/unsupported/core/lighting - `Update`/`GetCewgLightData`), updates
+     * its world position against this container's own `_worldTransform`
+     * (computed each `Update()`, see above) and collects its
+     * `GetCewgLightData` row. Plain deserialized lights that predate that
+     * API (missing `Update`/`GetCewgLightData`) are skipped silently, so
+     * populated and un-populated lights can coexist in `this.lights`.
+     * Does NOT recurse into `this.objects` - each child collects its own
+     * lights independently (the scene wiring is expected to walk the whole
+     * hierarchy and call `GetLights` on every owner).
+     * @param {CewgLightCollector} collector
+     * @param {object} [parentContext]
+     * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
+     * @param {Array} [parentContext.bones=null] forwarded to `light.Update` - null until scene wiring threads real bone matrices through
+     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCewgLightData`
+     */
+    GetLights(collector, parentContext = {})
+    {
+        if (!collector || !this.lights.length) return;
+
+        const dt = parentContext.dt || 0;
+        const bones = parentContext.bones || null;
+        const parentBrightness = parentContext.parentBrightness !== undefined ? parentContext.parentBrightness : 1;
+        const parentScale = GetAverageAxisScale(this._worldTransform);
+
+        for (let i = 0; i < this.lights.length; i++)
+        {
+            const light = this.lights[i];
+            if (!light || typeof light.Update !== "function" || typeof light.GetCewgLightData !== "function") continue;
+
+            light.Update(dt, this._worldTransform, bones);
+            collector.Collect([ light.GetCewgLightData({ parentBrightness, parentScale }) ]);
+        }
     }
 
     /**

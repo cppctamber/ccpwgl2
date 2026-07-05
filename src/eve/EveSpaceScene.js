@@ -1,6 +1,8 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
+import { CewgLightCollector } from "core/cewg/CewgLightCollector";
+import { CewgResourceBinder } from "core/cewg/CewgResourceBinder";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import {
     Tw2BatchAccumulator,
@@ -617,10 +619,53 @@ export class EveSpaceScene extends meta.Model
 
         this.PerChildObject("Update", dt);
 
+        this.UpdateCewgLights(dt);
+
         if (this.postprocess)
         {
             this.postprocess.Update(dt, this);
         }
+    }
+
+    /**
+     * Collects dynamic lights from light-owning children into the CEWG
+     * light list (translated DX11 shader path). Additive: legacy v8
+     * shaders never read the light-list textures, so this is inert
+     * until a CEWG effect samples them. Mirrors Carbon's per-frame
+     * pull (EveSpaceScene.cpp:1375-1416): clear -> GetLights on every
+     * owner -> resolve/cull -> hand the list to the binder.
+     * @param {Number} dt - delta time
+     */
+    UpdateCewgLights(dt)
+    {
+        if (!this._cewgLightCollector)
+        {
+            this._cewgLightCollector = new CewgLightCollector();
+        }
+
+        const
+            d = device,
+            collector = this._cewgLightCollector;
+
+        collector.Reset();
+        this.PerChildObject("GetLights", collector, { dt });
+
+        // The list's tile-header layout must track the real viewport —
+        // the translated shaders derive their tile count from the
+        // screen size in the per-frame constants.
+        collector.GetLightList().SetScreenSize(d.viewportWidth || 16, d.viewportHeight || 16);
+
+        // fovY from the projection's [1][1] = 1/tan(fovY/2); frustum
+        // planes are omitted until the Tw2Frustum plane convention is
+        // verified against the collector's (positive-inside) one.
+        const projScaleY = d.projection[5] || 1;
+        collector.Resolve({
+            viewportHeight: d.viewportHeight || 0,
+            fovY: 2 * Math.atan(1 / Math.abs(projScaleY)),
+            cameraPosition: d.eyePosition
+        });
+
+        CewgResourceBinder.Get(d).SetLightList(collector.GetLightList());
     }
 
     /**

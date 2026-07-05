@@ -71,6 +71,30 @@ export class EveObject extends WglTransform
     }
 
     /**
+     * Collects dynamic lights for the CEWG (translated DX11) shader
+     * path by forwarding to any light-owning child effects (e.g.
+     * EveChildContainer). Subclasses with their own light sources
+     * should extend this. Inert for the legacy v8 shader path.
+     * @param {CewgLightCollector} collector
+     * @param {Object} [parentContext]
+     */
+    GetLights(collector, parentContext)
+    {
+        if (!this.display) return;
+
+        const children = this.effectChildren;
+        if (!children) return;
+
+        for (let i = 0; i < children.length; i++)
+        {
+            if (children[i] && "GetLights" in children[i])
+            {
+                children[i].GetLights(collector, parentContext);
+            }
+        }
+    }
+
+    /**
      * Finds planeSets with names that include billboard
      * TODO: why is this here, this looks like a specific helper function.
      * @param out

@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
 import { Tw2Float } from "core";
+import { GetAverageAxisScale } from "unsupported/core/lighting/CewgLightMath";
 
 
 @meta.type("EveStretch")
@@ -351,6 +352,65 @@ export class EveStretch extends meta.Model
         }
 
         return accumulator.length !== c;
+    }
+
+    /**
+     * Collects this stretch's owned `sourceLights` into a CewgLightCollector
+     *
+     * Additive hook: not called by any per-frame code yet (the render-loop /
+     * EveSpaceScene call site is separate scene-wiring work). `sourceLights`
+     * is `@meta.notImplemented` and has no destination-side counterpart in
+     * the deserialized data (see the property declaration above), so only
+     * the source endpoint is handled here.
+     *
+     * SIMPLIFICATION: `UpdateViewDependentData` derives a full oriented
+     * basis for the source endpoint (direction/up vectors composed with
+     * `parentTransform`, see above) that is not reproduced here - only the
+     * source's world position is used, built either from `_sourceTransform`
+     * (when `_useTransformsForStretch`) or from `_sourcePosition` (a plain
+     * translation). This is sufficient for `Tr2PointLight` (the only type
+     * `sourceLights` declares - see `@meta.list("Tr2PointLight")` above),
+     * which only reads world position, not orientation, from the transform
+     * passed to `Update`.
+     * @param {CewgLightCollector} collector
+     * @param {object} [parentContext]
+     * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
+     * @param {Array} [parentContext.bones=null] forwarded to `light.Update` - null until scene wiring threads real bone matrices through
+     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCewgLightData`
+     */
+    GetLights(collector, parentContext = {})
+    {
+        if (!collector || !this.sourceLights.length) return;
+
+        EveStretch.init();
+
+        const dt = parentContext.dt || 0;
+        const bones = parentContext.bones || null;
+        const parentBrightness = parentContext.parentBrightness !== undefined ? parentContext.parentBrightness : 1;
+
+        let worldTransform;
+        if (this._useTransformsForStretch)
+        {
+            // No source transform has been supplied yet (see SetSourceTransform) - nothing to attach lights to.
+            if (!this._sourceTransform) return;
+            worldTransform = this._sourceTransform;
+        }
+        else
+        {
+            worldTransform = mat4.identity(EveStretch.global.mat4_0);
+            mat4.setTranslation(worldTransform, this._sourcePosition);
+        }
+
+        const parentScale = GetAverageAxisScale(worldTransform);
+
+        for (let i = 0; i < this.sourceLights.length; i++)
+        {
+            const light = this.sourceLights[i];
+            if (!light || typeof light.Update !== "function" || typeof light.GetCewgLightData !== "function") continue;
+
+            light.Update(dt, worldTransform, bones);
+            collector.Collect([ light.GetCewgLightData({ parentBrightness, parentScale }) ]);
+        }
     }
 
     /**
