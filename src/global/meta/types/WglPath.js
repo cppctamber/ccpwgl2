@@ -1,5 +1,5 @@
-import WglString from "./WglString";
+import { WglString } from "./WglString";
 
-export default class WglPath extends WglString
+export class WglPath extends WglString
 {
 }

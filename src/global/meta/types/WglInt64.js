@@ -1,6 +1,6 @@
 import WglNumber from "../WglNumber";
 
-export default class WglInt64 extends WglNumber
+export class WglInt64 extends WglNumber
 {
     Equals(a, b)
     {

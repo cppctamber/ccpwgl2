@@ -1,7 +1,7 @@
 import WglPropertyType from "../WglPropertyType";
 import { isNoU } from "../../utils/type";
 
-export default class WglStruct extends WglPropertyType
+export class WglStruct extends WglPropertyType
 {
     Is(value)
     {

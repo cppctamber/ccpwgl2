@@ -3,7 +3,7 @@ import WglPropertyType from "../WglPropertyType";
 
 const getArray = (a, key) => a[key] ? Array.from(a[key]) : [];
 
-export default class WglVector extends WglPropertyType
+export class WglVector extends WglPropertyType
 {
     constructor(type, Constructor, length)
     {

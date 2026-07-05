@@ -1,7 +1,7 @@
 import { isArray, isEqual } from "../../utils/type";
 import WglPropertyType from "../WglPropertyType";
 
-export default class WglArray extends WglPropertyType
+export class WglArray extends WglPropertyType
 {
     Is(value)
     {

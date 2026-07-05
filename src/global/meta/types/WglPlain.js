@@ -1,7 +1,7 @@
 import { isObject as isObjectLike, isPlain } from "../../utils/type";
 import WglPropertyType from "../WglPropertyType";
 
-export default class WglPlain extends WglPropertyType
+export class WglPlain extends WglPropertyType
 {
     Is(value)
     {

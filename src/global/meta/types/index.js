@@ -1,5 +1,28 @@
 import { isFunction, isPlain } from "../../utils/type";
 
+// Explicit (not wildcard) re-exports: `export * from` did not reliably
+// propagate these through this barrel under this project's webpack 4 +
+// babel-loader setup (config.js's `import * as MT from "global/meta/types"`
+// saw every one of these as missing, even already-named exports). Naming
+// each export here sidesteps whatever is causing that.
+export { WglArray } from "./WglArray";
+export { WglBoolean } from "./WglBoolean";
+export { WglExpression } from "./WglExpression";
+export { WglFloat32 } from "./WglFloat32";
+export { WglInt32 } from "./WglInt32";
+export { WglInt64 } from "./WglInt64";
+export { WglPath } from "./WglPath";
+export { WglPlain } from "./WglPlain";
+export { WglString } from "./WglString";
+export { WglStruct } from "./WglStruct";
+export { WglStructList } from "./WglStructList";
+export { WglTypedArray } from "./WglTypedArray";
+export { WglUInt8 } from "./WglUInt8";
+export { WglUInt16 } from "./WglUInt16";
+export { WglUInt32 } from "./WglUInt32";
+export { WglUnknown } from "./WglUnknown";
+export { WglVector } from "./WglVector";
+
 /**
  * @typedef {Function|Object} PropertyTypeDefinition
  *

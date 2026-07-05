@@ -5,7 +5,7 @@ const
     MIN_VALUE = -2147483648,
     MAX_VALUE = 2147483647;
 
-export default class WglInt32 extends WglNumber
+export class WglInt32 extends WglNumber
 {
     Normalize(value)
     {

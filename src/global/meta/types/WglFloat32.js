@@ -1,5 +1,6 @@
 import WglNumber from "../WglNumber";
 
-export default class WglFloat32 extends WglNumber
+export class WglFloat32 extends WglNumber
 {
+    
 }

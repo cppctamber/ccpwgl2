@@ -2,7 +2,7 @@ import WglUnsignedInteger from "../WglUnsignedInteger";
 
 const MAX_VALUE = 255;
 
-export default class WglUInt8 extends WglUnsignedInteger
+export class WglUInt8 extends WglUnsignedInteger
 {
     constructor(type)
     {

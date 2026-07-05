@@ -1,5 +1,5 @@
 import WglPropertyType from "../WglPropertyType";
 
-export default class WglUnknown extends WglPropertyType
+export class WglUnknown extends WglPropertyType
 {
 }

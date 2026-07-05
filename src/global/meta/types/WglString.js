@@ -1,7 +1,7 @@
 import { isString } from "../../utils/type";
 import WglPropertyType from "../WglPropertyType";
 
-export default class WglString extends WglPropertyType
+export class WglString extends WglPropertyType
 {
     Is(value)
     {

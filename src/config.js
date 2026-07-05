@@ -5,28 +5,12 @@ import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
 import { PT } from "constant/type";
-import WglArray from "global/meta/types/WglArray";
-import WglBoolean from "global/meta/types/WglBoolean";
-import WglExpression from "global/meta/types/WglExpression";
-import WglFloat32 from "global/meta/types/WglFloat32";
-import WglInt32 from "global/meta/types/WglInt32";
-import WglInt64 from "global/meta/types/WglInt64";
-import WglPath from "global/meta/types/WglPath";
-import WglPlain from "global/meta/types/WglPlain";
-import WglStruct from "global/meta/types/WglStruct";
-import WglStructList from "global/meta/types/WglStructList";
-import WglString from "global/meta/types/WglString";
-import WglTypedArray from "global/meta/types/WglTypedArray";
-import WglUInt8 from "global/meta/types/WglUInt8";
-import WglUInt16 from "global/meta/types/WglUInt16";
-import WglUInt32 from "global/meta/types/WglUInt32";
-import WglUnknown from "global/meta/types/WglUnknown";
-import WglVector from "global/meta/types/WglVector";
+import * as MT from "global/meta/types";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
 import { tw2BatchSorter } from "core/batch";
 
-const typedArray = ctor => ({ type: WglTypedArray, ctor });
+const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 
 /**
  * Register global configurations
@@ -316,39 +300,39 @@ export const config = {
     },
 
     propertyTypes: {
-        [PT.UNKNOWN]: WglUnknown,
+        [PT.UNKNOWN]: MT.WglUnknown,
 
-        [PT.BOOLEAN]: WglBoolean,
-        [PT.ENUM]: WglPlain,
+        [PT.BOOLEAN]: MT.WglBoolean,
+        [PT.ENUM]: MT.WglPlain,
 
-        [PT.STRING]: WglString,
-        [PT.PATH]: WglPath,
-        [PT.EXPRESSION]: WglExpression,
-        [PT.BYTE]: WglUInt8,
-        [PT.UINT]: WglUInt32,
-        [PT.USHORT]: WglUInt16,
-        [PT.FLOAT]: WglFloat32,
-        [PT.INT64]: WglInt64,
-        [PT.INT32]: WglInt32,
+        [PT.STRING]: MT.WglString,
+        [PT.PATH]: MT.WglPath,
+        [PT.EXPRESSION]: MT.WglExpression,
+        [PT.BYTE]: MT.WglUInt8,
+        [PT.UINT]: MT.WglUInt32,
+        [PT.USHORT]: MT.WglUInt16,
+        [PT.FLOAT]: MT.WglFloat32,
+        [PT.INT64]: MT.WglInt64,
+        [PT.INT32]: MT.WglInt32,
 
-        [PT.STRUCT]: WglStruct,
-        [PT.STRUCT_RAW]: WglStruct,
-        [PT.STRUCT_LIST]: WglStructList,
-        [PT.PLAIN]: WglPlain,
-        [PT.ARRAY]: WglArray,
+        [PT.STRUCT]: MT.WglStruct,
+        [PT.STRUCT_RAW]: MT.WglStruct,
+        [PT.STRUCT_LIST]: MT.WglStructList,
+        [PT.PLAIN]: MT.WglPlain,
+        [PT.ARRAY]: MT.WglArray,
 
-        [PT.VECTOR]: { type: WglVector,ctor: Float32Array },
-        [PT.VECTOR2]: { type: WglVector,ctor: Float32Array, length: 2 },
-        [PT.VECTOR3]: { type: WglVector, ctor: Float32Array, length: 3 },
-        [PT.VECTOR4]: { type: WglVector, ctor: Float32Array, length: 4 },
-        [PT.COLOR]: { type: WglVector, ctor: Float32Array, length: 4 },
-        [PT.QUATERNION]: { type: WglVector, ctor: Float32Array, length: 4 },
-        [PT.MATRIX3]: { type: WglVector, ctor: Float32Array, length: 9 },
-        [PT.MATRIX4]: { type: WglVector, ctor: Float32Array, length: 16 },
+        [PT.VECTOR]: { type: MT.WglVector,ctor: Float32Array },
+        [PT.VECTOR2]: { type: MT.WglVector,ctor: Float32Array, length: 2 },
+        [PT.VECTOR3]: { type: MT.WglVector, ctor: Float32Array, length: 3 },
+        [PT.VECTOR4]: { type: MT.WglVector, ctor: Float32Array, length: 4 },
+        [PT.COLOR]: { type: MT.WglVector, ctor: Float32Array, length: 4 },
+        [PT.QUATERNION]: { type: MT.WglVector, ctor: Float32Array, length: 4 },
+        [PT.MATRIX3]: { type: MT.WglVector, ctor: Float32Array, length: 9 },
+        [PT.MATRIX4]: { type: MT.WglVector, ctor: Float32Array, length: 16 },
 
-        [PT.TRANSLATION]: { type: WglVector, ctor: Float32Array, length: 3 },
-        [PT.SCALING]: { type: WglVector, ctor: Float32Array, length: 3 },
-        [PT.ROTATION]: { type: WglVector, ctor: Float32Array,length: 4 },
+        [PT.TRANSLATION]: { type: MT.WglVector, ctor: Float32Array, length: 3 },
+        [PT.SCALING]: { type: MT.WglVector, ctor: Float32Array, length: 3 },
+        [PT.ROTATION]: { type: MT.WglVector, ctor: Float32Array,length: 4 },
 
         [PT.UINT8_ARRAY]: typedArray(Uint8Array),
         [PT.UINT8_CLAMPED_ARRAY]: typedArray(Uint8ClampedArray),

@@ -80,8 +80,18 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                exclude: [ /node_modules/ ],
-                loader: "babel-loader"
+                // @carbonenginejs/* packages ship modern syntax (private
+                // class fields) and must be transpiled like first-party
+                // source; everything else in node_modules is left alone.
+                exclude: /node_modules\/(?!@carbonenginejs)/,
+                loader: "babel-loader",
+                options: {
+                    // Babel's .babelrc lookup stops at package boundaries,
+                    // so node_modules/@carbonenginejs packages (each their
+                    // own package root) would otherwise be parsed with no
+                    // config at all. Force this project's config onto them.
+                    configFile: path.resolve(__dirname, ".babelrc")
+                }
             }
         ]
     }

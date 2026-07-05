@@ -2,7 +2,7 @@ import { isArray, isNumber, isTyped } from "../../utils/type";
 import WglPropertyType from "../WglPropertyType";
 
 
-export default class WglTypedArray extends WglPropertyType
+export class WglTypedArray extends WglPropertyType
 {
     constructor(type, Constructor)
     {
