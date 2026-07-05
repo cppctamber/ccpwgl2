@@ -741,14 +741,16 @@ function GetCurveSetTime(context, name)
 {
     if (context.owner)
     {
-        if (context.owner.GetCurveSetDuration)
-        {
-            return ToNumber(context.owner.GetCurveSetDuration(name));
-        }
+        // A "Set/Range" path is a named range lookup — resolve it against GetRangeDuration first;
+        // only a bare set name falls through to the whole-set (max curve) duration.
         if (context.owner.GetRangeDuration && typeof name === "string" && name.includes("/"))
         {
             const parts = name.split("/");
             return ToNumber(context.owner.GetRangeDuration(parts[0], parts.slice(1).join("/")));
+        }
+        if (context.owner.GetCurveSetDuration)
+        {
+            return ToNumber(context.owner.GetCurveSetDuration(name));
         }
     }
     return CallContextFunction(context, "CurveSetTime", name);

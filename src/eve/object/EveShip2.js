@@ -823,6 +823,19 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Checks whether a mesh animation on the given mask/layer is currently playing.
+     * Backs the `IsAnimationPlaying("<layer>")` expression used by controller state-machine
+     * transitions (e.g. stances wait on `IsAnimationPlaying("TrackMaskStance")==0`). Without this,
+     * the expression falls back to 0 and transition clips are skipped before they finish playing.
+     * @param {String} [maskName=""]
+     * @returns {Boolean}
+     */
+    IsAnimationPlaying(maskName = "")
+    {
+        return this.animation ? this.animation.IsMaskAnimationPlaying(maskName) : false;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      */

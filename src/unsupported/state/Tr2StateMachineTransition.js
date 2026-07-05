@@ -60,23 +60,14 @@ export class Tr2StateMachineTransition extends meta.Model
             return false;
         }
 
-        if (dirtyVariables && dirtyVariables.size && this._variableNames.length && !this._functionNames.length)
-        {
-            let hasDirtyVariable = false;
-            for (let i = 0; i < this._variableNames.length; i++)
-            {
-                if (dirtyVariables.has(this._variableNames[i]))
-                {
-                    hasDirtyVariable = true;
-                    break;
-                }
-            }
-            if (!hasDirtyVariable)
-            {
-                return false;
-            }
-        }
-
+        // Always evaluate the condition against the live value; never gate on `dirtyVariables`.
+        // Gating on dirtiness lost "last instruction wins" across a transition: while a transition
+        // state plays (it advances only on IsAnimationPlaying==0), the target variable can be set
+        // several times, but the controller clears the dirty flag each frame — so by the time the
+        // destination state is entered the change was no longer "dirty" and its variable conditions
+        // were skipped, stranding the machine. Evaluating live lets the destination state route to
+        // the latest requested value the instant it becomes current, without interrupting the
+        // in-flight transition. (`dirtyVariables` is still passed in as an unused fast-path hint.)
         const context = controller && controller.GetExpressionContext ? controller.GetExpressionContext(owner, stateMachine) : { controller, owner, stateMachine };
         return program.EvaluateBoolean(context);
     }

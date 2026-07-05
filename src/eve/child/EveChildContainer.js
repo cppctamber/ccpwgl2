@@ -24,7 +24,6 @@ export class EveChildContainer extends EveChild
     @meta.int32
     boneIndex = -1;
 
-    @meta.notImplemented
     @meta.list("Tr2Controller")
     controllers = [];
 
@@ -94,6 +93,92 @@ export class EveChildContainer extends EveChild
     _boneTransform = null;
     _worldTransform = mat4.create();
     //_worldTransformLast = mat4.create();
+    _controllersLinked = false;
+
+    /**
+     * Links this container's controllers with the container as their owner, mirroring
+     * CarbonEngine's EveChildContainer::Initialize (controller->Link(*GetRawRoot())).
+     * The owner exposes GetRangeDuration/GetCurveSetDuration so expression terms like
+     * CurveSetTime("Set/Range") resolve against this container's own curve sets.
+     * Idempotent: only links controllers that aren't already linked.
+     */
+    Initialize()
+    {
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            const controller = this.controllers[i];
+            if (!controller) continue;
+            const linked = controller.IsLinked ? controller.IsLinked() : false;
+            if (!linked && controller.Initialize)
+            {
+                controller.Initialize(this);
+            }
+        }
+        this._controllersLinked = true;
+    }
+
+    /**
+     * Total duration of the longest range with the given name across curve sets named `setName`,
+     * recursing into child curve-set owners. Port of EveChildContainer::GetRangeDuration.
+     * @param {String} setName
+     * @param {String} rangeName
+     * @returns {Number} seconds
+     */
+    GetRangeDuration(setName, rangeName)
+    {
+        let duration = 0;
+
+        for (let i = 0; i < this.curveSets.length; i++)
+        {
+            const cs = this.curveSets[i];
+            if (cs && cs.name === setName && cs.GetRangeDuration)
+            {
+                duration = Math.max(duration, cs.GetRangeDuration(rangeName));
+            }
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            const child = this.objects[i];
+            if (child && child.GetRangeDuration)
+            {
+                duration = Math.max(duration, child.GetRangeDuration(setName, rangeName));
+            }
+        }
+
+        return duration;
+    }
+
+    /**
+     * Longest curve duration across curve sets named `setName`, recursing into child
+     * curve-set owners. Port of EveChildContainer::GetCurveSetDuration.
+     * @param {String} setName
+     * @returns {Number} seconds
+     */
+    GetCurveSetDuration(setName)
+    {
+        let duration = 0;
+
+        for (let i = 0; i < this.curveSets.length; i++)
+        {
+            const cs = this.curveSets[i];
+            if (cs && cs.name === setName && cs.GetMaxCurveDuration)
+            {
+                duration = Math.max(duration, cs.GetMaxCurveDuration());
+            }
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            const child = this.objects[i];
+            if (child && child.GetCurveSetDuration)
+            {
+                duration = Math.max(duration, child.GetCurveSetDuration(setName));
+            }
+        }
+
+        return duration;
+    }
 
     /**
      * Resets lod
@@ -206,6 +291,18 @@ export class EveChildContainer extends EveChild
             {
 
                 mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+            }
+        }
+
+        if (this.controllers.length)
+        {
+            // Effect-child controllers arrive via deserialization rather than an AddController
+            // call, so link them (owner = this container) on first tick before updating.
+            if (!this._controllersLinked) this.Initialize();
+
+            for (let i = 0; i < this.controllers.length; i++)
+            {
+                this.controllers[i].Update(dt);
             }
         }
 

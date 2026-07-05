@@ -5,7 +5,6 @@ import { Tw2Action } from "./Tw2Action";
 
 @meta.type("Tr2ActionPlayMeshAnimation")
 @meta.ccp.define("Tr2ActionPlayMeshAnimation")
-@meta.todo("Track masks/layers are not supported by Tw2AnimationController - the 'mask' field is currently ignored")
 export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 
@@ -271,7 +270,10 @@ export class Tr2ActionPlayMeshAnimation extends Tw2Action
     {
         const options = {
             cycle: this.loops !== 1,
-            timeScale: this.speed
+            timeScale: this.speed,
+            // Routes masked/layered playback (e.g. "TrackMaskStance") through the animation
+            // controller; empty/unknown masks fall back to full-body playback.
+            mask: this.mask
         };
 
         // Tw2Animation only supports play-once or infinite cycling, so a

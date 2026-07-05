@@ -201,8 +201,68 @@ export class Tw2AnimationController extends meta.Model
         const animation = this.GetAnimation(name);
         if (animation)
         {
+            const maskName = options && options.mask ? options.mask : "";
+
+            // One animation per layer: the new clip replaces whatever else is on this layer. Stop
+            // anything still playing and clear its (held) weight so it stops contributing — the new
+            // clip takes over cleanly with no overlap, and the outgoing held pose hands straight off.
+            for (let i = 0; i < this.animations.length; i++)
+            {
+                const other = this.animations[i];
+                if (other !== animation && other.trackMaskName === maskName)
+                {
+                    if (other.IsPlaying()) other.Stop();
+                    other.weight = 0;
+                }
+            }
+
+            animation.trackMaskName = maskName;
+            // Unknown/absent masks resolve to null weights → full-body override (legacy behaviour);
+            // the layer name still drives sequencing and IsAnimationPlaying regardless.
+            animation.trackMask = maskName ? this.ResolveTrackMask(maskName) : null;
             animation.Play(options);
         }
+    }
+
+    /**
+     * Checks whether any animation on the given mask/layer is currently playing. Backs the
+     * IsAnimationPlaying(layer) expression used by state-machine transition conditions.
+     * @param {String} [maskName=""]
+     * @returns {Boolean}
+     */
+    IsMaskAnimationPlaying(maskName = "")
+    {
+        for (let i = 0; i < this.animations.length; i++)
+        {
+            const animation = this.animations[i];
+            if (animation.trackMaskName === maskName && animation.IsPlaying())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Resolves a named track mask to its per-bone weight array (Float32Array, one weight per
+     * model bone, aligned with Tw2Bone._skeletonIndex). Returns null when the mask is unknown
+     * (e.g. geometry exported without ExtendedData).
+     * @param {String} maskName
+     * @returns {Float32Array|null}
+     */
+    ResolveTrackMask(maskName)
+    {
+        if (!maskName) return null;
+
+        for (let i = 0; i < this.models.length; i++)
+        {
+            const skeleton = this.models[i].modelRes && this.models[i].modelRes.skeleton;
+            if (skeleton && skeleton.trackMasks && skeleton.trackMasks[maskName])
+            {
+                return skeleton.trackMasks[maskName];
+            }
+        }
+        return null;
     }
 
     /**
@@ -244,6 +304,7 @@ export class Tw2AnimationController extends meta.Model
             if (names.includes(this.animations[i].name))
             {
                 this.animations[i].Stop();
+                this.animations[i].weight = 0;
             }
         }
     }
@@ -265,6 +326,7 @@ export class Tw2AnimationController extends meta.Model
         for (let i = 0; i < this.animations.length; ++i)
         {
             this.animations[i].Stop();
+            this.animations[i].weight = 0;
         }
     }
 
@@ -290,6 +352,7 @@ export class Tw2AnimationController extends meta.Model
             if (!names.includes(this.animations[i].name))
             {
                 this.animations[i].Stop();
+                this.animations[i].weight = 0;
             }
         }
     }
@@ -572,55 +635,65 @@ export class Tw2AnimationController extends meta.Model
             position = g.vec3_0,
             scale = g.mat3_0;
 
-        //var updateBones = false;
+        // Reset every bone to its rest TRS, then blend in each playing/fading animation.
+        // Unmasked animations (base layer) override fully; masked animations (e.g. stances)
+        // blend only their masked bones over the result. Weights are eased for crossfades, so
+        // at weight 1 with no track mask this reproduces the legacy direct-write behaviour.
+        for (let i = 0; i < this.models.length; ++i)
+        {
+            const bones = this.models[i].bones;
+            for (let j = 0; j < bones.length; ++j)
+            {
+                const bone = bones[j], rest = bone.boneRes;
+                const bp = bone._blendPosition, bq = bone._blendRotation, bs = bone._blendScaleShear;
+                bp[0] = rest.position[0]; bp[1] = rest.position[1]; bp[2] = rest.position[2];
+                bq[0] = rest.orientation[0]; bq[1] = rest.orientation[1]; bq[2] = rest.orientation[2]; bq[3] = rest.orientation[3];
+                for (let m = 0; m < 9; m++) bs[m] = rest.scaleShear[m];
+            }
+        }
+
+        const fadeIn = Tw2AnimationController.FADE_IN_TIME > 0 ? dt / Tw2AnimationController.FADE_IN_TIME : 1;
+
         for (let i = 0; i < this.animations.length; ++i)
         {
             const animation = this.animations[i];
-            if (animation.Update(dt))
+            const playing = animation.Update(dt);
+            if (playing) this._isPlaying = true;
+
+            if (playing || animation.IsPaused())
             {
-                this._isPlaying = true;
-                const res = animation.animationRes;
+                // Ease up to full contribution while active (snaps when fade is disabled).
+                animation.weight = fadeIn >= 1 ? 1 : Math.min(1, animation.weight + fadeIn);
+            }
+            // Otherwise HOLD the current weight. A naturally-finished clip keeps contributing its
+            // held end pose until another clip replaces it on its layer (or it is explicitly cleared
+            // below). This closes the one-frame gap where masked bones would otherwise snap back to
+            // the base pose between a transition finishing and the next state's clip starting.
+        }
 
-                for (let j = 0; j < animation.trackGroups.length; ++j)
-                {
-                    for (let k = 0; k < animation.trackGroups[j].transformTracks.length; ++k)
-                    {
-                        const track = animation.trackGroups[j].transformTracks[k];
-                        if (track.trackRes.position)
-                        {
-                            curve.evaluate(track.trackRes.position, animation.time, position, animation.cycle, res.duration);
-                        }
-                        else
-                        {
-                            position[0] = position[1] = position[2] = 0;
-                        }
+        for (let i = 0; i < this.animations.length; ++i)
+        {
+            const animation = this.animations[i];
+            if (!animation.trackMask && animation.weight > 0) this.BlendAnimationPose(animation, position, orientation, scale);
+        }
+        for (let i = 0; i < this.animations.length; ++i)
+        {
+            const animation = this.animations[i];
+            if (animation.trackMask && animation.weight > 0) this.BlendAnimationPose(animation, position, orientation, scale);
+        }
 
-                        if (track.trackRes.orientation)
-                        {
-                            curve.evaluate(track.trackRes.orientation, animation.time, orientation, animation.cycle, res.duration);
-                            quat.normalize(orientation, orientation);
-                        }
-                        else
-                        {
-                            quat.identity(orientation);
-                        }
-
-                        if (track.trackRes.scaleShear)
-                        {
-                            curve.evaluate(track.trackRes.scaleShear, animation.time, scale, animation.cycle, res.duration);
-                        }
-                        else
-                        {
-                            mat3.identity(scale);
-                        }
-
-                        mat4.fromMat3(track.bone.localTransform, scale);
-                        mat4.multiply(track.bone.localTransform, track.bone.localTransform, mat4.fromQuat(rotationMat, orientation));
-                        track.bone.localTransform[12] = position[0];
-                        track.bone.localTransform[13] = position[1];
-                        track.bone.localTransform[14] = position[2];
-                    }
-                }
+        // Compose each bone's local transform from its blended TRS accumulator.
+        for (let i = 0; i < this.models.length; ++i)
+        {
+            const bones = this.models[i].bones;
+            for (let j = 0; j < bones.length; ++j)
+            {
+                const bone = bones[j];
+                mat4.fromMat3(bone.localTransform, bone._blendScaleShear);
+                mat4.multiply(bone.localTransform, bone.localTransform, mat4.fromQuat(rotationMat, bone._blendRotation));
+                bone.localTransform[12] = bone._blendPosition[0];
+                bone.localTransform[13] = bone._blendPosition[1];
+                bone.localTransform[14] = bone._blendPosition[2];
             }
         }
 
@@ -666,6 +739,99 @@ export class Tw2AnimationController extends meta.Model
         if (this._isPlaying || this._isPlaying !== wasPlaying)
         {
             this._boundsDirty = true;
+        }
+    }
+
+    /**
+     * Blends a single animation's sampled pose into the per-bone TRS accumulators, scaled by the
+     * animation's current weight and (optionally) its per-bone track mask. At weight 1 with no mask
+     * this is a plain override (identical to the legacy direct write); otherwise it lerps the bone
+     * toward the sampled pose, giving weighted crossfades and masked (layered) overlays.
+     * @param {Tw2Animation} animation
+     * @param {vec3} position    - scratch
+     * @param {quat} orientation - scratch
+     * @param {mat3} scale       - scratch
+     */
+    BlendAnimationPose(animation, position, orientation, scale)
+    {
+        const
+            res = animation.animationRes,
+            mask = animation.trackMask,
+            weight = animation.weight;
+
+        for (let j = 0; j < animation.trackGroups.length; ++j)
+        {
+            const tracks = animation.trackGroups[j].transformTracks;
+            for (let k = 0; k < tracks.length; ++k)
+            {
+                const track = tracks[k];
+                const bone = track.bone;
+
+                let bw = weight;
+                if (mask)
+                {
+                    const bi = bone._skeletonIndex;
+                    bw *= bi >= 0 && bi < mask.length ? mask[bi] : 0;
+                }
+                if (bw <= 0) continue;
+
+                if (track.trackRes.position)
+                {
+                    curve.evaluate(track.trackRes.position, animation.time, position, animation.cycle, res.duration);
+                }
+                else
+                {
+                    position[0] = position[1] = position[2] = 0;
+                }
+
+                if (track.trackRes.orientation)
+                {
+                    curve.evaluate(track.trackRes.orientation, animation.time, orientation, animation.cycle, res.duration);
+                    quat.normalize(orientation, orientation);
+                }
+                else
+                {
+                    quat.identity(orientation);
+                }
+
+                if (track.trackRes.scaleShear)
+                {
+                    curve.evaluate(track.trackRes.scaleShear, animation.time, scale, animation.cycle, res.duration);
+                }
+                else
+                {
+                    mat3.identity(scale);
+                }
+
+                const bp = bone._blendPosition, bq = bone._blendRotation, bs = bone._blendScaleShear;
+
+                if (bw >= 0.999999)
+                {
+                    bp[0] = position[0]; bp[1] = position[1]; bp[2] = position[2];
+                    bq[0] = orientation[0]; bq[1] = orientation[1]; bq[2] = orientation[2]; bq[3] = orientation[3];
+                    for (let m = 0; m < 9; m++) bs[m] = scale[m];
+                }
+                else
+                {
+                    bp[0] += (position[0] - bp[0]) * bw;
+                    bp[1] += (position[1] - bp[1]) * bw;
+                    bp[2] += (position[2] - bp[2]) * bw;
+
+                    // hemisphere-corrected nlerp (adequate for the short crossfade window)
+                    let ax = bq[0], ay = bq[1], az = bq[2], aw = bq[3];
+                    let ox = orientation[0], oy = orientation[1], oz = orientation[2], ow = orientation[3];
+                    if (ax * ox + ay * oy + az * oz + aw * ow < 0) { ox = -ox; oy = -oy; oz = -oz; ow = -ow; }
+                    const
+                        qx = ax + (ox - ax) * bw,
+                        qy = ay + (oy - ay) * bw,
+                        qz = az + (oz - az) * bw,
+                        qw = aw + (ow - aw) * bw,
+                        len = Math.sqrt(qx * qx + qy * qy + qz * qz + qw * qw) || 1;
+                    bq[0] = qx / len; bq[1] = qy / len; bq[2] = qz / len; bq[3] = qw / len;
+
+                    for (let m = 0; m < 9; m++) bs[m] += (scale[m] - bs[m]) * bw;
+                }
+            }
         }
     }
 
@@ -813,6 +979,7 @@ export class Tw2AnimationController extends meta.Model
             {
                 const bone = new Tw2Bone();
                 bone.boneRes = skeleton.bones[j];
+                bone._skeletonIndex = j;
                 model.bones.push(bone);
                 model.bonesByName[bone.boneRes.name] = bone;
             }
@@ -958,6 +1125,15 @@ export class Tw2AnimationController extends meta.Model
             controller._pendingCommands.splice(0);
         }
     }
+
+    /**
+     * Crossfade durations (seconds) for easing animation blend weights in/out. 0 = disabled
+     * (weights snap): clips play cleanly one after another with no blend/morph between them, which
+     * is the correct behaviour for stance deploy/retract animations. Kept as tunable constants in
+     * case a specific layer ever wants a short blend, but stances must NOT crossfade.
+     */
+    static FADE_IN_TIME = 0;
+    static FADE_OUT_TIME = 0;
 
     /**
      * Global and Scratch variables

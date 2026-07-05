@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { mat4 } from "math";
+import { mat3, mat4, quat, vec3 } from "math";
 
 
 @meta.type("Tw2Bone")
@@ -24,6 +24,16 @@ export class Tw2Bone
 
     @meta.matrix4
     offsetTransform = mat4.create();
+
+    // Index of this bone within its model/skeleton (aligned with
+    // Tw2GeometrySkeleton.trackMasks weight arrays). Set by Tw2AnimationController.AddModel.
+    _skeletonIndex = -1;
+
+    // Per-frame TRS accumulators used by Tw2AnimationController.Update to blend
+    // multiple (optionally masked) animations before composing localTransform.
+    _blendPosition = vec3.create();
+    _blendRotation = quat.create();
+    _blendScaleShear = mat3.create();
 
     /**
      * Gets the bone's parent bone index

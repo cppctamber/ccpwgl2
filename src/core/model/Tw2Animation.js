@@ -24,6 +24,24 @@ export class Tw2Animation extends meta.Model
     @meta.isPrivate
     trackGroups = [];
 
+    // Per-bone weight array (from Tw2GeometrySkeleton.trackMasks) for masked/layered
+    // playback; null = full-body override. Set by Tw2AnimationController.PlayAnimation.
+    @meta.plain
+    @meta.isPrivate
+    trackMask = null;
+
+    // The requested mask/layer name (e.g. "TrackMaskStance"). Identifies the animation's layer
+    // for one-at-a-time playback and for IsAnimationPlaying(layer) expression queries. Set even
+    // when trackMask weights are absent, so the state machine still sequences correctly.
+    @meta.string
+    @meta.isPrivate
+    trackMaskName = "";
+
+    // Current blend contribution [0..1], eased in/out by the controller for crossfades.
+    @meta.float
+    @meta.isPrivate
+    weight = 0;
+
 
     _callback = null;
     _controller = null;
