@@ -48,8 +48,12 @@
     "regenerator-runtime": "^0.13.7",
     "rollup": "^4.62.2",
     "terser-webpack-plugin": "^1.4.2",
-    "webgl-obj-loader": "^2.0.8",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "@carbonenginejs/format-gr2": "0.1.1",
+    "@carbonenginejs/format-gltf": "0.1.0",
+    "@carbonenginejs/format-obj": "0.1.0"
   }
 }
