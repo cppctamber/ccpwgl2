@@ -7,6 +7,9 @@ export class EveChild extends meta.Model
 
     _lod = 3;
 
+    @meta.boolean 
+    updateOnDisplay = false;
+
     get isEffectChild()
     {
         return true;

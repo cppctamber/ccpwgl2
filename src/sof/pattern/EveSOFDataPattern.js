@@ -12,8 +12,9 @@ import { EveSOFDataPatternPerHull } from "./EveSOFDataPatternPerHull";
 export class EveSOFDataPattern extends meta.Model
 {
 
+    
     @meta.string
-    name = "";
+    name = ""; // the guid -> gaurantees there is no collision with existing patterns
 
     @meta.struct("EveSOFDataPatternLayer")
     layer1 = null;
