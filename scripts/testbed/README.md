@@ -1,6 +1,6 @@
 # ccpwgl testbed
 
-Headless, agent-runnable diagnostics for the CEWG (translated DX11) shader
+Headless diagnostics for the CEWG (translated DX11) shader
 path. Runs without a browser or the resource server, loading `.cewg` packages
 through ccpwgl's real `Tw2EffectRes` pipeline against a stubbed GL context and
 dumping everything you'd otherwise extract by hand in the devtools console.
@@ -51,7 +51,7 @@ path to a `.cewg` file.
 | `--mesh PATH` | also decode a `.gr2` mesh |
 | `--mesh-verts N` | sample vertex count (default 6) |
 | `--apply` | run the recorded ApplyPass |
-| `--json` | emit one JSON document instead of readable text (for agents) |
+| `--json` | emit one JSON document instead of readable text |
 
 ### Examples
 
@@ -59,7 +59,7 @@ path to a `.cewg` file.
 # skinned hull, default permutation, human-readable
 npm run testbed:cewg -- unpackedskinned_quadv5.webgl.cewg --technique Main
 
-# depth tier with patterns on, JSON for an agent to parse
+# depth tier with patterns on, JSON output
 npm run testbed:cewg -- unpackedskinned_quadv5_depth.webgl.cewg \
   --options SPACE_OBJECT_PPT_ENABLED=SOPPT_ENABLED --json
 

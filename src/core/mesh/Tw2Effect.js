@@ -891,8 +891,16 @@ export class Tw2Effect extends meta.Model
             }
         }
 
-        // Automatically removes unused parameters
-        if (this.autoParameter)
+        // Prune anything the CURRENT permutation doesn't use. This is the
+        // "CleanEffect" half of parameter management and it DELETES, so it
+        // must only run on a deliberate clean (PopulateParameters/
+        // CleanEffect), never on a passive bind. autoParameter on its own
+        // means "auto-create & keep": a passive bind (e.g. OnResPrepared
+        // after SetValue, or a transient default-permutation bind on a
+        // cached reload) must not delete externally-assigned parameters
+        // like a SOF-applied PatternMask1Map before the intended
+        // permutation is even bound.
+        if (this.autoParameter && opt && opt.cleanUnused)
         {
             // Remove unnecessary parameters and textures
             for (const key in this.parameters)
@@ -1199,8 +1207,79 @@ export class Tw2Effect extends meta.Model
      */
     PopulateParameters(opt)
     {
+        return this.AutoPopulate(true, opt);
+    }
+
+    /**
+     * Auto-creates the parameters the current permutation declares and,
+     * when autoClean is set, prunes the ones it does NOT use (Graphite's
+     * CleanEffect).
+     *
+     * autoClean separates the two behaviours ccpwgl used to conflate on the
+     * single `autoParameter` flag:
+     *  - create & keep (autoClean=false): guess the parameters the shader
+     *    declares, but keep everything already assigned.
+     *  - clean (autoClean=true): additionally DELETE parameters the current
+     *    permutation doesn't use.
+     *
+     * Only the clean pass deletes, so it must be a deliberate call. A
+     * passive bind - OnResPrepared after SetValue, or a transient default-
+     * permutation bind on a cached reload - must never clean, or it drops
+     * externally-assigned parameters (e.g. a SOF-applied PatternMask1Map)
+     * before the intended permutation is bound. Correct order of operations
+     * for a permutation-gated swap is: SetOption(...) first, then SetValue,
+     * then AutoPopulate() once.
+     *
+     * @param {Boolean} [autoClean=true]
+     * @param {Object} [opt]
+     */
+    AutoPopulate(autoClean = true, opt)
+    {
         this.autoParameter = true;
-        if (!this.Rebind(opt)) this.BindParameters(opt);
+        const o = autoClean ? { ...opt, cleanUnused: true } : opt;
+        if (!this.Rebind(o)) this.BindParameters(o);
+    }
+
+    /**
+     * Graphite-style CleanEffect: create the current permutation's
+     * parameters and prune the rest. Alias of AutoPopulate(true).
+     * @param {Object} [opt]
+     */
+    CleanEffect(opt)
+    {
+        return this.AutoPopulate(true, opt);
+    }
+
+    /**
+     * Sets one or more permutation options.
+     *
+     * By default this repopulates (rebuilds the shader for the new
+     * permutation) so the change takes effect immediately. Pass
+     * autoPopulate=false to batch several option changes without rebuilding
+     * - set every option first, THEN Rebind()/PopulateParameters() once.
+     * This is the correct order of operations when swapping an effect to a
+     * permutation-gated shader: set the options before the resource binds,
+     * so the intended permutation is chosen from the first bind and no
+     * transient default-permutation bind is needed.
+     *
+     * @param {Object} options - e.g. { SPACE_OBJECT_PPT_ENABLED: "SOPPT_ENABLED" }
+     * @param {Boolean} [autoPopulate=true] - rebuild after setting
+     * @returns {Boolean} true if any option value changed
+     */
+    SetOption(options, autoPopulate = true)
+    {
+        let changed = false;
+        for (const name in options)
+        {
+            if (!options.hasOwnProperty(name)) continue;
+            if (this.options[name] !== options[name])
+            {
+                this.options[name] = options[name];
+                changed = true;
+            }
+        }
+        if (changed && autoPopulate) this.PopulateParameters();
+        return changed;
     }
 
     /**
