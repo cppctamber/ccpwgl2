@@ -74,7 +74,8 @@ export class Gr2Reader
         aoResolution: 512,
         aoBias: 0.5,
         aoSamples: 256,
-        aoIndexed: false
+        aoIndexed: false,
+        unpackTangents: false
     };
 
     /**
@@ -92,13 +93,15 @@ export class Gr2Reader
      * @param {Tw2GeometryRes} res
      * @param {Object} [options]
      */
-    static Prepare(data, res, options)
+    static Prepare(data, res, options={})
     {
         const t0 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
 
+        options = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
+
         const json = CjsFormatGr2.read(data, {
             emit: "json",
-            unpackTangents: false
+            unpackTangents: options.unpackTangents
         });
 
         const t1 = Gr2Reader.DEBUG_TIMING ? performance.now() : 0;
@@ -165,6 +168,17 @@ export class Gr2Reader
 
             if (srcM.vertex)
             {
+                // Establish the vertex count from POSITION (always 3-wide)
+                // so other channels' widths can be inferred from their
+                // actual data rather than assumed from the VertexTypes
+                // table - e.g. tangent/binormal are 4-wide packed frames
+                // by default but CjsFormatGr2's unpackTangents rewrites
+                // them (and normal) as 3-wide channels.
+                if (srcM.vertex.position && srcM.vertex.position.length)
+                {
+                    vertexCount = srcM.vertex.position.length / 3;
+                }
+
                 for (const key in srcM.vertex)
                 {
                     if (srcM.vertex.hasOwnProperty(key) && srcM.vertex[key] && srcM.vertex[key].length)
@@ -172,7 +186,19 @@ export class Gr2Reader
                         const type = VertexTypes[key.toUpperCase()];
                         if (!type) throw new Error(`Unsupported vertex type: ${key}`);
 
-                        const count = srcM.vertex[key].length / type.elements;
+                        const data = srcM.vertex[key];
+
+                        let elements = type.elements;
+                        if (vertexCount)
+                        {
+                            const inferred = data.length / vertexCount;
+                            if (Number.isInteger(inferred) && inferred >= 1 && inferred <= 4)
+                            {
+                                elements = inferred;
+                            }
+                        }
+
+                        const count = data.length / elements;
                         if (!vertexCount) vertexCount = count;
                         else if (vertexCount !== count) throw new Error(`Invalid vertex count: ${key}`);
 
@@ -181,11 +207,11 @@ export class Gr2Reader
                             usageIndex: type.usageIndex,
                             offset: vertexSize * 4,
                             type: GL_FLOAT,
-                            elements: type.elements,
-                            data: srcM.vertex[key]
+                            elements,
+                            data
                         });
 
-                        vertexSize += type.elements;
+                        vertexSize += elements;
                     }
                 }
             }

@@ -75,7 +75,7 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             //    0, // bone count
             //    0, // unused
             // ]],                   // gles doesn't use these
-            //[ "MorphTargetData", [ // EveChildMesh
+            //[ "MorphTargetData", [ // EveChildMesh only
             //   0, // activeMorphTargetsCount
             //   0, // morphTargetAnimationDataOffset
             //   0, // morphTargetVertexDataOffset

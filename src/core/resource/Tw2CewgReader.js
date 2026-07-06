@@ -17,6 +17,27 @@ const STAGE_VERTEX = Tw2ShaderStage.Type.VERTEX;
 const STAGE_FRAGMENT = Tw2ShaderStage.Type.FRAGMENT;
 const TEXTURE_2D = 2;
 
+/**
+ * Carbon metadata -> ccpwgl/SOF constant-name aliases.
+ *
+ * The DX11 pattern bodies name their two pattern materials as palette
+ * slots 5 and 6 (Mtl5.../Mtl6..., cb7[18-23]), but CCP's engine data and
+ * ccpwgl's entire SOF pipeline address the same values as pattern
+ * materials 1 and 2 (PMtl1.../PMtl2...) - the engine remaps when
+ * applying patterns. ccpwgl binds constants by name, so translate at
+ * this reader boundary (same policy as the package-time
+ * BINORMAL->BITANGENT attribute alias: runtime-ABI naming translation
+ * belongs at the boundary, not in the GLSL emitter).
+ */
+const CARBON_TO_SOF_CONSTANT_NAMES = {
+    Mtl5DiffuseColor: "PMtl1DiffuseColor",
+    Mtl5FresnelColor: "PMtl1FresnelColor",
+    Mtl5Gloss: "PMtl1Gloss",
+    Mtl6DiffuseColor: "PMtl2DiffuseColor",
+    Mtl6FresnelColor: "PMtl2FresnelColor",
+    Mtl6Gloss: "PMtl2Gloss"
+};
+
 const textDecoder = new TextDecoder("utf-8", { fatal: false });
 
 
@@ -337,9 +358,21 @@ function buildInputDefinition(shaderRecord, manifestStage, stageType)
         // GLES convention is translated away at its readers). The
         // usageName lookup is drift armor only — it wins if the numeric
         // code and the name ever disagree.
-        const usage = Tw2VertexElement.Type[input.usageName] !== undefined
+        let usage = Tw2VertexElement.Type[input.usageName] !== undefined
             ? Tw2VertexElement.Type[input.usageName]
             : input.usage;
+
+        // Bridge the blend-usage 6<->7 swap at this reader boundary, the
+        // same runtime-ABI translation UsageFromCcpLegacy applies to .wbg.
+        // ccpwgl's mesh pipeline (the Gr2Reader granny flip) and the
+        // legacy skinned shaders keep the per-vertex bone INDEX at usage 7
+        // (BLENDWEIGHTS) and weights at usage 6 - the swap of the
+        // DX11/Trinity convention. HLSLcc-derived CEWG inputs use the DX11
+        // semantic (BLENDINDICES=6), so without this swap in_BLENDINDICES0
+        // binds to a usage-6 element the mesh doesn't have, reads a
+        // constant 0, and every vertex rides bone 0 (no skinning). Only
+        // 6<->7 are touched; POSITION/NORMAL/TANGENT/TEXCOORD pass through.
+        usage = Tw2VertexElement.UsageFromCcpLegacy(usage);
 
         stage.inputDefinition.elements.push(Tw2VertexElement.from({
             usage,
@@ -389,7 +422,7 @@ function buildConstants(stage, manifestStage)
         if (!item.name || !size) continue;
 
         stage.constants.push(Tw2ShaderStageConstant.fromJSON({
-            name: item.name,
+            name: CARBON_TO_SOF_CONSTANT_NAMES[item.name] || item.name,
             offset,
             size,
             dimension: item.dimension || 4,

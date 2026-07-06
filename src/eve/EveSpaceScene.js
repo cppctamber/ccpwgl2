@@ -610,7 +610,7 @@ export class EveSpaceScene extends meta.Model
     {
         if (!this._emptyTexture)
         {
-            this._emptyTexture = tw2.GetResource("cdn:/texture/global/black.png");
+            this._emptyTexture = tw2.GetResource("res:/texture/global/black.png");
         }
 
         return this._emptyTexture;
@@ -1436,7 +1436,7 @@ export class EveSpaceScene extends meta.Model
 
             this._distortionEffect = this._distortionEffect || Tw2Effect.from({
                 name: "Distortion",
-                effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+                effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
                 parameters: {
                     MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
                 },
@@ -1549,7 +1549,7 @@ export class EveSpaceScene extends meta.Model
 
         this._distortionEffect = this._distortionEffect || Tw2Effect.from({
             name: "Distortion",
-            effectFilePath: "cdn:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
+            effectFilePath: "res:/graphics/effect.gles2/managed/space/postprocess/distortion.fx",
             parameters: {
                 MAX_DISTORTION_OFFSET: [ this.distortionOffset, 0, 0, 0 ]
             },

@@ -4,8 +4,8 @@ import { Tw2BatchAccumulator, Tw2RenderBatchContext, Tw2Effect, Tw2Frustum, Tw2P
 import { CMP_GREATEREQUAL, RM_OPAQUE, RS_ALPHAFUNC, RS_ALPHAREF, RS_ALPHATESTENABLE } from "constant";
 
 
-const DEFAULT_SHADOW_EFFECT_PATH = "cdn:/graphics/effect.gles2/managed/space/spaceobject/shadow/shadow.sm_hi";
-const DEFAULT_SKINNED_SHADOW_EFFECT_PATH = "cdn:/graphics/effect.gles2/managed/space/spaceobject/shadow/skinned_shadow.sm_hi";
+const DEFAULT_SHADOW_EFFECT_PATH = "res:/graphics/effect.gles2/managed/space/spaceobject/shadow/shadow.sm_hi";
+const DEFAULT_SKINNED_SHADOW_EFFECT_PATH = "res:/graphics/effect.gles2/managed/space/spaceobject/shadow/skinned_shadow.sm_hi";
 
 
 export class EveSpaceSceneShadowHandler

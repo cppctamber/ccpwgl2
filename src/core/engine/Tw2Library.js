@@ -372,13 +372,13 @@ export class Tw2Library extends Tw2EventEmitter
      * Remote path to the current res file index
      * @type {String}
      */
-    static resFileIndexResPath = "cdn:/resfiles";
+    static resFileIndexResPath = "res:/resfiles";
 
     /**
      * Remote path to the current SOF data black file
      * @type {String}
      */
-    static spaceObjectFactoryResPath = "cdn:/dx9/model/spaceobjectfactory/data.black";
+    static spaceObjectFactoryResPath = "res:/dx9/model/spaceobjectfactory/data.black";
 
     /**
      * Start frame
@@ -505,10 +505,16 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.black) this.RegisterBlackPathHandlers(opt.black);
         if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
         if (opt.constructors) this.constructors.Register(opt.constructors);
-        if (opt.variables) this.variables.Register(opt.variables);
+        // paths/dynamicPaths/extensions must be registered before variables:
+        // a real (non-"", non-"rgba:/...") texture path in `variables` (e.g.
+        // config.js's SSAOMap/EveSpaceSceneShadowMap defaults) eagerly calls
+        // GetResource() -> GetExtensionFromPath() while constructing its
+        // Tw2TextureParameter, which throws ErrStoreKeyUnregistered if the
+        // path prefix or file extension isn't registered yet.
         if (opt.paths) this.paths.Register(opt.paths);
         if (opt.dynamicPaths) this.dynamicPaths.Register(opt.dynamicPaths);
         if (opt.extensions) this.extensions.Register(opt.extensions);
+        if (opt.variables) this.variables.Register(opt.variables);
         if (opt.propertyTypes) registerPropertyTypes(this.propertyTypes, opt.propertyTypes);
         if (opt.renderBatchSorter !== undefined) this.renderBatchSorter = opt.renderBatchSorter;
         if (opt.shaders) this.RegisterShaders(opt.shaders);

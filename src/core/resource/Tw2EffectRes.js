@@ -257,6 +257,7 @@ export class Tw2EffectRes extends Tw2Resource
 
         switch(this._extension)
         {
+            case "cewg":
             case "fx":
             case "sm_hi":
             case "sm_lo":
@@ -347,6 +348,7 @@ export class Tw2EffectRes extends Tw2Resource
 
         switch(this._extension)
         {
+            case "cewg":
             case "fx":
             case "sm_hi":
             case "sm_lo":
@@ -372,6 +374,7 @@ export class Tw2EffectRes extends Tw2Resource
 
         switch(extension)
         {
+            case "cewg":
             case "fx":
             case "sm_hi":
             case "sm_lo":

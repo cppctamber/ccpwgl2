@@ -497,6 +497,24 @@ export class Tw2Effect extends meta.Model
         this.effectRes = res;
         this.shader = null;
 
+        // Populate `options` with every permutation dimension the shader
+        // actually has, at its current value (anything the caller already
+        // set wins over the effect file's defaults). This makes the full
+        // option surface discoverable on the effect. Deliberately plain
+        // values, no auto-rebuilding setters - change options, then call
+        // Rebind().
+        if (Array.isArray(res.permutations))
+        {
+            for (let i = 0; i < res.permutations.length; i++)
+            {
+                const permutation = res.permutations[i];
+                if (permutation && permutation.name && !(permutation.name in this.options))
+                {
+                    this.options[permutation.name] = Tw2Effect.getPermutationDefaultOption(permutation);
+                }
+            }
+        }
+
         try
         {
             this.shader = res.GetShader(this.options);
@@ -560,6 +578,34 @@ export class Tw2Effect extends meta.Model
             return this.techniques[technique][pass].state;
         }
         return null;
+    }
+
+    /**
+     * Rebuilds the effect's shader from its current options and rebinds
+     * parameters. Call after changing `options` - option values are
+     * deliberately plain (no auto-rebuild setters), so the expected flow
+     * is: mutate `effect.options`, then `effect.Rebind()`.
+     * @param {Object} [opt]
+     * @returns {Boolean} true if a shader was rebuilt
+     */
+    Rebind(opt)
+    {
+        const res = this.effectRes;
+
+        // HasPrepared, not just IsGood: IsGood only means the raw bytes
+        // loaded - parsing happens later in resMan's batched prepare
+        // queue, and GetShader before then reads a null binary reader.
+        // Callers hitting that window fall back to the normal flow:
+        // OnResPrepared builds the shader from `options` when the
+        // resource is actually ready.
+        if (!res || !res.IsGood() || !res.HasPrepared()) return false;
+
+        this.shader = res.GetShader(this.options);
+        if (!this.shader) return false;
+
+        this.BindParameters(opt);
+        this.EmitEvent("rebuilt", this, opt);
+        return true;
     }
 
     /**
@@ -630,10 +676,23 @@ export class Tw2Effect extends meta.Model
         if (!this.IsGood())
         {
             this.UnBindParameters();
+            this.techniques = {};
             return false;
         }
 
         this.UnBindParameters({ skipEvents: true });
+
+        // UnBindParameters only hollows out existing technique entries
+        // (clears their stage arrays) - it doesn't remove technique keys
+        // that don't exist on the new shader. Without this reset, a
+        // technique name from a previously-bound shader (e.g. "Normal"
+        // on a ship's original material) can survive an effectFilePath/
+        // SetValue swap to a shader that doesn't have that technique at
+        // all, stale but still passing ApplyPass's `technique in
+        // this.techniques` guard, and crash reading
+        // `this.shader.techniques[technique].passes[pass]` since the new
+        // shader genuinely has no such entry.
+        this.techniques = {};
 
         // Add object id for picking
         if (this.shader.HasConstant("objectId"))
@@ -902,6 +961,12 @@ export class Tw2Effect extends meta.Model
             return;
         }
 
+        if (!this.techniques[technique][pass] || !this.shader.techniques[technique] || !this.shader.techniques[technique].passes || !this.shader.techniques[technique].passes[pass])
+        {
+            console.debug({ pass, technique, shader: this.shader, effect: this });
+            return;
+        }
+
         const
             p = this.techniques[technique][pass],
             rp = this.shader.techniques[technique].passes[pass],
@@ -1123,13 +1188,19 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
-     * Adds effect parameters automatically
+     * Adds effect parameters automatically (Graphite/Jessica's
+     * "CleanParameters"): creates a parameter/texture for everything the
+     * shader's stages declare. Re-resolves the shader from the effect's
+     * current `options` first, so option changes (permutation selection)
+     * made since the last build are respected - without this, the
+     * population would walk the stale shader's stages and never see
+     * permutation-gated inputs (e.g. pattern maps).
      * @param {Object} [opt]
      */
     PopulateParameters(opt)
     {
         this.autoParameter = true;
-        this.BindParameters(opt);
+        if (!this.Rebind(opt)) this.BindParameters(opt);
     }
 
     /**
@@ -1325,6 +1396,18 @@ export class Tw2Effect extends meta.Model
         }
 
         return Object.keys(options).sort((a, b) => options[a] - options[b]);
+    }
+
+    /**
+     * Gets a permutation's default option name, handling both record
+     * shapes (legacy Tw2ShaderPermutation's name->index object and CEWG's
+     * plain string array)
+     * @param {Tw2ShaderPermutation|Object} permutation
+     * @returns {String|undefined}
+     */
+    static getPermutationDefaultOption(permutation)
+    {
+        return Tw2Effect.getPermutationOptions(permutation.options)[permutation.defaultOption || 0];
     }
 
     /**

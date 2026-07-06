@@ -59,6 +59,16 @@ class CewgResourceBinder
         this._bufferTextureSources = {};
         this._zeroFloatTexture = null;
 
+        // Dedicated scratch unit for texture creation/upload binds, so
+        // uploading (which happens mid-ApplyPass, after material textures
+        // are applied) never clobbers whatever unit is currently active
+        // (e.g. unit 8 = the last-applied material sampler). WebGL2
+        // guarantees at least 32 combined units; fall back to 31 under
+        // test stubs that don't implement getParameter.
+        this._scratchUnit = typeof gl.getParameter === "function"
+            ? gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS) - 1
+            : 31;
+
         this._warnedStrides = {};
 
         // Carbon-shaped constant scratch buffers (packed per apply)
@@ -312,6 +322,10 @@ class CewgResourceBinder
         state.uploaded = false;
         if (!data || !info.width || !info.height) return;
 
+        // Bind on the scratch unit - uploads run mid-ApplyPass and must
+        // not disturb the material sampler units already applied.
+        gl.activeTexture(gl.TEXTURE0 + this._scratchUnit);
+
         if (!state.texture || state.width !== info.width || state.height !== info.height)
         {
             if (!state.texture)
@@ -395,6 +409,9 @@ class CewgResourceBinder
         {
             const gl = this.gl;
             this._zeroFloatTexture = gl.createTexture();
+            // Create on the scratch unit so lazy creation mid-ApplyPass
+            // can't clobber an already-applied material sampler unit.
+            gl.activeTexture(gl.TEXTURE0 + this._scratchUnit);
             gl.bindTexture(gl.TEXTURE_2D, this._zeroFloatTexture);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);

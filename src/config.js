@@ -47,8 +47,10 @@ export const config = {
     // The paths in the black files must be changed
     black: {
 
-        // Change "res" prefix in .black files to "cdn" so there are no conflicts with ccpwgl paths
-        "*": path => path.replace("res:/", "cdn:/").toLowerCase(),
+        // Normalize casing in .black-authored paths to match the lowercase
+        // resfileindex keys. No prefix rewrite needed any more - everything
+        // uses "res:/" directly now, "cdn:/" has been retired.
+        "*": path => path.toLowerCase(),
 
         // Replace dds extension  with pngs
         "dds": path =>
@@ -237,7 +239,7 @@ export const config = {
     paths: {
 
         // Local resource server (not provided with this library)
-        "cdn": "http://127.0.0.1:3000/",
+        "res": "http://127.0.0.1:3000/",
 
     },
 
@@ -249,6 +251,7 @@ export const config = {
         "sm_hi": core.Tw2EffectRes,
         "sm_lo": core.Tw2EffectRes,
         "fx": core.Tw2EffectRes,
+        "cewg": core.Tw2EffectRes, // CEWG packages (see Tw2EffectRes.PrepareCEWG) - same class, format detected by magic bytes
 
         //Geometry
         "gr2": core.Tw2GeometryRes,
@@ -355,8 +358,23 @@ export const config = {
         "u_DecalMatrix": mat4.create(),
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
-        "EveSpaceSceneShadowMap": "",
+        // WHITE, not black: this is a shadow *visibility* map (1 = fully
+        // lit). The translated CEWG Main pixel shader multiplies the
+        // entire direct-sun term (diffuse + specular) by this texel, so a
+        // black default silently kills all sunlight and the hull is lit
+        // only by the env cubemap ("melted brown" look). White matches
+        // both the old hslswebgl adapter's forced per-effect fallback and
+        // EveSpaceSceneShadowHandler's own resets ("rgba:/255,255,255,255").
+        // Real file path (not "rgba:/...") so it resolves lazily through
+        // the resource pipeline instead of eagerly creating a GL texture
+        // at module-load time, before device.gl exists.
+        "EveSpaceSceneShadowMap": "res:/texture/global/white.png",
         "EveSpaceSceneCascadedShadowMap": "",
+
+        // CEWG per-effect SSAO map has no producer yet; default to the
+        // same real white texture EveSpaceScene.GetEmptyTexture() style
+        // code already relies on (no occlusion), lazily resolved.
+        "SSAOMap": "res:/texture/global/white.png",
 
         "EnvMap1": "",
         "EnvMap2": "",
