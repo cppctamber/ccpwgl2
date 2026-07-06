@@ -15,7 +15,8 @@
     "test:cewg-effect-res": "node scripts/test-cewg-effect-res.js",
     "test:cewg-resource-binder": "node scripts/test-cewg-resource-binder.js",
     "test:cewg-carbon-data": "node scripts/test-cewg-carbon-data.js",
-    "test:parity": "node scripts/parityCewgVsLegacy.js"
+    "test:parity": "node scripts/parityCewgVsLegacy.js",
+    "testbed:cewg": "node scripts/testbed/cewg-diagnostics.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
