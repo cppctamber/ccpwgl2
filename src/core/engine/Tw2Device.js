@@ -1018,7 +1018,7 @@ export class Tw2Device extends Tw2EventEmitter
         if (this._blitEffect === null)
         {
             this._blitEffect = Tw2Effect.from({
-                effectFilePath: "cdn:/graphics/effect/managed/space/system/blit.fx",
+                effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
                 textures: {
                     BlitSource: ""
                 }

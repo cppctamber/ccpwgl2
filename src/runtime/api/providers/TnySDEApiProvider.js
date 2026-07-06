@@ -7,7 +7,7 @@ import { resMan } from "global";
 export class TnySDEApiProvider
 {
 
-    root = "cdn:/static";
+    root = "res:/static";
     fetcher = null;
     typeProvider = null;
     cache = new Map();

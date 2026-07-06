@@ -113,7 +113,7 @@ export class EveSOFDataGeneric extends meta.Model
         if (this.bannerShader)
         {
             // No banner.fx for gles effects
-            this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx";
+            this.bannerShader.shader = "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx";
             // TODO: Figure out default parameters and textures for unpacked banner shader
         }
 

@@ -37,7 +37,7 @@ export class EveTrailsSet extends meta.Model
     _geometryRes = null;
     _vertex = null;
     _perObjectData = Tw2PerObjectData.from(EveTrailsSet.perObjectData);
-    _geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
+    _geometryResource = resMan.GetResource("res:/graphics/generic/unit_plane.gr2_json");
 
     /**
      * Checks if the trail set is good
@@ -123,13 +123,13 @@ export class EveTrailsSet extends meta.Model
      * Default trail effect
      * @type {string}
      */
-    static defaultTrailEffect = "cdn:/graphics/effect.gles2/managed/space/booster/volumetrictrails.fx";
+    static defaultTrailEffect = "res:/graphics/effect.gles2/managed/space/booster/volumetrictrails.fx";
 
     /**
      * Default geometry res path
      * @type {string}
      */
-    static defaultGeometryResPath = "cdn:/dx9/model/ship/booster/volumetrictrail.gr2_json";
+    static defaultGeometryResPath = "res:/dx9/model/ship/booster/volumetrictrail.gr2_json";
 
     /**
      * Per Object Data

@@ -99,7 +99,7 @@ export class EveHazeSet extends EveObjectSet
 
     @meta.struct()
     effect = Tw2Effect.from({
-        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/spaceobject/fx/hazespherical.fx"
+        effectFilePath: "res:/graphics/effect.gles2/managed/space/spaceobject/fx/hazespherical.fx"
     });
 
     _decl = Tw2VertexDeclaration.from(EveHazeSet.vertexDeclarations);

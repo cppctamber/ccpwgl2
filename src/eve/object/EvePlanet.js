@@ -304,7 +304,7 @@ export class EvePlanet extends EveObject
         const planet = this.highDetail.children[0];
 
         let originalEffect = planet ? getMainEffect(planet) : null,
-            resPath = "cdn:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
+            resPath = "res:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
 
         if (originalEffect)
         {
@@ -364,7 +364,7 @@ export class EvePlanet extends EveObject
      * Planet z only model
      * @type {string}
      */
-    static zOnlyModelPath = "cdn:/dx9/model/worldObject/planet/planetZOnly.black";
+    static zOnlyModelPath = "res:/dx9/model/worldObject/planet/planetZOnly.black";
 
     /**
      * The generated height map's resolution

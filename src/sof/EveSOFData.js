@@ -104,10 +104,10 @@ export class EveSOFData extends meta.Model
         devColor: [ 0, 0, 0, 0 ],
 
         banners: {
-            defaultBorderMap: "cdn:/texture/global/white.png",
-            defaultImageMap: "cdn:/texture/global/white.png",
-            defaultHorizontalImageMap: "cdn:/texture/global/white.png",
-            defaultVerticalImageMap: "cdn:/texture/global/white.png",
+            defaultBorderMap: "res:/texture/global/white.png",
+            defaultImageMap: "res:/texture/global/white.png",
+            defaultHorizontalImageMap: "res:/texture/global/white.png",
+            defaultVerticalImageMap: "res:/texture/global/white.png",
             Type: {
                 SQUARE: 0,
                 VERTICAL: 1,
@@ -151,33 +151,33 @@ export class EveSOFData extends meta.Model
             orange_neon01: { FresnelColor: [ 0, 0, 0, 1 ] }
         },
 
-        billboardsURL: "cdn:/billboards",
+        billboardsURL: "res:/billboards",
         billboards: null,
 
         effectPath: {
-            plane: "cdn:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
+            plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
             spotlightCone: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx",
             spotlightGlow: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx",
 
             // TODO: Fix weird artifacts
-            spotlightConePool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
-            spotlightGlowPool: "cdn:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
-            boosterVolumetric: "cdn:/graphics/effect/managed/space/booster/boostervolumetric.fx",
-            boosterGlow: "cdn:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
-            spriteSet: "cdn:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-            banner: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
+            spotlightConePool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightconepool.fx",
+            spotlightGlowPool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
+            boosterVolumetric: "res:/graphics/effect/managed/space/booster/boostervolumetric.fx",
+            boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
+            spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+            banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
         },
 
         texturePath: {
-            noise: "cdn:/Texture/global/noise.dds",
-            noise32: "cdn:/Texture/Global/noise32cube_volume.dds",
-            whiteSharp: "cdn:/Texture/Particle/whitesharp.dds",
+            noise: "res:/Texture/global/noise.dds",
+            noise32: "res:/Texture/Global/noise32cube_volume.dds",
+            whiteSharp: "res:/Texture/Particle/whitesharp.dds",
             //noise: "res:/Texture/global/noise.dds.0.png",
             //noise32: "res:/Texture/Global/noise32cube_volume.dds.0.png",
             //whiteSharp: "res:/Texture/Particle/whitesharp.dds.0.png",
-            hologramNoise: "cdn:/texture/fx/hologram/hologram_noise.dds",
-            hologramPulse: "cdn:/texture/fx/hologram/hologram_pulse.dds",
-            hologramInterlace: "cdn:/texture/fx/hologram/hologram_interlace_p.dds",
+            hologramNoise: "res:/texture/fx/hologram/hologram_noise.dds",
+            hologramPulse: "res:/texture/fx/hologram/hologram_pulse.dds",
+            hologramInterlace: "res:/texture/fx/hologram/hologram_interlace_p.dds",
         },
 
         decalUsage: [
@@ -192,7 +192,7 @@ export class EveSOFData extends meta.Model
 
         resFiles: null,
         resPathInserts: {},
-        modelDirectory: "cdn:/dx9/model/"
+        modelDirectory: "res:/dx9/model/"
 
     };
 
@@ -234,12 +234,12 @@ export class EveSOFData extends meta.Model
 
         meshContainer.mesh = Tw2Mesh.from({
             name: "SphereMesh",
-            geometryResPath: "cdn:/graphics/generic/unitsphere/unitsphere_4k_01a.gr2_json",
+            geometryResPath: "res:/graphics/generic/unitsphere/unitsphere_4k_01a.gr2_json",
             additiveAreas: [
                 {
                     name: "Additive effect",
                     effect: {
-                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
+                        effectFilePath: "res:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             FresnelFactors: [ 2.5, 12, 0, 0 ],
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
@@ -249,9 +249,9 @@ export class EveSOFData extends meta.Model
                             TextureTransform2: [ 0, 0, 1, 1.25 ]
                         },
                         textures: {
-                            DiffuseMap1: "cdn:/texture/fx/caustics/caustic_13.png",
-                            DiffuseMap2: "cdn:/texture/fx/caustics/caustic_16b.png",
-                            MaskMap: "cdn:/texture/fx/gradients/capmask_tight_01c.png"
+                            DiffuseMap1: "res:/texture/fx/caustics/caustic_13.png",
+                            DiffuseMap2: "res:/texture/fx/caustics/caustic_16b.png",
+                            MaskMap: "res:/texture/fx/gradients/capmask_tight_01c.png"
                         }
                     }
                 }
@@ -260,7 +260,7 @@ export class EveSOFData extends meta.Model
                 {
                     name: "Transparent effect",
                     effect: {
-                        effectFilePath: "cdn:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
+                        effectFilePath: "res:/graphics/effect.gles2/managed/space/specialfx/ubershader.fx",
                         parameters: {
                             DiffuseColor: [ 1, 0.1411765068769455, 0.047058798372745514, 1 ],
                             TextureScroll1: [ 0, 0, 0, 0 ],
@@ -270,9 +270,9 @@ export class EveSOFData extends meta.Model
                             FresnelFactors: [ 4, 1, 0, 0 ]
                         },
                         textures: {
-                            DiffuseMap1: "cdn:/texture/global/white.png",
-                            DiffuseMap2: "cdn:/texture/global/white.png",
-                            MaskMap: "cdn:/texture/global/white.png"
+                            DiffuseMap1: "res:/texture/global/white.png",
+                            DiffuseMap2: "res:/texture/global/white.png",
+                            MaskMap: "res:/texture/global/white.png"
                         }
                     }
                 }
@@ -1128,7 +1128,7 @@ export class EveSOFData extends meta.Model
             mask.display = false;
             mask.materialIndex = 0;
             mask.blendMode = "overlay";
-            mask.parameters.PatternMaskMap.SetValue("cdn:/texture/projection/solid_white.png");
+            mask.parameters.PatternMaskMap.SetValue("res:/texture/projection/solid_white.png");
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
 
@@ -1474,7 +1474,7 @@ export class EveSOFData extends meta.Model
                 const params = area.effect.GetTextures();
                 if (params.AoMap)
                 {
-                    area.effect.SetTextures({ AoMap: params.AoMap || "cdn:/graphics/shared_texture/global/white.png" });
+                    area.effect.SetTextures({ AoMap: params.AoMap || "res:/graphics/shared_texture/global/white.png" });
                 }
 
                 // Handle Environments who's values are multiplied by 10
@@ -1949,7 +1949,7 @@ export class EveSOFData extends meta.Model
                 {
                     const { billboards = [] } = options;
                     let bb = billboards[num.randomInt(0, billboards.length - 1)];
-                    if (bb.indexOf(":") === -1) bb = "cdn:/" + bb;
+                    if (bb.indexOf(":") === -1) bb = "res:/" + bb;
                     billboard.effect.parameters.MaskMap.SetValue(bb);
                 });
             };
@@ -2801,7 +2801,7 @@ export class EveSOFData extends meta.Model
      * Roots model path
      * @type {string}
      */
-    static modelPath = "cdn:/dx9/model/";
+    static modelPath = "res:/dx9/model/";
 
 
     /**

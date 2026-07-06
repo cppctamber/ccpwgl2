@@ -70,7 +70,7 @@ export class EveBanner extends meta.Model
     _boundsDirty = true;
     _perObjectData = Tw2PerObjectData.from(EveBanner.perObjectData);
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
-    _geometryResource = resMan.GetResource("cdn:/graphics/generic/unit_plane.gr2_json");
+    _geometryResource = resMan.GetResource("res:/graphics/generic/unit_plane.gr2_json");
     _worldTransform = mat4.create();
 
 
@@ -445,7 +445,7 @@ export class EveBanner extends meta.Model
      * @type {Object}
      */
     static defaultBannerEffect = {
-        effectFilePath: "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx",
+        effectFilePath: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx",
         parameters: {
             BaseColor: [ 0, 0, 0, 1 ],
             Layer1Transform: [ 1.5, 1.5, 0, 0 ],
@@ -453,11 +453,11 @@ export class EveBanner extends meta.Model
             LayerScroll: [ 10, 10, 1, -0.20000000298023224 ]
         },
         textures: {
-            Layer1Map: "cdn:/texture/fx/hologram/hologram_noise.png",
-            Layer2Map: "cdn:/texture/fx/hologram/hologram_pulse_brighter.png",
-            MaskMap: "cdn:/texture/fx/logo/logomask_1px_border.png",
-            BorderMap: "cdn:/texture/global/white.png",
-            ImageMap: "cdn:/texture/global/black.png",
+            Layer1Map: "res:/texture/fx/hologram/hologram_noise.png",
+            Layer2Map: "res:/texture/fx/hologram/hologram_pulse_brighter.png",
+            MaskMap: "res:/texture/fx/logo/logomask_1px_border.png",
+            BorderMap: "res:/texture/global/white.png",
+            ImageMap: "res:/texture/global/black.png",
         }
     }
 
