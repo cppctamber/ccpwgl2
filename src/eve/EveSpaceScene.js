@@ -4,6 +4,7 @@ import { vec3, vec4, quat, mat4 } from "math";
 import { CewgLightCollector } from "core/cewg/CewgLightCollector";
 import { CewgResourceBinder } from "core/cewg/CewgResourceBinder";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
+import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
     Tw2BatchAccumulator,
     Tw2RawData,
@@ -220,7 +221,14 @@ export class EveSpaceScene extends meta.Model
         planets: true,
         post: true,
         shadow: true,
+        ao: true,
     };
+
+    /**
+     * Default ambient-occlusion post-effect config (swappable).
+     * @type {Object}
+     */
+    static DEFAULT_AO_POST_EFFECT = DEFAULT_AO_POST_EFFECT;
 
     @meta.color
     selectorColor = vec4.fromValues(0.5, 0.3, 0.0, 1.0);
@@ -265,6 +273,9 @@ export class EveSpaceScene extends meta.Model
     _depthRendered = false;
     _customPasses = [];
     shadowHandler = null;
+
+    @meta.struct("EveSpaceSceneAO")
+    aoHandler = null;
 
     // ----------------------------------------------------------------------------[ Shadow ]---------------------- //
 
@@ -1025,6 +1036,23 @@ export class EveSpaceScene extends meta.Model
             shadowHandler.RenderShadowPass(dt, this);
         }
 
+        // Ambient occlusion prepass (produces SSAOMap) before the main colour
+        // pass samples it. Self-disables on error so a broken AO can't take the
+        // whole scene render down.
+        const aoHandler = this.GetAOHandler();
+        if (aoHandler && show.ao)
+        {
+            try
+            {
+                aoHandler.Render(dt, this);
+            }
+            catch (err)
+            {
+                this.visible.ao = false;
+                if (tw2.Warning) tw2.Warning({ name: "SSAO", description: String(err && err.message || err) });
+            }
+        }
+
         this.RenderCollectedBatches(mainAccumulator);
 
         if (this.starfield)
@@ -1090,6 +1118,26 @@ export class EveSpaceScene extends meta.Model
         }
 
         return this.shadowHandler;
+    }
+
+    /**
+     * Gets or creates the scene ambient occlusion handler.
+     * @param {Boolean} [create=true]
+     * @returns {EveSpaceSceneAO|null}
+     */
+    GetAOHandler(create = true)
+    {
+        if (!this.aoHandler && create)
+        {
+            this.aoHandler = new EveSpaceSceneAO(this, EveSpaceScene.DEFAULT_AO_POST_EFFECT);
+        }
+
+        if (this.aoHandler)
+        {
+            this.aoHandler.scene = this;
+        }
+
+        return this.aoHandler || null;
     }
 
     /**
