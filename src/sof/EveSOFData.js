@@ -1,6 +1,5 @@
 import { resMan, tw2 } from "global";
 import { vec3, vec4, mat4, quat, num } from "math";
-import { FilterMode, MipFilterMode, WrapMode } from "constant/d3d";
 
 import {
     meta,
@@ -2154,29 +2153,6 @@ export class EveSOFData extends meta.Model
                     mesh = obj.mesh.opaqueAreas.find(x => x.meshIndex === meshIndex),
                     provided = { textures: mesh ? mesh.effect.GetTextures() : {} },
                     effect = data.generic.GetShaderConfig(options.decalUsage[usage], false, provided);
-
-                switch (usage)
-                {
-                    case 1:
-                        // killmarks
-                        effect.overrides.DecalAtMap = {
-                            addressUMode: WrapMode.REPEAT,
-                            addressVMode: WrapMode.REPEAT,
-                            filterMode: FilterMode.LINEAR,
-                            mipFilterMode: MipFilterMode.NONE
-                        };
-                        break;
-
-                    case 5:
-                        // Glows
-                        effect.overrides.DecalAtMap = {
-                            addressUMode: WrapMode.CLAMP_TO_EDGE,
-                            addressVMode: WrapMode.CLAMP_TO_EDGE,
-                            filterMode: FilterMode.LINEAR,
-                            mipFilterMode: MipFilterMode.NONE
-                        };
-                        break;
-                }
 
                 // TODO: Handle usage as that dictates where textures come from.
 

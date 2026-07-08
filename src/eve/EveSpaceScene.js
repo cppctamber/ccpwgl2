@@ -1040,16 +1040,26 @@ export class EveSpaceScene extends meta.Model
         // pass samples it. Self-disables on error so a broken AO can't take the
         // whole scene render down.
         const aoHandler = this.GetAOHandler();
-        if (aoHandler && show.ao)
+        if (aoHandler)
         {
-            try
+            if (show.ao)
             {
-                aoHandler.Render(dt, this);
+                try
+                {
+                    aoHandler.Render(dt, this);
+                }
+                catch (err)
+                {
+                    this.visible.ao = false;
+                    aoHandler.ResetOutput();
+                    if (tw2.Warning) tw2.Warning({ name: "SSAO", description: String(err && err.message || err) });
+                }
             }
-            catch (err)
+            else
             {
-                this.visible.ao = false;
-                if (tw2.Warning) tw2.Warning({ name: "SSAO", description: String(err && err.message || err) });
+                // AO off: restore SSAOMap to white so the hull stops sampling
+                // the last (stale) AO frame.
+                aoHandler.ResetOutput();
             }
         }
 

@@ -16,13 +16,19 @@ import {
     GL_CLAMP_TO_EDGE,
 } from "constant";
 
+// CLAMP_TO_BORDER_EXT from EXT_texture_border_clamp. Core WebGL2 has no border
+// wrap; when the extension is present we bind this and rely on the default
+// TEXTURE_BORDER_COLOR of [0,0,0,0] (transparent). When it is absent, Apply
+// falls back to CLAMP_TO_EDGE (edge smear).
+const GL_CLAMP_TO_BORDER = 0x812D;
+
 // Texture Wrap modes
 const WrapModes = [
     0,
     GL_REPEAT,
     GL_MIRRORED_REPEAT,
     GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_EDGE, // Clamp to Border (Not supported by webgl)
+    GL_CLAMP_TO_BORDER, // Clamp to Border (via EXT_texture_border_clamp; Apply falls back to edge)
     GL_CLAMP_TO_EDGE  // Unknown MIRROR_ONCE
 ];
 
@@ -334,14 +340,21 @@ export class Tw2SamplerState extends meta.Model
             targetType = this.samplerType,
             { gl } = device,
             ext = device.GetExtension("EXT_texture_filter_anisotropic"),
+            borderExt = device.GetExtension("EXT_texture_border_clamp"),
             minFilter = useNoMipFilter ? this.minFilterNoMips : this.minFilter;
 
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
+        // CLAMP_TO_BORDER only exists with EXT_texture_border_clamp; without it,
+        // degrade to CLAMP_TO_EDGE (never pass 0x812D to a context that would
+        // reject it with INVALID_ENUM and leave the wrap at REPEAT).
+        const resolveWrap = (mode) =>
+            (mode === GL_CLAMP_TO_BORDER && !borderExt) ? gl.CLAMP_TO_EDGE : mode;
+
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? resolveWrap(this.addressV) : gl.CLAMP_TO_EDGE);
 
         if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY)
         {
-            gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, hasMipMaps ? this.addressW : gl.CLAMP_TO_EDGE);
+            gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, hasMipMaps ? resolveWrap(this.addressW) : gl.CLAMP_TO_EDGE);
         }
 
         gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? minFilter : this.minFilterNoMips);

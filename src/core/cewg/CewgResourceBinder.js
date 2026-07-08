@@ -158,13 +158,23 @@ class CewgResourceBinder
         const vsData = pod.vs ? pod.vs.data
             : (this._zeroObjectVS || (this._zeroObjectVS = new Float32Array(12 * 4)));
 
+        // Decals carry their own per-object layout (Carbon DecalVS/PSPerObjectData);
+        // the hull packers would reorganize it (esp. the PS path) and corrupt cb4.
+        const isDecal = pod.cewgKind === "decal";
+
         if (cbh[3] && pod.vs)
         {
-            gl.uniform4fv(cbh[3], CewgCarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data));
+            const packedVs = isDecal
+                ? CewgCarbonData.PackDecalPerObjectVS(this._perObjectVS, pod.vs.data)
+                : CewgCarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data);
+            gl.uniform4fv(cbh[3], packedVs);
         }
         if (cbh[4] && pod.ps)
         {
-            gl.uniform4fv(cbh[4], CewgCarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data));
+            const packedPs = isDecal
+                ? CewgCarbonData.PackDecalPerObjectPS(this._perObjectPS, pod.ps.data)
+                : CewgCarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data);
+            gl.uniform4fv(cbh[4], packedPs);
         }
     }
 

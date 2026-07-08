@@ -494,6 +494,9 @@ export class Tw2Device extends Tw2EventEmitter
             this.GetExtension("OES_element_index_uint");
             this.GetExtension("OES_texture_float");
             this.GetExtension("EXT_shader_texture_lod");
+            // Real CLAMP_TO_BORDER wrap (transparent border) for decals/patterns;
+            // Tw2SamplerState falls back to CLAMP_TO_EDGE when this is absent.
+            this.GetExtension("EXT_texture_border_clamp");
             const iArray = this.GetExtension("ANGLE_instanced_arrays");
             gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
             gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;

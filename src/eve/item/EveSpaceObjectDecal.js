@@ -430,6 +430,11 @@ export class EveSpaceObjectDecal extends meta.Model
         this._perObjectData.ps.SetIndex("displayData", 0, counter);
         this._perObjectData.ps.Set("shipData", parentPerObjectData.ps.data);
 
+        // Tag so the CEWG binder packs cb3/cb4 with the decal per-object layout
+        // (DecalVS/PSPerObjectData) instead of the hull layout - see
+        // CewgResourceBinder.ApplyPass / CewgCarbonData.PackDecalPerObject*.
+        this._perObjectData.cewgKind = "decal";
+
         const batch = new Tw2ForwardingRenderBatch();
         batch._geometryRes = geometryRes;
         batch.perObjectData = this._perObjectData;

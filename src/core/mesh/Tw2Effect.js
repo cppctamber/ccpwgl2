@@ -1,4 +1,4 @@
-import { meta, assignIfExists, getPathExtension, isPlain, isString } from "utils";
+import { meta, assignIfExists, getKeyFromValue, getPathExtension, isPlain, isString } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
@@ -1018,7 +1018,12 @@ export class Tw2Effect extends meta.Model
             for (let j = 0; j < stages.textures.length; ++j)
             {
                 let tex = stages.textures[j];
-                tex.parameter.Apply(tex.slot, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
+                // CEWG sampler registers past the 16-unit limit are remapped to
+                // free low units (Tw2ShaderProgram.SetupCewgSamplerUnits); bind
+                // to that unit so it matches the shader's uniform1i. In-range
+                // registers have no map entry and bind to unit == register.
+                const unit = program.cewgSamplerUnits ? (program.cewgSamplerUnits.get(tex.slot) ?? tex.slot) : tex.slot;
+                tex.parameter.Apply(unit, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
             }
         }
 
@@ -1196,6 +1201,70 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Sets sampler overrides on the effect. These are real Tw2SamplerOverride
+     * objects living in this.samplerOverrides, keyed by the shader's sampler
+     * name (e.g. "DecalAlbedoMapSampler"), and are resolved into each texture's
+     * bound sampler by BindParameters. This is the proper home for sampler
+     * overrides - the per-Tw2TextureParameter `overrides` path is legacy.
+     * @param {Object} [values]      - map of <samplerName>: (values|Tw2SamplerOverride|null)
+     * @param {Boolean} [skipUpdate] - skips re-binding the effect
+     * @return {Boolean}             - true if updated
+     */
+    SetSamplerOverrides(values = {}, skipUpdate)
+    {
+        let updated = false;
+
+        for (const key in values)
+        {
+            if (!values.hasOwnProperty(key)) continue;
+
+            // Sampler overrides are named "<TextureName>Sampler"
+            const name = key.lastIndexOf("Sampler") === key.length - 7 ? key : key + "Sampler";
+            const value = values[key];
+
+            // Null removes the override (falls back to the shader's sampler)
+            if (value === null || value === undefined)
+            {
+                if (this.samplerOverrides[name])
+                {
+                    this.samplerOverrides[name] = null;
+                    updated = true;
+                }
+                continue;
+            }
+
+            if (value instanceof Tw2SamplerOverride)
+            {
+                value.name = value.name || name;
+                this.samplerOverrides[name] = value;
+                updated = true;
+                continue;
+            }
+
+            let override = this.samplerOverrides[name];
+            if (!(override instanceof Tw2SamplerOverride))
+            {
+                override = this.samplerOverrides[name] = new Tw2SamplerOverride();
+                override.name = name;
+                updated = true;
+            }
+
+            if (override.SetValues(value, { skipUpdate: true })) updated = true;
+        }
+
+        if (updated && !skipUpdate && this.IsGood())
+        {
+            // BindParameters re-resolves each texture's bound sampler against
+            // the current samplerOverrides; a passive bind (no clean) keeps the
+            // overrides we just set. When the effect isn't good yet the pending
+            // overrides are applied by the next bind (e.g. OnResPrepared).
+            this.BindParameters();
+        }
+
+        return updated;
+    }
+
+    /**
      * Adds effect parameters automatically (Graphite/Jessica's
      * "CleanParameters"): creates a parameter/texture for everything the
      * shader's stages declare. Re-resolves the shader from the effect's
@@ -1283,6 +1352,25 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Checks whether the effect's shader exposes a named permutation option,
+     * e.g. "BLEND_MODE". Used by the graph-wide `GetEffectsWithOption` walk.
+     * @param {String} option
+     * @returns {Boolean}
+     */
+    HasOption(option)
+    {
+        const permutations = this.effectRes && this.effectRes.permutations;
+        if (Array.isArray(permutations))
+        {
+            for (let i = 0; i < permutations.length; i++)
+            {
+                if (permutations[i] && permutations[i].name === option) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Fires a function per child
      * @param {Function} func
      * @param {Boolean} [includeEmpty]
@@ -1335,12 +1423,13 @@ export class Tw2Effect extends meta.Model
     {
         if (!values) return false;
 
-        const { parameters, textures, overrides, options, effectFilePath = "" } = values;
+        const { parameters, textures, overrides, samplerOverrides, options, effectFilePath = "" } = values;
 
         let updated = assignIfExists(a, values, [ "name", "display", "autoParameter" ]);
 
         if (parameters && a.SetParameters(parameters, true)) updated = true;
         if (overrides && a.SetOverrides(overrides, true)) updated = true;
+        if (samplerOverrides && a.SetSamplerOverrides(samplerOverrides, true)) updated = true;
         if (textures && a.SetTextures(textures, true)) updated = true;
 
         if (options)
@@ -1403,6 +1492,7 @@ export class Tw2Effect extends meta.Model
         out.parameters = a.GetParameters();
         out.textures = a.GetTextures();
         out.overrides = a.GetOverrides();
+        out.samplerOverrides = a.GetSamplerOverrides();
         out.options = Object.assign({}, a.options);
         out.permutations = a.GetPermutations();
         return out;
@@ -1435,6 +1525,94 @@ export class Tw2Effect extends meta.Model
         }
 
         return Object.assign({}, options);
+    }
+
+    /**
+     * Gets the effect's sampler overrides as plain values
+     * @param {Object} [out={}]
+     * @returns {Object}
+     */
+    GetSamplerOverrides(out = {})
+    {
+        for (const name in this.samplerOverrides)
+        {
+            if (!this.samplerOverrides.hasOwnProperty(name)) continue;
+            const override = this.samplerOverrides[name];
+            if (!override) continue;
+            out[name] = typeof override.GetValues === "function" ? override.GetValues() : override;
+        }
+        return out;
+    }
+
+    /**
+     * Gets a json snapshot of the full compiled shader setup for the current
+     * permutation: techniques, passes, permutations/options, annotations, shader
+     * states, stages and stage data. Returns undefined when there is no effect
+     * resource or compiled shader.
+     * @returns {Object|undefined}
+     */
+    GetShaderValues()
+    {
+        if (!this.effectRes || !this.shader) return undefined;
+
+        const shader = this.shader;
+        const values = (item) => (item && typeof item.GetValues === "function") ? item.GetValues() : item;
+
+        const getStage = (stage) =>
+        {
+            if (!stage) return null;
+            const input = stage.inputDefinition;
+            return {
+                type: stage.type,
+                typeName: stage.constructor && stage.constructor.Type ? getKeyFromValue(stage.constructor.Type, stage.type) : undefined,
+                shaderCode: stage.shaderCode,
+                constantSize: stage.constantSize,
+                constantValues: stage.constantValues ? Array.from(stage.constantValues) : null,
+                constants: (stage.constants || []).map(values),
+                textures: (stage.textures || []).map(values),
+                samplers: (stage.samplers || []).map(values),
+                inputDefinition: input ? {
+                    stride: input.stride,
+                    elements: (input.elements || []).map((e) => ({
+                        usage: e.usage,
+                        usageIndex: e.usageIndex,
+                        type: e.type,
+                        elements: e.elements,
+                        offset: e.offset,
+                        location: e.location,
+                        registerIndex: e._registerIndex,
+                        usedMask: e._usedMask
+                    }))
+                } : null,
+                cewgBindings: (stage.cewgBindings && stage.cewgBindings.length) ? stage.cewgBindings : undefined
+            };
+        };
+
+        const getPass = (pass) => ({
+            hasProgram: !!pass.shaderProgram,
+            hasShadowProgram: !!pass.shadowShaderProgram,
+            states: (pass.states || []).map(values),
+            stages: (pass.stages || []).map(getStage)
+        });
+
+        const techniques = {};
+        for (const name in shader.techniques)
+        {
+            if (!shader.techniques.hasOwnProperty(name)) continue;
+            const technique = shader.techniques[name];
+            techniques[name] = {
+                name: technique.name,
+                passes: (technique.passes || []).map(getPass)
+            };
+        }
+
+        return {
+            effectFilePath: this.effectFilePath,
+            options: Object.assign({}, this.options),
+            permutations: this.GetPermutations(),
+            annotations: Object.assign({}, shader.annotations),
+            techniques
+        };
     }
 
     /**

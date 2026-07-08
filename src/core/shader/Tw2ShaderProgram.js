@@ -132,9 +132,73 @@ export class Tw2ShaderProgram
         if (pass.isCewg)
         {
             Tw2ShaderProgram.SetupCewgResources(program, pass, gl);
+            Tw2ShaderProgram.SetupCewgSamplerUnits(program, pass, gl);
         }
 
         return program;
+    }
+
+    /**
+     * Remaps CEWG sampler registers >= MAX_TEXTURE_IMAGE_UNITS (16) onto free
+     * low texture units. The legacy model binds sampler register N to texture
+     * unit N, but DX11/Carbon can assign sampler registers past the WebGL2
+     * 16-unit limit - e.g. `Detail3Map` at `s16` once the tiled-light samplers
+     * at s11-s13 are stubbed out. Such a register has no valid unit and its
+     * `uniform1i` is never set (the s0-s15 setup loop above does not reach it),
+     * so it defaults to unit 0 and collides with whatever samples unit 0
+     * (GL_INVALID_OPERATION: two textures of different types share a sampler
+     * location). Assign each out-of-range register the lowest unit in [0,16)
+     * not already taken by an in-range sampler or an in-range volume slice, set
+     * its `uniform1i`, and record the mapping on `program.cewgSamplerUnits` so
+     * Tw2Effect binds the texture to the same unit at draw time. In-range
+     * registers keep unit == register (no map entry), so shaders without an
+     * out-of-range sampler are unaffected.
+     * @param {Tw2ShaderProgram} program
+     * @param {Tw2ShaderPass} pass
+     * @param {WebGL2RenderingContext} gl
+     */
+    static SetupCewgSamplerUnits(program, pass, gl)
+    {
+        const MAX_UNITS = 16;
+        const remap = new Map();    // sampler registerIndex -> texture unit
+        const occupied = new Set(); // units already claimed in [0, MAX_UNITS)
+
+        // In-range regular samplers keep unit == registerIndex; volume samplers
+        // occupy registerIndex + 12 (see the vs# loop in SetupGLSLShader).
+        for (let s = 0; s < pass.stages.length; ++s)
+        {
+            for (const texture of pass.stages[s].textures || [])
+            {
+                if (texture.registerIndex < MAX_UNITS) occupied.add(texture.registerIndex);
+            }
+            for (const sampler of pass.stages[s].samplers || [])
+            {
+                if (sampler.isVolume && sampler.registerIndex + 12 < MAX_UNITS)
+                {
+                    occupied.add(sampler.registerIndex + 12);
+                }
+            }
+        }
+
+        for (let s = 0; s < pass.stages.length; ++s)
+        {
+            for (const texture of pass.stages[s].textures || [])
+            {
+                const reg = texture.registerIndex;
+                if (reg < MAX_UNITS || remap.has(reg)) continue;
+
+                let unit = 0;
+                while (unit < MAX_UNITS && occupied.has(unit)) unit++;
+                if (unit >= MAX_UNITS) continue; // over the unit budget; nothing free
+
+                occupied.add(unit);
+                remap.set(reg, unit);
+                const location = gl.getUniformLocation(program.program, "s" + reg);
+                if (location) gl.uniform1i(location, unit);
+            }
+        }
+
+        program.cewgSamplerUnits = remap.size ? remap : null;
     }
 
     /**

@@ -147,6 +147,44 @@ function PackPerObjectPS(out, glesVs, glesPs)
     return out;
 }
 
+/**
+ * Packs a decal's per-object VS data (b3) into Carbon DecalVSPerObjectData.
+ * The decal per-object schema is already that layout (worldMatrix@0,
+ * invWorldMatrix@4, decalMatrix@8, inverseDecalMatrix@12, parentBoneMatrix@16),
+ * so this is a direct copy — unlike the hull PackPerObjectVS. Registers past
+ * the decal data are zeroed (invParentBoneMatrix has no ccpwgl source yet).
+ * @param {Float32Array} out - PER_OBJECT_REGS * 4 floats
+ * @param {Float32Array} glesVs - decal per-object vs data
+ * @returns {Float32Array} out
+ */
+function PackDecalPerObjectVS(out, glesVs)
+{
+    const regs = Math.min(Math.floor(glesVs.length / FLOATS_PER_REG), PER_OBJECT_REGS);
+    copyRegs(out, 0, glesVs, 0, regs);
+    out.fill(0, regs * FLOATS_PER_REG, PER_OBJECT_REGS * FLOATS_PER_REG);
+    return out;
+}
+
+/**
+ * Packs a decal's per-object PS data (b4) into Carbon DecalPSPerObjectData
+ * (displayData@0, shipData@1, clipData@2, clipRadius2Sq@3, shLighting@4+). The
+ * decal PS schema already leads with displayData/shipData, so this is a direct
+ * copy — NOT the hull PackPerObjectPS, which prepends the VS world matrices at
+ * regs 0-11 and would push displayData/shipData out to 12+ (the decal reads them
+ * at cb4[0]/[1]). clipData and the SH coefficients have no ccpwgl source and stay
+ * zero.
+ * @param {Float32Array} out - PER_OBJECT_REGS * 4 floats
+ * @param {Float32Array} glesPs - decal per-object ps data
+ * @returns {Float32Array} out
+ */
+function PackDecalPerObjectPS(out, glesPs)
+{
+    const regs = Math.min(Math.floor(glesPs.length / FLOATS_PER_REG), PER_OBJECT_REGS);
+    copyRegs(out, 0, glesPs, 0, regs);
+    out.fill(0, regs * FLOATS_PER_REG, PER_OBJECT_REGS * FLOATS_PER_REG);
+    return out;
+}
+
 module.exports = {
     FLOATS_PER_REG,
     PER_FRAME_VS_REGS,
@@ -155,5 +193,7 @@ module.exports = {
     PackPerFrameVS,
     PackPerFramePS,
     PackPerObjectVS,
-    PackPerObjectPS
+    PackPerObjectPS,
+    PackDecalPerObjectVS,
+    PackDecalPerObjectPS
 };

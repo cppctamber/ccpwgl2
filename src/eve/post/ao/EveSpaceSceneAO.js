@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { RM_OPAQUE, RM_DECAL } from "constant";
+import { Tw2TextureRes } from "core/resource";
 import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
 
 /**
@@ -61,6 +62,8 @@ export class EveSpaceSceneAO extends meta.Model
     _targets = null;       // Map<name, { tex, fbo }>
     _passes = null;        // [{ name, program, loc, samplers, target }]
     _ssaoParams = null;
+    _outRes = null;        // dedicated Tw2TextureRes wrapping the AO output
+    _bound = false;        // true while SSAOMap params point at _outRes
 
     _report = { ok: false, status: "not_run" };
 
@@ -103,7 +106,7 @@ export class EveSpaceSceneAO extends meta.Model
         this.scene = scene || this.scene;
         this._report.ok = false;
 
-        if (!this.ShouldRender(this.scene)) { this._report.status = "disabled"; return false; }
+        if (!this.ShouldRender(this.scene)) { this.ResetOutput(); this._report.status = "disabled"; return false; }
 
         this._EnsureResources();
 
@@ -211,29 +214,80 @@ export class EveSpaceSceneAO extends meta.Model
     }
 
     /**
-     * Binds the output target into every `SSAOMap` parameter.
+     * Points every `SSAOMap` parameter at the AO output for this frame.
+     *
+     * The output is wrapped in a dedicated Tw2TextureRes and swapped in by
+     * reference - we must NOT write the AO texture onto the parameter's existing
+     * res, because SSAOMap defaults to the shared `res:/texture/global/white.png`
+     * resource: clobbering its `.texture` corrupted every other user of white.png
+     * and left a stale AO frame bound once AO was turned off. Each param's
+     * original res is remembered so {@link ResetOutput} can restore it.
      * @private
      */
     _BindOutput()
     {
-        const { gl } = device;
         const out = this._targets.get(this.config.output);
         if (!out) return;
 
-        // global variable
+        if (!this._outRes) this._outRes = new Tw2TextureRes();
+        if (this._outRes.texture !== out.tex) this._outRes.Attach(out.tex, "ssao:output");
+
+        for (const p of this._CollectSsaoParams())
+        {
+            if (p.textureRes === this._outRes) continue;
+            if (!p._ssaoWhiteRes) p._ssaoWhiteRes = p.textureRes;
+            p.textureRes = this._outRes;
+        }
+
+        this._bound = true;
+    }
+
+    /**
+     * Restores every `SSAOMap` parameter to its original (white) resource.
+     * Called whenever AO isn't producing a map this frame - disabled, errored,
+     * or resized - so the hull samples white (1.0 = no occlusion) instead of the
+     * last, now-stale, AO frame.
+     */
+    ResetOutput()
+    {
+        if (!this._bound) return;
+        for (const p of this._CollectSsaoParams())
+        {
+            if (p._ssaoWhiteRes) p.textureRes = p._ssaoWhiteRes;
+        }
+        this._bound = false;
+    }
+
+    /**
+     * Collects the SSAOMap texture parameters to drive: the global `SSAOMap`
+     * variable plus any per-effect `SSAOMap` params on the scene's objects
+     * (scanned lazily and cached). Only params that currently hold a res are
+     * returned.
+     * @returns {Array}
+     * @private
+     */
+    _CollectSsaoParams()
+    {
+        const params = [];
+
         try
         {
-            const p = tw2.GetVariable && tw2.GetVariable("SSAOMap");
-            if (p && p.textureRes) { p.textureRes.texture = out.tex; p.textureRes._target = gl.TEXTURE_2D; }
+            const g = tw2.GetVariable && tw2.GetVariable("SSAOMap");
+            if (g && g.textureRes) params.push(g);
         }
         catch (err) { /* ignore */ }
 
-        // per-effect params on the scene's objects (scanned lazily)
-        if (!this._ssaoParams || !this._ssaoParams.length) this._ssaoParams = this._FindSsaoParams();
-        for (const p of this._ssaoParams)
+        if ((!this._ssaoParams || !this._ssaoParams.length) && this.scene)
         {
-            if (p && p.textureRes) { p.textureRes.texture = out.tex; p.textureRes._target = gl.TEXTURE_2D; }
+            this._ssaoParams = this._FindSsaoParams();
         }
+
+        if (this._ssaoParams)
+        {
+            for (const p of this._ssaoParams) if (p && p.textureRes) params.push(p);
+        }
+
+        return params;
     }
 
     /**
@@ -323,6 +377,10 @@ export class EveSpaceSceneAO extends meta.Model
     Destroy()
     {
         const { gl } = device;
+        // Put SSAOMap params back to white before freeing the output texture,
+        // so nothing is left pointing at a deleted AO target.
+        this.ResetOutput();
+        if (this._outRes) { this._outRes.texture = null; this._outRes = null; }
         if (this._depth) { gl.deleteTexture(this._depth.depthTex); gl.deleteTexture(this._depth.colorTex); gl.deleteFramebuffer(this._depth.fbo); this._depth = null; }
         if (this._targets) { this._targets.forEach((t) => { gl.deleteTexture(t.tex); gl.deleteFramebuffer(t.fbo); }); this._targets = null; }
         if (this._passes) { this._passes.forEach((p) => gl.deleteProgram(p.program)); this._passes = null; }
