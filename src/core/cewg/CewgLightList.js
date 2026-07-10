@@ -36,12 +36,14 @@ const { CewgLightCuller } = require("./CewgLightCuller");
  * Buffer B - "light data buffer" (3 vec4s / 12 floats / 48 bytes per
  * light, exposed as an RGBA32UI texture, 3 texels per light):
  *   - row0: position.xyz, radius (w)
- *   - row1: color.rgb, flags (w) - flags is a raw uint32 BIT PATTERN
- *     stored in the float slot (bit 0x10000 = enabled, tested via a
- *     bitwise AND in the shader). This module writes/reads flags
- *     through a Uint32Array view aliasing the same buffer as the
- *     Float32Array view - it is never round-tripped through a float,
- *     which would corrupt NaN-pattern-like bit values (e.g. 0xFFFFFFFF).
+ *   - row1: color.rgb, packedInnerRadiusAndFlags (w) - a raw uint32 BIT PATTERN
+ *     stored in the float slot. Carbon packs innerRadius as a float16 in
+ *     the low 16 bits and PerLightData.flags in the high 16 bits, so
+ *     FLAG_AFFECTS_SURFACES (1) appears to shaders as bit 0x10000.
+ *     This module writes/reads the packed word through a Uint32Array
+ *     view aliasing the same buffer as the Float32Array view - it is
+ *     never round-tripped through a float, which would corrupt bit
+ *     patterns.
  *   - row2: params (4 floats, effect-specific passthrough).
  *
  * *** LIGHT INDEX 0 IN BUFFER B IS RESERVED AS THE NULL LIGHT. ***
@@ -255,7 +257,7 @@ class CewgLightList
 
     /**
      * Writes Buffer B light rows, starting at index 1 (index 0 is the reserved null light)
-     * @param {Array<{position:number[], radius:number, color:number[], flags:number, params:number[]}>} lights
+     * @param {Array<{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}>} lights
      */
     SetLights(lights)
     {
@@ -286,7 +288,7 @@ class CewgLightList
     /**
      * Writes a single Buffer B light row
      * @param {number} index 1-based Buffer B index (never 0 - that is the reserved null light)
-     * @param {{position:number[], radius:number, color:number[], flags:number, params:number[]}} light
+     * @param {{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}} light
      * @private
      */
     _writeLight(index, light)
@@ -305,13 +307,18 @@ class CewgLightList
         f[base + 5] = color[1];
         f[base + 6] = color[2];
 
-        // Flags is a raw uint32 bit pattern - write it through the
-        // Uint32Array view so bit values (including NaN-pattern-like
-        // values such as 0xFFFFFFFF) survive exactly, with no float
-        // round-trip.
-        this._bufferBUint[base + 7] = (light.flags || 0) >>> 0;
-
         const params = light.params || [ 0, 0, 0, 0 ];
+
+        // Carbon's PerLightData stores row1.w as one packed uint32:
+        // low 16 bits = innerRadius float16, high 16 bits = uint16 flags.
+        // Existing ccpwgl producers historically passed the already-shifted
+        // 0x10000 enabled bit, so accept both raw Carbon flags (1) and the
+        // legacy high-half representation (0x10000).
+        const rawFlags = (light.flags || 0) >>> 0;
+        const flagsHigh = rawFlags <= 0xFFFF ? (rawFlags << 16) >>> 0 : rawFlags & 0xFFFF0000;
+        const innerRadius = light.innerRadius !== undefined ? light.innerRadius : params[0];
+        this._bufferBUint[base + 7] = flagsHigh | Float32ToFloat16Bits(innerRadius || 0);
+
         f[base + 8] = params[0];
         f[base + 9] = params[1];
         f[base + 10] = params[2];
@@ -566,6 +573,33 @@ class CewgLightList
 
 }
 
+/**
+ * Packs a JavaScript number into IEEE-754 binary16 bits.
+ * @param {number} value
+ * @returns {number}
+ */
+function Float32ToFloat16Bits(value)
+{
+    if (!Number.isFinite(value)) return value < 0 ? 0xFC00 : 0x7C00;
+
+    const sign = value < 0 ? 0x8000 : 0;
+    const abs = Math.abs(value);
+    if (abs === 0) return sign;
+    if (abs >= 65504) return sign | 0x7BFF;
+
+    if (abs < 0.00006103515625)
+    {
+        return sign | Math.min(0x03FF, Math.round(abs / 0.000000059604644775390625));
+    }
+
+    const exponent = Math.floor(Math.log2(abs));
+    const mantissa = Math.round((abs / Math.pow(2, exponent) - 1) * 1024);
+    if (mantissa === 1024)
+    {
+        return sign | ((exponent + 16) << 10);
+    }
+    return sign | ((exponent + 15) << 10) | (mantissa & 0x03FF);
+}
 /** Buffer B floats per light (position.xyz+radius, color.rgb+flags, params x4) */
 CewgLightList.FLOATS_PER_LIGHT = 12;
 

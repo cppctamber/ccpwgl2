@@ -170,6 +170,52 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
     assert.strictEqual(subs[0][3], 1, "single dirty row uploaded");
 }
 
+// --- packed light-list data texture -------------------------------------------
+{
+    const gl = makeGl();
+    const device = { gl, viewportWidth: 640, viewportHeight: 480 };
+    const binder = CewgResourceBinder.Get(device);
+
+    const list = new CewgLightList();
+    list.SetScreenSize(640, 480);
+    list.SetLights([ { position: [ 1, 2, 3 ], radius: 50, color: [ 1, 1, 1 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] } ]);
+    list.WriteDrawList([ 1 ]);
+    binder.SetLightList(list);
+
+    const program = {
+        cewgUniformBlocks: [],
+        cewgDataTextures: [
+            {
+                name: "cewgLocalLightTexture",
+                kind: "structuredTexture",
+                cewgSemantic: "packedLocalLights",
+                unit: 28,
+                registerIndex: 13,
+                strideBytes: 0,
+                width: 2048,
+                dataTexelBase: 2048
+            }
+        ]
+    };
+
+    binder.ApplyPass(program, device);
+    let images = findCalls(gl, "texImage2D");
+    assert.strictEqual(images.length, 1, "packed path allocates one RGBA32UI texture");
+    assert.strictEqual(images[0][2], 2048, "packed texture keeps the data texture width");
+    assert.strictEqual(images[0][3], 2, "packed texture spans Buffer A plus Buffer B region");
+    assert(findCalls(gl, "activeTexture").some(c => c[1] === 28), "packed texture binds on its assigned unit");
+    assert.strictEqual(list.GetDirtyA(), null, "packed upload clears Buffer A dirty range");
+    assert.strictEqual(list.GetDirtyB(), null, "packed upload clears Buffer B dirty range");
+
+    gl.calls.length = 0;
+    list.SetLights([ { position: [ 9, 9, 9 ], radius: 25, color: [ 1, 0, 0 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] } ]);
+    binder.ApplyPass(program, device);
+    images = findCalls(gl, "texImage2D");
+    assert.strictEqual(images.length, 0, "packed path does not reallocate for data-only changes");
+    const subs = findCalls(gl, "texSubImage2D");
+    assert.strictEqual(subs.length, 1, "packed path uploads one dirty Buffer B row");
+    assert.strictEqual(subs[0][1], 1, "packed Buffer B dirty row is shifted by dataTexelBase");
+}
 // --- bufferTexture placeholder -------------------------------------------------
 {
     const gl = makeGl();

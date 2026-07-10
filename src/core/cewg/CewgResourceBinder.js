@@ -54,6 +54,8 @@ class CewgResourceBinder
         this._fallbackLightList = null;
         this._texA = { texture: null, width: 0, height: 0 };
         this._texB = { texture: null, width: 0, height: 0 };
+        this._texPacked = { texture: null, width: 0, height: 0 };
+        this._packedLightStaging = null;
 
         // Post-fx buffer textures by register index
         this._bufferTextureSources = {};
@@ -202,12 +204,20 @@ class CewgResourceBinder
                 const entry = dataTextures[i];
                 if (entry.kind === "structuredTexture")
                 {
-                    if (!lightTexturesReady)
+                    if (entry.cewgSemantic === "packedLocalLights")
                     {
-                        this._UpdateLightTextures(device);
-                        lightTexturesReady = true;
+                        this._UpdatePackedLightTexture(device, entry);
+                        this._BindPackedLightTexture(entry);
                     }
-                    this._BindLightTexture(entry);
+                    else
+                    {
+                        if (!lightTexturesReady)
+                        {
+                            this._UpdateLightTextures(device);
+                            lightTexturesReady = true;
+                        }
+                        this._BindLightTexture(entry);
+                    }
                 }
                 else if (entry.kind === "bufferTexture")
                 {
@@ -319,6 +329,68 @@ class CewgResourceBinder
     }
 
     /**
+     * Uploads the local-light buffers packed into one RGBA32UI texture.
+     * Buffer A starts at texel 0; Buffer B starts at entry.dataTexelBase.
+     * @param {Tw2Device} device
+     * @param {{width:Number,dataTexelBase:Number}} entry
+     * @private
+     */
+    _UpdatePackedLightTexture(device, entry)
+    {
+        const list = this._GetLightList(device);
+        const infoA = list.GetBufferATextureInfo();
+        const infoB = list.GetBufferBTextureInfo();
+        const width = entry.width || infoA.width || CewgResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH;
+        const dataTexelBase = entry.dataTexelBase || CewgResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE;
+        const dataRowBase = Math.floor(dataTexelBase / width);
+        const height = Math.max(infoA.height, Math.ceil((dataTexelBase + infoB.texelCount) / width));
+        const rowElements = width * 4;
+        const totalElements = rowElements * height;
+
+        const fullUpload = !this._packedLightStaging || this._packedLightStaging.length !== totalElements
+            || !this._texPacked.texture || this._texPacked.width !== width || this._texPacked.height !== height;
+
+        if (!this._packedLightStaging || this._packedLightStaging.length !== totalElements)
+        {
+            this._packedLightStaging = new Uint32Array(totalElements);
+        }
+
+        const staging = this._packedLightStaging;
+        if (fullUpload)
+        {
+            staging.fill(0);
+            staging.set(list.GetBufferA(), 0);
+            staging.set(list.GetBufferBUint(), dataTexelBase * 4);
+            this._UploadUintTexture(this._texPacked, staging, { width, height }, { y0: 0, y1: height - 1 });
+            if (this._texPacked.uploaded)
+            {
+                list.ClearDirtyA();
+                list.ClearDirtyB();
+            }
+            return;
+        }
+
+        const dirtyA = list.GetDirtyARows();
+        if (dirtyA)
+        {
+            const y0 = Math.max(0, dirtyA.y0);
+            const y1 = Math.min(infoA.height - 1, dirtyA.y1);
+            staging.set(list.GetBufferA().subarray(y0 * rowElements, (y1 + 1) * rowElements), y0 * rowElements);
+            this._UploadUintTexture(this._texPacked, staging, { width, height }, { y0, y1 });
+            if (this._texPacked.uploaded) list.ClearDirtyA();
+        }
+
+        const dirtyB = list.GetDirtyBRows();
+        if (dirtyB)
+        {
+            const y0 = Math.max(0, dirtyB.y0);
+            const y1 = Math.min(infoB.height - 1, dirtyB.y1);
+            staging.set(list.GetBufferBUint().subarray(y0 * rowElements, (y1 + 1) * rowElements), (dataRowBase + y0) * rowElements);
+            this._UploadUintTexture(this._texPacked, staging, { width, height }, { y0: dataRowBase + y0, y1: dataRowBase + y1 });
+            if (this._texPacked.uploaded) list.ClearDirtyB();
+        }
+    }
+    /**
      * Creates/reallocates/partially updates one RGBA32UI data texture
      * @param {{texture:WebGLTexture, width:Number, height:Number}} state
      * @param {Uint32Array} data - texel data (4 uint32s per texel)
@@ -409,6 +481,20 @@ class CewgResourceBinder
     }
 
     /**
+     * Binds the packed local-light texture.
+     * @param {{unit:Number}} entry
+     * @private
+     */
+    _BindPackedLightTexture(entry)
+    {
+        if (this._texPacked.texture)
+        {
+            const gl = this.gl;
+            gl.activeTexture(gl.TEXTURE0 + entry.unit);
+            gl.bindTexture(gl.TEXTURE_2D, this._texPacked.texture);
+        }
+    }
+    /**
      * Gets the 1x1 zero RGBA32F placeholder for unset bt<r> registers
      * @returns {WebGLTexture}
      * @private
@@ -442,6 +528,12 @@ CewgResourceBinder.INDEX_BUFFER_STRIDE = 4;
 
 /** structuredTexture stride identifying Buffer B (48-byte light rows) */
 CewgResourceBinder.LIGHT_BUFFER_STRIDE = 48;
+
+/** Default fixed texel width for CEWG data textures */
+CewgResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH = 2048;
+
+/** Fixed texel offset where packed local-light Buffer B begins */
+CewgResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE = 131072;
 
 /** Bone UBO size when a block reports no capacity (69 joints x 48 bytes) */
 CewgResourceBinder.DEFAULT_BONE_BYTE_LENGTH = 69 * 48;

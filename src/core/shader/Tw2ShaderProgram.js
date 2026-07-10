@@ -258,7 +258,9 @@ export class Tw2ShaderProgram
                         unit,
                         registerIndex: binding.registerIndex,
                         strideBytes: binding.strideBytes || 0,
-                        width: binding.width || 0
+                        width: binding.width || 0,
+                        cewgSemantic: binding.cewgSemantic || null,
+                        dataTexelBase: binding.dataTexelBase || 0
                     });
                     unit++;
                 }

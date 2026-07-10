@@ -78,7 +78,48 @@ function froundArray(values)
 }
 
 /**
- * Reads a Buffer B light row (position, radius, color, flags-as-uint, params) by 1-based index.
+ * Packs a JavaScript number into IEEE-754 binary16 bits.
+ * @param {number} value
+ * @returns {number}
+ */
+function float32ToFloat16Bits(value)
+{
+    if (!Number.isFinite(value)) return value < 0 ? 0xFC00 : 0x7C00;
+
+    const sign = value < 0 ? 0x8000 : 0;
+    const abs = Math.abs(value);
+    if (abs === 0) return sign;
+    if (abs >= 65504) return sign | 0x7BFF;
+
+    if (abs < 0.00006103515625)
+    {
+        return sign | Math.min(0x03FF, Math.round(abs / 0.000000059604644775390625));
+    }
+
+    const exponent = Math.floor(Math.log2(abs));
+    const mantissa = Math.round((abs / Math.pow(2, exponent) - 1) * 1024);
+    if (mantissa === 1024)
+    {
+        return sign | ((exponent + 16) << 10);
+    }
+    return sign | ((exponent + 15) << 10) | (mantissa & 0x03FF);
+}
+
+/**
+ * Packs a light flags/inner-radius word as Buffer B row1.w.
+ * @param {number} flags
+ * @param {number} innerRadius
+ * @returns {number}
+ */
+function packLightWord(flags, innerRadius)
+{
+    const rawFlags = flags >>> 0;
+    const flagsHigh = rawFlags <= 0xFFFF ? (rawFlags << 16) >>> 0 : rawFlags & 0xFFFF0000;
+    return (flagsHigh | float32ToFloat16Bits(innerRadius || 0)) >>> 0;
+}
+
+/**
+ * Reads a Buffer B light row (position, radius, color, packed flags/inner-radius word, params) by 1-based index.
  * @param {Float32Array} bufferBFloat
  * @param {Uint32Array} bufferBUint
  * @param {number} lightIndex
@@ -169,8 +210,8 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 
     assertAllTiles(list, 1920, 1080, [ 3, 1, 4 ], "test2-draw-list");
 
-    // Bit-exact round-trip for every light, including the 0x10000 flag bit
-    // and the NaN-pattern-like 0xFFFFFFFF value.
+    // Bit-exact round-trip for every light, including the high-half flag bits,
+    // packed inner-radius low bits, and the NaN-pattern-like 0xFFFFFFFF value.
     const bf = list.GetBufferBFloat();
     const bu = list.GetBufferBUint();
     for (let i = 0; i < lights.length; i++)
@@ -184,12 +225,12 @@ function assertAllTiles(list, width, height, expectedRaw, label)
         assert.deepStrictEqual(row.position, froundArray(expected.position), `light ${i + 1} position`);
         assert.strictEqual(row.radius, Math.fround(expected.radius), `light ${i + 1} radius`);
         assert.deepStrictEqual(row.color, froundArray(expected.color), `light ${i + 1} color`);
-        assert.strictEqual(row.flags >>> 0, expected.flags >>> 0, `light ${i + 1} flags bit-exact`);
+        assert.strictEqual(row.flags >>> 0, packLightWord(expected.flags, expected.innerRadius ?? expected.params[0]) >>> 0, `light ${i + 1} packed flags/inner-radius word`);
         assert.deepStrictEqual(row.params, froundArray(expected.params), `light ${i + 1} params`);
     }
     // Explicit call-out for the two flag values named in the spec.
-    assert.strictEqual(readLightRow(bf, bu, 1).flags, 0x10000, "light 1 flags must be exactly 0x10000");
-    assert.strictEqual(readLightRow(bf, bu, 3).flags, 0xFFFFFFFF >>> 0, "light 3 flags must be exactly 0xFFFFFFFF");
+    assert.strictEqual((readLightRow(bf, bu, 1).flags & 0xFFFF0000) >>> 0, 0x10000, "light 1 high flags must be exactly 0x10000");
+    assert.strictEqual((readLightRow(bf, bu, 3).flags & 0xFFFF0000) >>> 0, 0xFFFF0000, "light 3 high flags must be exactly 0xFFFF0000");
 
     console.log("PASS 2: 5 lights set + draw list [3,1,4] traverses correctly on every tile; Buffer B round-trips bit-exact");
 }

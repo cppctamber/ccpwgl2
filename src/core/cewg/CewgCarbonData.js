@@ -171,8 +171,8 @@ function PackDecalPerObjectVS(out, glesVs)
  * decal PS schema already leads with displayData/shipData, so this is a direct
  * copy — NOT the hull PackPerObjectPS, which prepends the VS world matrices at
  * regs 0-11 and would push displayData/shipData out to 12+ (the decal reads them
- * at cb4[0]/[1]). clipData and the SH coefficients have no ccpwgl source and stay
- * zero.
+ * at cb4[0]/[1]). The decal object packs its PS data in Carbon order before this
+ * direct copy.
  * @param {Float32Array} out - PER_OBJECT_REGS * 4 floats
  * @param {Float32Array} glesPs - decal per-object ps data
  * @returns {Float32Array} out
