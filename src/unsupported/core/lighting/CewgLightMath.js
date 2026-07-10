@@ -229,6 +229,40 @@ export function Saturate(color, saturation, out = [ 0, 0, 0, 0 ])
 export const CEWG_FLAG_ENABLED = 0x10000;
 
 /**
+ * Per-light shadow-casting mode. Matches Carbon's PerLightShadowSetting enum
+ * (carbonengine trinity/trinity/Lights/Tr2Light.h:20-25) and is confirmed as
+ * the canonical `LightData.castsShadows` type by the format-black schema
+ * (@carbonenginejs/format-black - `castsShadows: enum`). The CEWG tile path
+ * does not consume per-light shadow settings yet (shadow flag bits are
+ * unconfirmed in the shader contract - see CEWG_FLAG_ENABLED).
+ * @enum {Number}
+ */
+export const PerLightShadowSetting = {
+    DISABLED: 0,
+    ENABLED_ONLY_ON_HIGH_QUALITY: 1,
+    ALWAYS_ENABLED: 2
+};
+
+/**
+ * `LightData.flags` bitmask. Matches Carbon's Tr2LightManager flags
+ * (carbonengine trinity/trinity/Lights/Tr2LightManager.h:100-105); stored as
+ * uint16 (canonical width confirmed by the format-black schema). Gates which
+ * render passes a light affects - not yet consumed by the CEWG tile path.
+ * @enum {Number}
+ */
+export const LightDataFlags = {
+    AFFECTS_SURFACES: 1,
+    AFFECTS_PARTICLES: 2
+};
+
+/**
+ * Default `LightData.flags` value (FLAG_AFFECTS_SURFACES), matching Carbon's
+ * FLAG_DEFAULT (Tr2LightManager.h:105).
+ * @type {Number}
+ */
+export const LIGHT_FLAG_DEFAULT = LightDataFlags.AFFECTS_SURFACES;
+
+/**
  * Average length of a mat4's three basis (axis) vectors - a cheap
  * "world scale" estimate for a transform whose scale isn't necessarily
  * uniform. Used as the `parentScale` passed to `Tr2*Light#GetCewgLightData`

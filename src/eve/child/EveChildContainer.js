@@ -96,6 +96,18 @@ export class EveChildContainer extends EveChild
     _controllersLinked = false;
 
     /**
+     * The top-level space object this container ultimately hangs off (e.g. the `EveShip2`),
+     * recorded each `Update` from the `parentSpaceObject` argument threaded down by the caller.
+     * Backs this container's own `ShipSpeed()`/`ShipMaxSpeed()` delegation below: controllers
+     * attached directly to an effect-child container get `owner = this container`
+     * (`Initialize()` below), not the ship, so the container must forward those builtin lookups
+     * itself. Carbon parity: `EveChildContainer` stores `spaceObjectParent` and child containers
+     * inherit the parent object's velocity (`EveChildContainer.cpp:603,1012`).
+     * @type {?EveShip2}
+     */
+    _parentSpaceObject = null;
+
+    /**
      * Links this container's controllers with the container as their owner, mirroring
      * CarbonEngine's EveChildContainer::Initialize (controller->Link(*GetRawRoot())).
      * The owner exposes GetRangeDuration/GetCurveSetDuration so expression terms like
@@ -181,6 +193,28 @@ export class EveChildContainer extends EveChild
     }
 
     /**
+     * Backs the `ShipSpeed()` controller-expression builtin for controllers whose owner is this
+     * container (`context.owner.ShipSpeed()`,
+     * `unsupported/state/expression/Tr2ExpressionProgram.js:701,779-781`), by delegating to the
+     * parent space object recorded in `Update` (see `_parentSpaceObject`).
+     * @returns {Number}
+     */
+    ShipSpeed()
+    {
+        return this._parentSpaceObject && this._parentSpaceObject.ShipSpeed ? this._parentSpaceObject.ShipSpeed() : 0;
+    }
+
+    /**
+     * Backs the `ShipMaxSpeed()` controller-expression builtin, delegated the same way as
+     * `ShipSpeed()` above.
+     * @returns {Number}
+     */
+    ShipMaxSpeed()
+    {
+        return this._parentSpaceObject && this._parentSpaceObject.ShipMaxSpeed ? this._parentSpaceObject.ShipMaxSpeed() : 1;
+    }
+
+    /**
      * Resets lod
      */
     ResetLod()
@@ -227,9 +261,13 @@ export class EveChildContainer extends EveChild
      * @param {number} dt
      * @param {mat4} parentTransform
      * @param {Tw2PerObjectData} perObjectData
+     * @param {?EveShip2} [parentSpaceObject] - top-level space object, threaded down so nested
+     *  containers' controllers can resolve ShipSpeed()/ShipMaxSpeed() (see `_parentSpaceObject`)
      */
-    Update(dt, parentTransform, perObjectData)
+    Update(dt, parentTransform, perObjectData, parentSpaceObject)
     {
+        this._parentSpaceObject = parentSpaceObject || null;
+
         if (this.useSRT)
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -313,7 +351,9 @@ export class EveChildContainer extends EveChild
 
         for (let i = 0; i < this.objects.length; i++)
         {
-            this.objects[i].Update(dt, this._worldTransform, perObjectData);
+            // Forward the same top-level parentSpaceObject (not `this`) so deeply nested
+            // containers still resolve ShipSpeed() against the ship, not an intermediate container.
+            this.objects[i].Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
         }
 
         /*
@@ -336,9 +376,13 @@ export class EveChildContainer extends EveChild
      * `GetCewgLightData` row. Plain deserialized lights that predate that
      * API (missing `Update`/`GetCewgLightData`) are skipped silently, so
      * populated and un-populated lights can coexist in `this.lights`.
-     * Does NOT recurse into `this.objects` - each child collects its own
-     * lights independently (the scene wiring is expected to walk the whole
-     * hierarchy and call `GetLights` on every owner).
+     *
+     * Recurses into `this.objects`: light owners can sit at any depth
+     * (`container.objects[].objects[]...lights`), and the scene-side walk
+     * (`EveObject.GetLights`) only descends `effectChildren`, so nested
+     * containers would otherwise never be visited. Each child's own
+     * `_worldTransform` was refreshed by this container's `Update()` (which
+     * updates `this.objects`), so recursion only needs to forward the collect.
      * @param {CewgLightCollector} collector
      * @param {object} [parentContext]
      * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
@@ -347,7 +391,7 @@ export class EveChildContainer extends EveChild
      */
     GetLights(collector, parentContext = {})
     {
-        if (!collector || !this.lights.length) return;
+        if (!collector) return;
 
         const dt = parentContext.dt || 0;
         const bones = parentContext.bones || null;
@@ -361,6 +405,12 @@ export class EveChildContainer extends EveChild
 
             light.Update(dt, this._worldTransform, bones);
             collector.Collect([ light.GetCewgLightData({ parentBrightness, parentScale }) ]);
+        }
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            const child = this.objects[i];
+            if (child && typeof child.GetLights === "function") child.GetLights(collector, parentContext);
         }
     }
 

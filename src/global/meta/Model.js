@@ -541,6 +541,66 @@ export class Model
     }
 
     /**
+     * Gets every child struct that currently exposes a named permutation option
+     * (e.g. an effect whose shader has a "BLEND_MODE" option), optionally
+     * narrowed by a filter. Walks the whole struct graph, so it works from any
+     * node (`EveShip2`, `Tw2Mesh`, `Tw2MeshArea`, `Tw2Effect`, ...).
+     *
+     * This is a query: it only matches effects whose resource is loaded, since
+     * the option surface comes from the effect resource. To *set* an option in a
+     * way that also reaches not-yet-loaded effects, use {@link SetEffectsOption}.
+     * @param {String} option      - permutation option name, e.g. "BLEND_MODE"
+     * @param {Function} [filter]   - optional predicate `(struct) => boolean`
+     * @param {Array} [out=[]]
+     * @returns {Array} out         - the matching structs (usually effects)
+     */
+    GetEffectsWithOption(option, filter, out = [])
+    {
+        return this.FilterStruct(
+            (struct) => !!struct
+                && typeof struct.HasOption === "function"
+                && struct.HasOption(option)
+                && (!filter || filter(struct)),
+            out
+        );
+    }
+
+    /**
+     * Sets a permutation option across the graph from one place (the "set once,
+     * apply to each supporting shader" case).
+     *
+     * Robust to load order: it applies the value to effects that already expose
+     * the option, AND to effects whose resource has not loaded yet - those store
+     * the value on `options`, and `OnResPrepared` applies it on load if the
+     * shader has the option (or harmlessly ignores it if not). Loaded effects
+     * that do not have the option are skipped. Scope with `filter` (e.g. to a
+     * shader family) so the optimistic pre-load set is not sprayed everywhere.
+     * @param {String} option              - option name, e.g. "BLEND_MODE"
+     * @param {String} value               - option value, e.g. "BLEND_MODE_SUBTRACT"
+     * @param {Function} [filter]          - optional predicate `(effect) => boolean`
+     * @param {Boolean} [autoPopulate=true] - rebuild each loaded effect after setting
+     * @returns {Array} the effects whose option value changed
+     */
+    SetEffectsOption(option, value, filter, autoPopulate = true)
+    {
+        const updated = [];
+        this.Traverse((opt) =>
+        {
+            const struct = opt.struct;
+            if (!struct || typeof struct.SetOption !== "function") return;
+            if (filter && !filter(struct)) return;
+
+            const res = struct.effectRes;
+            const loaded = !!(res && res.IsGood && res.IsGood() && res.HasPrepared && res.HasPrepared());
+            const supports = typeof struct.HasOption === "function" && struct.HasOption(option);
+            if (loaded && !supports) return;
+
+            if (struct.SetOption({ [option]: value }, autoPopulate)) updated.push(struct);
+        });
+        return updated;
+    }
+
+    /**
      * Finds an object by it's id
      * @param {String} id
      * @param {Array} [out] - Optional array for capturing the path to the found object

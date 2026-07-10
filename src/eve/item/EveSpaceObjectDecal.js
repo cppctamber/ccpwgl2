@@ -64,6 +64,7 @@ export class EveSpaceObjectDecal extends meta.Model
     _parentMeshIndex = 0;
     _parentGeometryRes = null;
     _parentTransform = null;
+    _perObjectDataBagOfStuff = {};
     _rawIndexBuffers = [];
 
     /**
@@ -164,6 +165,72 @@ export class EveSpaceObjectDecal extends meta.Model
         }
 
         return GLESPerObjectDataEveSpaceObject.Pack(parentData, this._parentPerObjectData);
+    }
+
+    /**
+     * Gets a temporary semantic-ish bag of values used to build decal per-object data
+     * @param {Tw2PerObjectData} parentPerObjectData
+     * @param {Object} [out]
+     * @param {Number} [counter=0]
+     * @returns {Object}
+     */
+    GetPerObjectDataBagOfStuff(parentPerObjectData, out = {}, counter = 0)
+    {
+        delete out.shipData;
+        delete out.clipData;
+        delete out.clipRadius2Sq;
+        delete out.sphericalHarmonicLighting;
+        delete out.jointMatrices;
+        delete out.displayData;
+        delete out.parentPerObjectData;
+        delete out.perObjectData;
+
+        GLESPerObjectDataEveSpaceObject.Unpack(parentPerObjectData, out);
+
+        out.displayData = [ counter, 1, 0, 0 ];
+        out.clipRadius2Sq = out.clipRadius2Sq ?? 0;
+        out.parentPerObjectData = parentPerObjectData;
+        out.perObjectData = this._perObjectData;
+        return out;
+    }
+
+    /**
+     * Packs decal per-object data
+     * @param {Object} bag
+     * @param {Tw2PerObjectData} [perObjectData=this._perObjectData]
+     * @returns {Tw2PerObjectData}
+     */
+    PackPerObjectData(bag, perObjectData = this._perObjectData)
+    {
+        const { vs, ps } = perObjectData;
+
+        if (vs)
+        {
+            const parentVs = bag.parentPerObjectData && bag.parentPerObjectData.vs;
+            if (parentVs)
+            {
+                vs.Set("worldMatrix", parentVs.Get("WorldMat"));
+                mat4.invert(vs.Get("invWorldMatrix"), vs.Get("worldMatrix"));
+            }
+
+            mat4.transpose(vs.Get("decalMatrix"), this._localTransform);
+            mat4.transpose(vs.Get("invDecalMatrix"), this._localTransformInverse);
+        }
+
+        if (ps)
+        {
+            ps.Set("displayData", bag.displayData || [ 0, 1, 0, 0 ]);
+            if (bag.shipData) ps.Set("shipData", bag.shipData);
+            if (bag.clipData) ps.Set("clipData", bag.clipData);
+            ps.Set("clipRadius2Sq", [ bag.clipRadius2Sq ?? 0, 0, 0, 0 ]);
+            if (bag.sphericalHarmonicLighting) ps.Set("shLighting", bag.sphericalHarmonicLighting);
+        }
+
+        // Tag so the CEWG binder packs cb3/cb4 with the decal per-object layout
+        // (DecalVS/PSPerObjectData) instead of the hull layout - see
+        // CewgResourceBinder.ApplyPass / CewgCarbonData.PackDecalPerObject*.
+        perObjectData.cewgKind = "decal";
+        return perObjectData;
     }
 
     /**
@@ -422,18 +489,10 @@ export class EveSpaceObjectDecal extends meta.Model
         }
         if (!hasBone) this._offsetTransform = null;
 
-        this._perObjectData.vs.Set("worldMatrix", parentPerObjectData.vs.Get("WorldMat"));
-        mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
-        mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
-        mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
-
-        this._perObjectData.ps.SetIndex("displayData", 0, counter);
-        this._perObjectData.ps.Set("shipData", parentPerObjectData.ps.data);
-
-        // Tag so the CEWG binder packs cb3/cb4 with the decal per-object layout
-        // (DecalVS/PSPerObjectData) instead of the hull layout - see
-        // CewgResourceBinder.ApplyPass / CewgCarbonData.PackDecalPerObject*.
-        this._perObjectData.cewgKind = "decal";
+        this.PackPerObjectData(
+            this.GetPerObjectDataBagOfStuff(parentPerObjectData, this._perObjectDataBagOfStuff, counter),
+            this._perObjectData
+        );
 
         const batch = new Tw2ForwardingRenderBatch();
         batch._geometryRes = geometryRes;
@@ -605,8 +664,20 @@ export class EveSpaceObjectDecal extends meta.Model
             [ "clampDecalToEdge", 4 ]
         ],
         ps: [
+            // .x = kill counter, .y = decal visibility/fade, .z = unused, .w = unused
             [ "displayData", [ 0, 1, 0, 0 ] ],
-            [ "shipData", 12 ]
+
+            // .x = booster glow/intensity, .y = activation strength, .z = dirt level, .w = bounding sphere radius squared
+            [ "shipData", 4 ],
+
+            // .xyz = clip sphere center, .w = signed clip sphere radius squared
+            [ "clipData", 4 ],
+
+            // .x = second signed clip sphere radius squared, .yzw = unused
+            [ "clipRadius2Sq", 4 ],
+
+            // 7 packed spherical harmonic lighting coefficients
+            [ "shLighting", 4 * 7 ]
         ]
     };
 

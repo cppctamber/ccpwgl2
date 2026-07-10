@@ -3,7 +3,7 @@ import { meta } from "utils";
 
 @meta.type("Tw2ShaderState")
 @meta.wgl.define("Tw2ShaderState")
-export class Tw2ShaderState
+export class Tw2ShaderState extends meta.Model
 {
 
     @meta.float

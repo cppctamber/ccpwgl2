@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
 import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
-import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED } from "./CewgLightMath";
+import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
 
 
 export class EvePointLightBatch extends Tw2RenderBatch
@@ -59,27 +59,23 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     brightness = 1;
 
-    // NOTE (drift): Carbon's castsShadows is the PerLightShadowSetting enum
-    // (0=DISABLED, 1=ENABLED_ONLY_ON_HIGH_QUALITY, 2=ALWAYS_ENABLED,
-    // Tr2Light.h:20-25). The decorator type below is the black WIRE format
-    // ccpwgl's reader was already using (black readers dispatch on decorator
-    // type) and must not be changed without re-verifying against real .black
-    // data.
+    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
+    // confirmed by the format-black schema (`castsShadows: enum`). Shadow
+    // settings are not consumed by the CEWG tile path yet.
     @meta.notImplemented
-    @meta.float
-    castsShadows = false;
+    @meta.enums(PerLightShadowSetting)
+    castsShadows = PerLightShadowSetting.DISABLED;
 
     @meta.color
     color = vec4.create();
 
-    // NOTE (drift): Carbon's flags is a uint16 bitmask
-    // (Tr2LightManager::FLAG_AFFECTS_SURFACES=1 | FLAG_AFFECTS_PARTICLES=2,
-    // default FLAG_DEFAULT=1, Tr2LightManager.h:100-105). ccpwgl's black
-    // reader observed this property as a string on the wire - decorator type
-    // kept as-is (see castsShadows note above).
+    // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
+    // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
+    // format-black schema. Gates which passes a light affects - not consumed
+    // by the CEWG tile path yet.
     @meta.notImplemented
-    @meta.string
-    flags = "";
+    @meta.ushort
+    flags = LIGHT_FLAG_DEFAULT;
 
     @meta.float
     innerRadius = 0;
@@ -102,10 +98,9 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     noiseFrequency = 1;
 
-    // NOTE (drift): Carbon type is uint32_t (carbonenginejs: num.uint32) but
-    // the pre-existing ccpwgl stub read this as float - decorator kept as
-    // the observed wire format (see castsShadows note above).
-    @meta.float
+    // uint32 (Tr2Light.h; carbonenginejs num.uint32), confirmed canonical by
+    // the format-black schema. Consumed by GetComposedBrightness's noise sum.
+    @meta.uint
     noiseOctaves = 1;
 
     @meta.vector3

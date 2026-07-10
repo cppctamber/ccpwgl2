@@ -3,7 +3,7 @@ import { getKeyFromValue, meta, toArray } from "utils";
 
 @meta.type("Tw2ShaderStageConstant")
 @meta.wgl.define("Tw2ShaderStageConstant")
-export class Tw2ShaderStageConstant
+export class Tw2ShaderStageConstant extends meta.Model
 {
 
     @meta.string

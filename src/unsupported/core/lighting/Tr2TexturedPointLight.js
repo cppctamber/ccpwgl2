@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED } from "./CewgLightMath";
+import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
 // NOTE: `Saturate` (also exported from ./CewgLightMath, ported 1:1 from
 // carbonengine math/include/Color_inline.h:161-172) is what
 // `UpdateColorFromTexture` below should use once a texture average-color
@@ -36,28 +36,25 @@ export class Tr2TexturedPointLight extends meta.Model
     @meta.float
     brightness = 1;
 
-    // NOTE (drift): Carbon's castsShadows is the PerLightShadowSetting enum
-    // (0=DISABLED, 1=ENABLED_ONLY_ON_HIGH_QUALITY, 2=ALWAYS_ENABLED,
-    // Tr2Light.h:20-25). The decorator type below is the black WIRE format
-    // ccpwgl's reader was already using (black readers dispatch on decorator
-    // type) and must not be changed without re-verifying against real .black
-    // data.
+    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
+    // confirmed by the format-black schema (`castsShadows: enum`). Shadow
+    // settings are not consumed by the CEWG tile path yet.
     @meta.notImplemented
-    @meta.float
-    castsShadows = false;
+    @meta.enums(PerLightShadowSetting)
+    castsShadows = PerLightShadowSetting.DISABLED;
 
     // NOTE (drift): pre-existing stub used @meta.vector4 rather than
     // @meta.color (same wire bytes) - kept as observed.
     @meta.vector4
     color = vec4.fromValues(0, 0, 0, 1);
 
-    // NOTE (drift): Carbon's flags is a uint16 bitmask (Tr2LightManager.h:100-105).
-    // New property here (the pre-existing stub omitted it entirely) -
-    // declared with the same string wire type the sibling Tr2PointLight/
-    // Tr2SpotLight stubs observed for the identical LightData.flags member.
+    // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
+    // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
+    // format-black schema. Gates which passes a light affects - not consumed
+    // by the CEWG tile path yet.
     @meta.notImplemented
-    @meta.string
-    flags = "";
+    @meta.ushort
+    flags = LIGHT_FLAG_DEFAULT;
 
     @meta.notImplemented
     @meta.desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice.")
@@ -85,10 +82,9 @@ export class Tr2TexturedPointLight extends meta.Model
     @meta.float
     noiseFrequency = 1;
 
-    // NOTE (drift): Carbon type is uint32_t (carbonenginejs: num.uint32) but
-    // the pre-existing ccpwgl stub read this as float - decorator kept as
-    // the observed wire format (see castsShadows note above).
-    @meta.float
+    // uint32 (Tr2Light.h; carbonenginejs num.uint32), confirmed canonical by
+    // the format-black schema. Consumed by GetComposedBrightness's noise sum.
+    @meta.uint
     noiseOctaves = 1;
 
     @meta.notImplemented

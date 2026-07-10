@@ -89,6 +89,21 @@ export class EveShip2 extends EveObject
     @meta.float
     boosterGain = 1;
 
+    @meta.vector3
+    clipSphereCenter = vec3.create();
+
+    @meta.float
+    clipSphereFactor = 0;
+
+    @meta.float
+    clipSphereFactor2 = 0;
+
+    @meta.float
+    impactDataOffset = 0;
+
+    @meta.float
+    modelScale = 1;
+
     @meta.list("EveChild")
     effectChildren = [];
 
@@ -114,6 +129,7 @@ export class EveShip2 extends EveObject
         turretSets: true
     };
 
+    @meta.ui({ group: "Dirt" })
     @meta.float
     weeksSinceCleaned = 0;
 
@@ -123,10 +139,37 @@ export class EveShip2 extends EveObject
      */
     controllers = [];
 
+    /**
+     * Embedder-set ship speed telemetry (world-velocity magnitude), backing the `ShipSpeed()`
+     * controller-expression builtin. CarbonEngine caches this from the Destiny ball's velocity
+     * every sync update (`m_speed = Length(GetWorldVelocity())`, `EveShip2.cpp:50-57`,
+     * `TriFloat m_speed`, `EveShip2.h:66`); ccpwgl has no physics/ball layer, so derivation is
+     * left entirely to the embedder (e.g. `ship.speed = |worldTransform delta| / dt` per frame,
+     * or a value pushed straight from game state). Runtime-only: not persisted.
+     * @type {Number}
+     */
+
+    @meta.ui({ group: "Speed", index: 2 })
+    @meta.float
+    speed = 0;
+
+    /**
+     * Embedder-set maximum ship speed, backing the `ShipMaxSpeed()` builtin. Used by expressions
+     * that normalize `speed` into a 0..1 input (e.g. warp-state mixers). ccpwgl does not receive
+     * real ship max speeds, so this follows CCP's frontend/editor default: 1 is unmodified max
+     * speed, 2 approximates a ship with one propulsion modifier.
+     * Runtime-only: not persisted.
+     * @type {Number}
+     */
+    @meta.ui({ group: "Speed", index: 2 })
+    @meta.float
+    maxSpeed = 2;
+
     _enableCurves = false;
     _pixelSizeAcross = 0;
 
     _spriteScale = 1;
+    _dirtyGeometry = true;
     _ellipsoidCenter = vec3.create();
     _ellipsoidRadii = vec3.create();
     _jointMatrices = null;
@@ -140,6 +183,7 @@ export class EveShip2 extends EveObject
      */
     Initialize()
     {
+        this.InvalidateMeshData();
         this.RebuildBoosterSet();
         super.Initialize();
     }
@@ -836,6 +880,28 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Backs the `ShipSpeed()` controller-expression builtin, resolved via
+     * `context.owner.ShipSpeed()` (`unsupported/state/expression/Tr2ExpressionProgram.js:701,779-781`).
+     * See the `speed` field doc for the carbon reference and why ccpwgl leaves derivation to the
+     * embedder.
+     * @returns {Number}
+     */
+    ShipSpeed()
+    {
+        return this.speed;
+    }
+
+    /**
+     * Backs the `ShipMaxSpeed()` controller-expression builtin, resolved via
+     * `context.owner.ShipMaxSpeed()` (`unsupported/state/expression/Tr2ExpressionProgram.js:702,779-781`).
+     * @returns {Number}
+     */
+    ShipMaxSpeed()
+    {
+        return this.maxSpeed;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      */
@@ -881,7 +947,9 @@ export class EveShip2 extends EveObject
 
         for (let i = 0; i < this.children.length; i++)
         {
-            this.children[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff);
+            // 4th arg: parent space object, so nested EveChildContainer controllers can resolve
+            // ShipSpeed()/ShipMaxSpeed() against this ship (carbon parity: EveChildContainer.cpp:603).
+            this.children[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
 
             if (this.children[i]._boundsDirty)
             {
@@ -891,7 +959,7 @@ export class EveShip2 extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; i++)
         {
-            this.effectChildren[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff);
+            this.effectChildren[i].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
 
             if (this.effectChildren[i]._boundsDirty)
             {
@@ -1107,6 +1175,65 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Marks stable mesh-derived shader data dirty.
+     */
+    InvalidateMeshData()
+    {
+        this._dirtyGeometry = true;
+    }
+
+    /**
+     * Rebuilds stable mesh-derived shader data from the current geometry resource.
+     * This intentionally does not use `OnRebuildBounds()`, which is a runtime
+     * intersection/culling bounds path and may include attachments or children.
+     * @param {Boolean} [force=false]
+     * @returns {Boolean}
+     */
+    RebuildMeshData(force = false)
+    {
+        const
+            mesh = this.mesh && this.mesh.IsGood() ? this.mesh : null,
+            res = mesh ? mesh.geometryResource : null;
+
+        if (!res)
+        {
+            this._dirtyGeometry = true;
+            return false;
+        }
+
+        if (!force && !this._dirtyGeometry)
+        {
+            return true;
+        }
+
+        res.RebuildBounds();
+
+        vec3.copy(this.boundingSphereCenter, res.boundsSpherePosition);
+        this.boundingSphereRadius = res.boundsSphereRadius;
+
+        const
+            center = this._ellipsoidCenter,
+            radii = this._ellipsoidRadii;
+
+        if (this.shapeEllipsoidRadius[0] > 0)
+        {
+            vec3.copy(center, this.shapeEllipsoidCenter);
+            vec3.copy(radii, this.shapeEllipsoidRadius);
+        }
+        else
+        {
+            const { maxBounds, minBounds } = res;
+            vec3.subtract(center, maxBounds, minBounds);
+            vec3.scale(center, center, 0.5 * 1.732050807);
+            vec3.add(radii, maxBounds, minBounds);
+            vec3.scale(radii, radii, 0.5);
+        }
+
+        this._dirtyGeometry = false;
+        return true;
+    }
+
+    /**
      * Gets a temporary semantic-ish bag of values used to build per-object data.
      * Values may be references to object/raw arrays; treat the bag as read-only.
      * @param {Object} [out]
@@ -1114,9 +1241,13 @@ export class EveShip2 extends EveObject
      */
     GetPerObjectDataBagOfStuff(out = {})
     {
+        this.RebuildMeshData();
+
         delete out.shipData;
         delete out.clipData;
         delete out.clipData1;
+        delete out.miscData;
+        delete out.clipRadius2Sq;
         delete out.worldTransformTranspose;
         delete out.worldTransformLastTranspose;
         delete out.inverseWorldTransformTranspose;
@@ -1131,7 +1262,24 @@ export class EveShip2 extends EveObject
         const
             boosterGain = Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0),
             activationStrength = Math.max(Math.min(this.activationStrength, 1), 0),
-            dirtLevel = Math.max(EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0);
+            dirtLevel = Math.max(EveShip2.getDirtLevelFromWeeks(this.weeksSinceCleaned, !this.visible.dirt), 0),
+            modelScale = this.modelScale === 0 ? 1 : this.modelScale,
+            clipOffset = vec3.length(this.clipSphereCenter),
+            normalizedBoundingRadius = this.boundingSphereRadius / modelScale + clipOffset,
+            insideSpherePercentage = normalizedBoundingRadius > 0
+                ? Math.min(1, clipOffset / normalizedBoundingRadius)
+                : 0,
+            clipScale = normalizedBoundingRadius * (1 + insideSpherePercentage),
+            dissolveRadius = this.clipSphereFactor * clipScale,
+            dissolveRadius2 = this.clipSphereFactor2 * clipScale,
+            clipRadiusSq = Math.sign(dissolveRadius) * dissolveRadius * dissolveRadius,
+            clipRadius2Sq = Math.sign(dissolveRadius2) * dissolveRadius2 * dissolveRadius2,
+            clipCenter = [
+                this.boundingSphereCenter[0] + this.clipSphereCenter[0],
+                this.boundingSphereCenter[1] + this.clipSphereCenter[1],
+                this.boundingSphereCenter[2] + this.clipSphereCenter[2],
+                clipRadiusSq
+            ];
 
         out.source = this;
         out.perObjectData = this._perObjectData;
@@ -1145,6 +1293,12 @@ export class EveShip2 extends EveObject
         out.weeksSinceCleaned = this.weeksSinceCleaned;
         out.boundingSphereCenter = this.boundingSphereCenter;
         out.boundingSphereRadius = this.boundingSphereRadius;
+        out.shipData = [ boosterGain, activationStrength, dirtLevel, this.boundingSphereRadius ];
+        out.clipData = clipCenter;
+        out.clipSphereCenter = clipCenter;
+        out.clipSphereSignedRadiusSq = clipRadiusSq;
+        out.miscData = [ clipRadius2Sq, this.impactDataOffset, this.clipSphereFactor2, this.clipSphereFactor ];
+        out.clipRadius2Sq = clipRadius2Sq;
         out.shapeEllipsoidCenter = this.shapeEllipsoidCenter;
         out.shapeEllipsoidRadius = this.shapeEllipsoidRadius;
         out.ellipsoidCenter = this._ellipsoidCenter;
@@ -1251,6 +1405,7 @@ export class EveShip2 extends EveObject
                 this.meshIndex = res.meshes.length - 1;
             }
             this.mesh.SetMeshIndex(this.meshIndex);
+            this.RebuildMeshData();
 
             // If we have animations, check if they're loaded
             if (this.animation)
@@ -1284,31 +1439,6 @@ export class EveShip2 extends EveObject
                     }
                 }
             }
-        }
-
-        // Update bounding ellipsoid (Used for some effects and maybe collsions?)
-        // - Similar as the clip data, we should only have to update this on first load
-        // - and then whenever the bounds get updated
-        const
-            center = this._ellipsoidCenter,
-            radii = this._ellipsoidRadii;
-
-        if (this.shapeEllipsoidRadius[0] > 0)
-        {
-            center[0] = this.shapeEllipsoidCenter[0];
-            center[1] = this.shapeEllipsoidCenter[1];
-            center[2] = this.shapeEllipsoidCenter[2];
-            radii[0] = this.shapeEllipsoidRadius[0];
-            radii[1] = this.shapeEllipsoidRadius[1];
-            radii[2] = this.shapeEllipsoidRadius[2];
-        }
-        else if (res)
-        {
-            const { maxBounds, minBounds } = res;
-            vec3.subtract(center, maxBounds, minBounds);
-            vec3.scale(center, center, 0.5 * 1.732050807);
-            vec3.add(radii, maxBounds, minBounds);
-            vec3.scale(radii, radii, 0.5);
         }
 
         // Is this correct?

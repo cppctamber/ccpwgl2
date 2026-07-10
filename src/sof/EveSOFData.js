@@ -56,7 +56,7 @@ export class EveSOFData extends meta.Model
 
     @meta.boolean
     @meta.uiDescription("Custom property for debugging")
-    enableChildCurveSets = false;
+    enableChildCurveSets = true;
 
     @meta.boolean
     @meta.uiDescription("Custom property for debugging")

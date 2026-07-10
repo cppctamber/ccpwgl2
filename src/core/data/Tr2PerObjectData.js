@@ -251,7 +251,7 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
 
         const
             shipData = bag.shipData || rawData.Get("Shipdata"),
-            radiusSq = bag.boundingSphereRadiusSq ?? (
+            radiusSq = bag.shipData ? undefined : bag.boundingSphereRadiusSq ?? (
                 bag.boundingSphereRadius !== undefined
                     ? bag.boundingSphereRadius * bag.boundingSphereRadius
                     : undefined

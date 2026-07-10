@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, Saturate, CEWG_FLAG_ENABLED } from "./CewgLightMath";
+import { ComposeNoiseBrightness, Saturate, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
 
 
 /**
@@ -52,23 +52,23 @@ export class Tr2FactionLight
     @meta.float
     brightness = 1;
 
-    // NOTE (drift): Carbon's castsShadows is the PerLightShadowSetting enum
-    // (0=DISABLED, 1=ENABLED_ONLY_ON_HIGH_QUALITY, 2=ALWAYS_ENABLED,
-    // Tr2Light.h:20-25). The decorator type below is the black WIRE format
-    // ccpwgl's pre-existing generated stub was already using (black readers
-    // dispatch on decorator type) and must not be changed without
-    // re-verifying against real .black data.
+    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
+    // confirmed by the format-black schema (`castsShadows: enum`). Shadow
+    // settings are not consumed by the CEWG tile path yet.
     @meta.notImplemented
-    @meta.boolean
-    castsShadows = null;
+    @meta.enums(PerLightShadowSetting)
+    castsShadows = PerLightShadowSetting.DISABLED;
 
     @meta.int32
     factionColor = -1;
 
-    // NOTE (drift): Carbon's flags is a uint16 bitmask (Tr2LightManager.h:100-105).
-    // The pre-existing generated stub deliberately left this undecorated
-    // (no black reader registered) - kept as-is, see castsShadows note.
-    flags = null;
+    // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
+    // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
+    // format-black schema. Gates which passes a light affects - not consumed
+    // by the CEWG tile path yet.
+    @meta.notImplemented
+    @meta.ushort
+    flags = LIGHT_FLAG_DEFAULT;
 
     @meta.float
     innerAngle = 0;
@@ -100,10 +100,9 @@ export class Tr2FactionLight
     @meta.float
     noiseFrequency = 1;
 
-    // NOTE (drift): Carbon type is uint32_t (carbonenginejs: num.uint32) but
-    // the pre-existing ccpwgl stub read this as float - decorator kept as
-    // the observed wire format (see castsShadows note above).
-    @meta.float
+    // uint32 (Tr2Light.h; carbonenginejs num.uint32), confirmed canonical by
+    // the format-black schema. Consumed by GetComposedBrightness's noise sum.
+    @meta.uint
     noiseOctaves = 1;
 
     @meta.float
