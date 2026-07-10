@@ -90,9 +90,6 @@ export class TnyTransformGizmo extends WglTransform
     intersectable = true;
 
     @meta.boolean
-    keyboardShortcuts = true;
-
-    @meta.boolean
     captureShiftCamera = true;
 
     @meta.boolean
@@ -185,7 +182,7 @@ export class TnyTransformGizmo extends WglTransform
     {
         for (const key of [
             "display", "active", "additive", "enableDepth", "pickable",
-            "intersectable", "keyboardShortcuts", "captureShiftCamera",
+            "intersectable", "captureShiftCamera",
             "activateOnShortcut", "requireTargetForActivation", "deactivateOnTargetClear",
             "inheritTargetRotation", "useTargetScale", "autoSize",
             "invertX", "invertY", "invertZ", "invertView"
@@ -701,17 +698,6 @@ export class TnyTransformGizmo extends WglTransform
 
         switch (event.type)
         {
-            case "keydown":
-            {
-                const mode = this.GetKeyboardModeFromInputEvent(event);
-                if (mode && this.CanActivate())
-                {
-                    event.Consume();
-                    return Result.CONSUME;
-                }
-                break;
-            }
-
             case "mousedown":
             {
                 if (!this.IsActive())
@@ -764,20 +750,6 @@ export class TnyTransformGizmo extends WglTransform
 
         switch (event.type)
         {
-            case "keydown":
-            {
-                const mode = this.GetKeyboardModeFromInputEvent(event);
-                if (mode)
-                {
-                    return this.Activate(mode) ? Result.CONSUME : Result.PASS;
-                }
-                else if (this.IsKeyboardControlEvent(event))
-                {
-                    this.Deactivate();
-                }
-                break;
-            }
-
             case "mousedown":
             {
                 if (!this.IsActive())
@@ -828,42 +800,6 @@ export class TnyTransformGizmo extends WglTransform
         }
 
         return Result.PASS;
-    }
-
-    /**
-     * Gets a keyboard mode from a managed input event.
-     * @param {Object} event
-     * @returns {String|null}
-     */
-    GetKeyboardModeFromInputEvent(event)
-    {
-        if (!this.IsKeyboardControlEvent(event)) return null;
-
-        switch (String(event.key || "").toLowerCase())
-        {
-            case "w":
-                return "translation";
-
-            case "e":
-                return "rotation";
-
-            case "r":
-                return "scaling";
-        }
-
-        return null;
-    }
-
-    /**
-     * Checks if a keyboard event should affect gizmo tool state.
-     * @param {Object} event
-     * @returns {Boolean}
-     */
-    IsKeyboardControlEvent(event)
-    {
-        return !!this.keyboardShortcuts &&
-            !this._drag &&
-            !this.constructor.IsEditableInputEvent(event.domEvent || event);
     }
 
     /**
@@ -936,7 +872,7 @@ export class TnyTransformGizmo extends WglTransform
             const token = input.Register({
                 name: `${this.name || "transformGizmo"}Controls`,
                 priority: 1000,
-                events: [ "mousedown", "mousemove", "mouseup", "keydown" ],
+                events: [ "mousedown", "mousemove", "mouseup" ],
                 context: this,
                 PreviewInputEvent: this.PreviewInputEvent,
                 HandleInputEvent: this.HandleInputEvent
@@ -965,20 +901,6 @@ export class TnyTransformGizmo extends WglTransform
                 event.preventDefault();
                 event.stopPropagation();
                 if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-            },
-            onKeyDown = event =>
-            {
-                if (!this.IsKeyboardControlEvent(event)) return;
-
-                const mode = this.GetKeyboardModeFromInputEvent(event);
-                if (mode && this.Activate(mode))
-                {
-                    consume(event);
-                }
-                else
-                {
-                    this.Deactivate();
-                }
             },
             onMouseMove = event =>
             {
@@ -1032,18 +954,12 @@ export class TnyTransformGizmo extends WglTransform
             };
 
         dom.addEventListener("mousedown", onMouseDown, true);
-        if (keyTarget && keyTarget.addEventListener)
-        {
-            keyTarget.addEventListener("keydown", onKeyDown, true);
-        }
-
         this._controls = {
             scene,
             dom,
             keyTarget,
             camera,
             previousIgnoreOnShiftDown,
-            onKeyDown,
             onMouseDown,
             onMouseMove,
             onMouseUp
@@ -1066,7 +982,6 @@ export class TnyTransformGizmo extends WglTransform
             keyTarget,
             camera,
             previousIgnoreOnShiftDown,
-            onKeyDown,
             onMouseDown,
             onMouseMove,
             onMouseUp
@@ -1080,11 +995,6 @@ export class TnyTransformGizmo extends WglTransform
         if (dom && dom.removeEventListener && onMouseDown)
         {
             dom.removeEventListener("mousedown", onMouseDown, true);
-        }
-
-        if (keyTarget && keyTarget.removeEventListener && onKeyDown)
-        {
-            keyTarget.removeEventListener("keydown", onKeyDown, true);
         }
 
         if (camera && previousIgnoreOnShiftDown !== undefined)
