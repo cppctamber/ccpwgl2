@@ -554,9 +554,6 @@ export class Gr2Reader
                     track.position = CreateCurve(transformTracks[iTT].position, 3, "position");
                     track.scaleShear = CreateCurve(transformTracks[iTT].scaleShear, 9, "scaleShear");
 
-                    // TODO: Why do some root objects have non-identity scaleshears
-                    if (track.name.toUpperCase() === "ROOT") mat3.identity(track.scaleShear.controls);
-
                     if (track.orientation)
                     {
                         let lastX = 0,
