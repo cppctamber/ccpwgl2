@@ -70,7 +70,7 @@ export class EveBanner extends meta.Model
     _boundsDirty = true;
     _perObjectData = Tw2PerObjectData.from(EveBanner.perObjectData);
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
-    _geometryResource = resMan.GetResource("res:/graphics/generic/unit_plane.gr2_json");
+    _geometryResource = resMan.GetResource("res:/graphics/generic/unit_plane.gr2");
     _worldTransform = mat4.create();
 
 
@@ -453,11 +453,11 @@ export class EveBanner extends meta.Model
             LayerScroll: [ 10, 10, 1, -0.20000000298023224 ]
         },
         textures: {
-            Layer1Map: "res:/texture/fx/hologram/hologram_noise.png",
-            Layer2Map: "res:/texture/fx/hologram/hologram_pulse_brighter.png",
-            MaskMap: "res:/texture/fx/logo/logomask_1px_border.png",
-            BorderMap: "res:/texture/global/white.png",
-            ImageMap: "res:/texture/global/black.png",
+            Layer1Map: "res:/texture/fx/hologram/hologram_noise.dds",
+            Layer2Map: "res:/texture/fx/hologram/hologram_pulse_brighter.dds",
+            MaskMap: "res:/texture/fx/logo/logomask_1px_border.dds",
+            BorderMap: "res:/texture/global/white.dds",
+            ImageMap: "res:/texture/global/black.dds",
         }
     }
 
