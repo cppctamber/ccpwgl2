@@ -45,7 +45,7 @@ export class EveObject extends WglTransform
     @meta.abstract
     GetResources(out = [])
     {
-
+        return out;
     }
 
     /**

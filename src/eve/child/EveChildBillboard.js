@@ -52,7 +52,7 @@ export class EveChildBillboard extends EveChild
      * @param {Array} [out=[]]
      * @returns {Array.<Tw2Resource>} out
      */
-    GetResources(out)
+    GetResources(out = [])
     {
         if (this.mesh) this.mesh.GetResources(out);
         return out;
