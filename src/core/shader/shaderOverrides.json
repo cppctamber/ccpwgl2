@@ -34,6 +34,43 @@
     "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<0;++i){"
   },
 
+  "managed/interior/avatar/simple.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  },
+
+  "managed/interior/avatar/skinnedsimple.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  },
+
+  "managed/interior/avatar/skinnedavatar.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;" : "r0.x=c11.y;"
+  },
+
+  "managed/interior/avatar/skinnedavatarbrdf.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;" : "r0.x=c11.y;"
+  },
+
+  "managed/interior/avatar/clothavatar.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;" : "r0.x=c11.y;"
+  },
+
+  "managed/interior/avatar/skinnedavatarhair.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){",
+    "r0.x=r5.y;" : "r0.x=c11.y;"
+  },
+
+  "managed/interior/avatar/eyeshader.fragment" : {
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  },
+
+  "managed/interior/avatar/glassshader.fragment" : {
+    "for(int i=0;i<i0.x;++i){" : "for(int i=0;i<5;++i){",
+    "for(int i=0;i<i15.x;++i){" : "for(int i=0;i<10;++i){"
+  },
+
   "fxshieldimpactv5.fragment" : {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
   },

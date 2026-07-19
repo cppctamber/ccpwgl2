@@ -642,6 +642,16 @@ export class Tw2ShaderStage
         let shaderName = path.split("/");
         shaderName = `//${shaderName[shaderName.length - 1]}\n`;
 
+        if (!shader)
+        {
+            if (skipError) return null;
+            throw new ErrShaderCompile({
+                path,
+                shaderType: stageType === 0 ? "vertex" : "fragment",
+                infoLog: this.getShaderFailureDetails(gl, null, shaderCode)
+            });
+        }
+
         if (ccpShaderBinary)
         {
             ccpShaderBinary["shaderBinary"](shader, shaderCode);
@@ -658,15 +668,38 @@ export class Tw2ShaderStage
         {
             if (!skipError)
             {
+                const infoLog = gl.getShaderInfoLog(shader) || this.getShaderFailureDetails(gl, shader, shaderCode);
                 throw new ErrShaderCompile({
                     path: path,
                     shaderType: stageType === 0 ? "vertex" : "fragment",
-                    infoLog: gl.getShaderInfoLog(shader)
+                    infoLog
                 });
             }
             return null;
         }
         return shader;
+    }
+
+    /**
+     * Describes WebGL failures that do not provide a compiler information log.
+     * @param {WebGLRenderingContext|WebGL2RenderingContext} gl
+     * @param {WebGLShader|null} shader
+     * @param {String|Uint8Array} shaderCode
+     * @returns {String}
+     */
+    static getShaderFailureDetails(gl, shader, shaderCode)
+    {
+        const
+            contextLost = !!(gl.isContextLost && gl.isContextLost()),
+            glError = gl.getError ? gl.getError() : 0,
+            sourceLength = shaderCode ? shaderCode.length : 0;
+
+        return [
+            contextLost ? "WebGL context lost" : "WebGL returned no compiler diagnostics",
+            `shaderCreated=${!!shader}`,
+            `glError=0x${Number(glError || 0).toString(16)}`,
+            `sourceLength=${sourceLength}`
+        ].join("; ");
     }
 
     /**
@@ -680,13 +713,17 @@ export class Tw2ShaderStage
     static inspectShaderCode(code, path, type)
     {
         const
-            fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
+            fileName = Tw2ShaderStage.getOverrideName(path),
             mainOverrides = shaderOverrides[fileName],
             shaderTypeSuffix = type === 0 ? ".vertex" : ".fragment",
-            typeOverrides = shaderOverrides[fileName + shaderTypeSuffix];
+            typeOverrides = shaderOverrides[fileName + shaderTypeSuffix],
+            scopedName = Tw2ShaderStage.isInteriorAvatarShaderPath(path)
+                ? `managed/interior/avatar/${fileName}`
+                : null,
+            scopedOverrides = scopedName ? shaderOverrides[scopedName] : null,
+            scopedTypeOverrides = scopedName ? shaderOverrides[scopedName + shaderTypeSuffix] : null;
 
-        const overrides = Object.assign({}, mainOverrides, typeOverrides);
-        if (!Object.keys(overrides).length) return code;
+        const overrides = Object.assign({}, mainOverrides, typeOverrides, scopedOverrides, scopedTypeOverrides);
 
         function escapeRegExp(string)
         {
@@ -706,7 +743,60 @@ export class Tw2ShaderStage
             }
         }
 
+        if (type === 1)
+        {
+            code = Tw2ShaderStage.fixFragmentLoopCounts(code, fileName, path);
+        }
+
         return code;
+    }
+
+    /**
+     * Replaces fragment loop bounds that WebGL requires to be compile-time
+     * constants. The HLSL translator can emit `i < i15.x` even when `i15` is
+     * initialized from a literal `ivec4`, which ANGLE rejects.
+     * @param {String} code
+     * @param {String} fileName
+     * @param {String} path
+     * @returns {String}
+     */
+    static fixFragmentLoopCounts(code, fileName, path)
+    {
+        return code.replace(/for\(int i=0;i<(i\d+)\.x;\+\+i\)\{/g, (match, name, offset) =>
+        {
+            const
+                prefix = code.slice(0, offset),
+                initializer = new RegExp(`\\bivec4\\s+${name}\\s*=\\s*ivec4\\s*\\(\\s*(\\d+)`, "g");
+
+            let count = null;
+            let initializerEnd = -1;
+            for (let result = initializer.exec(prefix); result; result = initializer.exec(prefix))
+            {
+                count = result[1];
+                initializerEnd = initializer.lastIndex;
+            }
+
+            if (count !== null)
+            {
+                const
+                    tail = prefix.slice(initializerEnd),
+                    assignment = new RegExp(
+                        `(?:\\b${name}(?:\\.[xyzw]+)?\\s*(?:[+\\-*/]?=|\\+\\+|--)|(?:\\+\\+|--)\\s*${name}\\b)`
+                    );
+
+                if (!assignment.test(tail))
+                {
+                    return `for(int i=0;i<${count};++i){`;
+                }
+            }
+
+            if (Tw2ShaderStage.isInteriorAvatarShaderPath(path) && name === "i15")
+            {
+                return "for(int i=0;i<10;++i){";
+            }
+
+            return match;
+        });
     }
 
     /**
@@ -718,5 +808,29 @@ export class Tw2ShaderStage
         VERTEX: 0,
         FRAGMENT: 1
     };
+
+    /**
+     * Gets the shader override name from an effect path
+     * @param {String} path
+     * @returns {String}
+     */
+    static getOverrideName(path)
+    {
+        let name = path.substring(path.lastIndexOf("/") + 1).toLowerCase();
+        name = name.replace(/\.(sm_hi|sm_depth|sm_lo|sm_low|red|fx)$/i, "");
+        const dot = name.indexOf(".");
+        return dot === -1 ? name : name.substring(0, dot);
+    }
+
+    /**
+     * Checks whether a shader is from the managed interior/avatar family.
+     * This covers authored variants without maintaining an incomplete name list.
+     * @param {String} path
+     * @returns {Boolean}
+     */
+    static isInteriorAvatarShaderPath(path)
+    {
+        return /\/managed\/interior\/avatar\//i.test(path || "");
+    }
 
 }

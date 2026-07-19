@@ -193,6 +193,23 @@ test("effect and shader binary decoders are chunk-safe", () =>
     notIncludes(shaderStage, "String.fromCharCode.apply(null, shaderCode)");
 });
 
+test("managed interior avatar shaders repair dynamic fragment loop bounds", () =>
+{
+    const shaderStage = read("src/core/shader/Tw2ShaderStage.js");
+    includes(shaderStage, "fixFragmentLoopCounts(code, fileName, path)");
+    includes(shaderStage, "isInteriorAvatarShaderPath(path)");
+    includes(shaderStage, "/\\/managed\\/interior\\/avatar\\//i");
+});
+
+test("shader failures report context and allocation diagnostics", () =>
+{
+    const shaderStage = read("src/core/shader/Tw2ShaderStage.js");
+    includes(shaderStage, "getShaderFailureDetails(gl, null, shaderCode)");
+    includes(shaderStage, "WebGL context lost");
+    includes(shaderStage, "shaderCreated=${!!shader}");
+    includes(shaderStage, "glError=0x${Number(glError || 0).toString(16)}");
+});
+
 test("DDS reader uploads volume textures as native 3D textures", () =>
 {
     const source = read("src/core/resource/formats/TextureFormatDDS.js");
