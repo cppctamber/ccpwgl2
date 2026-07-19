@@ -7,6 +7,9 @@ import { Tw2VertexElement } from "./Tw2VertexElement";
 export class Tw2VertexDeclaration
 {
 
+    /** Whether this geometry uses direct Trinity blend semantics. */
+    swapBlendWeightsAndIndices = false;
+
     @meta.list("Tw2VertexElement")
     elements = [];
 
@@ -124,6 +127,38 @@ export class Tw2VertexDeclaration
         {
             const el = inputDecl.elementsSorted[i];
             if (el.location < 0) continue;
+
+            // CEWG `in_*` inputs use Trinity's direct 6/7 order while legacy
+            // `attr*` inputs use the historical swapped order. GR2 geometry is
+            // legacy by default and can opt into direct order. Translate only
+            // when the geometry and shader input use different conventions.
+            const
+                geometryDirect = this.swapBlendWeightsAndIndices,
+                inputDirect = /^in_/.test(el._attr || "");
+
+            if (geometryDirect !== inputDirect)
+            {
+                let usage = el.usage;
+                if (usage === Tw2VertexElement.Type.BLENDINDICES) usage = Tw2VertexElement.Type.BLENDWEIGHT;
+                else if (usage === Tw2VertexElement.Type.BLENDWEIGHT) usage = Tw2VertexElement.Type.BLENDINDICES;
+
+                const input = this.FindUsage(usage, el.usageIndex);
+                if (!input)
+                {
+                    gl.disableVertexAttribArray(el.location);
+                    gl.vertexAttrib4f(el.location, 0, 0, 0, 0);
+                }
+                else if (input.customSetter)
+                {
+                    input.customSetter(el);
+                }
+                else
+                {
+                    gl.enableVertexAttribArray(el.location);
+                    gl.vertexAttribPointer(el.location, input.elements, input.type, false, stride, input.offset);
+                }
+                continue;
+            }
 
             while (true)
             {

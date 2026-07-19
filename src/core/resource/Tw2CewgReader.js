@@ -362,18 +362,6 @@ function buildInputDefinition(shaderRecord, manifestStage, stageType)
             ? Tw2VertexElement.Type[input.usageName]
             : input.usage;
 
-        // Bridge the blend-usage 6<->7 swap at this reader boundary, the
-        // same runtime-ABI translation UsageFromCcpLegacy applies to .wbg.
-        // ccpwgl's mesh pipeline (the Gr2Reader granny flip) and the
-        // legacy skinned shaders keep the per-vertex bone INDEX at usage 7
-        // (BLENDWEIGHTS) and weights at usage 6 - the swap of the
-        // DX11/Trinity convention. HLSLcc-derived CEWG inputs use the DX11
-        // semantic (BLENDINDICES=6), so without this swap in_BLENDINDICES0
-        // binds to a usage-6 element the mesh doesn't have, reads a
-        // constant 0, and every vertex rides bone 0 (no skinning). Only
-        // 6<->7 are touched; POSITION/NORMAL/TANGENT/TEXCOORD pass through.
-        usage = Tw2VertexElement.UsageFromCcpLegacy(usage);
-
         stage.inputDefinition.elements.push(Tw2VertexElement.from({
             usage,
             usageIndex: input.usageIndex,
