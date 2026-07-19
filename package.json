@@ -25,6 +25,7 @@
     "test:interior-additive-animation": "node scripts/test-interior-additive-animation.js",
     "test:interior-animation-lifecycle": "node scripts/test-interior-animation-lifecycle.js",
     "test:interior-per-object-data": "node scripts/test-interior-per-object-data.js",
+    "test:eve-turret-tracking": "node scripts/test-eve-turret-tracking.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",

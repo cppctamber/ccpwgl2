@@ -185,38 +185,42 @@ export class EveTurretSet extends EveObjectSet
     @meta.boolean
     projectileMissBehaviour = false;
 
-    @meta.notImplemented
     @meta.float
-    sysBoneHeight = 0;
+    sysBoneHeight = 1;
 
-    @meta.notImplemented
     @meta.float
-    sysBonePitch01Factor = 0;
+    sysBonePitch01Offset = 0;
 
-    @meta.notImplemented
     @meta.float
-    sysBonePitch02Factor = 0;
+    sysBonePitch01Factor = 1;
 
-    @meta.notImplemented
     @meta.float
-    sysBonePitchFactor = 0;
+    sysBonePitch02Offset = 0;
 
-    @meta.notImplemented
     @meta.float
-    sysBonePitchMax = 0;
+    sysBonePitch02Factor = 1;
 
-    @meta.notImplemented
+    @meta.float
+    sysBonePitch03Offset = 0;
+
+    @meta.float
+    sysBonePitch03Factor = 1;
+
+    @meta.float
+    sysBonePitchFactor = 1;
+
+    @meta.float
+    sysBonePitchMax = 90;
+
     @meta.float
     sysBonePitchMin = 0;
 
-    @meta.notImplemented
     @meta.float
     sysBonePitchOffset = 0;
 
     @meta.struct("Tw2Effect")
     turretEffect = null;
 
-    @meta.notImplemented
     @meta.boolean
     updatePitchPose = false;
 
@@ -253,8 +257,11 @@ export class EveTurretSet extends EveObjectSet
     _parentPerObjectData = new GLESPerObjectDataEveSpaceObject();
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
+    _pendingFiring = false;
     _state = EveTurretSet.State.IDLE;
     _targetPosition = vec3.create();
+    _trackingInfluence = 0;
+    _trackingScratch = null;
     _recheckTimeLeft = 0;
 
 
@@ -350,6 +357,312 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Gets a system bone's configured pitch factor
+     * @param {Number} systemBone
+     * @returns {Number}
+     */
+    GetBonePitchFactor(systemBone)
+    {
+        switch (systemBone)
+        {
+            case EveTurretSet.SystemBone.PITCH:
+            case EveTurretSet.SystemBone.PITCH1:
+            case EveTurretSet.SystemBone.PITCH2:
+                return this.sysBonePitchFactor;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH01:
+                return this.sysBonePitch01Factor;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH02:
+                return this.sysBonePitch02Factor;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH03:
+                return this.sysBonePitch03Factor;
+
+            default:
+                return 1;
+        }
+    }
+
+    /**
+     * Gets a system bone's configured pitch offset in degrees
+     * @param {Number} systemBone
+     * @returns {Number}
+     */
+    GetBonePitchOffset(systemBone)
+    {
+        switch (systemBone)
+        {
+            case EveTurretSet.SystemBone.PITCH:
+            case EveTurretSet.SystemBone.PITCH1:
+            case EveTurretSet.SystemBone.PITCH2:
+                return this.sysBonePitchOffset;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH01:
+                return this.sysBonePitch01Offset;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH02:
+                return this.sysBonePitch02Offset;
+
+            case EveTurretSet.SystemBone.SCALED_PITCH03:
+                return this.sysBonePitch03Offset;
+
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Applies Carbon's target tracking rule to a system bone's sampled local transform
+     * @param {Number} systemBone
+     * @param {vec3} target - Target position in turret space
+     * @param {mat4} localTransform - Sampled bone transform to modify
+     * @param {?mat4} worldTransform - Current bone world transform for pitch-pose correction
+     * @param {Number} influence
+     * @param {*} scratch
+     */
+    ModifySystemBoneTransform(systemBone, target, localTransform, worldTransform, influence, scratch)
+    {
+        switch (systemBone)
+        {
+            case EveTurretSet.SystemBone.ROTATION:
+            case EveTurretSet.SystemBone.ROTATION01:
+            case EveTurretSet.SystemBone.ROTATION02:
+                mat4.rotateY(localTransform, localTransform, Math.atan2(target[0], target[2]) * influence);
+                break;
+
+            case EveTurretSet.SystemBone.COUNTER_ROTATION:
+                mat4.rotateY(localTransform, localTransform, -Math.atan2(target[0], target[2]) * influence);
+                break;
+
+            case EveTurretSet.SystemBone.PITCH:
+            case EveTurretSet.SystemBone.PITCH1:
+            case EveTurretSet.SystemBone.PITCH2:
+                this.ApplyPitchBoneTransform(
+                    systemBone,
+                    target,
+                    localTransform,
+                    worldTransform,
+                    this.sysBonePitchMin * EveTurretSet.DEG_TO_RAD,
+                    this.sysBonePitchMax * EveTurretSet.DEG_TO_RAD,
+                    influence,
+                    scratch
+                );
+                break;
+
+            case EveTurretSet.SystemBone.SCALED_HEIGHT:
+            {
+                const direction = scratch.targetDirection;
+                vec3.normalize(direction, target);
+                localTransform[13] += Math.max(0, Math.min(1, direction[1])) * this.sysBoneHeight * influence;
+                break;
+            }
+
+            case EveTurretSet.SystemBone.SCALED_PITCH01:
+            case EveTurretSet.SystemBone.SCALED_PITCH02:
+            case EveTurretSet.SystemBone.SCALED_PITCH03:
+            case EveTurretSet.SystemBone.SCALED_PITCH04:
+            case EveTurretSet.SystemBone.SCALED_PITCH05:
+            case EveTurretSet.SystemBone.SCALED_PITCH06:
+                this.ApplyPitchBoneTransform(
+                    systemBone,
+                    target,
+                    localTransform,
+                    null,
+                    0,
+                    this.sysBonePitchMax * EveTurretSet.DEG_TO_RAD,
+                    influence,
+                    scratch
+                );
+                break;
+        }
+    }
+
+    /**
+     * Applies Carbon's pitch calculation to a sampled local bone transform
+     * @param {Number} systemBone
+     * @param {vec3} target
+     * @param {mat4} localTransform
+     * @param {?mat4} worldTransform
+     * @param {Number} minPitch
+     * @param {Number} maxPitch
+     * @param {Number} influence
+     * @param {*} scratch
+     */
+    ApplyPitchBoneTransform(systemBone, target, localTransform, worldTransform, minPitch, maxPitch, influence, scratch)
+    {
+        const
+            bonePosition = scratch.bonePosition,
+            relativeTarget = scratch.relativeTarget,
+            direction = scratch.targetDirection;
+
+        if (worldTransform)
+        {
+            mat4.getTranslation(bonePosition, worldTransform);
+        }
+        else
+        {
+            vec3.set(bonePosition, 0, 0, 0);
+        }
+
+        vec3.subtract(relativeTarget, target, bonePosition);
+        if (vec3.squaredLength(relativeTarget) <= EveTurretSet.TRACKING_EPSILON) return;
+
+        vec3.normalize(direction, relativeTarget);
+        let radians = Math.asin(Math.max(-1, Math.min(1, direction[1])));
+
+        if (worldTransform)
+        {
+            const boneLength = vec3.length(bonePosition);
+            if (boneLength > EveTurretSet.TRACKING_EPSILON)
+            {
+                vec3.scale(scratch.boneDirection, bonePosition, 1 / boneLength);
+                if (vec3.dot(scratch.boneDirection, target) < boneLength)
+                {
+                    radians = Math.sign(relativeTarget[1]) * Math.PI - radians;
+                }
+            }
+        }
+
+        let alpha = Math.max(minPitch, Math.min(maxPitch, radians));
+        alpha = this.GetBonePitchFactor(systemBone) * alpha;
+        alpha += this.GetBonePitchOffset(systemBone) * EveTurretSet.DEG_TO_RAD;
+        mat4.rotateX(localTransform, localTransform, -alpha * influence);
+    }
+
+    /**
+     * Computes model-space bone transforms from sampled local transforms
+     * @param {Array<Tw2Bone>} bones
+     * @param {Array<mat4>} localTransforms
+     * @param {Array<mat4>} worldTransforms
+     */
+    ComputeTrackingWorldTransforms(bones, localTransforms, worldTransforms)
+    {
+        for (let i = 0; i < bones.length; ++i)
+        {
+            const parentIndex = bones[i].boneRes.parentIndex;
+            if (parentIndex !== -1)
+            {
+                mat4.multiply(worldTransforms[i], worldTransforms[parentIndex], localTransforms[i]);
+            }
+            else
+            {
+                mat4.copy(worldTransforms[i], localTransforms[i]);
+            }
+        }
+    }
+
+    /**
+     * Builds a target-tracked pose for one turret without mutating its shared animation controller
+     * @param {Tw2AnimationController} controller
+     * @param {EveTurretSetItem} item
+     * @param {?Float32Array} [baseTransforms]
+     * @returns {?Object}
+     */
+    UpdateTrackingPose(controller, item, baseTransforms)
+    {
+        if (!controller || !controller.models.length || !item) return null;
+
+        const
+            model = controller.models[0],
+            bones = model.bones;
+        if (!bones.length) return null;
+
+        if (!this._trackingScratch)
+        {
+            this._trackingScratch = {
+                localTransforms: [],
+                worldTransforms: [],
+                bindingTransforms: new Float32Array(0),
+                turretWorldTransform: mat4.create(),
+                inverseTurretWorldTransform: mat4.create(),
+                offsetTransform: mat4.create(),
+                targetPosition: vec3.create(),
+                targetDirection: vec3.create(),
+                bonePosition: vec3.create(),
+                boneDirection: vec3.create(),
+                relativeTarget: vec3.create()
+            };
+        }
+
+        const scratch = this._trackingScratch;
+        while (scratch.localTransforms.length < bones.length)
+        {
+            scratch.localTransforms.push(mat4.create());
+            scratch.worldTransforms.push(mat4.create());
+        }
+
+        for (let i = 0; i < bones.length; ++i)
+        {
+            mat4.copy(scratch.localTransforms[i], bones[i].localTransform);
+        }
+
+        const influence = this._trackingInfluence;
+        mat4.multiply(scratch.turretWorldTransform, this._parentTransform, item._localTransform);
+        const inverse = mat4.invert(scratch.inverseTurretWorldTransform, scratch.turretWorldTransform);
+
+        if (influence && inverse)
+        {
+            vec3.transformMat4(scratch.targetPosition, this._targetPosition, inverse);
+            if (vec3.squaredLength(scratch.targetPosition) > EveTurretSet.TRACKING_EPSILON)
+            {
+                for (let systemBone = EveTurretSet.SystemBone.ROTATION; systemBone < EveTurretSet.SystemBone.MAX; ++systemBone)
+                {
+                    const bone = model.bonesByName[EveTurretSet.systemBoneSkeletonNames[systemBone]];
+                    if (!bone) continue;
+
+                    const boneIndex = bone._skeletonIndex !== -1 ? bone._skeletonIndex : bones.indexOf(bone);
+                    if (boneIndex === -1) continue;
+
+                    let worldTransform = null;
+                    if (this.updatePitchPose &&
+                        systemBone >= EveTurretSet.SystemBone.PITCH &&
+                        systemBone <= EveTurretSet.SystemBone.PITCH2)
+                    {
+                        this.ComputeTrackingWorldTransforms(bones, scratch.localTransforms, scratch.worldTransforms);
+                        worldTransform = scratch.worldTransforms[boneIndex];
+                    }
+
+                    this.ModifySystemBoneTransform(
+                        systemBone,
+                        scratch.targetPosition,
+                        scratch.localTransforms[boneIndex],
+                        worldTransform,
+                        influence,
+                        scratch
+                    );
+                }
+            }
+        }
+
+        this.ComputeTrackingWorldTransforms(bones, scratch.localTransforms, scratch.worldTransforms);
+
+        if (baseTransforms)
+        {
+            if (scratch.bindingTransforms.length !== baseTransforms.length)
+            {
+                scratch.bindingTransforms = new Float32Array(baseTransforms.length);
+            }
+            scratch.bindingTransforms.set(baseTransforms);
+
+            for (let i = 0; i < bones.length; ++i)
+            {
+                const bone = bones[i];
+                mat4.multiply(scratch.offsetTransform, scratch.worldTransforms[i], bone.boneRes.worldTransformInv);
+
+                for (let j = 0; j < bone.bindingArrays.length; ++j)
+                {
+                    const binding = bone.bindingArrays[j];
+                    if (binding.array !== baseTransforms) continue;
+                    EveTurretSet.mat4ToMat3x4(scratch.offsetTransform, scratch.bindingTransforms, binding.offset);
+                }
+            }
+        }
+
+        return scratch;
+    }
+
+    /**
      * Helper function for finding out what turret should be firing
      * @returns {Number}
      */
@@ -401,6 +714,7 @@ export class EveTurretSet extends EveObjectSet
     EnterStateDeactive()
     {
         if (this._state === EveTurretSet.State.INACTIVE || this._state === EveTurretSet.State.PACKING) return;
+        this._pendingFiring = false;
 
         if (this.turretEffect)
         {
@@ -451,7 +765,21 @@ export class EveTurretSet extends EveObjectSet
      */
     EnterStateIdle()
     {
-        if (this._state === EveTurretSet.State.IDLE || this._state === EveTurretSet.State.UNPACKING) return;
+        if (this._state === EveTurretSet.State.IDLE)
+        {
+            this._pendingFiring = false;
+            return;
+        }
+
+        if (this._state === EveTurretSet.State.UNPACKING)
+        {
+            this._pendingFiring = false;
+            this._activeTurret = -1;
+            this.DoStopFiring();
+            return;
+        }
+
+        this._pendingFiring = false;
 
         if (this.turretEffect)
         {
@@ -466,7 +794,7 @@ export class EveTurretSet extends EveObjectSet
             this._activeAnimation.StopAllAnimations();
             this._inactiveAnimation.StopAllAnimations();
 
-            if (this._state === EveTurretSet.State.FIRING)
+            if (this._state === EveTurretSet.State.FIRING || this._state === EveTurretSet.State.TARGETING)
             {
                 this._activeAnimation.PlayAnimation("Active", { cycle: true });
                 this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
@@ -513,38 +841,39 @@ export class EveTurretSet extends EveObjectSet
      */
     EnterStateFiring()
     {
-        if (!this.turretEffect || this._state === EveTurretSet.State.FIRING)
+        if (!this.turretEffect)
         {
             this.DoStartFiring();
-            if (this.turretEffect)
-            {
-                this._activeAnimation.PlayAnimation("Fire", {
-                    cycle: false,
-                    callback: () =>
-                    {
-                        this._activeAnimation.PlayAnimation("Active", { cycle: true });
-                    }
-                });
-            }
             return;
         }
+
+        if (this._state === EveTurretSet.State.FIRING)
+        {
+            this.DoStartFiring();
+            this.PlayFireAnimation();
+            return;
+        }
+
+        if (this._pendingFiring || this._state === EveTurretSet.State.TARGETING) return;
 
         this._activeAnimation.StopAllAnimations();
         this._inactiveAnimation.StopAllAnimations();
         if (this._state === EveTurretSet.State.INACTIVE)
         {
+            this._pendingFiring = true;
             this._activeAnimation.PlayAnimation("Deploy", {
                 cycle: false,
                 callback: () =>
                 {
-                    this.DoStartFiring();
-                    this._activeAnimation.PlayAnimation("Fire", {
-                        cycle: false,
-                        callback: () =>
-                        {
-                            this._activeAnimation.PlayAnimation("Active", { cycle: true });
-                        }
-                    });
+                    if (this._pendingFiring)
+                    {
+                        this.BeginStateTargeting(false);
+                    }
+                    else
+                    {
+                        this._state = EveTurretSet.State.IDLE;
+                        this._activeAnimation.PlayAnimation("Active", { cycle: true });
+                    }
                 }
             });
 
@@ -559,17 +888,58 @@ export class EveTurretSet extends EveObjectSet
         }
         else
         {
-            this.DoStartFiring();
-            this._activeAnimation.PlayAnimation("Fire", {
-                cycle: false,
-                callback: () =>
-                {
-                    this._activeAnimation.PlayAnimation("Active", { cycle: true });
-                }
-            });
+            this.BeginStateTargeting();
+        }
+    }
 
+    /**
+     * Begins the initial aiming phase before the first shot
+     * @param {Boolean} [activateInactive=true] whether to start the inactive loop immediately
+     */
+    BeginStateTargeting(activateInactive = true)
+    {
+        this._pendingFiring = true;
+        this._state = EveTurretSet.State.TARGETING;
+        this._activeTurret = -1;
+        this._activeAnimation.PlayAnimation("Active", { cycle: true });
+        if (activateInactive)
+        {
             this._inactiveAnimation.PlayAnimation("Active", { cycle: true });
         }
+        this.StartPendingFiring();
+    }
+
+    /**
+     * Starts a pending first shot once the tracking pose has reached its target
+     * @returns {Boolean} true when firing started
+     */
+    StartPendingFiring()
+    {
+        if (!this._pendingFiring ||
+            this._state !== EveTurretSet.State.TARGETING ||
+            this._trackingInfluence < 1)
+        {
+            return false;
+        }
+
+        this._pendingFiring = false;
+        this.DoStartFiring();
+        this.PlayFireAnimation();
+        return true;
+    }
+
+    /**
+     * Plays the active turret's firing clip and returns it to the active loop
+     */
+    PlayFireAnimation()
+    {
+        this._activeAnimation.PlayAnimation("Fire", {
+            cycle: false,
+            callback: () =>
+            {
+                this._activeAnimation.PlayAnimation("Active", { cycle: true });
+            }
+        });
     }
 
     /**
@@ -615,6 +985,11 @@ export class EveTurretSet extends EveObjectSet
                         active.PlayAnimation("Active", { cycle: true });
                     }
                 });
+                inactive.PlayAnimation("Active", { cycle: true });
+                break;
+
+            case EveTurretSet.State.TARGETING:
+                active.PlayAnimation("Active", { cycle: true });
                 inactive.PlayAnimation("Active", { cycle: true });
                 break;
 
@@ -745,6 +1120,8 @@ export class EveTurretSet extends EveObjectSet
     Update(dt)
     {
         super.Update(dt);
+        this.UpdateTrackingInfluence(dt);
+        this.StartPendingFiring();
 
         if (this.turretEffect)
         {
@@ -772,14 +1149,25 @@ export class EveTurretSet extends EveObjectSet
 
                 if (this._activeAnimation.models.length)
                 {
-                    const bones = this._activeAnimation.models[0].bonesByName;
+                    const
+                        model = this._activeAnimation.models[0],
+                        bones = model.bonesByName,
+                        trackedPose = this.UpdateTrackingPose(this._activeAnimation, activeTurret);
+
                     for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                     {
                         const
-                            transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
+                            bone = bones[EveTurretSet.positionBoneSkeletonNames[i]],
                             out = this.firingEffect.GetMuzzleTransform(i);
 
-                        mat4.multiply(out, activeTurret._localTransform, transform);
+                        mat4.copy(out, activeTurret._localTransform);
+                        if (bone)
+                        {
+                            const transform = trackedPose ?
+                                trackedPose.worldTransforms[bone._skeletonIndex] :
+                                bone.worldTransform;
+                            mat4.multiply(out, out, transform);
+                        }
                         mat4.multiply(out, this._parentTransform, out);
                     }
                 }
@@ -811,6 +1199,29 @@ export class EveTurretSet extends EveObjectSet
             this.firingEffect.SetEndPosition(this._targetPosition);
             this.firingEffect.Update(dt);
         }
+    }
+
+    /**
+     * Fades Carbon's tracking influence between the sampled idle pose and target tracking
+     * @param {Number} dt - Delta time in seconds
+     * @returns {Number} current tracking influence
+     */
+    UpdateTrackingInfluence(dt)
+    {
+        const target = this._state === EveTurretSet.State.FIRING ||
+            this._state === EveTurretSet.State.TARGETING ? 1 : 0;
+        if (!(dt > 0) || this._trackingInfluence === target) return this._trackingInfluence;
+
+        const step = dt / EveTurretSet.TRACKING_FADE_TIME;
+        if (this._trackingInfluence < target)
+        {
+            this._trackingInfluence = Math.min(target, this._trackingInfluence + step);
+        }
+        else
+        {
+            this._trackingInfluence = Math.max(target, this._trackingInfluence - step);
+        }
+        return this._trackingInfluence;
     }
 
     /**
@@ -851,7 +1262,7 @@ export class EveTurretSet extends EveObjectSet
             const transforms = this._inactiveAnimation.GetBoneMatrices(0);
             if (transforms.length !== 0)
             {
-                this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
+                this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms, false, this._inactiveAnimation);
                 this._perObjectDataInactive.ps = parentPerObjectData.ps;
 
                 const batch = new Tw2ForwardingRenderBatch();
@@ -867,7 +1278,7 @@ export class EveTurretSet extends EveObjectSet
                     const transforms = this._activeAnimation.GetBoneMatrices(0);
                     if (transforms.length !== 0)
                     {
-                        this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
+                        this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true, this._activeAnimation);
                         this._perObjectDataActive.ps = parentPerObjectData.ps;
 
                         const batch = new Tw2ForwardingRenderBatch();
@@ -966,8 +1377,9 @@ export class EveTurretSet extends EveObjectSet
      * @param {Tw2RawData} perObjectData
      * @param transforms
      * @param {Boolean} [skipBoneCalculations]
+     * @param {?Tw2AnimationController} [animationController]
      */
-    UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations)
+    UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations, animationController)
     {
         mat4.transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
         const transformCount = transforms.length / 12;
@@ -983,18 +1395,22 @@ export class EveTurretSet extends EveObjectSet
         {
             const item = this._visibleItems[i];
 
-            for (let j = 0; j < transformCount; ++j)
-            {
-                pose[(i * transformCount + j) * 2 * 4] = transforms[j * 12 + 3];
-                pose[(i * transformCount + j) * 2 * 4 + 1] = transforms[j * 12 + 7];
-                pose[(i * transformCount + j) * 2 * 4 + 2] = transforms[j * 12 + 11];
-                pose[(i * transformCount + j) * 2 * 4 + 3] = 1;
-                EveTurretSet.mat3x4toquat(transforms, j, pose, (i * transformCount + j) * 2 + 1);
-            }
-
             if (item._bone && !skipBoneCalculations)
             {
                 item.UpdateTransforms();
+            }
+
+            const
+                trackedPose = this.UpdateTrackingPose(animationController, item, transforms),
+                itemTransforms = trackedPose ? trackedPose.bindingTransforms : transforms;
+
+            for (let j = 0; j < transformCount; ++j)
+            {
+                pose[(i * transformCount + j) * 2 * 4] = itemTransforms[j * 12 + 3];
+                pose[(i * transformCount + j) * 2 * 4 + 1] = itemTransforms[j * 12 + 7];
+                pose[(i * transformCount + j) * 2 * 4 + 2] = itemTransforms[j * 12 + 11];
+                pose[(i * transformCount + j) * 2 * 4 + 3] = 1;
+                EveTurretSet.mat3x4toquat(itemTransforms, j, pose, (i * transformCount + j) * 2 + 1);
             }
 
             translation[i * 4] = item._localTransform[12];
@@ -1050,15 +1466,65 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Turret states
-     * @type {{INACTIVE: number, IDLE: number, FIRING: number, PACKING: number, UNPACKING: number}}
+     * @type {{INACTIVE: number, IDLE: number, FIRING: number, PACKING: number, UNPACKING: number, TARGETING: number}}
      */
     static State = {
         INACTIVE: 0,
         IDLE: 1,
         FIRING: 2,
         PACKING: 3,
-        UNPACKING: 4
+        UNPACKING: 4,
+        TARGETING: 5
     };
+
+    /**
+     * Carbon turret system bone identifiers
+     * @type {Object}
+     */
+    static SystemBone = {
+        INVALID: 0,
+        ROTATION: 1,
+        ROTATION01: 2,
+        ROTATION02: 3,
+        COUNTER_ROTATION: 4,
+        PITCH: 5,
+        PITCH1: 6,
+        PITCH2: 7,
+        SCALED_HEIGHT: 8,
+        SCALED_PITCH01: 9,
+        SCALED_PITCH02: 10,
+        SCALED_PITCH03: 11,
+        SCALED_PITCH04: 12,
+        SCALED_PITCH05: 13,
+        SCALED_PITCH06: 14,
+        MAX: 15
+    };
+
+    /**
+     * Carbon turret system bone names, indexed by SystemBone
+     * @type {Array<?String>}
+     */
+    static systemBoneSkeletonNames = [
+        null,
+        "Sys_Rotation_Arm",
+        "Sys_Rotation_Arm01",
+        "Sys_Rotation_Arm02",
+        "Sys_CounterRotation",
+        "Sys_Pitch_Barrel",
+        "Sys_Pitch_Barrel1",
+        "Sys_Pitch_Barrel2",
+        "Sys_Height",
+        "Sys_Pitch_Arm01",
+        "Sys_Pitch_Arm02",
+        "Sys_Pitch_Arm03",
+        "Sys_Pitch_Arm04",
+        "Sys_Pitch_Arm05",
+        "Sys_Pitch_Arm06"
+    ];
+
+    static DEG_TO_RAD = Math.PI / 180;
+    static TRACKING_FADE_TIME = 1;
+    static TRACKING_EPSILON = 1e-12;
 
     /**
      * World turret bone names
@@ -1099,6 +1565,30 @@ export class EveTurretSet extends EveObjectSet
             [ "turretPoseTransAndRot", 2 * 4 * 72 ]
         ]
     };
+
+    /**
+     * Writes a mat4 to the animation controller's row-packed mat3x4 layout
+     * @param {mat4} transform
+     * @param {Float32Array} out
+     * @param {Number} offset
+     */
+    static mat4ToMat3x4(transform, out, offset)
+    {
+        out[offset] = transform[0];
+        out[offset + 1] = transform[4];
+        out[offset + 2] = transform[8];
+        out[offset + 3] = transform[12];
+
+        out[offset + 4] = transform[1];
+        out[offset + 5] = transform[5];
+        out[offset + 6] = transform[9];
+        out[offset + 7] = transform[13];
+
+        out[offset + 8] = transform[2];
+        out[offset + 9] = transform[6];
+        out[offset + 10] = transform[10];
+        out[offset + 11] = transform[14];
+    }
 
     /**
      * mat3x4 to quat
