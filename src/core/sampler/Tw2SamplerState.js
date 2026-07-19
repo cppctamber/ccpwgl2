@@ -91,6 +91,19 @@ export class Tw2SamplerState extends meta.Model
     @meta.boolean
     isVolume = false;
 
+    /**
+     * Enables hardware depth comparison for GLSL shadow samplers. This is a
+     * CEWG-facing field; legacy CCP binary comparison bytes remain on the
+     * historical private fields below so existing EVE sampler behaviour is
+     * unchanged unless a CEWG binding opts in explicitly.
+     */
+    @meta.boolean
+    comparison = false;
+
+    /** D3D/Carbon comparison-function enum (1=never ... 8=always). */
+    @meta.uint
+    comparisonFunc = 0;
+
     @meta.uint
     @meta.isPrivate
     hash = null;
@@ -326,6 +339,13 @@ export class Tw2SamplerState extends meta.Model
         this.hash ^= this.addressW;
         this.hash *= 16777619;
         this.hash ^= this.anisotropy;
+        if (this.comparison)
+        {
+            this.hash *= 16777619;
+            this.hash ^= 1;
+            this.hash *= 16777619;
+            this.hash ^= this.comparisonFunc;
+        }
     }
 
     /**
@@ -359,6 +379,26 @@ export class Tw2SamplerState extends meta.Model
 
         gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? minFilter : this.minFilterNoMips);
         gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
+
+        // Shadow sampler uniforms require comparison mode on the bound depth
+        // texture. Always restore NONE for ordinary samplers so a texture used
+        // by different passes cannot retain stale comparison state.
+        if (gl.TEXTURE_COMPARE_MODE !== undefined)
+        {
+            gl.texParameteri(
+                targetType,
+                gl.TEXTURE_COMPARE_MODE,
+                this.comparison ? gl.COMPARE_REF_TO_TEXTURE : gl.NONE
+            );
+            if (this.comparison)
+            {
+                gl.texParameteri(
+                    targetType,
+                    gl.TEXTURE_COMPARE_FUNC,
+                    Tw2SamplerState.ResolveComparisonFunc(gl, this.comparisonFunc)
+                );
+            }
+        }
 
         if (ext && device.enableAnisotropicFiltering)
         {
@@ -426,9 +466,34 @@ export class Tw2SamplerState extends meta.Model
     static fromJSON(json={}, context)
     {
         const sampler = new Tw2SamplerState();
-        assignIfExists(sampler, json, [ "name", "registerIndex", "samplerType", "isVolume" ]);
+        assignIfExists(sampler, json, [
+            "name", "registerIndex", "samplerType", "isVolume",
+            "comparison", "comparisonFunc"
+        ]);
         sampler.ResolveModes(json);
         return sampler;
+    }
+
+    /**
+     * Converts Carbon/D3D's comparison-function enum to WebGL.
+     * @param {WebGL2RenderingContext} gl WebGL2 context.
+     * @param {Number} value Carbon comparison function.
+     * @returns {Number} WebGL comparison function.
+     */
+    static ResolveComparisonFunc(gl, value)
+    {
+        switch (value)
+        {
+            case 1: return gl.NEVER;
+            case 2: return gl.LESS;
+            case 3: return gl.EQUAL;
+            case 4: return gl.LEQUAL;
+            case 5: return gl.GREATER;
+            case 6: return gl.NOTEQUAL;
+            case 7: return gl.GEQUAL;
+            case 8: return gl.ALWAYS;
+            default: return gl.LEQUAL;
+        }
     }
 
     /**

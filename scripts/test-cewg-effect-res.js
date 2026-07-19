@@ -175,6 +175,38 @@ const constantShader = constantSized.GetShader({});
 const constantStages = Object.values(constantShader.techniques).flatMap(t => t.passes.flatMap(p => p.stages));
 assert(constantStages.some(stage => stage.constantSize >= 260), "named constant extent expands the local constant array");
 
+// Explicit decoded t#/s# use wins over the legacy equal-register inference.
+const paired = loadRes("quadv5.webgl.cewg");
+let pairedResourceRegister = null;
+for (const shaderRecord of paired._cewg.glslSet.shaders || [])
+{
+    const resources = (shaderRecord.bindings || []).filter(binding => binding.kind === "resource");
+    const resource = resources.find(binding => binding.registerIndex !== 0);
+    if (resource)
+    {
+        resource.samplerRegisterIndex = 0;
+        pairedResourceRegister = resource.registerIndex;
+        break;
+    }
+}
+assert.notStrictEqual(pairedResourceRegister, null, "fixture exposes a non-zero texture register for pairing test");
+const pairedShader = paired.GetShader({});
+const pairedStages = Object.values(pairedShader.techniques).flatMap(t => t.passes.flatMap(p => p.stages));
+const pairedTexture = pairedStages.flatMap(stage => stage.textures).find(texture =>
+    texture.registerIndex === pairedResourceRegister && texture._sampler?.registerIndex === 0
+);
+assert(pairedTexture, "explicit texture/sampler register pairing survives stage construction");
+const Tw2Effect = tw2.GetClass("Tw2Effect");
+const Tw2TextureParameter = tw2.GetClass("Tw2TextureParameter");
+const pairedEffect = new Tw2Effect();
+pairedEffect.shader = pairedShader;
+pairedEffect.parameters[pairedTexture.name] = new Tw2TextureParameter(pairedTexture.name);
+assert(pairedEffect.BindParameters(), "paired shader binds through Tw2Effect");
+const pairedRuntimeTexture = Object.values(pairedEffect.techniques)
+    .flatMap(passes => passes.flatMap(pass => pass.stages.flatMap(stage => stage.textures)))
+    .find(texture => texture.slot === pairedResourceRegister);
+assert.strictEqual(pairedRuntimeTexture?.sampler.registerIndex, 0, "Tw2Effect retains the paired sampler register");
+
 // Program-side CEWG setup: the linked program resolves the bone block to
 // a uniform-block binding point (SetupCewgResources, consumed at draw
 // time by CewgResourceBinder).

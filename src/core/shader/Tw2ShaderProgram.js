@@ -135,11 +135,12 @@ export class Tw2ShaderProgram
         const { samplers } = pass.stages[1];
         for (let j = 0; j < samplers.length; ++j)
         {
-            samplers[j]._attr = `s${samplers[j].registerIndex}`;
+            const textureRegister = samplers[j]._textureRegisterIndex ?? samplers[j].registerIndex;
+            samplers[j]._attr = `s${textureRegister}`;
 
             if (samplers[j].isVolume)
             {
-                program.volumeSlices[samplers[j].registerIndex] = gl.getUniformLocation(program.program, "s" + samplers[j].registerIndex + "sl");
+                program.volumeSlices[samplers[j].registerIndex] = gl.getUniformLocation(program.program, "s" + textureRegister + "sl");
             }
         }
 

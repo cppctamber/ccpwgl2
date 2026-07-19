@@ -53,6 +53,7 @@ export class Tw2SamplerOverride extends meta.Model
 
     _sampler = null;
     _isDirty = true;
+    _sourceHash = null;
 
     /**
      * Fires on value changes
@@ -74,7 +75,23 @@ export class Tw2SamplerOverride extends meta.Model
             return o;
         }
 
-        if (this._sampler && !this._isDirty)
+        const sourceHash = [
+            o.name,
+            o.samplerType,
+            o.isVolume,
+            o.registerIndex,
+            o.comparison,
+            o.comparisonFunc,
+            o.filterMode,
+            o.mipFilterMode,
+            o.magFilterMode,
+            o.addressUMode,
+            o.addressVMode,
+            o.addressWMode,
+            o.maxAnisotropy
+        ].join("|");
+
+        if (this._sampler && !this._isDirty && this._sourceHash === sourceHash)
         {
             return this._sampler;
         }
@@ -85,6 +102,9 @@ export class Tw2SamplerOverride extends meta.Model
         s.samplerType = o.samplerType;
         s.isVolume = o.isVolume;
         s.registerIndex  = o.registerIndex;
+        s.comparison = o.comparison;
+        s.comparisonFunc = o.comparisonFunc;
+        s.hash = null;
 
         const overrides = {
             filterMode: this.filterMode !== -1 ? this.filterMode : o.filterMode,
@@ -98,7 +118,8 @@ export class Tw2SamplerOverride extends meta.Model
 
         s.ResolveModes(overrides);
 
-        this._isDirty =  false;
+        this._sourceHash = sourceHash;
+        this._isDirty = false;
         return s;
     }
 

@@ -462,6 +462,11 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
             .filter((entry) => entry.kind === "sampler")
             .map((entry) => [ entry.registerIndex, entry ])
     );
+    const emittedResourcesByRegister = new Map(
+        (shaderRecord?.bindings || [])
+            .filter((entry) => entry.kind === "resource")
+            .map((entry) => [ entry.registerIndex, entry ])
+    );
 
     for (const resource of bindings.filter((entry) => entry.kind === "resource"))
     {
@@ -478,14 +483,21 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
 
         stage.textures.push(texture);
 
-        const samplerBinding = samplersByRegister.get(resource.registerIndex) || samplersByRegister.get(0);
+        const emittedResource = emittedResourcesByRegister.get(resource.registerIndex);
+        const pairedRegister = getSamplerRegisterIndex(resource, emittedResource);
+        const samplerBinding = pairedRegister !== null
+            ? samplersByRegister.get(pairedRegister)
+            : samplersByRegister.get(resource.registerIndex)
+                || (samplersByRegister.size === 1 ? samplersByRegister.values().next().value : samplersByRegister.get(0));
         const sampler = samplerBinding?.carbon?.sampler || {};
-        stage.samplers.push(Tw2SamplerState.fromJSON({
+        const samplerState = Tw2SamplerState.fromJSON({
             name: samplerBinding?.metadataName || `${name}Sampler`,
-            registerIndex: texture.registerIndex,
+            registerIndex: samplerBinding?.registerIndex ?? texture.registerIndex,
             samplerType: texture.glType,
             isVolume: texture.isVolume,
             type,
+            comparison: emittedResource?.comparison === true,
+            comparisonFunc: sampler.comparisonFunc,
             addressUMode: sampler.addressU,
             addressVMode: sampler.addressV,
             addressWMode: sampler.addressW,
@@ -493,11 +505,45 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
             mipFilterMode: sampler.mipFilter,
             magFilterMode: sampler.magFilter,
             maxAnisotropy: sampler.maxAnisotropy
-        }, null));
+        }, null);
+
+        // Tw2Effect historically inferred pairing from equal registers. Keep a
+        // direct link so CEWG can preserve t#/s# pairs when the package carries
+        // decoded instruction-use metadata with a different sampler register.
+        texture._sampler = samplerState;
+        samplerState._textureRegisterIndex = texture.registerIndex;
+        stage.samplers.push(samplerState);
     }
 
     stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
     stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
+}
+
+/**
+ * Gets an explicitly paired sampler register from CEWG metadata
+ * @param {Object} resource Carbon resource binding
+ * @param {Object} emittedResource emitter resource binding
+ * @returns {Number|null}
+ */
+function getSamplerRegisterIndex(resource, emittedResource)
+{
+    const sources = [ emittedResource, resource, resource?.carbon ];
+    for (const source of sources)
+    {
+        if (!source) continue;
+        if (Number.isInteger(source.samplerRegisterIndex)) return source.samplerRegisterIndex;
+        if (Array.isArray(source.samplerRegisterIndices))
+        {
+            const registers = [ ...new Set(source.samplerRegisterIndices.filter(Number.isInteger)) ];
+            if (registers.length === 1) return registers[0];
+            if (registers.length > 1)
+            {
+                const name = resource.metadataName || resource.carbon?.name || resource.generatedSymbol || `t${resource.registerIndex}`;
+                throw new Error(`CEWG resource '${name}' uses multiple sampler registers: ${registers.join(", ")}`);
+            }
+        }
+    }
+    return null;
 }
 
 /**

@@ -843,9 +843,11 @@ export class Tw2Effect extends meta.Model
                                 continue;
                             }
 
+                            const textureDefinition = stageRes.textures[k];
+                            const pairedSampler = textureDefinition._sampler || null;
                             const p = {
                                 parameter: texture,
-                                slot: stageRes.textures[k].registerIndex,
+                                slot: textureDefinition.registerIndex,
                                 sampler: null
                             };
 
@@ -863,7 +865,7 @@ export class Tw2Effect extends meta.Model
                                     samplerOverrideNames.sort();
                                 }
 
-                                if (registerIndex === p.slot)
+                                if (stageRes.samplers[n] === pairedSampler || (!pairedSampler && registerIndex === p.slot))
                                 {
                                     if (name in this.samplerOverrides && this.samplerOverrides[name])
                                     {
