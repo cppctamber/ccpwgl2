@@ -305,7 +305,7 @@ export class Tw2CewgShaderFactory
         stage.type = stageType;
         stage.shaderCode = shaderRecord.source;
         stage.inputDefinition = buildInputDefinition(shaderRecord, manifestStage, stageType);
-        buildConstants(stage, manifestStage);
+        buildConstants(stage, manifestStage, shaderRecord);
         buildTexturesAndSamplers(stage, manifestStage, shaderRecord);
         // New-format binding kinds (structuredUbo bones, structuredTexture
         // lights, bufferTexture post-fx) ride along for the CEWG program/
@@ -380,30 +380,41 @@ function buildInputDefinition(shaderRecord, manifestStage, stageType)
  * Builds local stage constants from Carbon constant-buffer metadata
  * @param {Tw2ShaderStage} stage
  * @param {Object} manifestStage
+ * @param {Object} shaderRecord emitter shader record (binding declarations)
  */
-function buildConstants(stage, manifestStage)
+function buildConstants(stage, manifestStage, shaderRecord)
 {
     const binding = (manifestStage?.bindings || []).find((entry) =>
         entry.kind === "constantBuffer" &&
-        entry.registerIndex === 0 &&
-        entry.carbon?.hasLocalConstants
+        entry.registerIndex === 0
     );
+    const declaration = (shaderRecord?.bindings || []).find((entry) =>
+        entry.kind === "constantBuffer" &&
+        entry.registerIndex === 0
+    );
+    const constants = binding?.carbon?.constants || [];
 
-    if (!binding)
+    if (!binding && !declaration)
     {
         stage.constantSize = 0;
         stage.constantValues = new Float32Array(0);
         return;
     }
 
-    // Pad to a whole vec4 register: gl.uniform4fv rejects arrays whose
-    // length is not a multiple of 4, and unlike the legacy CCP binaries
-    // the Carbon manifest's constantValueSize can end mid-register.
-    const constantValueSize = (bytesToFloats(binding.carbon.constantValueSize || 0) + 3) & ~3;
+    // Some packages omit or under-report constantValueSize. The emitted
+    // declaration and the end of the final named constant are independent
+    // authorities, so allocate for the largest and pad to a vec4 register.
+    const declaredSize = (declaration?.sizeInVec4 || 0) * 4;
+    const defaultValueSize = bytesToFloats(binding?.carbon?.constantValueSize || 0);
+    const constantsSize = constants.reduce((size, item) =>
+    {
+        return Math.max(size, Math.ceil(((item.offset || 0) + (item.size || 0)) / 4));
+    }, 0);
+    const constantValueSize = (Math.max(declaredSize, defaultValueSize, constantsSize) + 3) & ~3;
     stage.constantValues = new Float32Array(constantValueSize);
     stage.constantSize = constantValueSize;
 
-    for (const item of binding.carbon.constants || [])
+    for (const item of constants)
     {
         const size = bytesToFloats(item.size || 0);
         const offset = bytesToFloats(item.offset || 0);

@@ -36,7 +36,10 @@ for (const name of [ "WebGLShader", "WebGLProgram", "WebGLBuffer", "WebGLTexture
     if (!global[name]) global[name] = class {};
 }
 
-const { tw2 } = require("../dist/ccpwgl2_int.js");
+const bundlePath = process.env.CCPWGL_TEST_BUNDLE
+    ? path.resolve(process.env.CCPWGL_TEST_BUNDLE)
+    : path.join(__dirname, "../dist/ccpwgl2_int.js");
+const { tw2 } = require(bundlePath);
 
 const glStub = new Proxy({}, {
     get: (target, prop) =>
@@ -130,6 +133,47 @@ assert(skinnedVs.cewgBindings.some(b => b.kind === "structuredUbo"), "bone bindi
 const blendIndices = skinnedVs.inputDefinition.elements.find(e => e._attr === "in_BLENDINDICES0");
 assert(blendIndices, "skinned vertex stage declares in_BLENDINDICES0");
 assert.strictEqual(blendIndices.usage, 6, "BLENDINDICES uses Trinity's usage code (6)");
+
+// Local cb0/cb7 allocation must not trust constantValueSize alone. Avatar
+// packages can omit it while retaining an emitted declaration and named
+// constants, so exercise both independent sizing sources in memory.
+const declarationSized = loadRes("quadv5.webgl.cewg");
+for (const body of declarationSized._cewg.metadata.bodies || [])
+{
+    for (const stage of body.manifest?.stages || [])
+    {
+        for (const binding of stage.bindings || [])
+        {
+            if (binding.kind === "constantBuffer" && binding.registerIndex === 0)
+            {
+                binding.carbon.constantValueSize = 0;
+                binding.carbon.constants = [];
+            }
+        }
+    }
+}
+const declarationShader = declarationSized.GetShader({});
+const declarationStages = Object.values(declarationShader.techniques).flatMap(t => t.passes.flatMap(p => p.stages));
+assert(declarationStages.some(stage => stage.constantSize > 0), "emitted cb declaration sizes local constants without defaults");
+
+const constantSized = loadRes("quadv5.webgl.cewg");
+for (const body of constantSized._cewg.metadata.bodies || [])
+{
+    for (const stage of body.manifest?.stages || [])
+    {
+        for (const binding of stage.bindings || [])
+        {
+            if (binding.kind === "constantBuffer" && binding.registerIndex === 0)
+            {
+                binding.carbon.constantValueSize = 0;
+                binding.carbon.constants.push({ name: "SizingSentinel", offset: 1024, size: 16, dimension: 4, elements: 1 });
+            }
+        }
+    }
+}
+const constantShader = constantSized.GetShader({});
+const constantStages = Object.values(constantShader.techniques).flatMap(t => t.passes.flatMap(p => p.stages));
+assert(constantStages.some(stage => stage.constantSize >= 260), "named constant extent expands the local constant array");
 
 // Program-side CEWG setup: the linked program resolves the bone block to
 // a uniform-block binding point (SetupCewgResources, consumed at draw

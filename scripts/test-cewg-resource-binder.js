@@ -47,7 +47,8 @@ function makeGl()
         texParameteri: () => {},
         texImage2D: (...args) => calls.push([ "texImage2D", args[2], args[3], args[4], args[8] ? args[8].length : 0 ]),
         texSubImage2D: (...args) => calls.push([ "texSubImage2D", args[3], args[4], args[5], args[8] ? args[8].length : 0 ]),
-        activeTexture: unit => calls.push([ "activeTexture", unit - constants.TEXTURE0 ])
+        activeTexture: unit => calls.push([ "activeTexture", unit - constants.TEXTURE0 ]),
+        uniform4fv: (handle, data) => calls.push([ "uniform4fv", handle, data.slice() ])
     };
     Object.assign(gl, constants);
     return gl;
@@ -97,6 +98,67 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
     gl.calls.length = 0;
     binder.ApplyPass(program, device);
     assert.strictEqual(findCalls(gl, "bufferData").length, 1, "re-staged joints re-upload");
+}
+
+// --- per-object constant packing hook ---------------------------------------
+{
+    const gl = makeGl();
+    const device = {
+        gl,
+        perObjectData: {
+            vs: { data: new Float32Array(40 * 4).fill(3) },
+            ps: { data: new Float32Array(16 * 4).fill(4) }
+        }
+    };
+    const binder = CewgResourceBinder.Get(device);
+    const program = { constantBufferHandles: [ null, null, null, "cb3", "cb4" ] };
+    const packer = {
+        PackPerObjectVS(out, pod, receivedDevice, receivedProgram)
+        {
+            assert.strictEqual(pod, device.perObjectData);
+            assert.strictEqual(receivedDevice, device);
+            assert.strictEqual(receivedProgram, program);
+            out[0] = 31;
+        },
+        PackPerObjectPS(out)
+        {
+            out[0] = 41;
+            return out;
+        }
+    };
+
+    binder.ApplyConstants(program, device, packer);
+    let uploads = findCalls(gl, "uniform4fv");
+    assert.strictEqual(uploads.find(call => call[1] === "cb3")[2][0], 31, "custom cb3 packer controls the VS upload");
+    assert.strictEqual(uploads.find(call => call[1] === "cb4")[2][0], 41, "custom cb4 packer controls the PS upload");
+
+    gl.calls.length = 0;
+    binder.ApplyConstants(program, device, { PackPerObjectVS: out => { out[0] = 99; } });
+    uploads = findCalls(gl, "uniform4fv");
+    assert.strictEqual(uploads.find(call => call[1] === "cb3")[2][0], 99, "packing overrides are per apply");
+    assert.strictEqual(uploads.find(call => call[1] === "cb4")[2][0], 3, "missing cb4 override retains the space fallback");
+
+    gl.calls.length = 0;
+    program.constantBufferSizes = [ null, null, null, 1, 2 ];
+    binder.ApplyConstants(program, device, packer);
+    uploads = findCalls(gl, "uniform4fv");
+    assert.strictEqual(uploads.find(call => call[1] === "cb3")[2].length, 4, "cb3 upload clips to the linked declaration");
+    assert.strictEqual(uploads.find(call => call[1] === "cb4")[2].length, 8, "cb4 upload clips to the linked declaration");
+
+    gl.calls.length = 0;
+    device.perFrameVSData = { data: new Float32Array(8).fill(5) };
+    device.perFramePSData = { data: new Float32Array(12).fill(6) };
+    const frameProgram = {
+        constantBufferHandles: [ null, "cb1", "cb2" ],
+        constantBufferSizes: [ null, 2, 3 ]
+    };
+    binder.ApplyConstants(frameProgram, device, {
+        PackPerFrameVS(out) { out.fill(7); },
+        PackPerFramePS(out) { out.fill(8); }
+    });
+    uploads = findCalls(gl, "uniform4fv");
+    assert.deepStrictEqual(Array.from(uploads.find(call => call[1] === "cb1")[2]), new Array(8).fill(7));
+    assert.deepStrictEqual(Array.from(uploads.find(call => call[1] === "cb2")[2]), new Array(12).fill(8));
 }
 
 // --- light-list data textures (fallback list) ---------------------------------

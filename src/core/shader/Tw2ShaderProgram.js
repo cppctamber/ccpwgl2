@@ -12,6 +12,9 @@ export class Tw2ShaderProgram
     @meta.list(WebGLUniformLocation)
     constantBufferHandles = [];
 
+    @meta.list(Number)
+    constantBufferSizes = [];
+
     @meta.struct("Tw2VertexDeclaration")
     input = new Tw2VertexDeclaration();
 
@@ -69,6 +72,17 @@ export class Tw2ShaderProgram
         for (let j = 0; j < 16; ++j)
         {
             program.constantBufferHandles[j] = gl.getUniformLocation(program.program, "cb" + j);
+        }
+
+        // CEWG emitters declare compact cb arrays from the highest register
+        // actually used. Keep their linked sizes so uploads can be clipped to
+        // the declaration instead of submitting a larger ABI backing array.
+        const uniformCount = gl.getProgramParameter(program.program, gl.ACTIVE_UNIFORMS);
+        for (let j = 0; j < uniformCount; j++)
+        {
+            const uniform = gl.getActiveUniform(program.program, j);
+            const match = uniform?.name?.match(/^cb(\d+)(?:\[0\])?$/);
+            if (match) program.constantBufferSizes[Number(match[1])] = uniform.size;
         }
 
         // Samplers

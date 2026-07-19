@@ -1,6 +1,12 @@
 const { CewgLightList } = require("./CewgLightList");
 const CewgCarbonData = require("./CewgCarbonData");
 
+function fitConstantBuffer(data, registerCount)
+{
+    const floatCount = Number(registerCount) * 4;
+    return floatCount > 0 && data.length > floatCount ? data.subarray(0, floatCount) : data;
+}
+
 /**
  * CewgResourceBinder
  *
@@ -139,19 +145,26 @@ class CewgResourceBinder
      * per-frame arrays are used for all CEWG techniques.
      * @param {Tw2ShaderProgram} program
      * @param {Tw2Device} device
+     * @param {{PackPerObjectVS?: Function, PackPerObjectPS?: Function}} [perObjectPacker]
      */
-    ApplyConstants(program, device)
+    ApplyConstants(program, device, perObjectPacker)
     {
         const gl = this.gl;
         const cbh = program.constantBufferHandles;
 
         if (cbh[1] && device.perFrameVSData)
         {
-            gl.uniform4fv(cbh[1], CewgCarbonData.PackPerFrameVS(this._perFrameVS, device.perFrameVSData.data));
+            const packed = perObjectPacker?.PackPerFrameVS
+                ? perObjectPacker.PackPerFrameVS(this._perFrameVS, device.perFrameVSData.data, device, program) || this._perFrameVS
+                : CewgCarbonData.PackPerFrameVS(this._perFrameVS, device.perFrameVSData.data);
+            gl.uniform4fv(cbh[1], fitConstantBuffer(packed, program.constantBufferSizes?.[1]));
         }
         if (cbh[2] && device.perFramePSData)
         {
-            gl.uniform4fv(cbh[2], CewgCarbonData.PackPerFramePS(this._perFramePS, device.perFramePSData.data));
+            const packed = perObjectPacker?.PackPerFramePS
+                ? perObjectPacker.PackPerFramePS(this._perFramePS, device.perFramePSData.data, device, program) || this._perFramePS
+                : CewgCarbonData.PackPerFramePS(this._perFramePS, device.perFramePSData.data);
+            gl.uniform4fv(cbh[2], fitConstantBuffer(packed, program.constantBufferSizes?.[2]));
         }
 
         const pod = device.perObjectData;
@@ -166,17 +179,35 @@ class CewgResourceBinder
 
         if (cbh[3] && pod.vs)
         {
-            const packedVs = isDecal
-                ? CewgCarbonData.PackDecalPerObjectVS(this._perObjectVS, pod.vs.data)
-                : CewgCarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data);
-            gl.uniform4fv(cbh[3], packedVs);
+            let packedVs;
+            if (perObjectPacker?.PackPerObjectVS)
+            {
+                this._perObjectVS.fill(0);
+                packedVs = perObjectPacker.PackPerObjectVS(this._perObjectVS, pod, device, program) || this._perObjectVS;
+            }
+            else
+            {
+                packedVs = isDecal
+                    ? CewgCarbonData.PackDecalPerObjectVS(this._perObjectVS, pod.vs.data)
+                    : CewgCarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data);
+            }
+            gl.uniform4fv(cbh[3], fitConstantBuffer(packedVs, program.constantBufferSizes?.[3]));
         }
         if (cbh[4] && pod.ps)
         {
-            const packedPs = isDecal
-                ? CewgCarbonData.PackDecalPerObjectPS(this._perObjectPS, pod.ps.data)
-                : CewgCarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data);
-            gl.uniform4fv(cbh[4], packedPs);
+            let packedPs;
+            if (perObjectPacker?.PackPerObjectPS)
+            {
+                this._perObjectPS.fill(0);
+                packedPs = perObjectPacker.PackPerObjectPS(this._perObjectPS, pod, device, program) || this._perObjectPS;
+            }
+            else
+            {
+                packedPs = isDecal
+                    ? CewgCarbonData.PackDecalPerObjectPS(this._perObjectPS, pod.ps.data)
+                    : CewgCarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data);
+            }
+            gl.uniform4fv(cbh[4], fitConstantBuffer(packedPs, program.constantBufferSizes?.[4]));
         }
     }
 
