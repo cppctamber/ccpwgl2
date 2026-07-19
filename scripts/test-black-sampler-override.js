@@ -7,7 +7,8 @@
  * DiffuseMapSampler samplerOverride (56-byte Carbon Sampler::Save layout).
  *
  * Runs against dist/ccpwgl2_int.js — rebuild before testing source changes.
- * Usage: npm run test:black-sampler-override
+ * Pass a bundle path as argv[2] to smoke-test another output.
+ * Usage: npm run test:black-sampler-override [-- dist/ccpwgl2_int.min.js]
  */
 const fs = require("fs");
 const path = require("path");
@@ -34,7 +35,10 @@ for (const name of [ "WebGLShader", "WebGLProgram", "WebGLBuffer", "WebGLTexture
     if (!global[name]) global[name] = class {};
 }
 
-const { tw2 } = require("../dist/ccpwgl2_int.js");
+const bundlePath = process.argv[2]
+    ? path.resolve(process.cwd(), process.argv[2])
+    : path.resolve(__dirname, "../dist/ccpwgl2_int.js");
+const { tw2 } = require(bundlePath);
 
 // GL stub so geometry construction during the read doesn't explode.
 const glStub = new Proxy({}, {
@@ -48,6 +52,7 @@ const glStub = new Proxy({}, {
 Object.defineProperty(tw2.device, "gl", { value: glStub, configurable: true, writable: true });
 
 const Tw2BlackReader = tw2.GetClass("Tw2BlackReader");
+const Tw2Effect = tw2.GetClass("Tw2Effect");
 const fixture = path.join(__dirname, "../test/fixtures/as6_breacheroidfx_01a.black");
 const bytes = fs.readFileSync(fixture);
 const reader = new Tw2BlackReader(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
@@ -60,7 +65,7 @@ const seen = new Set();
 {
     if (!node || typeof node !== "object" || seen.has(node)) return;
     seen.add(node);
-    if (node.constructor && /Effect$/.test(node.constructor.name) && node.options !== undefined)
+    if (node instanceof Tw2Effect && node.options !== undefined)
     {
         effects.push(node);
     }

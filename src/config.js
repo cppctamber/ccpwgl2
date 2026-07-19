@@ -285,12 +285,12 @@ export const config = {
     },
 
     constructors: [
-        core,
-        curve,
-        eve,
-        particle,
-        sof,
-        unsupported
+        { ...core },
+        { ...curve },
+        { ...eve },
+        { ...particle },
+        { ...sof },
+        { ...unsupported }
     ],
 
     variableTypes: {
