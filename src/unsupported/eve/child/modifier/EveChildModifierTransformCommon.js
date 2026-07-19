@@ -27,7 +27,6 @@ function getScratch()
             camFwd: vec3.create(),
             right: vec3.create(),
             up: vec3.create(),
-            parentT: mat4.create(),
             toObject: vec3.create()
         };
     }
@@ -61,6 +60,31 @@ function changeBase(out, forward, up)
 }
 
 /**
+ * Rotates a vector by a transform's basis rows (rotation + scale), reproducing
+ * the engine intrinsic `TriVectorRotateMatrix` - a pure 3x3 rotate with NO
+ * translation and NO perspective divide.
+ *
+ * Replaces the previous `vec3.transformMat4(v, Transpose(transform))`, which was
+ * subtly wrong for any transform with a non-zero translation: transposing moves
+ * the translation into the matrix's projective row (indices 3, 7, 11), so
+ * gl-matrix's `transformMat4` computed `w = dot(v, translation) + 1 !== 1` and
+ * divided the result by it. Dotting against the basis rows directly matches
+ * Carbon (`v.x*_11 + v.y*_21 + v.z*_31`, etc). Safe to call in place (out === v).
+ * @param {vec3} out
+ * @param {vec3} v
+ * @param {mat4} transform - basis read from indices [0,1,2]/[4,5,6]/[8,9,10]
+ * @returns {vec3} out
+ */
+export function rotateIntoBasis(out, v, transform)
+{
+    const x = v[0], y = v[1], z = v[2];
+    out[0] = x * transform[0] + y * transform[1] + z * transform[2];
+    out[1] = x * transform[4] + y * transform[5] + z * transform[6];
+    out[2] = x * transform[8] + y * transform[9] + z * transform[10];
+    return out;
+}
+
+/**
  * Computes the camera-facing alignment basis for a transform, plus the
  * (parent-space, scale-corrected) distance and direction to the camera.
  *
@@ -75,16 +99,14 @@ function changeBase(out, forward, up)
  */
 export function DistanceBase(outAlignMat, outD, transform)
 {
-    const { camFwd, right, up, parentT } = getScratch();
+    const { camFwd, right, up } = getScratch();
 
     const camPos = device.eyePosition;
     outD[0] = camPos[0] - transform[12];
     outD[1] = camPos[1] - transform[13];
     outD[2] = camPos[2] - transform[14];
 
-    vec3.copy(camFwd, outD);
-    mat4.transpose(parentT, transform);
-    vec3.transformMat4(camFwd, camFwd, parentT);
+    rotateIntoBasis(camFwd, outD, transform);
 
     const lengthSqX = vec3.squaredLength(transform.subarray(0, 3));
     const lengthSqY = vec3.squaredLength(transform.subarray(4, 7));
@@ -98,7 +120,7 @@ export function DistanceBase(outAlignMat, outD, transform)
 
     const view = device.view;
     vec3.set(right, view[0], view[4], view[8]);
-    vec3.transformMat4(right, right, parentT);
+    rotateIntoBasis(right, right, transform);
 
     vec3.cross(up, camFwd, right);
     vec3.normalize(up, up);

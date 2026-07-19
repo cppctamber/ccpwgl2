@@ -2,6 +2,7 @@ import { EveChildModifier } from "./EveChildModifier";
 import { meta } from "utils";
 import { mat4, vec3 } from "math";
 import { device } from "global";
+import { rotateIntoBasis } from "./EveChildModifierTransformCommon";
 
 let scratch = null;
 
@@ -18,7 +19,6 @@ export function modifyHalo(worldTransform, parentTransform, rotation, translatio
             up : vec3.create(),
             forward : vec3.create(),
             dirToCamNorm : vec3.create(),
-            parentT : mat4.create(),
             alignMat : mat4.create(),
             rotationT : mat4.create()
         };
@@ -32,7 +32,6 @@ export function modifyHalo(worldTransform, parentTransform, rotation, translatio
         up,
         forward,
         dirToCamNorm,
-        parentT,
         alignMat,
         rotationT
     } = scratch;
@@ -46,20 +45,20 @@ export function modifyHalo(worldTransform, parentTransform, rotation, translatio
 
     // 3 4 3 3 3 4 3 3
     mat4.translate(worldTransform, parentTransform, translation);
-    mat4.transpose(parentT, parentTransform);
 
     device.GetEyePosition(dir);
     dir[0] -= worldTransform[12];
     dir[1] -= worldTransform[13];
     dir[2] -= worldTransform[14];
 
-    vec3.copy(camFwd, dir);
-    vec3.transformMat4(camFwd, camFwd, parentT);
+    // Rotate the camera direction into the parent's basis (pure 3x3, no w-divide;
+    // see rotateIntoBasis in EveChildModifierTransformCommon.js).
+    rotateIntoBasis(camFwd, dir, parentTransform);
     vec3.divide(camFwd, camFwd, parentScaling);
     vec3.normalize(camFwd, camFwd);
 
     vec3.set(right, device.view[0], device.view[4], device.view[8]);
-    vec3.transformMat4(right, right, parentT);
+    rotateIntoBasis(right, right, parentTransform);
     vec3.normalize(right, right);
 
     vec3.cross(up, camFwd, right);
