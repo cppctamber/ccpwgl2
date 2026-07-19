@@ -8,7 +8,8 @@ export const DeviceTextureQuality = {
 };
 
 export const DeviceShaderQuality = {
-    HIGH: "hi",
+    HIGH: "depth",
+    MEDIUM: "hi",
     LOW: "lo"
 };
 

@@ -249,6 +249,29 @@ test("DDS reader recognizes legacy float FOURCC formats", () =>
     includes(source, "new Uint16Array(arrayBuffer, offset, srcSize >> 1)");
 });
 
+test("shader quality names map to the correct compiled tiers", () =>
+{
+    const constants = read("src/global/constant/ccpwgl.js");
+    const config = read("src/config.js");
+
+    includes(constants, "HIGH: \"depth\"");
+    includes(constants, "MEDIUM: \"hi\"");
+    includes(constants, "LOW: \"lo\"");
+    includes(config, "\"shaderQuality\": DeviceShaderQuality.MEDIUM");
+});
+
+test("Tw2Device protects authored effect paths with registered profiles", () =>
+{
+    const source = read("src/core/engine/Tw2Device.js");
+
+    includes(source, "static EffectProfiles = {");
+    includes(source, "\"effect.gles2\": \"/effect.gles2/\"");
+    includes(source, "\"effect.webgl2\": \"/effect.webgl2/\"");
+    includes(source, "SetEffectProfile(profile)");
+    includes(source, "this.effectDir = this.constructor.EffectProfiles[normalized]");
+    includes(source, "replace(\"/effect/\", this.effectDir)");
+});
+
 if (process.exitCode)
 {
     process.exit(process.exitCode);

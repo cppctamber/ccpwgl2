@@ -63,6 +63,21 @@ import {
 
 export class Tw2Device extends Tw2EventEmitter
 {
+    /**
+     * Compiled-effect path profiles.
+     *
+     * Authored `.fx` resources below `/effect/` stay backend-neutral;
+     * ToEffectPath selects
+     * one of these protected runtime namespaces. The object remains mutable so
+     * tests and downstream integrations can register temporary profiles.
+     *
+     * @type {Object.<string, string>}
+     */
+    static EffectProfiles = {
+        "effect.gles2": "/effect.gles2/",
+        "effect.webgl2": "/effect.webgl2/"
+    };
+
     name = "Device";
 
     /**
@@ -106,7 +121,8 @@ export class Tw2Device extends Tw2EventEmitter
     viewportAspect = 0;
     viewportPixelRatio = ("devicePixelRatio" in window) ? window.devicePixelRatio : 1;
 
-    effectDir = "/effect.gles2/";
+    effectProfile = "effect.gles2";
+    effectDir = Tw2Device.EffectProfiles[this.effectProfile];
     mipLevelSkipCount = 0;
     shaderModel = "hi";
     enableAnisotropicFiltering = true;
@@ -358,7 +374,8 @@ export class Tw2Device extends Tw2EventEmitter
      *
      * @param {*} [opt]
      * @param {Number} opt.textureQuality
-     * @param {Number} opt.shaderQuality
+     * @param {String} opt.shaderQuality
+     * @param {String} opt.effectProfile
      * @param {Boolean} opt.anisotropicFilter
      * @param {Boolean} opt.antialiasing
      * @param {Boolean} opt.webgl2
@@ -399,6 +416,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
         if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
+        if ("effectProfile" in opt) this.SetEffectProfile(opt.effectProfile);
         if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
         if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
         if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
@@ -431,7 +449,7 @@ export class Tw2Device extends Tw2EventEmitter
     Create({ canvas, canvas3d, canvas2d, glParams } = {})
     {
         this.gl = null;
-        this.effectDir = "/effect.gles2/";
+        this.SetEffectProfile(this.effectProfile);
 
         // Fallback
         if (!canvas) canvas = canvas3d;
@@ -523,7 +541,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         // CCP mobile shader binary (is this depreciated?)
         const ccpShaderBinary = this.GetExtension("CCP_shader_binary");
-        if (ccpShaderBinary)
+        if (ccpShaderBinary && this.effectProfile === "effect.gles2")
         {
             const
                 renderer = gl.getParameter(this.gl.RENDERER),
@@ -606,6 +624,24 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Selects a registered compiled-effect path profile.
+     * @param {String} profile
+     * @returns {String} The selected compiled-effect directory
+     */
+    SetEffectProfile(profile)
+    {
+        const normalized = String(profile || "").trim().toLowerCase();
+        if (!Object.prototype.hasOwnProperty.call(this.constructor.EffectProfiles, normalized))
+        {
+            throw new Error(`Unknown effect profile: ${profile}`);
+        }
+
+        this.effectProfile = normalized;
+        this.effectDir = this.constructor.EffectProfiles[normalized];
+        return this.effectDir;
+    }
+
+    /**
      * Sets the pixel aspect ratio and resizes afterwards
      * @param {Number} value
      */
@@ -631,7 +667,7 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
-     * Translates a path to an
+     * Translates an authored effect path into the active compiled profile
      * @param {String} path
      * @returns {String}
      */

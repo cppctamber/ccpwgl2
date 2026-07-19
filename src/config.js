@@ -143,8 +143,11 @@ export const config = {
         // Defines the default texture quality (HIGH, MEDIUM, LOW) - Doesn't work with CDN resources yet
         "textureQuality": DeviceTextureQuality.HIGH,
 
-        // Defines the default shader quality (DEPTH, HIGH or LOW)
-        "shaderQuality": DeviceShaderQuality.HIGH,
+        // Defines the default shader quality (HIGH, MEDIUM or LOW)
+        "shaderQuality": DeviceShaderQuality.MEDIUM,
+
+        // Selects the protected compiled-effect namespace
+        "effectProfile": "effect.gles2",
 
         // Enables antialiasing (can affect performance)
         "antialiasing": true,
