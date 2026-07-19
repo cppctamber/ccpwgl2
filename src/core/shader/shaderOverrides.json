@@ -20,6 +20,21 @@
     "texcoord.xyw=r0.zzw*c[0+a0.x].zwz;": "if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}",
     "r0.x=saturate(sqrt(abs(r0.x)));": "r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);"
   },
+  "artillery.vertex": {
+    "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
+  },
+  "atomic.vertex": {
+    "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
+  },
+  "blast.vertex": {
+    "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
+  },
+  "laser.vertex": {
+    "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
+  },
+  "projectile.vertex": {
+    "c[0+a0.x]": "(a0.x==0?c[0]:(a0.x==1?c[1]:(a0.x==2?c[2]:c[3])))"
+  },
   "motionfx":  {
     "for(int i=0;i<i0.x;++i){": "for(int i=0;i<8;++i){"
   },

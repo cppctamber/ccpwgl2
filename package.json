@@ -20,6 +20,7 @@
     "test:cewg-carbon-data": "node scripts/test-cewg-carbon-data.js",
     "test:cewg-comparison-sampler": "node scripts/test-cewg-comparison-sampler.js",
     "test:cewg-interior-per-object-data": "node scripts/test-cewg-interior-per-object-data.js",
+    "test:eve-stretch2": "node scripts/test-eve-stretch2.js",
     "test:get-resources": "node scripts/test-get-resources-contract.js",
     "test:interior-additive-animation": "node scripts/test-interior-additive-animation.js",
     "test:interior-animation-lifecycle": "node scripts/test-interior-animation-lifecycle.js",
@@ -27,6 +28,7 @@
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
+    "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",
     "test:parity": "node scripts/parityCewgVsLegacy.js",
     "testbed:cewg": "node scripts/testbed/cewg-diagnostics.js"
   },

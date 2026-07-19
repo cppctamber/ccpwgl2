@@ -1,6 +1,5 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
-import { EveStretch } from "./EveStretch";
 
 
 class EvePerMuzzleData
@@ -127,18 +126,10 @@ export class EveTurretFiringFX extends meta.Model
     Initialize()
     {
         this._firingDuration = this.GetCurveDuration();
+        this._perMuzzleData.length = this.stretch.length;
         for (let i = 0; i < this.stretch.length; ++i)
         {
-            if (this.stretch[i] instanceof EveStretch)
-            {
-                this._perMuzzleData[i] = new EvePerMuzzleData();
-            }
-            // Todo: Implement Stretch2 effects
-            else
-            {
-                this.stretch.splice(i, 1);
-                i--;
-            }
+            this._perMuzzleData[i] = new EvePerMuzzleData();
         }
 
         const data = this._perMuzzleData;
@@ -162,9 +153,16 @@ export class EveTurretFiringFX extends meta.Model
         for (let i = 0; i < this.stretch.length; ++i)
         {
             const stretch = this.stretch[i];
-            for (let j = 0; j < stretch.curveSets.length; ++j)
+            if (typeof stretch.GetCurveDuration === "function")
             {
-                maxDuration = Math.max(maxDuration, stretch.curveSets[j].GetMaxCurveDuration());
+                maxDuration = Math.max(maxDuration, stretch.GetCurveDuration());
+                continue;
+            }
+
+            const curveSets = stretch.curveSets || [];
+            for (let j = 0; j < curveSets.length; ++j)
+            {
+                maxDuration = Math.max(maxDuration, curveSets[j].GetMaxCurveDuration());
             }
         }
         return maxDuration;
@@ -244,21 +242,32 @@ export class EveTurretFiringFX extends meta.Model
     StartMuzzleEffect(muzzleID)
     {
         const stretch = this.stretch[muzzleID];
-        for (let i = 0; i < stretch.curveSets.length; ++i)
-        {
-            const curveSet = stretch.curveSets[i];
-            switch (curveSet.name)
-            {
-                case "play_start":
-                case "play_loop":
-                    curveSet.PlayFrom(-this._perMuzzleData[muzzleID].currentStartDelay);
-                    break;
+        const delay = this._perMuzzleData[muzzleID].currentStartDelay;
 
-                case "play_stop":
-                    curveSet.Stop();
-                    break;
+        if (typeof stretch.StartFiring === "function")
+        {
+            stretch.StartFiring(delay);
+        }
+        else
+        {
+            const curveSets = stretch.curveSets || [];
+            for (let i = 0; i < curveSets.length; ++i)
+            {
+                const curveSet = curveSets[i];
+                switch (curveSet.name)
+                {
+                    case "play_start":
+                    case "play_loop":
+                        curveSet.PlayFrom(-delay);
+                        break;
+
+                    case "play_stop":
+                        curveSet.Stop();
+                        break;
+                }
             }
         }
+
         this._perMuzzleData[muzzleID].started = true;
         this._perMuzzleData[muzzleID].readyToStart = false;
     }
@@ -271,19 +280,27 @@ export class EveTurretFiringFX extends meta.Model
         for (let j = 0; j < this.stretch.length; ++j)
         {
             const stretch = this.stretch[j];
-            for (let i = 0; i < stretch.curveSets.length; ++i)
+            if (typeof stretch.StopFiring === "function")
             {
-                const curveSet = stretch.curveSets[i];
-                switch (curveSet.name)
+                stretch.StopFiring();
+            }
+            else
+            {
+                const curveSets = stretch.curveSets || [];
+                for (let i = 0; i < curveSets.length; ++i)
                 {
-                    case "play_start":
-                    case "play_loop":
-                        curveSet.Stop();
-                        break;
+                    const curveSet = curveSets[i];
+                    switch (curveSet.name)
+                    {
+                        case "play_start":
+                        case "play_loop":
+                            curveSet.Stop();
+                            break;
 
-                    case "play_stop":
-                        curveSet.Play();
-                        break;
+                        case "play_stop":
+                            curveSet.Play();
+                            break;
+                    }
                 }
             }
             this._perMuzzleData[j].started = false;
@@ -345,16 +362,26 @@ export class EveTurretFiringFX extends meta.Model
                     }
                     else
                     {
-                        if (this.useMuzzleTransform)
+                        const stretch = this.stretch[i];
+                        if (typeof stretch.SetFiringTransform === "function")
                         {
-                            this.stretch[i].SetSourceTransform(this._perMuzzleData[i].muzzleTransform);
+                            const transform = this._perMuzzleData[i].muzzleTransform;
+                            stretch.SetFiringTransform(this.useMuzzleTransform ? transform : transform.subarray(12, 15), this._endPosition);
+                            stretch.DisplayEndPoints(true, true);
                         }
                         else
                         {
-                            this.stretch[i].SetSourcePositionFromTransform(this._perMuzzleData[i].muzzleTransform);
+                            if (this.useMuzzleTransform)
+                            {
+                                stretch.SetSourceTransform(this._perMuzzleData[i].muzzleTransform);
+                            }
+                            else
+                            {
+                                stretch.SetSourcePositionFromTransform(this._perMuzzleData[i].muzzleTransform);
+                            }
+                            stretch.SetDestinationPosition(this._endPosition);
+                            stretch.SetIsNegZForward(true);
                         }
-                        this.stretch[i].SetDestinationPosition(this._endPosition);
-                        this.stretch[i].SetIsNegZForward(true);
                     }
                 }
             }
@@ -373,7 +400,6 @@ export class EveTurretFiringFX extends meta.Model
     {
         if (!this.display || !this._isFiring) return false;
         perObjectData = perObjectData || accumulator.GetCurrentPerObjectData?.();
-        if (!perObjectData) return false;
 
         let c = accumulator.length;
 
