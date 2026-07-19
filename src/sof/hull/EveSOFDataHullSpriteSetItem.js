@@ -17,7 +17,7 @@ export class EveSOFDataHullSpriteSetItem extends meta.Model
     blinkRate = 0;
 
     @meta.int32
-    boneIndex = 0;
+    boneIndex = -1;
 
     @meta.uint
     colorType = 0;

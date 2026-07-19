@@ -11,7 +11,7 @@ export class EveSOFDataHullSpotlightSetItem extends meta.Model
 {
 
     @meta.int32
-    boneIndex = 0;
+    boneIndex = -1;
 
     @meta.boolean
     boosterGainInfluence = false;

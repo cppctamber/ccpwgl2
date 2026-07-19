@@ -31,7 +31,7 @@ export class EveSOFDataHullPlaneSetItem extends meta.Model
     blinkMode = 0;
 
     @meta.int32
-    boneIndex = 0;
+    boneIndex = -1;
 
     @meta.color
     color = vec4.create();
