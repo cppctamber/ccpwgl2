@@ -1,12 +1,12 @@
 import CjsFormatGr2 from "@carbonenginejs/format-gr2";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
-import { ErrFeatureNotImplemented, Tw2Error } from "core/Tw2Error";
+import { Tw2Error } from "core/Tw2Error";
 import { Gr2CurveReader } from "core/reader/granny";
 import { vec3, quat, mat4, box3, mat3 } from "math";
 import { GL_FLOAT } from "constant/gl";
 import { device } from "global/tw2";
 
-import * as geo from "geo-ambient-occlusion";
+import geo from "geo-ambient-occlusion";
 
 
 import {
@@ -27,6 +27,15 @@ export class ErrCurveDataInvalid extends Tw2Error
     constructor(data)
     {
         super(data, "Invalid curve data (%name%): expected uncompressed, legacy flat, or source + compressed curve data");
+    }
+}
+
+
+export class ErrGr2GeometryExpected extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Granny State files are not render geometry");
     }
 }
 
@@ -75,7 +84,12 @@ export class Gr2Reader
         aoBias: 0.5,
         aoSamples: 256,
         aoIndexed: false,
-        unpackTangents: false
+        unpackTangents: false,
+        skipInvalidBoneBindings: false,
+        // Granny exports expose the two skinning channels under historically
+        // inverted names. Keep the established mapping by default; converted
+        // shader paths can opt into Trinity's direct semantic order.
+        swapBlendWeightsAndIndices: false
     };
 
     /**
@@ -99,7 +113,13 @@ export class Gr2Reader
 
         options = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
 
-        const json = CjsFormatGr2.read(data, {
+        const raw = CjsFormatGr2.readRaw(data);
+        if (CjsFormatGr2.gsf.isRaw(raw))
+        {
+            throw new ErrGr2GeometryExpected();
+        }
+
+        const json = CjsFormatGr2.read(raw, {
             emit: "json",
             unpackTangents: options.unpackTangents
         });
@@ -186,6 +206,19 @@ export class Gr2Reader
                         const type = VertexTypes[key.toUpperCase()];
                         if (!type) throw new Error(`Unsupported vertex type: ${key}`);
 
+                        let usage = type.usage;
+                        if (options.swapBlendWeightsAndIndices)
+                        {
+                            if (usage === Tw2VertexElement.Type.BLENDINDICES)
+                            {
+                                usage = Tw2VertexElement.Type.BLENDWEIGHT;
+                            }
+                            else if (usage === Tw2VertexElement.Type.BLENDWEIGHT)
+                            {
+                                usage = Tw2VertexElement.Type.BLENDINDICES;
+                            }
+                        }
+
                         const data = srcM.vertex[key];
 
                         let elements = type.elements;
@@ -203,7 +236,7 @@ export class Gr2Reader
                         else if (vertexCount !== count) throw new Error(`Invalid vertex count: ${key}`);
 
                         vertexElements.push({
-                            usage: type.usage,
+                            usage,
                             usageIndex: type.usageIndex,
                             offset: vertexSize * 4,
                             type: GL_FLOAT,
@@ -341,6 +374,7 @@ export class Gr2Reader
             }
             declaration.RebuildHash();
             declaration.stride = vertexSize * 4;
+            declaration.swapBlendWeightsAndIndices = options.swapBlendWeightsAndIndices === true;
             mesh.declaration = declaration;
 
             // Buffer data
@@ -384,11 +418,11 @@ export class Gr2Reader
                 }
             }
 
-            // Blend shapes
-            if (srcM.blendShapes && srcM.blendShapes.length)
-            {
-                throw new ErrFeatureNotImplemented({ feature: "Geometry blend shapes" });
-            }
+            // Runtime geometry has no native GR2 morph container yet. Preserve
+            // the format payload and a system mirror for consumers that apply
+            // CPU deformation explicitly.
+            mesh.morphTargets = Gr2Reader.CreateMorphTargets(srcM.morphTargets);
+            if (mesh.morphTargets.length) mesh.forceSystemMirror = true;
 
             // Test data
             mesh._areas = mesh.areas.length;
@@ -413,7 +447,7 @@ export class Gr2Reader
 
             model.name = srcM.name;
 
-            if (srcM.skeleton)
+            if (srcM.skeleton && srcM.skeleton.bones && srcM.skeleton.bones.length)
             {
                 const skeleton = new Tw2GeometrySkeleton();
                 model.skeleton = skeleton;
@@ -463,12 +497,24 @@ export class Gr2Reader
                 skeleton.BuildTrackMasks();
 
                 res.models.push(model);
-            }
 
-            const { meshBindings = [] } = srcM;
-            for (let iMB = 0; iMB < meshBindings.length; iMB++)
-            {
-                res.constructor.BindMeshToModel(res.meshes[meshBindings[iMB]], model, res);
+                const { meshBindings = [] } = srcM;
+                let resolvedMeshBindings = meshBindings
+                    .filter(index => Number.isInteger(index) && res.meshes[index]);
+
+                if (!resolvedMeshBindings.length && options.skipInvalidBoneBindings)
+                {
+                    resolvedMeshBindings = res.meshes
+                        .map((mesh, index) => mesh && mesh.boneBindings && mesh.boneBindings.length ? index : -1)
+                        .filter(index => index !== -1);
+                }
+
+                for (let iMB = 0; iMB < resolvedMeshBindings.length; iMB++)
+                {
+                    res.constructor.BindMeshToModel(res.meshes[resolvedMeshBindings[iMB]], model, res, {
+                        skipInvalidBoneBindings: options.skipInvalidBoneBindings
+                    });
+                }
             }
         }
 
@@ -593,6 +639,47 @@ export class Gr2Reader
     }
 
     /**
+     * Converts format-gr2 morph targets into a stable runtime-facing payload.
+     * Source names remain available while runtime names follow Trinity's
+     * trailing exact `Shape` convention.
+     * @param {Array<Object>} [targets]
+     * @returns {Array<Object>}
+     */
+    static CreateMorphTargets(targets=[])
+    {
+        if (!Array.isArray(targets)) return [];
+
+        return targets.map(target =>
+        {
+            const
+                sourceName = typeof target.name === "string" ? target.name : "",
+                vertex = {};
+
+            for (const key of Object.keys(target.vertex || {}))
+            {
+                const values = target.vertex[key];
+                vertex[key] = values && typeof values.length === "number"
+                    ? Float32Array.from(values)
+                    : new Float32Array(0);
+            }
+
+            const result = {
+                name: sourceName.endsWith("Shape") ? sourceName.slice(0, -5) : sourceName,
+                sourceName,
+                dataIsDeltas: target.dataIsDeltas === true,
+                vertex
+            };
+
+            if (target.vertexIndices && typeof target.vertexIndices.length === "number")
+            {
+                result.vertexIndices = Uint32Array.from(target.vertexIndices);
+            }
+
+            return result;
+        });
+    }
+
+    /**
      * Normalizes GR2-JSON key casing quirks produced by legacy tooling
      * (e.g. all-lowercase "controlscaleoffsets" -> "controlScaleOffsets").
      * Idempotent, so it is safe to run over already-correct data too.
@@ -636,6 +723,16 @@ export class Gr2Reader
         }
 
         return obj;
+    }
+
+    /**
+     * Detects Granny State bytes without treating them as render geometry.
+     * @param {ArrayBuffer|Uint8Array} data
+     * @returns {Boolean}
+     */
+    static IsGSF(data)
+    {
+        return CjsFormatGr2.isGsf(data);
     }
 
     /**

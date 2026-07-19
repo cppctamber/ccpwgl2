@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { resMan, device } from "global";
 import { box3, sph3, vec3, vertex } from "math";
-import { Tw2BinaryReader, WBGReader, Gr2Reader, OBJReader, GR2JsonReader, GltfReader } from "../reader";
+import { Tw2BinaryReader, WBGReader, GsfReader, Gr2Reader, OBJReader, GR2JsonReader, GltfReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Error } from "../Tw2Error";
@@ -22,7 +22,8 @@ const readers = {
     [Gr2Reader.extension.toLowerCase()]: Gr2Reader,
     [GR2JsonReader.extension.toLowerCase()]: GR2JsonReader,
     [WBGReader.extension.toLowerCase()]: WBGReader,
-    [GltfReader.extension.toLowerCase()]: GltfReader
+    [GltfReader.extension.toLowerCase()]: GltfReader,
+    [GsfReader.extension.toLowerCase()]: GsfReader
 };
 
 /**
@@ -401,10 +402,11 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {Tw2GeometryModel} model
      * @param {Tw2GeometryRes} res
      */
-    static BindMeshToModel(mesh, model, res)
+    static BindMeshToModel(mesh, model, res, opt = {})
     {
         const binding = new Tw2GeometryMeshBinding();
         binding.mesh = mesh;
+        const fallbackBone = model.FindBoneByName("Root") || model.skeleton?.bones?.[0] || null;
         for (let b = 0; b < binding.mesh.boneBindings.length; ++b)
         {
             const
@@ -413,6 +415,27 @@ export class Tw2GeometryRes extends Tw2Resource
 
             if (!bone)
             {
+                if (opt.skipInvalidBoneBindings)
+                {
+                    if (!fallbackBone)
+                    {
+                        console.warn(
+                            `CCPWGL2 Resource manager: Skipping geometry mesh '${binding.mesh.name}' ` +
+                            `bone binding '${name}' for model '${model.name}' because no fallback bone exists`,
+                            res.path
+                        );
+                        return null;
+                    }
+
+                    console.warn(
+                        `CCPWGL2 Resource manager: Binding geometry mesh '${binding.mesh.name}' ` +
+                        `invalid bone name '${name}' for model '${model.name}' to fallback bone`,
+                        res.path
+                    );
+                    binding.bones.push(fallbackBone);
+                    continue;
+                }
+
                 throw new ErrGeometryMeshBoneNameInvalid({
                     path: res.path,
                     mesh: binding.mesh.name,
@@ -427,6 +450,7 @@ export class Tw2GeometryRes extends Tw2Resource
             }
         }
         model.meshBindings.push(binding);
+        return binding;
     }
 
     /**
