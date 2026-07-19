@@ -146,24 +146,28 @@ class CewgResourceBinder
      * @param {Tw2ShaderProgram} program
      * @param {Tw2Device} device
      * @param {{PackPerObjectVS?: Function, PackPerObjectPS?: Function}} [perObjectPacker]
+     * @param {{perFrameVSData?: Tw2RawData, perFramePSData?: Tw2RawData}} [frameData]
      */
-    ApplyConstants(program, device, perObjectPacker)
+    ApplyConstants(program, device, perObjectPacker, frameData)
     {
-        const gl = this.gl;
-        const cbh = program.constantBufferHandles;
+        const
+            gl = this.gl,
+            cbh = program.constantBufferHandles,
+            perFrameVSData = frameData && frameData.perFrameVSData || device.perFrameVSData,
+            perFramePSData = frameData && frameData.perFramePSData || device.perFramePSData;
 
-        if (cbh[1] && device.perFrameVSData)
+        if (cbh[1] && perFrameVSData)
         {
             const packed = perObjectPacker?.PackPerFrameVS
-                ? perObjectPacker.PackPerFrameVS(this._perFrameVS, device.perFrameVSData.data, device, program) || this._perFrameVS
-                : CewgCarbonData.PackPerFrameVS(this._perFrameVS, device.perFrameVSData.data);
+                ? perObjectPacker.PackPerFrameVS(this._perFrameVS, perFrameVSData.data, device, program) || this._perFrameVS
+                : CewgCarbonData.PackPerFrameVS(this._perFrameVS, perFrameVSData.data);
             gl.uniform4fv(cbh[1], fitConstantBuffer(packed, program.constantBufferSizes?.[1]));
         }
-        if (cbh[2] && device.perFramePSData)
+        if (cbh[2] && perFramePSData)
         {
             const packed = perObjectPacker?.PackPerFramePS
-                ? perObjectPacker.PackPerFramePS(this._perFramePS, device.perFramePSData.data, device, program) || this._perFramePS
-                : CewgCarbonData.PackPerFramePS(this._perFramePS, device.perFramePSData.data);
+                ? perObjectPacker.PackPerFramePS(this._perFramePS, perFramePSData.data, device, program) || this._perFramePS
+                : CewgCarbonData.PackPerFramePS(this._perFramePS, perFramePSData.data);
             gl.uniform4fv(cbh[2], fitConstantBuffer(packed, program.constantBufferSizes?.[2]));
         }
 

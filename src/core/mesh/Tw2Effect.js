@@ -995,7 +995,11 @@ export class Tw2Effect extends meta.Model
             program,
             gl,
             device: d,
-            perObjectData: null,
+            perObjectData: d.perObjectData,
+            perFrameVSData: null,
+            perFramePSData: null,
+            cewgPerObjectPacker: null,
+            cewgJointMatrices: undefined,
             constantBufferHandles: program.constantBufferHandles
         };
 
@@ -1032,6 +1036,10 @@ export class Tw2Effect extends meta.Model
         this._RunAdapterHook("OnAfterApplyParameters", context);
 
         const cbh = program.constantBufferHandles;
+        const pod = d.perObjectData;
+        context.perObjectData = pod;
+        context.perFrameVSData = pod && pod.perFrameVSData || d.perFrameVSData;
+        context.perFramePSData = pod && pod.perFramePSData || d.perFramePSData;
         // vertex constants
         if (cbh[0]) gl.uniform4fv(cbh[0], p.stages[0].constantBuffer);
         // Fragment constants
@@ -1042,7 +1050,17 @@ export class Tw2Effect extends meta.Model
         // the binder instead of the raw GLES-shaped arrays below.
         if (rp.isCewg)
         {
-            CewgResourceBinder.Get(d).ApplyConstants(program, d);
+            const podPacker = context.perObjectData && context.perObjectData.cewgPerObjectPacker;
+            if (podPacker && !this._adapters.includes(podPacker) && podPacker.OnBeforeCewgConstants)
+            {
+                podPacker.OnBeforeCewgConstants(context);
+            }
+            // Adapters can set context.cewgPerObjectPacker to provide
+            // PackPerObjectVS/PS without teaching the space packer about
+            // object-family-specific cb3/cb4 layouts.
+            this._RunAdapterHook("OnBeforeCewgConstants", context);
+            CewgResourceBinder.Get(d).ApplyConstants(program, d, context.cewgPerObjectPacker, context);
+            this._RunAdapterHook("OnAfterCewgConstants", context);
         }
         // Surely a better way to do this...
         else if (this._isShadowEffect)
@@ -1052,18 +1070,24 @@ export class Tw2Effect extends meta.Model
         }
         else
         {
-            if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
-            if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
+            if (context.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], context.perFrameVSData.data);
+            if (context.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], context.perFramePSData.data);
         }
 
         this._RunAdapterHook("OnAfterPerFrameData", context);
 
-        const pod = d.perObjectData;
-        context.perObjectData = pod;
         if (pod && !rp.isCewg)
         {
             if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
             if (pod.ps && cbh[4]) gl.uniform4fv(cbh[4], pod.ps.data);
+            if (pod.psInt && program.intConstantHandles)
+            {
+                for (let j = 0; j < program.intConstantHandles.length; j++)
+                {
+                    const handle = program.intConstantHandles[j];
+                    if (handle) gl.uniform4iv(handle, pod.psInt.subarray(j * 4, j * 4 + 4));
+                }
+            }
             if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
         }
 
@@ -1075,7 +1099,10 @@ export class Tw2Effect extends meta.Model
         if (rp.isCewg)
         {
             const binder = CewgResourceBinder.Get(d);
-            binder.SetJointMatrices(pod && pod.vs && pod.vs.Has("JointMat") ? pod.vs.Get("JointMat") : null);
+            const jointMatrices = context.cewgJointMatrices !== undefined
+                ? context.cewgJointMatrices
+                : (pod && pod.vs && pod.vs.Has("JointMat") ? pod.vs.Get("JointMat") : null);
+            binder.SetJointMatrices(jointMatrices);
             binder.ApplyPass(program, d);
         }
 

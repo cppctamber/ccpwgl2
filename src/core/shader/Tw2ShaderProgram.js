@@ -30,6 +30,10 @@ export class Tw2ShaderProgram
     @meta.struct(WebGLUniformLocation)
     shadowStateYFlip = null;
 
+    @meta.list(WebGLUniformLocation)
+    intConstantHandles = [];
+
+
     @meta.array
     volumeSlices = [];
 
@@ -130,6 +134,23 @@ export class Tw2ShaderProgram
         program.shadowStateFloat = gl.getUniformLocation(program.program, "ssf");
         program.shadowStateYFlip = gl.getUniformLocation(program.program, "ssyf");
         gl.uniform3f(program.shadowStateYFlip, 0, 0, 1);
+
+        const psConstants = pass.stages[1] && pass.stages[1].constants || [];
+        for (let j = 0; j < psConstants.length; ++j)
+        {
+            const constant = psConstants[j];
+            if (constant.name !== "PerObjectPSInt") continue;
+
+            const
+                firstRegister = constant.offset / 4,
+                registerCount = Math.ceil(constant.size / 4);
+
+            for (let k = 0; k < registerCount; ++k)
+            {
+                const register = firstRegister + k;
+                program.intConstantHandles[register] = gl.getUniformLocation(program.program, "i" + register);
+            }
+        }
 
         //Get volume slices
         const { samplers } = pass.stages[1];

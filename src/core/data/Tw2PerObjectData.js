@@ -5,14 +5,20 @@ import { Tw2RawData } from "./Tw2RawData";
  *
  * @property {Tw2RawData|null} vs - Per object vertex shader data
  * @property {Tw2RawData|null} ps - Per object pixel shader data
+ * @property {Int32Array|null} psInt - Per object pixel shader integer data
  * @property {Tw2RawData|null} ffe - Per object fixed function emulation
+ * @property {Tw2RawData|null} perFrameVSData - Optional draw-local vertex frame data
+ * @property {Tw2RawData|null} perFramePSData - Optional draw-local pixel frame data
  */
 export class Tw2PerObjectData
 {
 
     vs = null;
     ps = null;
+    psInt = null;
     ffe = null;
+    perFrameVSData = null;
+    perFramePSData = null;
 
     /**
      * Creates per object data from values
