@@ -61,8 +61,8 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@carbonenginejs/format-gr2": "0.1.1",
     "@carbonenginejs/format-gltf": "0.1.0",
+    "@carbonenginejs/format-gr2": "0.1.5",
     "@carbonenginejs/format-obj": "0.1.0"
   }
 }
