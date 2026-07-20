@@ -147,6 +147,41 @@ deploy.options.callback();
 assert.equal(cancelledDeploySet._state, EveTurretSet.State.IDLE);
 assert.equal(cancelledDeploySet._pendingFiring, false, "cancelled deployment must settle in idle without firing");
 
+const coordinatedSet = new EveTurretSet();
+const coordinatedTarget = {
+    targetable: null,
+    startArgs: null,
+    SetTargetable(value) { this.targetable = value; return true; },
+    GetTargetable() { return this.targetable; },
+    GetRadius() { return 10; },
+    FindClosestLocator(source, out) { vec3.copy(out, source); return 7; },
+    FindRandomValidLocator(source, out) { vec3.copy(out, source); return 8; },
+    StartFireAtLocator(...args) { this.startArgs = args; }
+};
+Object.defineProperty(coordinatedSet, "target", { value: coordinatedTarget, writable: true });
+coordinatedSet.useRandomFiringDelay = false;
+const coordinatedItem = {
+    display: true,
+    canFireWhenHidden: false,
+    _localTransform: mat4.create()
+};
+coordinatedSet.items = [ coordinatedItem ];
+coordinatedSet._visibleItems = [ coordinatedItem ];
+Object.defineProperty(coordinatedSet, "firingEffect", { value: {
+    PrepareFiring() {},
+    GetFiringDuration: () => 2,
+    GetFiringPeakTime: () => 0.5,
+    SetScaleByRadius(value) { this.radius = value; }
+}, writable: true });
+const targetObject = { GetWorldTranslation: out => vec3.set(out, 0, 0, 10) };
+assert.equal(coordinatedSet.SetTargetObject(targetObject), true);
+assert.strictEqual(coordinatedSet.GetTargetObject(), targetObject);
+assert.equal(coordinatedSet.firingEffect.radius, 10);
+coordinatedSet.DoStartFiring();
+assert.equal(coordinatedSet._activeTurret, 0);
+assert.deepEqual(coordinatedSet.target.startArgs.slice(0, 3), [ 8, 0.5, 1.5 ]);
+assert.equal(coordinatedSet.items[0]._isClosest, true, "the selected turret item must be marked closest by index");
+
 console.log("EveTurretSet per-item Carbon tracking pose verified");
 
 
@@ -220,6 +255,8 @@ function loadTurretSet(source)
 
         static global = {
             vec3_0: glMatrix.vec3.create(),
+            vec3_1: glMatrix.vec3.create(),
+            vec3_2: glMatrix.vec3.create(),
             vec4_0: glMatrix.vec4.create(),
             vec4_1: glMatrix.vec4.create(),
             mat4_0: glMatrix.mat4.create()
@@ -227,6 +264,45 @@ function loadTurretSet(source)
     }
 
     class EveObjectSetItem {}
+    class EveTurretTarget
+    {
+        constructor()
+        {
+            this.targetable = null;
+            this.startArgs = null;
+            this.position = glMatrix.vec3.create();
+        }
+
+        SetBehaviour() {}
+        SetTargetPosition(value)
+        {
+            this.targetable = null;
+            glMatrix.vec3.copy(this.position, value);
+        }
+        SetTargetable(value)
+        {
+            this.targetable = value;
+            return true;
+        }
+        GetTargetable() { return this.targetable; }
+        GetRadius() { return 10; }
+        Update() {}
+        GetTrackingPosition(out) { return glMatrix.vec3.copy(out, this.position); }
+        GetTargetPosition() { return this.position; }
+        FindClosestLocator(source, out)
+        {
+            glMatrix.vec3.copy(out, source);
+            return 7;
+        }
+        FindRandomValidLocator(source, out)
+        {
+            glMatrix.vec3.copy(out, source);
+            return 8;
+        }
+        StartFireAtLocator(...args) { this.startArgs = args; }
+        ShowDestObject() { return true; }
+        StopFireAtLocator() {}
+    }
     class Tw2AnimationController
     {
         constructor()
@@ -263,6 +339,8 @@ function loadTurretSet(source)
                 };
             case "./EveObjectSet":
                 return { EveObjectSet, EveObjectSetItem };
+            case "../EveTurretTarget":
+                return { EveTurretTarget };
             case "../../unsupported/curve/curve/AudEventCurve":
                 return { AudEventKey: { from: value => value } };
             default:

@@ -14,7 +14,7 @@ export class EveChildProceduralContainer extends EveChild
     @meta.string
     name = ""
 
-    @meta.int32
-    selectionMethod = -1;
+    @meta.struct()
+    selectionMethod = null;
 
 }

@@ -1,4 +1,11 @@
-import { TnyApiService, TnyESIApiProvider, TnySDEApiProvider } from "./api";
+import {
+    TnyApiService,
+    TnyCharacterApiProvider,
+    TnyESIApiProvider,
+    TnySDEApiProvider,
+    TnySkinApiProvider,
+    TnyToolsApiProvider
+} from "./api";
 import { TnyCameraTest } from "./cameras";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./debug";
 import { TnyLensflare, TnyPlanet, TnyShip, TnySpaceObject, TnyStrategicCruiser } from "./objects";
@@ -27,10 +34,13 @@ export const tnyDebugConstructors = {
 
 export const tnyServiceConstructors = {
     TnyApiService,
+    TnyCharacterApiProvider,
     TnyClient,
     TnyESIApiProvider,
     TnyResService,
-    TnySDEApiProvider
+    TnySDEApiProvider,
+    TnySkinApiProvider,
+    TnyToolsApiProvider
 };
 
 export const tnyConstructors = {

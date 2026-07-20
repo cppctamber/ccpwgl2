@@ -5,10 +5,24 @@ const path = require("node:path");
 
 const controllerPath = path.resolve(
     __dirname,
-    "../src/unsupported/interior/character/Tr2InteriorAnimationController.js"
+    "../src/interior/character/Tr2InteriorAnimationController.js"
 );
 const controllerSource = fs.readFileSync(controllerPath, "utf8");
 const rebuildSource = controllerSource.slice(controllerSource.indexOf("static DoRebuildCachedData"));
+const configSource = fs.readFileSync(path.resolve(__dirname, "../src/config.js"), "utf8");
+const unsupportedIndexSource = fs.readFileSync(
+    path.resolve(__dirname, "../src/unsupported/index.js"),
+    "utf8"
+);
+
+assert.equal(
+    fs.existsSync(path.resolve(__dirname, "../src/unsupported/interior")),
+    false,
+    "The promoted interior runtime must not retain a second unsupported copy"
+);
+assert.match(configSource, /import \* as interior from "\.\/interior";/);
+assert.match(configSource, /\{ \.\.\.interior \}/);
+assert.doesNotMatch(unsupportedIndexSource, /interior/);
 
 assert.match(
     rebuildSource,

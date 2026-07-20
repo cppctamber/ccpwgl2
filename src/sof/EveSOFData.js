@@ -1,4 +1,4 @@
-import { resMan, tw2 } from "global";
+import { tw2 } from "global";
 import { vec3, vec4, mat4, quat, num } from "math";
 
 import {
@@ -103,10 +103,10 @@ export class EveSOFData extends meta.Model
         devColor: [ 0, 0, 0, 0 ],
 
         banners: {
-            defaultBorderMap: "res:/texture/global/white.png",
-            defaultImageMap: "res:/texture/global/white.png",
-            defaultHorizontalImageMap: "res:/texture/global/white.png",
-            defaultVerticalImageMap: "res:/texture/global/white.png",
+            defaultBorderMap: "res:/texture/global/white.dds",
+            defaultImageMap: "res:/texture/global/white.dds",
+            defaultHorizontalImageMap: "res:/texture/global/white.dds",
+            defaultVerticalImageMap: "res:/texture/global/white.dds",
             Type: {
                 SQUARE: 0,
                 VERTICAL: 1,
@@ -150,8 +150,7 @@ export class EveSOFData extends meta.Model
             orange_neon01: { FresnelColor: [ 0, 0, 0, 1 ] }
         },
 
-        billboardsURL: "res:/billboards",
-        billboards: null,
+        billboards: [],
 
         effectPath: {
             plane: "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx",
@@ -189,8 +188,9 @@ export class EveSOFData extends meta.Model
             "decalv5.fx"               // Logo
         ],
 
-        resFiles: null,
         resPathInserts: {},
+        listHullResPathInserts: null,
+        resolveHullResPathInserts: null,
         modelDirectory: "res:/dx9/model/"
 
     };
@@ -269,9 +269,9 @@ export class EveSOFData extends meta.Model
                             FresnelFactors: [ 4, 1, 0, 0 ]
                         },
                         textures: {
-                            DiffuseMap1: "res:/texture/global/white.png",
-                            DiffuseMap2: "res:/texture/global/white.png",
-                            MaskMap: "res:/texture/global/white.png"
+                            DiffuseMap1: "res:/texture/global/white.dds",
+                            DiffuseMap2: "res:/texture/global/white.dds",
+                            MaskMap: "res:/texture/global/white.dds"
                         }
                     }
                 }
@@ -320,7 +320,9 @@ export class EveSOFData extends meta.Model
     {
         resPathInsert = resPathInsert ? resPathInsert.toLowerCase() : "";
         if (!resPathInsert || resPathInsert === "none" || resPathInsert === "base") return true;
-        return this.GetHullResPathInserts(hull).includes(resPathInsert);
+        hull = isString(hull) ? this.GetHull(hull) : hull;
+        const cached = this._options.resPathInserts[hull.name];
+        return !cached || cached.includes(resPathInsert);
     }
 
     /**
@@ -331,31 +333,34 @@ export class EveSOFData extends meta.Model
     GetHullResPathInserts(hull)
     {
         hull = isString(hull) ? this.GetHull(hull) : hull;
+        return this._options.resPathInserts[hull.name] || [ "none" ];
+    }
 
-        // Cache the hull's respathinserts
+    /**
+     * Fetches and caches the narrow resource insert catalog for a hull.
+     * @param {EveSOFDataHull|String} hull
+     * @returns {Promise<Array<String>>}
+     */
+    async FetchHullResPathInserts(hull)
+    {
+        hull = isString(hull) ? this.GetHull(hull) : hull;
         if (!this._options.resPathInserts[hull.name])
         {
-            const
-                resFiles = this.GetResFiles(),
-                rootDirectory = `${this._options.modelDirectory}${hull.description}`,
-                hullFiles = resFiles.filter(x => x.indexOf(rootDirectory) === 0 && EveSOFData.IsResPathInsertCheckRequired(x));
+            const fetcher = this._options.listHullResPathInserts,
+                values = fetcher ? await fetcher(hull.name) : [];
 
-            this._options.resPathInserts[hull.name] = hullFiles
-                .reduce((acc, cur) =>
-                {
-                    cur = cur.replace(rootDirectory, "");
-                    const split = cur.split("/");
-                    let faction = split[0] || split[1];
-                    if (faction.includes(".")) faction = null;
-                    if (faction && faction !== "none" && !acc.includes(faction)) acc.push(faction);
-                    return acc;
-                }, [])
+            if (!isArray(values))
+            {
+                throw new TypeError("Hull resource path insert provider must return an array");
+            }
+
+            const inserts = [ ...new Set(values
+                .map(value => String(value).trim().toLowerCase())
+                .filter(value => value && value !== "none" && value !== "base")) ]
                 .sort((a, b) => a.localeCompare(b));
 
-            this._options.resPathInserts[hull.name].unshift("none");
+            this._options.resPathInserts[hull.name] = [ "none", ...inserts ];
         }
-
-
         return this._options.resPathInserts[hull.name];
     }
 
@@ -368,10 +373,7 @@ export class EveSOFData extends meta.Model
         if (!this._options.resources || !this._options.resources.horizontalBanners)
         {
             this._options.resources = this._options.resources || {};
-            const resFileIndex = this.GetResFiles();
-            this._options.resources.horizontalBanners = resFileIndex
-                .filter(x => x.includes("texture/sprite/banners/") && x.includes(".png"))
-                .sort((a, b) => a.localeCompare(b));
+            this._options.resources.horizontalBanners = [];
         }
         return this._options.resources.horizontalBanners;
     }
@@ -385,72 +387,49 @@ export class EveSOFData extends meta.Model
         if (!this._options.resources || !this._options.resources.billboards)
         {
             this._options.resources = this._options.resources || {};
-            const resFileIndex = this.GetResFiles();
-            this._options.resources.billboards = resFileIndex.index
-                .filter(x => x.includes("video/billboards") === 0)
+            this._options.resources.billboards = [ ...(this._options.billboards || []) ]
                 .sort((a, b) => a.localeCompare(b));
         }
         return this._options.resources.billboards;
     }
 
     /**
-     * Temporary
-     * @returns {Object}
-     */
-    GetResFiles()
-    {
-        if (!this._options.resFiles) throw new Error("Resfiles not provided");
-        return this._options.resFiles;
-    }
-
-    /**
-     * Gets a res path insert
+     * Resolves resource path inserts through the configured narrow provider.
      * @param {EveSOFDataHull|String} hull
      * @param {EveSOFDataFaction|String} faction
-     * @param {String} originalFileName
+     * @param {Array<String>} originalFileNames
      * @param {String} resPathInsert
+     * @returns {Promise<Array<String>>}
      */
-    UpdateResPathInsert(hull, faction, originalFileName, resPathInsert)
+    async ResolveResPathInserts(hull, faction, originalFileNames, resPathInsert)
     {
-        if (!originalFileName) return "";
+        const paths = originalFileNames.map(value => String(value || "").toLowerCase());
+        const isExplicit = resPathInsert !== undefined && resPathInsert !== null;
 
-        // Normalize strings
-        originalFileName = originalFileName.toLowerCase();
-        resPathInsert = resPathInsert ? resPathInsert.toLowerCase() : "";
-
-        // Normalize sof objects
+        resPathInsert = isExplicit ? String(resPathInsert).toLowerCase() : "";
         hull = isString(hull) ? this.GetHull(hull) : hull;
         faction = isString(faction) ? this.GetFaction(faction) : faction;
 
-        if (!resPathInsert)
+        if (resPathInsert === "none") return paths;
+
+        if (!isExplicit)
         {
-            resPathInsert = faction.resPathInsert;
+            resPathInsert = faction.resPathInsert
+                ? String(faction.resPathInsert).toLowerCase()
+                : "";
         }
 
-        // Use the base texture (this assumes we were given the base texture as the original file name)
-        // TODO: Strip all respathinserts we're using none!
-        if (resPathInsert && resPathInsert !== "base" && resPathInsert !== "none" && this.IsValidHullResPathInsert(hull.name, resPathInsert))
+        if (!resPathInsert || resPathInsert === "base" || resPathInsert === "none") return paths;
+
+        const resolver = this._options.resolveHullResPathInserts;
+        if (!resolver) return paths;
+
+        const resolved = await resolver(hull.name, resPathInsert, paths);
+        if (!Array.isArray(resolved) || resolved.length !== paths.length)
         {
-            // Try to find a respathinsert version
-            const resFiles = this.GetResFiles();
-
-            let path = originalFileName.toLowerCase();
-            let index = path.lastIndexOf("/");
-            if (index >= 0) path = path.substr(0, index + 1) + resPathInsert + "/" + path.substr(index + 1);
-            index = path.lastIndexOf("_");
-            if (index >= 0) path = path.substr(0, index) + "_" + resPathInsert + path.substr(index);
-            if (resFiles.includes(path.split(":/")[1]) || resFiles.includes(path)) return path;
-
-            // Extra check for faction ships
-            if (hull.name.includes("_fn") && !resPathInsert)
-            {
-                let nonFaction = originalFileName.replace("_fn", "_t1");
-                if (resFiles.includes(nonFaction.split(":/")[1]) || resFiles.includes(nonFaction)) return nonFaction;
-            }
+            throw new TypeError("Resource path insert resolver returned an invalid positional result");
         }
-
-        // Fallback to the original file name
-        return originalFileName;
+        return resolved.map(value => String(value || "").toLowerCase());
     }
 
     /**
@@ -766,7 +745,7 @@ export class EveSOFData extends meta.Model
             faction = this.GetFaction(parts[1]),
             race = this.GetRace(parts[2]),
             area = {},
-            resPathInsert = null,
+            resPathInsert,
             pattern = null;
 
         const m = commands["MESH"] || commands["MATERIAL"];
@@ -823,10 +802,13 @@ export class EveSOFData extends meta.Model
             area.patternMaterial1 = this.GetMaterial(faction.defaultPatternLayer1MaterialName).name;
         }
 
-        resPathInsert = commands["RESPATHINSERT"] ? commands["RESPATHINSERT"][0] : faction.resPathInsert || null;
+        resPathInsert = commands["RESPATHINSERT"]
+            ? commands["RESPATHINSERT"][0]
+            : undefined;
 
         // Validate the res path insert
-        if (!this.IsValidHullResPathInsert(hull, resPathInsert))
+        if (resPathInsert !== undefined && resPathInsert !== null
+            && !this.IsValidHullResPathInsert(hull, resPathInsert))
         {
             tw2.Warning({
                 type: "Space Object Factory",
@@ -1032,19 +1014,6 @@ export class EveSOFData extends meta.Model
     {
         const args = [ data, obj, sof, options ];
 
-        if (options.billboardsURL && !options.billboards)
-        {
-            try
-            {
-                const response = await fetch(resMan.BuildUrl(options.billboardsURL));
-                options.billboards = await response.json();
-            }
-            catch (err)
-            {
-                //Fall back to defaults
-            }
-        }
-
         // Supported
         this.SetupCustomMasks(...args);
         await this.SetupMesh(...args);
@@ -1127,7 +1096,7 @@ export class EveSOFData extends meta.Model
             mask.display = false;
             mask.materialIndex = 0;
             mask.blendMode = "overlay";
-            mask.parameters.PatternMaskMap.SetValue("res:/texture/projection/solid_white.png");
+            mask.parameters.PatternMaskMap.SetValue("res:/texture/projection/solid_white.dds");
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
 
@@ -1296,6 +1265,51 @@ export class EveSOFData extends meta.Model
         if (!resPath) throw new TypeError("Hull has no geometry");
         await mesh.FetchGeometryResPath(resPath);
 
+        const areaNames = [
+                "opaqueAreas",
+                "additiveAreas",
+                "decalAreas",
+                "depthAreas",
+                "distortionAreas",
+                "transparentAreas"
+            ],
+            insertPaths = [];
+
+        for (let i = 0; i < areaNames.length; i++)
+        {
+            const areasName = areaNames[i];
+            if (opaqueAreasOnly && areasName !== "opaqueAreas") continue;
+
+            const hullAreas = get(hull, areasName, []);
+            for (let n = 0; n < hullAreas.length; n++)
+            {
+                const hullArea = hullAreas[n],
+                    effect = data.generic.GetShaderConfig(hullArea.shader || "", sof.hull.isSkinned);
+
+                hullArea.Assign(effect);
+                for (const key in effect.textures)
+                {
+                    if (effect.textures.hasOwnProperty(key)
+                        && EveSOFData.IsResPathInsertCheckRequired(effect.textures[key]))
+                    {
+                        insertPaths.push(effect.textures[key]);
+                    }
+                }
+            }
+        }
+
+        const uniqueInsertPaths = [ ...new Set(insertPaths) ],
+            resolvedInsertPaths = await data.ResolveResPathInserts(
+                sof.hull,
+                sof.faction,
+                uniqueInsertPaths,
+                sof.resPathInsert
+            ),
+            resolvedInsertMap = new Map(uniqueInsertPaths.map((path, index) => [
+                path.toLowerCase(),
+                resolvedInsertPaths[index]
+            ]));
+
         let cachedParameters = {};
 
         /**
@@ -1355,7 +1369,8 @@ export class EveSOFData extends meta.Model
                 {
                     if (eff.textures.hasOwnProperty(key) && EveSOFData.IsResPathInsertCheckRequired(eff.textures[key]))
                     {
-                        eff.textures[key] = data.UpdateResPathInsert(sof.hull, sof.faction, eff.textures[key], sof.resPathInsert);
+                        eff.textures[key] = resolvedInsertMap.get(eff.textures[key].toLowerCase())
+                            || eff.textures[key];
                     }
                 }
 
@@ -1473,7 +1488,7 @@ export class EveSOFData extends meta.Model
                 const params = area.effect.GetTextures();
                 if (params.AoMap)
                 {
-                    area.effect.SetTextures({ AoMap: params.AoMap || "res:/graphics/shared_texture/global/white.png" });
+                    area.effect.SetTextures({ AoMap: params.AoMap || "res:/graphics/shared_texture/global/white.dds" });
                 }
 
                 // Handle Environments who's values are multiplied by 10
@@ -1533,15 +1548,12 @@ export class EveSOFData extends meta.Model
             obj.mesh[areasName].sort((a, b) => a.index - b.index);
         };
 
-        setupMeshArea("opaqueAreas");
-
-        if (!opaqueAreasOnly)
+        for (let i = 0; i < areaNames.length; i++)
         {
-            setupMeshArea("additiveAreas");
-            setupMeshArea("decalAreas");
-            setupMeshArea("depthAreas");
-            setupMeshArea("distortionAreas");
-            setupMeshArea("transparentAreas");
+            if (!opaqueAreasOnly || areaNames[i] === "opaqueAreas")
+            {
+                setupMeshArea(areaNames[i]);
+            }
         }
 
         obj.mesh = mesh;

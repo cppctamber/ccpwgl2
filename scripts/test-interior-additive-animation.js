@@ -7,7 +7,7 @@ const test = require("node:test");
 const root = path.resolve(__dirname, "..");
 const helperPath = path.join(
     root,
-    "src/unsupported/interior/character/Tr2InteriorAdditiveAnimation.js"
+    "src/interior/character/Tr2InteriorAdditiveAnimation.js"
 );
 const helperSource = readFileSync(helperPath, "utf8");
 const helperPromise = import(`data:text/javascript;base64,${Buffer.from(helperSource).toString("base64")}`);
@@ -107,7 +107,7 @@ test("Mask and Amount multiply translation, scale, and quaternion delta", async 
 test("additive APIs remain isolated from Tw2AnimationController", () => {
     const controller = readFileSync(path.join(
         root,
-        "src/unsupported/interior/character/Tr2InteriorAnimationController.js"
+        "src/interior/character/Tr2InteriorAnimationController.js"
     ), "utf8");
     const generic = readFileSync(path.join(root, "src/core/model/Tw2AnimationController.js"), "utf8");
 
@@ -122,7 +122,7 @@ test("additive APIs remain isolated from Tw2AnimationController", () => {
 test("interior skinned objects preserve animation-only GR2 clips while rebinding visible meshes", () => {
     const skinnedObject = readFileSync(path.join(
         root,
-        "src/unsupported/interior/character/Tr2IntSkinnedObject.js"
+        "src/interior/character/Tr2IntSkinnedObject.js"
     ), "utf8");
 
     assert.match(skinnedObject, /animationOnlyResources = current\.length && current\[0\] === resources\[0\]/);

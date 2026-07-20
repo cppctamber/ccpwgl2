@@ -902,6 +902,257 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Gets the first authored locator set by name
+     * @param {String} name
+     * @returns {Array<EveLocatorSetItem>|null}
+     * @private
+     */
+    _GetLocatorSetItems(name)
+    {
+        for (let i = 0; i < this.locatorSets.length; i++)
+        {
+            if (this.locatorSets[i]?.name === name) return this.locatorSets[i].locators;
+        }
+        return null;
+    }
+
+    /**
+     * Builds a locator transform directly from authored values so targeting
+     * does not depend on view-dependent update order
+     * @param {mat4} out
+     * @param {EveLocatorSetItem} locator
+     * @param {Boolean} inWorldSpace
+     * @returns {mat4}
+     * @private
+     */
+    _GetLocatorSetItemTransform(out, locator, inWorldSpace)
+    {
+        mat4.fromRotationTranslationScale(out, locator.rotation, locator.position, locator.scaling);
+        if (locator._bone) mat4.multiply(out, locator._bone.offsetTransform, out);
+        if (inWorldSpace)
+        {
+            this.GetWorldTransform(EveShip2.global.targetWorldTransform);
+            mat4.multiply(out, EveShip2.global.targetWorldTransform, out);
+        }
+        return out;
+    }
+
+    /**
+     * Gets a damage locator position for ITriTargetable consumers
+     * @param {vec3} out
+     * @param {Number} index
+     * @param {Boolean} [inWorldSpace=true]
+     * @returns {Boolean} true when the locator exists
+     */
+    GetDamageLocatorPosition(out, index, inWorldSpace = true)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators || !(index >= 0 && index < locators.length))
+        {
+            if (inWorldSpace) this.GetWorldTranslation(out);
+            else vec3.set(out, 0, 0, 0);
+            return false;
+        }
+
+        const transform = EveShip2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        mat4.getTranslation(out, transform);
+        return true;
+    }
+
+    /**
+     * Gets a damage locator's +Y direction
+     * @param {vec3} out
+     * @param {Number} index
+     * @param {Boolean} [inWorldSpace=true]
+     * @returns {Boolean} true when the locator exists
+     */
+    GetDamageLocatorDirection(out, index, inWorldSpace = true)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators || !(index >= 0 && index < locators.length))
+        {
+            vec3.set(out, 0, 1, 0);
+            return false;
+        }
+
+        const transform = EveShip2.global.targetTransform;
+        this._GetLocatorSetItemTransform(transform, locators[index], inWorldSpace);
+        vec3.set(out, transform[4], transform[5], transform[6]);
+        vec3.normalize(out, out);
+        return true;
+    }
+
+    /**
+     * Gets the closest facing damage locator
+     * @param {vec3} position world-space source position
+     * @returns {Number}
+     */
+    GetClosestDamageLocatorIndex(position)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators) return 0;
+
+        const g = EveShip2.global;
+        this.GetWorldInverseTransform(g.targetInverse);
+        vec3.transformMat4(g.targetSource, position, g.targetInverse);
+
+        let closestIndex = -1;
+        let closestDistance = Infinity;
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            const distance = vec3.squaredDistance(g.targetPosition, g.targetSource);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+        return closestIndex;
+    }
+
+    /**
+     * Gets Carbon's randomized distance/direction-fit damage locator
+     * @param {vec3} position world-space source position
+     * @returns {Number}
+     */
+    GetGoodDamageLocatorIndex(position)
+    {
+        const locators = this._GetLocatorSetItems("damage");
+        if (!locators) return 0;
+
+        const g = EveShip2.global;
+        this.GetWorldInverseTransform(g.targetInverse);
+        vec3.transformMat4(g.targetSource, position, g.targetInverse);
+
+        let minDistance = Infinity;
+        let maxDistance = Number.MIN_VALUE;
+        let bestDirectionFit = 0;
+
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            vec3.subtract(g.targetOffset, g.targetPosition, g.targetSource);
+            const distance = vec3.length(g.targetOffset);
+            minDistance = Math.min(minDistance, distance);
+            maxDistance = Math.max(maxDistance, distance);
+            if (distance) vec3.scale(g.targetOffset, g.targetOffset, 1 / distance);
+            bestDirectionFit = Math.max(bestDirectionFit, getDirectionFit(g.targetDirection, g.targetOffset));
+        }
+
+        const desiredFit = Math.random() * (0.25 - (1 - bestDirectionFit)) + 0.75;
+        let bestFit = 1;
+        let bestLocator = -1;
+        for (let i = 0; i < locators.length; i++)
+        {
+            this._GetLocatorSetItemTransform(g.targetTransform, locators[i], false);
+            mat4.getTranslation(g.targetPosition, g.targetTransform);
+            vec3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
+            if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
+
+            vec3.subtract(g.targetOffset, g.targetPosition, g.targetSource);
+            const distance = vec3.length(g.targetOffset);
+            const range = maxDistance - minDistance;
+            let scale = range > 0 ? 1 - (distance - minDistance) / range : 1;
+            let value = 2 * scale - 1;
+            value = value < 0 ? 1 - Math.sqrt(Math.abs(value)) : Math.sqrt(Math.abs(value)) + 1;
+            value *= 0.5;
+            if (distance) vec3.scale(g.targetOffset, g.targetOffset, 1 / distance);
+            value *= getDirectionFit(g.targetDirection, g.targetOffset);
+            const fit = Math.abs(value - desiredFit);
+            if (fit < bestFit)
+            {
+                bestFit = fit;
+                bestLocator = i;
+            }
+        }
+
+        return bestLocator < 0 ? this.GetClosestDamageLocatorIndex(position) : bestLocator;
+    }
+
+    /**
+     * Gets the model-scaled target radius
+     * @returns {Number}
+     */
+    GetRadius()
+    {
+        return this.boundingSphereRadius * this.GetWorldMaxScale();
+    }
+
+    /**
+     * Computes a miss point just outside the ship silhouette
+     * @param {vec3} out
+     * @param {vec3} hit
+     * @param {vec3} source
+     * @returns {vec3}
+     */
+    GetMissPosition(out, hit, source)
+    {
+        const g = EveShip2.global;
+        this.GetWorldTranslation(out);
+        if (this.boundingSphereRadius > 0 && hit && source)
+        {
+            vec3.subtract(g.targetOffset, hit, out);
+            vec3.subtract(g.targetDirection, hit, source);
+            const directionLength = vec3.length(g.targetDirection);
+            if (directionLength) vec3.scale(g.targetDirection, g.targetDirection, 1 / directionLength);
+            vec3.scaleAndAdd(g.targetOffset, g.targetOffset, g.targetDirection, -vec3.dot(g.targetDirection, g.targetOffset));
+            const offsetLength = vec3.length(g.targetOffset);
+            if (offsetLength) vec3.scale(g.targetOffset, g.targetOffset, 1 / offsetLength);
+            vec3.scaleAndAdd(out, out, g.targetOffset, this.GetRadius() * 1.125);
+        }
+        return out;
+    }
+
+    /**
+     * ccpwgl has no Carbon impact-overlay object, so damage locators are used
+     * @returns {Number}
+     */
+    GetImpactConfiguration()
+    {
+        return 0;
+    }
+
+    HasImpactConfigurationShield()
+    {
+        return false;
+    }
+
+    /**
+     * Resolves a damage-locator collision point
+     * @param {vec3} out
+     * @param {Number} locator
+     * @param {vec3} _positionPrevious
+     * @param {vec3} positionNow
+     * @param {Number} epsilon squared collision distance
+     * @returns {Boolean}
+     */
+    GetImpactPosition(out, locator, _positionPrevious, positionNow, epsilon)
+    {
+        this.GetDamageLocatorPosition(out, locator, true);
+        return vec3.squaredDistance(positionNow, out) < Number(epsilon);
+    }
+
+    CreateImpact()
+    {
+        return -1;
+    }
+
+    UpdateImpact()
+    {
+        return false;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt
      */
@@ -1484,6 +1735,11 @@ export class EveShip2 extends EveObject
             }
         }
 
+        for (let i = 0; i < this.locatorSets.length; i++)
+        {
+            this.locatorSets[i].UpdateViewDependentData(this._worldTransform, bones);
+        }
+
         if (this.boosters)
         {
             this.boosters.UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
@@ -1531,4 +1787,32 @@ export class EveShip2 extends EveObject
      */
     static perObjectData = GLESPerObjectDataEveSpaceObject.layout;
 
+    static global = {
+        ...EveObject.global,
+        targetTransform: mat4.create(),
+        targetWorldTransform: mat4.create(),
+        targetInverse: mat4.create(),
+        targetSource: vec3.create(),
+        targetPosition: vec3.create(),
+        targetDirection: vec3.create(),
+        targetOffset: vec3.create()
+    };
+
+}
+
+
+function isLocatorFacing(locatorDirection, sourcePosition)
+{
+    const moved = EveShip2.global.targetOffset;
+    vec3.subtract(moved, sourcePosition, locatorDirection);
+    return vec3.squaredLength(moved) < vec3.squaredLength(sourcePosition);
+}
+
+
+function getDirectionFit(a, b)
+{
+    const direction = -vec3.dot(a, b);
+    return direction < 0
+        ? (1 - Math.sqrt(Math.abs(direction))) * 0.5
+        : (Math.sqrt(Math.abs(direction)) + 1) * 0.5;
 }

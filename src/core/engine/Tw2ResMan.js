@@ -21,6 +21,8 @@ export class Tw2ResMan extends Tw2EventEmitter
     useWorkerLoading = false;
     /** Worker script URL used when worker loading is enabled. */
     workerLoaderUrl = null;
+    /** RequestInit object or URL-scoped resolver used by all raw fetches. */
+    fetchOptions = null;
     /** Auto purge resources when they are no longer watched. */
     autoPurgeResources = true;
     /** Monotonic frame counter used by purge scheduling. */
@@ -149,6 +151,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             "maxPrepareTime",
             "maxConcurrentLoads",
             "workerLoaderUrl",
+            "fetchOptions",
             "autoPurgeResources",
             "purgeTime",
             "minimumAutoReloadSeconds",
@@ -799,7 +802,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         this.AddPendingLoad(url);
 
-        return fetch(url)
+        return fetch(url, this.GetFetchOptions(url))
             .then(response =>
             {
                 if (!response.ok)
@@ -866,6 +869,20 @@ export class Tw2ResMan extends Tw2EventEmitter
                     throw err;
                 }
             });
+    }
+
+    GetFetchOptions(url)
+    {
+        const options = isFunction(this.fetchOptions)
+            ? this.fetchOptions(url)
+            : this.fetchOptions;
+
+        if (options !== null && options !== undefined && typeof options !== "object")
+        {
+            throw new TypeError("Resource fetch options must be an object or URL resolver");
+        }
+
+        return options || undefined;
     }
 
     /**

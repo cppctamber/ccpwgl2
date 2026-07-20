@@ -40,10 +40,20 @@ const mat4 = {
 };
 
 const turretTargets = [];
+let turretObjectTarget = null;
 const turretSet = {
     SetTargetPosition(value)
     {
         turretTargets.push(Array.from(value));
+    },
+    SetTargetObject(value)
+    {
+        turretObjectTarget = value;
+        return true;
+    },
+    GetTargetObject()
+    {
+        return turretObjectTarget;
     },
     UpdateItemsFromLocators()
     {
@@ -124,7 +134,8 @@ const slot = new WrappedSlot(parent, wrapped, "locator_turret_1", []);
 
 (async () =>
 {
-    await slot.Mount("res:/weapon.black");
+    assert.equal(await slot.Mount("res:/weapon.black"), true);
+    assert.equal(slot.resPath, "res:/weapon.black", "mounted resource paths must remain visible to UI consumers");
 
     const movingTarget = {
         position: [ 10, 20, 30 ],
@@ -136,14 +147,15 @@ const slot = new WrappedSlot(parent, wrapped, "locator_turret_1", []);
 
     assert.equal(slot.SetTargetObject(movingTarget), true);
     assert.strictEqual(slot.GetTargetObject(), movingTarget);
-    assert.deepEqual(turretTargets.at(-1), [ 10, 20, 30 ]);
+    assert.strictEqual(turretObjectTarget, movingTarget, "live target identity must be forwarded to the turret runtime");
 
     movingTarget.position = [ 40, 50, 60 ];
     assert.equal(slot.UpdateTarget([ movingTarget ]), true);
-    assert.deepEqual(turretTargets.at(-1), [ 40, 50, 60 ]);
+    assert.strictEqual(turretObjectTarget, movingTarget, "moving targets stay object-owned rather than becoming fixed positions");
 
     assert.equal(slot.UpdateTarget([]), false, "removed scene targets must be invalidated by identity");
     assert.equal(slot.GetTargetObject(), null);
+    assert.equal(turretObjectTarget, null);
 
     const matrixTarget = {
         GetWorldTransform(out)
@@ -156,13 +168,21 @@ const slot = new WrappedSlot(parent, wrapped, "locator_turret_1", []);
     };
 
     assert.equal(slot.SetTargetObject(matrixTarget), true);
-    assert.deepEqual(turretTargets.at(-1), [ 70, 80, 90 ]);
+    assert.strictEqual(turretObjectTarget, matrixTarget);
 
     slot.SetTarget([ 1, 2, 3 ]);
     assert.equal(slot.GetTargetObject(), null, "fixed targets must clear object following");
     assert.deepEqual(turretTargets.at(-1), [ 1, 2, 3 ]);
 
-    console.log("WrappedSlot fixed/object target switching, movement and removal verified");
+    const laterAttachment = { name: "later attachment" };
+    wrapped.attachments.push(laterAttachment);
+    slot.Unmount();
+    assert.equal(slot.resPath, "");
+    assert.deepEqual(wrapped.attachments, [ laterAttachment ], "unmount must remove only its own turret attachment");
+    slot.Unmount();
+    assert.deepEqual(wrapped.attachments, [ laterAttachment ], "repeated unmount must not splice index -1");
+
+    console.log("WrappedSlot targets, mounted path visibility and safe unmount verified");
 })().catch(err =>
 {
     console.error(err);

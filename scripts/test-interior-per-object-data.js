@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const cewgSourcePath = path.resolve(
     __dirname,
-    "../src/unsupported/interior/cewg/CewgInteriorPerObjectData.js"
+    "../src/interior/cewg/CewgInteriorPerObjectData.js"
 );
 const cewgSource = fs.readFileSync(cewgSourcePath, "utf8")
     .replace(/export const /g, "const ")
@@ -19,7 +19,7 @@ const {
     `${cewgSource}\nreturn { CewgInteriorPerObjectData, CewgInteriorPerObjectAdapter };`
 )();
 
-const sourcePath = path.resolve(__dirname, "../src/unsupported/interior/Tr2InteriorPerObjectData.js");
+const sourcePath = path.resolve(__dirname, "../src/interior/Tr2InteriorPerObjectData.js");
 const source = fs.readFileSync(sourcePath, "utf8")
     .replace(/^import[\s\S]*?;\r?\n/gm, "")
     .replace("export class GLESPerObjectDataInterior", "class GLESPerObjectDataInterior")

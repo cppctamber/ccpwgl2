@@ -7,7 +7,7 @@ const { CewgResourceBinder } = require("../src/core/cewg/CewgResourceBinder");
 
 const sourcePath = path.resolve(
     __dirname,
-    "../src/unsupported/interior/cewg/CewgInteriorPerObjectData.js"
+    "../src/interior/cewg/CewgInteriorPerObjectData.js"
 );
 const source = fs.readFileSync(sourcePath, "utf8")
     .replace(/export const /g, "const ")
@@ -160,7 +160,7 @@ assert.deepEqual(frameGl.calls.filter(call => call[0] === "uniform4fv"), [
 ]);
 
 const
-    sceneSource = fs.readFileSync(path.resolve(__dirname, "../src/unsupported/interior/scene/Tr2InteriorScene.js"), "utf8"),
+    sceneSource = fs.readFileSync(path.resolve(__dirname, "../src/interior/scene/Tr2InteriorScene.js"), "utf8"),
     effectSource = fs.readFileSync(path.resolve(__dirname, "../src/core/mesh/Tw2Effect.js"), "utf8");
 assert.doesNotMatch(sceneSource, /device\.perFrame(?:VS|PS)Data\s*=/, "interior collection must not replace Eve frame data");
 assert.match(effectSource, /pod && pod\.perFrameVSData \|\| d\.perFrameVSData/);

@@ -102,7 +102,12 @@ export class Tw2ResManWorkerLoader
 
             try
             {
-                this.worker.postMessage({ id, url, responseType });
+                this.worker.postMessage({
+                    id,
+                    url,
+                    responseType,
+                    fetchOptions: this.resMan.GetFetchOptions(url)
+                });
             }
             catch (err)
             {
@@ -215,7 +220,7 @@ function Tw2ResourceLoaderWorker()
     {
         const data = event.data;
 
-        fetch(data.url)
+        fetch(data.url, data.fetchOptions)
             .then(function(response)
             {
                 if (!response.ok)

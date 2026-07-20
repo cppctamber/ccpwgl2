@@ -621,7 +621,7 @@ export class EveSpaceScene extends meta.Model
     {
         if (!this._emptyTexture)
         {
-            this._emptyTexture = tw2.GetResource("res:/texture/global/black.png");
+            this._emptyTexture = tw2.GetResource("res:/texture/global/black.dds");
         }
 
         return this._emptyTexture;

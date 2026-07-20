@@ -74,6 +74,7 @@ export class EveLocatorSetItem extends meta.Model
         else
         {
             this._bone = null;
+            mat4.copy(this._worldTransform, this._localTransform);
         }
 
         mat4.multiply(this._worldTransform, parentTransform, this._worldTransform);

@@ -153,6 +153,6 @@ export class EveSOFDataPatternLayer extends meta.Model
      * Empty texture res file path
      * @type {string}
      */
-    static EMPTY_TEXTURE_RES_FILE_PATH = "res:/texture/global/black.png";
+    static EMPTY_TEXTURE_RES_FILE_PATH = "res:/texture/global/black.dds";
 
 }

@@ -218,8 +218,8 @@ export class EveSpaceSceneAO extends meta.Model
      *
      * The output is wrapped in a dedicated Tw2TextureRes and swapped in by
      * reference - we must NOT write the AO texture onto the parameter's existing
-     * res, because SSAOMap defaults to the shared `res:/texture/global/white.png`
-     * resource: clobbering its `.texture` corrupted every other user of white.png
+     * res, because SSAOMap defaults to the shared `res:/texture/global/white.dds`
+     * resource: clobbering its `.texture` corrupted every other user of white.dds
      * and left a stale AO frame bound once AO was turned off. Each param's
      * original res is remembered so {@link ResetOutput} can restore it.
      * @private

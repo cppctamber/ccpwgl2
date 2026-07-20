@@ -1,6 +1,7 @@
 import * as core from "./core";
 import * as curve from "./curve";
 import * as eve from "./eve";
+import * as interior from "./interior";
 import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
@@ -47,33 +48,17 @@ export const config = {
     // The paths in the black files must be changed
     black: {
 
-        // Normalize casing in .black-authored paths to match the lowercase
-        // resfileindex keys. No prefix rewrite needed any more - everything
-        // uses "res:/" directly now, "cdn:/" has been retired.
+        // Normalize casing in .black-authored paths. No prefix rewrite is
+        // needed - everything uses "res:/" directly and "cdn:/" is retired.
         "*": path => path.toLowerCase(),
 
-        // Replace dds extension  with pngs
-        "dds": path =>
-        {
-            const
-                support = core.Tw2TextureRes.GetFormatSupport(),
-                isSupported = support.dds && support.dds.supported;
+        // DDS is the authored source. TextureFormatDDS uploads its compressed
+        // payload when supported and decodes the same bytes to RGBA otherwise.
+        "dds": path => path,
 
-            if (path.includes("_cube"))
-            {
-                const supportsBC6H = isSupported &&
-                    support.dds.formats &&
-                    support.dds.formats.bc6h &&
-                    support.dds.formats.bc6h.declared;
-
-                return supportsBC6H ? path : path.replace(".dds", ".qube");
-            }
-
-            return isSupported ? path : path.replace(".dds", ".png");
-
-        },
-
-        // PNG skyboxes are backed by legacy ".cube" image strips
+        // PNG has no cubemap header, so authored _cube names select the
+        // legacy six-face ".cube" image strip. Native DDS cubemaps are
+        // identified independently from DDSCAPS2_CUBEMAP by TextureFormatDDS.
         "png": path => path.includes("_cube") ? path.replace(".png", ".qube") : path,
 
         // Replace gr2 extension with gr2_json
@@ -241,8 +226,9 @@ export const config = {
 
     paths: {
 
-        // Local resource server (not provided with this library)
-        "res": "http://127.0.0.1:3000/",
+        // Local tools-core service (not provided with this library)
+        "api": "http://127.0.0.1:3000/ccp/latest/",
+        "res": "http://127.0.0.1:3000/ccp/latest/resources/",
 
     },
 
@@ -291,6 +277,7 @@ export const config = {
         { ...core },
         { ...curve },
         { ...eve },
+        { ...interior },
         { ...particle },
         { ...sof },
         { ...unsupported }
@@ -372,13 +359,13 @@ export const config = {
         // Real file path (not "rgba:/...") so it resolves lazily through
         // the resource pipeline instead of eagerly creating a GL texture
         // at module-load time, before device.gl exists.
-        "EveSpaceSceneShadowMap": "res:/texture/global/white.png",
+        "EveSpaceSceneShadowMap": "res:/texture/global/white.dds",
         "EveSpaceSceneCascadedShadowMap": "",
 
         // CEWG per-effect SSAO map has no producer yet; default to the
         // same real white texture EveSpaceScene.GetEmptyTexture() style
         // code already relies on (no occlusion), lazily resolved.
-        "SSAOMap": "res:/texture/global/white.png",
+        "SSAOMap": "res:/texture/global/white.dds",
 
         "EnvMap1": "",
         "EnvMap2": "",

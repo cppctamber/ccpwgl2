@@ -25,7 +25,11 @@
     "test:interior-additive-animation": "node scripts/test-interior-additive-animation.js",
     "test:interior-animation-lifecycle": "node scripts/test-interior-animation-lifecycle.js",
     "test:interior-per-object-data": "node scripts/test-interior-per-object-data.js",
+    "test:runtime-api-providers": "node scripts/test-runtime-api-providers.js",
+    "test:dds-adapter": "node scripts/test-dds-adapter.js",
     "test:eve-turret-tracking": "node scripts/test-eve-turret-tracking.js",
+    "test:eve-turret-targeting": "node scripts/test-eve-turret-targeting.js",
+    "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
@@ -72,6 +76,7 @@
   "dependencies": {
     "@carbonenginejs/format-gltf": "0.1.0",
     "@carbonenginejs/format-gr2": "0.1.5",
-    "@carbonenginejs/format-obj": "0.1.0"
+    "@carbonenginejs/format-obj": "0.1.0",
+    "@carbonenginejs/runtime-resource": "^0.8.0"
   }
 }
