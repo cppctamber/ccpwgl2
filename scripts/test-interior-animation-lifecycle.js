@@ -182,7 +182,7 @@ function loadInteriorController()
     }
 
     return loadModule(
-        "../src/unsupported/interior/character/Tr2InteriorAnimationController.js",
+        "../src/interior/character/Tr2InteriorAnimationController.js",
         {
             utils: { meta: makeMeta() },
             math: { curve: {}, mat3, mat4, quat },
@@ -208,7 +208,7 @@ function loadInteriorController()
 function loadBoneOffset()
 {
     return loadModule(
-        "../src/unsupported/interior/character/Tr2InteriorBoneOffset.js",
+        "../src/interior/character/Tr2InteriorBoneOffset.js",
         {
             utils: { meta: makeMeta() },
             math: { mat4, quat, vec3 }
