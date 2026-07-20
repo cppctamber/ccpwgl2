@@ -3,6 +3,7 @@ import { TnyCharacterApiProvider } from "./providers/TnyCharacterApiProvider";
 import { TnyESIApiProvider } from "./providers/TnyESIApiProvider";
 import { TnySDEApiProvider } from "./providers/TnySDEApiProvider";
 import { TnySkinApiProvider } from "./providers/TnySkinApiProvider";
+import { TnyToolsApiProvider } from "./providers/TnyToolsApiProvider";
 
 
 export function createApiService(options = {})
@@ -19,31 +20,44 @@ export function createApiService(options = {})
         characterLibrary = options.characterLibrary || options.characterProvider
             || new TnyCharacterApiProvider(Object.assign({
                 toolsService: options.toolsService
-            }, options.characterOptions));
+            }, options.characterOptions)),
+        tools = options.tools || options.toolsProvider
+            || new TnyToolsApiProvider(options.toolsOptions || {});
 
-    return new TnyApiService(Object.assign({}, options, { esi, sde, skin, characterLibrary }));
+    return new TnyApiService(Object.assign({}, options, { esi, sde, skin, characterLibrary, tools }));
 }
 
 export function createToolsServiceConfig(bootstrap, options = {})
 {
-    const apiRoot = TnyCharacterApiProvider.BuildToolsServiceRoot(bootstrap, options);
+    const
+        target = options.target || "ccp",
+        apiRoot = TnyCharacterApiProvider.BuildToolsServiceRoot(
+            bootstrap,
+            Object.assign({}, options, { target })
+        ),
+        resourceRoot = `${apiRoot}/resources`;
 
     return {
         apiOptions: {
             toolsService: bootstrap,
             skinOptions: {
-                target: options.target || "eve",
+                target,
                 build: options.build || "latest",
                 scheme: options.scheme || "http"
             },
             characterOptions: {
-                target: options.target || "eve",
+                target,
                 build: options.build || "latest",
                 scheme: options.scheme || "http"
+            },
+            toolsOptions: {
+                apiRoot,
+                resourceRoot
             }
         },
         paths: {
-            res: `${apiRoot}/res/`
+            api: `${apiRoot}/`,
+            res: `${resourceRoot}/`
         }
     };
 }

@@ -36,4 +36,7 @@ export class EveChildCloud2 extends EveChild
     @meta.struct()
     reflectionEffect = null;
 
+    @meta.int32
+    reflectionMode = 3;
+
 }

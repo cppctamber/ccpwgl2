@@ -1,5 +1,6 @@
 import { device, resMan } from "global";
 import { num } from "math";
+import { CjsDdsFormat } from "@carbonenginejs/runtime-resource/formats/dds";
 import {
     ErrResourceFormatInvalid,
     ErrResourceFormatUnsupported
@@ -163,7 +164,7 @@ export const TextureFormatDDS =
                 declared: false,
                 verified: false,
                 pending: true,
-                fallback: "png",
+                fallback: "rgba",
                 formats: {},
                 reason: "webgl_not_initialized"
             };
@@ -178,50 +179,249 @@ export const TextureFormatDDS =
 
         return {
             supported: true,
-            partial: !(hasS3TC && hasRGTC && hasBPTC),
+            partial: !hasBPTC,
             declared: true,
             verified: false,
-            fallback: "png",
+            fallback: "rgba",
             formats: {
                 uncompressed: { declared: true, verified: true },
                 dx10Uncompressed: { declared: true, verified: true },
-                bc1: { declared: hasS3TC, verified: false },
-                bc1SRGB: { declared: hasS3TC && hasS3TCSRGB, verified: false },
-                bc2: { declared: hasS3TC, verified: false },
-                bc2SRGB: { declared: hasS3TC && hasS3TCSRGB, verified: false },
-                bc3: { declared: hasS3TC, verified: false },
-                bc3SRGB: { declared: hasS3TC && hasS3TCSRGB, verified: false },
-                bc4: { declared: hasRGTC, verified: false },
-                bc5: { declared: hasRGTC, verified: false },
-                bc6h: { declared: hasBPTC, verified: false },
-                bc7: { declared: hasBPTC, verified: false },
-                bc7SRGB: { declared: hasBPTC, verified: false }
+                bc1: { declared: true, native: hasS3TC, verified: true },
+                bc1SRGB: { declared: true, native: hasS3TC && hasS3TCSRGB, verified: true },
+                bc2: { declared: true, native: hasS3TC, verified: true },
+                bc2SRGB: { declared: true, native: hasS3TC && hasS3TCSRGB, verified: true },
+                bc3: { declared: true, native: hasS3TC, verified: true },
+                bc3SRGB: { declared: true, native: hasS3TC && hasS3TCSRGB, verified: true },
+                bc4: { declared: true, native: hasRGTC, verified: true },
+                bc5: { declared: true, native: hasRGTC, verified: true },
+                bc6h: { declared: true, native: hasBPTC, verified: true },
+                bc7: { declared: true, native: hasBPTC, verified: true },
+                bc7SRGB: { declared: true, native: hasBPTC, verified: true }
             }
         };
     },
 
     Prepare(res, gl, arrayBuffer)
     {
-        const info = this.ParseDDS(arrayBuffer, gl);
-        if (device.tw2.GetDebugMode()) res._debugInfo = this.GetDebugInfo(res, info);
-
-        if (info.isVolume)
+        let texture;
+        try
         {
+            texture = CjsDdsFormat.read(arrayBuffer, { emit: "texture" });
+        }
+        catch (err)
+        {
+            throw new ErrResourceFormatInvalid({
+                format: "DDS",
+                reason: err.message,
+                cause: err
+            });
+        }
+
+        // Volume upload still uses the legacy 3D adapter. All 2D/cube DDS
+        // parsing, validation and subresource layout comes from runtime-resource.
+        if (texture.dimension === "3d")
+        {
+            const info = this.ParseDDS(arrayBuffer, gl);
+            if (device.tw2.GetDebugMode()) res._debugInfo = this.GetDebugInfo(res, info);
             this.PrepareVolume3D(res, gl, arrayBuffer, info);
             return;
         }
 
+        const info = this.ResolveTexturePayload(texture, gl);
+        if (device.tw2.GetDebugMode()) res._debugInfo = this.GetDebugInfo(res, info);
+
         if (!info.clientSupport)
         {
-            throw new ErrResourceFormatUnsupported({
-                format: "DDS",
-                reason: info.name,
-                data: info
-            });
+            this.AssignFallbackResourceInfo(res, gl, info);
+            this.UploadRgbaFallback(res, gl, arrayBuffer, texture, info);
+            return;
         }
 
         this.AssignResourceInfo(res, gl, info);
-        this.UploadTexture(res, gl, arrayBuffer, info);
+        this.UploadTexturePayload(res, gl, texture, info);
+    },
+
+    ResolveTexturePayload(texture, gl)
+    {
+        if (texture.arraySize !== 1)
+        {
+            throw new ErrResourceFormatUnsupported({
+                format: "DDS",
+                reason: "Texture arrays are not supported",
+                data: texture
+            });
+        }
+
+        const
+            pixelFormat = texture.pixelFormat,
+            isSRGB = pixelFormat.endsWith("-srgb"),
+            info = {
+                name: pixelFormat,
+                pixelFormat,
+                width: texture.width,
+                height: texture.height,
+                depth: Math.max(texture.depth || 1, 1),
+                mipmaps: texture.mipCount,
+                faces: texture.faces,
+                isCube: texture.dimension === "cube",
+                isVolume: texture.dimension === "3d",
+                isPowerOfTwo: this.IsPowerOfTwo(texture.width, texture.height),
+                target: texture.dimension === "cube" ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D,
+                isFourCC: !!texture.metadata.fourCc,
+                isCompressed: texture.isCompressed,
+                isLuminance: false,
+                isRGB: true,
+                hasAlpha: texture.metadata.hasAlpha,
+                isSRGB,
+                type: gl.UNSIGNED_BYTE,
+                format: gl.RGBA,
+                internalFormat: null,
+                blockBytes: pixelFormat.startsWith("bc1-") || pixelFormat.startsWith("bc4-") ? 8 : (texture.isCompressed ? 16 : 0),
+                bpp: 0,
+                clientSupport: false,
+                dataOffset: texture.metadata.dataOffset,
+                texture
+            };
+
+        const extensions = this.GetExtensions(gl);
+
+        if (pixelFormat.startsWith("bc1-"))
+        {
+            info.internalFormat = isSRGB
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT", "COMPRESSED_RGBA_S3TC_DXT1_EXT", extensions.s3tc)
+                : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT1_EXT");
+        }
+        else if (pixelFormat.startsWith("bc2-"))
+        {
+            info.internalFormat = isSRGB
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT", "COMPRESSED_RGBA_S3TC_DXT3_EXT", extensions.s3tc)
+                : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT3_EXT");
+        }
+        else if (pixelFormat.startsWith("bc3-"))
+        {
+            info.internalFormat = isSRGB
+                ? this.GetExtConstant(extensions.s3tcSRGB, "COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT", "COMPRESSED_RGBA_S3TC_DXT5_EXT", extensions.s3tc)
+                : this.GetExtConstant(extensions.s3tc, "COMPRESSED_RGBA_S3TC_DXT5_EXT");
+        }
+        else if (pixelFormat.startsWith("bc4-"))
+        {
+            info.internalFormat = pixelFormat.endsWith("-snorm")
+                ? this.GetExtConstant(extensions.rgtc, "COMPRESSED_SIGNED_RED_RGTC1_EXT")
+                : this.GetExtConstant(extensions.rgtc, "COMPRESSED_RED_RGTC1_EXT");
+        }
+        else if (pixelFormat.startsWith("bc5-"))
+        {
+            info.internalFormat = pixelFormat.endsWith("-snorm")
+                ? this.GetExtConstant(extensions.rgtc, "COMPRESSED_SIGNED_RG_RGTC2_EXT")
+                : this.GetExtConstant(extensions.rgtc, "COMPRESSED_RG_RGTC2_EXT");
+        }
+        else if (pixelFormat === "bc6h-rgb-float" || pixelFormat === "bc6h-rgb-ufloat")
+        {
+            info.internalFormat = pixelFormat === "bc6h-rgb-float"
+                ? this.GetExtConstant(extensions.bptc, "COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT")
+                : this.GetExtConstant(extensions.bptc, "COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT");
+        }
+        else if (pixelFormat.startsWith("bc7-"))
+        {
+            info.internalFormat = isSRGB
+                ? this.GetExtConstant(extensions.bptc, "COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT")
+                : this.GetExtConstant(extensions.bptc, "COMPRESSED_RGBA_BPTC_UNORM_EXT");
+        }
+        else
+        {
+            this.ResolveUncompressedTexturePayload(info, gl);
+        }
+
+        info.clientSupport = !!info.internalFormat;
+        return info;
+    },
+
+    ResolveUncompressedTexturePayload(info, gl)
+    {
+        switch (info.pixelFormat)
+        {
+            case "rgba8unorm":
+            case "rgba8unorm-srgb":
+                info.bpp = 32;
+                info.format = gl.RGBA;
+                info.internalFormat = info.isSRGB && device.glVersion > 1 ? gl.SRGB8_ALPHA8 : gl.RGBA;
+                return;
+
+            case "r8unorm":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 8;
+                    info.format = gl.RED;
+                    info.internalFormat = gl.R8;
+                }
+                return;
+
+            case "rg8unorm":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 16;
+                    info.format = gl.RG;
+                    info.internalFormat = gl.RG8;
+                }
+                return;
+
+            case "rgba32float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 128;
+                    info.type = gl.FLOAT;
+                    info.internalFormat = gl.RGBA32F;
+                }
+                return;
+
+            case "rgb32float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 96;
+                    info.type = gl.FLOAT;
+                    info.format = gl.RGB;
+                    info.internalFormat = gl.RGB32F;
+                }
+                return;
+
+            case "rgba16float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 64;
+                    info.type = gl.HALF_FLOAT;
+                    info.internalFormat = gl.RGBA16F;
+                }
+                return;
+
+            case "rg32float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 64;
+                    info.type = gl.FLOAT;
+                    info.format = gl.RG;
+                    info.internalFormat = gl.RG32F;
+                }
+                return;
+
+            case "r32float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 32;
+                    info.type = gl.FLOAT;
+                    info.format = gl.RED;
+                    info.internalFormat = gl.R32F;
+                }
+                return;
+
+            case "r16float":
+                if (device.glVersion > 1)
+                {
+                    info.bpp = 16;
+                    info.type = gl.HALF_FLOAT;
+                    info.format = gl.RED;
+                    info.internalFormat = gl.R16F;
+                }
+        }
     },
 
     PrepareVolumeAtlas(res, gl, arrayBuffer, info)
@@ -403,6 +603,26 @@ export const TextureFormatDDS =
         res._isSRGB = !!info.isSRGB;
     },
 
+    AssignFallbackResourceInfo(res, gl, info)
+    {
+        const isFloat = info.pixelFormat.includes("float");
+
+        res._type = isFloat ? gl.FLOAT : gl.UNSIGNED_BYTE;
+        res._format = gl.RGBA;
+        res._internalFormat = isFloat && device.glVersion > 1
+            ? gl.RGBA32F
+            : (info.isSRGB && device.glVersion > 1 ? gl.SRGB8_ALPHA8 : gl.RGBA);
+        res._target = info.target;
+
+        res._mipCount = info.mipmaps;
+        res._hasMipMaps = info.mipmaps > 1;
+        res._isCube = info.isCube;
+        res._width = info.width;
+        res._height = info.height;
+        res._isPowerOfTwo = info.isPowerOfTwo;
+        res._isSRGB = !!info.isSRGB;
+    },
+
     GetDebugInfo(res, info)
     {
         return {
@@ -505,6 +725,141 @@ export const TextureFormatDDS =
 
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
         gl.bindTexture(res._target, null);
+    },
+
+    UploadTexturePayload(res, gl, texture, info)
+    {
+        res.texture = gl.createTexture();
+        gl.bindTexture(res._target, res.texture);
+
+        const prevUnpack = gl.getParameter(gl.UNPACK_ALIGNMENT);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+        for (const subresource of texture.subresources)
+        {
+            const target = info.isCube
+                ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + subresource.face
+                : res._target;
+            const bytes = texture.data.subarray(
+                subresource.offset,
+                subresource.offset + subresource.byteLength
+            );
+
+            if (info.isCompressed)
+            {
+                gl.compressedTexImage2D(
+                    target,
+                    subresource.mip,
+                    info.internalFormat,
+                    subresource.width,
+                    subresource.height,
+                    0,
+                    bytes
+                );
+            }
+            else
+            {
+                const pixels = info.type === gl.FLOAT
+                    ? new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength >> 2)
+                    : info.type === gl.HALF_FLOAT
+                        ? new Uint16Array(bytes.buffer, bytes.byteOffset, bytes.byteLength >> 1)
+                        : bytes;
+
+                gl.texImage2D(
+                    target,
+                    subresource.mip,
+                    info.internalFormat,
+                    subresource.width,
+                    subresource.height,
+                    0,
+                    info.format,
+                    info.type,
+                    pixels
+                );
+            }
+        }
+
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
+        gl.bindTexture(res._target, null);
+    },
+
+    UploadRgbaFallback(res, gl, arrayBuffer, texture, info)
+    {
+        res.texture = gl.createTexture();
+        gl.bindTexture(res._target, res.texture);
+
+        const prevUnpack = gl.getParameter(gl.UNPACK_ALIGNMENT);
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+        try
+        {
+            for (const subresource of texture.subresources)
+            {
+                const surfaceDds = this.CreateSurfaceDDS(arrayBuffer, texture, subresource);
+                const rgba = CjsDdsFormat.read(surfaceDds, { emit: "rgba" });
+                const target = info.isCube
+                    ? gl.TEXTURE_CUBE_MAP_POSITIVE_X + subresource.face
+                    : res._target;
+
+                gl.texImage2D(
+                    target,
+                    subresource.mip,
+                    res._internalFormat,
+                    subresource.width,
+                    subresource.height,
+                    0,
+                    gl.RGBA,
+                    rgba.data instanceof Float32Array ? gl.FLOAT : gl.UNSIGNED_BYTE,
+                    rgba.data
+                );
+            }
+        }
+        catch (err)
+        {
+            gl.deleteTexture(res.texture);
+            res.texture = null;
+            throw new ErrResourceFormatUnsupported({
+                format: "DDS",
+                reason: `${info.pixelFormat} has no native GPU support and cannot be decoded to RGBA`,
+                data: info,
+                cause: err
+            });
+        }
+        finally
+        {
+            gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
+            gl.bindTexture(res._target, null);
+        }
+    },
+
+    CreateSurfaceDDS(arrayBuffer, texture, subresource)
+    {
+        const
+            headerSize = texture.metadata.dataOffset,
+            output = new Uint8Array(headerSize + subresource.byteLength),
+            view = new DataView(output.buffer);
+
+        output.set(new Uint8Array(arrayBuffer, 0, headerSize), 0);
+        output.set(
+            texture.data.subarray(subresource.offset, subresource.offset + subresource.byteLength),
+            headerSize
+        );
+
+        view.setUint32(DDS.OFFSET_HEIGHT, subresource.height, true);
+        view.setUint32(DDS.OFFSET_WIDTH, subresource.width, true);
+        view.setUint32(DDS.OFFSET_DEPTH, 0, true);
+        view.setUint32(DDS.OFFSET_MIPMAP_COUNT, 1, true);
+        view.setUint32(DDS.OFFSET_CAPS2, 0, true);
+
+        if (texture.metadata.hasDx10)
+        {
+            // D3D11_RESOURCE_MISC_TEXTURECUBE and arraySize belong to the
+            // container, not to this isolated face/mip surface.
+            view.setUint32(136, 0, true);
+            view.setUint32(140, 1, true);
+        }
+
+        return output;
     },
 
     ParseDDS(arrayBuffer, gl)

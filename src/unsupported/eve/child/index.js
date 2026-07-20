@@ -17,6 +17,7 @@ export * from "./EveChildParticleSphere";
 export * from "./EveChildPlug";
 export * from "./EveChildPostProcessVolume";
 export * from "./EveChildProceduralContainer";
+export * from "./EveProceduralMethodCycling";
 export * from "./EveChildQuad";
 export * from "./EveChildRef";
 export * from "./EveChildSocket";

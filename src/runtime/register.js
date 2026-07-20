@@ -3,7 +3,8 @@ import {
     TnyCharacterApiProvider,
     TnyESIApiProvider,
     TnySDEApiProvider,
-    TnySkinApiProvider
+    TnySkinApiProvider,
+    TnyToolsApiProvider
 } from "./api";
 import { TnyCameraTest } from "./cameras";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./debug";
@@ -38,7 +39,8 @@ export const tnyServiceConstructors = {
     TnyESIApiProvider,
     TnyResService,
     TnySDEApiProvider,
-    TnySkinApiProvider
+    TnySkinApiProvider,
+    TnyToolsApiProvider
 };
 
 export const tnyConstructors = {

@@ -44,7 +44,7 @@ export class EveCustomMask extends WglTransform
     @meta.todo("Move to direct class properties")
     @meta.isPrivate
     parameters = {
-        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap", "res:/texture/global/black.png"),
+        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap", "res:/texture/global/black.dds"),
         DiffuseColor: new Tw2Vector4Parameter("DiffuseColor", [ 0, 0, 0, 1 ]),
         DustDiffuseColor: new Tw2Vector4Parameter("DustDiffuseColor", [ 0, 0, 0, 1 ]),
         FresnelColor: new Tw2Vector4Parameter("FresnelColor", [ 0, 0, 0, 1 ]),

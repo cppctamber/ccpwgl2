@@ -121,9 +121,9 @@ export class TnyESIApiProvider
         return this.GetRoute(endpoint, params);
     }
 
-    async GetRouteIDNormalized(route, id, params)
+    async GetRouteIDNormalized(route, id, params, path)
     {
-        return normalizeEsiObject(await this.GetRouteID(route, id, params));
+        return normalizeEsiObject(await this.GetRouteID(route, id, params, path));
     }
 
     GetCollection(route, id, params)
@@ -138,32 +138,32 @@ export class TnyESIApiProvider
 
     GetCharacter(characterID, params)
     {
-        return this.GetRouteID(TnyESIRoute.CHARACTERS, characterID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.CHARACTERS, characterID, params);
     }
 
     GetCharacterPortraits(characterID, params)
     {
-        return this.GetRouteID(TnyESIRoute.CHARACTERS, characterID, params, "portrait");
+        return this.GetRouteIDNormalized(TnyESIRoute.CHARACTERS, characterID, params, "portrait");
     }
 
     GetCorporation(corporationID, params)
     {
-        return this.GetRouteID(TnyESIRoute.CORPORATIONS, corporationID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.CORPORATIONS, corporationID, params);
     }
 
     GetCorporationLogos(corporationID, params)
     {
-        return this.GetRouteID(TnyESIRoute.CORPORATIONS, corporationID, params, "icons");
+        return this.GetRouteIDNormalized(TnyESIRoute.CORPORATIONS, corporationID, params, "icons");
     }
 
     GetAlliance(allianceID, params)
     {
-        return this.GetRouteID(TnyESIRoute.ALLIANCES, allianceID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.ALLIANCES, allianceID, params);
     }
 
     GetAllianceLogos(allianceID, params)
     {
-        return this.GetRouteID(TnyESIRoute.ALLIANCES, allianceID, params, "icons");
+        return this.GetRouteIDNormalized(TnyESIRoute.ALLIANCES, allianceID, params, "icons");
     }
 
     GetType(typeID, params)
@@ -229,17 +229,17 @@ export class TnyESIApiProvider
 
     GetMoon(moonID, params)
     {
-        return this.GetRouteID(TnyESIRoute.MOONS, moonID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.MOONS, moonID, params);
     }
 
     GetPlanet(planetID, params)
     {
-        return this.GetRouteID(TnyESIRoute.PLANETS, planetID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.PLANETS, planetID, params);
     }
 
     GetSystem(systemID, params)
     {
-        return this.GetRouteID(TnyESIRoute.SYSTEMS, systemID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.SYSTEMS, systemID, params);
     }
 
 }

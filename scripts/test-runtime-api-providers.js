@@ -30,7 +30,9 @@ const { tw2 } = require(bundlePath);
 const {
     TnyCharacterApiProvider,
     TnyGeneratedLibraryProvider,
-    TnySkinApiProvider
+    TnySkinApiProvider,
+    TnyToolsApiProvider,
+    TnyApiService
 } = tw2.runtime;
 
 
@@ -82,6 +84,97 @@ const {
     await assert.rejects(
         emptySkinApi.GetSkinLibrary(),
         /Skin API .*\/skin returned no data/
+    );
+
+    const requests = [];
+    const tools = new TnyToolsApiProvider({
+        apiRoot: "http://localhost/ccp/latest",
+        resourceRoot: "http://localhost/ccp/latest/resources",
+        fetcher: async url =>
+        {
+            requests.push(url);
+            return { typeID: 42 };
+        },
+        postFetcher: async (url, body) =>
+        {
+            requests.push(url);
+            return body.paths;
+        }
+    });
+    const api = new TnyApiService({ tools });
+
+    assert.deepEqual(await api.GetWeaponType(42), { typeID: 42 });
+    assert.equal(requests[0], "http://localhost/ccp/latest/weapons/types/42");
+    await api.GetResource("res:/texture/sprite/banners");
+    assert.equal(requests[1], "http://localhost/ccp/latest/resources/texture/sprite/banners");
+    assert.deepEqual(
+        await api.ResolveHullResPathInserts("ab1_t1", "navy", [ "res:/ship_m.dds" ]),
+        [ "res:/ship_m.dds" ]
+    );
+    assert.equal(
+        requests[2],
+        "http://localhost/ccp/latest/sof/hulls/ab1_t1/respathinserts/navy/resolve"
+    );
+
+    const sof = new tw2.EveSOFData();
+    sof.Register({
+        resolveHullResPathInserts: async (hull, insert, paths) =>
+        {
+            assert.equal(hull, "ab1_t1");
+            assert.equal(insert, "navy");
+            return paths.map(path => path.replace("ship_m.dds", "navy/ship_navy_m.dds"));
+        }
+    });
+    assert.deepEqual(await sof.ResolveResPathInserts(
+        { name: "ab1_t1" },
+        { resPathInsert: "navy" },
+        [ "RES:/SHIP_M.DDS" ],
+        null
+    ), [ "res:/navy/ship_navy_m.dds" ]);
+
+    let factionDefaultResolved = false;
+    const factionDefaultSof = new tw2.EveSOFData();
+    factionDefaultSof.Register({
+        resolveHullResPathInserts: async (hull, insert, paths) =>
+        {
+            factionDefaultResolved = true;
+            assert.equal(hull, "ab1_t1");
+            assert.equal(insert, "amarrbase");
+            return paths;
+        }
+    });
+    assert.deepEqual(await factionDefaultSof.ResolveResPathInserts(
+        { name: "ab1_t1" },
+        { resPathInsert: "amarrbase" },
+        [ "RES:/SHIP_M.DDS" ],
+        null
+    ), [ "res:/ship_m.dds" ]);
+    assert.equal(factionDefaultResolved, true);
+    factionDefaultResolved = false;
+    assert.deepEqual(await factionDefaultSof.ResolveResPathInserts(
+        { name: "ab1_t1" },
+        { resPathInsert: "navy" },
+        [ "RES:/SHIP_M.DDS" ],
+        "none"
+    ), [ "res:/ship_m.dds" ]);
+    assert.equal(factionDefaultResolved, false);
+
+    const emptyTools = new TnyToolsApiProvider({
+        apiRoot: "http://localhost/ccp/latest",
+        fetcher: async () => null,
+        postFetcher: async () => null
+    });
+    await assert.rejects(
+        emptyTools.GetBillboards(),
+        /Tools API .*\/billboards returned no data/
+    );
+    await assert.rejects(
+        emptyTools.ResolveHullResPathInserts(
+            "ab1_t1",
+            "navy",
+            [ "res:/ship_m.dds" ]
+        ),
+        /Tools API .*\/resolve returned no data/
     );
 
     console.log("Runtime API providers reject missing configuration and payloads");

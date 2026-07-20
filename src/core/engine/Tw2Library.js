@@ -335,13 +335,6 @@ export class Tw2Library extends Tw2EventEmitter
             this.device.RequestAnimationFrame(tick);
         }
 
-        if (!sof.resFiles)
-        {
-            this.Log({ type: "Space Object Factory", message: "Loading resource files" });
-            sof.resFiles = await this.resMan.FetchRaw(this.GetURL(this.constructor.resFileIndexResPath), "json");
-            sof.resFiles.sort((a, b) => a.localeCompare(b));
-        }
-
         this.Log({ type: "Space Object Factory", message: "Loading space object factory data" });
         this.eveSof = await this.resMan.FetchObject(this.constructor.spaceObjectFactoryResPath);
         this.eveSof.Register(sof);
@@ -367,12 +360,6 @@ export class Tw2Library extends Tw2EventEmitter
         this.EmitEvent("post_capability_process", reports, context);
         return reports;
     }
-
-    /**
-     * Remote path to the current res file index
-     * @type {String}
-     */
-    static resFileIndexResPath = "res:/resfiles";
 
     /**
      * Remote path to the current SOF data black file

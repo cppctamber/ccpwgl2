@@ -10,6 +10,7 @@ export class TnyApiService extends meta.Model
     sde = null;
     skin = null;
     characterLibrary = null;
+    tools = null;
     providers = [];
 
     constructor(options = {})
@@ -19,7 +20,8 @@ export class TnyApiService extends meta.Model
         const esi = options.esi || options.esiProvider,
             sde = options.sde || options.sdeProvider,
             skin = options.skin || options.skinProvider,
-            characterLibrary = options.characterLibrary || options.characterProvider;
+            characterLibrary = options.characterLibrary || options.characterProvider,
+            tools = options.tools || options.toolsProvider;
 
         if (esi)
         {
@@ -41,6 +43,11 @@ export class TnyApiService extends meta.Model
             this.SetCharacterProvider(characterLibrary);
         }
 
+        if (tools)
+        {
+            this.SetToolsProvider(tools);
+        }
+
         const providers = options.providers || options.provider;
         if (providers)
         {
@@ -57,7 +64,7 @@ export class TnyApiService extends meta.Model
 
         this[name] = provider || null;
 
-        if (name === "esi" || name === "sde" || name === "skin" || name === "characterLibrary")
+        if ([ "esi", "sde", "skin", "characterLibrary", "tools" ].includes(name))
         {
             this.LinkProviders();
         }
@@ -108,6 +115,16 @@ export class TnyApiService extends meta.Model
     GetCharacterProvider()
     {
         return this.GetProvider("characterLibrary");
+    }
+
+    SetToolsProvider(provider)
+    {
+        return this.SetProvider("tools", provider);
+    }
+
+    GetToolsProvider()
+    {
+        return this.GetProvider("tools");
     }
 
     LinkProviders()
@@ -177,6 +194,7 @@ export class TnyApiService extends meta.Model
         this.sde = null;
         this.skin = null;
         this.characterLibrary = null;
+        this.tools = null;
         return this.ClearProviders();
     }
 
@@ -225,6 +243,11 @@ export class TnyApiService extends meta.Model
         if (this.characterLibrary && this.characterLibrary.ClearCache)
         {
             this.characterLibrary.ClearCache();
+        }
+
+        if (this.tools && this.tools.ClearCache)
+        {
+            this.tools.ClearCache();
         }
 
         for (let i = 0; i < this.providers.length; i++)
@@ -411,6 +434,71 @@ export class TnyApiService extends meta.Model
     GetSystem(...args)
     {
         return this.RequestFrom("esi", "GetSystem", ...args);
+    }
+
+    GetBillboards(...args)
+    {
+        return this.RequestFrom("tools", "GetBillboards", ...args);
+    }
+
+    GetResource(...args)
+    {
+        return this.RequestFrom("tools", "GetResource", ...args);
+    }
+
+    GetNebulas(...args)
+    {
+        return this.RequestFrom("tools", "GetNebulas", ...args);
+    }
+
+    GetCubes(...args)
+    {
+        return this.RequestFrom("tools", "GetCubes", ...args);
+    }
+
+    GetHullResPathInserts(...args)
+    {
+        return this.RequestFrom("tools", "GetHullResPathInserts", ...args);
+    }
+
+    ResolveHullResPathInserts(...args)
+    {
+        return this.RequestFrom("tools", "ResolveHullResPathInserts", ...args);
+    }
+
+    GetWeaponLibrary(...args)
+    {
+        return this.RequestFrom("tools", "GetWeaponLibrary", ...args);
+    }
+
+    LookupWeaponName(...args)
+    {
+        return this.RequestFrom("tools", "LookupWeaponName", ...args);
+    }
+
+    SearchWeaponName(...args)
+    {
+        return this.RequestFrom("tools", "SearchWeaponName", ...args);
+    }
+
+    GetWeaponTypes(...args)
+    {
+        return this.RequestFrom("tools", "GetWeaponTypes", ...args);
+    }
+
+    GetWeaponType(...args)
+    {
+        return this.RequestFrom("tools", "GetWeaponType", ...args);
+    }
+
+    GetWeaponAmmunition(...args)
+    {
+        return this.RequestFrom("tools", "GetWeaponAmmunition", ...args);
+    }
+
+    GetWeaponProjectiles(...args)
+    {
+        return this.RequestFrom("tools", "GetWeaponProjectiles", ...args);
     }
 
 }
