@@ -33,31 +33,16 @@ function normalizeEsiObject(value)
     {
         if (!value.hasOwnProperty(key)) continue;
 
-        const normalized = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+        const normalized = key.split("_").map((part, index) =>
+        {
+            if (part === "id") return "ID";
+            if (index === 0) return part;
+            return part.charAt(0).toUpperCase() + part.slice(1);
+        }).join("");
         out[normalized] = normalizeEsiObject(value[key]);
     }
     return out;
 }
-
-function applyAliases(item, aliases)
-{
-    if (!item) return item;
-
-    for (let i = 0; i < aliases.length; i++)
-    {
-        const alias = aliases[i],
-            source = alias[0],
-            target = alias[1];
-
-        if (item[source] !== undefined && item[target] === undefined)
-        {
-            item[target] = item[source];
-        }
-    }
-
-    return item;
-}
-
 
 @meta.tny.type("TnyESIApiProvider")
 @meta.tny.define("TnyESIApiProvider")
@@ -136,17 +121,16 @@ export class TnyESIApiProvider
         return this.GetRoute(endpoint, params);
     }
 
-    async GetRouteIDNormalized(route, id, params, aliases = [])
+    async GetRouteIDNormalized(route, id, params)
     {
-        const item = normalizeEsiObject(await this.GetRouteID(route, id, params));
-        return applyAliases(item, aliases);
+        return normalizeEsiObject(await this.GetRouteID(route, id, params));
     }
 
-    GetCollection(route, id, params, aliases = [])
+    GetCollection(route, id, params)
     {
         if (id !== undefined && id !== null)
         {
-            return this.GetRouteIDNormalized(route, id, params, aliases);
+            return this.GetRouteIDNormalized(route, id, params);
         }
 
         return this.GetRoute(route, params);
@@ -184,35 +168,27 @@ export class TnyESIApiProvider
 
     GetType(typeID, params)
     {
-        return this.GetRouteID(TnyESIRoute.TYPES, typeID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.TYPES, typeID, params);
     }
 
     GetCategory(categoryID, params)
     {
-        return this.GetRouteIDNormalized(TnyESIRoute.CATEGORIES, categoryID, params, [
-            [ "categoryId", "categoryID" ]
-        ]);
+        return this.GetRouteIDNormalized(TnyESIRoute.CATEGORIES, categoryID, params);
     }
 
     GetGroup(groupID, params)
     {
-        return this.GetRouteIDNormalized(TnyESIRoute.GROUPS, groupID, params, [
-            [ "categoryId", "categoryID" ],
-            [ "groupId", "groupID" ]
-        ]);
+        return this.GetRouteIDNormalized(TnyESIRoute.GROUPS, groupID, params);
     }
 
     GetMarketGroup(marketGroupID, params)
     {
-        return this.GetRouteIDNormalized(TnyESIRoute.MARKET_GROUPS, marketGroupID, params, [
-            [ "marketGroupId", "marketGroupID" ],
-            [ "parentGroupId", "parentGroupID" ]
-        ]);
+        return this.GetRouteIDNormalized(TnyESIRoute.MARKET_GROUPS, marketGroupID, params);
     }
 
     GetGraphic(graphicID, params)
     {
-        return this.GetRouteID(TnyESIRoute.GRAPHICS, graphicID, params);
+        return this.GetRouteIDNormalized(TnyESIRoute.GRAPHICS, graphicID, params);
     }
 
     async GetResPathFromGraphicID(graphicID, params)
@@ -220,14 +196,35 @@ export class TnyESIApiProvider
         if (!graphicID) throw new Error("Graphic ID not found");
 
         const graphic = await this.GetGraphic(graphicID, params);
-        return graphic.sof_dna || graphic.sofDna || graphic.graphic_file || graphic.graphicFile || "";
+        return graphic.sofDna || graphic.graphicFile || "";
     }
 
     async GetResPathFromTypeID(typeID, params)
     {
         const type = await this.GetType(typeID, params),
-            graphicID = type.graphic_id || type.graphicId;
+            graphicID = type.graphicID;
         return this.GetResPathFromGraphicID(graphicID, params);
+    }
+
+    async ResolveTypeDna(typeID, params)
+    {
+        const type = await this.GetType(typeID, params),
+            graphicID = type.graphicID,
+            graphic = await this.GetGraphic(graphicID, params),
+            dna = graphic.sofDna || graphic.graphicFile || "";
+
+        if (!dna)
+        {
+            throw new ReferenceError(`Graphic ${graphicID} has no SOF DNA or graphic file`);
+        }
+
+        return {
+            typeID: Number(typeID),
+            graphicID: Number(graphicID),
+            skinID: null,
+            name: type.name || null,
+            dna
+        };
     }
 
     GetMoon(moonID, params)

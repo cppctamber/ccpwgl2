@@ -8,6 +8,8 @@ export class TnyApiService extends meta.Model
 
     esi = null;
     sde = null;
+    skin = null;
+    characterLibrary = null;
     providers = [];
 
     constructor(options = {})
@@ -15,7 +17,9 @@ export class TnyApiService extends meta.Model
         super();
 
         const esi = options.esi || options.esiProvider,
-            sde = options.sde || options.sdeProvider;
+            sde = options.sde || options.sdeProvider,
+            skin = options.skin || options.skinProvider,
+            characterLibrary = options.characterLibrary || options.characterProvider;
 
         if (esi)
         {
@@ -25,6 +29,16 @@ export class TnyApiService extends meta.Model
         if (sde)
         {
             this.SetSDEProvider(sde);
+        }
+
+        if (skin)
+        {
+            this.SetSkinProvider(skin);
+        }
+
+        if (characterLibrary)
+        {
+            this.SetCharacterProvider(characterLibrary);
         }
 
         const providers = options.providers || options.provider;
@@ -43,7 +57,7 @@ export class TnyApiService extends meta.Model
 
         this[name] = provider || null;
 
-        if (name === "esi" || name === "sde")
+        if (name === "esi" || name === "sde" || name === "skin" || name === "characterLibrary")
         {
             this.LinkProviders();
         }
@@ -76,11 +90,36 @@ export class TnyApiService extends meta.Model
         return this.GetProvider("sde");
     }
 
+    SetSkinProvider(provider)
+    {
+        return this.SetProvider("skin", provider);
+    }
+
+    GetSkinProvider()
+    {
+        return this.GetProvider("skin");
+    }
+
+    SetCharacterProvider(provider)
+    {
+        return this.SetProvider("characterLibrary", provider);
+    }
+
+    GetCharacterProvider()
+    {
+        return this.GetProvider("characterLibrary");
+    }
+
     LinkProviders()
     {
         if (this.sde && this.esi && this.sde.SetTypeProvider && !this.sde.typeProvider)
         {
             this.sde.SetTypeProvider(this.esi);
+        }
+
+        if (this.skin && this.esi && this.skin.SetTypeProvider && !this.skin.typeProvider)
+        {
+            this.skin.SetTypeProvider(this.esi);
         }
 
         return this;
@@ -136,6 +175,8 @@ export class TnyApiService extends meta.Model
     {
         this.esi = null;
         this.sde = null;
+        this.skin = null;
+        this.characterLibrary = null;
         return this.ClearProviders();
     }
 
@@ -176,6 +217,16 @@ export class TnyApiService extends meta.Model
             this.sde.ClearCache();
         }
 
+        if (this.skin && this.skin.ClearCache)
+        {
+            this.skin.ClearCache();
+        }
+
+        if (this.characterLibrary && this.characterLibrary.ClearCache)
+        {
+            this.characterLibrary.ClearCache();
+        }
+
         for (let i = 0; i < this.providers.length; i++)
         {
             const provider = this.providers[i];
@@ -195,6 +246,36 @@ export class TnyApiService extends meta.Model
     GetCharacterPortraits(...args)
     {
         return this.RequestFrom("esi", "GetCharacterPortraits", ...args);
+    }
+
+    GetCharacterLibrary(...args)
+    {
+        return this.RequestFrom("characterLibrary", "GetCharacterLibrary", ...args);
+    }
+
+    LookupCharacterName(...args)
+    {
+        return this.RequestFrom("characterLibrary", "LookupCharacterName", ...args);
+    }
+
+    SearchCharacterName(...args)
+    {
+        return this.RequestFrom("characterLibrary", "SearchCharacterName", ...args);
+    }
+
+    ResolveCharacterName(...args)
+    {
+        return this.RequestFrom("characterLibrary", "ResolveCharacterName", ...args);
+    }
+
+    GetCharacterPartByTypeID(...args)
+    {
+        return this.RequestFrom("characterLibrary", "GetCharacterPartByTypeID", ...args);
+    }
+
+    GetCharacterPartsByCategory(...args)
+    {
+        return this.RequestFrom("characterLibrary", "GetCharacterPartsByCategory", ...args);
     }
 
     GetCorporation(...args)
@@ -252,44 +333,59 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("esi", "GetResPathFromTypeID", ...args);
     }
 
-    GetResPathFromTypeIDAndSkinMaterialID(...args)
-    {
-        return this.RequestFrom("sde", "GetResPathFromTypeIDAndSkinMaterialID", ...args);
-    }
-
-    GetResPathFromTypeIDAndSkinID(...args)
-    {
-        return this.RequestFrom("sde", "GetResPathFromTypeIDAndSkinID", ...args);
-    }
-
     GetSkin(...args)
     {
-        return this.RequestFrom("sde", "GetSkin", ...args);
+        return this.RequestFrom("skin", "GetSkin", ...args);
     }
 
     GetSkinMaterial(...args)
     {
-        return this.RequestFrom("sde", "GetSkinMaterial", ...args);
+        return this.RequestFrom("skin", "GetSkinMaterial", ...args);
     }
 
     GetSkinMaterialSet(...args)
     {
-        return this.RequestFrom("sde", "GetSkinMaterialSet", ...args);
+        return this.RequestFrom("skin", "GetSkinMaterialSet", ...args);
     }
 
     GetSkinMaterialTypeIDs(...args)
     {
-        return this.RequestFrom("sde", "GetSkinMaterialTypeIDs", ...args);
+        return this.RequestFrom("skin", "GetSkinMaterialTypeIDs", ...args);
     }
 
     GetTypeIDSkinIDs(...args)
     {
-        return this.RequestFrom("sde", "GetTypeIDSkinIDs", ...args);
+        return this.RequestFrom("skin", "GetTypeIDSkinIDs", ...args);
     }
 
-    GetSkinMaterialSetFromSkinID(...args)
+    GetSkinr(...args)
     {
-        return this.RequestFrom("sde", "GetSkinMaterialSetFromSkinID", ...args);
+        return this.RequestFrom("skin", "GetSkinr", ...args);
+    }
+
+    LookupName(...args)
+    {
+        return this.RequestFrom("skin", "LookupName", ...args);
+    }
+
+    SearchName(...args)
+    {
+        return this.RequestFrom("skin", "SearchName", ...args);
+    }
+
+    ResolveTypeDna(...args)
+    {
+        return this.RequestFrom("skin", "ResolveTypeDna", ...args);
+    }
+
+    ResolveSkinDna(...args)
+    {
+        return this.RequestFrom("skin", "ResolveSkinDna", ...args);
+    }
+
+    ResolveDna(...args)
+    {
+        return this.RequestFrom("skin", "ResolveDna", ...args);
     }
 
     async GetMoon(moonID, params)

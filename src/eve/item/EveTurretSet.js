@@ -9,6 +9,7 @@ import {
     Tw2ForwardingRenderBatch
 } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { EveTurretTarget } from "../EveTurretTarget";
 import { AudEventKey } from "../../unsupported/curve/curve/AudEventCurve";
 
 
@@ -145,13 +146,11 @@ export class EveTurretSet extends EveObjectSet
     @meta.vector4
     boundingSphere = vec4.create();
 
-    @meta.notImplemented
     @meta.boolean
-    chooseRandomLocator = false;
+    chooseRandomLocator = true;
 
-    @meta.notImplemented
     @meta.uint
-    cyclingFireGroupCount = 0;
+    cyclingFireGroupCount = 1;
 
     @meta.path
     firingEffectResPath = "";
@@ -162,26 +161,25 @@ export class EveTurretSet extends EveObjectSet
     @meta.struct(AudEvent)
     idleToTargetingMovementAudioEvent = null;
 
-    @meta.notImplemented
+    @meta.uint
+    impactBehaviour = 0;
+
     @meta.float
     impactSize = 0;
 
-    @meta.notImplemented
     @meta.boolean
     laserMissBehaviour = false;
 
     @meta.string
     locatorName = "";
 
-    @meta.notImplemented
     @meta.uint
-    maxCyclingFirePos = 0;
+    maxCyclingFirePos = 1;
 
     @meta.notImplemented
     @meta.struct()
     turretMovementObserver = null;
 
-    @meta.notImplemented
     @meta.boolean
     projectileMissBehaviour = false;
 
@@ -228,12 +226,14 @@ export class EveTurretSet extends EveObjectSet
     @meta.boolean
     useDynamicBounds = false;
 
-    @meta.notImplemented
     @meta.boolean
-    useRandomFiringDelay = false;
+    useRandomFiringDelay = true;
 
     @meta.struct()
     firingEffect = null;
+
+    @meta.struct("EveTurretTarget")
+    target = new EveTurretTarget();
 
     @meta.struct("Tw2GeometryResource")
     @meta.todo("Make private")
@@ -250,7 +250,6 @@ export class EveTurretSet extends EveObjectSet
     _currentCyclingFiresPos = 0;
     _fireCallback = null;
     _fireCallbackPending = false;
-    _hasCyclingFiringPos = false;
     _inactiveAnimation = new Tw2AnimationController();
     _locatorDirty = true;
     _parentTransform = mat4.create();
@@ -263,6 +262,7 @@ export class EveTurretSet extends EveObjectSet
     _trackingInfluence = 0;
     _trackingScratch = null;
     _recheckTimeLeft = 0;
+    _randomFiringDelay = 0;
 
 
     /**
@@ -289,6 +289,14 @@ export class EveTurretSet extends EveObjectSet
      */
     Initialize()
     {
+        if (!this.target) this.target = new EveTurretTarget();
+        this.target.SetBehaviour(
+            this.laserMissBehaviour,
+            this.projectileMissBehaviour,
+            this.impactSize,
+            this.impactBehaviour
+        );
+
         if (this.turretEffect && this.geometryResPath !== "")
         {
             this.geometryResource = tw2.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
@@ -298,7 +306,11 @@ export class EveTurretSet extends EveObjectSet
 
         if (this.firingEffectResPath !== "")
         {
-            tw2.Fetch(this.firingEffectResPath).then(object => this.firingEffect = object);
+            tw2.Fetch(this.firingEffectResPath).then(object =>
+            {
+                this.firingEffect = object;
+                this.SetTargetScale();
+            });
         }
 
         this.Rebuild();
@@ -353,7 +365,56 @@ export class EveTurretSet extends EveObjectSet
      */
     SetTargetPosition(v)
     {
+        if (!this.target) this.target = new EveTurretTarget();
+        this.target.SetTargetPosition(v);
         vec3.copy(this._targetPosition, v);
+    }
+
+    /**
+     * Sets a live targetable scene object
+     * @param {Object|null} object
+     * @returns {Boolean}
+     */
+    SetTargetObject(object)
+    {
+        if (!this.target) this.target = new EveTurretTarget();
+        const accepted = this.target.SetTargetable(object);
+        if (accepted) this.SetTargetScale();
+        return accepted;
+    }
+
+    /**
+     * Gets the live target object
+     * @returns {Object|null}
+     */
+    GetTargetObject()
+    {
+        return this.target?.GetTargetable() ?? null;
+    }
+
+    SetTargetScale()
+    {
+        this.firingEffect?.SetScaleByRadius?.(this.target?.GetRadius?.() ?? -1);
+    }
+
+    SetShotMissed(missed, timestamp)
+    {
+        this.target?.SetShotMissed(missed, timestamp);
+    }
+
+    GetLastShotTime()
+    {
+        return this.target?.GetLastShotTime() ?? 0;
+    }
+
+    MissQueueSize()
+    {
+        return this.target?.MissQueueSize() ?? 0;
+    }
+
+    GetShotTimeVariance()
+    {
+        return 0.6;
     }
 
     /**
@@ -702,7 +763,7 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < this.items.length; i++)
         {
-            this.items[i]._isClosest = this.items[i] === closestTurret;
+            this.items[i]._isClosest = i === closestTurret;
         }
 
         return closestTurret;
@@ -1120,6 +1181,15 @@ export class EveTurretSet extends EveObjectSet
     Update(dt)
     {
         super.Update(dt);
+
+        const source = EveTurretSet.global.vec3_1;
+        vec3.set(source, this._parentTransform[12], this._parentTransform[13], this._parentTransform[14]);
+        if (this.target)
+        {
+            this.target.Update(dt, source);
+            this.target.GetTrackingPosition(this._targetPosition);
+        }
+
         this.UpdateTrackingInfluence(dt);
         this.StartPendingFiring();
 
@@ -1196,7 +1266,8 @@ export class EveTurretSet extends EveObjectSet
                 }
             }
 
-            this.firingEffect.SetEndPosition(this._targetPosition);
+            this.firingEffect.SetEndPosition(this.target?.GetTargetPosition() ?? this._targetPosition);
+            this.firingEffect.SetDisplayDestObject?.(this.target?.ShowDestObject() ?? true);
             this.firingEffect.Update(dt);
         }
     }
@@ -1430,17 +1501,48 @@ export class EveTurretSet extends EveObjectSet
      */
     DoStartFiring()
     {
-        if (this._hasCyclingFiringPos)
+        if (this.maxCyclingFirePos > 1)
         {
-            this._currentCyclingFiresPos = 1 - this._currentCyclingFiresPos;
-        }
-
-        if (this.firingEffect)
-        {
-            this.firingEffect.PrepareFiring(0, this._hasCyclingFiringPos ? this._currentCyclingFiresPos : -1);
+            this._currentCyclingFiresPos += this.cyclingFireGroupCount;
+            if (this._currentCyclingFiresPos >= this.maxCyclingFirePos * this.cyclingFireGroupCount)
+            {
+                this._currentCyclingFiresPos = 0;
+            }
         }
 
         this._activeTurret = this.GetClosestTurret();
+
+        const g = EveTurretSet.global;
+        vec3.set(g.vec3_1, this._parentTransform[12], this._parentTransform[13], this._parentTransform[14]);
+        let locator = -1;
+        if (this._activeTurret !== -1 && this.target?.GetTargetable())
+        {
+            const item = this.items[this._activeTurret];
+            vec3.set(g.vec3_2, item._localTransform[12], item._localTransform[13], item._localTransform[14]);
+            vec3.transformMat4(g.vec3_2, g.vec3_2, this._parentTransform);
+            locator = this.chooseRandomLocator
+                ? this.target.FindRandomValidLocator(g.vec3_2, g.vec3_3)
+                : this.target.FindClosestLocator(g.vec3_2, g.vec3_3);
+        }
+
+        this._randomFiringDelay = this.firingEffect && this.useRandomFiringDelay
+            ? this.GetShotTimeVariance() * Math.random()
+            : 0;
+
+        if (this.firingEffect)
+        {
+            this.firingEffect.PrepareFiring(
+                this._randomFiringDelay,
+                this.maxCyclingFirePos > 1 ? this._currentCyclingFiresPos : -1,
+                this.maxCyclingFirePos > 1 ? this.cyclingFireGroupCount : -1
+            );
+            this.firingEffect.SetImpactConfiguration?.(this.target?.GetImpactConfiguration?.() ?? 0);
+        }
+
+        const duration = Number(this.firingEffect?.GetFiringDuration?.() ?? 0);
+        const peak = Number(this.firingEffect?.GetFiringPeakTime?.() ?? 0);
+        this.target?.StartFireAtLocator(locator, this._randomFiringDelay + peak, Math.max(duration - peak, 0), g.vec3_1);
+
         this._state = EveTurretSet.State.FIRING;
         this._recheckTimeLeft = 2;
 
@@ -1452,6 +1554,7 @@ export class EveTurretSet extends EveObjectSet
      */
     DoStopFiring()
     {
+        this.target?.StopFireAtLocator();
         if (this.firingEffect)
         {
             this.firingEffect.StopFiring();
@@ -1564,6 +1667,11 @@ export class EveTurretSet extends EveObjectSet
             [ "turretRotation", 4 * 24 ],
             [ "turretPoseTransAndRot", 2 * 4 * 72 ]
         ]
+    };
+
+    static global = {
+        ...EveObjectSet.global,
+        vec3_3: vec3.create()
     };
 
     /**

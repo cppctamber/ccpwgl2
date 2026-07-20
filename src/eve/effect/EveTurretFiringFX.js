@@ -66,32 +66,27 @@ export class EveTurretFiringFX extends meta.Model
     @meta.todo("Deprecated?")
     firingDelay8 = 0;
 
-    @meta.notImplemented
     @meta.float
-    firingDurationOverride = 0;
+    firingDurationOverride = -1;
 
-    @meta.notImplemented
     @meta.float
     firingPeakTime = 0;
 
     @meta.boolean
     isLoopFiring = false;
 
-    @meta.notImplemented
     @meta.float
     maxRadius = 0;
 
     @meta.float
     maxScale = 0;
 
-    @meta.notImplemented
     @meta.float
     minRadius = 0;
 
     @meta.float
     minScale = 0;
 
-    @meta.notImplemented
     @meta.boolean
     scaleEffectTarget = false;
 
@@ -118,6 +113,8 @@ export class EveTurretFiringFX extends meta.Model
     _firingDuration = 0;
     _isFiring = false;
     _perMuzzleData = [];
+    _displayDestObject = true;
+    _impactConfiguration = 0;
 
 
     /**
@@ -125,7 +122,9 @@ export class EveTurretFiringFX extends meta.Model
      */
     Initialize()
     {
-        this._firingDuration = this.GetCurveDuration();
+        this._firingDuration = this.firingDurationOverride >= 0
+            ? this.firingDurationOverride
+            : this.GetCurveDuration();
         this._perMuzzleData.length = this.stretch.length;
         for (let i = 0; i < this.stretch.length; ++i)
         {
@@ -189,6 +188,69 @@ export class EveTurretFiringFX extends meta.Model
     }
 
     /**
+     * Gets the effective firing duration
+     * @returns {Number}
+     */
+    GetFiringDuration()
+    {
+        return this.firingDurationOverride >= 0 ? this.firingDurationOverride : this._firingDuration;
+    }
+
+    /**
+     * Gets the firing impact peak time
+     * @returns {Number}
+     */
+    GetFiringPeakTime()
+    {
+        return this.firingPeakTime;
+    }
+
+    /**
+     * Scales destination effects from the live target radius
+     * @param {Number} radius
+     */
+    SetScaleByRadius(radius)
+    {
+        if (!this.scaleEffectTarget) return;
+        const span = this.maxRadius - this.minRadius;
+        const amount = span ? (Number(radius) - this.minRadius) / span : 0;
+        const scale = Math.max(this.minScale, Math.min(this.maxScale, this.minScale + amount * (this.maxScale - this.minScale)));
+        for (let i = 0; i < this.stretch.length; i++)
+        {
+            this.stretch[i].SetDestObjectScale?.(scale);
+        }
+    }
+
+    SetDisplayDestObject(display)
+    {
+        this._displayDestObject = !!display;
+    }
+
+    GetDisplayDestObject()
+    {
+        return this._displayDestObject;
+    }
+
+    SetImpactConfiguration(configuration)
+    {
+        configuration = Number(configuration) | 0;
+        if (configuration !== this._impactConfiguration)
+        {
+            const observer = this.destinationObserver?.GetObserver?.();
+            const value = configuration === EveTurretFiringFX.ImpactConfiguration.IMPACT_ARMOR
+                ? "Armor"
+                : configuration === EveTurretFiringFX.ImpactConfiguration.IMPACT_HULL ? "Hull" : "Shield";
+            observer?.SetSwitch?.("Impact_On", value);
+        }
+        this._impactConfiguration = configuration;
+    }
+
+    GetImpactConfiguration()
+    {
+        return this._impactConfiguration;
+    }
+
+    /**
      * Sets muzzle bone id
      * @param {number} index
      * @param bone
@@ -212,12 +274,13 @@ export class EveTurretFiringFX extends meta.Model
      * Prepares the firing effect
      * @param {number} delay
      * @param {number} [muzzleID=-1]
+     * @param {number} [muzzleCount=-1]
      */
-    PrepareFiring(delay, muzzleID = -1)
+    PrepareFiring(delay, muzzleID = -1, muzzleCount = -1)
     {
         for (let i = 0; i < this.stretch.length; ++i)
         {
-            if (muzzleID < 0 || muzzleID === i)
+            if (muzzleID < 0 || (i >= muzzleID && (muzzleCount < 0 || i < muzzleID + muzzleCount)))
             {
                 this._perMuzzleData[i].currentStartDelay = delay + this._perMuzzleData[i].constantDelay;
                 this._perMuzzleData[i].started = false;
@@ -367,7 +430,7 @@ export class EveTurretFiringFX extends meta.Model
                         {
                             const transform = this._perMuzzleData[i].muzzleTransform;
                             stretch.SetFiringTransform(this.useMuzzleTransform ? transform : transform.subarray(12, 15), this._endPosition);
-                            stretch.DisplayEndPoints(true, true);
+                            stretch.DisplayEndPoints(true, this._displayDestObject);
                         }
                         else
                         {
@@ -413,5 +476,12 @@ export class EveTurretFiringFX extends meta.Model
 
         return accumulator.length !== c;
     }
+
+    static ImpactConfiguration = Object.freeze({
+        IMPACT_INVALID: 0,
+        IMPACT_SHIELD: 1,
+        IMPACT_ARMOR: 2,
+        IMPACT_HULL: 3
+    });
 
 }
