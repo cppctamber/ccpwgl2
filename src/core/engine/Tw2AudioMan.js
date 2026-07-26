@@ -75,6 +75,7 @@ export class Tw2AudioMan
     _bufferCache = new Map();
     _bankBytesCache = new Map();
     _dirty = true;
+    _gestureHooked = false;
 
     /**
      * Gets whether the underlying engine is enabled
@@ -300,6 +301,26 @@ export class Tw2AudioMan
     Resume()
     {
         if (this.state === Tw2AudioMan.State.SUSPENDED) this.context.resume();
+    }
+
+    /**
+     * Resumes the audio context on the first user gesture (browsers keep
+     * a context created without a gesture suspended until one occurs)
+     */
+    ResumeOnGesture()
+    {
+        if (this._gestureHooked || typeof document === "undefined") return;
+        this._gestureHooked = true;
+
+        const resume = () =>
+        {
+            document.removeEventListener("pointerdown", resume);
+            document.removeEventListener("keydown", resume);
+            this.Resume();
+        };
+
+        document.addEventListener("pointerdown", resume);
+        document.addEventListener("keydown", resume);
     }
 
     /**

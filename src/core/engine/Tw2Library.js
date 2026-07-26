@@ -99,6 +99,12 @@ export class Tw2Library extends Tw2EventEmitter
     audMan = new Tw2AudioMan();
 
     /**
+     * Enables audio initialization
+     * @type {Boolean}
+     */
+    audioEnabled = false;
+
+    /**
      * Resource manager
      * @type {Tw2ResMan}
      */
@@ -322,6 +328,11 @@ export class Tw2Library extends Tw2EventEmitter
             await this.ProcessCapabilities(this._capabilityOptions);
         }
 
+        if (this.audioEnabled)
+        {
+            await this.InitializeAudio();
+        }
+
         if (render)
         {
             this.OnEvent("tick", render);
@@ -360,6 +371,34 @@ export class Tw2Library extends Tw2EventEmitter
 
         this.EmitEvent("post_capability_process", reports, context);
         return reports;
+    }
+
+    /**
+     * Initializes audio: installs the audio library document and enables
+     * the audio manager, with audible output deferred to the first user
+     * gesture. Audio being unavailable is a warning, never an error.
+     * @return {Promise<Boolean>} whether audio enabled
+     */
+    async InitializeAudio()
+    {
+        try
+        {
+            if (!this.audMan.library)
+            {
+                await this.audMan.FetchLibrary();
+            }
+            const enabled = this.audMan.Enable();
+            this.audMan.ResumeOnGesture();
+            return enabled;
+        }
+        catch (err)
+        {
+            this.Warning({
+                name: "Audio manager",
+                message: `Audio unavailable: ${err.message}`
+            });
+            return false;
+        }
     }
 
     /**
@@ -486,6 +525,7 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (opt.events) this.AddEvents(opt.events);
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
+        if (opt.audioEnabled !== undefined) this.audioEnabled = !!opt.audioEnabled;
         if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
