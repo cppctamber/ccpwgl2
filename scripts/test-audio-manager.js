@@ -9,6 +9,7 @@ const source = fs.readFileSync(sourcePath, "utf8")
     .replace("export class", "class");
 
 let Tw2AudioMan;
+let fakeTw2;
 
 function assignIfExists(dest, src, keys)
 {
@@ -23,10 +24,43 @@ test.before(async () =>
     const { CjsAudioSystem, AudListener } = await import("@carbonenginejs/runtime-audio");
     const { CjsWemFormat } = await import("@carbonenginejs/runtime-resource/formats/wem");
     const { vec3, mat4 } = require("gl-matrix");
+    const AudioFormatWem = {
+        DecodeAudioBuffer: async bytes => ({ fakeDecoded: bytes }),
+        toOgg: CjsWemFormat.toOgg.bind(CjsWemFormat),
+        toPcm: CjsWemFormat.toPcm.bind(CjsWemFormat)
+    };
+    const AudioFormatBnk = {
+        SliceMedia: (bankBytes, offset, byteLength) => bankBytes.subarray(offset, offset + byteLength)
+    };
+    fakeTw2 = {
+        paths: {
+            map: { res: "https://res.test/" },
+            Has(key) { return key in this.map; },
+            Resolve(path)
+            {
+                const index = path.indexOf(":/");
+                const prefix = path.substr(0, index);
+                if (prefix === "http" || prefix === "https") return path;
+                if (!(prefix in this.map)) throw new Error(`Undefined resource prefix: ${prefix}`);
+                return this.map[prefix] + path.substr(index + 2);
+            }
+        },
+        resMan: {
+            fetched: [],
+            resources: {},
+            async Fetch(path)
+            {
+                this.fetched.push(path);
+                if (!(path in this.resources)) throw new Error(`Fake resMan has no resource: ${path}`);
+                return { data: this.resources[path] };
+            },
+            async FetchRaw() { throw new Error("tests must inject fetch"); }
+        }
+    };
     Tw2AudioMan = new Function(
-        "CjsAudioSystem", "AudListener", "CjsWemFormat", "vec3", "mat4", "assignIfExists",
+        "CjsAudioSystem", "AudListener", "AudioFormatWem", "AudioFormatBnk", "vec3", "mat4", "assignIfExists", "tw2",
         `${source}\nreturn Tw2AudioMan;`
-    )(CjsAudioSystem, AudListener, CjsWemFormat, vec3, mat4, assignIfExists);
+    )(CjsAudioSystem, AudListener, AudioFormatWem, AudioFormatBnk, vec3, mat4, assignIfExists, fakeTw2);
 });
 
 function FakeParam()
@@ -95,8 +129,8 @@ function CreateLibrary()
             "101": { resPath: "res:/audio/media/101.wem", storagePath: "aa/loose_101", byteLength: 4, checksum: "x", language: "" }
         },
         banks: {
-            "900:1": { sourceID: "900:1", bankID: "900", languageID: "1", language: "en-us", shortName: "Voice", resPath: "res:/audio/voice.bnk", storagePath: "bb/bank_900_en", byteLength: 16 },
-            "900:2": { sourceID: "900:2", bankID: "900", languageID: "2", language: "de", shortName: "Voice", resPath: "res:/audio/voice.bnk", storagePath: "bb/bank_900_de", byteLength: 16 }
+            "900:1": { sourceID: "900:1", bankID: "900", languageID: "1", language: "en-us", shortName: "Voice", resPath: "res:/audio/loc/en-us/voice.bnk", byteLength: 16 },
+            "900:2": { sourceID: "900:2", bankID: "900", languageID: "2", language: "de", shortName: "Voice", resPath: "res:/audio/loc/de/voice.bnk", byteLength: 16 }
         },
         eventMedia: {
             engine_loop: [ "101" ],
@@ -172,16 +206,16 @@ test("stays headless until Enable and then realizes the listener and emitters", 
 
 test("resolves event media through library edges, loose media and bank slices", async () =>
 {
-    const fetched = [];
     const bankBytes = Uint8Array.from([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]);
-    const audMan = new Tw2AudioMan(); audMan.Register({
-        resourceBaseUrl: "https://cdn.test/",
-        fetch: async url =>
-        {
-            fetched.push(url);
-            return { ok: true, arrayBuffer: async () => bankBytes.slice().buffer };
-        }
-    });
+    const { resMan } = fakeTw2;
+    resMan.fetched.length = 0;
+    resMan.resources = {
+        "res:/audio/media/101.wem": bankBytes,
+        "res:/audio/loc/en-us/voice.bnk": bankBytes,
+        "res:/audio/loc/de/voice.bnk": bankBytes
+    };
+
+    const audMan = new Tw2AudioMan();
     audMan.SetLibrary(CreateLibrary());
 
     assert.equal(audMan.ResolveEventMedia("engine_loop"), "101");
@@ -190,15 +224,15 @@ test("resolves event media through library edges, loose media and bank slices", 
     assert.equal(audMan.ResolveEventMedia("unknown_event"), null);
 
     const loose = await audMan.FetchWemBytes("101");
-    assert.equal(fetched[0], "https://cdn.test/aa/loose_101");
+    assert.equal(resMan.fetched[0], "res:/audio/media/101.wem", "loose media fetches its res path through resMan");
     assert.equal(loose.length, 16);
 
     const embedded = await audMan.FetchWemBytes("202");
-    assert.equal(fetched[1], "https://cdn.test/bb/bank_900_en", "preferred language variant picks its bank");
+    assert.equal(resMan.fetched[1], "res:/audio/loc/en-us/voice.bnk", "preferred language variant picks its bank");
     assert.deepEqual([ ...embedded ], [ 4, 5, 6, 7 ], "bank slice honors offset and byteLength");
 
     await audMan.FetchWemBytes("202");
-    assert.equal(fetched.length, 2, "bank bytes are fetched once");
+    assert.equal(resMan.fetched.length, 2, "bank bytes are fetched once");
 
     const single = await audMan.FetchWemBytes("303");
     assert.deepEqual([ ...single ], [ 8, 9, 10, 11 ], "single-variant embedded records are plain objects, not arrays");
@@ -206,7 +240,7 @@ test("resolves event media through library edges, loose media and bank slices", 
     audMan.Register({ language: "de" });
     audMan.SetLibrary(CreateLibrary());
     const german = await audMan.FetchWemBytes("202");
-    assert.equal(fetched[2], "https://cdn.test/bb/bank_900_de");
+    assert.equal(resMan.fetched[2], "res:/audio/loc/de/voice.bnk");
     assert.deepEqual([ ...german ], [ 2, 3, 4, 5 ]);
 
     await assert.rejects(() => audMan.FetchWemBytes("999"), /not found in library/);
@@ -265,25 +299,32 @@ test("EveSOFData.SetupAudio builds tracked hull emitters", () =>
     assert.doesNotMatch(body, /not implemented/i);
 });
 
-test("a mediaUrl endpoint short-circuits loose and embedded resolution", async () =>
+test("a registered aud:/ prefix short-circuits loose and embedded resolution", async () =>
 {
     const fetched = [];
     const audMan = new Tw2AudioMan(); audMan.Register({
-        mediaUrl: (id, lib) => `https://tools.test/eve/${lib.sourceBuild}/audio/id/${id}`,
         fetch: async url =>
         {
             fetched.push(url);
             return { ok: true, arrayBuffer: async () => new Uint8Array([ 1, 2 ]).buffer };
         }
     });
-    audMan.SetLibrary({ ...CreateLibrary(), sourceBuild: "3435006" });
+    audMan.SetLibrary(CreateLibrary());
 
-    await audMan.FetchWemBytes("101");
-    await audMan.FetchWemBytes("202");
-    assert.deepEqual(fetched, [
-        "https://tools.test/eve/3435006/audio/id/101",
-        "https://tools.test/eve/3435006/audio/id/202"
-    ], "both loose and embedded ids go straight to the media endpoint");
+    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/id/";
+    try
+    {
+        await audMan.FetchWemBytes("101");
+        await audMan.FetchWemBytes("202");
+        assert.deepEqual(fetched, [
+            "https://tools.test/eve/3435006/audio/id/101",
+            "https://tools.test/eve/3435006/audio/id/202"
+        ], "both loose and embedded ids go straight to the media-id endpoint");
+    }
+    finally
+    {
+        delete fakeTw2.paths.map.aud;
+    }
 });
 
 test("rejects invalid libraries and reports fetch failures", async () =>
@@ -296,5 +337,13 @@ test("rejects invalid libraries and reports fetch failures", async () =>
     assert.throws(() => audMan.SetLibrary(null), /carbonenginejs\.audioLibrary/);
 
     audMan.SetLibrary(CreateLibrary());
-    await assert.rejects(() => audMan.FetchWemBytes("101"), /fetch failed \(404\)/);
+    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/id/";
+    try
+    {
+        await assert.rejects(() => audMan.FetchWemBytes("101"), /fetch failed \(404\)/);
+    }
+    finally
+    {
+        delete fakeTw2.paths.map.aud;
+    }
 });

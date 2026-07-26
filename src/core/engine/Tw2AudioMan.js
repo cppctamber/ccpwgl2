@@ -1,7 +1,9 @@
 import { vec3, mat4 } from "math";
+import { tw2 } from "global";
 import { assignIfExists } from "utils";
 import { CjsAudioSystem, AudListener } from "@carbonenginejs/runtime-audio";
-import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
+import { AudioFormatWem } from "core/resource/formats/AudioFormatWem";
+import { AudioFormatBnk } from "core/resource/formats/AudioFormatBnk";
 
 /**
  * Audio manager backed by @carbonenginejs/runtime-audio.
@@ -9,8 +11,12 @@ import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
  * Owns the Carbon audio composition root (manager + repository + WebAudio
  * backend), the singleton listener, and a default media pipeline that resolves
  * events through an installed "carbonenginejs.audioLibrary" document: loose
- * wem media fetched by storage path, embedded media sliced out of fetched
- * banks, decoded client-side (Vorbis->Ogg, PTADPCM->PCM).
+ * wem media and banks fetched by their res:/ paths through the engine's
+ * resource path store, embedded media sliced out of fetched banks, decoded
+ * client-side (Vorbis->Ogg, PTADPCM->PCM). When an "aud" path prefix is
+ * registered (e.g. a tools-core /eve/<build>/audio/id/ endpoint) media is
+ * fetched by id through it instead, and loose/embedded resolution is
+ * handled server-side.
  *
  * Headless until Enable() is called from a user gesture: constructing the
  * manager or installing a library never creates an AudioContext, and emitters
@@ -23,9 +29,6 @@ import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
  * @property {vec3} forward                - listener forward vector
  * @property {vec3} up                     - listener up vector
  * @property {vec3} position               - listener position
- * @property {String} resourceBaseUrl      - base url storage paths resolve against
- * @property {?Function} mediaUrl          - media id -> url (server-side resolution, e.g. tools-core audio routes)
- * @property {?Function} resolveUrl        - custom library record -> url resolution
  * @property {String} language             - preferred embedded media language
  * @property {Number} distanceScale        - world units to WebAudio panner units
  * @property {?Function} fetch             - fetch override
@@ -52,9 +55,6 @@ export class Tw2AudioMan
     up = vec3.fromValues(0, 1, 0);
     position = vec3.create();
 
-    resourceBaseUrl = "https://resources.eveonline.com/";
-    mediaUrl = null;
-    resolveUrl = null;
     language = "en-us";
     distanceScale = 1;
     fetch = null;
@@ -94,9 +94,6 @@ export class Tw2AudioMan
         if (!opt) return;
 
         assignIfExists(this, opt, [
-            "resourceBaseUrl",
-            "mediaUrl",
-            "resolveUrl",
             "language",
             "distanceScale",
             "fetch",
@@ -393,17 +390,19 @@ export class Tw2AudioMan
      */
     async FetchWemBytes(wemId)
     {
-        // A media-id endpoint (e.g. tools-core /eve/<build>/audio/id/<id>)
-        // resolves loose, embedded and localized sources server-side.
-        if (this.mediaUrl)
+        // A registered "aud" prefix targets a media-id endpoint (e.g.
+        // tools-core /eve/<build>/audio/id/<id>) which resolves loose,
+        // embedded and localized sources server-side.
+        if (tw2.paths.Has("aud"))
         {
-            return this._FetchBytes(this.mediaUrl(wemId, this.library));
+            return this._FetchBytes(tw2.paths.Resolve(`aud:/${wemId}`));
         }
 
         const loose = this.library?.media?.[wemId];
         if (loose)
         {
-            return this._FetchBytes(this._ResolveMediaUrl(loose));
+            const res = await tw2.resMan.Fetch(loose.resPath);
+            return res.data;
         }
 
         const variant = this._PickEmbeddedVariant(this.library?.embeddedMedia?.[wemId]);
@@ -419,7 +418,7 @@ export class Tw2AudioMan
         }
 
         const bankBytes = await this._FetchBankBytes(bank);
-        return bankBytes.subarray(variant.offset, variant.offset + variant.byteLength);
+        return AudioFormatBnk.SliceMedia(bankBytes, variant.offset, variant.byteLength);
     }
 
     /**
@@ -430,19 +429,7 @@ export class Tw2AudioMan
     async DecodeWem(bytes)
     {
         if (!this.context) throw new ReferenceError("Audio manager has no context, call Enable first");
-
-        try
-        {
-            const ogg = CjsWemFormat.toOgg(bytes);
-            return await this.context.decodeAudioData(ogg.bytes.slice().buffer);
-        }
-        catch (err)
-        {
-            const pcm = CjsWemFormat.toPcm(bytes);
-            const buffer = this.context.createBuffer(pcm.channels, pcm.sampleCount, pcm.sampleRate);
-            pcm.channelData.forEach((data, channel) => buffer.copyToChannel(data, channel));
-            return buffer;
-        }
+        return AudioFormatWem.DecodeAudioBuffer(bytes, this.context);
     }
 
     /**
@@ -508,43 +495,29 @@ export class Tw2AudioMan
         {
             this._bankBytesCache.set(
                 bank.sourceID,
-                this._FetchBytes(this._ResolveMediaUrl(bank))
+                tw2.resMan.Fetch(bank.resPath).then(res => res.data)
             );
         }
         return this._bankBytesCache.get(bank.sourceID);
     }
 
     /**
-     * Resolves a library media/bank record to a url.
-     * Defaults to the storage path against resourceBaseUrl; hosts can
-     * override with resolveUrl(record) e.g. to serve by res path.
-     * @param {Object} record
-     * @return {String}
-     */
-    _ResolveMediaUrl(record)
-    {
-        if (this.resolveUrl)
-        {
-            const resolved = this.resolveUrl(record);
-            if (resolved) return resolved;
-        }
-        return this.resourceBaseUrl + record.storagePath;
-    }
-
-    /**
-     * Fetches a url as bytes
+     * Fetches a url as bytes through the resource manager
      * @param {String} url
      * @return {Promise<Uint8Array>}
      */
     async _FetchBytes(url)
     {
-        const doFetch = this.fetch || fetch;
-        const response = await doFetch(url);
-        if (!response.ok)
+        if (this.fetch)
         {
-            throw new Error(`Audio media fetch failed (${response.status}): ${url}`);
+            const response = await this.fetch(url);
+            if (!response.ok)
+            {
+                throw new Error(`Audio media fetch failed (${response.status}): ${url}`);
+            }
+            return new Uint8Array(await response.arrayBuffer());
         }
-        return new Uint8Array(await response.arrayBuffer());
+        return new Uint8Array(await tw2.resMan.FetchRaw(url, "arraybuffer"));
     }
 
     /**

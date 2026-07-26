@@ -202,11 +202,6 @@ export const config = {
 
     audMan: {
 
-        // Base url the audio library's storage paths resolve against
-        // (the public CDN does not send CORS headers - browsers need a
-        // proxying server or the mediaUrl/resolveUrl overrides)
-        "resourceBaseUrl": "https://resources.eveonline.com/",
-
         // Preferred language for localized embedded media variants
         "language": "en-us",
 
@@ -245,6 +240,12 @@ export const config = {
         // Local tools-core service (not provided with this library)
         "api": "http://127.0.0.1:3000/ccp/latest/",
         "res": "http://127.0.0.1:3000/ccp/latest/resources/",
+
+        // Audio media by id. "res" must remain the standard eve resource
+        // path; "aud" can target any media-id endpoint (e.g. tools-core
+        // /eve/<build>/audio/id/) and takes precedence over res:/ media
+        // resolution in the audio manager when registered.
+        "aud": "http://127.0.0.1:3000/eve/latest/audio/id/",
 
     },
 
@@ -287,6 +288,9 @@ export const config = {
         "wav": core.Tw2AudioRes,
         // Assumes audio...
         "ogg": core.Tw2AudioRes,
+        // Wwise media and banks (raw bytes, decoded via runtime-resource)
+        "wem": core.Tw2AudioRes,
+        "bnk": core.Tw2AudioRes,
     },
 
     constructors: [
