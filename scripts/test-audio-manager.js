@@ -282,6 +282,20 @@ test("tracked emitters follow their target's world transform each tick", () =>
 
     assert.equal(audMan.ReleaseEmitter(emitter), true);
     assert.equal(audMan.UntrackEmitter(emitter), false, "release also untracks");
+
+    // An explicitly designated camera drives the listener
+    assert.throws(() => audMan.SetActiveCamera({}), /GetView/);
+    audMan.SetActiveCamera({
+        GetView(out)
+        {
+            // A view looking down -z from [7, 8, 9]
+            out.set([ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -7, -8, -9, 1 ]);
+            return out;
+        }
+    });
+    audMan.Tick();
+    assert.deepEqual([ ...audMan.position ], [ 7, 8, 9 ], "listener follows the active camera pose");
+    audMan.SetActiveCamera(null);
     audMan.system.Detach();
 });
 

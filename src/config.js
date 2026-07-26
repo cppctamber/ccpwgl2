@@ -232,6 +232,12 @@ export const config = {
         // World units to WebAudio panner units
         "distanceScale": 1,
 
+        // The listener follows the device's camera pose (viewInverse) each
+        // tick. Multi-camera hosts should disable this and drive the
+        // listener manually (SetAudioLocation/SetAudioLocationFromPoseMatrix),
+        // since only the host knows which camera is the ears.
+        "listenerFromCamera": true,
+
         // Allows fetching media by id through the aud:/ endpoint when it
         // verifies. When false the endpoint is never used and media always
         // resolves through its res:/ paths.

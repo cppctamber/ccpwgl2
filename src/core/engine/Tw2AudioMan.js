@@ -31,6 +31,7 @@ import { AudioFormatBnk } from "core/resource/formats/AudioFormatBnk";
  * @property {vec3} position               - listener position
  * @property {String} language             - preferred embedded media language
  * @property {Number} distanceScale        - world units to WebAudio panner units
+ * @property {Boolean} listenerFromCamera  - follows the device's camera pose (viewInverse) each tick
  * @property {Boolean} allowMediaIds       - permits aud:/ media-id fetching (never used when false)
  * @property {Boolean} allowOffsets        - permits Range requests (never used when false)
  * @property {Boolean} mediaIdSupport      - verified: the aud:/ endpoint answers media ids directly
@@ -61,6 +62,7 @@ export class Tw2AudioMan
 
     language = "en-us";
     distanceScale = 1;
+    listenerFromCamera = true;
     allowMediaIds = true;
     allowOffsets = true;
     fetch = null;
@@ -76,6 +78,7 @@ export class Tw2AudioMan
     _bankBytesCache = new Map();
     _dirty = true;
     _gestureHooked = false;
+    _activeCamera = null;
 
     /**
      * Gets whether the underlying engine is enabled
@@ -106,6 +109,7 @@ export class Tw2AudioMan
         assignIfExists(this, opt, [
             "language",
             "distanceScale",
+            "listenerFromCamera",
             "allowMediaIds",
             "allowOffsets",
             "fetch",
@@ -348,6 +352,20 @@ export class Tw2AudioMan
     Tick()
     {
         if (!this.system) return;
+
+        // Listener pose priority: an explicitly designated camera, then the
+        // device's camera pose, then manual control
+        if (this._activeCamera)
+        {
+            const { mat4_0 } = Tw2AudioMan.global;
+            mat4.invert(mat4_0, this._activeCamera.GetView(mat4_0));
+            this.SetAudioLocationFromPoseMatrix(mat4_0);
+        }
+        else if (this.listenerFromCamera && tw2.device && tw2.device.viewInverse)
+        {
+            this.SetAudioLocationFromPoseMatrix(tw2.device.viewInverse);
+        }
+
         if (this._dirty && this.listener)
         {
             this.listener.SetPosition(this.forward, this.up, this.position);
@@ -369,6 +387,24 @@ export class Tw2AudioMan
         }
 
         this.system.Process(typeof performance !== "undefined" ? performance.now() : Date.now());
+    }
+
+    /**
+     * Sets the camera the listener follows. Hosts drawing multiple
+     * views/scissors should designate their "ears" camera here, since the
+     * device only holds whichever view rendered last. Pass null to clear
+     * (falling back to device follow or manual control).
+     * @param {?*} camera - any camera exposing GetView(out)
+     * @return {Tw2AudioMan}
+     */
+    SetActiveCamera(camera)
+    {
+        if (camera && typeof camera.GetView !== "function")
+        {
+            throw new TypeError("Audio active camera requires GetView(out)");
+        }
+        this._activeCamera = camera || null;
+        return this;
     }
 
     /**
