@@ -105,6 +105,12 @@ export class Tw2Library extends Tw2EventEmitter
     audioEnabled = false;
 
     /**
+     * The settled result of audio initialization, null until it settles
+     * @type {?Boolean}
+     */
+    _audioAvailable = null;
+
+    /**
      * Resource manager
      * @type {Tw2ResMan}
      */
@@ -328,10 +334,9 @@ export class Tw2Library extends Tw2EventEmitter
             await this.ProcessCapabilities(this._capabilityOptions);
         }
 
-        if (this.audioEnabled)
-        {
-            await this.InitializeAudio();
-        }
+        // Audio never blocks initialization: the library can take minutes to
+        // prepare server side, and a scene must render without it
+        if (this.audioEnabled) this.InitializeAudio();
 
         if (render)
         {
@@ -374,9 +379,13 @@ export class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Initializes audio: installs the audio library document and enables
-     * the audio manager, with audible output deferred to the first user
-     * gesture. Audio being unavailable is a warning, never an error.
+     * Initializes audio: installs the audio library document and enables the
+     * audio manager, with audible output deferred to the first user gesture.
+     *
+     * Never blocks or throws: the library may take minutes to prepare server
+     * side, so callers listen for the "audio_available" event rather than
+     * awaiting this. Audio being unavailable is a warning, and emits
+     * "audio_available" with `false`.
      * @return {Promise<Boolean>} whether audio enabled
      */
     async InitializeAudio()
@@ -389,6 +398,8 @@ export class Tw2Library extends Tw2EventEmitter
             }
             const enabled = this.audMan.Enable();
             this.audMan.ResumeOnGesture();
+            this._audioAvailable = enabled;
+            this.EmitEvent("audio_available", enabled, this.audMan);
             return enabled;
         }
         catch (err)
@@ -397,8 +408,31 @@ export class Tw2Library extends Tw2EventEmitter
                 name: "Audio manager",
                 message: `Audio unavailable: ${err.message}`
             });
+            this._audioAvailable = false;
+            this.EmitEvent("audio_available", false, this.audMan, err);
             return false;
         }
+    }
+
+    /**
+     * Handles listeners added after an event has already been fired
+     * @param {Tw2Library} tw2
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} [context]
+     * @return {Boolean} true if the listener was fired
+     */
+    static onListener(tw2, eventName, listener, context)
+    {
+        // Audio resolves asynchronously, so a listener added after it
+        // settled fires immediately with the settled result
+        if (eventName === "audio_available" && tw2._audioAvailable !== null)
+        {
+            listener.call(context, tw2._audioAvailable, tw2.audMan);
+            return true;
+        }
+
+        return false;
     }
 
     /**
