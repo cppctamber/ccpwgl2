@@ -1,9 +1,9 @@
 import { meta } from "utils";
 import { CallEmitter, FindSoundEmitter, GetOwner } from "./Tr2ActionAudioHelpers";
+import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.notImplemented
 @meta.type("Tr2ActionBindRTPC")
 @meta.ccp.define("Tr2ActionBindRTPC")
 export class Tr2ActionBindRTPC extends Tw2Action
@@ -28,6 +28,10 @@ export class Tr2ActionBindRTPC extends Tw2Action
     _startTime = 0;
 
     _lastTime = 0;
+
+    _program = null;
+
+    _programSource = null;
 
     Link(controller)
     {
@@ -100,14 +104,13 @@ export class Tr2ActionBindRTPC extends Tw2Action
         }
 
         // Carbon evaluates a controller expression and sends it to an audio RTPC.
-        // ccpwgl has no audio backend contract here, so this only calls a duck-typed hook.
         return CallEmitter(this._emitter, "SetRTPC", [ this.rtpcName, this.EvaluateValue(controller, owner) ]);
     }
 
     EvaluateValue(controller, owner)
     {
         const numeric = Number(this.value);
-        if (!Number.isNaN(numeric))
+        if (this.value !== "" && !Number.isNaN(numeric))
         {
             return numeric;
         }
@@ -115,6 +118,25 @@ export class Tr2ActionBindRTPC extends Tw2Action
         if (this.value === "StateTime()")
         {
             return this._lastTime - this._startTime;
+        }
+
+        if (this.value)
+        {
+            if (!this._program || this._programSource !== this.value)
+            {
+                this._program = Tr2ExpressionProgram.Compile(this.value, { emptyValue: null });
+                this._programSource = this.value;
+            }
+
+            if (this._program.IsValid())
+            {
+                const context = controller && controller.GetExpressionContext
+                    ? controller.GetExpressionContext(owner, null, { action: this })
+                    : { controller, owner, action: this };
+
+                const value = Number(this._program.Evaluate(context));
+                if (!Number.isNaN(value)) return value;
+            }
         }
 
         return this.GetCurveValue(this._lastTime - this._startTime);
@@ -142,7 +164,19 @@ export class Tr2ActionBindRTPC extends Tw2Action
 
     IsExpressionValid()
     {
-        return true;
+        const numeric = Number(this.value);
+        if (this.value === "" || !Number.isNaN(numeric) || this.value === "StateTime()")
+        {
+            return true;
+        }
+
+        if (!this._program || this._programSource !== this.value)
+        {
+            this._program = Tr2ExpressionProgram.Compile(this.value, { emptyValue: null });
+            this._programSource = this.value;
+        }
+
+        return this._program.IsValid();
     }
 
     IsAttrExpressionValid()
