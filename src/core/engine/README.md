@@ -45,7 +45,7 @@ After creation it emits `context_created`, and every frame `Tw2Library.StartFram
 ```text
 device.Tick()
 resMan.Tick()
-audMan.Tick() if present
+audMan.Tick()
 ```
 
 WebGL object creation and upload work must stay on the main thread.
@@ -187,9 +187,9 @@ The store records and formats reports; it does not decide policy. Systems report
 
 `Tw2Logger` handles engine log entries, console display, history, visibility, and throttling. `Tw2Library` exposes convenience methods such as `Log`, `Info`, `Warning`, and `Error`.
 
-### `Tw2AudMan`
+### `Tw2AudioMan`
 
-`Tw2AudMan` is the audio manager. It belongs in the engine layer because audio resources and runtime audio state are engine-level concerns. It is not fully wired as a default singleton yet.
+`Tw2AudioMan` is the audio manager, backed by `@carbonenginejs/runtime-audio`. It is wired as `tw2.audMan` and stays headless — no `AudioContext`, no network — until `Enable()` is called from a user gesture. It installs a `carbonenginejs.audioLibrary` document via `SetLibrary()`, resolves event media through the library's exact HIRC edges (loose wem by storage path, embedded wem sliced from fetched banks), decodes client-side via `@carbonenginejs/runtime-resource`'s wem format, and drives the Carbon culling/render loop from `Tick()`. The listener follows `SetAudioLocation`/`SetAudioLocationFromPoseMatrix`, and emitters created through `CreateEmitter`/`AdoptEmitter` are discoverable by name for the audio state actions.
 
 ## Boundaries
 

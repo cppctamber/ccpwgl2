@@ -3,6 +3,7 @@ import { Tw2ResMan } from "./Tw2ResMan";
 import { Tw2Device } from "./Tw2Device";
 import { Tw2Logger } from "./Tw2Logger";
 import { Tw2InputMan } from "./Tw2InputMan";
+import { Tw2AudioMan } from "./Tw2AudioMan";
 import { path } from "../reader/Tw2BlackPropertyReaders";
 import { ErrSingletonInstantiation } from "../Tw2Error";
 import * as consts from "constant";
@@ -92,10 +93,10 @@ export class Tw2Library extends Tw2EventEmitter
     logger = new Tw2Logger();
 
     /**
-     * Audio context
-     * @type {null|Tw2AudMan}
+     * Audio manager
+     * @type {Tw2AudioMan}
      */
-    audMan = null; //new Tw2AudMan();
+    audMan = new Tw2AudioMan();
 
     /**
      * Resource manager
@@ -374,7 +375,7 @@ export class Tw2Library extends Tw2EventEmitter
     {
         this.device.Tick();
         this.resMan.Tick();
-        if (this.audMan) this.audMan.Tick();
+        this.audMan.Tick();
         if (this.input) this.input.Update(this.device.dt);
         this.EmitEvent("start_frame", this.device.dt);
         this.EmitEvent("tick", this.device.dt);
