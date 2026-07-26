@@ -311,6 +311,16 @@ export function string(reader)
     return reader.ReadStringU16();
 }
 
+/**
+ * Reads a wide string (Carbon std::wstring - indexes the wide string table)
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {String}
+ */
+export function wstring(reader)
+{
+    return reader.ReadWStringU16();
+}
+
 
 const pathExtensionHandlers = new Map();
 

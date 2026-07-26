@@ -47,6 +47,14 @@ export class Tw2BlackBinaryReader
     }
 
     /**
+     * Gets the wide string table (Carbon std::wstring values)
+     */
+    get wideStringTable()
+    {
+        return this.context._wideStringTable;
+    }
+
+    /**
      * Gets references
      */
     get references()
@@ -229,6 +237,22 @@ export class Tw2BlackBinaryReader
             });
         }
         return this.stringTable[value];
+    }
+
+    /**
+     * Reads a wide string by table index (Carbon std::wstring values)
+     * @returns {String}
+     */
+    ReadWStringU16()
+    {
+        let value = this.ReadU16();
+        if (value > this.wideStringTable.length)
+        {
+            throw new ErrBinaryReaderReadError({
+                readError: `Reading wide string "${value}" but only ${this.wideStringTable.length} exist`
+            });
+        }
+        return this.wideStringTable[value];
     }
 
     /**

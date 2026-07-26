@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { vec3, quat } from "math";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 
 
 @meta.type("EveSOFDataHullSoundEmitter")
@@ -24,5 +25,10 @@ export class EveSOFDataHullSoundEmitter extends meta.Model
 
     @meta.quaternion
     rotation = quat.create();
+
+    // Carbon m_prefix is std::wstring: the value indexes the wide string table
+    static blackReaders = {
+        prefix: wstring
+    };
 
 }

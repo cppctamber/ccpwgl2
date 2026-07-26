@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { Tr2CurveKey } from "./Tr2CurveKeys";
 
 
@@ -45,6 +46,11 @@ export class Tw2EventKey extends Tr2CurveKey
             value: this.value
         };
     }
+
+    // Carbon TriEventKey m_value is std::wstring
+    static blackReaders = {
+        value: wstring
+    };
 }
 
 
@@ -79,6 +85,11 @@ export class Tw2EventCurve extends meta.Model
     eventListener = null;
 
     _currentKeyIndex = 0;
+
+    // Carbon TriEventCurve m_value is std::wstring
+    static blackReaders = {
+        value: wstring
+    };
 
     Initialize()
     {

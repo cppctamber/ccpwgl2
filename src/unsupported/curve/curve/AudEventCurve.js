@@ -1,6 +1,7 @@
 import { meta } from "utils";
 import { tw2 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "curve";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { AudEmitter } from "@carbonenginejs/runtime-audio";
 
 
@@ -17,6 +18,11 @@ export class AudEventKey extends Tw2CurveKey
 
     @meta.string
     value = "";
+
+    // Carbon m_value is std::wstring
+    static blackReaders = {
+        value: wstring
+    };
 
 }
 
@@ -38,6 +44,9 @@ export class AudEventCurve extends Tw2Curve
 
     @meta.string
     name = "";
+
+    @meta.string
+    value = "";
 
     @meta.uint
     extrapolation = 0;
@@ -179,6 +188,11 @@ export class AudEventCurve extends Tw2Curve
             this._currentKeyIndex++;
         }
     }
+
+    // Carbon m_value is std::wstring
+    static blackReaders = {
+        value: wstring
+    };
 
     /**
      * The curve's key constructor

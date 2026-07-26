@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { CallEmitter, FindSoundEmitter, GetOwner } from "./Tr2ActionAudioHelpers";
 import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
@@ -32,6 +33,11 @@ export class Tr2ActionBindRTPC extends Tw2Action
     _program = null;
 
     _programSource = null;
+
+    // Carbon m_rtpcName is std::wstring
+    static blackReaders = {
+        rtpcName: wstring
+    };
 
     Link(controller)
     {

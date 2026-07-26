@@ -22,7 +22,8 @@ class AudEvent
     static blackStruct(reader)
     {
         return AudEventKey.from({
-            value: reader.ReadU16(),
+            // Carbon m_value is std::wstring - u16 index into the wide string table
+            value: reader.ReadWStringU16(),
             time: reader.ReadF32()
         });
     }

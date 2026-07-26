@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { CallEmitter, FindSoundEmitter, GetOwner } from "./Tr2ActionAudioHelpers";
 import { Tw2Action } from "./Tw2Action";
 
@@ -15,6 +16,12 @@ export class Tr2ActionSetAudioSwitch extends Tw2Action
 
     @meta.string
     switchState = "";
+
+    // Carbon m_switchGroup/m_switchState are std::wstring
+    static blackReaders = {
+        switchGroup: wstring,
+        switchState: wstring
+    };
 
     Start(controller, owner)
     {

@@ -25,6 +25,7 @@ export class Tw2BlackReader
     _reader = null;
     _start = 0;
     _stringTable = null;
+    _wideStringTable = null;
 
     /**
      * Constructor
@@ -67,17 +68,18 @@ export class Tw2BlackReader
         }
         stringsReader.ExpectEnd();
 
-        // Comments
+        // Wide string table (Carbon std::wstring values; was misread as comments)
         const
-            commentReader = reader.ReadBinaryReader(reader.ReadU32()),
-            commentCount = commentReader.ReadU16();
+            wideReader = reader.ReadBinaryReader(reader.ReadU32()),
+            wideCount = wideReader.ReadU16();
 
-        this._comments = [];
-        for (let i = 0; i < commentCount; i++)
+        this._wideStringTable = [];
+        for (let i = 0; i < wideCount; i++)
         {
-            this._comments[i] = commentReader.ReadCWString();
+            this._wideStringTable[i] = wideReader.ReadCWString();
         }
-        commentReader.ExpectEnd();
+        wideReader.ExpectEnd();
+        this._comments = this._wideStringTable;
 
         this._ids = new Map();
         this._reader = reader;

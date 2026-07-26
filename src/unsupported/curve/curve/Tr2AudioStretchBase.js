@@ -1,5 +1,6 @@
 import { meta } from "utils";
 import { tw2 } from "global";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { StretchAudio } from "@carbonenginejs/runtime-audio";
 import { AudEmitter } from "../../AudEmitter";
 
@@ -33,6 +34,13 @@ export class Tr2AudioStretchBase extends meta.Model
 
     @meta.string
     stretchEvent = "";
+
+    // Carbon event names are std::wstring (persisted on Tr2AudioStretchAuto)
+    static blackReaders = {
+        outburstEvent: wstring,
+        impactEvent: wstring,
+        stretchEvent: wstring
+    };
 
     /**
      * Creates the three standard emitters when absent
