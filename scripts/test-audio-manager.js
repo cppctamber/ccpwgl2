@@ -10,14 +10,23 @@ const source = fs.readFileSync(sourcePath, "utf8")
 
 let Tw2AudioMan;
 
+function assignIfExists(dest, src, keys)
+{
+    for (const key of keys)
+    {
+        if (src && src[key] !== undefined) dest[key] = src[key];
+    }
+}
+
 test.before(async () =>
 {
     const { CjsAudioSystem, AudListener } = await import("@carbonenginejs/runtime-audio");
     const { CjsWemFormat } = await import("@carbonenginejs/runtime-resource/formats/wem");
+    const { vec3, mat4 } = require("gl-matrix");
     Tw2AudioMan = new Function(
-        "CjsAudioSystem", "AudListener", "CjsWemFormat",
+        "CjsAudioSystem", "AudListener", "CjsWemFormat", "vec3", "mat4", "assignIfExists",
         `${source}\nreturn Tw2AudioMan;`
-    )(CjsAudioSystem, AudListener, CjsWemFormat);
+    )(CjsAudioSystem, AudListener, CjsWemFormat, vec3, mat4, assignIfExists);
 });
 
 function FakeParam()
@@ -109,7 +118,7 @@ test("stays headless until Enable and then realizes the listener and emitters", 
 {
     const log = [];
     let contexts = 0;
-    const audMan = new Tw2AudioMan({
+    const audMan = new Tw2AudioMan(); audMan.Register({
         createContext: () => { contexts++; return FakeContext(log); },
         loadBuffer: async () => ({ fake: "buffer" })
     });
@@ -165,7 +174,7 @@ test("resolves event media through library edges, loose media and bank slices", 
 {
     const fetched = [];
     const bankBytes = Uint8Array.from([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ]);
-    const audMan = new Tw2AudioMan({
+    const audMan = new Tw2AudioMan(); audMan.Register({
         resourceBaseUrl: "https://cdn.test/",
         fetch: async url =>
         {
@@ -194,7 +203,7 @@ test("resolves event media through library edges, loose media and bank slices", 
     const single = await audMan.FetchWemBytes("303");
     assert.deepEqual([ ...single ], [ 8, 9, 10, 11 ], "single-variant embedded records are plain objects, not arrays");
 
-    audMan.SetOptions({ language: "de" });
+    audMan.Register({ language: "de" });
     audMan.SetLibrary(CreateLibrary());
     const german = await audMan.FetchWemBytes("202");
     assert.equal(fetched[2], "https://cdn.test/bb/bank_900_de");
@@ -206,7 +215,7 @@ test("resolves event media through library edges, loose media and bank slices", 
 test("tracked emitters follow their target's world transform each tick", () =>
 {
     const log = [];
-    const audMan = new Tw2AudioMan({
+    const audMan = new Tw2AudioMan(); audMan.Register({
         createContext: () => FakeContext(log),
         loadBuffer: async () => ({ fake: "buffer" })
     });
@@ -259,7 +268,7 @@ test("EveSOFData.SetupAudio builds tracked hull emitters", () =>
 test("a mediaUrl endpoint short-circuits loose and embedded resolution", async () =>
 {
     const fetched = [];
-    const audMan = new Tw2AudioMan({
+    const audMan = new Tw2AudioMan(); audMan.Register({
         mediaUrl: (id, lib) => `https://tools.test/eve/${lib.sourceBuild}/audio/id/${id}`,
         fetch: async url =>
         {
@@ -279,7 +288,7 @@ test("a mediaUrl endpoint short-circuits loose and embedded resolution", async (
 
 test("rejects invalid libraries and reports fetch failures", async () =>
 {
-    const audMan = new Tw2AudioMan({
+    const audMan = new Tw2AudioMan(); audMan.Register({
         fetch: async () => ({ ok: false, status: 404 })
     });
 

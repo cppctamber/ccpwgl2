@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { vec3 } from "math";
 
 
 /**
@@ -57,17 +58,17 @@ export class EveChildAudio
 
         if (parentTransform && emitter.SetPosition)
         {
-            const { front, top, pos } = EveChildAudio.global;
-            front[0] = parentTransform[8];
-            front[1] = parentTransform[9];
-            front[2] = parentTransform[10];
-            top[0] = parentTransform[4];
-            top[1] = parentTransform[5];
-            top[2] = parentTransform[6];
-            pos[0] = parentTransform[12];
-            pos[1] = parentTransform[13];
-            pos[2] = parentTransform[14];
-            emitter.SetPosition(front, top, pos);
+            const { vec3_0, vec3_1, vec3_2 } = EveChildAudio.global;
+            vec3_0[0] = parentTransform[8];
+            vec3_0[1] = parentTransform[9];
+            vec3_0[2] = parentTransform[10];
+            vec3_1[0] = parentTransform[4];
+            vec3_1[1] = parentTransform[5];
+            vec3_1[2] = parentTransform[6];
+            vec3_2[0] = parentTransform[12];
+            vec3_2[1] = parentTransform[13];
+            vec3_2[2] = parentTransform[14];
+            emitter.SetPosition(vec3_0, vec3_1, vec3_2);
         }
     }
 
@@ -95,9 +96,9 @@ export class EveChildAudio
      * @type {Object}
      */
     static global = {
-        front: new Float32Array(3),
-        top: new Float32Array(3),
-        pos: new Float32Array(3)
+        vec3_0: vec3.create(),
+        vec3_1: vec3.create(),
+        vec3_2: vec3.create()
     };
 
     static __isEffectChild = true;

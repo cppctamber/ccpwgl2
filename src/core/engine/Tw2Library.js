@@ -509,6 +509,7 @@ export class Tw2Library extends Tw2EventEmitter
 
         if (opt.logger) this.logger.Register(opt.logger);
         if (opt.resMan) this.resMan.Register(opt.resMan);
+        if (opt.audMan) this.audMan.Register(opt.audMan);
         if (opt.device) this.device.Register(opt.device);
 
         // Shortcut to device.glParams

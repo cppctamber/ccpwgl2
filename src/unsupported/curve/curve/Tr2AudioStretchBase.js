@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { vec3 } from "math";
 import { tw2 } from "global";
 import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { StretchAudio } from "@carbonenginejs/runtime-audio";
@@ -141,8 +142,8 @@ export class Tr2AudioStretchBase extends meta.Model
      * @type {Object}
      */
     static global = {
-        front: new Float32Array([ 0, 1, 0 ]),
-        top: new Float32Array([ 0, 0, 1 ])
+        front: vec3.fromValues(0, 1, 0),
+        top: vec3.fromValues(0, 0, 1)
     };
 
 }

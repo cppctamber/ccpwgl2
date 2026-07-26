@@ -200,6 +200,21 @@ export const config = {
 
     },
 
+    audMan: {
+
+        // Base url the audio library's storage paths resolve against
+        // (the public CDN does not send CORS headers - browsers need a
+        // proxying server or the mediaUrl/resolveUrl overrides)
+        "resourceBaseUrl": "https://resources.eveonline.com/",
+
+        // Preferred language for localized embedded media variants
+        "language": "en-us",
+
+        // World units to WebAudio panner units
+        "distanceScale": 1
+
+    },
+
     logger: {
 
         // The name to use in console outputs

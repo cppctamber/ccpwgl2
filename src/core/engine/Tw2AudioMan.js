@@ -1,3 +1,5 @@
+import { vec3, mat4 } from "math";
+import { assignIfExists } from "utils";
 import { CjsAudioSystem, AudListener } from "@carbonenginejs/runtime-audio";
 import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
 
@@ -13,40 +15,57 @@ import { CjsWemFormat } from "@carbonenginejs/runtime-resource/formats/wem";
  * Headless until Enable() is called from a user gesture: constructing the
  * manager or installing a library never creates an AudioContext, and emitters
  * created before enablement queue their events for replay on wake.
+ *
+ * @property {?CjsAudioSystem} system      - the runtime-audio composition root
+ * @property {?AudListener} listener       - the singleton listener, created on Enable
+ * @property {?AudioContext} context       - the audio context, created on Enable
+ * @property {?Object} library             - installed carbonenginejs.audioLibrary document
+ * @property {vec3} forward                - listener forward vector
+ * @property {vec3} up                     - listener up vector
+ * @property {vec3} position               - listener position
+ * @property {String} resourceBaseUrl      - base url storage paths resolve against
+ * @property {?Function} mediaUrl          - media id -> url (server-side resolution, e.g. tools-core audio routes)
+ * @property {?Function} resolveUrl        - custom library record -> url resolution
+ * @property {String} language             - preferred embedded media language
+ * @property {Number} distanceScale        - world units to WebAudio panner units
+ * @property {?Function} fetch             - fetch override
+ * @property {?Function} loadBuffer        - full loadBuffer(eventID, eventName) override
+ * @property {?Function} createContext     - AudioContext factory override
+ * @property {Map} _emittersByName         - registered emitters by name
+ * @property {Map} _tracked                - emitters following a target's world transform
+ * @property {Map} _bufferCache            - decoded audio buffers by wem id
+ * @property {Map} _bankBytesCache         - fetched bank bytes by bank source id
+ * @property {Boolean} _dirty              - listener pose needs pushing
  */
 export class Tw2AudioMan
 {
 
-    /** @type {?CjsAudioSystem} */
     system = null;
 
-    /** @type {?AudListener} */
     listener = null;
 
-    /** @type {?AudioContext} */
     context = null;
 
-    /** @type {?Object} installed carbonenginejs.audioLibrary document */
     library = null;
 
-    forward = new Float32Array([ 0, 0, -1 ]);
-    up = new Float32Array([ 0, 1, 0 ]);
-    position = new Float32Array(3);
+    forward = vec3.fromValues(0, 0, -1);
+    up = vec3.fromValues(0, 1, 0);
+    position = vec3.create();
 
-    _options = { ...Tw2AudioMan.DEFAULT_OPTIONS };
+    resourceBaseUrl = "https://resources.eveonline.com/";
+    mediaUrl = null;
+    resolveUrl = null;
+    language = "en-us";
+    distanceScale = 1;
+    fetch = null;
+    loadBuffer = null;
+    createContext = null;
+
     _emittersByName = new Map();
     _tracked = new Map();
     _bufferCache = new Map();
     _bankBytesCache = new Map();
     _dirty = true;
-
-    /**
-     * @param {Object} [options]
-     */
-    constructor(options)
-    {
-        if (options) this.SetOptions(options);
-    }
 
     /**
      * Gets whether the underlying engine is enabled
@@ -67,22 +86,25 @@ export class Tw2AudioMan
     }
 
     /**
-     * Sets manager options
-     * @param {Object} options
-     * @param {String} [options.resourceBaseUrl] - base url storage paths resolve against
-     * @param {Function} [options.mediaUrl]      - media id -> url (server-side resolution, e.g. tools-core audio routes)
-     * @param {Function} [options.resolveUrl]    - custom record -> url resolution
-     * @param {String} [options.language]        - preferred embedded media language
-     * @param {Number} [options.distanceScale]   - world units to WebAudio panner units
-     * @param {Function} [options.fetch]         - fetch override
-     * @param {Function} [options.loadBuffer]    - full loadBuffer(eventID, eventName) override
-     * @param {Function} [options.createContext] - AudioContext factory override
-     * @return {Tw2AudioMan}
+     * Registers options
+     * @param {Object} opt
      */
-    SetOptions(options)
+    Register(opt)
     {
-        Object.assign(this._options, options);
-        return this;
+        if (!opt) return;
+
+        assignIfExists(this, opt, [
+            "resourceBaseUrl",
+            "mediaUrl",
+            "resolveUrl",
+            "language",
+            "distanceScale",
+            "fetch",
+            "loadBuffer",
+            "createContext"
+        ]);
+
+        if (opt.library) this.SetLibrary(opt.library);
     }
 
     /**
@@ -186,21 +208,18 @@ export class Tw2AudioMan
             this._dirty = false;
         }
 
-        const { mat, front, top, pos } = Tw2AudioMan.global;
+        const { mat4_0, vec3_0, vec3_1, vec3_2 } = Tw2AudioMan.global;
         for (const [ emitter, follow ] of this._tracked)
         {
-            follow.target.GetWorldTransform(mat);
-            front[0] = mat[8];
-            front[1] = mat[9];
-            front[2] = mat[10];
-            top[0] = mat[4];
-            top[1] = mat[5];
-            top[2] = mat[6];
-            const p = follow.localPosition;
-            pos[0] = mat[0] * p[0] + mat[4] * p[1] + mat[8] * p[2] + mat[12];
-            pos[1] = mat[1] * p[0] + mat[5] * p[1] + mat[9] * p[2] + mat[13];
-            pos[2] = mat[2] * p[0] + mat[6] * p[1] + mat[10] * p[2] + mat[14];
-            emitter.SetPosition(front, top, pos);
+            follow.target.GetWorldTransform(mat4_0);
+            vec3_0[0] = mat4_0[8];
+            vec3_0[1] = mat4_0[9];
+            vec3_0[2] = mat4_0[10];
+            vec3_1[0] = mat4_0[4];
+            vec3_1[1] = mat4_0[5];
+            vec3_1[2] = mat4_0[6];
+            vec3.transformMat4(vec3_2, follow.localPosition, mat4_0);
+            emitter.SetPosition(vec3_0, vec3_1, vec3_2);
         }
 
         this.system.Process(typeof performance !== "undefined" ? performance.now() : Date.now());
@@ -214,9 +233,9 @@ export class Tw2AudioMan
      */
     SetAudioLocation(forward, up, position)
     {
-        this.forward.set(forward);
-        this.up.set(up);
-        this.position.set(position);
+        vec3.copy(this.forward, forward);
+        vec3.copy(this.up, up);
+        vec3.copy(this.position, position);
         this._dirty = true;
     }
 
@@ -270,13 +289,16 @@ export class Tw2AudioMan
      * @param {vec3} [localPosition]    - target-local emitter position
      * @return {AudGameObjResource}
      */
-    TrackEmitter(emitter, target, localPosition = [ 0, 0, 0 ])
+    TrackEmitter(emitter, target, localPosition)
     {
         if (!target || typeof target.GetWorldTransform !== "function")
         {
             throw new TypeError("Audio emitter tracking requires a target with GetWorldTransform");
         }
-        this._tracked.set(emitter, { target, localPosition: Float32Array.from(localPosition) });
+        this._tracked.set(emitter, {
+            target,
+            localPosition: localPosition ? vec3.fromValues(localPosition[0], localPosition[1], localPosition[2]) : vec3.create()
+        });
         return emitter;
     }
 
@@ -333,9 +355,9 @@ export class Tw2AudioMan
      */
     async LoadEventBuffer(eventID, eventName)
     {
-        if (this._options.loadBuffer)
+        if (this.loadBuffer)
         {
-            return this._options.loadBuffer(eventID, eventName);
+            return this.loadBuffer(eventID, eventName);
         }
 
         const wemId = this.ResolveEventMedia(eventName);
@@ -373,9 +395,9 @@ export class Tw2AudioMan
     {
         // A media-id endpoint (e.g. tools-core /eve/<build>/audio/id/<id>)
         // resolves loose, embedded and localized sources server-side.
-        if (this._options.mediaUrl)
+        if (this.mediaUrl)
         {
-            return this._FetchBytes(this._options.mediaUrl(wemId, this.library));
+            return this._FetchBytes(this.mediaUrl(wemId, this.library));
         }
 
         const loose = this.library?.media?.[wemId];
@@ -435,7 +457,7 @@ export class Tw2AudioMan
                 createContext: () => this._CreateContext(),
                 loadBuffer: (eventID, eventName) => this.LoadEventBuffer(eventID, eventName),
                 audioMetadata: this.library?.metadata,
-                distanceScale: this._options.distanceScale
+                distanceScale: this.distanceScale
             }).Attach();
         }
         return this.system;
@@ -447,9 +469,9 @@ export class Tw2AudioMan
      */
     _CreateContext()
     {
-        if (this._options.createContext)
+        if (this.createContext)
         {
-            this.context = this._options.createContext();
+            this.context = this.createContext();
         }
         else if (typeof window !== "undefined")
         {
@@ -470,8 +492,7 @@ export class Tw2AudioMan
     {
         const variants = Array.isArray(record) ? record : record ? [ record ] : [];
         if (!variants.length) return null;
-        const { language } = this._options;
-        return variants.find(v => v.language === language)
+        return variants.find(v => v.language === this.language)
             || variants.find(v => v.language === "")
             || variants[0];
     }
@@ -496,18 +517,18 @@ export class Tw2AudioMan
     /**
      * Resolves a library media/bank record to a url.
      * Defaults to the storage path against resourceBaseUrl; hosts can
-     * override with options.resolveUrl(record) e.g. to serve by res path.
+     * override with resolveUrl(record) e.g. to serve by res path.
      * @param {Object} record
      * @return {String}
      */
     _ResolveMediaUrl(record)
     {
-        if (this._options.resolveUrl)
+        if (this.resolveUrl)
         {
-            const resolved = this._options.resolveUrl(record);
+            const resolved = this.resolveUrl(record);
             if (resolved) return resolved;
         }
-        return this._options.resourceBaseUrl + record.storagePath;
+        return this.resourceBaseUrl + record.storagePath;
     }
 
     /**
@@ -517,7 +538,7 @@ export class Tw2AudioMan
      */
     async _FetchBytes(url)
     {
-        const doFetch = this._options.fetch || fetch;
+        const doFetch = this.fetch || fetch;
         const response = await doFetch(url);
         if (!response.ok)
         {
@@ -547,10 +568,10 @@ export class Tw2AudioMan
      * @type {Object}
      */
     static global = {
-        mat: new Float32Array(16),
-        front: new Float32Array(3),
-        top: new Float32Array(3),
-        pos: new Float32Array(3)
+        mat4_0: mat4.create(),
+        vec3_0: vec3.create(),
+        vec3_1: vec3.create(),
+        vec3_2: vec3.create()
     };
 
     /**
@@ -558,21 +579,6 @@ export class Tw2AudioMan
      * @type {String}
      */
     static LIBRARY_SCHEMA = "carbonenginejs.audioLibrary";
-
-    /**
-     * Default manager options
-     * @type {Object}
-     */
-    static DEFAULT_OPTIONS = {
-        resourceBaseUrl: "https://resources.eveonline.com/",
-        mediaUrl: null,
-        resolveUrl: null,
-        language: "en-us",
-        distanceScale: 1,
-        fetch: null,
-        loadBuffer: null,
-        createContext: null
-    };
 
     /**
      * Context states
