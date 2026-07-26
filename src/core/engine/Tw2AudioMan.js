@@ -70,6 +70,7 @@ export class Tw2AudioMan
      * Sets manager options
      * @param {Object} options
      * @param {String} [options.resourceBaseUrl] - base url storage paths resolve against
+     * @param {Function} [options.mediaUrl]      - media id -> url (server-side resolution, e.g. tools-core audio routes)
      * @param {Function} [options.resolveUrl]    - custom record -> url resolution
      * @param {String} [options.language]        - preferred embedded media language
      * @param {Number} [options.distanceScale]   - world units to WebAudio panner units
@@ -370,6 +371,13 @@ export class Tw2AudioMan
      */
     async FetchWemBytes(wemId)
     {
+        // A media-id endpoint (e.g. tools-core /eve/<build>/audio/id/<id>)
+        // resolves loose, embedded and localized sources server-side.
+        if (this._options.mediaUrl)
+        {
+            return this._FetchBytes(this._options.mediaUrl(wemId, this.library));
+        }
+
         const loose = this.library?.media?.[wemId];
         if (loose)
         {
@@ -557,6 +565,7 @@ export class Tw2AudioMan
      */
     static DEFAULT_OPTIONS = {
         resourceBaseUrl: "https://resources.eveonline.com/",
+        mediaUrl: null,
         resolveUrl: null,
         language: "en-us",
         distanceScale: 1,

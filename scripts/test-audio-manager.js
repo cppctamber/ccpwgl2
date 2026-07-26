@@ -256,6 +256,27 @@ test("EveSOFData.SetupAudio builds tracked hull emitters", () =>
     assert.doesNotMatch(body, /not implemented/i);
 });
 
+test("a mediaUrl endpoint short-circuits loose and embedded resolution", async () =>
+{
+    const fetched = [];
+    const audMan = new Tw2AudioMan({
+        mediaUrl: (id, lib) => `https://tools.test/eve/${lib.sourceBuild}/audio/id/${id}`,
+        fetch: async url =>
+        {
+            fetched.push(url);
+            return { ok: true, arrayBuffer: async () => new Uint8Array([ 1, 2 ]).buffer };
+        }
+    });
+    audMan.SetLibrary({ ...CreateLibrary(), sourceBuild: "3435006" });
+
+    await audMan.FetchWemBytes("101");
+    await audMan.FetchWemBytes("202");
+    assert.deepEqual(fetched, [
+        "https://tools.test/eve/3435006/audio/id/101",
+        "https://tools.test/eve/3435006/audio/id/202"
+    ], "both loose and embedded ids go straight to the media endpoint");
+});
+
 test("rejects invalid libraries and reports fetch failures", async () =>
 {
     const audMan = new Tw2AudioMan({
