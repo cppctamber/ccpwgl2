@@ -1029,10 +1029,10 @@ export class EveSOFData extends meta.Model
         this.SetupLocatorSets(...args);
         // partial support
         await this.SetupChildren(...args);
+        this.SetupAudio(...args);
         // Unsupported
         this.SetupHazeSets(...args);
         this.SetupSpriteLineSets(...args);
-        this.SetupAudio(...args);
         await this.SetupModelCurves(...args);
         this.SetupLights(...args);
         this.SetupObservers(...args);
@@ -2768,7 +2768,49 @@ export class EveSOFData extends meta.Model
      */
     static SetupAudio(data, obj, sof, options)
     {
-        tw2.Debug({ name: "Space object factory", message: "Audio not implemented" });
+        const { soundEmitters = [], audioPosition } = sof.hull;
+
+        if (obj.audioEmitters)
+        {
+            for (let i = 0; i < obj.audioEmitters.length; i++)
+            {
+                tw2.audMan.ReleaseEmitter(obj.audioEmitters[i]);
+            }
+        }
+        obj.audioEmitters = [];
+
+        const canTrack = typeof obj.GetWorldTransform === "function";
+
+        // Hulls without authored sound emitters still get a single ship
+        // emitter at the hull's audio position, matching the game client.
+        const sources = soundEmitters.length ? soundEmitters : [ {
+            name: "ship",
+            prefix: "",
+            position: audioPosition || [ 0, 0, 0 ],
+            rotation: [ 0, 0, 0, 1 ],
+            attenuationScalingFactor: 0
+        } ];
+
+        for (let i = 0; i < sources.length; i++)
+        {
+            const source = sources[i];
+            const values = {
+                name: source.name,
+                prefix: source.prefix,
+                position: Array.from(source.position),
+                rotation: Array.from(source.rotation)
+            };
+            if (source.attenuationScalingFactor)
+            {
+                values.attenuationScalingFactor = source.attenuationScalingFactor;
+            }
+
+            const emitter = tw2.audMan.CreateEmitter(values);
+            if (canTrack) tw2.audMan.TrackEmitter(emitter, obj, source.position);
+            obj.audioEmitters.push(emitter);
+        }
+
+        return obj.audioEmitters;
     }
 
 

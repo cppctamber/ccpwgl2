@@ -35,6 +35,7 @@ export class Tw2AudioMan
 
     _options = { ...Tw2AudioMan.DEFAULT_OPTIONS };
     _emittersByName = new Map();
+    _tracked = new Map();
     _bufferCache = new Map();
     _bankBytesCache = new Map();
     _dirty = true;
@@ -161,6 +162,7 @@ export class Tw2AudioMan
         this.system = null;
         this.listener = null;
         this._emittersByName.clear();
+        this._tracked.clear();
         this._bufferCache.clear();
         this._bankBytesCache.clear();
         if (this.context)
@@ -181,6 +183,24 @@ export class Tw2AudioMan
             this.listener.SetPosition(this.forward, this.up, this.position);
             this._dirty = false;
         }
+
+        const { mat, front, top, pos } = Tw2AudioMan.global;
+        for (const [ emitter, follow ] of this._tracked)
+        {
+            follow.target.GetWorldTransform(mat);
+            front[0] = mat[8];
+            front[1] = mat[9];
+            front[2] = mat[10];
+            top[0] = mat[4];
+            top[1] = mat[5];
+            top[2] = mat[6];
+            const p = follow.localPosition;
+            pos[0] = mat[0] * p[0] + mat[4] * p[1] + mat[8] * p[2] + mat[12];
+            pos[1] = mat[1] * p[0] + mat[5] * p[1] + mat[9] * p[2] + mat[13];
+            pos[2] = mat[2] * p[0] + mat[6] * p[1] + mat[10] * p[2] + mat[14];
+            emitter.SetPosition(front, top, pos);
+        }
+
         this.system.Process(typeof performance !== "undefined" ? performance.now() : Date.now());
     }
 
@@ -242,12 +262,40 @@ export class Tw2AudioMan
     }
 
     /**
+     * Follows a target's world transform with an emitter each tick
+     * @param {AudGameObjResource} emitter
+     * @param {*} target                - object exposing GetWorldTransform(out)
+     * @param {vec3} [localPosition]    - target-local emitter position
+     * @return {AudGameObjResource}
+     */
+    TrackEmitter(emitter, target, localPosition = [ 0, 0, 0 ])
+    {
+        if (!target || typeof target.GetWorldTransform !== "function")
+        {
+            throw new TypeError("Audio emitter tracking requires a target with GetWorldTransform");
+        }
+        this._tracked.set(emitter, { target, localPosition: Float32Array.from(localPosition) });
+        return emitter;
+    }
+
+    /**
+     * Stops following a target with an emitter
+     * @param {AudGameObjResource} emitter
+     * @return {Boolean}
+     */
+    UntrackEmitter(emitter)
+    {
+        return this._tracked.delete(emitter);
+    }
+
+    /**
      * Stops and unregisters an adopted emitter
      * @param {AudGameObjResource} emitter
      * @return {Boolean}
      */
     ReleaseEmitter(emitter)
     {
+        this._tracked.delete(emitter);
         for (const [ name, value ] of this._emittersByName)
         {
             if (value === emitter) this._emittersByName.delete(name);
@@ -464,6 +512,17 @@ export class Tw2AudioMan
         }
         return h >>> 0;
     }
+
+    /**
+     * Scratch variables
+     * @type {Object}
+     */
+    static global = {
+        mat: new Float32Array(16),
+        front: new Float32Array(3),
+        top: new Float32Array(3),
+        pos: new Float32Array(3)
+    };
 
     /**
      * The library document schema this manager installs

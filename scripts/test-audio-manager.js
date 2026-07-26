@@ -197,6 +197,59 @@ test("resolves event media through library edges, loose media and bank slices", 
     await assert.rejects(() => audMan.FetchWemBytes("999"), /not found in library/);
 });
 
+test("tracked emitters follow their target's world transform each tick", () =>
+{
+    const log = [];
+    const audMan = new Tw2AudioMan({
+        createContext: () => FakeContext(log),
+        loadBuffer: async () => ({ fake: "buffer" })
+    });
+    audMan.SetLibrary(CreateLibrary());
+    audMan.Enable();
+
+    const emitter = audMan.CreateEmitter({ name: "Engine_SFX", position: [ 1, 2, 3 ] });
+    const target = {
+        transform: [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            100, 200, 300, 1
+        ],
+        GetWorldTransform(out)
+        {
+            out.set(this.transform);
+            return out;
+        }
+    };
+
+    assert.throws(() => audMan.TrackEmitter(emitter, {}), /GetWorldTransform/);
+    audMan.TrackEmitter(emitter, target, [ 1, 2, 3 ]);
+    audMan.Tick();
+    assert.deepEqual([ ...emitter.GetPosition() ], [ 101, 202, 303 ]);
+
+    target.transform[12] = -50;
+    audMan.Tick();
+    assert.deepEqual([ ...emitter.GetPosition() ], [ -49, 202, 303 ]);
+
+    assert.equal(audMan.ReleaseEmitter(emitter), true);
+    assert.equal(audMan.UntrackEmitter(emitter), false, "release also untracks");
+    audMan.system.Detach();
+});
+
+test("EveSOFData.SetupAudio builds tracked hull emitters", () =>
+{
+    const sofSource = fs.readFileSync(path.resolve(__dirname, "../src/sof/EveSOFData.js"), "utf8");
+    const start = sofSource.indexOf("static SetupAudio");
+    const body = sofSource.slice(start, sofSource.indexOf("static SetupAnimations"));
+
+    assert.match(body, /soundEmitters = \[\], audioPosition/, "reads hull sound emitters and audio position");
+    assert.match(body, /tw2\.audMan\.ReleaseEmitter/, "releases previous emitters on rebuild");
+    assert.match(body, /tw2\.audMan\.CreateEmitter/, "creates emitters through the audio manager");
+    assert.match(body, /tw2\.audMan\.TrackEmitter\(emitter, obj, source\.position\)/, "tracks emitters against the object");
+    assert.match(body, /obj\.audioEmitters\.push/, "exposes emitters for FindSoundEmitter discovery");
+    assert.doesNotMatch(body, /not implemented/i);
+});
+
 test("rejects invalid libraries and reports fetch failures", async () =>
 {
     const audMan = new Tw2AudioMan({
