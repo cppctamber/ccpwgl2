@@ -31,6 +31,10 @@ import { AudioFormatBnk } from "core/resource/formats/AudioFormatBnk";
  * @property {vec3} position               - listener position
  * @property {String} language             - preferred embedded media language
  * @property {Number} distanceScale        - world units to WebAudio panner units
+ * @property {Boolean} allowMediaIds       - permits aud:/ media-id fetching (never used when false)
+ * @property {Boolean} allowOffsets        - permits Range requests (never used when false)
+ * @property {Boolean} mediaIdSupport      - verified: the aud:/ endpoint answers media ids directly
+ * @property {Boolean} rangeSupport        - verified: the aud:/ endpoint honors Range requests
  * @property {?Function} fetch             - fetch override
  * @property {?Function} loadBuffer        - full loadBuffer(eventID, eventName) override
  * @property {?Function} createContext     - AudioContext factory override
@@ -57,9 +61,14 @@ export class Tw2AudioMan
 
     language = "en-us";
     distanceScale = 1;
+    allowMediaIds = true;
+    allowOffsets = true;
     fetch = null;
     loadBuffer = null;
     createContext = null;
+
+    mediaIdSupport = false;
+    rangeSupport = false;
 
     _emittersByName = new Map();
     _tracked = new Map();
@@ -96,10 +105,15 @@ export class Tw2AudioMan
         assignIfExists(this, opt, [
             "language",
             "distanceScale",
+            "allowMediaIds",
+            "allowOffsets",
             "fetch",
             "loadBuffer",
             "createContext"
         ]);
+
+        if (this.allowMediaIds === false) this.mediaIdSupport = false;
+        if (this.allowOffsets === false) this.rangeSupport = false;
 
         if (opt.library) this.SetLibrary(opt.library);
     }
@@ -122,7 +136,106 @@ export class Tw2AudioMan
         {
             this.system.repository.Initialize(library.metadata);
         }
+
+        // A library provides real probe ids, so re-verify the media-id
+        // endpoint against it (fire and forget: until verification lands,
+        // media resolves through the normal res:/ pipeline).
+        if (tw2.paths.Has("aud"))
+        {
+            this.DetectMediaSourcing();
+        }
         return this;
+    }
+
+    /**
+     * Detects how media should be sourced: probes the aud:/ media-id
+     * endpoint when registered and records whether ids can be fetched
+     * directly and whether the endpoint honors Range requests (the
+     * resource manager does no offset management of its own).
+     * @return {Promise<Object>} a capability report
+     */
+    async DetectMediaSourcing()
+    {
+        const declared = tw2.paths.Has("aud");
+        const report = {
+            supported: false,
+            declared,
+            verified: false,
+            reason: null,
+            ranges: false,
+            fallback: "res"
+        };
+
+        if (!this.allowMediaIds)
+        {
+            report.reason = "media ids disabled (allowMediaIds)";
+            this.mediaIdSupport = false;
+            this.rangeSupport = false;
+            return report;
+        }
+
+        if (!declared)
+        {
+            report.reason = "no aud:/ path registered";
+            this.mediaIdSupport = false;
+            this.rangeSupport = false;
+            return report;
+        }
+
+        const probeId = this._GetProbeMediaId();
+        if (!probeId)
+        {
+            report.reason = "no audio library installed to verify against";
+            return report;
+        }
+
+        const url = tw2.paths.Resolve(`aud:/id/${probeId}`);
+        const doFetch = this.fetch || fetch;
+
+        let response = null;
+        try
+        {
+            response = this.allowOffsets
+                ? await doFetch(url, { method: "HEAD", headers: { "Range": "bytes=0-0" } })
+                : await doFetch(url, { method: "HEAD" });
+        }
+        catch (err)
+        {
+            try
+            {
+                response = await doFetch(url, { method: "HEAD" });
+            }
+            catch (retryErr)
+            {
+                report.reason = "aud:/ endpoint unreachable";
+            }
+        }
+
+        if (response)
+        {
+            report.supported = response.ok || response.status === 206;
+            report.verified = report.supported;
+            report.ranges = this.allowOffsets && (response.status === 206
+                || (response.headers && (response.headers.get("accept-ranges") || "").includes("bytes")));
+            if (!report.supported) report.reason = `aud:/ endpoint answered ${response.status}`;
+        }
+
+        this.mediaIdSupport = report.supported;
+        this.rangeSupport = report.ranges;
+        return report;
+    }
+
+    /**
+     * Picks a real media id from the installed library for endpoint probing
+     * @return {?String}
+     */
+    _GetProbeMediaId()
+    {
+        if (!this.library) return null;
+        const loose = Object.keys(this.library.media || {});
+        if (loose.length) return loose[0];
+        const embedded = Object.keys(this.library.embeddedMedia || {});
+        return embedded.length ? embedded[0] : null;
     }
 
     /**
@@ -390,12 +503,12 @@ export class Tw2AudioMan
      */
     async FetchWemBytes(wemId)
     {
-        // A registered "aud" prefix targets a media-id endpoint (e.g.
-        // tools-core /eve/<build>/audio/id/<id>) which resolves loose,
-        // embedded and localized sources server-side.
-        if (tw2.paths.Has("aud"))
+        // A verified "aud" media-id endpoint (e.g. tools-core
+        // /eve/<build>/audio/id/<id>) resolves loose, embedded and
+        // localized sources server-side. See DetectMediaSourcing.
+        if (this.mediaIdSupport)
         {
-            return this._FetchBytes(tw2.paths.Resolve(`aud:/${wemId}`));
+            return this._FetchBytes(tw2.paths.Resolve(`aud:/id/${wemId}`));
         }
 
         const loose = this.library?.media?.[wemId];
@@ -518,6 +631,22 @@ export class Tw2AudioMan
             return new Uint8Array(await response.arrayBuffer());
         }
         return new Uint8Array(await tw2.resMan.FetchRaw(url, "arraybuffer"));
+    }
+
+    /**
+     * Gets the audio media-sourcing capability provider
+     * @return {Object}
+     */
+    static GetCapabilityProvider()
+    {
+        return {
+            key: "audio.media",
+            name: "audio.media",
+            category: "audio",
+            label: "Audio media sourcing",
+            description: "Whether the aud:/ media-id endpoint answers directly and honors Range requests, or media falls back to res:/ paths",
+            resolve: ({ tw2 }) => tw2.audMan.DetectMediaSourcing()
+        };
     }
 
     /**

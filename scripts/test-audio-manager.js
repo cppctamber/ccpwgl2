@@ -299,27 +299,59 @@ test("EveSOFData.SetupAudio builds tracked hull emitters", () =>
     assert.doesNotMatch(body, /not implemented/i);
 });
 
-test("a registered aud:/ prefix short-circuits loose and embedded resolution", async () =>
+test("a verified aud:/ endpoint short-circuits loose and embedded resolution", async () =>
 {
     const fetched = [];
     const audMan = new Tw2AudioMan(); audMan.Register({
-        fetch: async url =>
+        fetch: async (url, opt) =>
         {
-            fetched.push(url);
-            return { ok: true, arrayBuffer: async () => new Uint8Array([ 1, 2 ]).buffer };
+            fetched.push(`${opt?.method || "GET"} ${url}`);
+            return {
+                ok: true,
+                status: opt?.method === "HEAD" ? 206 : 200,
+                headers: { get: name => name === "accept-ranges" ? "bytes" : null },
+                arrayBuffer: async () => new Uint8Array([ 1, 2 ]).buffer
+            };
         }
     });
-    audMan.SetLibrary(CreateLibrary());
 
-    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/id/";
+    // Without a registered aud:/ prefix, detection reports the fallback
+    const unregistered = await audMan.DetectMediaSourcing();
+    assert.equal(unregistered.declared, false);
+    assert.equal(audMan.mediaIdSupport, false);
+
+    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/";
     try
     {
+        audMan.SetLibrary(CreateLibrary());
+        const report = await audMan.DetectMediaSourcing();
+        assert.equal(report.supported, true);
+        assert.equal(report.ranges, true, "Range support detected from the probe");
+        assert.equal(audMan.mediaIdSupport, true);
+        assert.equal(audMan.rangeSupport, true);
+        assert.equal(fetched[0], "HEAD https://tools.test/eve/3435006/audio/id/101", "probes with a real library media id");
+
+        fetched.length = 0;
         await audMan.FetchWemBytes("101");
         await audMan.FetchWemBytes("202");
         assert.deepEqual(fetched, [
-            "https://tools.test/eve/3435006/audio/id/101",
-            "https://tools.test/eve/3435006/audio/id/202"
+            "GET https://tools.test/eve/3435006/audio/id/101",
+            "GET https://tools.test/eve/3435006/audio/id/202"
         ], "both loose and embedded ids go straight to the media-id endpoint");
+
+        // Offsets disallowed: probes without Range and never reports ranges
+        audMan.Register({ allowOffsets: false });
+        const noOffsets = await audMan.DetectMediaSourcing();
+        assert.equal(noOffsets.supported, true);
+        assert.equal(noOffsets.ranges, false, "allowOffsets false never reports range support");
+        assert.equal(audMan.rangeSupport, false);
+
+        // Media ids disallowed: endpoint is never used even though registered
+        audMan.Register({ allowMediaIds: false });
+        const disabled = await audMan.DetectMediaSourcing();
+        assert.equal(disabled.supported, false);
+        assert.match(disabled.reason, /allowMediaIds/);
+        assert.equal(audMan.mediaIdSupport, false);
     }
     finally
     {
@@ -337,7 +369,8 @@ test("rejects invalid libraries and reports fetch failures", async () =>
     assert.throws(() => audMan.SetLibrary(null), /carbonenginejs\.audioLibrary/);
 
     audMan.SetLibrary(CreateLibrary());
-    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/id/";
+    fakeTw2.paths.map.aud = "https://tools.test/eve/3435006/audio/";
+    audMan.mediaIdSupport = true;
     try
     {
         await assert.rejects(() => audMan.FetchWemBytes("101"), /fetch failed \(404\)/);

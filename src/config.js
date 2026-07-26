@@ -14,6 +14,15 @@ import { tw2BatchSorter } from "core/batch";
 
 const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 
+// Default resource serving (the local tools-core service, not provided with
+// this library). Routes follow /{provider|target}/{build}/{topic}: provider
+// routes ("ccp") serve the res:/ file tree, target routes ("eve") serve
+// query/answer topics like audio. Only one build is passed everywhere.
+const RES_SERVER = "http://127.0.0.1:3000/";
+const RES_PROVIDER = "ccp";
+const RES_TARGET = "eve";
+const RES_BUILD = "latest";
+
 /**
  * Register global configurations
  */
@@ -41,7 +50,17 @@ export const config = {
         process: true,
 
         providers: [
-            core.Tw2TextureRes.GetCapabilityProvider()
+            core.Tw2TextureRes.GetCapabilityProvider(),
+            // Inline entry: Tw2AudioMan is in the tw2 module cycle, so its
+            // class binding isn't initialized when this literal evaluates
+            {
+                key: "audio.media",
+                name: "audio.media",
+                category: "audio",
+                label: "Audio media sourcing",
+                description: "Whether the aud:/ media-id endpoint answers directly and honors Range requests, or media falls back to res:/ paths",
+                resolve: context => context.tw2.audMan.DetectMediaSourcing()
+            }
         ]
 
     },
@@ -206,7 +225,17 @@ export const config = {
         "language": "en-us",
 
         // World units to WebAudio panner units
-        "distanceScale": 1
+        "distanceScale": 1,
+
+        // Allows fetching media by id through the aud:/ endpoint when it
+        // verifies. When false the endpoint is never used and media always
+        // resolves through its res:/ paths.
+        "allowMediaIds": true,
+
+        // Allows Range (byte offset) requests against the aud:/ endpoint
+        // when it verifies. When false ranges are never used and banks are
+        // fetched whole. The resource manager does no offset management.
+        "allowOffsets": true
 
     },
 
@@ -237,15 +266,15 @@ export const config = {
 
     paths: {
 
-        // Local tools-core service (not provided with this library)
-        "api": "http://127.0.0.1:3000/ccp/latest/",
-        "res": "http://127.0.0.1:3000/ccp/latest/resources/",
+        "api": `${RES_SERVER}${RES_PROVIDER}/${RES_BUILD}/`,
+        "res": `${RES_SERVER}${RES_PROVIDER}/${RES_BUILD}/resources/`,
 
-        // Audio media by id. "res" must remain the standard eve resource
-        // path; "aud" can target any media-id endpoint (e.g. tools-core
-        // /eve/<build>/audio/id/) and takes precedence over res:/ media
-        // resolution in the audio manager when registered.
-        "aud": "http://127.0.0.1:3000/eve/latest/audio/id/",
+        // The audio route family root. "res" must remain the standard eve
+        // resource path; "aud" can target any audio endpoint root (e.g.
+        // tools-core /eve/<build>/audio/ with its id/ and path/ sub-routes,
+        // resolved as aud:/id/<mediaID>) and takes precedence over res:/
+        // media resolution in the audio manager when verified.
+        "aud": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/audio/`,
 
     },
 
