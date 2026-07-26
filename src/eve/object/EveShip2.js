@@ -902,6 +902,18 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Backs the `BoundingSphereRadius()` controller-expression builtin, resolved via
+     * `context.owner.BoundingSphereRadius()` (`state/expression/Tr2ExpressionProgram.js:705`).
+     * audioshipstandard's "Ship Size" machine buckets this into the emitter
+     * prefix (ship_engine_XXS_ .. ship_engine_XXL_).
+     * @returns {Number}
+     */
+    BoundingSphereRadius()
+    {
+        return this.GetRadius();
+    }
+
+    /**
      * Gets the first authored locator set by name
      * @param {String} name
      * @returns {Array<EveLocatorSetItem>|null}
