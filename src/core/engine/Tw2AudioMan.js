@@ -119,6 +119,21 @@ export class Tw2AudioMan
     }
 
     /**
+     * Fetches and installs an audio library document through the resource
+     * manager. Defaults to the aud:/ endpoint's library route; any res path
+     * or url resolving to a "carbonenginejs.audioLibrary" json works (the
+     * document may equally be published locally or built client-side).
+     * @param {String} [path="aud:/library.json"]
+     * @return {Promise<Object>} the installed library
+     */
+    async FetchLibrary(path = "aud:/library.json")
+    {
+        const res = await tw2.resMan.Fetch(path);
+        this.SetLibrary(res.data);
+        return this.library;
+    }
+
+    /**
      * Installs an audio library document
      * @param {Object} library - a carbonenginejs.audioLibrary v1/v2 document
      * @return {Tw2AudioMan}

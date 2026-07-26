@@ -359,6 +359,37 @@ test("a verified aud:/ endpoint short-circuits loose and embedded resolution", a
     }
 });
 
+test("fetches the library document through the resource manager", async () =>
+{
+    const { resMan } = fakeTw2;
+    const originalFetch = resMan.Fetch;
+    resMan.fetched.length = 0;
+
+    const document = CreateLibrary();
+    resMan.Fetch = async function(path)
+    {
+        this.fetched.push(path);
+        return { data: document };
+    };
+
+    try
+    {
+        const audMan = new Tw2AudioMan();
+        const library = await audMan.FetchLibrary();
+
+        assert.equal(resMan.fetched[0], "aud:/library.json", "defaults to the aud:/ library route");
+        assert.equal(library, audMan.library);
+        assert.equal(audMan.library.schema, "carbonenginejs.audioLibrary");
+
+        await audMan.FetchLibrary("res:/generated/audio-library.json");
+        assert.equal(resMan.fetched[1], "res:/generated/audio-library.json", "any res path works");
+    }
+    finally
+    {
+        resMan.Fetch = originalFetch;
+    }
+});
+
 test("rejects invalid libraries and reports fetch failures", async () =>
 {
     const audMan = new Tw2AudioMan(); audMan.Register({

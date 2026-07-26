@@ -320,6 +320,9 @@ export const config = {
         // Wwise media and banks (raw bytes, decoded via runtime-resource)
         "wem": core.Tw2AudioRes,
         "bnk": core.Tw2AudioRes,
+
+        // Generated json artifacts (e.g. aud:/library.json)
+        "json": core.Tw2JsonRes,
     },
 
     constructors: [
