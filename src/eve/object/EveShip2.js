@@ -914,6 +914,23 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Backs the `ShipBoosterIntensity()` controller-expression builtin, resolved via
+     * `context.owner.ShipBoosterIntensity()` (`state/expression/Tr2ExpressionProgram.js:703`).
+     *
+     * Carbon averages every booster renderable's intensity into the ship data's
+     * booster glow slot; ccpwgl's booster set carries no per-renderable intensity,
+     * so `boosterGain` - the value that already occupies that same slot - stands in.
+     * Only negatives clamp: the warp overlay states gate on values above one, so the
+     * shader side's upper clamp must not apply here.
+     * @returns {Number}
+     */
+    ShipBoosterIntensity()
+    {
+        if (!this.boosters) return 0;
+        return this.boosterGain > 0 ? this.boosterGain : 0;
+    }
+
+    /**
      * Gets the first authored locator set by name
      * @param {String} name
      * @returns {Array<EveLocatorSetItem>|null}
