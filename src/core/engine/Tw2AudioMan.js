@@ -2,6 +2,7 @@ import { vec3, mat4 } from "math";
 import { tw2 } from "global";
 import { assignIfExists } from "utils";
 import { CjsAudioSystem, AudListener } from "@carbonenginejs/runtime-audio";
+import { CjsAudioLibraryBuilder } from "@carbonenginejs/tools-browser/audio/builder";
 import { AudioFormatWem } from "core/resource/formats/AudioFormatWem";
 import { AudioFormatBnk } from "core/resource/formats/AudioFormatBnk";
 
@@ -69,6 +70,14 @@ export class Tw2AudioMan
     loadBuffer = null;
     createContext = null;
 
+    /**
+     * Options forwarded to BuildLibrary when the engine initializes audio, for
+     * a host whose audio index, SoundbanksInfo or language differ from the
+     * defaults. Null builds with the defaults.
+     * @type {?Object}
+     */
+    buildLibraryOptions = null;
+
     mediaIdSupport = false;
     rangeSupport = false;
 
@@ -114,7 +123,8 @@ export class Tw2AudioMan
             "allowOffsets",
             "fetch",
             "loadBuffer",
-            "createContext"
+            "createContext",
+            "buildLibraryOptions"
         ]);
 
         if (this.allowMediaIds === false) this.mediaIdSupport = false;
@@ -135,6 +145,79 @@ export class Tw2AudioMan
     {
         const res = await tw2.resMan.Fetch(path);
         this.SetLibrary(res.data);
+        return this.library;
+    }
+
+    /**
+     * Builds the audio library in the browser from the build's own indexed
+     * inputs, then installs it.
+     *
+     * This is the client-side half of the same join the server performs: the
+     * audio rows of the resource index name every bank and loose medium,
+     * SoundbanksInfo supplies bank identity, and each bank is read once for its
+     * event graph and embedded media windows. Nothing here is a conversion - the
+     * document is derived from files the build already ships.
+     *
+     * Preferred over {@link Tw2AudioMan#FetchLibrary}, which needs a document
+     * prepared server side. The banks are fetched through the resource manager,
+     * so they arrive over whatever route res:/ is configured to use and land in
+     * the same cache the media pipeline reads later.
+     * @param {Object} [options]
+     * @param {String} [options.index="api:/resfiles"]                        - resource index listing logical paths
+     * @param {String} [options.soundbanksInfo="res:/audio/soundbanksinfo.json"] - authored Wwise bank identity
+     * @param {String} [options.audioPrefix="res:/audio/"]                    - index rows to keep
+     * @param {String} [options.language="en-us"]                             - localized event media to select
+     * @param {Boolean} [options.music=false]                                 - whether to build the music graph
+     * @return {Promise<Object>} the installed library
+     * @throws {Error} when the index or SoundbanksInfo cannot be read
+     */
+    async BuildLibrary(options = {})
+    {
+        const {
+            index = "api:/resfiles",
+            soundbanksInfo: soundbanksInfoPath = "res:/audio/soundbanksinfo.json",
+            audioPrefix = "res:/audio/",
+            language = "en-us",
+            music = false
+        } = options;
+
+        const url = tw2.resMan.BuildUrl(index);
+        const response = await fetch(url);
+
+        if (!response.ok)
+        {
+            throw new Error(`Audio index unavailable (${response.status}): ${url}`);
+        }
+
+        const paths = await response.json();
+
+        if (!Array.isArray(paths))
+        {
+            throw new Error(`Audio index is not a path list: ${url}`);
+        }
+
+        const prefix = audioPrefix.toLowerCase();
+        const indexEntries = paths
+            .filter(path => typeof path === "string" && path.toLowerCase().startsWith(prefix))
+            .map(logicalPath => ({ logicalPath }));
+
+        if (!indexEntries.length)
+        {
+            throw new Error(`Audio index contains no "${audioPrefix}" rows: ${url}`);
+        }
+
+        const soundbanksInfo = (await tw2.resMan.Fetch(soundbanksInfoPath)).data;
+
+        const library = await CjsAudioLibraryBuilder.buildFromBanks({
+            indexEntries,
+            soundbanksInfo,
+            language,
+            music,
+            sourceProvider: "ccpwgl",
+            loadBank: async bank => (await tw2.resMan.Fetch(bank.resPath)).data
+        });
+
+        this.SetLibrary(library);
         return this.library;
     }
 

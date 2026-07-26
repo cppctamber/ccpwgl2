@@ -394,7 +394,7 @@ export class Tw2Library extends Tw2EventEmitter
         {
             if (!this.audMan.library)
             {
-                await this.audMan.FetchLibrary();
+                await this.audMan.BuildLibrary(this.audMan.buildLibraryOptions || undefined);
             }
             const enabled = this.audMan.Enable();
             this.audMan.ResumeOnGesture();
