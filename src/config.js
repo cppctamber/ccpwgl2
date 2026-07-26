@@ -4,6 +4,7 @@ import * as eve from "./eve";
 import * as interior from "./interior";
 import * as particle from "./particle";
 import * as sof from "./sof";
+import * as state from "./state";
 import * as unsupported from "./unsupported";
 import { PT } from "constant/type";
 import * as MT from "global/meta/types";
@@ -280,6 +281,7 @@ export const config = {
         { ...interior },
         { ...particle },
         { ...sof },
+        { ...state },
         { ...unsupported }
     ],
 

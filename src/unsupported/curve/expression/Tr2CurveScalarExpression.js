@@ -1,6 +1,6 @@
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
 import { meta } from "utils";
-import { Tr2ExpressionProgram } from "../../state/expression/Tr2ExpressionProgram";
+import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
 
 
 @meta.type("Tr2CurveScalarExpression")

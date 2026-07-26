@@ -881,7 +881,7 @@ export class EveShip2 extends EveObject
 
     /**
      * Backs the `ShipSpeed()` controller-expression builtin, resolved via
-     * `context.owner.ShipSpeed()` (`unsupported/state/expression/Tr2ExpressionProgram.js:701,779-781`).
+     * `context.owner.ShipSpeed()` (`state/expression/Tr2ExpressionProgram.js:701,779-781`).
      * See the `speed` field doc for the carbon reference and why ccpwgl leaves derivation to the
      * embedder.
      * @returns {Number}
@@ -893,7 +893,7 @@ export class EveShip2 extends EveObject
 
     /**
      * Backs the `ShipMaxSpeed()` controller-expression builtin, resolved via
-     * `context.owner.ShipMaxSpeed()` (`unsupported/state/expression/Tr2ExpressionProgram.js:702,779-781`).
+     * `context.owner.ShipMaxSpeed()` (`state/expression/Tr2ExpressionProgram.js:702,779-781`).
      * @returns {Number}
      */
     ShipMaxSpeed()

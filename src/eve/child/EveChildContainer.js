@@ -195,7 +195,7 @@ export class EveChildContainer extends EveChild
     /**
      * Backs the `ShipSpeed()` controller-expression builtin for controllers whose owner is this
      * container (`context.owner.ShipSpeed()`,
-     * `unsupported/state/expression/Tr2ExpressionProgram.js:701,779-781`), by delegating to the
+     * `state/expression/Tr2ExpressionProgram.js:701,779-781`), by delegating to the
      * parent space object recorded in `Update` (see `_parentSpaceObject`).
      * @returns {Number}
      */

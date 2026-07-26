@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { Tw2Curve, Tw2CurveKey } from "curve";
-import { Tr2ExpressionProgram } from "../../state/expression/Tr2ExpressionProgram";
+import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
 
 
 /**

@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { vec3 } from "math";
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
-import { Tr2ExpressionProgram } from "../../state/expression/Tr2ExpressionProgram";
+import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
 
 
 @meta.type("Tr2CurveVector3Expression")
