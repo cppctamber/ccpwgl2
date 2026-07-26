@@ -91,13 +91,16 @@ function CreateLibrary()
         },
         eventMedia: {
             engine_loop: [ "101" ],
-            voice_line: [ "202" ]
+            voice_line: [ "202" ],
+            control_only: [],
+            single_sfx: [ "303" ]
         },
         embeddedMedia: {
             "202": [
                 { sourceID: "embedded:1:900:2", bank: "900:2", offset: 2, byteLength: 4, language: "de", mediaType: "wem" },
                 { sourceID: "embedded:1:900:1", bank: "900:1", offset: 4, byteLength: 4, language: "en-us", mediaType: "wem" }
-            ]
+            ],
+            "303": { sourceID: "embedded:303:900:1", bank: "900:1", offset: 8, byteLength: 4, language: "", mediaType: "wem" }
         }
     };
 }
@@ -187,6 +190,9 @@ test("resolves event media through library edges, loose media and bank slices", 
 
     await audMan.FetchWemBytes("202");
     assert.equal(fetched.length, 2, "bank bytes are fetched once");
+
+    const single = await audMan.FetchWemBytes("303");
+    assert.deepEqual([ ...single ], [ 8, 9, 10, 11 ], "single-variant embedded records are plain objects, not arrays");
 
     audMan.SetOptions({ language: "de" });
     audMan.SetLibrary(CreateLibrary());

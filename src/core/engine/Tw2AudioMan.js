@@ -70,6 +70,7 @@ export class Tw2AudioMan
      * Sets manager options
      * @param {Object} options
      * @param {String} [options.resourceBaseUrl] - base url storage paths resolve against
+     * @param {Function} [options.resolveUrl]    - custom record -> url resolution
      * @param {String} [options.language]        - preferred embedded media language
      * @param {Number} [options.distanceScale]   - world units to WebAudio panner units
      * @param {Function} [options.fetch]         - fetch override
@@ -372,7 +373,7 @@ export class Tw2AudioMan
         const loose = this.library?.media?.[wemId];
         if (loose)
         {
-            return this._FetchBytes(this._options.resourceBaseUrl + loose.storagePath);
+            return this._FetchBytes(this._ResolveMediaUrl(loose));
         }
 
         const variant = this._PickEmbeddedVariant(this.library?.embeddedMedia?.[wemId]);
@@ -451,13 +452,16 @@ export class Tw2AudioMan
     }
 
     /**
-     * Picks the embedded media variant for the preferred language
-     * @param {Array<Object>} variants
+     * Picks the embedded media variant for the preferred language.
+     * Library records hold a single object for one variant and an array
+     * for per-language variants.
+     * @param {Array<Object>|Object} record
      * @return {?Object}
      */
-    _PickEmbeddedVariant(variants)
+    _PickEmbeddedVariant(record)
     {
-        if (!Array.isArray(variants) || !variants.length) return null;
+        const variants = Array.isArray(record) ? record : record ? [ record ] : [];
+        if (!variants.length) return null;
         const { language } = this._options;
         return variants.find(v => v.language === language)
             || variants.find(v => v.language === "")
@@ -475,10 +479,27 @@ export class Tw2AudioMan
         {
             this._bankBytesCache.set(
                 bank.sourceID,
-                this._FetchBytes(this._options.resourceBaseUrl + bank.storagePath)
+                this._FetchBytes(this._ResolveMediaUrl(bank))
             );
         }
         return this._bankBytesCache.get(bank.sourceID);
+    }
+
+    /**
+     * Resolves a library media/bank record to a url.
+     * Defaults to the storage path against resourceBaseUrl; hosts can
+     * override with options.resolveUrl(record) e.g. to serve by res path.
+     * @param {Object} record
+     * @return {String}
+     */
+    _ResolveMediaUrl(record)
+    {
+        if (this._options.resolveUrl)
+        {
+            const resolved = this._options.resolveUrl(record);
+            if (resolved) return resolved;
+        }
+        return this._options.resourceBaseUrl + record.storagePath;
     }
 
     /**
@@ -536,6 +557,7 @@ export class Tw2AudioMan
      */
     static DEFAULT_OPTIONS = {
         resourceBaseUrl: "https://resources.eveonline.com/",
+        resolveUrl: null,
         language: "en-us",
         distanceScale: 1,
         fetch: null,
