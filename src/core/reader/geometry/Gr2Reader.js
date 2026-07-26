@@ -1,4 +1,4 @@
-import CjsFormatGr2 from "@carbonenginejs/format-gr2";
+import { CjsFormatGr2 } from "@carbonenginejs/runtime-resource/formats/gr2";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { Tw2Error } from "core/Tw2Error";
 import { Gr2CurveReader } from "core/reader/granny";

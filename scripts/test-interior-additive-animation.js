@@ -116,6 +116,8 @@ test("additive APIs remain isolated from Tw2AnimationController", () => {
     assert.match(controller, /RegisterReferenceClip\(name, clip\)/);
     assert.match(controller, /super\.Update\(dt\);\s*this\.ApplyAdditiveAnimations\(\);/);
     assert.match(controller, /sampleInteriorDegreeOneCurve/);
+    assert.match(controller, /_interiorCompositionOrder = Number\.isFinite\(options\.compositionOrder\)/);
+    assert.match(controller, /a\.animation\._interiorCompositionOrder - b\.animation\._interiorCompositionOrder/);
     assert.doesNotMatch(generic, /Tr2InteriorAdditiveAnimation|PlayAdditiveAnimation|composeInteriorAdditivePose/);
 });
 

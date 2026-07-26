@@ -32,6 +32,7 @@
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
+    "test:interior-viseme-binding": "node scripts/test-interior-viseme-binding.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
     "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",
     "test:parity": "node scripts/parityCewgVsLegacy.js",
@@ -75,8 +76,7 @@
   },
   "dependencies": {
     "@carbonenginejs/format-gltf": "0.1.0",
-    "@carbonenginejs/format-gr2": "0.1.5",
     "@carbonenginejs/format-obj": "0.1.0",
-    "@carbonenginejs/runtime-resource": "^0.8.0"
+    "@carbonenginejs/runtime-resource": "^0.9.0"
   }
 }

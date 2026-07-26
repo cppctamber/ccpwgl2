@@ -118,6 +118,9 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
             animation._interiorUseRestReference = animation._interiorAdditive &&
                 animation._interiorReferenceSource === undefined;
             animation._interiorInto = options.into !== undefined ? options.into : null;
+            animation._interiorCompositionOrder = Number.isFinite(options.compositionOrder)
+                ? Number(options.compositionOrder)
+                : Number.MAX_SAFE_INTEGER;
         }
 
         return animation;
@@ -406,7 +409,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
     /**
      * Applies additive clips after ordinary base and masked playback has built
-     * the Into pose. This makes composition independent of animation order.
+     * the Into pose, preserving the authored additive composition order.
      */
     ApplyAdditiveAnimations()
     {
@@ -415,10 +418,17 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
         const g = Tr2InteriorAnimationController.global;
         let changed = false;
 
-        for (let i = 0; i < this.animations.length; i++)
+        const animations = this.animations
+            .map((animation, sourceIndex) => ({ animation, sourceIndex }))
+            .filter(item => item.animation._interiorAdditive)
+            .sort((a, b) =>
+                a.animation._interiorCompositionOrder - b.animation._interiorCompositionOrder ||
+                a.sourceIndex - b.sourceIndex
+            );
+
+        for (let i = 0; i < animations.length; i++)
         {
-            const animation = this.animations[i];
-            if (!animation._interiorAdditive) continue;
+            const animation = animations[i].animation;
 
             const
                 animationWeight = Number.isFinite(animation.weight) ? animation.weight : 1,

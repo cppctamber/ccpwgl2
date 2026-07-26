@@ -354,7 +354,7 @@ function collectMesh(meshPath, verts)
     let CjsFormatGr2;
     try
     {
-        const mod = require("@carbonenginejs/format-gr2");
+        const mod = require("@carbonenginejs/runtime-resource/formats/gr2");
         CjsFormatGr2 = mod.default || mod.CjsFormatGr2 || mod;
     }
     catch (e) { return { error: `format-gr2 not resolvable: ${e}` }; }

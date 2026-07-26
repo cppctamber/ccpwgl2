@@ -5,7 +5,7 @@ const path = require("node:path");
 
 async function main()
 {
-    const { CjsFormatGr2 } = await import("@carbonenginejs/format-gr2");
+    const { CjsFormatGr2 } = await import("@carbonenginejs/runtime-resource/formats/gr2");
     const authoredScale = [
         0.75, 0, 0,
         0, 0.75, 0,
