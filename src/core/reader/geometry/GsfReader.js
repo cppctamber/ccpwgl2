@@ -1,4 +1,4 @@
-import { CjsFormatGr2 } from "@carbonenginejs/runtime-resource/formats/gr2";
+import { CjsGr2Format } from "@carbonenginejs/runtime-resource/formats/gr2";
 
 
 /**
@@ -50,14 +50,14 @@ export class GsfReader
 
         const raw = GsfReader.IsRaw(input)
             ? input
-            : CjsFormatGr2.readRaw(input);
+            : CjsGr2Format.readRaw(input);
 
-        if (!CjsFormatGr2.gsf.isRaw(raw))
+        if (!CjsGr2Format.gsf.isRaw(raw))
         {
             throw new TypeError("GsfReader expected Granny State data");
         }
 
-        return CjsFormatGr2.readGsf(raw);
+        return CjsGr2Format.readGsf(raw);
     }
 
     /**
@@ -70,7 +70,7 @@ export class GsfReader
         return !!value &&
             typeof value === "object" &&
             typeof value.version === "number" &&
-            CjsFormatGr2.gsf.isRaw(value);
+            CjsGr2Format.gsf.isRaw(value);
     }
 
     /**
@@ -82,7 +82,7 @@ export class GsfReader
     {
         if (GsfReader.IsRaw(data)) return true;
         if (data?.format === "gsf" && data?.stateMachine) return true;
-        return CjsFormatGr2.isGsf(data);
+        return CjsGr2Format.isGsf(data);
     }
 
     /**

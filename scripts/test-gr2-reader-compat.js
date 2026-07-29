@@ -149,7 +149,7 @@ function loadReader(formatGr2)
     };
 
     const modules = {
-        "@carbonenginejs/runtime-resource/formats/gr2": { __esModule: true, default: formatGr2, CjsFormatGr2: formatGr2 },
+        "@carbonenginejs/runtime-resource/formats/gr2": { __esModule: true, default: formatGr2, CjsGr2Format: formatGr2 },
         "core/vertex": { Tw2VertexDeclaration, Tw2VertexElement },
         "core/Tw2Error": { Tw2Error },
         "core/reader/granny": { Gr2CurveReader: class {} },
@@ -206,7 +206,7 @@ function loadGsfReader(formatGr2)
     });
 
     const modules = {
-        "@carbonenginejs/runtime-resource/formats/gr2": { __esModule: true, default: formatGr2, CjsFormatGr2: formatGr2 }
+        "@carbonenginejs/runtime-resource/formats/gr2": { __esModule: true, default: formatGr2, CjsGr2Format: formatGr2 }
     };
 
     const module = { exports: {} };
@@ -457,10 +457,10 @@ async function main()
     testGsfBoundary(exports, formatGr2, gsfBytes);
     testGsfReaderProjection(gsfExports, formatGr2, gsfBytes, projectedGsf);
 
-    const { CjsFormatGr2 } = await import("@carbonenginejs/runtime-resource/formats/gr2");
-    assert.equal(CjsFormatGr2.isGsf(rawGsf), true);
-    assert.equal(CjsFormatGr2.readGsf(rawGsf).format, "gsf");
-    assert.equal(CjsFormatGr2.isGsf(new Uint8Array(16)), false, "Byte detection must fail closed for non-GSF data");
+    const { CjsGr2Format } = await import("@carbonenginejs/runtime-resource/formats/gr2");
+    assert.equal(CjsGr2Format.isGsf(rawGsf), true);
+    assert.equal(CjsGr2Format.readGsf(rawGsf).format, "gsf");
+    assert.equal(CjsGr2Format.isGsf(new Uint8Array(16)), false, "Byte detection must fail closed for non-GSF data");
 
     console.log("GR2 morph ingestion, GSF boundary, GSF reader projection, root scale, and bone binding verified");
 }

@@ -1,4 +1,4 @@
-import { CjsFormatGr2 } from "@carbonenginejs/runtime-resource/formats/gr2";
+import { CjsGr2Format } from "@carbonenginejs/runtime-resource/formats/gr2";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { Tw2Error } from "core/Tw2Error";
 import { Gr2CurveReader } from "core/reader/granny";
@@ -113,13 +113,13 @@ export class Gr2Reader
 
         options = Object.assign({}, Gr2Reader.DEFAULT_OPTIONS, options);
 
-        const raw = CjsFormatGr2.readRaw(data);
-        if (CjsFormatGr2.gsf.isRaw(raw))
+        const raw = CjsGr2Format.readRaw(data);
+        if (CjsGr2Format.gsf.isRaw(raw))
         {
             throw new ErrGr2GeometryExpected();
         }
 
-        const json = CjsFormatGr2.read(raw, {
+        const json = CjsGr2Format.read(raw, {
             emit: "json",
             unpackTangents: options.unpackTangents
         });
@@ -192,7 +192,7 @@ export class Gr2Reader
                 // so other channels' widths can be inferred from their
                 // actual data rather than assumed from the VertexTypes
                 // table - e.g. tangent/binormal are 4-wide packed frames
-                // by default but CjsFormatGr2's unpackTangents rewrites
+                // by default but CjsGr2Format's unpackTangents rewrites
                 // them (and normal) as 3-wide channels.
                 if (srcM.vertex.position && srcM.vertex.position.length)
                 {
@@ -252,7 +252,7 @@ export class Gr2Reader
             // Packed-tangent support was removed: ccpwgl's local packing math
             // was out of date and produced wrong results. If a packed
             // tangent representation is ever needed again, it belongs in
-            // CjsFormatGr2 (upstream of this builder), not here.
+            // CjsGr2Format (upstream of this builder), not here.
 
             // Index buffer
             let indexLength = 0;
@@ -732,7 +732,7 @@ export class Gr2Reader
      */
     static IsGSF(data)
     {
-        return CjsFormatGr2.isGsf(data);
+        return CjsGr2Format.isGsf(data);
     }
 
     /**

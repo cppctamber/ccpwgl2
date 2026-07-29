@@ -195,11 +195,13 @@ from a user gesture. Runtime-audio installs the complete library document and
 owns media/language selection, individual versus original-bank range/whole
 delivery, WEM preparation, decoded-buffer retention, music, and Carbon graph
 behavior. CCPWGL supplies the tools-core endpoint adapter,
-listener/camera placement, and emitter tracking. Initialization requires a
-configured `aud:` path and fetches `aud:/library.json`; individual, complete,
-and range reads use `aud:/path/<encoded-logical-path>`. If the endpoint is
-absent or unavailable, `InitializeAudio()` reports audio unavailable and the
-application continues without audio.
+listener/camera placement, emitter tracking, and thin delegates for bank,
+global RTPC/state, and stop controls. The listener itself is owned by
+`CjsAudioMan`. Initialization requires a configured `aud:` path and fetches
+`aud:/library.json`; individual, complete, and range reads use
+`aud:/path/<encoded-logical-path>`. If the endpoint is absent or unavailable,
+`InitializeAudio()` reports audio unavailable and the application continues
+without audio.
 
 ## Boundaries
 

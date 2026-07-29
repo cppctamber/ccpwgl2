@@ -26,10 +26,8 @@ function assignIfExists(destination, sourceValue, keys)
 
 test.before(async () =>
 {
-    const {
-        AudListener,
-        CjsAudioMan,
-    } = await import("@carbonenginejs/runtime-audio");
+    const { CjsAudioMan } =
+        await import("@carbonenginejs/runtime-audio");
     const { vec3, mat4 } = require("gl-matrix");
 
     fakeTw2 = {
@@ -80,7 +78,6 @@ test.before(async () =>
 
     Tw2AudioMan = new Function(
         "CjsAudioMan",
-        "AudListener",
         "vec3",
         "mat4",
         "assignIfExists",
@@ -88,7 +85,6 @@ test.before(async () =>
         `${source}\nreturn Tw2AudioMan;`,
     )(
         CjsAudioMan,
-        AudListener,
         vec3,
         mat4,
         assignIfExists,
@@ -279,6 +275,7 @@ test("CCPWGL delegates installed documents and individual decoding to CjsAudioMa
     audMan.InstallLibrary(CreateLibrary());
 
     assert.equal(Object.isFrozen(audMan.library), true);
+    assert.equal(audMan.listener, audMan.audio.listener);
 
     const emitter = audMan.CreateEmitter({
         name: "Engine_SFX",
@@ -289,6 +286,7 @@ test("CCPWGL delegates installed documents and individual decoding to CjsAudioMa
     assert.equal(emitter.SendEvent("engine_loop", true), 0);
     assert.equal(audMan.Enable(), true);
     assert.equal(contexts, 1);
+    assert.equal(audMan.listener, audMan.audio.listener);
 
     await audMan.audio.LoadMedia(101);
     assert.deepEqual(
@@ -426,6 +424,39 @@ test("tracked emitters and listener placement remain in the CCPWGL facade", () =
         ],
         [ 5, 6, 7 ],
     );
+    audMan.Dispose();
+});
+
+test("high-level audio controls delegate to CjsAudioMan", () =>
+{
+    const audMan = new Tw2AudioMan();
+
+    audMan.Register({
+        createContext: () => FakeContext([]),
+    });
+    audMan.InstallLibrary(CreateLibrary());
+
+    assert.equal(audMan.LoadSoundBank("voice.bnk"), "voice.bnk");
+    assert.deepEqual(
+        audMan.audio.banksWaitingToLoad,
+        [ "voice.bnk" ],
+    );
+    assert.equal(audMan.Enable({ soundBanks: [] }), true);
+    assert.equal(audMan.SetGlobalRTPC("volume", 0.5), true);
+    assert.equal(audMan.SetState("ship", "warping"), true);
+    assert.deepEqual(
+        audMan.SwapSoundBanks([ "ships.bnk" ]),
+        {
+            loaded: [ "ships.bnk" ],
+            unloaded: [ "voice.bnk" ],
+        },
+    );
+    assert.deepEqual(
+        audMan.GetLoadedSoundBanks().sort(),
+        [ "Init.bnk", "ships.bnk" ],
+    );
+
+    audMan.StopAllPlayingSounds();
     audMan.Dispose();
 });
 

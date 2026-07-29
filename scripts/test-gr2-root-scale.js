@@ -5,13 +5,13 @@ const path = require("node:path");
 
 async function main()
 {
-    const { CjsFormatGr2 } = await import("@carbonenginejs/runtime-resource/formats/gr2");
+    const { CjsGr2Format } = await import("@carbonenginejs/runtime-resource/formats/gr2");
     const authoredScale = [
         0.75, 0, 0,
         0, 0.75, 0,
         0, 0, 0.75
     ];
-    const decoded = CjsFormatGr2.curves.decode({
+    const decoded = CjsGr2Format.curves.decode({
         format: 3,
         degree: 0,
         controls: authoredScale

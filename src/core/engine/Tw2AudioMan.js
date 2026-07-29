@@ -1,10 +1,7 @@
 import { vec3, mat4 } from "math";
 import { tw2 } from "global";
 import { assignIfExists } from "utils";
-import {
-    AudListener,
-    CjsAudioMan,
-} from "@carbonenginejs/runtime-audio";
+import { CjsAudioMan } from "@carbonenginejs/runtime-audio";
 
 /**
  * CCPWGL integration facade over `@carbonenginejs/runtime-audio`.
@@ -136,7 +133,11 @@ export class Tw2AudioMan
      */
     InstallLibrary(library)
     {
-        this._EnsureAudio().InstallLibrary(library);
+        const audio = this._EnsureAudio();
+
+        audio.InstallLibrary(library);
+        this.listener = audio.listener;
+        this._dirty = true;
         return this;
     }
 
@@ -217,13 +218,8 @@ export class Tw2AudioMan
         const enabled = audio.Enable(banks);
 
         this.Resume();
-
-        if (!this.listener)
-        {
-            this.listener = new AudListener();
-            audio.AdoptEmitter(this.listener);
-            this._dirty = true;
-        }
+        this.listener = audio.listener;
+        this._dirty = true;
 
         return enabled;
     }
@@ -232,6 +228,104 @@ export class Tw2AudioMan
     Disable()
     {
         this.audio?.Disable();
+    }
+
+    /**
+     * Adds and loads one protected default soundbank.
+     * @param {String} soundBankName Soundbank name.
+     * @return {String} Normalized bank name.
+     */
+    AddAndLoadDefaultSoundBank(soundBankName)
+    {
+        return this._EnsureAudio()
+            .AddAndLoadDefaultSoundBank(soundBankName);
+    }
+
+    /**
+     * Removes and unloads one protected default soundbank.
+     * @param {String} soundBankName Soundbank name.
+     * @return {Boolean} True when removed.
+     */
+    RemoveAndUnloadDefaultSoundBank(soundBankName)
+    {
+        return this._EnsureAudio()
+            .RemoveAndUnloadDefaultSoundBank(soundBankName);
+    }
+
+    /**
+     * Loads one soundbank now or retains it for the next enable.
+     * @param {String} soundBankName Soundbank name.
+     * @return {String} Normalized bank name.
+     */
+    LoadSoundBank(soundBankName)
+    {
+        return this._EnsureAudio().LoadSoundBank(soundBankName);
+    }
+
+    /**
+     * Unloads one non-default soundbank.
+     * @param {String} soundBankName Soundbank name.
+     * @return {Boolean} True when unloaded or removed from pending loads.
+     */
+    UnloadSoundBank(soundBankName)
+    {
+        return this._EnsureAudio().UnloadSoundBank(soundBankName);
+    }
+
+    /**
+     * Reconciles non-default soundbanks with one desired set.
+     * @param {Array<String>} soundBanks Desired soundbank names.
+     * @return {Object} Loaded and unloaded bank names.
+     */
+    SwapSoundBanks(soundBanks)
+    {
+        return this._EnsureAudio().SwapSoundBanks(soundBanks);
+    }
+
+    /**
+     * Disables and re-enables while preserving desired soundbanks.
+     * @return {Boolean} Whether audio enabled.
+     */
+    ReloadSoundBanks()
+    {
+        return this._EnsureAudio().ReloadSoundBanks();
+    }
+
+    /**
+     * Gets loaded and in-flight soundbank names.
+     * @return {Array<String>} Soundbank names.
+     */
+    GetLoadedSoundBanks()
+    {
+        return this.audio?.GetLoadedSoundBanks() ?? [];
+    }
+
+    /**
+     * Sets one global RTPC.
+     * @param {String} rtpcName RTPC name.
+     * @param {Number} value RTPC value.
+     * @return {Boolean} True when applied.
+     */
+    SetGlobalRTPC(rtpcName, value)
+    {
+        return this.audio?.SetGlobalRTPC(rtpcName, value) ?? false;
+    }
+
+    /**
+     * Sets one global authored state.
+     * @param {String} stateGroup State group name.
+     * @param {String} stateName State name.
+     * @return {Boolean} True when applied.
+     */
+    SetState(stateGroup, stateName)
+    {
+        return this.audio?.SetState(stateGroup, stateName) ?? false;
+    }
+
+    /** Stops emitter-routed and directly posted playback. */
+    StopAllPlayingSounds()
+    {
+        this.audio?.StopAllPlayingSounds();
     }
 
     /** Suspends the browser audio context. */
