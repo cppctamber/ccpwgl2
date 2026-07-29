@@ -78,7 +78,7 @@
   "dependencies": {
     "@carbonenginejs/format-gltf": "0.1.0",
     "@carbonenginejs/format-obj": "0.1.0",
-    "@carbonenginejs/runtime-audio": "^0.1.2",
+    "@carbonenginejs/runtime-audio": "^0.2.2",
     "@carbonenginejs/runtime-resource": "^0.10.0"
   }
 }
