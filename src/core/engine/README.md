@@ -189,7 +189,17 @@ The store records and formats reports; it does not decide policy. Systems report
 
 ### `Tw2AudioMan`
 
-`Tw2AudioMan` is the audio manager, backed by `@carbonenginejs/runtime-audio`. It is wired as `tw2.audMan` and stays headless — no `AudioContext`, no network — until `Enable()` is called from a user gesture. It installs a `carbonenginejs.audioLibrary` document via `SetLibrary()`, resolves event media through the library's exact HIRC edges (loose wem by storage path, embedded wem sliced from fetched banks), decodes client-side via `@carbonenginejs/runtime-resource`'s wem format, and drives the Carbon culling/render loop from `Tick()`. The listener follows `SetAudioLocation`/`SetAudioLocationFromPoseMatrix`, and emitters created through `CreateEmitter`/`AdoptEmitter` are discoverable by name for the audio state actions.
+`Tw2AudioMan` is the CCPWGL facade over
+`@carbonenginejs/runtime-audio`. It stays headless until `Enable()` is called
+from a user gesture. Runtime-audio installs the complete library document and
+owns media/language selection, individual versus original-bank range/whole
+delivery, WEM preparation, decoded-buffer retention, music, and Carbon graph
+behavior. CCPWGL supplies the tools-core endpoint adapter,
+listener/camera placement, and emitter tracking. Initialization requires a
+configured `aud:` path and fetches `aud:/library.json`; individual, complete,
+and range reads use `aud:/path/<encoded-logical-path>`. If the endpoint is
+absent or unavailable, `InitializeAudio()` reports audio unavailable and the
+application continues without audio.
 
 ## Boundaries
 

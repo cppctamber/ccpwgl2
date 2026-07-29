@@ -18,10 +18,32 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // this library). Routes follow /{provider|target}/{build}/{topic}: provider
 // routes ("ccp") serve the res:/ file tree, target routes ("eve") serve
 // query/answer topics like audio. Only one build is passed everywhere.
-const RES_SERVER = "http://127.0.0.1:3000/";
+const RES_SERVER = getResourceServer();
 const RES_PROVIDER = "ccp";
 const RES_TARGET = "eve";
 const RES_BUILD = "latest";
+
+
+function getResourceServer()
+{
+    const injected = typeof window === "undefined"
+        ? undefined
+        : window.CCPWGL_RESOURCE_SERVER;
+    if (injected === undefined) return "http://127.0.0.1:3000/";
+    if (typeof injected !== "string" || !injected.trim())
+    {
+        throw new TypeError("CCPWGL_RESOURCE_SERVER must be an HTTP(S) origin");
+    }
+
+    const url = new URL(injected);
+    if (!/^https?:$/u.test(url.protocol)
+        || url.username || url.password
+        || url.pathname !== "/" || url.search || url.hash)
+    {
+        throw new TypeError("CCPWGL_RESOURCE_SERVER must be an HTTP(S) origin");
+    }
+    return url.href;
+}
 
 /**
  * Register global configurations
@@ -63,7 +85,7 @@ export const config = {
                 name: "audio.media",
                 category: "audio",
                 label: "Audio media sourcing",
-                description: "Whether the aud:/ media-id endpoint answers directly and honors Range requests, or media falls back to res:/ paths",
+                description: "Whether the configured aud:/ tools-core endpoint is reachable and supports exact Range requests",
                 resolve: context => context.tw2.audMan.DetectMediaSourcing()
             }
         ]
@@ -238,14 +260,8 @@ export const config = {
         // since only the host knows which camera is the ears.
         "listenerFromCamera": true,
 
-        // Allows fetching media by id through the aud:/ endpoint when it
-        // verifies. When false the endpoint is never used and media always
-        // resolves through its res:/ paths.
-        "allowMediaIds": true,
-
-        // Allows Range (byte offset) requests against the aud:/ endpoint
-        // when it verifies. When false ranges are never used and banks are
-        // fetched whole. The resource manager does no offset management.
+        // Allows exact Range requests for embedded media in original banks.
+        // When false, original banks are fetched whole and sliced locally.
         "allowOffsets": true
 
     },
@@ -281,10 +297,9 @@ export const config = {
         "res": `${RES_SERVER}${RES_PROVIDER}/${RES_BUILD}/resources/`,
 
         // The audio route family root. "res" must remain the standard eve
-        // resource path; "aud" can target any audio endpoint root (e.g.
-        // tools-core /eve/<build>/audio/ with its id/ and path/ sub-routes,
-        // resolved as aud:/id/<mediaID>) and takes precedence over res:/
-        // media resolution in the audio manager when verified.
+        // resource path; "aud" can target a tools-core audio endpoint root.
+        // The runtime requests exact path/ records and optional ranges; media
+        // selection remains in runtime-audio.
         "aud": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/audio/`,
 
     },

@@ -29,7 +29,7 @@
     "test:dds-adapter": "node scripts/test-dds-adapter.js",
     "test:eve-turret-tracking": "node scripts/test-eve-turret-tracking.js",
     "test:eve-turret-targeting": "node scripts/test-eve-turret-targeting.js",
-    "test:audio-manager": "node scripts/test-audio-manager.js",
+    "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
@@ -79,7 +79,6 @@
     "@carbonenginejs/format-gltf": "0.1.0",
     "@carbonenginejs/format-obj": "0.1.0",
     "@carbonenginejs/runtime-audio": "^0.1.2",
-    "@carbonenginejs/runtime-resource": "^0.9.0",
-    "@carbonenginejs/tools-browser": "^0.1.1"
+    "@carbonenginejs/runtime-resource": "^0.10.0"
   }
 }

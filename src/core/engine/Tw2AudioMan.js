@@ -1,402 +1,265 @@
 import { vec3, mat4 } from "math";
 import { tw2 } from "global";
 import { assignIfExists } from "utils";
-import { CjsAudioSystem, AudListener } from "@carbonenginejs/runtime-audio";
-import { CjsAudioLibraryBuilder } from "@carbonenginejs/tools-browser/audio/builder";
-import { AudioFormatWem } from "core/resource/formats/AudioFormatWem";
-import { AudioFormatBnk } from "core/resource/formats/AudioFormatBnk";
+import {
+    AudListener,
+    CjsAudioMan,
+} from "@carbonenginejs/runtime-audio";
 
 /**
- * Audio manager backed by @carbonenginejs/runtime-audio.
+ * CCPWGL integration facade over `@carbonenginejs/runtime-audio`.
  *
- * Owns the Carbon audio composition root (manager + repository + WebAudio
- * backend), the singleton listener, and a default media pipeline that resolves
- * events through an installed "carbonenginejs.audioLibrary" document: loose
- * wem media and banks fetched by their res:/ paths through the engine's
- * resource path store, embedded media sliced out of fetched banks, decoded
- * client-side (Vorbis->Ogg, PTADPCM->PCM). When an "aud" path prefix is
- * registered (e.g. a tools-core /eve/<build>/audio/id/ endpoint) media is
- * fetched by id through it instead, and loose/embedded resolution is
- * handled server-side.
- *
- * Headless until Enable() is called from a user gesture: constructing the
- * manager or installing a library never creates an AudioContext, and emitters
- * created before enablement queue their events for replay on wake.
- *
- * @property {?CjsAudioSystem} system      - the runtime-audio composition root
- * @property {?AudListener} listener       - the singleton listener, created on Enable
- * @property {?AudioContext} context       - the audio context, created on Enable
- * @property {?Object} library             - installed carbonenginejs.audioLibrary document
- * @property {vec3} forward                - listener forward vector
- * @property {vec3} up                     - listener up vector
- * @property {vec3} position               - listener position
- * @property {String} language             - preferred embedded media language
- * @property {Number} distanceScale        - world units to WebAudio panner units
- * @property {Boolean} listenerFromCamera  - follows the device's camera pose (viewInverse) each tick
- * @property {Boolean} allowMediaIds       - permits aud:/ media-id fetching (never used when false)
- * @property {Boolean} allowOffsets        - permits Range requests (never used when false)
- * @property {Boolean} mediaIdSupport      - verified: the aud:/ endpoint answers media ids directly
- * @property {Boolean} rangeSupport        - verified: the aud:/ endpoint honors Range requests
- * @property {?Function} fetch             - fetch override
- * @property {?Function} loadBuffer        - full loadBuffer(eventID, eventName) override
- * @property {?Function} createContext     - AudioContext factory override
- * @property {Map} _emittersByName         - registered emitters by name
- * @property {Map} _tracked                - emitters following a target's world transform
- * @property {Map} _bufferCache            - decoded audio buffers by wem id
- * @property {Map} _bankBytesCache         - fetched bank bytes by bank source id
- * @property {Boolean} _dirty              - listener pose needs pushing
+ * Runtime-audio owns the installed document, source selection, original-bank
+ * range or whole-file delivery, WEM preparation, decoded buffers, Carbon
+ * manager, and Web Audio backend. This facade adds the tools-core `aud:`
+ * endpoint adapter, listener/camera placement, and emitter name/tracking
+ * helpers.
  */
 export class Tw2AudioMan
 {
-
-    system = null;
+    audio = null;
 
     listener = null;
 
     context = null;
 
-    library = null;
-
     forward = vec3.fromValues(0, 0, -1);
+
     up = vec3.fromValues(0, 1, 0);
+
     position = vec3.create();
 
     language = "en-us";
+
     distanceScale = 1;
+
     listenerFromCamera = true;
-    allowMediaIds = true;
+
     allowOffsets = true;
-    fetch = null;
-    loadBuffer = null;
-    createContext = null;
 
-    /**
-     * Options forwarded to BuildLibrary when the engine initializes audio, for
-     * a host whose audio index, SoundbanksInfo or language differ from the
-     * defaults. Null builds with the defaults.
-     * @type {?Object}
-     */
-    buildLibraryOptions = null;
-
-    mediaIdSupport = false;
     rangeSupport = false;
 
+    fetch = null;
+
+    createContext = null;
+
     _emittersByName = new Map();
+
     _tracked = new Map();
-    _bufferCache = new Map();
-    _bankBytesCache = new Map();
+
     _dirty = true;
+
     _gestureHooked = false;
+
     _activeCamera = null;
 
-    /**
-     * Gets whether the underlying engine is enabled
-     * @return {Boolean}
-     */
+    /** Gets the runtime-audio low-level system. */
+    get system()
+    {
+        return this.audio?.system ?? null;
+    }
+
+    /** Gets the installed immutable audio-library document. */
+    get library()
+    {
+        return this.audio?.library ?? null;
+    }
+
+    /** Gets whether the underlying Carbon manager is enabled. */
     get enabled()
     {
-        return !!this.system?.manager?.enabled;
+        return Boolean(this.audio?.manager?.enabled);
     }
 
-    /**
-     * Gets the audio context state
-     * @return {String}
-     */
+    /** Gets the browser audio-context state. */
     get state()
     {
-        return this.context ? this.context.state : Tw2AudioMan.State.NO_CONTEXT;
+        return this.context
+            ? this.context.state
+            : Tw2AudioMan.State.NO_CONTEXT;
     }
 
     /**
-     * Registers options
-     * @param {Object} opt
+     * Registers integration options.
+     * @param {Object} opt Options.
      */
     Register(opt)
     {
-        if (!opt) return;
+        if (!opt)
+        {
+            return;
+        }
 
         assignIfExists(this, opt, [
             "language",
             "distanceScale",
             "listenerFromCamera",
-            "allowMediaIds",
             "allowOffsets",
             "fetch",
-            "loadBuffer",
             "createContext",
-            "buildLibraryOptions"
         ]);
 
-        if (this.allowMediaIds === false) this.mediaIdSupport = false;
-        if (this.allowOffsets === false) this.rangeSupport = false;
+        this.audio?.SetLanguages([ this.language ]);
 
-        if (opt.library) this.SetLibrary(opt.library);
+        if (opt.library)
+        {
+            this.InstallLibrary(opt.library);
+        }
     }
 
     /**
-     * Fetches and installs an audio library document through the resource
-     * manager. Defaults to the aud:/ endpoint's library route; any res path
-     * or url resolving to a "carbonenginejs.audioLibrary" json works (the
-     * document may equally be published locally or built client-side).
-     * @param {String} [path="aud:/library.json"]
-     * @return {Promise<Object>} the installed library
+     * Fetches and installs a complete document from the configured tools-core
+     * audio endpoint.
+     * @param {String} [path="aud:/library.json"] Resource path.
+     * @return {Promise<Object>} Installed immutable document.
      */
     async FetchLibrary(path = "aud:/library.json")
     {
-        const res = await tw2.resMan.Fetch(path);
-        this.SetLibrary(res.data);
-        return this.library;
-    }
-
-    /**
-     * Builds the audio library in the browser from the build's own indexed
-     * inputs, then installs it.
-     *
-     * This is the client-side half of the same join the server performs: the
-     * audio rows of the resource index name every bank and loose medium,
-     * SoundbanksInfo supplies bank identity, and each bank is read once for its
-     * event graph and embedded media windows. Nothing here is a conversion - the
-     * document is derived from files the build already ships.
-     *
-     * Preferred over {@link Tw2AudioMan#FetchLibrary}, which needs a document
-     * prepared server side. The banks are fetched through the resource manager,
-     * so they arrive over whatever route res:/ is configured to use and land in
-     * the same cache the media pipeline reads later.
-     * @param {Object} [options]
-     * @param {String} [options.index="api:/resfiles"]                        - resource index listing logical paths
-     * @param {String} [options.soundbanksInfo="res:/audio/soundbanksinfo.json"] - authored Wwise bank identity
-     * @param {String} [options.audioPrefix="res:/audio/"]                    - index rows to keep
-     * @param {String} [options.language="en-us"]                             - localized event media to select
-     * @param {Boolean} [options.music=false]                                 - whether to build the music graph
-     * @return {Promise<Object>} the installed library
-     * @throws {Error} when the index or SoundbanksInfo cannot be read
-     */
-    async BuildLibrary(options = {})
-    {
-        const {
-            index = "api:/resfiles",
-            soundbanksInfo: soundbanksInfoPath = "res:/audio/soundbanksinfo.json",
-            audioPrefix = "res:/audio/",
-            language = "en-us",
-            music = false
-        } = options;
-
-        const url = tw2.resMan.BuildUrl(index);
-        const response = await fetch(url);
+        const url = this._ResolveAudioEndpoint(path);
+        const response = await this._GetFetch()(url);
 
         if (!response.ok)
         {
-            throw new Error(`Audio index unavailable (${response.status}): ${url}`);
+            throw new Error(
+                `Audio library unavailable (${response.status}): ${url}`,
+            );
         }
 
-        const paths = await response.json();
-
-        if (!Array.isArray(paths))
-        {
-            throw new Error(`Audio index is not a path list: ${url}`);
-        }
-
-        const prefix = audioPrefix.toLowerCase();
-        const indexEntries = paths
-            .filter(path => typeof path === "string" && path.toLowerCase().startsWith(prefix))
-            .map(logicalPath => ({ logicalPath }));
-
-        if (!indexEntries.length)
-        {
-            throw new Error(`Audio index contains no "${audioPrefix}" rows: ${url}`);
-        }
-
-        const soundbanksInfo = (await tw2.resMan.Fetch(soundbanksInfoPath)).data;
-
-        const library = await CjsAudioLibraryBuilder.buildFromBanks({
-            indexEntries,
-            soundbanksInfo,
-            language,
-            music,
-            sourceProvider: "ccpwgl",
-            loadBank: async bank => (await tw2.resMan.Fetch(bank.resPath)).data
-        });
-
-        this.SetLibrary(library);
+        this.InstallLibrary(await response.json());
         return this.library;
     }
 
     /**
-     * Installs an audio library document
-     * @param {Object} library - a carbonenginejs.audioLibrary v1/v2 document
-     * @return {Tw2AudioMan}
+     * Installs one complete audio-library document in CjsAudioMan.
+     * @param {Object} library Complete plain document.
+     * @return {Tw2AudioMan} This manager.
      */
-    SetLibrary(library)
+    InstallLibrary(library)
     {
-        if (!library || library.schema !== Tw2AudioMan.LIBRARY_SCHEMA)
-        {
-            throw new TypeError(`Audio manager requires a "${Tw2AudioMan.LIBRARY_SCHEMA}" document`);
-        }
-        this.library = library;
-        this._bufferCache.clear();
-        this._bankBytesCache.clear();
-        if (this.system && library.metadata)
-        {
-            this.system.repository.Initialize(library.metadata);
-        }
-
-        // A library provides real probe ids, so re-verify the media-id
-        // endpoint against it (fire and forget: until verification lands,
-        // media resolves through the normal res:/ pipeline).
-        if (tw2.paths.Has("aud"))
-        {
-            this.DetectMediaSourcing();
-        }
+        this._EnsureAudio().InstallLibrary(library);
         return this;
     }
 
     /**
-     * Detects how media should be sourced: probes the aud:/ media-id
-     * endpoint when registered and records whether ids can be fetched
-     * directly and whether the endpoint honors Range requests (the
-     * resource manager does no offset management of its own).
-     * @return {Promise<Object>} a capability report
+     * Probes exact-path HTTP range delivery for original bank members.
+     * Whole-file acquisition remains the safe fallback.
+     * @return {Promise<Object>} Capability report.
      */
     async DetectMediaSourcing()
     {
-        const declared = tw2.paths.Has("aud");
+        const source = this._GetProbeSource();
+        const declared = Boolean(source);
         const report = {
-            supported: false,
+            supported: declared,
             declared,
             verified: false,
             reason: null,
             ranges: false,
-            fallback: "res"
+            fallback: "whole",
         };
 
-        if (!this.allowMediaIds)
+        if (!source)
         {
-            report.reason = "media ids disabled (allowMediaIds)";
-            this.mediaIdSupport = false;
+            report.reason = "no audio library source available to probe";
+            this.rangeSupport = false;
+            return report;
+        }
+        if (!this.allowOffsets)
+        {
+            report.reason = "offset delivery disabled";
             this.rangeSupport = false;
             return report;
         }
 
-        if (!declared)
-        {
-            report.reason = "no aud:/ path registered";
-            this.mediaIdSupport = false;
-            this.rangeSupport = false;
-            return report;
-        }
-
-        const probeId = this._GetProbeMediaId();
-        if (!probeId)
-        {
-            report.reason = "no audio library installed to verify against";
-            return report;
-        }
-
-        const url = tw2.paths.Resolve(`aud:/id/${probeId}`);
-        const doFetch = this.fetch || fetch;
-
-        let response = null;
         try
         {
-            response = this.allowOffsets
-                ? await doFetch(url, { method: "HEAD", headers: { "Range": "bytes=0-0" } })
-                : await doFetch(url, { method: "HEAD" });
-        }
-        catch (err)
-        {
-            try
-            {
-                response = await doFetch(url, { method: "HEAD" });
-            }
-            catch (retryErr)
-            {
-                report.reason = "aud:/ endpoint unreachable";
-            }
-        }
+            const url = this._ResolveSourceUrl(source);
+            const doFetch = this._GetFetch();
+            const response = await doFetch(url, {
+                method: "HEAD",
+                headers: {
+                    Range: "bytes=0-0",
+                },
+            });
 
-        if (response)
-        {
             report.supported = response.ok || response.status === 206;
             report.verified = report.supported;
-            report.ranges = this.allowOffsets && (response.status === 206
-                || (response.headers && (response.headers.get("accept-ranges") || "").includes("bytes")));
-            if (!report.supported) report.reason = `aud:/ endpoint answered ${response.status}`;
+            report.ranges = response.status === 206
+                || String(
+                    response.headers?.get?.("accept-ranges") ?? "",
+                ).includes("bytes");
+            if (!report.supported)
+            {
+                report.reason = `audio source answered ${response.status}`;
+            }
+        }
+        catch (error)
+        {
+            report.supported = false;
+            report.reason = error?.message ?? "audio source unreachable";
         }
 
-        this.mediaIdSupport = report.supported;
         this.rangeSupport = report.ranges;
         return report;
     }
 
     /**
-     * Picks a real media id from the installed library for endpoint probing
-     * @return {?String}
-     */
-    _GetProbeMediaId()
-    {
-        if (!this.library) return null;
-        const loose = Object.keys(this.library.media || {});
-        if (loose.length) return loose[0];
-        const embedded = Object.keys(this.library.embeddedMedia || {});
-        return embedded.length ? embedded[0] : null;
-    }
-
-    /**
-     * Creates the audio context and enables the engine.
-     * Must be called from a user gesture for audible output.
-     * @param {Object} [opt]
-     * @param {Array<String>} [opt.soundBanks] - banks to load, defaults to every library bank
-     * @return {Boolean} whether the engine enabled
+     * Creates the context and enables runtime-audio from a user gesture.
+     * @param {Object} [opt] Options.
+     * @param {Array<String>} [opt.soundBanks] Banks to mark loaded.
+     * @return {Boolean} Whether audio enabled.
      */
     Enable({ soundBanks } = {})
     {
-        const system = this._EnsureSystem();
-        const banks = soundBanks || Object.keys(this.library?.metadata?.SoundBanks || {});
-        const enabled = system.Enable(banks);
+        const audio = this._EnsureAudio();
+        const banks = soundBanks
+            ?? Object.keys(this.library?.metadata?.SoundBanks ?? {});
+        const enabled = audio.Enable(banks);
 
-        if (!this.context && system.backend) this.context = system.backend.context;
         this.Resume();
 
         if (!this.listener)
         {
             this.listener = new AudListener();
-            system.AdoptEmitter(this.listener);
+            audio.AdoptEmitter(this.listener);
             this._dirty = true;
         }
+
         return enabled;
     }
 
-    /**
-     * Disables the engine, keeping the graph and context
-     */
+    /** Disables the audio graph while retaining the browser context. */
     Disable()
     {
-        this.system?.Disable();
+        this.audio?.Disable();
     }
 
-    /**
-     * Suspends the audio context
-     */
+    /** Suspends the browser audio context. */
     Suspend()
     {
-        if (this.state === Tw2AudioMan.State.RUNNING) this.context.suspend();
+        if (this.state === Tw2AudioMan.State.RUNNING)
+        {
+            this.context.suspend();
+        }
     }
 
-    /**
-     * Resumes the audio context
-     */
+    /** Resumes the browser audio context. */
     Resume()
     {
-        if (this.state === Tw2AudioMan.State.SUSPENDED) this.context.resume();
+        if (this.state === Tw2AudioMan.State.SUSPENDED)
+        {
+            this.context.resume();
+        }
     }
 
-    /**
-     * Resumes the audio context on the first user gesture (browsers keep
-     * a context created without a gesture suspended until one occurs)
-     */
+    /** Hooks one browser gesture to resume a suspended audio context. */
     ResumeOnGesture()
     {
-        if (this._gestureHooked || typeof document === "undefined") return;
+        if (this._gestureHooked || typeof document === "undefined")
+        {
+            return;
+        }
+
         this._gestureHooked = true;
 
         const resume = () =>
@@ -410,18 +273,15 @@ export class Tw2AudioMan
         document.addEventListener("keydown", resume);
     }
 
-    /**
-     * Disposes the engine, emitters and context
-     */
+    /** Disposes runtime-audio, emitters, tracking, and the owned context. */
     Dispose()
     {
-        this.system?.Dispose();
-        this.system = null;
+        this.audio?.Dispose();
+        this.audio = null;
         this.listener = null;
         this._emittersByName.clear();
         this._tracked.clear();
-        this._bufferCache.clear();
-        this._bankBytesCache.clear();
+
         if (this.context)
         {
             this.context.close();
@@ -429,33 +289,45 @@ export class Tw2AudioMan
         }
     }
 
-    /**
-     * Per frame update
-     */
+    /** Drives listener placement, tracked emitters, and runtime-audio. */
     Tick()
     {
-        if (!this.system) return;
+        if (!this.audio)
+        {
+            return;
+        }
 
-        // Listener pose priority: an explicitly designated camera, then the
-        // device's camera pose, then manual control
         if (this._activeCamera)
         {
             const { mat4_0 } = Tw2AudioMan.global;
+
             mat4.invert(mat4_0, this._activeCamera.GetView(mat4_0));
             this.SetAudioLocationFromPoseMatrix(mat4_0);
         }
-        else if (this.listenerFromCamera && tw2.device && tw2.device.viewInverse)
+        else if (this.listenerFromCamera
+            && tw2.device
+            && tw2.device.viewInverse)
         {
             this.SetAudioLocationFromPoseMatrix(tw2.device.viewInverse);
         }
 
         if (this._dirty && this.listener)
         {
-            this.listener.SetPosition(this.forward, this.up, this.position);
+            this.listener.SetPosition(
+                this.forward,
+                this.up,
+                this.position,
+            );
             this._dirty = false;
         }
 
-        const { mat4_0, vec3_0, vec3_1, vec3_2 } = Tw2AudioMan.global;
+        const {
+            mat4_0,
+            vec3_0,
+            vec3_1,
+            vec3_2,
+        } = Tw2AudioMan.global;
+
         for (const [ emitter, follow ] of this._tracked)
         {
             follow.target.GetWorldTransform(mat4_0);
@@ -465,36 +337,44 @@ export class Tw2AudioMan
             vec3_1[0] = mat4_0[4];
             vec3_1[1] = mat4_0[5];
             vec3_1[2] = mat4_0[6];
-            vec3.transformMat4(vec3_2, follow.localPosition, mat4_0);
+            vec3.transformMat4(
+                vec3_2,
+                follow.localPosition,
+                mat4_0,
+            );
             emitter.SetPosition(vec3_0, vec3_1, vec3_2);
         }
 
-        this.system.Process(typeof performance !== "undefined" ? performance.now() : Date.now());
+        this.audio.Process(
+            typeof performance !== "undefined"
+                ? performance.now()
+                : Date.now(),
+        );
     }
 
     /**
-     * Sets the camera the listener follows. Hosts drawing multiple
-     * views/scissors should designate their "ears" camera here, since the
-     * device only holds whichever view rendered last. Pass null to clear
-     * (falling back to device follow or manual control).
-     * @param {?*} camera - any camera exposing GetView(out)
-     * @return {Tw2AudioMan}
+     * Selects the camera used as the listener pose source.
+     * @param {?Object} camera Object exposing GetView(out).
+     * @return {Tw2AudioMan} This manager.
      */
     SetActiveCamera(camera)
     {
         if (camera && typeof camera.GetView !== "function")
         {
-            throw new TypeError("Audio active camera requires GetView(out)");
+            throw new TypeError(
+                "Audio active camera requires GetView(out)",
+            );
         }
-        this._activeCamera = camera || null;
+
+        this._activeCamera = camera ?? null;
         return this;
     }
 
     /**
-     * Sets the listener location
-     * @param {vec3} forward
-     * @param {vec3} up
-     * @param {vec3} position
+     * Sets the listener pose.
+     * @param {vec3} forward Forward vector.
+     * @param {vec3} up Up vector.
+     * @param {vec3} position Position.
      */
     SetAudioLocation(forward, up, position)
     {
@@ -505,72 +385,91 @@ export class Tw2AudioMan
     }
 
     /**
-     * Sets the listener location from a pose matrix
-     * @param {mat4} m
+     * Sets listener pose from a column-vector world pose matrix.
+     * @param {mat4} value Pose matrix.
      */
-    SetAudioLocationFromPoseMatrix(m)
+    SetAudioLocationFromPoseMatrix(value)
     {
-        this.forward[0] = -m[8];
-        this.forward[1] = -m[9];
-        this.forward[2] = -m[10];
-        this.up[0] = m[4];
-        this.up[1] = m[5];
-        this.up[2] = m[6];
-        this.position[0] = m[12];
-        this.position[1] = m[13];
-        this.position[2] = m[14];
+        this.forward[0] = -value[8];
+        this.forward[1] = -value[9];
+        this.forward[2] = -value[10];
+        this.up[0] = value[4];
+        this.up[1] = value[5];
+        this.up[2] = value[6];
+        this.position[0] = value[12];
+        this.position[1] = value[13];
+        this.position[2] = value[14];
         this._dirty = true;
     }
 
     /**
-     * Creates and adopts an emitter
-     * @param {Object} [descriptor] - name, eventPrefix/prefix, position, attenuationScalingFactor...
-     * @return {AudEmitter}
+     * Creates and adopts one emitter.
+     * @param {Object} [descriptor] Runtime-audio emitter descriptor.
+     * @return {Object} Adopted emitter.
      */
     CreateEmitter(descriptor = {})
     {
-        const emitter = this._EnsureSystem().CreateEmitter(descriptor);
-        if (descriptor.name) this._emittersByName.set(descriptor.name, emitter);
+        const emitter = this._EnsureAudio().CreateEmitter(descriptor);
+
+        if (descriptor.name)
+        {
+            this._emittersByName.set(descriptor.name, emitter);
+        }
         return emitter;
     }
 
     /**
-     * Adopts an externally constructed audio game object
-     * @param {AudGameObjResource} emitter
-     * @return {AudGameObjResource}
+     * Adopts one existing audio game object.
+     * @param {Object} emitter Audio game object.
+     * @return {Object} Adopted emitter.
      */
     AdoptEmitter(emitter)
     {
-        this._EnsureSystem().AdoptEmitter(emitter);
-        const name = emitter.GetName?.() || emitter.name;
-        if (name) this._emittersByName.set(name, emitter);
+        this._EnsureAudio().AdoptEmitter(emitter);
+
+        const name = emitter.GetName?.() ?? emitter.name;
+
+        if (name)
+        {
+            this._emittersByName.set(name, emitter);
+        }
         return emitter;
     }
 
     /**
-     * Follows a target's world transform with an emitter each tick
-     * @param {AudGameObjResource} emitter
-     * @param {*} target                - object exposing GetWorldTransform(out)
-     * @param {vec3} [localPosition]    - target-local emitter position
-     * @return {AudGameObjResource}
+     * Follows a target world transform with one emitter.
+     * @param {Object} emitter Audio game object.
+     * @param {Object} target Object exposing GetWorldTransform(out).
+     * @param {vec3} [localPosition] Target-local emitter position.
+     * @return {Object} Emitter.
      */
     TrackEmitter(emitter, target, localPosition)
     {
-        if (!target || typeof target.GetWorldTransform !== "function")
+        if (!target
+            || typeof target.GetWorldTransform !== "function")
         {
-            throw new TypeError("Audio emitter tracking requires a target with GetWorldTransform");
+            throw new TypeError(
+                "Audio emitter tracking requires a target with GetWorldTransform",
+            );
         }
+
         this._tracked.set(emitter, {
             target,
-            localPosition: localPosition ? vec3.fromValues(localPosition[0], localPosition[1], localPosition[2]) : vec3.create()
+            localPosition: localPosition
+                ? vec3.fromValues(
+                    localPosition[0],
+                    localPosition[1],
+                    localPosition[2],
+                )
+                : vec3.create(),
         });
         return emitter;
     }
 
     /**
-     * Stops following a target with an emitter
-     * @param {AudGameObjResource} emitter
-     * @return {Boolean}
+     * Stops following a target with one emitter.
+     * @param {Object} emitter Audio game object.
+     * @return {Boolean} True when tracking existed.
      */
     UntrackEmitter(emitter)
     {
@@ -578,150 +477,71 @@ export class Tw2AudioMan
     }
 
     /**
-     * Stops and unregisters an adopted emitter
-     * @param {AudGameObjResource} emitter
-     * @return {Boolean}
+     * Stops and releases one emitter.
+     * @param {Object} emitter Audio game object.
+     * @return {Boolean} True when released.
      */
     ReleaseEmitter(emitter)
     {
         this._tracked.delete(emitter);
+
         for (const [ name, value ] of this._emittersByName)
         {
-            if (value === emitter) this._emittersByName.delete(name);
+            if (value === emitter)
+            {
+                this._emittersByName.delete(name);
+            }
         }
-        return this.system ? this.system.ReleaseEmitter(emitter) : false;
+
+        return this.audio?.ReleaseEmitter(emitter) ?? false;
     }
 
     /**
-     * Finds a registered sound emitter by name
-     * @param {String} name
-     * @return {?AudGameObjResource}
+     * Finds one emitter by name.
+     * @param {String} name Emitter name.
+     * @return {?Object} Emitter.
      */
     FindSoundEmitter(name)
     {
-        return this._emittersByName.get(name) || null;
+        return this._emittersByName.get(name) ?? null;
     }
 
     /**
-     * Finds a registered sound emitter by name
-     * @param {String} name
-     * @return {?AudGameObjResource}
+     * Gets one emitter by name.
+     * @param {String} name Emitter name.
+     * @return {?Object} Emitter.
      */
     GetSoundEmitter(name)
     {
         return this.FindSoundEmitter(name);
     }
 
-    /**
-     * Resolves and decodes the media for an event
-     * @param {Number} eventID
-     * @param {String} eventName
-     * @return {Promise<?AudioBuffer>}
-     */
-    async LoadEventBuffer(eventID, eventName)
+    _EnsureAudio()
     {
-        if (this.loadBuffer)
+        if (!this.audio)
         {
-            return this.loadBuffer(eventID, eventName);
-        }
+            const provider = {
+                Read: source => this._ReadSource(source),
+                ReadRange: (source, options) =>
+                    this._ReadSourceRange(source, options),
+                CanReadRange: () =>
+                    this.allowOffsets && this.rangeSupport,
+            };
 
-        const wemId = this.ResolveEventMedia(eventName);
-        if (!wemId) return null;
-        if (this._bufferCache.has(wemId)) return this._bufferCache.get(wemId);
-
-        const bytes = await this.FetchWemBytes(wemId);
-        const buffer = await this.DecodeWem(bytes);
-        this._bufferCache.set(wemId, buffer);
-        return buffer;
-    }
-
-    /**
-     * Picks the media for an event from the library's exact HIRC edges.
-     * No edges means a control or unshipped event and resolves to silence,
-     * matching the real client.
-     * @param {String} eventName
-     * @return {?String} wem id
-     */
-    ResolveEventMedia(eventName)
-    {
-        const candidates = (this.library?.eventMedia?.[eventName] || [])
-            .filter(id => this.library.media?.[id] || this.library.embeddedMedia?.[id]);
-
-        if (!candidates.length) return null;
-        return candidates[Tw2AudioMan.Hash(eventName) % candidates.length];
-    }
-
-    /**
-     * Fetches the bytes for a wem id, from loose media or a bank slice
-     * @param {String} wemId
-     * @return {Promise<Uint8Array>}
-     */
-    async FetchWemBytes(wemId)
-    {
-        // A verified "aud" media-id endpoint (e.g. tools-core
-        // /eve/<build>/audio/id/<id>) resolves loose, embedded and
-        // localized sources server-side. See DetectMediaSourcing.
-        if (this.mediaIdSupport)
-        {
-            return this._FetchBytes(tw2.paths.Resolve(`aud:/id/${wemId}`));
-        }
-
-        const loose = this.library?.media?.[wemId];
-        if (loose)
-        {
-            const res = await tw2.resMan.Fetch(loose.resPath);
-            return res.data;
-        }
-
-        const variant = this._PickEmbeddedVariant(this.library?.embeddedMedia?.[wemId]);
-        if (!variant)
-        {
-            throw new ReferenceError(`Audio media not found in library: ${wemId}`);
-        }
-
-        const bank = this.library.banks?.[variant.bank];
-        if (!bank)
-        {
-            throw new ReferenceError(`Audio bank not found in library: ${variant.bank}`);
-        }
-
-        const bankBytes = await this._FetchBankBytes(bank);
-        return AudioFormatBnk.SliceMedia(bankBytes, variant.offset, variant.byteLength);
-    }
-
-    /**
-     * Decodes wem bytes into an audio buffer
-     * @param {Uint8Array} bytes
-     * @return {Promise<AudioBuffer>}
-     */
-    async DecodeWem(bytes)
-    {
-        if (!this.context) throw new ReferenceError("Audio manager has no context, call Enable first");
-        return AudioFormatWem.DecodeAudioBuffer(bytes, this.context);
-    }
-
-    /**
-     * Creates the composition root and wires the graph seams
-     * @return {CjsAudioSystem}
-     */
-    _EnsureSystem()
-    {
-        if (!this.system)
-        {
-            this.system = new CjsAudioSystem({
+            this.audio = new CjsAudioMan(null, {
+                mediaProvider: provider,
                 createContext: () => this._CreateContext(),
-                loadBuffer: (eventID, eventName) => this.LoadEventBuffer(eventID, eventName),
-                audioMetadata: this.library?.metadata,
-                distanceScale: this.distanceScale
-            }).Attach();
+                languages: [ this.language ],
+                distanceScale: this.distanceScale,
+                selectEventMedia: ({ eventName, mediaIDs }) =>
+                    mediaIDs[
+                        Tw2AudioMan.Hash(eventName) % mediaIDs.length
+                    ],
+            });
         }
-        return this.system;
+        return this.audio;
     }
 
-    /**
-     * Creates the audio context
-     * @return {?AudioContext}
-     */
     _CreateContext()
     {
         if (this.createContext)
@@ -730,67 +550,140 @@ export class Tw2AudioMan
         }
         else if (typeof window !== "undefined")
         {
-            const Context = window.AudioContext || window.webkitAudioContext;
-            if (Context) this.context = new Context();
+            const Constructor = window.AudioContext
+                ?? window.webkitAudioContext;
+
+            if (Constructor)
+            {
+                this.context = new Constructor();
+            }
         }
+
         return this.context;
     }
 
-    /**
-     * Picks the embedded media variant for the preferred language.
-     * Library records hold a single object for one variant and an array
-     * for per-language variants.
-     * @param {Array<Object>|Object} record
-     * @return {?Object}
-     */
-    _PickEmbeddedVariant(record)
+    async _ReadSource(source)
     {
-        const variants = Array.isArray(record) ? record : record ? [ record ] : [];
-        if (!variants.length) return null;
-        return variants.find(v => v.language === this.language)
-            || variants.find(v => v.language === "")
-            || variants[0];
-    }
+        const url = this._ResolveSourceUrl(source);
+        const response = await this._GetFetch()(url);
 
-    /**
-     * Fetches and caches a bank's bytes
-     * @param {Object} bank - a library bank record
-     * @return {Promise<Uint8Array>}
-     */
-    _FetchBankBytes(bank)
-    {
-        if (!this._bankBytesCache.has(bank.sourceID))
+        if (!response.ok)
         {
-            this._bankBytesCache.set(
-                bank.sourceID,
-                tw2.resMan.Fetch(bank.resPath).then(res => res.data)
+            throw new Error(
+                `Audio source unavailable (${response.status}): ${url}`,
             );
         }
-        return this._bankBytesCache.get(bank.sourceID);
+
+        return {
+            bytes: await response.arrayBuffer(),
+            complete: true,
+            mediaType: source?.mediaType,
+        };
     }
 
-    /**
-     * Fetches a url as bytes through the resource manager
-     * @param {String} url
-     * @return {Promise<Uint8Array>}
-     */
-    async _FetchBytes(url)
+    async _ReadSourceRange(source, {
+        offset,
+        byteLength,
+        signal,
+    })
+    {
+        const url = this._ResolveSourceUrl(source);
+        const response = await this._GetFetch()(url, {
+            signal,
+            headers: {
+                Range: `bytes=${offset}-${offset + byteLength - 1}`,
+            },
+        });
+
+        if (!response.ok && response.status !== 206)
+        {
+            throw new Error(
+                `Audio range fetch failed (${response.status}): ${url}`,
+            );
+        }
+
+        return {
+            bytes: await response.arrayBuffer(),
+            complete: response.status !== 206,
+        };
+    }
+
+    _GetFetch()
     {
         if (this.fetch)
         {
-            const response = await this.fetch(url);
-            if (!response.ok)
-            {
-                throw new Error(`Audio media fetch failed (${response.status}): ${url}`);
-            }
-            return new Uint8Array(await response.arrayBuffer());
+            return this.fetch;
         }
-        return new Uint8Array(await tw2.resMan.FetchRaw(url, "arraybuffer"));
+        if (typeof window !== "undefined"
+            && typeof window.fetch === "function")
+        {
+            return window.fetch.bind(window);
+        }
+
+        throw new Error("Browser fetch is unavailable");
+    }
+
+    _GetProbeSource()
+    {
+        const embedded = Object.values(
+            this.library?.embeddedMedia ?? {},
+        ).flat();
+        const first = embedded[0];
+
+        if (first)
+        {
+            return this.library.banks?.[first.bank] ?? null;
+        }
+
+        return Object.values(this.library?.media ?? {})
+            .flat()
+            .find(Boolean) ?? null;
+    }
+
+    _ResolveSourceUrl(source)
+    {
+        const path = this._SourcePath(source);
+
+        return this._ResolveAudioEndpoint(
+            `aud:/path/${encodeURIComponent(path.toLowerCase())}`,
+        );
+    }
+
+    _ResolveAudioEndpoint(path)
+    {
+        if (!tw2.paths.Has("aud"))
+        {
+            throw new Error(
+                "Audio is unavailable because no tools-core aud: endpoint is configured",
+            );
+        }
+        if (typeof path !== "string" || !path.startsWith("aud:/"))
+        {
+            throw new TypeError(
+                "CCPWGL audio acquisition requires an aud: endpoint path",
+            );
+        }
+        return tw2.paths.Resolve(path);
+    }
+
+    _SourcePath(source)
+    {
+        const path = source?.resPath
+            ?? source?.logicalPath
+            ?? source?.path;
+
+        if (!path)
+        {
+            throw new TypeError(
+                "Audio source record has no resource path",
+            );
+        }
+        return path;
     }
 
     /**
-     * Gets the audio media-sourcing capability provider
-     * @return {Object}
+     * Gets the audio source capability provider.
+     * @return {Object} Capability provider.
      */
     static GetCapabilityProvider()
     {
@@ -799,53 +692,43 @@ export class Tw2AudioMan
             name: "audio.media",
             category: "audio",
             label: "Audio media sourcing",
-            description: "Whether the aud:/ media-id endpoint answers directly and honors Range requests, or media falls back to res:/ paths",
-            resolve: ({ tw2 }) => tw2.audMan.DetectMediaSourcing()
+            description:
+                "Exact individual, whole-file, and original-bank range delivery",
+            resolve: ({ tw2 }) =>
+                tw2.audMan.DetectMediaSourcing(),
         };
     }
 
     /**
-     * FNV-1a hash, the deterministic edge choice for multi-media events
-     * @param {String} text
-     * @return {Number}
+     * FNV-1a hash used for deterministic multi-media event selection.
+     * @param {String} text Input.
+     * @return {Number} Unsigned hash.
      */
     static Hash(text)
     {
-        let h = 2166136261;
-        for (const c of text)
+        let value = 2166136261;
+
+        for (const character of text)
         {
-            h ^= c.charCodeAt(0);
-            h = Math.imul(h, 16777619);
+            value ^= character.charCodeAt(0);
+            value = Math.imul(value, 16777619);
         }
-        return h >>> 0;
+        return value >>> 0;
     }
 
-    /**
-     * Scratch variables
-     * @type {Object}
-     */
+    /** Scratch math values. */
     static global = {
         mat4_0: mat4.create(),
         vec3_0: vec3.create(),
         vec3_1: vec3.create(),
-        vec3_2: vec3.create()
+        vec3_2: vec3.create(),
     };
 
-    /**
-     * The library document schema this manager installs
-     * @type {String}
-     */
-    static LIBRARY_SCHEMA = "carbonenginejs.audioLibrary";
-
-    /**
-     * Context states
-     * @type {Object}
-     */
+    /** Browser audio-context states. */
     static State = {
         NO_CONTEXT: "no_context",
         SUSPENDED: "suspended",
         RUNNING: "running",
-        CLOSED: "closed"
+        CLOSED: "closed",
     };
-
 }
