@@ -18,32 +18,10 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // this library). Routes follow /{provider|target}/{build}/{topic}: provider
 // routes ("ccp") serve the res:/ file tree, target routes ("eve") serve
 // query/answer topics like audio. Only one build is passed everywhere.
-const RES_SERVER = getResourceServer();
+const RES_SERVER = "http://127.0.0.1:3000/";
 const RES_PROVIDER = "ccp";
 const RES_TARGET = "eve";
 const RES_BUILD = "latest";
-
-
-function getResourceServer()
-{
-    const injected = typeof window === "undefined"
-        ? undefined
-        : window.CCPWGL_RESOURCE_SERVER;
-    if (injected === undefined) return "http://127.0.0.1:3000/";
-    if (typeof injected !== "string" || !injected.trim())
-    {
-        throw new TypeError("CCPWGL_RESOURCE_SERVER must be an HTTP(S) origin");
-    }
-
-    const url = new URL(injected);
-    if (!/^https?:$/u.test(url.protocol)
-        || url.username || url.password
-        || url.pathname !== "/" || url.search || url.hash)
-    {
-        throw new TypeError("CCPWGL_RESOURCE_SERVER must be an HTTP(S) origin");
-    }
-    return url.href;
-}
 
 /**
  * Register global configurations

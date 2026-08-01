@@ -54,19 +54,30 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             [ "WorldMat", 16 ],
             [ "WorldMatLast", 16 ],
             [ "InvWorldMat", 16 ],
+            // Shipdata is four independent floats, not a bitfield.
+            // confirmed as (source-backed, CarbonEngine EveSpaceObject2):
             [ "Shipdata", [
-                0,     // booster gain ?
-                1,     // activation
-                0,     // Dirt strength and shared with boosters for booster strength
-                1      // effect scale - might be clip scale?
+                0,     // .x confirmed as: booster glow intensity (EveShip2.cpp:285)
+                1,     // .y confirmed as: activation strength (EveSpaceObject2.cpp:739; EveMobile.cpp:210 scales it)
+                0,     // .z confirmed as: dirt level (EveSpaceObject2.cpp:744)
+                1      // .w confirmed as: bounding sphere radius - the shader needs the object's
+                //    size for surface scaling (EveSpaceObject2.cpp:742, re-stamped :1471)
             ] ],
-            [ "Clipdata1", 4 ], // Some sort of effect data - center(vec3), signed squared size
+            // confirmed as: clipSphereCenter.xyz + clipRadiusSq.w, a SIGNED squared radius -
+            // the sign carries the inside/outside test (EveSpaceObject2.cpp:751-753;
+            // shadercompiler/tests/RayTracingTest.cpp:678-679 does sign(w) * dot(d,d) - w)
+            [ "Clipdata1", 4 ],
             [ "EllipsoidRadii", 4 ],
             [ "EllipsoidCenter", 4 ],
             [ "CustomMaskMatrix0", [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ] ],
             [ "CustomMaskMatrix1", [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ] ],
-            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ], // unused, mirror
-            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ], // unused, mirror
+            // .x confirmed as: the enable flag, written as exactly 1.0 whenever a mask is
+            // present and 0 when absent - NOT unused (EveCustomMask.cpp:74 fill / :88-93 zero).
+            // .y is the mirror flag, as assumed here. Carbon zeroes the whole vec4 for an
+            // absent slot; ccpwgl instead gates through CustomMaskTarget, which appears
+            // equivalent in effect but is a different mechanism.
+            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ], // enable, mirror
+            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ], // enable, mirror
 
             // gles doesn't use these
             //[ "BoneOffsets", [
@@ -86,15 +97,22 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             [ "JointMat", 696 ]
         ],
         ps: [
+            // Same four floats as the vs block above; see there for the confirmations.
             [ "Shipdata", [
-                0,                          // booster gain ?
-                1,                          // activation
-                0,                          // Dirt strength and shared with boosters for booster strength
-                1                           // effect scale - might be clip scale? - not used in quad shaders
+                0,                          // .x booster glow intensity (EveShip2.cpp:285)
+                1,                          // .y activation strength (EveSpaceObject2.cpp:739)
+                0,                          // .z dirt level (EveSpaceObject2.cpp:744)
+                1                           // .w bounding sphere radius (EveSpaceObject2.cpp:742)
             ] ],
-            [ "Clipdata1", 4 ],             //  center(vec3), signed squared size
-            [ "Miscdata", 4 ],              // .x = clip strength? - yxw - unused
-            [ "ShLighting", 4 * 7 ],
+            [ "Clipdata1", 4 ],             // clipSphereCenter.xyz + signed clipRadiusSq.w
+            // confirmed as: Carbon's Miscdata - all four lanes are used, none spare
+            // (EveSpaceObject2.h:127-131, filled cpp:754-761)
+            [ "Miscdata", 4 ],              // .x clipRadius2Sq (signed sq), .y impactDataOffset,
+            // .z clipSphereFactor2, .w clipSphereFactor
+            [ "ShLighting", 4 * 7 ],        // confirmed as: Tr2ShLightingManager::PACKED_COEFFICIENT_COUNT = 7
+            // .yzw are a ccpwgl extension for the old OpenGL shaders, using lanes Carbon
+            // leaves at 0 (Carbon: materialIDs = (materialIndex, 0, 0, 0), EveCustomMask.cpp:77,
+            // with clamps in a separate CustomMaskClamps vec4 that the gles layout has no slot for).
             [ "CustomMaskMaterialID0", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
             [ "CustomMaskMaterialID1", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
             [ "CustomMaskTarget0", 4 ],     // Material Layer Masking

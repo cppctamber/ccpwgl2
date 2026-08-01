@@ -39,6 +39,8 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
 
     _rebuiltResources = new Set();
 
+    _baseCrossfade = null;
+
     /**
      * Replaces the controller's resources and resets interior rebuild state.
      * @param {*} geometryResource
@@ -47,6 +49,7 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
     {
         super.SetGeometryResource(geometryResource);
         this._rebuiltResources.clear();
+        this._baseCrossfade = null;
     }
 
     /**
@@ -97,32 +100,106 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
             return null;
         }
 
+        const layerName = options.layerName || options.layer || options.mask || "";
+        if (!layerName && options.additive !== true) this._baseCrossfade = null;
         super.PlayAnimation(name, options);
-        if (animation)
+        return this.ConfigureInteriorAnimation(animation, options);
+    }
+
+    /**
+     * Crossfades one ordinary base clip without changing additive expression,
+     * gaze, breathing, or viseme layers.
+     * @param {String} name
+     * @param {Object} [options]
+     * @param {Number} [options.responseSeconds=1]
+     * @returns {?Tw2Animation}
+     */
+    CrossfadeBaseAnimation(name, options = {})
+    {
+        const animation = this.GetAnimation(name);
+        if (!animation)
         {
-            const layerName = options.layerName || options.layer || options.mask || "";
-            animation._interiorLayerName = layerName;
-            animation._interiorAdditive = options.additive !== undefined ? !!options.additive : !!this.additiveBlendMode;
-            animation._interiorAmount = options.amount !== undefined
-                ? options.amount
-                : options.weight !== undefined
-                    ? options.weight
-                    : this.GetLayerWeight(layerName);
-            animation._interiorLayerWeight = animation._interiorAmount;
-            animation._interiorMaskSource = options.additiveMask !== undefined ? options.additiveMask : options.mask;
-            animation._interiorMaskSpecified = animation._interiorMaskSource !== undefined &&
-                animation._interiorMaskSource !== null && animation._interiorMaskSource !== "";
-            animation._interiorReferenceSource = options.base !== undefined
-                ? options.base
-                : options.referenceClip;
-            animation._interiorUseRestReference = animation._interiorAdditive &&
-                animation._interiorReferenceSource === undefined;
-            animation._interiorInto = options.into !== undefined ? options.into : null;
-            animation._interiorCompositionOrder = Number.isFinite(options.compositionOrder)
-                ? Number(options.compositionOrder)
-                : Number.MAX_SAFE_INTEGER;
+            if (!this._isLoaded)
+            {
+                this._pendingCommands.push({
+                    func: this.CrossfadeBaseAnimation,
+                    args: [ name, options ]
+                });
+            }
+            return null;
         }
 
+        const duration = Math.max(0, Number(options.responseSeconds) || 0);
+        if (!duration) return this.PlayAnimation(name, options);
+
+        const layerName = options.layerName || options.layer || options.mask || "";
+        const outgoing = this.animations
+            .filter(candidate =>
+                candidate !== animation &&
+                !candidate._interiorAdditive &&
+                (candidate._interiorLayerName || candidate.trackMaskName || "") === layerName &&
+                (candidate.IsPlaying() || candidate.IsPaused() ||
+                    Number(candidate._interiorLayerWeight) > 0)
+            )
+            .map(candidate => ({
+                animation: candidate,
+                startWeight: Number.isFinite(candidate._interiorLayerWeight)
+                    ? candidate._interiorLayerWeight
+                    : 1
+            }));
+
+        animation.trackMaskName = options.mask || "";
+        animation.trackMask = animation.trackMaskName
+            ? this.ResolveTrackMask(animation.trackMaskName)
+            : null;
+        animation.Play(options);
+        this.ConfigureInteriorAnimation(animation, {
+            ...options,
+            additive: false
+        });
+        animation.weight = 1;
+        animation._interiorLayerWeight = outgoing.length ? 0 : 1;
+
+        this._baseCrossfade = outgoing.length
+            ? { animation, outgoing, elapsed: 0, duration }
+            : null;
+        return animation;
+    }
+
+    /**
+     * Records the interior-only playback metadata consumed during composition.
+     * @param {Tw2Animation} animation
+     * @param {Object} options
+     * @returns {?Tw2Animation}
+     */
+    ConfigureInteriorAnimation(animation, options = {})
+    {
+        if (!animation) return null;
+        const layerName = options.layerName || options.layer || options.mask || "";
+        animation._interiorLayerName = layerName;
+        animation._interiorAdditive = options.additive !== undefined
+            ? !!options.additive
+            : !!this.additiveBlendMode;
+        animation._interiorAmount = options.amount !== undefined
+            ? options.amount
+            : options.weight !== undefined
+                ? options.weight
+                : this.GetLayerWeight(layerName);
+        animation._interiorLayerWeight = animation._interiorAmount;
+        animation._interiorMaskSource = options.additiveMask !== undefined
+            ? options.additiveMask
+            : options.mask;
+        animation._interiorMaskSpecified = animation._interiorMaskSource !== undefined &&
+            animation._interiorMaskSource !== null && animation._interiorMaskSource !== "";
+        animation._interiorReferenceSource = options.base !== undefined
+            ? options.base
+            : options.referenceClip;
+        animation._interiorUseRestReference = animation._interiorAdditive &&
+            animation._interiorReferenceSource === undefined;
+        animation._interiorInto = options.into !== undefined ? options.into : null;
+        animation._interiorCompositionOrder = Number.isFinite(options.compositionOrder)
+            ? Number(options.compositionOrder)
+            : Number.MAX_SAFE_INTEGER;
         return animation;
     }
 
@@ -402,9 +479,44 @@ export class Tr2InteriorAnimationController extends Tw2AnimationController
      */
     Update(dt)
     {
+        this.UpdateBaseCrossfade(dt);
         super.Update(dt);
         this.ApplyAdditiveAnimations();
         this.ApplyBoneOffsets();
+    }
+
+    /**
+     * Advances only the ordinary full-body base transition. Additive layers
+     * retain their independent mixer weights and response times.
+     * @param {Number} dt
+     */
+    UpdateBaseCrossfade(dt)
+    {
+        const transition = this._baseCrossfade;
+        if (!transition) return;
+
+        transition.elapsed = Math.min(
+            transition.duration,
+            transition.elapsed + Math.max(0, Number(dt) || 0)
+        );
+        const amount = transition.duration
+            ? transition.elapsed / transition.duration
+            : 1;
+        transition.animation._interiorLayerWeight = amount;
+        for (const outgoing of transition.outgoing)
+        {
+            outgoing.animation._interiorLayerWeight = outgoing.startWeight * (1 - amount);
+        }
+
+        if (amount < 1) return;
+        for (const outgoing of transition.outgoing)
+        {
+            outgoing.animation.Stop();
+            outgoing.animation.weight = 0;
+            outgoing.animation._interiorLayerWeight = 0;
+        }
+        transition.animation._interiorLayerWeight = 1;
+        this._baseCrossfade = null;
     }
 
     /**
