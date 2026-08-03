@@ -3,8 +3,10 @@ import { Tw2BinaryReader } from "../reader";
 import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
-import { tw2 } from "global";
-import { Tw2CarbonPackageReader, Tw2CarbonShaderFactory } from "./Tw2CarbonReader";
+import { device, tw2 } from "global";
+import { CjsWebglFormat } from "@carbonenginejs/runtime-resource/formats/webgl";
+import { Tw2Device } from "../engine/Tw2Device";
+import { Tw2CarbonShaderFactory } from "./Tw2CarbonEffectReader";
 
 const CHAR_CODE_CHUNK_SIZE = 0x8000;
 
@@ -57,10 +59,19 @@ export class Tw2EffectRes extends Tw2Resource
      */
     static IsCarbonData(data)
     {
-        const bytes = new Uint8Array(data, 0, Math.min(4, data.byteLength));
-        return bytes.length === 4
-            && bytes[0] === 0x43 && bytes[1] === 0x45   // "CE"
-            && bytes[2] === 0x57 && bytes[3] === 0x47;  // "WG"
+        // The version dword, which is what Carbon itself branches on. This
+        // replaced a "CEWG" magic sniff: that format is gone, and it had
+        // claimed version 9 in CCP's namespace to get itself read.
+        //
+        // 2-8 is the legacy gles2 range PrepareCCP owns. 15 is the current
+        // Carbon container, whether it carries DXBC or already-translated
+        // GLSL - the program slot differs, the container does not, which is
+        // why the path and not the bytes decides how to prepare it.
+        const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+        if (bytes.byteLength < 4) return false;
+
+        const version = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+        return version === 15;
     }
 
 
@@ -289,26 +300,53 @@ export class Tw2EffectRes extends Tw2Resource
      */
     PrepareCarbon(data)
     {
-        const reader = new Tw2CarbonPackageReader();
-        if (!reader.Read(data))
+        try
         {
-            this.OnError(reader.readError || new Error("Unable to read Carbon package"));
-            return;
-        }
+            const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
 
-        const metadata = reader.GetJson("META");
-        const glslSet = reader.GetJson("GLSL");
-        const info = reader.GetJson("INFO");
-        if (!info || !metadata || !glslSet)
+            // The container is byte-identical across backends - only the
+            // program slot differs - so the bytes cannot say whether this is a
+            // dx11 source needing translation or an already-translated
+            // artefact. The path is the discriminator, exactly as it is in
+            // Carbon. `ToEffectPath` has already qualified it by now.
+            const profile = Tw2Device.EffectProfileFromPath(this.path)
+                || device.effectProfile;
+
+            let container = bytes;
+            let permutationGraph = null;
+
+            if (profile === "effect.dx11")
+            {
+                // Translating at load is a build step running at runtime. It is
+                // correct but not cheap; a pre-translated effect.webgl2 tree
+                // takes the branch below and skips it entirely.
+                const built = CjsWebglFormat.buildEffect(bytes, { source: this.path });
+                container = built.bytes;
+                permutationGraph = built.permutationGraph;
+            }
+            else
+            {
+                throw new Error(
+                    `Carbon effect profile '${profile}' cannot be prepared yet; `
+                    + "only effect.dx11 sources are translated at load."
+                );
+            }
+
+            this._carbon = { container, permutationGraph };
+            this._carbonFactory = new Tw2CarbonShaderFactory(
+                CjsWebglFormat.read(container),
+                permutationGraph
+            );
+            this.permutations = this._carbonFactory.permutations;
+            // Carbon's own version, not a number invented for this path. The
+            // previous reader claimed 9 ("first post-v8 format") for a chunk
+            // container, which asserted a Carbon generation that never existed.
+            this.version = 15;
+        }
+        catch (err)
         {
-            this.OnError(new Error("Carbon package must contain INFO, META and GLSL chunks"));
-            return;
+            this.OnError(err);
         }
-
-        this._carbon = { info, metadata, glslSet };
-        this._carbonFactory = new Tw2CarbonShaderFactory(metadata, glslSet);
-        this.permutations = this._carbonFactory.permutations;
-        this.version = 9; // first post-v8 format
     }
 
     /**

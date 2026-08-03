@@ -133,27 +133,64 @@ export class Tw2CarbonShaderFactory
 {
 
     /**
-     * Builds package indexes used by shader construction.
-     * @param {Object} metadata  META chunk JSON
-     * @param {Object} glslSet   GLSL chunk JSON
+     * Both spellings of one body identity: `body0` and `body_0`.
+     *
+     * @param {String} bodyKey
+     * @returns {String[]} Unique aliases, the original first.
      */
-    constructor(metadata, glslSet)
+    static BodyKeyAliases(bodyKey)
     {
-        this.metadata = metadata;
-        this.glslSet = glslSet;
-        this.permutations = Array.isArray(metadata.permutations) ? metadata.permutations : [];
+        const key = String(bodyKey ?? "");
+        const alt = /^body_(\d+)$/.test(key)
+            ? key.replace(/^body_(\d+)$/, "body$1")
+            : key.replace(/^body(\d+)$/, "body_$1");
 
-        this._bodiesByKey = new Map();
-        this._glslBodiesByKey = new Map();
-        this._glslStagesByKey = new Map();
-        this._glslShadersByKey = new Map();
+        return alt === key ? [ key ] : [ key, alt ];
+    }
+
+    /**
+     * Builds the indexes shader construction walks.
+     *
+     * Both inputs come from `@carbonenginejs/runtime-resource/formats/webgl`
+     * reading one Carbon v15 container. There are no chunks: `read()` returns a
+     * flat stage/shader graph, and each stage carries its own manifest rather
+     * than being paired against a separate META body.
+     *
+     * @param {Object} readResult        `CjsWebglFormat.read(bytes)` output.
+     * @param {Object} permutationGraph  Permutation axes and variants.
+     */
+    constructor(readResult, permutationGraph)
+    {
+        this.read = readResult;
+        this.graph = permutationGraph || {};
+        // Axes carry {name, options, defaultOption}, which is the shape the
+        // mixed-radix resolver below already expects.
+        this.permutations = Array.isArray(this.graph.axes) ? this.graph.axes : [];
+
+        this._shadersByKey = new Map();
+        this._stagesByBody = new Map();
         this._variantBodiesByIndex = new Map();
 
-        for (const body of metadata.bodies || []) this._bodiesByKey.set(body.key, body);
-        for (const body of glslSet.bodies || []) this._glslBodiesByKey.set(body.key, body);
-        for (const stage of glslSet.stages || []) this._glslStagesByKey.set(stage.key, stage);
-        for (const shader of glslSet.shaders || []) this._glslShadersByKey.set(shader.key, shader);
-        for (const variant of glslSet.variants || [])
+        for (const shader of readResult.shaders || [])
+        {
+            this._shadersByKey.set(shader.key, shader);
+        }
+        // The two producers spell one body identity two ways: the permutation
+        // graph emits `body0`, the stage graph emits `body_0`. They are 1:1 and
+        // both come from runtime-resource, so this is a defect there rather
+        // than a contract; index under both spellings so a fix upstream cannot
+        // break this, and so a mismatch shows up as a missing body rather than
+        // an empty pass list.
+        for (const stage of readResult.stages || [])
+        {
+            for (const key of Tw2CarbonShaderFactory.BodyKeyAliases(stage.bodyKey))
+            {
+                const list = this._stagesByBody.get(key);
+                if (list) { if (!list.includes(stage)) list.push(stage); }
+                else this._stagesByBody.set(key, [ stage ]);
+            }
+        }
+        for (const variant of this.graph.variants || [])
         {
             this._variantBodiesByIndex.set(variant.permutationIndex, variant.bodyKey);
         }
@@ -191,16 +228,16 @@ export class Tw2CarbonShaderFactory
      */
     CreateShader(permutationIndex, path)
     {
-        const bodyKey = this._variantBodiesByIndex.get(permutationIndex) || this.glslSet.variants?.[0]?.bodyKey;
-        const body = this._bodiesByKey.get(bodyKey);
-        const glslBody = this._glslBodiesByKey.get(bodyKey);
-        if (!body || !glslBody || body.error)
+        const bodyKey = this._variantBodiesByIndex.get(permutationIndex)
+            ?? this.graph.variants?.[0]?.bodyKey;
+
+        if (!bodyKey || !this._stagesByBody.has(bodyKey))
         {
-            throw new Error(`Carbon body is not available: ${bodyKey} ${body?.error || ""}`);
+            throw new Error(`Carbon body is not available: ${bodyKey ?? `permutation ${permutationIndex}`}`);
         }
 
         const shader = new Tw2Shader();
-        const grouped = this._groupStagesByPass(body, glslBody);
+        const grouped = this._groupStagesByPass(bodyKey);
 
         for (const groupKey in grouped)
         {
@@ -223,19 +260,12 @@ export class Tw2CarbonShaderFactory
      * @param {Object} glslBody
      * @returns {Object.<string,Object>}
      */
-    _groupStagesByPass(body, glslBody)
+    _groupStagesByPass(bodyKey)
     {
-        const manifestStages = new Map();
-        for (const stage of body.manifest?.stages || [])
-        {
-            manifestStages.set(stageKey(stage), stage);
-        }
-
         const grouped = {};
-        for (const stageKeyValue of glslBody.stages || [])
+
+        for (const glslStage of this._stagesByBody.get(bodyKey) || [])
         {
-            const glslStage = this._glslStagesByKey.get(stageKeyValue);
-            if (!glslStage) continue;
             if (glslStage.stageName !== "vertex" && glslStage.stageName !== "pixel") continue;
 
             const key = `${glslStage.techniqueName || "Main"}:${glslStage.passIndex || 0}`;
@@ -248,8 +278,10 @@ export class Tw2CarbonShaderFactory
 
             grouped[key][glslStage.stageName] = {
                 glslStage,
-                manifestStage: manifestStages.get(stageKey(glslStage)),
-                shaderRecord: this._glslShadersByKey.get(glslStage.shaderKey)
+                // Each stage carries its own manifest now, so there is no
+                // second lookup to keep in step with the stage list.
+                manifestStage: glslStage.manifest,
+                shaderRecord: this._shadersByKey.get(glslStage.shaderKey)
             };
         }
         return grouped;
