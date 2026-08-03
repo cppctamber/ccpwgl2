@@ -103,3 +103,25 @@ function expectZeroReg(out, outReg, label)
 }
 
 console.log("PASS: Tw2CarbonData — GLES->Carbon repack maps verified for b1(46), b2(118), b3(29), b4(29)");
+
+// --- customMaskClamps reaches Carbon reg 26 through the +12 shift -------------
+// Carbon reads clamps at cb4[26] as [m0.U, m0.V, m1.U, m1.V]
+// (EveCustomMask.cpp:80-81). ccpwgl carries them in GLES PS reg 14, chosen so
+// the existing shift lands them there with no special case in the packer.
+//
+// Regression for a silent failure: zeros here mean a translated pattern shader
+// does not clamp, and the pattern tiles across the hull instead of stopping.
+{
+    const glesVs = stamp(200);
+    const glesPs = new Float32Array(16 * 4);
+    glesPs[14 * 4] = 1;      // mask 0 clamp U
+    glesPs[14 * 4 + 1] = 0;  // mask 0 clamp V
+    glesPs[14 * 4 + 2] = 0;  // mask 1 clamp U
+    glesPs[14 * 4 + 3] = 1;  // mask 1 clamp V
+
+    const out = PackPerObjectPS(new Float32Array(PER_OBJECT_REGS * 4), glesVs, glesPs);
+    assert.strictEqual(out[26 * 4], 1, "carbon reg 26.x = mask0 clampU");
+    assert.strictEqual(out[26 * 4 + 1], 0, "carbon reg 26.y = mask0 clampV");
+    assert.strictEqual(out[26 * 4 + 2], 0, "carbon reg 26.z = mask1 clampU");
+    assert.strictEqual(out[26 * 4 + 3], 1, "carbon reg 26.w = mask1 clampV");
+}

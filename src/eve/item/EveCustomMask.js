@@ -93,12 +93,30 @@ export class EveCustomMask extends WglTransform
             clampToBorderV = 0,
             clampToBorderW = 0;
 
+        // Carbon's customMaskClamps: one vec4 for both masks, two lanes each
+        // (EveCustomMask.cpp:80-81), read by translated shaders at cb4[26] to
+        // lerp UV toward clamp(uv,0,1). Distinct from the border flags below —
+        // same source enum, different value:
+        //
+        //   projectionType -> address mode 3 (CLAMP_TO_EDGE)   -> Carbon clampU
+        //   projectionType -> address mode 4 (CLAMP_TO_BORDER) -> the shader
+        //                                                        emulation
+        //
+        // Same rule runtime-sof uses (EveSOF.js:1130, `=== 3`), so both engines
+        // derive it identically from EVE's authored projectionTypeU/V.
+        const clamps = out.customMaskClamps || (out.customMaskClamps = vec4.create());
+        clamps[index * 2] = 0;
+        clamps[index * 2 + 1] = 0;
+
         if (this.parameters && this.parameters.PatternMaskMap && this.parameters.PatternMaskMap.overrides)
         {
             const { addressUMode, addressVMode, addressWMode } = this.parameters.PatternMaskMap.overrides;
             if (addressUMode === 4) clampToBorderU = 1;
             if (addressVMode === 4) clampToBorderV = 1;
             if (addressWMode === 4) clampToBorderW = 1;
+
+            if (addressUMode === 3) clamps[index * 2] = 1;
+            if (addressVMode === 3) clamps[index * 2 + 1] = 1;
         }
 
         const materialID = this._customMaskMaterialID;

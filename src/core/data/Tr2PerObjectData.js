@@ -111,23 +111,26 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             // .z clipSphereFactor2, .w clipSphereFactor
             [ "ShLighting", 4 * 7 ],        // confirmed as: Tr2ShLightingManager::PACKED_COEFFICIENT_COUNT = 7
             // .yzw are a ccpwgl extension for the old OpenGL shaders, using lanes Carbon
-            // leaves at 0 (Carbon: materialIDs = (materialIndex, 0, 0, 0), EveCustomMask.cpp:77,
-            // with clamps in a separate CustomMaskClamps vec4 that the gles layout has no slot for).
+            // leaves at 0 (Carbon: materialIDs = (materialIndex, 0, 0, 0), EveCustomMask.cpp:77).
+            // They carry clamp-to-BORDER flags, derived from address mode 4, and drive the
+            // GLES clampToBorder helper. Carbon's own clamp-to-EDGE flags are a different
+            // quantity from the same enum at value 3, and now ride CustomMaskClamps below.
             [ "CustomMaskMaterialID0", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
             [ "CustomMaskMaterialID1", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
             [ "CustomMaskTarget0", 4 ],     // Material Layer Masking
             [ "CustomMaskTarget1", 4 ],     // Material Layer Masking
-            // Held ccpwgl's own CustomMaskBlending (blend mode + swapped flag).
-            // It existed only because this path had no permutations: in Carbon
-            // the custom-mask blend mode is a compile-time permutation option,
-            // and ccpwgl now passes it that way. Nothing reads the register.
+            // Carbon's customMaskClamps: one vec4 for BOTH masks, two lanes
+            // each - [m0.U, m0.V, m1.U, m1.V] (EveCustomMask.cpp:80-81).
             //
-            // The slot stays because this layout is positional. Deleting the
-            // entry would move Screensize from reg 15 to 14, and
-            // Tw2CarbonData.PackPerObjectPS shifts GLES 0-15 to Carbon 12-27 -
-            // so Screensize would land on Carbon reg 26 (customMaskClamps)
-            // instead of 27.
-            [ "Reserved14", 4 ],            // was CustomMaskBlending
+            // This slot previously held ccpwgl's own CustomMaskBlending, which
+            // existed only because this path had no permutations; blend mode is
+            // a compile-time permutation option in Carbon and ccpwgl now passes
+            // it that way.
+            //
+            // Reusing the slot is deliberate: PackPerObjectPS shifts GLES 0-15
+            // to Carbon 12-27, so reg 14 lands exactly on Carbon reg 26 and the
+            // packer needs no special case. The GLES shaders do not read it.
+            [ "CustomMaskClamps", 4 ],
             [ "Screensize", 4 ]             // custom
         ]
     });
@@ -191,6 +194,7 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             if (bag.customMaskMaterialID1) ps.Set("CustomMaskMaterialID1", bag.customMaskMaterialID1);
             if (bag.customMaskTarget0) ps.Set("CustomMaskTarget0", bag.customMaskTarget0);
             if (bag.customMaskTarget1) ps.Set("CustomMaskTarget1", bag.customMaskTarget1);
+            if (bag.customMaskClamps) ps.Set("CustomMaskClamps", bag.customMaskClamps);
             if (bag.screenSize) ps.Set("Screensize", bag.screenSize);
         }
 
