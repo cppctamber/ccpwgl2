@@ -132,21 +132,6 @@ export class Tw2CarbonPackageReader
 export class Tw2CarbonShaderFactory
 {
 
-    /**
-     * Both spellings of one body identity: `body0` and `body_0`.
-     *
-     * @param {String} bodyKey
-     * @returns {String[]} Unique aliases, the original first.
-     */
-    static BodyKeyAliases(bodyKey)
-    {
-        const key = String(bodyKey ?? "");
-        const alt = /^body_(\d+)$/.test(key)
-            ? key.replace(/^body_(\d+)$/, "body$1")
-            : key.replace(/^body(\d+)$/, "body_$1");
-
-        return alt === key ? [ key ] : [ key, alt ];
-    }
 
     /**
      * Builds the indexes shader construction walks.
@@ -175,35 +160,29 @@ export class Tw2CarbonShaderFactory
         {
             this._shadersByKey.set(shader.key, shader);
         }
-        // The two producers spell one body two ways: the permutation graph
-        // emits `body0`, the stage graph `body_0`. Worse, they do not even
-        // partition bodies the same way — the graph dedupes by content
-        // (SHA-256 plus byte equality), the reader by source-record offset.
-        //
-        // Those partitions coincide only because the container writer already
-        // aliases byte-identical bodies onto a single offset, which makes the
-        // two ordinal sequences agree. That is an emergent property of the
-        // writer, not a contract, and runtime-resource's own
-        // glslBackendBodySet.js warns against bridging these by "string surgery
-        // on either spelling".
-        //
-        // So this is a deliberate stopgap, not the intended bridge. Indexing
-        // under both spellings keeps it working either way and makes a genuine
-        // mismatch surface as a missing body rather than an effect that loads
-        // clean and draws nothing. Replace it once runtime-resource exposes one
-        // identity both producers agree on.
         for (const stage of readResult.stages || [])
         {
-            for (const key of Tw2CarbonShaderFactory.BodyKeyAliases(stage.bodyKey))
-            {
-                const list = this._stagesByBody.get(key);
-                if (list) { if (!list.includes(stage)) list.push(stage); }
-                else this._stagesByBody.set(key, [ stage ]);
-            }
+            const list = this._stagesByBody.get(stage.bodyKey);
+            if (list) list.push(stage);
+            else this._stagesByBody.set(stage.bodyKey, [ stage ]);
         }
-        for (const variant of this.graph.variants || [])
+
+        // Bridge permutation index -> body through `read().bodies`, never
+        // through the permutation graph's `bodyKey`.
+        //
+        // The graph spells the same body `body${N}` while the reader spells it
+        // `body_${N}`, and they do not even partition bodies by the same rule:
+        // the graph dedupes by content, the reader by source-record offset.
+        // Mapping between the spellings looks like it works — the two ordinals
+        // agree today only because the writer aliases byte-identical bodies
+        // onto one offset — and fails silently when it stops being true, with
+        // every permutation resolving to a body that does not exist.
+        for (const body of readResult.bodies || [])
         {
-            this._variantBodiesByIndex.set(variant.permutationIndex, variant.bodyKey);
+            for (const permutationIndex of body.permutationIndices)
+            {
+                this._variantBodiesByIndex.set(permutationIndex, body.key);
+            }
         }
     }
 
