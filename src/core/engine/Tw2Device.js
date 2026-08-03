@@ -75,7 +75,13 @@ export class Tw2Device extends Tw2EventEmitter
      */
     static EffectProfiles = {
         "effect.gles2": "/effect.gles2/",
-        "effect.webgl2": "/effect.webgl2/"
+        "effect.webgl2": "/effect.webgl2/",
+        // Carbon v15 sources carrying DXBC. Not renderable as-is: Tw2EffectRes
+        // translates them to GLSL in memory at load, which is a build step
+        // running at runtime and costs real time on a large effect. Useful for
+        // testing the Carbon path without a pre-translated effect.webgl2 tree;
+        // point `effectProfile` here to route authored /effect/ paths at it.
+        "effect.dx11": "/effect.dx11/"
     };
 
     name = "Device";
