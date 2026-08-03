@@ -175,12 +175,23 @@ export class Tw2CarbonShaderFactory
         {
             this._shadersByKey.set(shader.key, shader);
         }
-        // The two producers spell one body identity two ways: the permutation
-        // graph emits `body0`, the stage graph emits `body_0`. They are 1:1 and
-        // both come from runtime-resource, so this is a defect there rather
-        // than a contract; index under both spellings so a fix upstream cannot
-        // break this, and so a mismatch shows up as a missing body rather than
-        // an empty pass list.
+        // The two producers spell one body two ways: the permutation graph
+        // emits `body0`, the stage graph `body_0`. Worse, they do not even
+        // partition bodies the same way — the graph dedupes by content
+        // (SHA-256 plus byte equality), the reader by source-record offset.
+        //
+        // Those partitions coincide only because the container writer already
+        // aliases byte-identical bodies onto a single offset, which makes the
+        // two ordinal sequences agree. That is an emergent property of the
+        // writer, not a contract, and runtime-resource's own
+        // glslBackendBodySet.js warns against bridging these by "string surgery
+        // on either spelling".
+        //
+        // So this is a deliberate stopgap, not the intended bridge. Indexing
+        // under both spellings keeps it working either way and makes a genuine
+        // mismatch surface as a missing body rather than an effect that loads
+        // clean and draws nothing. Replace it once runtime-resource exposes one
+        // identity both producers agree on.
         for (const stage of readResult.stages || [])
         {
             for (const key of Tw2CarbonShaderFactory.BodyKeyAliases(stage.bodyKey))
