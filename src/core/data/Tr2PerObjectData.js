@@ -117,7 +117,17 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             [ "CustomMaskMaterialID1", 4 ], // Material Index, Clamp U, Clamp V, Clamp W
             [ "CustomMaskTarget0", 4 ],     // Material Layer Masking
             [ "CustomMaskTarget1", 4 ],     // Material Layer Masking
-            [ "CustomMaskBlending", 4 ],    // custom
+            // Held ccpwgl's own CustomMaskBlending (blend mode + swapped flag).
+            // It existed only because this path had no permutations: in Carbon
+            // the custom-mask blend mode is a compile-time permutation option,
+            // and ccpwgl now passes it that way. Nothing reads the register.
+            //
+            // The slot stays because this layout is positional. Deleting the
+            // entry would move Screensize from reg 15 to 14, and
+            // Tw2CarbonData.PackPerObjectPS shifts GLES 0-15 to Carbon 12-27 -
+            // so Screensize would land on Carbon reg 26 (customMaskClamps)
+            // instead of 27.
+            [ "Reserved14", 4 ],            // was CustomMaskBlending
             [ "Screensize", 4 ]             // custom
         ]
     });
@@ -181,7 +191,6 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             if (bag.customMaskMaterialID1) ps.Set("CustomMaskMaterialID1", bag.customMaskMaterialID1);
             if (bag.customMaskTarget0) ps.Set("CustomMaskTarget0", bag.customMaskTarget0);
             if (bag.customMaskTarget1) ps.Set("CustomMaskTarget1", bag.customMaskTarget1);
-            if (bag.customMaskBlending) ps.Set("CustomMaskBlending", bag.customMaskBlending);
             if (bag.screenSize) ps.Set("Screensize", bag.screenSize);
         }
 
@@ -226,7 +235,6 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             if (ps.Has("CustomMaskMaterialID1")) out.customMaskMaterialID1 = ps.Get("CustomMaskMaterialID1");
             if (ps.Has("CustomMaskTarget0")) out.customMaskTarget0 = ps.Get("CustomMaskTarget0");
             if (ps.Has("CustomMaskTarget1")) out.customMaskTarget1 = ps.Get("CustomMaskTarget1");
-            if (ps.Has("CustomMaskBlending")) out.customMaskBlending = ps.Get("CustomMaskBlending");
             if (ps.Has("Screensize")) out.screenSize = ps.Get("Screensize");
             this.UnpackShipData(ps, out);
             this.UnpackClipData(ps, out);

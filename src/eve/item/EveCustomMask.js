@@ -22,6 +22,7 @@ export class EveCustomMask extends WglTransform
     @meta.boolean
     isMirrored = false;
 
+    // CUSTOM
     @meta.boolean
     customMasksSwapped = false;
 
@@ -73,7 +74,6 @@ export class EveCustomMask extends WglTransform
     _worldInverseTranspose = mat4.create();
     _customMaskData = vec4.create();
     _customMaskMaterialID = vec4.create();
-    _customMaskBlending = vec4.create();
     _perObjectDataBagOfStuff = {};
 
     /**
@@ -113,17 +113,10 @@ export class EveCustomMask extends WglTransform
         customMaskData[2] = 0;
         customMaskData[3] = 0;
 
-        const customMaskBlending = this._customMaskBlending;
-        customMaskBlending[0] = this.constructor.GetBlendMode(this.blendMode);
-        customMaskBlending[1] = this.customMasksSwapped ? 1 : 0;
-        customMaskBlending[2] = 0;
-        customMaskBlending[3] = 0;
-
         out["customMaskTarget" + index] = targets;
         out["customMaskMaterialID" + index] = materialID;
         out["customMaskData" + index] = customMaskData;
         out["customMaskMatrix" + index] = this._worldInverseTranspose;
-        out.customMaskBlending = customMaskBlending;
         return out;
     }
 
@@ -139,7 +132,6 @@ export class EveCustomMask extends WglTransform
         const bag = this.GetPerObjectDataBagOfStuff(parentTransform, this._perObjectDataBagOfStuff, index, visible);
         perObjectData.ps.Set("CustomMaskTarget" + index, bag["customMaskTarget" + index]);
         perObjectData.ps.Set("CustomMaskMaterialID" + index, bag["customMaskMaterialID" + index]);
-        if (perObjectData.ps.Has("CustomMaskBlending")) perObjectData.ps.Set("CustomMaskBlending", bag.customMaskBlending);
         perObjectData.vs.Set("CustomMaskData" + index, bag["customMaskData" + index]);
         perObjectData.vs.Set("CustomMaskMatrix" + index, bag["customMaskMatrix" + index]);
     }
