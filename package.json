@@ -37,7 +37,8 @@
     "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",
     "test:parity": "node scripts/parityCarbonVsLegacy.js",
     "testbed:carbon": "node scripts/testbed/carbon-diagnostics.js",
-    "test:carbon-data": "node scripts/test-carbon-data.js"
+    "test:carbon-data": "node scripts/test-carbon-data.js",
+    "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
