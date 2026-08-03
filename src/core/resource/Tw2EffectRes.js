@@ -4,7 +4,7 @@ import { ErrResourceFormatUnsupported, Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader, Tw2ShaderPermutation } from "../shader";
 import { Tw2Error } from "../Tw2Error";
 import { tw2 } from "global";
-import { Tw2CewgPackageReader, Tw2CewgShaderFactory } from "./Tw2CewgReader";
+import { Tw2CarbonPackageReader, Tw2CarbonShaderFactory } from "./Tw2CarbonReader";
 
 const CHAR_CODE_CHUNK_SIZE = 0x8000;
 
@@ -44,18 +44,18 @@ export class Tw2EffectRes extends Tw2Resource
     _extension = null;
     _requestResponseType = null;
 
-    _cewg = null;
-    _cewgFactory = null;
+    _carbon = null;
+    _carbonFactory = null;
 
     /**
-     * Checks whether effect bytes are a CEWG package (translated DX11
+     * Checks whether effect bytes are a Carbon package (translated DX11
      * shaders). The first dword of the legacy WebGL binary is its version
-     * (2..8); CEWG's "CEWG" magic reads as a value far above 8, which is the
+     * (2..8); Carbon's "Carbon" magic reads as a value far above 8, which is the
      * agreed new-format discriminator.
      * @param {ArrayBuffer} data
      * @returns {boolean}
      */
-    static IsCewgData(data)
+    static IsCarbonData(data)
     {
         const bytes = new Uint8Array(data, 0, Math.min(4, data.byteLength));
         return bytes.length === 4
@@ -252,19 +252,19 @@ export class Tw2EffectRes extends Tw2Resource
         this.version = 0;
         this.stringTable = "";
         this.shaders.splice(0);
-        this._cewg = null;
-        this._cewgFactory = null;
+        this._carbon = null;
+        this._carbonFactory = null;
 
         switch(this._extension)
         {
-            case "cewg":
+            case "carbon":
             case "fx":
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                if (Tw2EffectRes.IsCewgData(data))
+                if (Tw2EffectRes.IsCarbonData(data))
                 {
-                    this.PrepareCEWG(data);
+                    this.PrepareCarbon(data);
                 }
                 else
                 {
@@ -284,15 +284,15 @@ export class Tw2EffectRes extends Tw2Resource
     }
 
     /**
-     * Prepares a CEWG package (translated DX11 shaders)
+     * Prepares a Carbon package (translated DX11 shaders)
      * @param {ArrayBuffer} data
      */
-    PrepareCEWG(data)
+    PrepareCarbon(data)
     {
-        const reader = new Tw2CewgPackageReader();
+        const reader = new Tw2CarbonPackageReader();
         if (!reader.Read(data))
         {
-            this.OnError(reader.readError || new Error("Unable to read CEWG package"));
+            this.OnError(reader.readError || new Error("Unable to read Carbon package"));
             return;
         }
 
@@ -301,31 +301,31 @@ export class Tw2EffectRes extends Tw2Resource
         const info = reader.GetJson("INFO");
         if (!info || !metadata || !glslSet)
         {
-            this.OnError(new Error("CEWG package must contain INFO, META and GLSL chunks"));
+            this.OnError(new Error("Carbon package must contain INFO, META and GLSL chunks"));
             return;
         }
 
-        this._cewg = { info, metadata, glslSet };
-        this._cewgFactory = new Tw2CewgShaderFactory(metadata, glslSet);
-        this.permutations = this._cewgFactory.permutations;
+        this._carbon = { info, metadata, glslSet };
+        this._carbonFactory = new Tw2CarbonShaderFactory(metadata, glslSet);
+        this.permutations = this._carbonFactory.permutations;
         this.version = 9; // first post-v8 format
     }
 
     /**
-     * Gets/creates a shader for CEWG packages
+     * Gets/creates a shader for Carbon packages
      * @param {Object.<string, string>} options - Permutation options
      * @returns {Tw2Shader|null}
      */
-    GetShaderCEWG(options)
+    GetShaderCarbon(options)
     {
         try
         {
-            const index = this._cewgFactory.ResolvePermutationIndex(options);
+            const index = this._carbonFactory.ResolvePermutationIndex(options);
             if (this.shaders[index])
             {
                 return this.shaders[index];
             }
-            return this.shaders[index] = this._cewgFactory.CreateShader(index, this.path);
+            return this.shaders[index] = this._carbonFactory.CreateShader(index, this.path);
         }
         catch (err)
         {
@@ -348,12 +348,12 @@ export class Tw2EffectRes extends Tw2Resource
 
         switch(this._extension)
         {
-            case "cewg":
+            case "carbon":
             case "fx":
             case "sm_hi":
             case "sm_lo":
             case "sm_depth":
-                return this._cewgFactory ? this.GetShaderCEWG(options) : this.GetShaderCCP(options);
+                return this._carbonFactory ? this.GetShaderCarbon(options) : this.GetShaderCCP(options);
 
             case "sm_json":
                 return this.GetShaderJSON(options);
@@ -374,7 +374,7 @@ export class Tw2EffectRes extends Tw2Resource
 
         switch(extension)
         {
-            case "cewg":
+            case "carbon":
             case "fx":
             case "sm_hi":
             case "sm_lo":

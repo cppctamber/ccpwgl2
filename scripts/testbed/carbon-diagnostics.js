@@ -1,15 +1,15 @@
 /**
- * CEWG diagnostics testbed (headless, agent-runnable).
+ * Carbon diagnostics testbed (headless, agent-runnable).
  *
- * Loads a .cewg package through ccpwgl's REAL Tw2EffectRes pipeline with a
+ * Loads a .carbon package through ccpwgl's REAL Tw2EffectRes pipeline with a
  * stubbed GL context and dumps everything an agent (or human) needs to debug
- * CEWG rendering, without a browser or the resource server:
+ * Carbon rendering, without a browser or the resource server:
  *
  *   - package: version, permutation dimensions + defaults, techniques
- *   - per technique/pass: isCewg, per stage -> vertex-input usages + attr
+ *   - per technique/pass: isCarbon, per stage -> vertex-input usages + attr
  *     names, constants (name/offset/size), textures+samplers (register/name),
- *     cewgBindings, and (optionally) the emitted GLSL
- *   - CewgCarbonData b1-b4 constant packing (which register gets what, and
+ *     carbonBindings, and (optionally) the emitted GLSL
+ *   - Tw2CarbonData b1-b4 constant packing (which register gets what, and
  *     which are zeroed/synthesised)
  *   - optional .gr2 mesh: vertex declaration usages + sample vertices decoded
  *     both as float values AND int bit patterns (the two ways an attribute can
@@ -18,10 +18,10 @@
  *     uniform-block bindings the binder actually issues
  *
  * Usage:
- *   node scripts/testbed/cewg-diagnostics.js <package> [options]
+ *   node scripts/testbed/carbon-diagnostics.js <package> [options]
  *
  *   <package>   bare name (resolved against test/fixtures then the synthetic
- *               server cache) or an absolute/relative path to a .cewg file.
+ *               server cache) or an absolute/relative path to a .carbon file.
  *
  *   --options k=v,k=v   permutation option overrides (e.g.
  *                       SPACE_OBJECT_PPT_ENABLED=SOPPT_ENABLED)
@@ -34,8 +34,8 @@
  *   --json              emit a single JSON document instead of readable text
  *
  * Examples:
- *   node scripts/testbed/cewg-diagnostics.js unpackedskinned_quadv5.webgl.cewg
- *   node scripts/testbed/cewg-diagnostics.js unpackedskinned_quadv5_depth.webgl.cewg --options SPACE_OBJECT_PPT_ENABLED=SOPPT_ENABLED --glsl-lines 40
+ *   node scripts/testbed/carbon-diagnostics.js unpackedskinned_quadv5.webgl.carbon
+ *   node scripts/testbed/carbon-diagnostics.js unpackedskinned_quadv5_depth.webgl.carbon --options SPACE_OBJECT_PPT_ENABLED=SOPPT_ENABLED --glsl-lines 40
  */
 "use strict";
 
@@ -84,7 +84,7 @@ function parseArgs(argv)
 }
 
 // --------------------------------------------------------------------------
-// Headless browser/GL shims (same shape as scripts/test-cewg-effect-res.js)
+// Headless browser/GL shims (same shape as scripts/test-carbon-effect-res.js)
 // --------------------------------------------------------------------------
 function installShims()
 {
@@ -135,7 +135,7 @@ function makeInertGl()
 
 /**
  * A recording GL stub for the --apply pass. Returns resolvable handles/
- * locations so the CEWG bind path runs end to end, and logs every
+ * locations so the Carbon bind path runs end to end, and logs every
  * state-changing call so we can report what the binder actually did.
  */
 function makeRecordingGl()
@@ -227,13 +227,13 @@ function collectStage(stage, args)
 {
     const out = {
         stageName: stage.string || (stage.type === 0 ? "vertex" : stage.type === 1 ? "pixel" : String(stage.type)),
-        isCewg: !!stage.isCewg,
+        isCarbon: !!stage.isCarbon,
         constantSize: stage.constantSize,
         inputs: [],
         constants: [],
         textures: [],
         samplers: [],
-        cewgBindings: null
+        carbonBindings: null
     };
 
     const elements = (stage.inputDefinition && stage.inputDefinition.elements) || [];
@@ -274,12 +274,12 @@ function collectStage(stage, args)
         out.samplers.push({ register: s.registerIndex, name: s.name });
     }
 
-    if (Array.isArray(stage.cewgBindings))
+    if (Array.isArray(stage.carbonBindings))
     {
         // Binding shape varies (structuredUbo / bufferTexture / constantBuffer /
         // bone). Keep every field so nothing is silently dropped, and surface a
         // register from whichever key it lives under.
-        out.cewgBindings = stage.cewgBindings.map(b => ({
+        out.carbonBindings = stage.carbonBindings.map(b => ({
             ...b,
             register: b.register != null ? b.register : (b.registerIndex != null ? b.registerIndex : b.bindingPoint)
         }));
@@ -293,10 +293,10 @@ function collectStage(stage, args)
 
 function collectPacking(tw2, res)
 {
-    // Run CewgCarbonData packing on synthetic, provenance-stamped GLES input so
+    // Run Tw2CarbonData packing on synthetic, provenance-stamped GLES input so
     // each output register's source is identifiable (reg N.x == 100+N).
     let carbon;
-    try { carbon = require("../../src/core/cewg/CewgCarbonData.js"); } catch (e) { return { error: String(e) }; }
+    try { carbon = require("../../src/core/carbon/Tw2CarbonData.js"); } catch (e) { return { error: String(e) }; }
 
     const FL = 4;
     function stamp(regs) { const a = new Float32Array(regs * FL); for (let r = 0; r < regs; r++) for (let c = 0; c < FL; c++) a[r * FL + c] = 100 + r + c / 10; return a; }
@@ -424,7 +424,7 @@ function renderText(doc)
         L.push(section(`TECHNIQUE: ${tech.name}`));
         tech.passes.forEach((pass, pi) =>
         {
-            L.push(`pass ${pi}  isCewg=${pass.isCewg}  stages=${pass.stages.length}`);
+            L.push(`pass ${pi}  isCarbon=${pass.isCarbon}  stages=${pass.stages.length}`);
             for (const st of pass.stages)
             {
                 L.push(`  --- ${st.stageName} stage ---`);
@@ -454,9 +454,9 @@ function renderText(doc)
                         L.push(`    cb[${String(c.register).padStart(2)}] ${c.name}  (size ${c.size}${c.isSRGB ? ", sRGB" : ""})`);
                     }
                 }
-                if (st.cewgBindings && st.cewgBindings.length)
+                if (st.carbonBindings && st.carbonBindings.length)
                 {
-                    L.push(`  cewgBindings: ${st.cewgBindings.map(b => `${b.kind}${b.register != null ? "@" + b.register : ""}${b.name ? "(" + b.name + ")" : ""}`).join(", ")}`);
+                    L.push(`  carbonBindings: ${st.carbonBindings.map(b => `${b.kind}${b.register != null ? "@" + b.register : ""}${b.name ? "(" + b.name + ")" : ""}`).join(", ")}`);
                 }
                 if (st.glslHead) { L.push(`  glsl (first lines):`); L.push(st.glslHead.split("\n").map(l => "    " + l).join("\n")); }
                 if (st.glsl) { L.push(`  glsl:`); L.push(st.glsl.split("\n").map(l => "    " + l).join("\n")); }
@@ -466,7 +466,7 @@ function renderText(doc)
 
     if (doc.packing)
     {
-        L.push(section("CONSTANT PACKING (CewgCarbonData b1-b4)"));
+        L.push(section("CONSTANT PACKING (Tw2CarbonData b1-b4)"));
         L.push("(gN.C = value came from GLES register N column C; '0' = zeroed/synthesised)");
         for (const key of Object.keys(doc.packing))
         {
@@ -504,7 +504,7 @@ function renderText(doc)
         {
             L.push(`best-effort (not available): ${doc.apply.error}`);
             L.push("(ApplyPass needs a fully-linked program the stub can't fake; the binding");
-            L.push(" manifest is available statically above - see per-stage cewgBindings + textures.)");
+            L.push(" manifest is available statically above - see per-stage carbonBindings + textures.)");
         }
         else
         {
@@ -528,7 +528,7 @@ function main()
     const args = parseArgs(process.argv.slice(2));
     if (args.help || !args.package)
     {
-        console.log("usage: node scripts/testbed/cewg-diagnostics.js <package.cewg> [--options k=v,...] [--technique NAME] [--glsl|--glsl-lines N] [--mesh file.gr2] [--apply] [--json]");
+        console.log("usage: node scripts/testbed/carbon-diagnostics.js <package.carbon> [--options k=v,...] [--technique NAME] [--glsl|--glsl-lines N] [--mesh file.gr2] [--apply] [--json]");
         process.exit(args.help ? 0 : 1);
     }
 
@@ -543,7 +543,7 @@ function main()
     const bytes = fs.readFileSync(pkgPath);
     const res = new Tw2EffectRes();
     res.path = `testbed:/${path.basename(pkgPath)}`;
-    res._extension = "cewg";
+    res._extension = "carbon";
     res.Prepare(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
     if (res._error) { console.error(`prepare failed: ${res._error}`); process.exit(1); }
 
@@ -554,7 +554,7 @@ function main()
         package: {
             file: pkgPath,
             version: res.version,
-            sourcePath: (res._cewg && res._cewg.info && res._cewg.info.sourcePath) || null,
+            sourcePath: (res._carbon && res._carbon.info && res._carbon.info.sourcePath) || null,
             techniques: Object.keys(shader.techniques),
             permutations: (res.permutations || []).map(p => ({
                 name: p.name,
@@ -571,7 +571,7 @@ function main()
         if (args.technique && techName !== args.technique) continue;
         const tech = shader.techniques[techName];
         const passes = (tech.passes || []).map(pass => ({
-            isCewg: !!pass.isCewg,
+            isCarbon: !!pass.isCarbon,
             stages: (pass.stages || []).map(st => collectStage(st, args))
         }));
         doc.techniques.push({ name: techName, passes });

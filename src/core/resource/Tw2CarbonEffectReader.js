@@ -42,13 +42,13 @@ const textDecoder = new TextDecoder("utf-8", { fatal: false });
 
 
 /**
- * CEWG v1 package reader (chunked container of JSON + binary chunks).
+ * Carbon v1 package reader (chunked container of JSON + binary chunks).
  *
- * Package layout: "CEWG" magic, uint32 version, uint32 chunk count, then per
+ * Package layout: "Carbon" magic, uint32 version, uint32 chunk count, then per
  * chunk a 4-char tag, uint32 size and raw bytes. Standard chunks: INFO, META,
  * GLSL (JSON) and optional TR2E (original effect bytes).
  */
-export class Tw2CewgPackageReader
+export class Tw2CarbonPackageReader
 {
 
     version = 0;
@@ -57,7 +57,7 @@ export class Tw2CewgPackageReader
     readError = null;
 
     /**
-     * Reads CEWG bytes.
+     * Reads Carbon bytes.
      * @param {ArrayBuffer|ArrayBufferView} source
      * @returns {boolean} true when read successfully
      */
@@ -76,11 +76,11 @@ export class Tw2CewgPackageReader
 
             const magic = readAscii(bytes, offset, 4);
             offset += 4;
-            if (magic !== "CEWG") throw new Error(`Invalid CEWG magic: ${magic}`);
+            if (magic !== "Carbon") throw new Error(`Invalid Carbon magic: ${magic}`);
 
             this.version = view.getUint32(offset, true);
             offset += 4;
-            if (this.version !== 1) throw new Error(`Unsupported CEWG version: ${this.version}`);
+            if (this.version !== 1) throw new Error(`Unsupported Carbon version: ${this.version}`);
 
             const chunkCount = view.getUint32(offset, true);
             offset += 4;
@@ -96,7 +96,7 @@ export class Tw2CewgPackageReader
                 this.chunkMap.set(tag, chunk);
             }
 
-            if (offset !== bytes.length) throw new Error(`CEWG trailing bytes: ${bytes.length - offset}`);
+            if (offset !== bytes.length) throw new Error(`Carbon trailing bytes: ${bytes.length - offset}`);
             return true;
         }
         catch (err)
@@ -120,7 +120,7 @@ export class Tw2CewgPackageReader
 
 
 /**
- * Builds ccpwgl shader objects from CEWG package data.
+ * Builds ccpwgl shader objects from Carbon package data.
  *
  * Consumes packages produced by hlslreader's JS emitter (translator
  * "dxbc-js-emitter"): GLSL is load-ready (cb# uniform arrays with the PS
@@ -129,7 +129,7 @@ export class Tw2CewgPackageReader
  * source rewriting here by design — if a package needs rewriting, fix the
  * emitter, not the loader.
  */
-export class Tw2CewgShaderFactory
+export class Tw2CarbonShaderFactory
 {
 
     /**
@@ -196,7 +196,7 @@ export class Tw2CewgShaderFactory
         const glslBody = this._glslBodiesByKey.get(bodyKey);
         if (!body || !glslBody || body.error)
         {
-            throw new Error(`CEWG body is not available: ${bodyKey} ${body?.error || ""}`);
+            throw new Error(`Carbon body is not available: ${bodyKey} ${body?.error || ""}`);
         }
 
         const shader = new Tw2Shader();
@@ -265,11 +265,11 @@ export class Tw2CewgShaderFactory
     {
         if (!group.vertex || !group.pixel)
         {
-            throw new Error(`CEWG pass is missing vertex or pixel shader: ${group.techniqueName}[${group.passIndex}]`);
+            throw new Error(`Carbon pass is missing vertex or pixel shader: ${group.techniqueName}[${group.passIndex}]`);
         }
 
         const pass = new Tw2ShaderPass();
-        pass.isCewg = true;
+        pass.isCarbon = true;
         pass.stages[0] = this._createStage(group.vertex, STAGE_VERTEX, path);
         pass.stages[1] = this._createStage(group.pixel, STAGE_FRAGMENT, path);
         pass.shaderProgram = Tw2ShaderProgram.create(
@@ -283,7 +283,7 @@ export class Tw2CewgShaderFactory
     }
 
     /**
-     * Creates one shader stage from CEWG records
+     * Creates one shader stage from Carbon records
      * @param {Object} stageRecord
      * @param {Number} stageType
      * @param {String} path
@@ -294,11 +294,11 @@ export class Tw2CewgShaderFactory
         const { glslStage, manifestStage, shaderRecord } = stageRecord;
         if (shaderRecord?.excluded)
         {
-            throw new Error(`CEWG shader is excluded for WebGL2: ${glslStage.shaderKey} (${shaderRecord.excluded.reason})`);
+            throw new Error(`Carbon shader is excluded for WebGL2: ${glslStage.shaderKey} (${shaderRecord.excluded.reason})`);
         }
         if (!shaderRecord?.source)
         {
-            throw new Error(`CEWG shader source is missing: ${glslStage.shaderKey}`);
+            throw new Error(`Carbon shader source is missing: ${glslStage.shaderKey}`);
         }
 
         const stage = new Tw2ShaderStage();
@@ -308,9 +308,9 @@ export class Tw2CewgShaderFactory
         buildConstants(stage, manifestStage, shaderRecord);
         buildTexturesAndSamplers(stage, manifestStage, shaderRecord);
         // New-format binding kinds (structuredUbo bones, structuredTexture
-        // lights, bufferTexture post-fx) ride along for the CEWG program/
+        // lights, bufferTexture post-fx) ride along for the Carbon program/
         // upload layer; legacy Tw2Effect binding ignores them.
-        stage.cewgBindings = shaderRecord.bindings || [];
+        stage.carbonBindings = shaderRecord.bindings || [];
         stage.shader = compileShader(stageType, stage.shaderCode, path);
         return stage;
     }
@@ -448,7 +448,7 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
 
     // Registers the emitter lowered to non-texture GLSL bindings (bone UBOs,
     // light/index data textures, post-fx buffer textures) are not sampler
-    // uniforms — their upload path is the CEWG binding layer, not Tw2Effect.
+    // uniforms — their upload path is the Carbon binding layer, not Tw2Effect.
     const nonTextureRegisters = new Set(
         (shaderRecord?.bindings || [])
             .filter((entry) => entry.kind === "structuredUbo"
@@ -508,7 +508,7 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
         }, null);
 
         // Tw2Effect historically inferred pairing from equal registers. Keep a
-        // direct link so CEWG can preserve t#/s# pairs when the package carries
+        // direct link so Carbon can preserve t#/s# pairs when the package carries
         // decoded instruction-use metadata with a different sampler register.
         texture._sampler = samplerState;
         samplerState._textureRegisterIndex = texture.registerIndex;
@@ -520,7 +520,7 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
 }
 
 /**
- * Gets an explicitly paired sampler register from CEWG metadata
+ * Gets an explicitly paired sampler register from Carbon metadata
  * @param {Object} resource Carbon resource binding
  * @param {Object} emittedResource emitter resource binding
  * @returns {Number|null}
@@ -539,7 +539,7 @@ function getSamplerRegisterIndex(resource, emittedResource)
             if (registers.length > 1)
             {
                 const name = resource.metadataName || resource.carbon?.name || resource.generatedSymbol || `t${resource.registerIndex}`;
-                throw new Error(`CEWG resource '${name}' uses multiple sampler registers: ${registers.join(", ")}`);
+                throw new Error(`Carbon resource '${name}' uses multiple sampler registers: ${registers.join(", ")}`);
             }
         }
     }
@@ -581,7 +581,7 @@ function normalizeBytes(source)
     if (source instanceof Uint8Array) return source;
     if (source instanceof ArrayBuffer) return new Uint8Array(source);
     if (ArrayBuffer.isView(source)) return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);
-    throw new Error("Unsupported CEWG source bytes");
+    throw new Error("Unsupported Carbon source bytes");
 }
 
 /**

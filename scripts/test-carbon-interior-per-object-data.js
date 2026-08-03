@@ -2,12 +2,12 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { CewgResourceBinder } = require("../src/core/cewg/CewgResourceBinder");
+const { Tw2CarbonResourceBinder } = require("../src/core/carbon/Tw2CarbonResourceBinder");
 
 
 const sourcePath = path.resolve(
     __dirname,
-    "../src/interior/cewg/CewgInteriorPerObjectData.js"
+    "../src/interior/carbon/Tw2CarbonInteriorPerObjectData.js"
 );
 const source = fs.readFileSync(sourcePath, "utf8")
     .replace(/export const /g, "const ")
@@ -15,14 +15,14 @@ const source = fs.readFileSync(sourcePath, "utf8")
     .replace(/export function /g, "function ");
 
 const load = new Function(
-    `${source}\nreturn { CEWG_INTERIOR_LAYOUT, CewgInteriorPerObjectData, ` +
-    "CewgInteriorPerObjectAdapter, CreateCewgInteriorPerObjectAdapter };"
+    `${source}\nreturn { CARBON_INTERIOR_LAYOUT, Tw2CarbonInteriorPerObjectData, ` +
+    "Tw2CarbonInteriorPerObjectAdapter, CreateTw2CarbonInteriorPerObjectAdapter };"
 );
 const {
-    CEWG_INTERIOR_LAYOUT: layout,
-    CewgInteriorPerObjectData,
-    CewgInteriorPerObjectAdapter,
-    CreateCewgInteriorPerObjectAdapter
+    CARBON_INTERIOR_LAYOUT: layout,
+    Tw2CarbonInteriorPerObjectData,
+    Tw2CarbonInteriorPerObjectAdapter,
+    CreateTw2CarbonInteriorPerObjectAdapter
 } = load();
 
 assert.equal(layout.maxJoints, 69);
@@ -45,7 +45,7 @@ const shadow0 = [ 610, 611, 612, 613 ];
 const shadow1 = [ 620, 621, 622, 623 ];
 const spotLights = Float32Array.from({ length: 64 }, (_, i) => 6300 + i);
 
-const data = CewgInteriorPerObjectData.Pack({
+const data = Tw2CarbonInteriorPerObjectData.Pack({
     jointMatrices: joints,
     worldTransform: world,
     uvLinearTransform: uv,
@@ -84,11 +84,11 @@ assert.equal(palettes[0].count, 69);
 assert.strictEqual(data.GetPaletteData(), palettes[0]);
 assert.strictEqual(data.GetJointMatrices(), data.jointMatrices);
 
-const adapter = new CewgInteriorPerObjectAdapter();
+const adapter = new Tw2CarbonInteriorPerObjectAdapter();
 const legacyJoints = joints.subarray(0, 58 * 12);
 const pod = {
-    cewgInteriorData: data,
-    cewgPerObjectPacker: adapter,
+    carbonInteriorData: data,
+    carbonPerObjectPacker: adapter,
     vs: {
         data: new Float32Array(200 * 4),
         Has: name => name === "JointMat",
@@ -100,37 +100,37 @@ assert.strictEqual(adapter.GetConstantBuffers(pod), constants);
 assert.strictEqual(adapter.GetPalettes(pod), palettes);
 assert.strictEqual(adapter.GetPaletteData(pod), palettes[0]);
 assert.strictEqual(adapter.GetJointMatrices(pod), data.jointMatrices);
-assert.strictEqual(CreateCewgInteriorPerObjectAdapter(data).GetCewgData(), data.GetCewgData());
+assert.strictEqual(CreateTw2CarbonInteriorPerObjectAdapter(data).GetCarbonData(), data.GetCarbonData());
 
 const context = { perObjectData: pod };
-assert.equal(adapter.OnBeforeCewgConstants(context), true);
-assert.strictEqual(context.cewgPerObjectPacker, adapter);
-assert.strictEqual(context.cewgJointMatrices, data.jointMatrices);
-assert.strictEqual(context.cewgInteriorData, data.GetCewgData());
-assert.strictEqual(adapter.OnAfterPerObjectData(context), data.GetCewgData());
-assert.strictEqual(context.cewgInteriorData, data.GetCewgData());
+assert.equal(adapter.OnBeforeCarbonConstants(context), true);
+assert.strictEqual(context.carbonPerObjectPacker, adapter);
+assert.strictEqual(context.carbonJointMatrices, data.jointMatrices);
+assert.strictEqual(context.carbonInteriorData, data.GetCarbonData());
+assert.strictEqual(adapter.OnAfterPerObjectData(context), data.GetCarbonData());
+assert.strictEqual(context.carbonInteriorData, data.GetCarbonData());
 
 const gl = createGl();
 const device = { gl, perObjectData: pod };
 const program = {
     constantBufferHandles: [ null, null, null, "cb3", "cb4" ],
-    cewgUniformBlocks: [ {
-        name: "CewgSb0",
+    carbonUniformBlocks: [ {
+        name: "CarbonSb0",
         bindingPoint: 0,
         capacityElements: 69,
         strideBytes: 48,
         byteLength: 69 * 48
     } ],
-    cewgDataTextures: []
+    carbonDataTextures: []
 };
-const passContext = applyFakeCewgPass({ _adapters: [] }, program, device);
+const passContext = applyFakeCarbonPass({ _adapters: [] }, program, device);
 const uploads = gl.calls.filter(call => call[0] === "uniform4fv");
 const cb3Upload = uploads.find(call => call[1] === "cb3")[2];
 const cb4Upload = uploads.find(call => call[1] === "cb4")[2];
 assert.equal(cb3Upload.length, 212 * 4, "hook-selected cb3 must bypass the 29-register hull scratch buffer");
 assert.equal(cb4Upload.length, 79 * 4, "hook-selected cb4 must bypass the 29-register hull scratch buffer");
 assert.equal(cb3Upload[68 * 12], 69, "cb3 must retain joint 69");
-assert.strictEqual(passContext.cewgPerObjectPacker, adapter);
+assert.strictEqual(passContext.carbonPerObjectPacker, adapter);
 
 const boneUploads = gl.calls.filter(call => call[0] === "bufferData");
 const boneUpload = boneUploads[boneUploads.length - 1][2];
@@ -150,7 +150,7 @@ const
         PackPerFramePS(out, input) { return input; }
     };
 
-CewgResourceBinder.Get(frameDevice).ApplyConstants(frameProgram, frameDevice, framePacker, {
+Tw2CarbonResourceBinder.Get(frameDevice).ApplyConstants(frameProgram, frameDevice, framePacker, {
     perFrameVSData: interiorVS,
     perFramePSData: interiorPS
 });
@@ -166,7 +166,7 @@ assert.doesNotMatch(sceneSource, /device\.perFrame(?:VS|PS)Data\s*=/, "interior 
 assert.match(effectSource, /pod && pod\.perFrameVSData \|\| d\.perFrameVSData/);
 assert.match(effectSource, /pod && pod\.perFramePSData \|\| d\.perFramePSData/);
 
-const defaults = new CewgInteriorPerObjectData().Pack();
+const defaults = new Tw2CarbonInteriorPerObjectData().Pack();
 assert.deepEqual(Array.from(defaults.jointMatrices.subarray(0, 12)), [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -182,7 +182,7 @@ assert.deepEqual(Array.from(defaults.cb3.subarray(211 * 4)), [ 1, 1, 0, 0 ]);
 assert.equal(defaults.cb4Int[0], 0);
 assert(defaults.cb4.every(value => value === 0), "empty cb4 must be zero initialized");
 
-console.log("CEWG interior cb3/cb4 and 69-joint palette packing verified");
+console.log("Carbon interior cb3/cb4 and 69-joint palette packing verified");
 
 
 function createLight(i)
@@ -210,30 +210,30 @@ function expectedLight(i)
 }
 
 
-function applyFakeCewgPass(effect, program, device)
+function applyFakeCarbonPass(effect, program, device)
 {
     const context = {
         device,
         program,
         perObjectData: device.perObjectData,
-        cewgPerObjectPacker: null,
-        cewgJointMatrices: undefined
+        carbonPerObjectPacker: null,
+        carbonJointMatrices: undefined
     };
-    const podPacker = context.perObjectData && context.perObjectData.cewgPerObjectPacker;
-    if (podPacker && !effect._adapters.includes(podPacker) && podPacker.OnBeforeCewgConstants)
+    const podPacker = context.perObjectData && context.perObjectData.carbonPerObjectPacker;
+    if (podPacker && !effect._adapters.includes(podPacker) && podPacker.OnBeforeCarbonConstants)
     {
-        podPacker.OnBeforeCewgConstants(context);
+        podPacker.OnBeforeCarbonConstants(context);
     }
     for (let i = 0; i < effect._adapters.length; i++)
     {
-        const hook = effect._adapters[i].OnBeforeCewgConstants;
+        const hook = effect._adapters[i].OnBeforeCarbonConstants;
         if (hook) hook.call(effect._adapters[i], context);
     }
 
-    const binder = CewgResourceBinder.Get(device);
-    binder.ApplyConstants(program, device, context.cewgPerObjectPacker);
-    const selectedJoints = context.cewgJointMatrices !== undefined
-        ? context.cewgJointMatrices
+    const binder = Tw2CarbonResourceBinder.Get(device);
+    binder.ApplyConstants(program, device, context.carbonPerObjectPacker);
+    const selectedJoints = context.carbonJointMatrices !== undefined
+        ? context.carbonJointMatrices
         : (device.perObjectData.vs.Has("JointMat") ? device.perObjectData.vs.Get("JointMat") : null);
     binder.SetJointMatrices(selectedJoints);
     binder.ApplyPass(program, device);

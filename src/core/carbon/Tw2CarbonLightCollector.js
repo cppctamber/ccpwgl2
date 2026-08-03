@@ -1,26 +1,26 @@
-const { CewgLightList } = require("./CewgLightList");
+const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
 
 /**
- * CewgLightCollector
+ * Tw2CarbonLightCollector
  *
- * Frame-scoped light collection + CPU cull feeding a `CewgLightList` for
- * ccpwgl's CEWG (translated DX11) shader path. Scene-owned light owners
+ * Frame-scoped light collection + CPU cull feeding a `Tw2CarbonLightList` for
+ * ccpwgl's Carbon (translated DX11) shader path. Scene-owned light owners
  * (see the `GetLights(collector, parentContext)` hooks added to
  * EveChildContainer / EveEffectRoot2 / EveStretch) push already-composed
  * light rows (the `{position, radius, color, flags, params}` shape
- * `Tr2PointLight#GetCewgLightData` produces - see
+ * `Tr2PointLight#GetCarbonLightData` produces - see
  * src/unsupported/core/lighting/Tr2PointLight.js) into this collector via
  * `Collect()`; once every owner has been visited for the frame, `Resolve()`
- * runs the CPU cull and writes the survivors into the owned `CewgLightList`
- * (`SetLights` + `WriteDrawList`), ready for `CewgResourceBinder.SetLightList`.
+ * runs the CPU cull and writes the survivors into the owned `Tw2CarbonLightList`
+ * (`SetLights` + `WriteDrawList`), ready for `Tw2CarbonResourceBinder.SetLightList`.
  *
  * CPU CULL (ported from carbonengine trinity/trinity/Lights/Tr2LightManager.cpp,
  * `Tr2LightManager::AddLight`, lines 334-368 per the prior source survey):
  *   1. Reject if radius <= 0. This module receives already-composed rows
  *      (not raw brightness), so the "brightness <= 0" half of Carbon's test
- *      is represented here by the CEWG_FLAG_ENABLED bit
- *      (src/unsupported/core/lighting/CewgLightMath.js) being unset -
- *      `Tr2PointLight#GetCewgLightData` clears that bit whenever
+ *      is represented here by the Carbon_FLAG_ENABLED bit
+ *      (src/unsupported/core/lighting/Tw2CarbonLightMath.js) being unset -
+ *      `Tr2PointLight#GetCarbonLightData` clears that bit whenever
  *      `radius <= 0 || composedBrightness <= 0`. Rows missing the bit are
  *      rejected here too, so both halves of Carbon's original test are
  *      covered even though this module never sees raw brightness.
@@ -42,37 +42,37 @@ const { CewgLightList } = require("./CewgLightList");
  * PREMULTIPLY OPTION - the source survey flagged that Carbon's
  * `Tr2LightManager::AddLight` appears to do `color *= radius * dimming`
  * before handing the row to the shader-visible light buffer, but whether
- * the CEWG shader contract (reverse engineered independently in
- * CewgLightList.js from shipped DX11 bytecode) expects radius
+ * the Carbon shader contract (reverse engineered independently in
+ * Tw2CarbonLightList.js from shipped DX11 bytecode) expects radius
  * premultiplied into color, or expects raw color with radius carried
- * separately (as CewgLightList's Buffer B layout does, in `row0.w`), is
+ * separately (as Tw2CarbonLightList's Buffer B layout does, in `row0.w`), is
  * NOT verified. `premultiplyRadiusIntoColor` therefore defaults OFF; only
  * the (verified-safe) fade dimming multiply is always applied. Flip it on
  * only after confirming the shader-side expectation.
  *
  * Pure typed-array/math logic - no GL calls, no ccpwgl "utils"/"global"
  * aliases - so this runs directly under plain node (see
- * scripts/test-cewg-light-collector.js) as well as under webpack.
+ * scripts/test-carbon-light-collector.js) as well as under webpack.
  */
-class CewgLightCollector
+class Tw2CarbonLightCollector
 {
 
     /**
-     * Constructs a CewgLightCollector
+     * Constructs a Tw2CarbonLightCollector
      * @param {object} [options]
-     * @param {object} [options.lightList] forwarded to `new CewgLightList(...)`
+     * @param {object} [options.lightList] forwarded to `new Tw2CarbonLightList(...)`
      * @param {boolean} [options.premultiplyRadiusIntoColor=false] see class doc - defaults OFF (unverified)
      */
     constructor(options = {})
     {
-        this._lightList = new CewgLightList(options.lightList || {});
+        this._lightList = new Tw2CarbonLightList(options.lightList || {});
         this._rows = [];
         this.premultiplyRadiusIntoColor = options.premultiplyRadiusIntoColor === true;
     }
 
     /**
-     * Gets the owned CewgLightList (for SetScreenSize / handing to CewgResourceBinder.SetLightList)
-     * @returns {CewgLightList}
+     * Gets the owned Tw2CarbonLightList (for SetScreenSize / handing to Tw2CarbonResourceBinder.SetLightList)
+     * @returns {Tw2CarbonLightList}
      */
     GetLightList()
     {
@@ -111,7 +111,7 @@ class CewgLightCollector
 
     /**
      * Runs the CPU cull over every row collected since the last `Reset()` and
-     * writes the survivors into the owned CewgLightList (`SetLights` +
+     * writes the survivors into the owned Tw2CarbonLightList (`SetLights` +
      * `WriteDrawList`). Does NOT call `SetScreenSize` - the light list's
      * screen size / tile layout is a separate concern owned by the caller
      * (e.g. once per resize), since this method has no viewport width, only
@@ -121,9 +121,9 @@ class CewgLightCollector
      * @param {number} [options.viewportHeight=0] viewport height in pixels, used by the pixel-size cutoff. If <= 0, the cutoff never rejects (pixel size cannot be computed).
      * @param {number} [options.fovY=0] vertical field of view in radians, used by the pixel-size cutoff. If <= 0, the cutoff never rejects.
      * @param {number[]} [options.cameraPosition=[0,0,0]] world-space camera position, used by both the pixel-size cutoff and the contribution sort.
-     * @param {number} [options.maxLights] cap on the number of surviving lights (defaults to the owned CewgLightList's capacity; always clamped to it).
-     * @param {number} [options.cutoffPixelSize=CewgLightCollector.CUTOFF_PIXEL_SIZE] pixel-size cutoff override (e.g. to scale by LOD).
-     * @param {number} [options.fadeBandPixels=CewgLightCollector.FADE_BAND_PIXELS] fade-band override (e.g. to scale by LOD).
+     * @param {number} [options.maxLights] cap on the number of surviving lights (defaults to the owned Tw2CarbonLightList's capacity; always clamped to it).
+     * @param {number} [options.cutoffPixelSize=Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE] pixel-size cutoff override (e.g. to scale by LOD).
+     * @param {number} [options.fadeBandPixels=Tw2CarbonLightCollector.FADE_BAND_PIXELS] fade-band override (e.g. to scale by LOD).
      * @returns {{collectedCount:number, culledCount:number, lightCount:number}}
      */
     Resolve(options = {})
@@ -133,9 +133,9 @@ class CewgLightCollector
         const fovY = options.fovY || 0;
         const cameraPosition = options.cameraPosition || [ 0, 0, 0 ];
         const cutoffPixelSize = typeof options.cutoffPixelSize === "number"
-            ? options.cutoffPixelSize : CewgLightCollector.CUTOFF_PIXEL_SIZE;
+            ? options.cutoffPixelSize : Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE;
         const fadeBandPixels = typeof options.fadeBandPixels === "number"
-            ? options.fadeBandPixels : CewgLightCollector.FADE_BAND_PIXELS;
+            ? options.fadeBandPixels : Tw2CarbonLightCollector.FADE_BAND_PIXELS;
         const maxLights = typeof options.maxLights === "number"
             ? Math.min(options.maxLights, this._lightList.maxLights)
             : this._lightList.maxLights;
@@ -151,12 +151,12 @@ class CewgLightCollector
 
             // Step 1: brightness<=0 (unset enabled bit) / radius<=0.
             if (radius <= 0) continue;
-            if (!(flags & CewgLightCollector.FLAG_ENABLED)) continue;
+            if (!(flags & Tw2CarbonLightCollector.FLAG_ENABLED)) continue;
 
             const position = row.position || [ 0, 0, 0 ];
 
             // Step 2: frustum sphere test.
-            if (CewgLightCollector.FrustumRejectsSphere(frustumPlanes, position, radius)) continue;
+            if (Tw2CarbonLightCollector.FrustumRejectsSphere(frustumPlanes, position, radius)) continue;
 
             // Step 3: pixel-size cutoff + fade dimming.
             const dx = position[0] - cameraPosition[0];
@@ -165,8 +165,8 @@ class CewgLightCollector
             const distanceSq = dx * dx + dy * dy + dz * dz;
             const distance = Math.sqrt(distanceSq);
 
-            const pixelSize = CewgLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
-            const dimming = CewgLightCollector.ComputeSizeDimming(pixelSize, cutoffPixelSize, fadeBandPixels);
+            const pixelSize = Tw2CarbonLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
+            const dimming = Tw2CarbonLightCollector.ComputeSizeDimming(pixelSize, cutoffPixelSize, fadeBandPixels);
             if (dimming <= 0) continue;
 
             const color = row.color || [ 0, 0, 0 ];
@@ -182,7 +182,7 @@ class CewgLightCollector
                 b *= radius;
             }
 
-            // Contribution heuristic reused from CewgLightCuller (radius^2 / distance^2
+            // Contribution heuristic reused from Tw2CarbonLightCuller (radius^2 / distance^2
             // falloff proxy) purely to rank survivors when `maxLights` truncates.
             const safeDistanceSq = distanceSq > 1e-6 ? distanceSq : 1e-6;
             const contribution = (radius * radius) / safeDistanceSq;
@@ -293,13 +293,13 @@ class CewgLightCollector
 
 }
 
-/** Raw uint32 bit pattern mirroring CewgLightMath.CEWG_FLAG_ENABLED (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/unsupported/core/lighting/CewgLightMath.js for the ES-module original. */
-CewgLightCollector.FLAG_ENABLED = 0x10000;
+/** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_ENABLED (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/unsupported/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
+Tw2CarbonLightCollector.FLAG_ENABLED = 0x10000;
 
 /** Default pixel-size cutoff (Carbon: `CUTOFF_PIXEL_SIZE`, Tr2LightManager.cpp) */
-CewgLightCollector.CUTOFF_PIXEL_SIZE = 7;
+Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE = 7;
 
 /** Default fade band width below the cutoff, in pixels */
-CewgLightCollector.FADE_BAND_PIXELS = 5;
+Tw2CarbonLightCollector.FADE_BAND_PIXELS = 5;
 
-module.exports = { CewgLightCollector };
+module.exports = { Tw2CarbonLightCollector };

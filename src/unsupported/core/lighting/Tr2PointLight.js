@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
 import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
-import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
+import { ComposeNoiseBrightness, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 
 export class EvePointLightBatch extends Tw2RenderBatch
@@ -61,7 +61,7 @@ export class Tr2PointLight extends meta.Model
 
     // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
     // confirmed by the format-black schema (`castsShadows: enum`). Shadow
-    // settings are not consumed by the CEWG tile path yet.
+    // settings are not consumed by the Carbon tile path yet.
     @meta.notImplemented
     @meta.enums(PerLightShadowSetting)
     castsShadows = PerLightShadowSetting.DISABLED;
@@ -72,7 +72,7 @@ export class Tr2PointLight extends meta.Model
     // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
     // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
     // format-black schema. Gates which passes a light affects - not consumed
-    // by the CEWG tile path yet.
+    // by the Carbon tile path yet.
     @meta.notImplemented
     @meta.ushort
     flags = LIGHT_FLAG_DEFAULT;
@@ -236,21 +236,21 @@ export class Tr2PointLight extends meta.Model
     }
 
     /**
-     * Produces the fields for a CewgLightList Buffer B entry
-     * (see src/core/cewg/CewgLightList.js `SetLights`/`_writeLight`).
+     * Produces the fields for a Tw2CarbonLightList Buffer B entry
+     * (see src/core/carbon/Tw2CarbonLightList.js `SetLights`/`_writeLight`).
      *
      * Position/radius/color reproduce `LightData::AsPerPointLightData`
      * (carbonengine trinity/trinity/Lights/Tr2Light.cpp:37-69): world
      * position, radius*parentScale, color.rgb*composedBrightness.
      *
-     * TODO(flags/params): CewgLightList's flags/params were reverse
+     * TODO(flags/params): Tw2CarbonLightList's flags/params were reverse
      * engineered from shipped DX11 bytecode and only bit 0x10000 (enabled)
-     * is confirmed (see CewgLightMath.js `CEWG_FLAG_ENABLED` doc). Carbon's
+     * is confirmed (see Tw2CarbonLightMath.js `Carbon_FLAG_ENABLED` doc). Carbon's
      * own PerLightData additionally packs shadow-casting/volumetric flag
      * bits and a light-profile index into `flags` (Tr2LightManager.h:100-105,
      * Tr2Light.cpp:52,64,66) and packs innerRadius/direction/angles into
-     * separate PerLightData fields that CewgLightList's 4-float `params`
-     * has no confirmed layout for. Until the CEWG tile shader's actual
+     * separate PerLightData fields that Tw2CarbonLightList's 4-float `params`
+     * has no confirmed layout for. Until the Carbon tile shader's actual
      * flags/params usage is reverse engineered further, this only sets the
      * enabled bit and passes `innerRadius` through as `params[0]`.
      * @param {Object} [options]
@@ -258,7 +258,7 @@ export class Tr2PointLight extends meta.Model
      * @param {Number} [options.parentScale=1]
      * @returns {{position: Number[], radius: Number, color: Number[], flags: Number, params: Number[]}}
      */
-    GetCewgLightData(options = {})
+    GetCarbonLightData(options = {})
     {
         const parentBrightness = options.parentBrightness !== undefined ? options.parentBrightness : 1;
         const parentScale = options.parentScale !== undefined ? options.parentScale : 1;
@@ -271,7 +271,7 @@ export class Tr2PointLight extends meta.Model
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? CEWG_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_ENABLED : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

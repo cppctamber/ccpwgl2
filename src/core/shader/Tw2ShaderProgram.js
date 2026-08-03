@@ -78,7 +78,7 @@ export class Tw2ShaderProgram
             program.constantBufferHandles[j] = gl.getUniformLocation(program.program, "cb" + j);
         }
 
-        // CEWG emitters declare compact cb arrays from the highest register
+        // Carbon emitters declare compact cb arrays from the highest register
         // actually used. Keep their linked sizes so uploads can be clipped to
         // the declaration instead of submitting a larger ABI backing array.
         const uniformCount = gl.getProgramParameter(program.program, gl.ACTIVE_UNIFORMS);
@@ -104,12 +104,12 @@ export class Tw2ShaderProgram
         }
 
         // Collect used vertex declarations
-        // CEWG passes bind attributes by their emitted semantic names
+        // Carbon passes bind attributes by their emitted semantic names
         // (in_POSITION0 etc.); the legacy positional attrN lookup is untouched.
         const { elements } = pass.stages[0].inputDefinition;
         for (let j = 0; j < elements.length; ++j)
         {
-            const attr = pass.isCewg && elements[j]._attr ? elements[j]._attr : "attr" + j;
+            const attr = pass.isCarbon && elements[j]._attr ? elements[j]._attr : "attr" + j;
             let location = gl.getAttribLocation(program.program, attr);
             if (location >= 0)
             {
@@ -165,17 +165,17 @@ export class Tw2ShaderProgram
             }
         }
 
-        if (pass.isCewg)
+        if (pass.isCarbon)
         {
-            Tw2ShaderProgram.SetupCewgResources(program, pass, gl);
-            Tw2ShaderProgram.SetupCewgSamplerUnits(program, pass, gl);
+            Tw2ShaderProgram.SetupCarbonResources(program, pass, gl);
+            Tw2ShaderProgram.SetupCarbonSamplerUnits(program, pass, gl);
         }
 
         return program;
     }
 
     /**
-     * Remaps CEWG sampler registers >= MAX_TEXTURE_IMAGE_UNITS (16) onto free
+     * Remaps Carbon sampler registers >= MAX_TEXTURE_IMAGE_UNITS (16) onto free
      * low texture units. The legacy model binds sampler register N to texture
      * unit N, but DX11/Carbon can assign sampler registers past the WebGL2
      * 16-unit limit - e.g. `Detail3Map` at `s16` once the tiled-light samplers
@@ -185,7 +185,7 @@ export class Tw2ShaderProgram
      * (GL_INVALID_OPERATION: two textures of different types share a sampler
      * location). Assign each out-of-range register the lowest unit in [0,16)
      * not already taken by an in-range sampler or an in-range volume slice, set
-     * its `uniform1i`, and record the mapping on `program.cewgSamplerUnits` so
+     * its `uniform1i`, and record the mapping on `program.carbonSamplerUnits` so
      * Tw2Effect binds the texture to the same unit at draw time. In-range
      * registers keep unit == register (no map entry), so shaders without an
      * out-of-range sampler are unaffected.
@@ -193,7 +193,7 @@ export class Tw2ShaderProgram
      * @param {Tw2ShaderPass} pass
      * @param {WebGL2RenderingContext} gl
      */
-    static SetupCewgSamplerUnits(program, pass, gl)
+    static SetupCarbonSamplerUnits(program, pass, gl)
     {
         const MAX_UNITS = 16;
         const remap = new Map();    // sampler registerIndex -> texture unit
@@ -234,31 +234,31 @@ export class Tw2ShaderProgram
             }
         }
 
-        program.cewgSamplerUnits = remap.size ? remap : null;
+        program.carbonSamplerUnits = remap.size ? remap : null;
     }
 
     /**
-     * Resolves a CEWG pass's non-sampler bindings against the linked
+     * Resolves a Carbon pass's non-sampler bindings against the linked
      * program: structured UBOs (bones) get uniform-block binding points,
      * structured/buffer data textures (sb#/bt#) get texture units above
      * the legacy s0-15/vs0-15 range. The results are consumed at draw
-     * time by CewgResourceBinder.ApplyPass.
+     * time by Tw2CarbonResourceBinder.ApplyPass.
      * @param {Tw2ShaderProgram} program
      * @param {Tw2ShaderPass} pass
      * @param {WebGL2RenderingContext} gl
      */
-    static SetupCewgResources(program, pass, gl)
+    static SetupCarbonResources(program, pass, gl)
     {
-        program.cewgUniformBlocks = [];
-        program.cewgDataTextures = [];
+        program.carbonUniformBlocks = [];
+        program.carbonDataTextures = [];
 
         const seen = new Set();
         let bindingPoint = 0;
-        let unit = 28; // keep in sync with CewgResourceBinder.FIRST_DATA_TEXTURE_UNIT
+        let unit = 28; // keep in sync with Tw2CarbonResourceBinder.FIRST_DATA_TEXTURE_UNIT
 
         for (let s = 0; s < pass.stages.length; ++s)
         {
-            const bindings = pass.stages[s].cewgBindings;
+            const bindings = pass.stages[s].carbonBindings;
             if (!bindings) continue;
 
             for (let i = 0; i < bindings.length; ++i)
@@ -273,7 +273,7 @@ export class Tw2ShaderProgram
                     if (blockIndex === gl.INVALID_INDEX) continue;
                     seen.add(key);
                     gl.uniformBlockBinding(program.program, blockIndex, bindingPoint);
-                    program.cewgUniformBlocks.push({
+                    program.carbonUniformBlocks.push({
                         name: binding.name,
                         bindingPoint,
                         capacityElements: binding.capacityElements || 0,
@@ -288,14 +288,14 @@ export class Tw2ShaderProgram
                     if (!location) continue;
                     seen.add(key);
                     gl.uniform1i(location, unit);
-                    program.cewgDataTextures.push({
+                    program.carbonDataTextures.push({
                         name: binding.name,
                         kind: binding.kind,
                         unit,
                         registerIndex: binding.registerIndex,
                         strideBytes: binding.strideBytes || 0,
                         width: binding.width || 0,
-                        cewgSemantic: binding.cewgSemantic || null,
+                        cjsSemantic: binding.cjsSemantic || null,
                         dataTexelBase: binding.dataTexelBase || 0
                     });
                     unit++;

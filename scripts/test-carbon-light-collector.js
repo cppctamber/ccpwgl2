@@ -1,22 +1,22 @@
 /**
- * Regression test: CewgLightCollector (CEWG scene light collection + CPU cull).
+ * Regression test: Tw2CarbonLightCollector (Carbon scene light collection + CPU cull).
  *
- * Plain node, no ccpwgl bundle involved - CewgLightCollector /
- * CewgLightList / CewgLightCuller are pure typed-array logic with no GL
+ * Plain node, no ccpwgl bundle involved - Tw2CarbonLightCollector /
+ * Tw2CarbonLightList / Tw2CarbonLightCuller are pure typed-array logic with no GL
  * and no "utils"/"global" aliases, so they load directly via require().
  *
- * Style matches scripts/test-cewg-light-list.js: an independent shader
+ * Style matches scripts/test-carbon-light-list.js: an independent shader
  * traversal simulator walks Buffer A / Buffer B per the documented DX11
  * contract, rather than trusting the module's own getters for tile math.
  *
- * Usage: node scripts/test-cewg-light-collector.js
+ * Usage: node scripts/test-carbon-light-collector.js
  */
 const assert = require("assert");
-const { CewgLightCollector } = require("../src/core/cewg/CewgLightCollector");
+const { Tw2CarbonLightCollector } = require("../src/core/carbon/Tw2CarbonLightCollector");
 
 /**
  * Faithful simulation of the shader's tile traversal (see
- * scripts/test-cewg-light-list.js for the same helper).
+ * scripts/test-carbon-light-list.js for the same helper).
  * @param {Uint32Array} bufferA
  * @param {number} tilesPerRow
  * @param {number} tx
@@ -43,7 +43,7 @@ function simulateTileTraversal(bufferA, tilesPerRow, tx, ty)
  * Runs simulateTileTraversal over tile (0,0) of a screen already sized via
  * SetScreenSize on the collector's owned light list, and returns the
  * visited lightIndex sequence.
- * @param {CewgLightCollector} collector
+ * @param {Tw2CarbonLightCollector} collector
  * @returns {number[]}
  */
 function traverseTile00(collector)
@@ -58,7 +58,7 @@ function makeRow(overrides = {})
         position: [ 0, 0, 0 ],
         radius: 10,
         color: [ 1, 1, 1 ],
-        flags: CewgLightCollector.FLAG_ENABLED,
+        flags: Tw2CarbonLightCollector.FLAG_ENABLED,
         params: [ 0, 0, 0, 0 ]
     }, overrides);
 }
@@ -74,7 +74,7 @@ const NO_CUTOFF = { frustumPlanes: [], cameraPosition: [ 0, 0, 0 ] };
 //    empty draw list, so every tile visits only the null light (index 0).
 // ---------------------------------------------------------------------------
 {
-    const collector = new CewgLightCollector();
+    const collector = new Tw2CarbonLightCollector();
     collector.GetLightList().SetScreenSize(1920, 1080);
 
     collector.Reset();
@@ -92,7 +92,7 @@ const NO_CUTOFF = { frustumPlanes: [], cameraPosition: [ 0, 0, 0 ] };
 //    behind-frustum, while a legitimate light in the same batch survives.
 // ---------------------------------------------------------------------------
 {
-    const collector = new CewgLightCollector();
+    const collector = new Tw2CarbonLightCollector();
     collector.GetLightList().SetScreenSize(1920, 1080);
 
     collector.Reset();
@@ -132,16 +132,16 @@ const NO_CUTOFF = { frustumPlanes: [], cameraPosition: [ 0, 0, 0 ] };
     const viewportHeight = 1080;
 
     // Direct pure-function checks (no collector involved) for exact boundaries.
-    assert.ok(Math.abs(CewgLightCollector.ComputePixelSize(1, 1080 / 7, viewportHeight, fovY) - 7) < 1e-9, "pixelSize at distance 1080/7 must be ~7");
-    assert.strictEqual(CewgLightCollector.ComputeSizeDimming(7, 7, 5), 1, "dimming at exactly the cutoff must be 1");
-    assert.strictEqual(CewgLightCollector.ComputeSizeDimming(2, 7, 5), 0, "dimming at exactly the fade-band floor (cutoff-fadeBand=2) must be 0");
-    assert.strictEqual(CewgLightCollector.ComputeSizeDimming(4.5, 7, 5), 0.5, "dimming halfway across the fade band (4.5) must be 0.5");
-    assert.strictEqual(CewgLightCollector.ComputeSizeDimming(10, 7, 5), 1, "dimming above the cutoff must be 1");
-    assert.strictEqual(CewgLightCollector.ComputeSizeDimming(0, 7, 5), 0, "dimming at pixelSize 0 must be 0");
+    assert.ok(Math.abs(Tw2CarbonLightCollector.ComputePixelSize(1, 1080 / 7, viewportHeight, fovY) - 7) < 1e-9, "pixelSize at distance 1080/7 must be ~7");
+    assert.strictEqual(Tw2CarbonLightCollector.ComputeSizeDimming(7, 7, 5), 1, "dimming at exactly the cutoff must be 1");
+    assert.strictEqual(Tw2CarbonLightCollector.ComputeSizeDimming(2, 7, 5), 0, "dimming at exactly the fade-band floor (cutoff-fadeBand=2) must be 0");
+    assert.strictEqual(Tw2CarbonLightCollector.ComputeSizeDimming(4.5, 7, 5), 0.5, "dimming halfway across the fade band (4.5) must be 0.5");
+    assert.strictEqual(Tw2CarbonLightCollector.ComputeSizeDimming(10, 7, 5), 1, "dimming above the cutoff must be 1");
+    assert.strictEqual(Tw2CarbonLightCollector.ComputeSizeDimming(0, 7, 5), 0, "dimming at pixelSize 0 must be 0");
 
     // End-to-end through Resolve(): three lights at distances producing
     // pixelSize 10 (unaffected), 4.5 (half-dimmed), and 1 (culled outright).
-    const collector = new CewgLightCollector();
+    const collector = new Tw2CarbonLightCollector();
     collector.GetLightList().SetScreenSize(1920, 1080);
     collector.Reset();
     collector.Collect([
@@ -174,7 +174,7 @@ const NO_CUTOFF = { frustumPlanes: [], cameraPosition: [ 0, 0, 0 ] };
 //    the highest-contribution survivors (closest/largest lights).
 // ---------------------------------------------------------------------------
 {
-    const collector = new CewgLightCollector({ lightList: { maxLights: 4 } });
+    const collector = new Tw2CarbonLightCollector({ lightList: { maxLights: 4 } });
     collector.GetLightList().SetScreenSize(640, 480);
 
     collector.Reset();

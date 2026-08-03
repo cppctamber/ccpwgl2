@@ -1,11 +1,11 @@
 /**
- * CewgLightCuller
+ * Tw2CarbonLightCuller
  *
- * Contribution-based CPU light culler for the CEWG tiled-forward light
- * list (see `CewgLightList`). Given the full scene light array and a
+ * Contribution-based CPU light culler for the Carbon tiled-forward light
+ * list (see `Tw2CarbonLightList`). Given the full scene light array and a
  * bounding sphere (typically the camera frustum's bounding sphere, or an
  * object's world bounds), returns a small set of 1-based Buffer B indices
- * ready to hand to `CewgLightList#WriteDrawList`.
+ * ready to hand to `Tw2CarbonLightList#WriteDrawList`.
  *
  * "Contribution" here is a cheap `radius^2 / distance^2` falloff proxy -
  * it is not a physically exact attenuation model, just a stable ordering
@@ -16,16 +16,16 @@
  * This module is pure typed-array/math logic - no GL, no ccpwgl
  * "utils"/"global" aliases - so it can run directly under plain node.
  */
-class CewgLightCuller
+class Tw2CarbonLightCuller
 {
 
     /**
      * Culls and ranks a light array against a bounding sphere
      *
      * Lights are expected in the same order passed to
-     * `CewgLightList#SetLights` (a plain 0-based array); the returned
+     * `Tw2CarbonLightList#SetLights` (a plain 0-based array); the returned
      * indices are 1-based Buffer B indices (`arrayIndex + 1`), which is
-     * exactly the indexing `CewgLightList#WriteDrawList` expects.
+     * exactly the indexing `Tw2CarbonLightList#WriteDrawList` expects.
      *
      * @param {Array<{position:number[], radius:number}>} lights source light array (0-based, same order as SetLights)
      * @param {number[]} center [x, y, z] bounding sphere centre to cull against
@@ -78,4 +78,4 @@ class CewgLightCuller
 
 }
 
-module.exports = { CewgLightCuller };
+module.exports = { Tw2CarbonLightCuller };

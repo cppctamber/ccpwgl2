@@ -226,10 +226,10 @@ export class EveSpaceObjectDecal extends meta.Model
             if (bag.sphericalHarmonicLighting) ps.Set("shLighting", bag.sphericalHarmonicLighting);
         }
 
-        // Tag so the CEWG binder packs cb3/cb4 with the decal per-object layout
+        // Tag so the Carbon binder packs cb3/cb4 with the decal per-object layout
         // (DecalVS/PSPerObjectData) instead of the hull layout - see
-        // CewgResourceBinder.ApplyPass / CewgCarbonData.PackDecalPerObject*.
-        perObjectData.cewgKind = "decal";
+        // Tw2CarbonResourceBinder.ApplyPass / Tw2CarbonData.PackDecalPerObject*.
+        perObjectData.carbonKind = "decal";
         return perObjectData;
     }
 

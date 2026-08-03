@@ -71,11 +71,11 @@ export class EveObject extends WglTransform
     }
 
     /**
-     * Collects dynamic lights for the CEWG (translated DX11) shader
+     * Collects dynamic lights for the Carbon (translated DX11) shader
      * path by forwarding to any light-owning child effects (e.g.
      * EveChildContainer). Subclasses with their own light sources
      * should extend this. Inert for the legacy v8 shader path.
-     * @param {CewgLightCollector} collector
+     * @param {Tw2CarbonLightCollector} collector
      * @param {Object} [parentContext]
      */
     GetLights(collector, parentContext)

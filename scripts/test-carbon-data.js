@@ -1,5 +1,5 @@
 /**
- * Regression test: CewgCarbonData — GLES-v8 -> Carbon DX11 constant
+ * Regression test: Tw2CarbonData — GLES-v8 -> Carbon DX11 constant
  * repacking (register maps from docs/carbon-constant-layouts.md in
  * hlslreader). Each GLES register is stamped with a recognizable value
  * (reg index in .x) so every Carbon destination can be asserted by
@@ -9,7 +9,7 @@ const assert = require("assert");
 const {
     PER_FRAME_VS_REGS, PER_FRAME_PS_REGS, PER_OBJECT_REGS,
     PackPerFrameVS, PackPerFramePS, PackPerObjectVS, PackPerObjectPS
-} = require("../src/core/cewg/CewgCarbonData");
+} = require("../src/core/carbon/Tw2CarbonData");
 
 /** Builds a GLES array of `regs` registers, reg r = [r, r+0.25, r+0.5, r+0.75] */
 function stamp(regs)
@@ -102,4 +102,4 @@ function expectZeroReg(out, outReg, label)
     expectZeroReg(out, 28, "poPS customData");
 }
 
-console.log("PASS: CewgCarbonData — GLES->Carbon repack maps verified for b1(46), b2(118), b3(29), b4(29)");
+console.log("PASS: Tw2CarbonData — GLES->Carbon repack maps verified for b1(46), b2(118), b3(29), b4(29)");

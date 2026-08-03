@@ -241,6 +241,19 @@ export const saturate = `
 
 `;
 
+/**
+ * DEAD as of 2026-08-03 — no longer injected by any shader.
+ *
+ * This is the only thing in ccpwgl that ever read `cb4[14]`, and it exists only
+ * because this WebGL path had no permutations: custom-mask blend mode is a
+ * compile-time permutation option in Carbon, so it was demoted to a runtime
+ * vec4 and branched over here. That slot is Carbon's `customMaskClamps`
+ * (per-object PS reg 26).
+ *
+ * Kept commented-out rather than deleted so the removal is reversible. Do not
+ * re-inject it: reading `cb4[14]` re-occupies the clamps register.
+ * See `/docs/contracts/ccpwgl-per-object-layout-delta.md`.
+ */
 export const customMaskBlendModes = `
 
     void applyCustomMaskBlendMode(inout vec4 layer1, inout vec4 layer2)

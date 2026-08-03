@@ -624,6 +624,36 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Identifies which compiled-effect profile a path belongs to.
+     *
+     * `effectProfile` answers one question only: what `/effect/` turns into.
+     * By the time a path reaches a reader it is always qualified — either it
+     * arrived that way, or `ToEffectPath` substituted `effectDir` into it — so
+     * the directory segment is what selects the reader, and it is the only
+     * thing that can. The container is byte-identical across backends, so the
+     * bytes cannot say whether DXBC was meant to be translated or a native
+     * artefact loaded directly.
+     *
+     * Checks every registered profile rather than the active one: a fully
+     * qualified `/effect.dx11/...sm_hi` is legal whatever the profile says,
+     * and `ToEffectPath` leaves it untouched because its `/effect/`
+     * substitution never matches an already-qualified path.
+     *
+     * @param {String} path Resource path.
+     * @returns {String|null} Registered profile name, or null when the path
+     *     carries no recognised profile directory.
+     */
+    static EffectProfileFromPath(path)
+    {
+        const value = String(path || "").toLowerCase();
+        for (const [ profile, dir ] of Object.entries(this.EffectProfiles))
+        {
+            if (value.includes(dir)) return profile;
+        }
+        return null;
+    }
+
+    /**
      * Selects a registered compiled-effect path profile.
      * @param {String} profile
      * @returns {String} The selected compiled-effect directory

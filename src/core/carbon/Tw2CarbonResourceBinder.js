@@ -1,5 +1,5 @@
-const { CewgLightList } = require("./CewgLightList");
-const CewgCarbonData = require("./CewgCarbonData");
+const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
+const Tw2CarbonData = require("./Tw2CarbonData");
 
 function fitConstantBuffer(data, registerCount)
 {
@@ -8,18 +8,18 @@ function fitConstantBuffer(data, registerCount)
 }
 
 /**
- * CewgResourceBinder
+ * Tw2CarbonResourceBinder
  *
- * GL upload/binding layer for the CEWG (translated DX11) shader path.
+ * GL upload/binding layer for the Carbon (translated DX11) shader path.
  * Owns the GPU resources behind the emitter's non-sampler bindings and
- * binds them when a CEWG pass is applied:
+ * binds them when a Carbon pass is applied:
  *
- * - structuredUbo  (CewgSb<r>) — the dedicated bone UBO. Joint matrices
+ * - structuredUbo  (CjsSb<r>) — the dedicated bone UBO. Joint matrices
  *   arrive as the same 12-floats-per-joint float4x3 row layout the legacy
  *   path stores in perObjectData's "JointMat" (and the DXBC bytecode
  *   expects), so upload is a straight copy into a std140 vec4 array.
  * - structuredTexture (sb<r>) — the tiled light-list RGBA32UI data
- *   textures, sourced from a CewgLightList. The binding's structure
+ *   textures, sourced from a Tw2CarbonLightList. The binding's structure
  *   stride discriminates which buffer a register wants: stride 4 is
  *   Buffer A (tile headers + list nodes), stride 48 is Buffer B (light
  *   data rows).
@@ -34,10 +34,10 @@ function fitConstantBuffer(data, registerCount)
  * shaders render correctly with zero light contribution until scene
  * light collection is wired up.
  *
- * Like CewgLightList, this module is CommonJS with no ccpwgl aliases so
+ * Like Tw2CarbonLightList, this module is CommonJS with no ccpwgl aliases so
  * the node regression tests can require it without the webpack bundle.
  */
-class CewgResourceBinder
+class Tw2CarbonResourceBinder
 {
 
     /**
@@ -80,31 +80,31 @@ class CewgResourceBinder
         this._warnedStrides = {};
 
         // Carbon-shaped constant scratch buffers (packed per apply)
-        this._perFrameVS = new Float32Array(CewgCarbonData.PER_FRAME_VS_REGS * 4);
-        this._perFramePS = new Float32Array(CewgCarbonData.PER_FRAME_PS_REGS * 4);
-        this._perObjectVS = new Float32Array(CewgCarbonData.PER_OBJECT_REGS * 4);
-        this._perObjectPS = new Float32Array(CewgCarbonData.PER_OBJECT_REGS * 4);
+        this._perFrameVS = new Float32Array(Tw2CarbonData.PER_FRAME_VS_REGS * 4);
+        this._perFramePS = new Float32Array(Tw2CarbonData.PER_FRAME_PS_REGS * 4);
+        this._perObjectVS = new Float32Array(Tw2CarbonData.PER_OBJECT_REGS * 4);
+        this._perObjectPS = new Float32Array(Tw2CarbonData.PER_OBJECT_REGS * 4);
         this._zeroObjectVS = null;
     }
 
     /**
      * Gets (or lazily creates) the device's binder instance
      * @param {Tw2Device} device
-     * @returns {CewgResourceBinder}
+     * @returns {Tw2CarbonResourceBinder}
      */
     static Get(device)
     {
-        if (!device._cewgResourceBinder)
+        if (!device._carbonResourceBinder)
         {
-            device._cewgResourceBinder = new CewgResourceBinder(device.gl);
+            device._carbonResourceBinder = new Tw2CarbonResourceBinder(device.gl);
         }
-        return device._cewgResourceBinder;
+        return device._carbonResourceBinder;
     }
 
     /**
      * Sets the scene-owned light list (owner is responsible for
      * SetScreenSize/SetLights/WriteDrawList; the binder only uploads)
-     * @param {CewgLightList|null} lightList
+     * @param {Tw2CarbonLightList|null} lightList
      */
     SetLightList(lightList)
     {
@@ -137,12 +137,12 @@ class CewgResourceBinder
 
     /**
      * Uploads Carbon-shaped per-frame / per-object constants (b1-b4)
-     * packed from the device's GLES-v8-shaped arrays. CEWG shaders were
+     * packed from the device's GLES-v8-shaped arrays. Carbon shaders were
      * compiled against Carbon's DX11 layouts, so the legacy uploads in
-     * Tw2Effect.ApplyPass are skipped for CEWG passes in favour of this.
+     * Tw2Effect.ApplyPass are skipped for Carbon passes in favour of this.
      * Shadow-pass note: Carbon carries ShadowViewMat inside b1 rather
      * than swapping in a separate shadow buffer pair; the normal
-     * per-frame arrays are used for all CEWG techniques.
+     * per-frame arrays are used for all Carbon techniques.
      * @param {Tw2ShaderProgram} program
      * @param {Tw2Device} device
      * @param {{PackPerObjectVS?: Function, PackPerObjectPS?: Function}} [perObjectPacker]
@@ -160,14 +160,14 @@ class CewgResourceBinder
         {
             const packed = perObjectPacker?.PackPerFrameVS
                 ? perObjectPacker.PackPerFrameVS(this._perFrameVS, perFrameVSData.data, device, program) || this._perFrameVS
-                : CewgCarbonData.PackPerFrameVS(this._perFrameVS, perFrameVSData.data);
+                : Tw2CarbonData.PackPerFrameVS(this._perFrameVS, perFrameVSData.data);
             gl.uniform4fv(cbh[1], fitConstantBuffer(packed, program.constantBufferSizes?.[1]));
         }
         if (cbh[2] && perFramePSData)
         {
             const packed = perObjectPacker?.PackPerFramePS
                 ? perObjectPacker.PackPerFramePS(this._perFramePS, perFramePSData.data, device, program) || this._perFramePS
-                : CewgCarbonData.PackPerFramePS(this._perFramePS, perFramePSData.data);
+                : Tw2CarbonData.PackPerFramePS(this._perFramePS, perFramePSData.data);
             gl.uniform4fv(cbh[2], fitConstantBuffer(packed, program.constantBufferSizes?.[2]));
         }
 
@@ -179,7 +179,7 @@ class CewgResourceBinder
 
         // Decals carry their own per-object layout (Carbon DecalVS/PSPerObjectData);
         // the hull packers would reorganize it (esp. the PS path) and corrupt cb4.
-        const isDecal = pod.cewgKind === "decal";
+        const isDecal = pod.carbonKind === "decal";
 
         if (cbh[3] && pod.vs)
         {
@@ -192,8 +192,8 @@ class CewgResourceBinder
             else
             {
                 packedVs = isDecal
-                    ? CewgCarbonData.PackDecalPerObjectVS(this._perObjectVS, pod.vs.data)
-                    : CewgCarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data);
+                    ? Tw2CarbonData.PackDecalPerObjectVS(this._perObjectVS, pod.vs.data)
+                    : Tw2CarbonData.PackPerObjectVS(this._perObjectVS, pod.vs.data);
             }
             gl.uniform4fv(cbh[3], fitConstantBuffer(packedVs, program.constantBufferSizes?.[3]));
         }
@@ -208,15 +208,15 @@ class CewgResourceBinder
             else
             {
                 packedPs = isDecal
-                    ? CewgCarbonData.PackDecalPerObjectPS(this._perObjectPS, pod.ps.data)
-                    : CewgCarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data);
+                    ? Tw2CarbonData.PackDecalPerObjectPS(this._perObjectPS, pod.ps.data)
+                    : Tw2CarbonData.PackPerObjectPS(this._perObjectPS, vsData, pod.ps.data);
             }
             gl.uniform4fv(cbh[4], fitConstantBuffer(packedPs, program.constantBufferSizes?.[4]));
         }
     }
 
     /**
-     * Binds all CEWG resources a program declared
+     * Binds all Carbon resources a program declared
      * @param {Tw2ShaderProgram} program
      * @param {Tw2Device} device
      */
@@ -224,13 +224,13 @@ class CewgResourceBinder
     {
         const gl = this.gl;
 
-        const blocks = program.cewgUniformBlocks;
+        const blocks = program.carbonUniformBlocks;
         if (blocks && blocks.length)
         {
             this._ApplyBoneBlocks(blocks);
         }
 
-        const dataTextures = program.cewgDataTextures;
+        const dataTextures = program.carbonDataTextures;
         if (dataTextures && dataTextures.length)
         {
             let lightTexturesReady = false;
@@ -239,7 +239,7 @@ class CewgResourceBinder
                 const entry = dataTextures[i];
                 if (entry.kind === "structuredTexture")
                 {
-                    if (entry.cewgSemantic === "packedLocalLights")
+                    if (entry.cjsSemantic === "packedLocalLights")
                     {
                         this._UpdatePackedLightTexture(device, entry);
                         this._BindPackedLightTexture(entry);
@@ -267,7 +267,7 @@ class CewgResourceBinder
 
     /**
      * Ensures the bone UBO exists, uploads staged joints, binds blocks
-     * @param {Array} blocks - program.cewgUniformBlocks
+     * @param {Array} blocks - program.carbonUniformBlocks
      * @private
      */
     _ApplyBoneBlocks(blocks)
@@ -279,7 +279,7 @@ class CewgResourceBinder
         {
             if (blocks[i].byteLength > byteLength) byteLength = blocks[i].byteLength;
         }
-        if (!byteLength) byteLength = CewgResourceBinder.DEFAULT_BONE_BYTE_LENGTH;
+        if (!byteLength) byteLength = Tw2CarbonResourceBinder.DEFAULT_BONE_BYTE_LENGTH;
 
         if (!this._boneBuffer || byteLength > this._boneBufferByteLength)
         {
@@ -322,7 +322,7 @@ class CewgResourceBinder
      * Gets the active light list, maintaining the viewport-sized
      * fallback when the scene has not provided one
      * @param {Tw2Device} device
-     * @returns {CewgLightList}
+     * @returns {Tw2CarbonLightList}
      * @private
      */
     _GetLightList(device)
@@ -331,7 +331,7 @@ class CewgResourceBinder
 
         if (!this._fallbackLightList)
         {
-            this._fallbackLightList = new CewgLightList();
+            this._fallbackLightList = new Tw2CarbonLightList();
         }
 
         // The shader derives its tile count from the screen size in the
@@ -375,8 +375,8 @@ class CewgResourceBinder
         const list = this._GetLightList(device);
         const infoA = list.GetBufferATextureInfo();
         const infoB = list.GetBufferBTextureInfo();
-        const width = entry.width || infoA.width || CewgResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH;
-        const dataTexelBase = entry.dataTexelBase || CewgResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE;
+        const width = entry.width || infoA.width || Tw2CarbonResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH;
+        const dataTexelBase = entry.dataTexelBase || Tw2CarbonResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE;
         const dataRowBase = Math.floor(dataTexelBase / width);
         const height = Math.max(infoA.height, Math.ceil((dataTexelBase + infoB.texelCount) / width));
         const rowElements = width * 4;
@@ -493,11 +493,11 @@ class CewgResourceBinder
         const gl = this.gl;
         let state = null;
 
-        if (entry.strideBytes === CewgResourceBinder.INDEX_BUFFER_STRIDE)
+        if (entry.strideBytes === Tw2CarbonResourceBinder.INDEX_BUFFER_STRIDE)
         {
             state = this._texA;
         }
-        else if (entry.strideBytes === CewgResourceBinder.LIGHT_BUFFER_STRIDE)
+        else if (entry.strideBytes === Tw2CarbonResourceBinder.LIGHT_BUFFER_STRIDE)
         {
             state = this._texB;
         }
@@ -505,7 +505,7 @@ class CewgResourceBinder
         {
             this._warnedStrides[entry.strideBytes] = true;
             // eslint-disable-next-line no-console
-            console.warn(`CewgResourceBinder: no data source for structured stride ${entry.strideBytes} (register ${entry.registerIndex})`);
+            console.warn(`Tw2CarbonResourceBinder: no data source for structured stride ${entry.strideBytes} (register ${entry.registerIndex})`);
         }
 
         if (state && state.texture)
@@ -555,22 +555,22 @@ class CewgResourceBinder
 
 }
 
-/** First texture unit used for CEWG data textures (legacy s0-15 use 0-15, vs0-15 use 12-27) */
-CewgResourceBinder.FIRST_DATA_TEXTURE_UNIT = 28;
+/** First texture unit used for Carbon data textures (legacy s0-15 use 0-15, vs0-15 use 12-27) */
+Tw2CarbonResourceBinder.FIRST_DATA_TEXTURE_UNIT = 28;
 
 /** structuredTexture stride identifying Buffer A (tile headers / list nodes) */
-CewgResourceBinder.INDEX_BUFFER_STRIDE = 4;
+Tw2CarbonResourceBinder.INDEX_BUFFER_STRIDE = 4;
 
 /** structuredTexture stride identifying Buffer B (48-byte light rows) */
-CewgResourceBinder.LIGHT_BUFFER_STRIDE = 48;
+Tw2CarbonResourceBinder.LIGHT_BUFFER_STRIDE = 48;
 
-/** Default fixed texel width for CEWG data textures */
-CewgResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH = 2048;
+/** Default fixed texel width for Carbon data textures */
+Tw2CarbonResourceBinder.DEFAULT_DATA_TEXTURE_WIDTH = 2048;
 
 /** Fixed texel offset where packed local-light Buffer B begins */
-CewgResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE = 131072;
+Tw2CarbonResourceBinder.PACKED_LIGHT_DATA_TEXEL_BASE = 131072;
 
 /** Bone UBO size when a block reports no capacity (69 joints x 48 bytes) */
-CewgResourceBinder.DEFAULT_BONE_BYTE_LENGTH = 69 * 48;
+Tw2CarbonResourceBinder.DEFAULT_BONE_BYTE_LENGTH = 69 * 48;
 
-module.exports = { CewgResourceBinder };
+module.exports = { Tw2CarbonResourceBinder };

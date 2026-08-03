@@ -1,16 +1,16 @@
 /**
- * Regression test: Tw2EffectRes format fork — CEWG packages (first dword > 8,
- * "CEWG" magic) route to the new reader while legacy v8 WebGL binaries take
+ * Regression test: Tw2EffectRes format fork — Carbon packages (first dword > 8,
+ * "Carbon" magic) route to the new reader while legacy v8 WebGL binaries take
  * the untouched PrepareCCP path through the same extension.
  *
  * Fixtures:
- * - test/fixtures/quadv5.webgl.cewg  — JS-emitter package (480 permutations)
+ * - test/fixtures/quadv5.webgl.carbon  — JS-emitter package (480 permutations)
  * - test/fixtures/quadv5.gles2.sm_hi — legacy version-8 WebGL binary
  *
  * Structural test only (GL is stubbed): compiles/links are no-ops; asserts
  * cover format detection, permutation resolution, technique/pass/stage
  * construction, constants, samplers, attribute names and binding manifests.
- * Real compile/link coverage lives in hlslreader's validateCewgWebgl2 (672/672).
+ * Real compile/link coverage lives in hlslreader's validateCarbonWebgl2 (672/672).
  */
 const fs = require("fs");
 const path = require("path");
@@ -64,14 +64,14 @@ function loadRes(fixture)
     return res;
 }
 
-// --- CEWG path ---------------------------------------------------------------
-const cewg = loadRes("quadv5.webgl.cewg");
-assert(!cewg._error, "CEWG package should prepare without error");
-assert.strictEqual(cewg.version, 9, "CEWG resources report version 9 (first post-v8 format)");
-assert.strictEqual(cewg.permutations.length, 7, "QuadV5 has 7 permutations");
-assert(cewg._cewgFactory, "CEWG factory should be attached");
+// --- Carbon path ---------------------------------------------------------------
+const carbon = loadRes("quadv5.webgl.carbon");
+assert(!carbon._error, "Carbon package should prepare without error");
+assert.strictEqual(carbon.version, 9, "Carbon resources report version 9 (first post-v8 format)");
+assert.strictEqual(carbon.permutations.length, 7, "QuadV5 has 7 permutations");
+assert(carbon._carbonFactory, "Carbon factory should be attached");
 
-const defaultShader = cewg.GetShader({});
+const defaultShader = carbon.GetShader({});
 assert(defaultShader, "default permutation shader should build");
 const techniqueNames = Object.keys(defaultShader.techniques).sort();
 assert.deepStrictEqual(
@@ -82,7 +82,7 @@ assert.deepStrictEqual(
 
 const mainPass = defaultShader.techniques["Main"].passes[0];
 assert(mainPass, "Main pass 0 should exist");
-assert.strictEqual(mainPass.isCewg, true);
+assert.strictEqual(mainPass.isCarbon, true);
 assert.strictEqual(mainPass.stages.length, 2);
 
 const [ vertexStage, pixelStage ] = mainPass.stages;
@@ -97,25 +97,25 @@ assert(pixelStage.constants.length > 0, "pixel stage should carry effect constan
 assert(pixelStage.constants.some(c => c.name === "GeneralData"), "pixel constants include GeneralData");
 assert(pixelStage.textures.length > 0, "pixel stage should carry textures");
 assert(pixelStage.samplers.length === pixelStage.textures.length, "sampler per texture");
-assert(Array.isArray(pixelStage.cewgBindings), "emitter bindings should ride on the stage");
+assert(Array.isArray(pixelStage.carbonBindings), "emitter bindings should ride on the stage");
 assert(
-    pixelStage.cewgBindings.some(b => b.kind === "constantBuffer"),
+    pixelStage.carbonBindings.some(b => b.kind === "constantBuffer"),
     "bindings include constant buffers"
 );
 
 // Permutation selection: transparency option selects a different body/shader.
-const transparent = cewg.GetShader({ SPACE_OBJECT_TRANSPARENCY: "SOT_TRANSPARENT" });
+const transparent = carbon.GetShader({ SPACE_OBJECT_TRANSPARENCY: "SOT_TRANSPARENT" });
 assert(transparent, "transparent permutation shader should build");
 assert.notStrictEqual(transparent, defaultShader, "different options should map to a different permutation");
-const defaultIndex = cewg._cewgFactory.ResolvePermutationIndex({});
-const transparentIndex = cewg._cewgFactory.ResolvePermutationIndex({ SPACE_OBJECT_TRANSPARENCY: "SOT_TRANSPARENT" });
+const defaultIndex = carbon._carbonFactory.ResolvePermutationIndex({});
+const transparentIndex = carbon._carbonFactory.ResolvePermutationIndex({ SPACE_OBJECT_TRANSPARENCY: "SOT_TRANSPARENT" });
 assert.notStrictEqual(defaultIndex, transparentIndex);
-assert.strictEqual(cewg.GetShader({}), defaultShader, "shader instances should be cached per permutation");
+assert.strictEqual(carbon.GetShader({}), defaultShader, "shader instances should be cached per permutation");
 
 // Skinned package: bone UBO bindings and shader construction.
-const skinned = loadRes("skinned_quadv5.webgl.cewg");
-assert(!skinned._error, "skinned CEWG package should prepare without error");
-const boneShader = skinned._cewg.glslSet.shaders.find(s => (s.bindings || []).some(b => b.kind === "structuredUbo"));
+const skinned = loadRes("skinned_quadv5.webgl.carbon");
+assert(!skinned._error, "skinned Carbon package should prepare without error");
+const boneShader = skinned._carbon.glslSet.shaders.find(s => (s.bindings || []).some(b => b.kind === "structuredUbo"));
 assert(boneShader, "skinned package should contain a structured-UBO (bones) shader");
 const boneBinding = boneShader.bindings.find(b => b.kind === "structuredUbo");
 assert.strictEqual(boneBinding.capacityElements, 69, "bone UBO capacity should be Carbon's 69-joint maximum");
@@ -124,11 +124,11 @@ assert(boneShader.source.includes(`${boneBinding.name}Block`), "bone UBO block s
 const skinnedShader = skinned.GetShader({});
 assert(skinnedShader, "skinned default shader should build");
 const skinnedVs = skinnedShader.techniques["Main"].passes[0].stages[0];
-assert(skinnedVs.cewgBindings.some(b => b.kind === "structuredUbo"), "bone binding rides on the vertex stage");
+assert(skinnedVs.carbonBindings.some(b => b.kind === "structuredUbo"), "bone binding rides on the vertex stage");
 
 // Vertex usage codes are Trinity's (Tr2VertexDefinition::UsageCode:
 // BLENDINDICES=6, BLENDWEIGHTS=7). The legacy GLES-v8 convention had
-// them swapped and is translated away at its readers, so CEWG elements
+// them swapped and is translated away at its readers, so Carbon elements
 // carry the Carbon-correct value untouched.
 const blendIndices = skinnedVs.inputDefinition.elements.find(e => e._attr === "in_BLENDINDICES0");
 assert(blendIndices, "skinned vertex stage declares in_BLENDINDICES0");
@@ -137,8 +137,8 @@ assert.strictEqual(blendIndices.usage, 6, "BLENDINDICES uses Trinity's usage cod
 // Local cb0/cb7 allocation must not trust constantValueSize alone. Avatar
 // packages can omit it while retaining an emitted declaration and named
 // constants, so exercise both independent sizing sources in memory.
-const declarationSized = loadRes("quadv5.webgl.cewg");
-for (const body of declarationSized._cewg.metadata.bodies || [])
+const declarationSized = loadRes("quadv5.webgl.carbon");
+for (const body of declarationSized._carbon.metadata.bodies || [])
 {
     for (const stage of body.manifest?.stages || [])
     {
@@ -156,8 +156,8 @@ const declarationShader = declarationSized.GetShader({});
 const declarationStages = Object.values(declarationShader.techniques).flatMap(t => t.passes.flatMap(p => p.stages));
 assert(declarationStages.some(stage => stage.constantSize > 0), "emitted cb declaration sizes local constants without defaults");
 
-const constantSized = loadRes("quadv5.webgl.cewg");
-for (const body of constantSized._cewg.metadata.bodies || [])
+const constantSized = loadRes("quadv5.webgl.carbon");
+for (const body of constantSized._carbon.metadata.bodies || [])
 {
     for (const stage of body.manifest?.stages || [])
     {
@@ -176,9 +176,9 @@ const constantStages = Object.values(constantShader.techniques).flatMap(t => t.p
 assert(constantStages.some(stage => stage.constantSize >= 260), "named constant extent expands the local constant array");
 
 // Explicit decoded t#/s# use wins over the legacy equal-register inference.
-const paired = loadRes("quadv5.webgl.cewg");
+const paired = loadRes("quadv5.webgl.carbon");
 let pairedResourceRegister = null;
-for (const shaderRecord of paired._cewg.glslSet.shaders || [])
+for (const shaderRecord of paired._carbon.glslSet.shaders || [])
 {
     const resources = (shaderRecord.bindings || []).filter(binding => binding.kind === "resource");
     const resource = resources.find(binding => binding.registerIndex !== 0);
@@ -207,49 +207,49 @@ const pairedRuntimeTexture = Object.values(pairedEffect.techniques)
     .find(texture => texture.slot === pairedResourceRegister);
 assert.strictEqual(pairedRuntimeTexture?.sampler.registerIndex, 0, "Tw2Effect retains the paired sampler register");
 
-// Program-side CEWG setup: the linked program resolves the bone block to
-// a uniform-block binding point (SetupCewgResources, consumed at draw
-// time by CewgResourceBinder).
+// Program-side Carbon setup: the linked program resolves the bone block to
+// a uniform-block binding point (SetupCarbonResources, consumed at draw
+// time by Tw2CarbonResourceBinder).
 const skinnedProgram = skinnedShader.techniques["Main"].passes[0].shaderProgram;
-assert(Array.isArray(skinnedProgram.cewgUniformBlocks), "CEWG programs carry a uniform-block manifest");
-assert(Array.isArray(skinnedProgram.cewgDataTextures), "CEWG programs carry a data-texture manifest");
-assert.strictEqual(skinnedProgram.cewgUniformBlocks.length, 1, "skinned program resolves exactly the bone block");
-assert.strictEqual(skinnedProgram.cewgUniformBlocks[0].bindingPoint, 0, "bone block gets binding point 0");
-assert.strictEqual(skinnedProgram.cewgUniformBlocks[0].byteLength, 69 * 48, "bone block byteLength = capacity x stride");
+assert(Array.isArray(skinnedProgram.carbonUniformBlocks), "Carbon programs carry a uniform-block manifest");
+assert(Array.isArray(skinnedProgram.carbonDataTextures), "Carbon programs carry a data-texture manifest");
+assert.strictEqual(skinnedProgram.carbonUniformBlocks.length, 1, "skinned program resolves exactly the bone block");
+assert.strictEqual(skinnedProgram.carbonUniformBlocks[0].bindingPoint, 0, "bone block gets binding point 0");
+assert.strictEqual(skinnedProgram.carbonUniformBlocks[0].byteLength, 69 * 48, "bone block byteLength = capacity x stride");
 const quadProgram = defaultShader.techniques["Main"].passes[0].shaderProgram;
-assert(Array.isArray(quadProgram.cewgUniformBlocks), "unskinned CEWG program still carries (empty) manifests");
+assert(Array.isArray(quadProgram.carbonUniformBlocks), "unskinned Carbon program still carries (empty) manifests");
 
 // Light-visualizer package: the only shipped pixel shader that reads a
 // structured buffer (Buffer A, stride 4). Its program must resolve the
 // sb# usampler2D to a data-texture unit above the legacy 0-27 range.
-const lightcount = loadRes("lightcount.webgl.cewg");
-assert(!lightcount._error, "lightcount CEWG package should prepare without error");
+const lightcount = loadRes("lightcount.webgl.carbon");
+assert(!lightcount._error, "lightcount Carbon package should prepare without error");
 const lightShader = lightcount.GetShader({});
 const lightTech = Object.keys(lightShader.techniques)[0];
 const lightProgram = lightShader.techniques[lightTech].passes[0].shaderProgram;
-const sbEntry = lightProgram.cewgDataTextures.find(t => t.kind === "structuredTexture");
+const sbEntry = lightProgram.carbonDataTextures.find(t => t.kind === "structuredTexture");
 assert(sbEntry, "lightcount program resolves its structured light texture");
 assert.strictEqual(sbEntry.strideBytes, 4, "lightcount reads Buffer A (index buffer, stride 4)");
 assert(sbEntry.unit >= 28, "data textures sit above the legacy s/vs unit range");
 
 // Post-fx package: pixel Buffer<> becomes a bt# RGBA32F data texture.
-const lensgrime = loadRes("lensgrime.webgl.cewg");
-assert(!lensgrime._error, "lensgrime CEWG package should prepare without error");
+const lensgrime = loadRes("lensgrime.webgl.carbon");
+assert(!lensgrime._error, "lensgrime Carbon package should prepare without error");
 const grimeShader = lensgrime.GetShader({});
 const grimeTech = Object.keys(grimeShader.techniques)[0];
 const grimeProgram = grimeShader.techniques[grimeTech].passes[0].shaderProgram;
-const btEntry = grimeProgram.cewgDataTextures.find(t => t.kind === "bufferTexture");
+const btEntry = grimeProgram.carbonDataTextures.find(t => t.kind === "bufferTexture");
 assert(btEntry, "lensgrime program resolves its Buffer<> emulation texture");
 
 // --- Legacy path -------------------------------------------------------------
 const legacy = loadRes("quadv5.gles2.sm_hi");
 assert.strictEqual(legacy.version, 8, "legacy binary should read as version 8 via PrepareCCP");
-assert.strictEqual(legacy._cewgFactory, null, "legacy path must not build a CEWG factory");
+assert.strictEqual(legacy._carbonFactory, null, "legacy path must not build a Carbon factory");
 const legacyShader = legacy.GetShader({});
 assert(legacyShader, "legacy shader should still build through GetShaderCCP");
 const legacyTechName = Object.keys(legacyShader.techniques)[0];
 const legacyProgram = legacyShader.techniques[legacyTechName].passes[0].shaderProgram;
-assert.strictEqual(legacyProgram.cewgUniformBlocks, undefined, "legacy programs get no CEWG manifests");
+assert.strictEqual(legacyProgram.carbonUniformBlocks, undefined, "legacy programs get no Carbon manifests");
 
-console.log(`PASS: CEWG fork — v9 package (7 permutations, ${techniqueNames.length} techniques, ` +
+console.log(`PASS: Carbon fork — v9 package (7 permutations, ${techniqueNames.length} techniques, ` +
     `${pixelStage.constants.length} pixel constants) and legacy v8 both load through Tw2EffectRes`);

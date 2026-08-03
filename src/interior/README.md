@@ -25,7 +25,7 @@ npm run test:interior-additive-animation
 npm run test:interior-animation-lifecycle
 npm run test:interior-per-object-data
 npm run test:interior-skeleton-resource
-npm run test:cewg-interior-per-object-data
+npm run test:carbon-interior-per-object-data
 ```
 
 The live character renderers remain under `_dev/character` and

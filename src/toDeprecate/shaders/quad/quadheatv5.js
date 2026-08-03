@@ -2,7 +2,7 @@ import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { clampToBorder, customMaskBlendModes } from "../shared/func";
+import { clampToBorder } from "../shared/func";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadExtendedPickingHeatV5, skinnedQuadExtendedPickingHeatV5 } from "./extended/quadExtendedPickingHeatV5";
 import { quadUtilityHeatV5, skinnedQuadUtilityHeatV5 } from "./extended/quadUtilityHeatV5";
@@ -102,7 +102,10 @@ export const quadHeatV5 = {
                     uniform vec4 cb4[16];
                     uniform vec4 cb7[28];
 
-                    ${customMaskBlendModes}
+                    // customMaskBlendModes removed: custom-mask blend mode is a Carbon permutation
+                    // option, not per-object data. It lived in cb4[14] only because this WebGL path
+                    // had no permutations. Nothing reads cb4[14] now, freeing Carbon reg 26 for
+                    // customMaskClamps. See /docs/contracts/ccpwgl-per-object-layout-delta.md
 
                     void main()
                     {
@@ -254,7 +257,7 @@ export const quadHeatV5 = {
 
                         r7=r7.xxxx*cb4[12];
                         r8=r8.xxxx*cb4[13];
-                        applyCustomMaskBlendMode(r7, r8);
+                        // applyCustomMaskBlendMode(r7, r8);  // removed with cb4[14]
                         r4.w=mix(cb7[9].x,r3.w,r7.x);
                         r9.x=mix(r4.w,r0.w,r8.x);
                         r4.w=mix(cb7[10].x,r3.w,r7.y);

@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
 import { Tw2Float } from "core";
-import { GetAverageAxisScale } from "unsupported/core/lighting/CewgLightMath";
+import { GetAverageAxisScale } from "unsupported/core/lighting/Tw2CarbonLightMath";
 
 
 @meta.type("EveStretch")
@@ -355,7 +355,7 @@ export class EveStretch extends meta.Model
     }
 
     /**
-     * Collects this stretch's owned `sourceLights` into a CewgLightCollector
+     * Collects this stretch's owned `sourceLights` into a Tw2CarbonLightCollector
      *
      * Additive hook: not called by any per-frame code yet (the render-loop /
      * EveSpaceScene call site is separate scene-wiring work). `sourceLights`
@@ -372,11 +372,11 @@ export class EveStretch extends meta.Model
      * `sourceLights` declares - see `@meta.list("Tr2PointLight")` above),
      * which only reads world position, not orientation, from the transform
      * passed to `Update`.
-     * @param {CewgLightCollector} collector
+     * @param {Tw2CarbonLightCollector} collector
      * @param {object} [parentContext]
      * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
      * @param {Array} [parentContext.bones=null] forwarded to `light.Update` - null until scene wiring threads real bone matrices through
-     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCewgLightData`
+     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCarbonLightData`
      */
     GetLights(collector, parentContext = {})
     {
@@ -406,10 +406,10 @@ export class EveStretch extends meta.Model
         for (let i = 0; i < this.sourceLights.length; i++)
         {
             const light = this.sourceLights[i];
-            if (!light || typeof light.Update !== "function" || typeof light.GetCewgLightData !== "function") continue;
+            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
 
             light.Update(dt, worldTransform, bones);
-            collector.Collect([ light.GetCewgLightData({ parentBrightness, parentScale }) ]);
+            collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
         }
     }
 

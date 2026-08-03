@@ -1,8 +1,8 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
-import { CewgLightCollector } from "core/cewg/CewgLightCollector";
-import { CewgResourceBinder } from "core/cewg/CewgResourceBinder";
+import { Tw2CarbonLightCollector } from "core/carbon/Tw2CarbonLightCollector";
+import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
@@ -642,7 +642,7 @@ export class EveSpaceScene extends meta.Model
 
         this.PerChildObject("Update", dt);
 
-        this.UpdateCewgLights(dt);
+        this.UpdateCarbonLights(dt);
 
         if (this.postprocess)
         {
@@ -651,24 +651,24 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
-     * Collects dynamic lights from light-owning children into the CEWG
+     * Collects dynamic lights from light-owning children into the Carbon
      * light list (translated DX11 shader path). Additive: legacy v8
      * shaders never read the light-list textures, so this is inert
-     * until a CEWG effect samples them. Mirrors Carbon's per-frame
+     * until a Carbon effect samples them. Mirrors Carbon's per-frame
      * pull (EveSpaceScene.cpp:1375-1416): clear -> GetLights on every
      * owner -> resolve/cull -> hand the list to the binder.
      * @param {Number} dt - delta time
      */
-    UpdateCewgLights(dt)
+    UpdateCarbonLights(dt)
     {
-        if (!this._cewgLightCollector)
+        if (!this._carbonLightCollector)
         {
-            this._cewgLightCollector = new CewgLightCollector();
+            this._carbonLightCollector = new Tw2CarbonLightCollector();
         }
 
         const
             d = device,
-            collector = this._cewgLightCollector;
+            collector = this._carbonLightCollector;
 
         collector.Reset();
         this.PerChildObject("GetLights", collector, { dt });
@@ -688,7 +688,7 @@ export class EveSpaceScene extends meta.Model
             cameraPosition: d.eyePosition
         });
 
-        CewgResourceBinder.Get(d).SetLightList(collector.GetLightList());
+        Tw2CarbonResourceBinder.Get(d).SetLightList(collector.GetLightList());
     }
 
     /**

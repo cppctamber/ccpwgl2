@@ -1,5 +1,5 @@
 /**
- * CewgLightMath
+ * Tw2CarbonLightMath
  *
  * Shared, framework-free math helpers ported from carbonengine so the
  * Tr2*Light classes in this folder can reproduce Carbon's per-frame light
@@ -216,25 +216,25 @@ export function Saturate(color, saturation, out = [ 0, 0, 0, 0 ])
 }
 
 /**
- * CewgLightList (src/core/cewg/CewgLightList.js) reverse-engineered its
+ * Tw2CarbonLightList (src/core/carbon/Tw2CarbonLightList.js) reverse-engineered its
  * Buffer B "flags" field from shipped DX11 bytecode and only confirmed a
  * single bit: 0x10000 = enabled. Any other bits (shadow casting, volumetric,
  * light-profile index etc - all of which exist in Carbon's own
  * Tr2LightManager::PerLightData/flags, see Tr2LightManager.h:100-105 and
- * Tr2Light.cpp:52,64,66) are NOT confirmed for the CEWG shader contract, so
- * GetCewgLightData() implementations in this folder only ever set this one
- * bit - see the TODOs on each GetCewgLightData() for details.
+ * Tr2Light.cpp:52,64,66) are NOT confirmed for the Carbon shader contract, so
+ * GetCarbonLightData() implementations in this folder only ever set this one
+ * bit - see the TODOs on each GetCarbonLightData() for details.
  * @type {Number}
  */
-export const CEWG_FLAG_ENABLED = 0x10000;
+export const Carbon_FLAG_ENABLED = 0x10000;
 
 /**
  * Per-light shadow-casting mode. Matches Carbon's PerLightShadowSetting enum
  * (carbonengine trinity/trinity/Lights/Tr2Light.h:20-25) and is confirmed as
  * the canonical `LightData.castsShadows` type by the format-black schema
- * (@carbonenginejs/format-black - `castsShadows: enum`). The CEWG tile path
+ * (@carbonenginejs/format-black - `castsShadows: enum`). The Carbon tile path
  * does not consume per-light shadow settings yet (shadow flag bits are
- * unconfirmed in the shader contract - see CEWG_FLAG_ENABLED).
+ * unconfirmed in the shader contract - see Carbon_FLAG_ENABLED).
  * @enum {Number}
  */
 export const PerLightShadowSetting = {
@@ -247,7 +247,7 @@ export const PerLightShadowSetting = {
  * `LightData.flags` bitmask. Matches Carbon's Tr2LightManager flags
  * (carbonengine trinity/trinity/Lights/Tr2LightManager.h:100-105); stored as
  * uint16 (canonical width confirmed by the format-black schema). Gates which
- * render passes a light affects - not yet consumed by the CEWG tile path.
+ * render passes a light affects - not yet consumed by the Carbon tile path.
  * @enum {Number}
  */
 export const LightDataFlags = {
@@ -265,7 +265,7 @@ export const LIGHT_FLAG_DEFAULT = LightDataFlags.AFFECTS_SURFACES;
 /**
  * Average length of a mat4's three basis (axis) vectors - a cheap
  * "world scale" estimate for a transform whose scale isn't necessarily
- * uniform. Used as the `parentScale` passed to `Tr2*Light#GetCewgLightData`
+ * uniform. Used as the `parentScale` passed to `Tr2*Light#GetCarbonLightData`
  * by light-owning nodes that have no single scalar scale of their own
  * (see the `GetLights(collector, parentContext)` hooks on
  * EveChildContainer / EveEffectRoot2 / EveStretch). This is a ccpwgl-side

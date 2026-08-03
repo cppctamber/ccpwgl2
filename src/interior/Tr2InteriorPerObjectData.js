@@ -1,9 +1,9 @@
 import { mat4 } from "math";
 import { Tw2PerObjectData, Tw2RawData } from "core";
 import {
-    CewgInteriorPerObjectAdapter,
-    CewgInteriorPerObjectData
-} from "./cewg/CewgInteriorPerObjectData";
+    Tw2CarbonInteriorPerObjectAdapter,
+    Tw2CarbonInteriorPerObjectData
+} from "./carbon/Tw2CarbonInteriorPerObjectData";
 
 
 const
@@ -41,8 +41,8 @@ export class GLESPerObjectDataInterior extends Tw2PerObjectData
         if (data.ps) this.ps = this.constructor.RawData(data.ps, opt);
         if (data.ffe) this.ffe = this.constructor.RawData(data.ffe, opt);
         this.psInt = new Int32Array(16 * 4);
-        this.cewgInteriorData = new CewgInteriorPerObjectData();
-        this.cewgPerObjectPacker = GLESPerObjectDataInterior.CEWG_PER_OBJECT_PACKER;
+        this.carbonInteriorData = new Tw2CarbonInteriorPerObjectData();
+        this.carbonPerObjectPacker = GLESPerObjectDataInterior.CARBON_PER_OBJECT_PACKER;
     }
 
     /**
@@ -61,9 +61,9 @@ export class GLESPerObjectDataInterior extends Tw2PerObjectData
         perObjectData.perFrameVSData = bag.perFrameVSData || null;
         perObjectData.perFramePSData = bag.perFramePSData || null;
 
-        perObjectData.cewgInteriorData = CewgInteriorPerObjectData.Pack(
+        perObjectData.carbonInteriorData = Tw2CarbonInteriorPerObjectData.Pack(
             bag,
-            perObjectData.cewgInteriorData
+            perObjectData.carbonInteriorData
         );
 
         if (vs)
@@ -223,7 +223,7 @@ export class GLESPerObjectDataInterior extends Tw2PerObjectData
         return out;
     })();
 
-    static CEWG_PER_OBJECT_PACKER = new CewgInteriorPerObjectAdapter();
+    static CARBON_PER_OBJECT_PACKER = new Tw2CarbonInteriorPerObjectAdapter();
 
     static layout = Object.freeze({
         vs: [

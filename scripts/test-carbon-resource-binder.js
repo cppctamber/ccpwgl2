@@ -1,6 +1,6 @@
 /**
- * Regression test: CewgResourceBinder — the GL upload/binding layer for
- * CEWG non-sampler bindings (bone UBO, light-list RGBA32UI data
+ * Regression test: Tw2CarbonResourceBinder — the GL upload/binding layer for
+ * Carbon non-sampler bindings (bone UBO, light-list RGBA32UI data
  * textures, post-fx buffer textures).
  *
  * Runs against a recording GL stub (no real context): asserts resource
@@ -9,8 +9,8 @@
  * dirty-row texSubImage2D updates and texture-unit binding.
  */
 const assert = require("assert");
-const { CewgResourceBinder } = require("../src/core/cewg/CewgResourceBinder");
-const { CewgLightList } = require("../src/core/cewg/CewgLightList");
+const { Tw2CarbonResourceBinder } = require("../src/core/carbon/Tw2CarbonResourceBinder");
+const { Tw2CarbonLightList } = require("../src/core/carbon/Tw2CarbonLightList");
 
 // --- recording GL stub -------------------------------------------------------
 function makeGl()
@@ -61,12 +61,12 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 {
     const gl = makeGl();
     const device = { gl, viewportWidth: 1920, viewportHeight: 1080 };
-    const binder = CewgResourceBinder.Get(device);
-    assert.strictEqual(CewgResourceBinder.Get(device), binder, "binder is a device singleton");
+    const binder = Tw2CarbonResourceBinder.Get(device);
+    assert.strictEqual(Tw2CarbonResourceBinder.Get(device), binder, "binder is a device singleton");
 
     const program = {
-        cewgUniformBlocks: [ { name: "CewgSb0", bindingPoint: 0, capacityElements: 69, strideBytes: 48, byteLength: 69 * 48 } ],
-        cewgDataTextures: []
+        carbonUniformBlocks: [ { name: "CarbonSb0", bindingPoint: 0, capacityElements: 69, strideBytes: 48, byteLength: 69 * 48 } ],
+        carbonDataTextures: []
     };
 
     // No joints staged yet: buffer allocated zeroed and bound
@@ -110,7 +110,7 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
             ps: { data: new Float32Array(16 * 4).fill(4) }
         }
     };
-    const binder = CewgResourceBinder.Get(device);
+    const binder = Tw2CarbonResourceBinder.Get(device);
     const program = { constantBufferHandles: [ null, null, null, "cb3", "cb4" ] };
     const packer = {
         PackPerObjectVS(out, pod, receivedDevice, receivedProgram)
@@ -165,11 +165,11 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 {
     const gl = makeGl();
     const device = { gl, viewportWidth: 1920, viewportHeight: 1080 };
-    const binder = CewgResourceBinder.Get(device);
+    const binder = Tw2CarbonResourceBinder.Get(device);
 
     const program = {
-        cewgUniformBlocks: [],
-        cewgDataTextures: [
+        carbonUniformBlocks: [],
+        carbonDataTextures: [
             { name: "sb5", kind: "structuredTexture", unit: 28, registerIndex: 5, strideBytes: 4, width: 2048 },
             { name: "sb6", kind: "structuredTexture", unit: 29, registerIndex: 6, strideBytes: 48, width: 2048 }
         ]
@@ -179,7 +179,7 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 
     // Fallback list must match the viewport's tile layout: 1920x1080 -> 120x68 tiles
     const fallback = binder._fallbackLightList;
-    assert(fallback instanceof CewgLightList, "fallback light list created");
+    assert(fallback instanceof Tw2CarbonLightList, "fallback light list created");
     assert.strictEqual(fallback.GetTilesPerRow(), 120, "fallback tiles per row follows viewport width");
     assert.strictEqual(fallback.GetTilesPerCol(), 68, "fallback tiles per col follows viewport height");
     assert.strictEqual(fallback.GetBufferA()[fallback.GetListBase()], 0, "fallback draw list is the empty gate node");
@@ -204,17 +204,17 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 {
     const gl = makeGl();
     const device = { gl, viewportWidth: 640, viewportHeight: 480 };
-    const binder = CewgResourceBinder.Get(device);
+    const binder = Tw2CarbonResourceBinder.Get(device);
 
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(640, 480);
     list.SetLights([ { position: [ 1, 2, 3 ], radius: 50, color: [ 1, 1, 1 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] } ]);
     list.WriteDrawList([ 1 ]);
     binder.SetLightList(list);
 
     const program = {
-        cewgUniformBlocks: [],
-        cewgDataTextures: [
+        carbonUniformBlocks: [],
+        carbonDataTextures: [
             { name: "sb5", kind: "structuredTexture", unit: 28, registerIndex: 5, strideBytes: 4, width: 2048 },
             { name: "sb6", kind: "structuredTexture", unit: 29, registerIndex: 6, strideBytes: 48, width: 2048 }
         ]
@@ -236,21 +236,21 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 {
     const gl = makeGl();
     const device = { gl, viewportWidth: 640, viewportHeight: 480 };
-    const binder = CewgResourceBinder.Get(device);
+    const binder = Tw2CarbonResourceBinder.Get(device);
 
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(640, 480);
     list.SetLights([ { position: [ 1, 2, 3 ], radius: 50, color: [ 1, 1, 1 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] } ]);
     list.WriteDrawList([ 1 ]);
     binder.SetLightList(list);
 
     const program = {
-        cewgUniformBlocks: [],
-        cewgDataTextures: [
+        carbonUniformBlocks: [],
+        carbonDataTextures: [
             {
-                name: "cewgLocalLightTexture",
+                name: "carbonLocalLightTexture",
                 kind: "structuredTexture",
-                cewgSemantic: "packedLocalLights",
+                cjsSemantic: "packedLocalLights",
                 unit: 28,
                 registerIndex: 13,
                 strideBytes: 0,
@@ -282,11 +282,11 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
 {
     const gl = makeGl();
     const device = { gl, viewportWidth: 100, viewportHeight: 100 };
-    const binder = CewgResourceBinder.Get(device);
+    const binder = Tw2CarbonResourceBinder.Get(device);
 
     const program = {
-        cewgUniformBlocks: [],
-        cewgDataTextures: [ { name: "bt0", kind: "bufferTexture", unit: 28, registerIndex: 0, strideBytes: 0, width: 2048 } ]
+        carbonUniformBlocks: [],
+        carbonDataTextures: [ { name: "bt0", kind: "bufferTexture", unit: 28, registerIndex: 0, strideBytes: 0, width: 2048 } ]
     };
     binder.ApplyPass(program, device);
     const floatAllocs = findCalls(gl, "texImage2D").filter(c => c[1] === "RGBA32F");
@@ -300,5 +300,5 @@ function findCalls(gl, name) { return gl.calls.filter(c => c[0] === name); }
     assert(findCalls(gl, "bindTexture").some(c => c[2] === "postFxTexture"), "registered bt source is bound");
 }
 
-console.log("PASS: CewgResourceBinder — bone UBO staging/upload, stride-routed light textures, " +
+console.log("PASS: Tw2CarbonResourceBinder — bone UBO staging/upload, stride-routed light textures, " +
     "fallback viewport list, dirty-row updates and bt placeholder all behave");

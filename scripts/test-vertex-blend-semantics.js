@@ -11,9 +11,9 @@ const Tw2VertexDeclaration = loadDeclaration();
 assert.equal(new Tw2VertexDeclaration().swapBlendWeightsAndIndices, false);
 
 assert.equal(bindOffset(false, "attr0", BLENDWEIGHT), 70, "legacy geometry + legacy shader");
-assert.equal(bindOffset(false, "in_BLENDINDICES0", BLENDINDICES), 70, "legacy geometry + CEWG shader");
+assert.equal(bindOffset(false, "in_BLENDINDICES0", BLENDINDICES), 70, "legacy geometry + Carbon shader");
 assert.equal(bindOffset(true, "attr0", BLENDWEIGHT), 60, "direct geometry + legacy shader");
-assert.equal(bindOffset(true, "in_BLENDINDICES0", BLENDINDICES), 60, "direct geometry + CEWG shader");
+assert.equal(bindOffset(true, "in_BLENDINDICES0", BLENDINDICES), 60, "direct geometry + Carbon shader");
 assert.equal(bindOffset(true, "in_POSITION0", 0), 0, "non-blend semantics remain unchanged");
 
 console.log("Vertex blend semantic boundary verified");

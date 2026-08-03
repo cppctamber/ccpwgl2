@@ -1,14 +1,14 @@
 // Pixel-parity harness: renders the same quad with a legacy v8 GLES
-// shader and its CEWG (translated DX11) counterpart through ccpwgl's
-// real Tw2EffectRes/Tw2ShaderProgram/CewgResourceBinder pipeline in
+// shader and its Carbon (translated DX11) counterpart through ccpwgl's
+// real Tw2EffectRes/Tw2ShaderProgram/Tw2CarbonResourceBinder pipeline in
 // headless Chromium, then diffs the readback.
 //
 // Both sides receive equivalent inputs:
 // - effect constants matched BY NAME (legacy stage defaults are the
 //   source of truth, written into each side's own cb layout),
 // - identical GLES-shaped per-frame/per-object arrays — the legacy pass
-//   uploads them raw, the CEWG pass runs them through the production
-//   CewgResourceBinder.ApplyConstants (GLES -> Carbon repack),
+//   uploads them raw, the Carbon pass runs them through the production
+//   Tw2CarbonResourceBinder.ApplyConstants (GLES -> Carbon repack),
 // - white placeholder textures on every sampler unit,
 // - identical vertex data per semantic usage; render state application
 //   is skipped on both sides equally.
@@ -31,34 +31,34 @@ function parseArgs(argv) {
   const args = {
     ccpwgl: defaultCcpwgl,
     legacy: null,
-    cewg: null,
-    out: path.join(projectRoot, "artifacts", "parity.cewg-vs-legacy.json"),
+    carbon: null,
+    out: path.join(projectRoot, "artifacts", "parity.carbon-vs-legacy.json"),
     keepBrowserOpen: false
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--ccpwgl" && argv[i + 1]) args.ccpwgl = argv[++i];
     else if (arg === "--legacy" && argv[i + 1]) args.legacy = path.resolve(argv[++i]);
-    else if (arg === "--cewg" && argv[i + 1]) args.cewg = path.resolve(argv[++i]);
+    else if (arg === "--carbon" && argv[i + 1]) args.carbon = path.resolve(argv[++i]);
     else if (arg === "--out" && argv[i + 1]) args.out = path.resolve(argv[++i]);
     else if (arg === "--keep-browser-open") args.keepBrowserOpen = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
   args.dist = path.join(args.ccpwgl, "dist/ccpwgl2_int.js");
-  if (args.legacy && args.cewg) {
-    args.pairs = [ { name: path.basename(args.cewg, ".webgl.cewg"), legacy: args.legacy, cewg: args.cewg } ];
+  if (args.legacy && args.carbon) {
+    args.pairs = [ { name: path.basename(args.carbon, ".webgl.carbon"), legacy: args.legacy, carbon: args.carbon } ];
   } else {
     args.pairs = [
       {
         name: "quadv5",
         legacy: path.join(args.ccpwgl, "test/fixtures/quadv5.gles2.sm_hi"),
-        cewg: path.join(args.ccpwgl, "test/fixtures/quadv5.webgl.cewg")
+        carbon: path.join(args.ccpwgl, "test/fixtures/quadv5.webgl.carbon")
       },
       {
         name: "skinned_quadv5",
         skinned: true,
         legacy: path.join(args.ccpwgl, "test/fixtures/skinned_quadv5.gles2.sm_hi"),
-        cewg: path.join(args.ccpwgl, "test/fixtures/skinned_quadv5.webgl.cewg")
+        carbon: path.join(args.ccpwgl, "test/fixtures/skinned_quadv5.webgl.carbon")
       }
     ];
   }
@@ -77,7 +77,7 @@ async function loadPlaywright() {
 /**
  * Runs inside Chromium. Self-contained: no closure over node scope.
  *
- * @param {{legacyB64:string, cewgB64:string}} payload
+ * @param {{legacyB64:string, carbonB64:string}} payload
  * @returns {object} Per-technique parity stats.
  */
 function runParity(payload) {
@@ -90,7 +90,7 @@ function runParity(payload) {
       return bytes;
     };
 
-    const { tw2, CewgResourceBinder } = window;
+    const { tw2, Tw2CarbonResourceBinder } = window;
     const canvas = document.getElementById("c");
     const W = canvas.width;
     const H = canvas.height;
@@ -110,7 +110,7 @@ function runParity(payload) {
     };
 
     // Identity float3x4 joint rows for every legacy inline slot (58) —
-    // also staged to the CEWG bone UBO, so bone-0 skinning is a no-op
+    // also staged to the Carbon bone UBO, so bone-0 skinning is a no-op
     // on both sides and skinned output must equal the unskinned math.
     const JOINT_COUNT = 58;
     const jointMatrices = new Float32Array(JOINT_COUNT * 12);
@@ -260,7 +260,7 @@ function runParity(payload) {
     };
 
     // --- draw one pass ---------------------------------------------------------
-    const drawPass = (pass, donorStages, isCewg, label) => {
+    const drawPass = (pass, donorStages, isCarbon, label) => {
       const record = { label, glErrors: [], glErrorStages: [] };
       const drain = (stageName) => {
         let code;
@@ -282,8 +282,8 @@ function runParity(payload) {
       if (cbh[7] && psConsts && psConsts.length) gl.uniform4fv(cbh[7], psConsts);
 
       drain("effect-constants");
-      if (isCewg) {
-        const binder = CewgResourceBinder.Get(tw2.device);
+      if (isCarbon) {
+        const binder = Tw2CarbonResourceBinder.Get(tw2.device);
         binder.SetJointMatrices(activeJoints); // mirrors Tw2Effect.ApplyPass
         binder.ApplyConstants(program, tw2.device);
         drain("carbon-constants");
@@ -337,16 +337,16 @@ function runParity(payload) {
       drain("draw");
 
       // Bone-UBO deep probe: real block wiring + buffer readback.
-      if (isCewg && program.cewgUniformBlocks && program.cewgUniformBlocks.length) {
-        const dbg = { manifest: JSON.parse(JSON.stringify(program.cewgUniformBlocks)) };
-        const blockName = `${program.cewgUniformBlocks[0].name}Block`;
+      if (isCarbon && program.carbonUniformBlocks && program.carbonUniformBlocks.length) {
+        const dbg = { manifest: JSON.parse(JSON.stringify(program.carbonUniformBlocks)) };
+        const blockName = `${program.carbonUniformBlocks[0].name}Block`;
         const blockIndex = gl.getUniformBlockIndex(program.program, blockName);
         dbg.blockIndex = blockIndex;
         if (blockIndex !== gl.INVALID_INDEX) {
           dbg.dataSize = gl.getActiveUniformBlockParameter(program.program, blockIndex, gl.UNIFORM_BLOCK_DATA_SIZE);
           dbg.blockBinding = gl.getActiveUniformBlockParameter(program.program, blockIndex, gl.UNIFORM_BLOCK_BINDING);
         }
-        const binder = CewgResourceBinder.Get(tw2.device);
+        const binder = Tw2CarbonResourceBinder.Get(tw2.device);
         if (binder._boneBuffer) {
           const readback = new Float32Array(12);
           gl.bindBuffer(gl.UNIFORM_BUFFER, binder._boneBuffer);
@@ -372,61 +372,61 @@ function runParity(payload) {
     // --- compare all common techniques, per fixture pair -----------------------
     for (const pair of payload.pairs) {
       const legacyRes = loadRes(b64ToU8(pair.legacyB64), `${pair.name}.legacy.sm_hi`);
-      const cewgRes = loadRes(b64ToU8(pair.cewgB64), `${pair.name}.cewg.sm_hi`);
-      if (legacyRes._error || cewgRes._error) {
-        out.errors.push(`${pair.name}: prepare failed legacy=${!!legacyRes._error} cewg=${!!cewgRes._error}`);
+      const carbonRes = loadRes(b64ToU8(pair.carbonB64), `${pair.name}.carbon.sm_hi`);
+      if (legacyRes._error || carbonRes._error) {
+        out.errors.push(`${pair.name}: prepare failed legacy=${!!legacyRes._error} carbon=${!!carbonRes._error}`);
         continue;
       }
       setObjectData(!!pair.skinned);
 
       const legacyShader = legacyRes.GetShader({});
-      const cewgShader = cewgRes.GetShader({});
-      if (!legacyShader || !cewgShader) {
-        out.errors.push(`${pair.name}: shader build failed legacy=${!!legacyShader} cewg=${!!cewgShader}`);
+      const carbonShader = carbonRes.GetShader({});
+      if (!legacyShader || !carbonShader) {
+        out.errors.push(`${pair.name}: shader build failed legacy=${!!legacyShader} carbon=${!!carbonShader}`);
         continue;
       }
       const common = Object.keys(legacyShader.techniques)
-        .filter((name) => cewgShader.techniques[name]);
+        .filter((name) => carbonShader.techniques[name]);
       if (!common.length) {
-        out.warnings.push(`${pair.name}: no common techniques: legacy=[${Object.keys(legacyShader.techniques)}] cewg=[${Object.keys(cewgShader.techniques)}]`);
+        out.warnings.push(`${pair.name}: no common techniques: legacy=[${Object.keys(legacyShader.techniques)}] carbon=[${Object.keys(carbonShader.techniques)}]`);
       }
 
       for (const name of common) {
       const legacyPass = legacyShader.techniques[name].passes[0];
-      const cewgPass = cewgShader.techniques[name].passes[0];
+      const carbonPass = carbonShader.techniques[name].passes[0];
       const donorStages = [ legacyPass.stages[0], legacyPass.stages[1] ];
 
       const legacyRun = drawPass(legacyPass, null, false, `${pair.name}:legacy:${name}`);
-      const cewgRun = drawPass(cewgPass, donorStages, true, `${pair.name}:cewg:${name}`);
+      const carbonRun = drawPass(carbonPass, donorStages, true, `${pair.name}:carbon:${name}`);
 
       const entry = {
         pair: pair.name,
         technique: name,
         legacyGlErrors: legacyRun.glErrors,
-        cewgGlErrors: cewgRun.glErrors,
+        carbonGlErrors: carbonRun.glErrors,
         legacyGlErrorStages: legacyRun.glErrorStages,
-        cewgGlErrorStages: cewgRun.glErrorStages,
+        carbonGlErrorStages: carbonRun.glErrorStages,
         legacyError: legacyRun.error || null,
-        cewgError: cewgRun.error || null,
-        uboDebug: cewgRun.uboDebug || null
+        carbonError: carbonRun.error || null,
+        uboDebug: carbonRun.uboDebug || null
       };
 
       // Centre-pixel samples for eyeballing encoding differences.
-      if (legacyRun.pixels && cewgRun.pixels) {
+      if (legacyRun.pixels && carbonRun.pixels) {
         const mid = ((H / 2) * W + W / 2) * 4;
         entry.centerLegacy = Array.from(legacyRun.pixels.slice(mid, mid + 4));
-        entry.centerCewg = Array.from(cewgRun.pixels.slice(mid, mid + 4));
+        entry.centerCarbon = Array.from(carbonRun.pixels.slice(mid, mid + 4));
       }
 
-      if (legacyRun.pixels && cewgRun.pixels) {
+      if (legacyRun.pixels && carbonRun.pixels) {
         let maxDiff = 0;
         let totalDiff = 0;
         let diffCount = 0;
         let legacyLit = 0;
-        let cewgLit = 0;
+        let carbonLit = 0;
         const n = legacyRun.pixels.length;
         for (let i = 0; i < n; i += 1) {
-          const d = Math.abs(legacyRun.pixels[i] - cewgRun.pixels[i]);
+          const d = Math.abs(legacyRun.pixels[i] - carbonRun.pixels[i]);
           if (d > maxDiff) maxDiff = d;
           totalDiff += d;
           if (d > 2) diffCount += 1;
@@ -434,13 +434,13 @@ function runParity(payload) {
         // "lit" = differs from the clear color (13,13,26,255)
         for (let i = 0; i < n; i += 4) {
           if (Math.abs(legacyRun.pixels[i] - 13) > 3 || Math.abs(legacyRun.pixels[i + 1] - 13) > 3 || Math.abs(legacyRun.pixels[i + 2] - 26) > 3) legacyLit += 1;
-          if (Math.abs(cewgRun.pixels[i] - 13) > 3 || Math.abs(cewgRun.pixels[i + 1] - 13) > 3 || Math.abs(cewgRun.pixels[i + 2] - 26) > 3) cewgLit += 1;
+          if (Math.abs(carbonRun.pixels[i] - 13) > 3 || Math.abs(carbonRun.pixels[i + 1] - 13) > 3 || Math.abs(carbonRun.pixels[i + 2] - 26) > 3) carbonLit += 1;
         }
         entry.maxDiff = maxDiff;
         entry.meanDiff = totalDiff / n;
         entry.diffChannelCount = diffCount;
         entry.legacyLitPixels = legacyLit;
-        entry.cewgLitPixels = cewgLit;
+        entry.carbonLitPixels = carbonLit;
         entry.totalPixels = W * H;
       }
       out.techniques.push(entry);
@@ -459,7 +459,7 @@ async function main() {
     name: pair.name,
     skinned: !!pair.skinned,
     legacyB64: (await readFile(pair.legacy)).toString("base64"),
-    cewgB64: (await readFile(pair.cewg)).toString("base64")
+    carbonB64: (await readFile(pair.carbon)).toString("base64")
   })));
 
   const playwright = await loadPlaywright();
@@ -494,16 +494,16 @@ async function main() {
 
   let failures = 0;
   for (const t of result.techniques) {
-    let status = t.legacyError || t.cewgError ? "ERROR"
-      : t.legacyGlErrors.length || t.cewgGlErrors.length ? "GL-ERROR"
-        : t.legacyLitPixels === 0 && t.cewgLitPixels === 0 ? "BLANK"
+    let status = t.legacyError || t.carbonError ? "ERROR"
+      : t.legacyGlErrors.length || t.carbonGlErrors.length ? "GL-ERROR"
+        : t.legacyLitPixels === 0 && t.carbonLitPixels === 0 ? "BLANK"
           : t.maxDiff <= 4 && t.meanDiff < 0.5 ? "MATCH" : "DIFF";
     if (status === "DIFF" && knownSemanticDiffs[t.technique]) status = "EXPECTED";
     if (status !== "MATCH" && status !== "BLANK" && status !== "EXPECTED") failures += 1;
     console.log(
       `${status.padEnd(9)} ${(t.pair + ":" + t.technique).padEnd(34)} maxDiff=${t.maxDiff ?? "-"} ` +
-      `meanDiff=${t.meanDiff?.toFixed(4) ?? "-"} lit(legacy/cewg)=${t.legacyLitPixels}/${t.cewgLitPixels} ` +
-      `glErr(l/c)=${t.legacyGlErrors.length}/${t.cewgGlErrors.length}`
+      `meanDiff=${t.meanDiff?.toFixed(4) ?? "-"} lit(legacy/carbon)=${t.legacyLitPixels}/${t.carbonLitPixels} ` +
+      `glErr(l/c)=${t.legacyGlErrors.length}/${t.carbonGlErrors.length}`
     );
   }
   console.log(failures === 0 ? "PARITY: all common techniques match" : `PARITY: ${failures} technique(s) differ`);

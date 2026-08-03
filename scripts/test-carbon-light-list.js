@@ -1,22 +1,22 @@
 /**
- * Regression test: CewgLightList (CEWG tiled-forward light-list CPU data module).
+ * Regression test: Tw2CarbonLightList (Carbon tiled-forward light-list CPU data module).
  *
- * Plain node, no ccpwgl bundle involved - CewgLightList / CewgLightCuller
+ * Plain node, no ccpwgl bundle involved - Tw2CarbonLightList / Tw2CarbonLightCuller
  * are pure typed-array logic with no GL and no "utils"/"global" aliases,
  * so they load directly via require().
  *
  * This test implements an independent SHADER SIMULATOR that walks Buffer
  * A / Buffer B exactly per the documented DX11 traversal contract (see
- * the header comment of src/core/cewg/CewgLightList.js), deriving
+ * the header comment of src/core/carbon/Tw2CarbonLightList.js), deriving
  * tilesPerRow/tilesPerCol from screen width/height the same way the
  * shader does, rather than trusting the module's own getters for that
  * math - so a bug in the module's tile-count formula would not be masked
  * by the test using the same (buggy) getter.
  *
- * Usage: node scripts/test-cewg-light-list.js
+ * Usage: node scripts/test-carbon-light-list.js
  */
 const assert = require("assert");
-const { CewgLightList } = require("../src/core/cewg/CewgLightList");
+const { Tw2CarbonLightList } = require("../src/core/carbon/Tw2CarbonLightList");
 
 /**
  * Derives tile counts from screen size, independently of the module,
@@ -140,7 +140,7 @@ function readLightRow(bufferBFloat, bufferBUint, lightIndex)
 /**
  * Runs simulateTileTraversal over every tile of a screen and asserts every
  * tile visits exactly `expectedRaw` (in order).
- * @param {CewgLightList} list
+ * @param {Tw2CarbonLightList} list
  * @param {number} width
  * @param {number} height
  * @param {number[]} expectedRaw
@@ -169,7 +169,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    zero lights after SetScreenSize + WriteDrawList([]).
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     const changed = list.SetScreenSize(1920, 1080);
     assert.strictEqual(changed, true, "first SetScreenSize call should report a layout change");
 
@@ -195,7 +195,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    [3, 1, 4] in order; Buffer B rows round-trip bit-exact.
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(1920, 1080);
 
     const lights = [
@@ -242,7 +242,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    again at the new (smaller) tile grid.
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(1920, 1080);
     list.SetLights([
         { position: [ 1, 1, 1 ], radius: 5, color: [ 1, 0, 0 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] },
@@ -275,7 +275,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    only the null light: lightIndex 0, Buffer B radius 0 / flags 0).
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(1920, 1080);
     list.SetLights([
         { position: [ 0, 0, 0 ], radius: 1, color: [ 1, 1, 1 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] },
@@ -300,7 +300,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    (e&3), texture width 2048.
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList();
+    const list = new Tw2CarbonLightList();
     list.SetScreenSize(1920, 1080); // large enough that Buffer A spans >1 texture row
     list.SetLights([ { position: [ 1, 2, 3 ], radius: 9, color: [ 0.1, 0.2, 0.3 ], flags: 0x10000, params: [ 0, 0, 0, 0 ] } ]);
     list.WriteDrawList([ 1 ]);
@@ -329,7 +329,7 @@ function assertAllTiles(list, width, height, expectedRaw, label)
 //    index 0 or out-of-range throws.
 // ---------------------------------------------------------------------------
 {
-    const list = new CewgLightList({ maxLights: 4 });
+    const list = new Tw2CarbonLightList({ maxLights: 4 });
     list.SetScreenSize(640, 480);
 
     const tooManyLights = [];

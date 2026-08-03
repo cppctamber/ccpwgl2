@@ -1,35 +1,35 @@
 # ccpwgl testbed
 
-Headless diagnostics for the CEWG (translated DX11) shader
-path. Runs without a browser or the resource server, loading `.cewg` packages
+Headless diagnostics for the Carbon (translated DX11) shader
+path. Runs without a browser or the resource server, loading `.carbon` packages
 through ccpwgl's real `Tw2EffectRes` pipeline against a stubbed GL context and
 dumping everything you'd otherwise extract by hand in the devtools console.
 
-## cewg-diagnostics.js
+## carbon-diagnostics.js
 
 ```sh
-node scripts/testbed/cewg-diagnostics.js <package> [options]
+node scripts/testbed/carbon-diagnostics.js <package> [options]
 # or
-npm run testbed:cewg -- <package> [options]
+npm run testbed:carbon -- <package> [options]
 ```
 
 `<package>` is a bare filename (resolved against `test/fixtures/`, then the
 local synthetic server cache `ccpwgl2-server/public/cache/synthetic/`) or a
-path to a `.cewg` file.
+path to a `.carbon` file.
 
 ### What it dumps
 
 - **package** — version, permutation dimensions + default option per dimension,
   technique list, source path.
-- **per technique/pass** — `isCewg`, and per stage:
+- **per technique/pass** — `isCarbon`, and per stage:
   - vertex inputs: `usage` code + name, `usageIndex`, emitted `attr` name,
     register (this is where the skinned BLENDINDICES 6↔7 binding is visible).
   - textures: register → name → sampler (the `s0..sN` binding table).
   - constants: register → name → size.
-  - `cewgBindings`: constant buffers, structured UBOs (bone `CewgSb0`),
+  - `carbonBindings`: constant buffers, structured UBOs (bone `CarbonSb0`),
     structured textures (light-list `sb11`/`sb12`), post-fx buffer textures.
   - optionally the emitted GLSL (`--glsl` or `--glsl-lines N`).
-- **constant packing** — runs `CewgCarbonData` b1–b4 packing on provenance-
+- **constant packing** — runs `CarbonCarbonData` b1–b4 packing on provenance-
   stamped GLES input, so each Carbon register shows which GLES register/column
   it came from (`gN.C`) or whether it's zeroed/synthesised.
 - **mesh** (`--mesh file.gr2`) — vertex declaration channels with sample
@@ -57,13 +57,13 @@ path to a `.cewg` file.
 
 ```sh
 # skinned hull, default permutation, human-readable
-npm run testbed:cewg -- unpackedskinned_quadv5.webgl.cewg --technique Main
+npm run testbed:carbon -- unpackedskinned_quadv5.webgl.carbon --technique Main
 
 # depth tier with patterns on, JSON output
-npm run testbed:cewg -- unpackedskinned_quadv5_depth.webgl.cewg \
+npm run testbed:carbon -- unpackedskinned_quadv5_depth.webgl.carbon \
   --options SPACE_OBJECT_PPT_ENABLED=SOPPT_ENABLED --json
 
 # decode a mesh's blend/tangent channels both ways
-npm run testbed:cewg -- unpackedskinned_quadv5.webgl.cewg \
+npm run testbed:carbon -- unpackedskinned_quadv5.webgl.carbon \
   --mesh path/to/hull.gr2 --mesh-verts 8
 ```

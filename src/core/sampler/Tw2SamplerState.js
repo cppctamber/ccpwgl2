@@ -93,9 +93,9 @@ export class Tw2SamplerState extends meta.Model
 
     /**
      * Enables hardware depth comparison for GLSL shadow samplers. This is a
-     * CEWG-facing field; legacy CCP binary comparison bytes remain on the
+     * Carbon-facing field; legacy CCP binary comparison bytes remain on the
      * historical private fields below so existing EVE sampler behaviour is
-     * unchanged unless a CEWG binding opts in explicitly.
+     * unchanged unless a Carbon binding opts in explicitly.
      */
     @meta.boolean
     comparison = false;

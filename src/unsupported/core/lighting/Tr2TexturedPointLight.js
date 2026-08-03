@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
-// NOTE: `Saturate` (also exported from ./CewgLightMath, ported 1:1 from
+import { ComposeNoiseBrightness, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
+// NOTE: `Saturate` (also exported from ./Tw2CarbonLightMath, ported 1:1 from
 // carbonengine math/include/Color_inline.h:161-172) is what
 // `UpdateColorFromTexture` below should use once a texture average-color
 // API exists - see the TODO on that method.
@@ -38,7 +38,7 @@ export class Tr2TexturedPointLight extends meta.Model
 
     // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
     // confirmed by the format-black schema (`castsShadows: enum`). Shadow
-    // settings are not consumed by the CEWG tile path yet.
+    // settings are not consumed by the Carbon tile path yet.
     @meta.notImplemented
     @meta.enums(PerLightShadowSetting)
     castsShadows = PerLightShadowSetting.DISABLED;
@@ -51,7 +51,7 @@ export class Tr2TexturedPointLight extends meta.Model
     // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
     // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
     // format-black schema. Gates which passes a light affects - not consumed
-    // by the CEWG tile path yet.
+    // by the Carbon tile path yet.
     @meta.notImplemented
     @meta.ushort
     flags = LIGHT_FLAG_DEFAULT;
@@ -180,7 +180,7 @@ export class Tr2TexturedPointLight extends meta.Model
      * (carbonengine Resources/TriTextureRes.h) - no such API exists on
      * ccpwgl's texture resource classes yet. Once available, this should
      * set `this.color = Saturate(this.texture.GetAverageColor(), this._saturation)`
-     * (see `Saturate` in ./CewgLightMath.js, already ported 1:1 from
+     * (see `Saturate` in ./Tw2CarbonLightMath.js, already ported 1:1 from
      * carbonengine math/include/Color_inline.h:161-172).
      */
     UpdateColorFromTexture()
@@ -233,16 +233,16 @@ export class Tr2TexturedPointLight extends meta.Model
     }
 
     /**
-     * Produces the fields for a CewgLightList Buffer B entry - see
-     * Tr2PointLight.GetCewgLightData (same field mapping and same
+     * Produces the fields for a Tw2CarbonLightList Buffer B entry - see
+     * Tr2PointLight.GetCarbonLightData (same field mapping and same
      * flags/params caveats apply; this class behaves as a point light for
-     * CEWG purposes).
+     * Carbon purposes).
      * @param {Object} [options]
      * @param {Number} [options.parentBrightness=1]
      * @param {Number} [options.parentScale=1]
      * @returns {{position: Number[], radius: Number, color: Number[], flags: Number, params: Number[]}}
      */
-    GetCewgLightData(options = {})
+    GetCarbonLightData(options = {})
     {
         const parentBrightness = options.parentBrightness !== undefined ? options.parentBrightness : 1;
         const parentScale = options.parentScale !== undefined ? options.parentScale : 1;
@@ -255,7 +255,7 @@ export class Tr2TexturedPointLight extends meta.Model
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? CEWG_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_ENABLED : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

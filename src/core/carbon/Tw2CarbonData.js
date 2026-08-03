@@ -1,8 +1,8 @@
 /**
- * CewgCarbonData
+ * Tw2CarbonData
  *
  * Packs ccpwgl's GLES-v8-shaped per-frame / per-object constant arrays
- * into the Carbon/Trinity DX11 layouts the CEWG (translated) shaders
+ * into the Carbon/Trinity DX11 layouts the Carbon (translated) shaders
  * were compiled against. Register maps come from the carbonengine
  * source survey (see the reader-dxbc/reader-hlsl project's
  * carbon-constant-layouts.md survey document):
@@ -17,11 +17,11 @@
  *   whole cascaded-shadow + froxel tail (24-117). Missing regs pack as
  *   zero; shaders sampling them get neutral values.
  * - b3 per-object VS: aligned 0-25; Carbon 26 = boneOffsets (uint bit
- *   patterns). The CEWG bone UBO is per-object and base-0, so zeros
+ *   patterns). The Carbon bone UBO is per-object and base-0, so zeros
  *   are the CORRECT offsets (translated shaders compute
  *   boneIndex = blendIndex + floatBitsToInt(cb3[26].xy)). GLES's
  *   inline JointMat splice at 26.. is NOT copied — bones ride the
- *   dedicated CewgSb UBO instead.
+ *   dedicated CjsSb UBO instead.
  * - b4 per-object PS: Carbon leads with world/worldLast/invWorld
  *   matrices (regs 0-11) that the GLES PS layout lacks; they are taken
  *   from the per-object VS data (regs 0-11 are identical by layout),
@@ -118,7 +118,7 @@ function PackPerObjectVS(out, gles)
     // 0-25: world/worldLast/invWorld, shipData, clipData, ellipsoid,
     // custom masks — aligned.
     copyRegs(out, 0, gles, 0, 26);
-    // 26: boneOffsets [cur, prev, count, -] as uint bits. The CEWG bone
+    // 26: boneOffsets [cur, prev, count, -] as uint bits. The Carbon bone
     // UBO is per-object/base-0 so cur=prev=0 (0.0 bit pattern == uint 0
     // — exact and denormal-free). GLES's inline JointMat is NOT copied.
     // 27: morph-target offsets — no morph pipeline; zero.

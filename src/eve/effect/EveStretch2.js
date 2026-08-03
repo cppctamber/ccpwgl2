@@ -26,7 +26,7 @@ import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from
  * index buffer. The standard GLES stretch shaders use three vertex registers
  * and either three or four fragment registers; Carbon shaders consume the
  * complete four-register block in both stages. Dedicated Tw2PerObjectData and
- * CEWG packing keep those layouts separate from ship/turret POD.
+ * Carbon packing keep those layouts separate from ship/turret POD.
  * Component registration and debug drawing remain outside ccpwgl's scene API.
  */
 @meta.type("EveStretch2")
@@ -168,7 +168,7 @@ export class EveStretch2 extends meta.Model
 
         for (const perObjectData of [ this._perObjectData, this._perObjectDataShort ])
         {
-            perObjectData.cewgPerObjectPacker = EveStretch2.cewgPerObjectPacker;
+            perObjectData.carbonPerObjectPacker = EveStretch2.carbonPerObjectPacker;
             perObjectData._stretch2FullData = this._fullPerObjectData;
         }
 
@@ -488,7 +488,7 @@ export class EveStretch2 extends meta.Model
      * GLES vertex shaders consume Source, Destination and EffectData0. Most
      * fragment variants additionally consume EffectData1; atomic only declares
      * the first three registers. `_fullPerObjectData` retains Carbon's complete
-     * four-register layout for CEWG shaders.
+     * four-register layout for Carbon shaders.
      * @param {Tw2PerObjectData} perObjectData
      * @returns {Tw2PerObjectData}
      */
@@ -612,7 +612,7 @@ export class EveStretch2 extends meta.Model
 
     /**
      * Collects this stretch's `sourceLight`/`destinationLight` into a
-     * CewgLightCollector
+     * Tw2CarbonLightCollector
      *
      * Reproduces `EveStretch2::GetLights` (EveStretch2.cpp:400-418): skipped
      * when not visible/zero intensity or when neither light is set; the
@@ -623,11 +623,11 @@ export class EveStretch2 extends meta.Model
      * matching `EveStretch.GetLights` - not called by any per-frame code yet
      * (the render-loop/EveSpaceScene call site is separate scene-wiring
      * work).
-     * @param {CewgLightCollector} collector
+     * @param {Tw2CarbonLightCollector} collector
      * @param {object} [parentContext]
      * @param {number} [parentContext.dt=0] forwarded to `light.Update`
      * @param {Array} [parentContext.bones=null] forwarded to `light.Update`
-     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCewgLightData`
+     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCarbonLightData`
      */
     GetLights(collector, parentContext = {})
     {
@@ -638,16 +638,16 @@ export class EveStretch2 extends meta.Model
         const bones = parentContext.bones || null;
         const parentBrightness = parentContext.parentBrightness !== undefined ? parentContext.parentBrightness : 1;
 
-        if (this.sourceLight && typeof this.sourceLight.Update === "function" && typeof this.sourceLight.GetCewgLightData === "function")
+        if (this.sourceLight && typeof this.sourceLight.Update === "function" && typeof this.sourceLight.GetCarbonLightData === "function")
         {
             this.sourceLight.Update(dt, this._sourceTransform, bones);
-            collector.Collect([ this.sourceLight.GetCewgLightData({ parentBrightness, parentScale: 1 }) ]);
+            collector.Collect([ this.sourceLight.GetCarbonLightData({ parentBrightness, parentScale: 1 }) ]);
         }
 
-        if (this.destinationLight && typeof this.destinationLight.Update === "function" && typeof this.destinationLight.GetCewgLightData === "function")
+        if (this.destinationLight && typeof this.destinationLight.Update === "function" && typeof this.destinationLight.GetCarbonLightData === "function")
         {
             this.destinationLight.Update(dt, this._destinationTransform, bones);
-            collector.Collect([ this.destinationLight.GetCewgLightData({ parentBrightness, parentScale: this._currentDestinationScale }) ]);
+            collector.Collect([ this.destinationLight.GetCarbonLightData({ parentBrightness, parentScale: this._currentDestinationScale }) ]);
         }
     }
 
@@ -753,12 +753,12 @@ export class EveStretch2 extends meta.Model
     };
 
     /**
-     * Direct CEWG packer for Carbon's four-register Stretch2 cb3/cb4 layout
+     * Direct Carbon packer for Carbon's four-register Stretch2 cb3/cb4 layout
      */
-    static cewgPerObjectPacker = {
-        OnBeforeCewgConstants(context)
+    static carbonPerObjectPacker = {
+        OnBeforeCarbonConstants(context)
         {
-            context.cewgPerObjectPacker = this;
+            context.carbonPerObjectPacker = this;
         },
 
         PackPerObjectVS(out, perObjectData)

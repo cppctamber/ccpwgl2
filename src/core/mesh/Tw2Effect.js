@@ -5,7 +5,7 @@ import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2EffectRes, Tw2Resource } from "core/resource";
 import { Tw2SamplerOverride } from "core/sampler";
-import { CewgResourceBinder } from "core/cewg/CewgResourceBinder";
+import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
 
 
 class TemporaryBinaryReader
@@ -998,8 +998,8 @@ export class Tw2Effect extends meta.Model
             perObjectData: d.perObjectData,
             perFrameVSData: null,
             perFramePSData: null,
-            cewgPerObjectPacker: null,
-            cewgJointMatrices: undefined,
+            carbonPerObjectPacker: null,
+            carbonJointMatrices: undefined,
             constantBufferHandles: program.constantBufferHandles
         };
 
@@ -1024,11 +1024,11 @@ export class Tw2Effect extends meta.Model
             for (let j = 0; j < stages.textures.length; ++j)
             {
                 let tex = stages.textures[j];
-                // CEWG sampler registers past the 16-unit limit are remapped to
-                // free low units (Tw2ShaderProgram.SetupCewgSamplerUnits); bind
+                // Carbon sampler registers past the 16-unit limit are remapped to
+                // free low units (Tw2ShaderProgram.SetupCarbonSamplerUnits); bind
                 // to that unit so it matches the shader's uniform1i. In-range
                 // registers have no map entry and bind to unit == register.
-                const unit = program.cewgSamplerUnits ? (program.cewgSamplerUnits.get(tex.slot) ?? tex.slot) : tex.slot;
+                const unit = program.carbonSamplerUnits ? (program.carbonSamplerUnits.get(tex.slot) ?? tex.slot) : tex.slot;
                 tex.parameter.Apply(unit, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
             }
         }
@@ -1045,22 +1045,22 @@ export class Tw2Effect extends meta.Model
         // Fragment constants
         if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
 
-        // CEWG shaders were compiled against Carbon's DX11 b1-b4
+        // Carbon shaders were compiled against Carbon's DX11 b1-b4
         // layouts — their per-frame/per-object uploads are packed by
         // the binder instead of the raw GLES-shaped arrays below.
-        if (rp.isCewg)
+        if (rp.isCarbon)
         {
-            const podPacker = context.perObjectData && context.perObjectData.cewgPerObjectPacker;
-            if (podPacker && !this._adapters.includes(podPacker) && podPacker.OnBeforeCewgConstants)
+            const podPacker = context.perObjectData && context.perObjectData.carbonPerObjectPacker;
+            if (podPacker && !this._adapters.includes(podPacker) && podPacker.OnBeforeCarbonConstants)
             {
-                podPacker.OnBeforeCewgConstants(context);
+                podPacker.OnBeforeCarbonConstants(context);
             }
-            // Adapters can set context.cewgPerObjectPacker to provide
+            // Adapters can set context.carbonPerObjectPacker to provide
             // PackPerObjectVS/PS without teaching the space packer about
             // object-family-specific cb3/cb4 layouts.
-            this._RunAdapterHook("OnBeforeCewgConstants", context);
-            CewgResourceBinder.Get(d).ApplyConstants(program, d, context.cewgPerObjectPacker, context);
-            this._RunAdapterHook("OnAfterCewgConstants", context);
+            this._RunAdapterHook("OnBeforeCarbonConstants", context);
+            Tw2CarbonResourceBinder.Get(d).ApplyConstants(program, d, context.carbonPerObjectPacker, context);
+            this._RunAdapterHook("OnAfterCarbonConstants", context);
         }
         // Surely a better way to do this...
         else if (this._isShadowEffect)
@@ -1076,7 +1076,7 @@ export class Tw2Effect extends meta.Model
 
         this._RunAdapterHook("OnAfterPerFrameData", context);
 
-        if (pod && !rp.isCewg)
+        if (pod && !rp.isCarbon)
         {
             if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
             if (pod.ps && cbh[4]) gl.uniform4fv(cbh[4], pod.ps.data);
@@ -1093,14 +1093,14 @@ export class Tw2Effect extends meta.Model
 
         this._RunAdapterHook("OnAfterPerObjectData", context);
 
-        // CEWG passes carry non-sampler bindings (bone UBO, light-list
+        // Carbon passes carry non-sampler bindings (bone UBO, light-list
         // data textures, post-fx buffer textures) the legacy uniform
         // upload above knows nothing about.
-        if (rp.isCewg)
+        if (rp.isCarbon)
         {
-            const binder = CewgResourceBinder.Get(d);
-            const jointMatrices = context.cewgJointMatrices !== undefined
-                ? context.cewgJointMatrices
+            const binder = Tw2CarbonResourceBinder.Get(d);
+            const jointMatrices = context.carbonJointMatrices !== undefined
+                ? context.carbonJointMatrices
                 : (pod && pod.vs && pod.vs.Has("JointMat") ? pod.vs.Get("JointMat") : null);
             binder.SetJointMatrices(jointMatrices);
             binder.ApplyPass(program, d);
@@ -1613,7 +1613,7 @@ export class Tw2Effect extends meta.Model
                         usedMask: e._usedMask
                     }))
                 } : null,
-                cewgBindings: (stage.cewgBindings && stage.cewgBindings.length) ? stage.cewgBindings : undefined
+                carbonBindings: (stage.carbonBindings && stage.carbonBindings.length) ? stage.carbonBindings : undefined
             };
         };
 
@@ -1686,7 +1686,7 @@ export class Tw2Effect extends meta.Model
 
     /**
      * Gets a permutation's default option name, handling both record
-     * shapes (legacy Tw2ShaderPermutation's name->index object and CEWG's
+     * shapes (legacy Tw2ShaderPermutation's name->index object and Carbon's
      * plain string array)
      * @param {Tw2ShaderPermutation|Object} permutation
      * @returns {String|undefined}

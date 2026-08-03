@@ -8,10 +8,10 @@ const
 /**
  * Carbon/DX11 register layout used by skinned interior shaders.
  *
- * The joint palette is inline at the start of cb3. The generic CEWG worker can
+ * The joint palette is inline at the start of cb3. The generic Carbon worker can
  * also consume the same view as palette register sb0 without another copy.
  */
-export const CEWG_INTERIOR_LAYOUT = Object.freeze({
+export const CARBON_INTERIOR_LAYOUT = Object.freeze({
     maxJoints: 69,
     jointFloats: 69 * JOINT_FLOATS,
     jointRegisters: 69 * JOINT_REGISTERS,
@@ -32,11 +32,11 @@ export const CEWG_INTERIOR_LAYOUT = Object.freeze({
 /**
  * Packed character/interior data for converted DX11 shaders.
  */
-export class CewgInteriorPerObjectData
+export class Tw2CarbonInteriorPerObjectData
 {
     constructor()
     {
-        const layout = CEWG_INTERIOR_LAYOUT;
+        const layout = CARBON_INTERIOR_LAYOUT;
 
         this.cb3 = new Float32Array(layout.cb3Registers * REGISTER_SIZE);
         this.cb4 = new Float32Array(layout.cb4Registers * REGISTER_SIZE);
@@ -67,11 +67,11 @@ export class CewgInteriorPerObjectData
     /**
      * Packs a semantic interior data bag into Carbon's converted registers.
      * @param {Object} bag
-     * @returns {CewgInteriorPerObjectData}
+     * @returns {Tw2CarbonInteriorPerObjectData}
      */
     Pack(bag = {})
     {
-        const layout = CEWG_INTERIOR_LAYOUT;
+        const layout = CARBON_INTERIOR_LAYOUT;
 
         this.cb3.fill(0);
         fillIdentityJoints(this.jointMatrices);
@@ -120,7 +120,7 @@ export class CewgInteriorPerObjectData
         return this.constantBuffers;
     }
 
-    /** Palette contract used by the generic CEWG worker. */
+    /** Palette contract used by the generic Carbon worker. */
     GetPalettes()
     {
         return this.palettes;
@@ -137,7 +137,7 @@ export class CewgInteriorPerObjectData
     }
 
     /** Combined worker payload for workers which resolve constants and palettes together. */
-    GetCewgData()
+    GetCarbonData()
     {
         return this.workerData;
     }
@@ -150,11 +150,11 @@ export class CewgInteriorPerObjectData
 
 
 /**
- * Resolves the CEWG snapshot attached to an interior POD. This implements the
+ * Resolves the Carbon snapshot attached to an interior POD. This implements the
  * same GetConstantBuffers hook used by converted-effect workers while exposing
- * the palette alongside it for CEWG workers.
+ * the palette alongside it for Carbon workers.
  */
-export class CewgInteriorPerObjectAdapter
+export class Tw2CarbonInteriorPerObjectAdapter
 {
     constructor(source = null)
     {
@@ -165,7 +165,7 @@ export class CewgInteriorPerObjectAdapter
     {
         let source = perObjectData || this.source;
         if (typeof this.source === "function") source = this.source(perObjectData, context);
-        if (source && source.cewgInteriorData) source = source.cewgInteriorData;
+        if (source && source.carbonInteriorData) source = source.carbonInteriorData;
         return source && source.cb3 && source.cb4 ? source : null;
     }
 
@@ -193,25 +193,25 @@ export class CewgInteriorPerObjectAdapter
         return data ? data.GetJointMatrices() : null;
     }
 
-    GetCewgData(perObjectData, context)
+    GetCarbonData(perObjectData, context)
     {
         const data = this.GetData(perObjectData, context);
-        return data ? data.GetCewgData() : null;
+        return data ? data.GetCarbonData() : null;
     }
 
     /**
-     * Selects the interior constants and palette for the current CEWG draw.
+     * Selects the interior constants and palette for the current Carbon draw.
      * @param {Object} context
      * @returns {Boolean} True when interior data was selected
      */
-    OnBeforeCewgConstants(context)
+    OnBeforeCarbonConstants(context)
     {
         const data = this.GetData(context && context.perObjectData, context);
         if (!data) return false;
 
-        context.cewgPerObjectPacker = this;
-        context.cewgJointMatrices = data.GetJointMatrices();
-        context.cewgInteriorData = data.GetCewgData();
+        context.carbonPerObjectPacker = this;
+        context.carbonJointMatrices = data.GetJointMatrices();
+        context.carbonInteriorData = data.GetCarbonData();
         return true;
     }
 
@@ -253,8 +253,8 @@ export class CewgInteriorPerObjectAdapter
 
     OnAfterPerObjectData(context)
     {
-        const data = this.GetCewgData(context && context.perObjectData, context);
-        if (context) context.cewgInteriorData = data;
+        const data = this.GetCarbonData(context && context.perObjectData, context);
+        if (context) context.carbonInteriorData = data;
         return data;
     }
 }
@@ -270,9 +270,9 @@ function copyRegisters(out, outRegister, source, sourceRegister, registerCount)
 }
 
 
-export function CreateCewgInteriorPerObjectAdapter(source)
+export function CreateTw2CarbonInteriorPerObjectAdapter(source)
 {
-    return new CewgInteriorPerObjectAdapter(source);
+    return new Tw2CarbonInteriorPerObjectAdapter(source);
 }
 
 
@@ -284,10 +284,10 @@ function copyJointMatrices(out, matrices)
     {
         const count = Math.min(out.length, matrices.length);
         for (let i = 0; i < count; i++) out[i] = matrices[i];
-        return Math.min(Math.floor(matrices.length / JOINT_FLOATS), CEWG_INTERIOR_LAYOUT.maxJoints);
+        return Math.min(Math.floor(matrices.length / JOINT_FLOATS), CARBON_INTERIOR_LAYOUT.maxJoints);
     }
 
-    const count = Math.min(matrices.length, CEWG_INTERIOR_LAYOUT.maxJoints);
+    const count = Math.min(matrices.length, CARBON_INTERIOR_LAYOUT.maxJoints);
     for (let i = 0; i < count; i++) copy(out, i * JOINT_FLOATS, matrices[i], null, JOINT_FLOATS);
     return count;
 }

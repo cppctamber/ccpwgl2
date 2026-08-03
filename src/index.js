@@ -15,10 +15,10 @@ export { tiny } from "./wrapped";
 export { deprecatedShaders };
 export { tw2, tw2 as CCPWGL };
 
-// CEWG (translated DX11 shader path) support modules — exposed for the
+// Carbon (translated DX11 shader path) support modules — exposed for the
 // upload layer's consumers and the hlslreader parity harness.
-export { CewgLightList } from "./core/cewg/CewgLightList";
-export { CewgLightCuller } from "./core/cewg/CewgLightCuller";
-export { CewgResourceBinder } from "./core/cewg/CewgResourceBinder";
-export * as CewgCarbonData from "./core/cewg/CewgCarbonData";
+export { Tw2CarbonLightList } from "./core/carbon/Tw2CarbonLightList";
+export { Tw2CarbonLightCuller } from "./core/carbon/Tw2CarbonLightCuller";
+export { Tw2CarbonResourceBinder } from "./core/carbon/Tw2CarbonResourceBinder";
+export * as Tw2CarbonData from "./core/carbon/Tw2CarbonData";
 

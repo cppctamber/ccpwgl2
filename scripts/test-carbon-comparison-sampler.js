@@ -1,5 +1,5 @@
 /**
- * Regression test: CEWG comparison samplers opt into WebGL depth comparison
+ * Regression test: Carbon comparison samplers opt into WebGL depth comparison
  * while ordinary/legacy samplers explicitly retain TEXTURE_COMPARE_MODE NONE.
  */
 const path = require("path");
@@ -112,22 +112,22 @@ assert.equal(overriddenComparison.comparison, true, "cached override refreshes c
 assert.equal(overriddenComparison.comparisonFunc, 5, "cached override refreshes the comparison function");
 assert.notEqual(overriddenComparison.hash, ordinaryHash, "refresh invalidates the cached GL sampler hash");
 
-// CEWG reader propagation: opt emitted resource bindings into comparison
+// Carbon reader propagation: opt emitted resource bindings into comparison
 // mode and confirm their paired Carbon comparison function reaches runtime.
 const Tw2EffectRes = tw2.GetClass("Tw2EffectRes");
-const bytes = fs.readFileSync(path.join(__dirname, "../test/fixtures/quadv5.webgl.cewg"));
+const bytes = fs.readFileSync(path.join(__dirname, "../test/fixtures/quadv5.webgl.carbon"));
 const res = new Tw2EffectRes();
-res.path = "test:/quadv5.webgl.cewg";
+res.path = "test:/quadv5.webgl.carbon";
 res._extension = "sm_hi";
 res.Prepare(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
-for (const shaderRecord of res._cewg.glslSet.shaders || [])
+for (const shaderRecord of res._carbon.glslSet.shaders || [])
 {
     for (const binding of shaderRecord.bindings || [])
     {
         if (binding.kind === "resource") binding.comparison = true;
     }
 }
-for (const body of res._cewg.metadata.bodies || [])
+for (const body of res._carbon.metadata.bodies || [])
 {
     for (const stage of body.manifest?.stages || [])
     {
@@ -144,17 +144,17 @@ const shader = res.GetShader({});
 const comparisonSamplers = Object.values(shader.techniques)
     .flatMap(technique => technique.passes.flatMap(pass => pass.stages.flatMap(stage => stage.samplers)))
     .filter(sampler => sampler.comparison);
-assert(comparisonSamplers.length > 0, "CEWG comparison binding reaches stage samplers");
+assert(comparisonSamplers.length > 0, "Carbon comparison binding reaches stage samplers");
 assert(comparisonSamplers.some(sampler => sampler.comparisonFunc === 5), "Carbon comparison function reaches runtime sampler");
 
 const multiple = new Tw2EffectRes();
-multiple.path = "test:/quadv5-multiple-samplers.webgl.cewg";
+multiple.path = "test:/quadv5-multiple-samplers.webgl.carbon";
 multiple._extension = "sm_hi";
 multiple.Prepare(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
-const multiResource = multiple._cewg.glslSet.shaders
+const multiResource = multiple._carbon.glslSet.shaders
     .flatMap(record => record.bindings || [])
     .find(binding => binding.kind === "resource");
-assert(multiResource, "fixture exposes a CEWG texture resource");
+assert(multiResource, "fixture exposes a Carbon texture resource");
 multiResource.samplerRegisterIndices = [ 0, 1 ];
 const originalConsole = {
     error: console.error,
@@ -177,4 +177,4 @@ finally
 }
 assert.equal(multipleShader, null, "unsupported multi-sampler texture use fails explicitly");
 
-console.log("CEWG comparison-sampler regression tests passed");
+console.log("Carbon comparison-sampler regression tests passed");

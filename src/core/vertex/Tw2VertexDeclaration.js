@@ -128,7 +128,7 @@ export class Tw2VertexDeclaration
             const el = inputDecl.elementsSorted[i];
             if (el.location < 0) continue;
 
-            // CEWG `in_*` inputs use Trinity's direct 6/7 order while legacy
+            // Carbon `in_*` inputs use Trinity's direct 6/7 order while legacy
             // `attr*` inputs use the historical swapped order. GR2 geometry is
             // legacy by default and can opt into direct order. Translate only
             // when the geometry and shader input use different conventions.

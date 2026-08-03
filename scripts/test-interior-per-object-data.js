@@ -4,19 +4,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 
-const cewgSourcePath = path.resolve(
+const carbonSourcePath = path.resolve(
     __dirname,
-    "../src/interior/cewg/CewgInteriorPerObjectData.js"
+    "../src/interior/carbon/Tw2CarbonInteriorPerObjectData.js"
 );
-const cewgSource = fs.readFileSync(cewgSourcePath, "utf8")
+const carbonSource = fs.readFileSync(carbonSourcePath, "utf8")
     .replace(/export const /g, "const ")
     .replace(/export class /g, "class ")
     .replace(/export function /g, "function ");
 const {
-    CewgInteriorPerObjectData,
-    CewgInteriorPerObjectAdapter
+    Tw2CarbonInteriorPerObjectData,
+    Tw2CarbonInteriorPerObjectAdapter
 } = new Function(
-    `${cewgSource}\nreturn { CewgInteriorPerObjectData, CewgInteriorPerObjectAdapter };`
+    `${carbonSource}\nreturn { Tw2CarbonInteriorPerObjectData, Tw2CarbonInteriorPerObjectAdapter };`
 )();
 
 const sourcePath = path.resolve(__dirname, "../src/interior/Tr2InteriorPerObjectData.js");
@@ -52,16 +52,16 @@ const createClass = new Function(
     "mat4",
     "Tw2PerObjectData",
     "Tw2RawData",
-    "CewgInteriorPerObjectData",
-    "CewgInteriorPerObjectAdapter",
+    "Tw2CarbonInteriorPerObjectData",
+    "Tw2CarbonInteriorPerObjectAdapter",
     `${source}\nreturn GLESPerObjectDataInterior;`
 );
 const GLESPerObjectDataInterior = createClass(
     mat4,
     Tw2PerObjectData,
     Tw2RawData,
-    CewgInteriorPerObjectData,
-    CewgInteriorPerObjectAdapter
+    Tw2CarbonInteriorPerObjectData,
+    Tw2CarbonInteriorPerObjectAdapter
 );
 
 assert.equal(GLESPerObjectDataInterior.IDENTITY_JOINT_MAT.length, 58 * 12);
@@ -120,12 +120,12 @@ assert.deepEqual(
     Array.from(pod.vs.Get("JointMat").subarray(57 * 12, 58 * 12)),
     new Array(12).fill(58)
 );
-assert.equal(pod.cewgInteriorData.jointMatrices.length, 69 * 12);
-assert(pod.cewgPerObjectPacker instanceof CewgInteriorPerObjectAdapter);
+assert.equal(pod.carbonInteriorData.jointMatrices.length, 69 * 12);
+assert(pod.carbonPerObjectPacker instanceof Tw2CarbonInteriorPerObjectAdapter);
 assert.deepEqual(
-    Array.from(pod.cewgInteriorData.jointMatrices.subarray(68 * 12, 69 * 12)),
+    Array.from(pod.carbonInteriorData.jointMatrices.subarray(68 * 12, 69 * 12)),
     new Array(12).fill(69),
-    "CEWG snapshot must retain the full 69-joint palette"
+    "Carbon snapshot must retain the full 69-joint palette"
 );
 
 console.log("Interior per-object matrix layouts verified");

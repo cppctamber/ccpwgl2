@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, Saturate, CEWG_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./CewgLightMath";
+import { ComposeNoiseBrightness, Saturate, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 
 /**
@@ -54,7 +54,7 @@ export class Tr2FactionLight
 
     // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
     // confirmed by the format-black schema (`castsShadows: enum`). Shadow
-    // settings are not consumed by the CEWG tile path yet.
+    // settings are not consumed by the Carbon tile path yet.
     @meta.notImplemented
     @meta.enums(PerLightShadowSetting)
     castsShadows = PerLightShadowSetting.DISABLED;
@@ -65,7 +65,7 @@ export class Tr2FactionLight
     // uint16 bitmask (Tr2LightManager.h:100-105; AFFECTS_SURFACES=1 |
     // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
     // format-black schema. Gates which passes a light affects - not consumed
-    // by the CEWG tile path yet.
+    // by the Carbon tile path yet.
     @meta.notImplemented
     @meta.ushort
     flags = LIGHT_FLAG_DEFAULT;
@@ -192,11 +192,11 @@ export class Tr2FactionLight
     }
 
     /**
-     * Produces the fields for a CewgLightList Buffer B entry - see
-     * Tr2PointLight.GetCewgLightData for the field-mapping rationale.
+     * Produces the fields for a Tw2CarbonLightList Buffer B entry - see
+     * Tr2PointLight.GetCarbonLightData for the field-mapping rationale.
      * `isSpotlight` mirrors Carbon's dispatch between AsPerPointLightData
      * and AsPerSpotLightData (Tr2FactionLight.cpp:14, Tr2Light.cpp:139-148),
-     * but (as documented on Tr2SpotLight.GetCewgLightData) the CEWG struct
+     * but (as documented on Tr2SpotLight.GetCarbonLightData) the Carbon struct
      * has no confirmed cone-angle/direction packing, so both branches
      * currently return the same point-light-shaped fields.
      * @param {Object} [options]
@@ -204,7 +204,7 @@ export class Tr2FactionLight
      * @param {Number} [options.parentScale=1]
      * @returns {{position: Number[], radius: Number, color: Number[], flags: Number, params: Number[]}}
      */
-    GetCewgLightData(options = {})
+    GetCarbonLightData(options = {})
     {
         const parentBrightness = options.parentBrightness !== undefined ? options.parentBrightness : 1;
         const parentScale = options.parentScale !== undefined ? options.parentScale : 1;
@@ -217,7 +217,7 @@ export class Tr2FactionLight
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this._color[0] * brightness, this._color[1] * brightness, this._color[2] * brightness ],
-            flags: enabled ? CEWG_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_ENABLED : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

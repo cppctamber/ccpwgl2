@@ -290,7 +290,7 @@ export const config = {
         "sm_hi": core.Tw2EffectRes,
         "sm_lo": core.Tw2EffectRes,
         "fx": core.Tw2EffectRes,
-        "cewg": core.Tw2EffectRes, // CEWG packages (see Tw2EffectRes.PrepareCEWG) - same class, format detected by magic bytes
+        "carbon": core.Tw2EffectRes, // Carbon packages (see Tw2EffectRes.PrepareCarbon) - same class, format detected by magic bytes
 
         //Geometry
         "gr2": core.Tw2GeometryRes,
@@ -407,7 +407,7 @@ export const config = {
         "u_InvDecalMatrix": mat4.create(),
         "EveSpaceSceneEnvMap": "",
         // WHITE, not black: this is a shadow *visibility* map (1 = fully
-        // lit). The translated CEWG Main pixel shader multiplies the
+        // lit). The translated Carbon Main pixel shader multiplies the
         // entire direct-sun term (diffuse + specular) by this texel, so a
         // black default silently kills all sunlight and the hull is lit
         // only by the env cubemap ("melted brown" look). White matches
@@ -419,7 +419,7 @@ export const config = {
         "EveSpaceSceneShadowMap": "res:/texture/global/white.dds",
         "EveSpaceSceneCascadedShadowMap": "",
 
-        // CEWG per-effect SSAO map has no producer yet; default to the
+        // Carbon per-effect SSAO map has no producer yet; default to the
         // same real white texture EveSpaceScene.GetEmptyTexture() style
         // code already relies on (no occlusion), lazily resolved.
         "SSAOMap": "res:/texture/global/white.dds",

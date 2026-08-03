@@ -7,7 +7,7 @@ import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
 /**
  * EveSpaceSceneAO
  *
- * Screen-space ambient occlusion for the CEWG hull path, run as a small
+ * Screen-space ambient occlusion for the Carbon hull path, run as a small
  * config-driven multi-pass post-effect. Scene-owned, mirroring
  * {@link EveSpaceSceneShadowHandler}; gated by `scene.visible.ao`.
  *
@@ -18,7 +18,7 @@ import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
  * Per frame:
  *   1. own depth prepass — render the whole ship's `Main` technique into a 32F
  *      depth texture via `scene.GetDepthContext()` (skinned bones resolve). We
- *      don't read the scene's depth pass: the CEWG `"Depth"` technique is a
+ *      don't read the scene's depth pass: the Carbon `"Depth"` technique is a
  *      normal-prepass, and EVE's ~1e8 far plane makes 16-bit scene depth useless.
  *   2. run the config passes (AO → blur) into ping-friendly RGBA8 targets.
  *   3. bind the `output` target into `SSAOMap`.

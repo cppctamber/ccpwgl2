@@ -1,9 +1,9 @@
-const { CewgLightCuller } = require("./CewgLightCuller");
+const { Tw2CarbonLightCuller } = require("./Tw2CarbonLightCuller");
 
 /**
- * CewgLightList
+ * Tw2CarbonLightList
  *
- * CPU-side light-list data module for ccpwgl's CEWG (translated DX11)
+ * CPU-side light-list data module for ccpwgl's Carbon (translated DX11)
  * shader path. Builds the two structured buffers the translated pixel
  * shaders read as tiled-forward light lists, emulated here as plain
  * typed-array "data textures" (RGBA32UI). This module is pure
@@ -74,19 +74,19 @@ const { CewgLightCuller } = require("./CewgLightCuller");
  * makes K=0 expressible as "one node" instead of requiring headers to be
  * rewritten per draw.
  */
-class CewgLightList
+class Tw2CarbonLightList
 {
 
     /**
-     * Constructs a CewgLightList
+     * Constructs a Tw2CarbonLightList
      * @param {object} [options]
      * @param {number} [options.maxLights=254] maximum number of real lights (Buffer B indices 1..maxLights)
      * @param {number} [options.textureWidth=2048] fixed texel width used for both emulated RGBA32UI textures
      */
     constructor(options = {})
     {
-        this.maxLights = options.maxLights || CewgLightList.DEFAULT_MAX_LIGHTS;
-        this.textureWidth = options.textureWidth || CewgLightList.DEFAULT_TEXTURE_WIDTH;
+        this.maxLights = options.maxLights || Tw2CarbonLightList.DEFAULT_MAX_LIGHTS;
+        this.textureWidth = options.textureWidth || Tw2CarbonLightList.DEFAULT_TEXTURE_WIDTH;
 
         // Buffer A (light index buffer) state - allocated by SetScreenSize.
         this._tilesPerRow = 0;
@@ -123,7 +123,7 @@ class CewgLightList
      */
     _allocateBufferB()
     {
-        const totalFloats = (this.maxLights + 1) * CewgLightList.FLOATS_PER_LIGHT;
+        const totalFloats = (this.maxLights + 1) * Tw2CarbonLightList.FLOATS_PER_LIGHT;
         const texelCount = Math.ceil(totalFloats / 4);
         const height = Math.max(1, Math.ceil(texelCount / this.textureWidth));
         const paddedElementCount = this.textureWidth * height * 4;
@@ -165,9 +165,9 @@ class CewgLightList
 
         this._tilesPerRow = tilesPerRow;
         this._tilesPerCol = tilesPerCol;
-        this._headerElementCount = tilesPerRow * tilesPerCol * CewgLightList.ELEMENTS_PER_HEADER;
+        this._headerElementCount = tilesPerRow * tilesPerCol * Tw2CarbonLightList.ELEMENTS_PER_HEADER;
         this._listBase = this._headerElementCount;
-        this._elementCount = this._listBase + this.maxLights * CewgLightList.ELEMENTS_PER_NODE;
+        this._elementCount = this._listBase + this.maxLights * Tw2CarbonLightList.ELEMENTS_PER_NODE;
 
         const texelCount = Math.ceil(this._elementCount / 4);
         const height2 = Math.max(1, Math.ceil(texelCount / this.textureWidth));
@@ -180,7 +180,7 @@ class CewgLightList
         const tileCount = tilesPerRow * tilesPerCol;
         for (let t = 0; t < tileCount; t++)
         {
-            const base = t * CewgLightList.ELEMENTS_PER_HEADER;
+            const base = t * Tw2CarbonLightList.ELEMENTS_PER_HEADER;
             this._bufferA[base] = this._listBase;
             this._bufferA[base + 1] = 0;
             this._bufferA[base + 2] = 0;
@@ -212,18 +212,18 @@ class CewgLightList
     {
         if (!this._bufferA)
         {
-            throw new Error("CewgLightList.WriteDrawList: SetScreenSize must be called before WriteDrawList");
+            throw new Error("Tw2CarbonLightList.WriteDrawList: SetScreenSize must be called before WriteDrawList");
         }
         if (!Array.isArray(lightIndices))
         {
-            throw new Error("CewgLightList.WriteDrawList: lightIndices must be an array");
+            throw new Error("Tw2CarbonLightList.WriteDrawList: lightIndices must be an array");
         }
 
         const count = lightIndices.length;
         if (count > this.maxLights)
         {
             throw new Error(
-                `CewgLightList.WriteDrawList: draw list length ${count} exceeds maxLights (${this.maxLights})`
+                `Tw2CarbonLightList.WriteDrawList: draw list length ${count} exceeds maxLights (${this.maxLights})`
             );
         }
 
@@ -241,18 +241,18 @@ class CewgLightList
             if (!Number.isInteger(lightIndex) || lightIndex < 1 || lightIndex > this.maxLights)
             {
                 throw new Error(
-                    `CewgLightList.WriteDrawList: light index ${lightIndex} out of range [1, ${this.maxLights}] (index 0 is the reserved null light)`
+                    `Tw2CarbonLightList.WriteDrawList: light index ${lightIndex} out of range [1, ${this.maxLights}] (index 0 is the reserved null light)`
                 );
             }
 
-            const nodeIndex = this._listBase + i * CewgLightList.ELEMENTS_PER_NODE;
+            const nodeIndex = this._listBase + i * Tw2CarbonLightList.ELEMENTS_PER_NODE;
             this._bufferA[nodeIndex] = lightIndex;
             this._bufferA[nodeIndex + 1] = i < count - 1
-                ? this._listBase + (i + 1) * CewgLightList.ELEMENTS_PER_NODE
+                ? this._listBase + (i + 1) * Tw2CarbonLightList.ELEMENTS_PER_NODE
                 : 0;
         }
 
-        this._markDirtyA(this._listBase, this._listBase + count * CewgLightList.ELEMENTS_PER_NODE - 1);
+        this._markDirtyA(this._listBase, this._listBase + count * Tw2CarbonLightList.ELEMENTS_PER_NODE - 1);
     }
 
     /**
@@ -263,12 +263,12 @@ class CewgLightList
     {
         if (!Array.isArray(lights))
         {
-            throw new Error("CewgLightList.SetLights: lights must be an array");
+            throw new Error("Tw2CarbonLightList.SetLights: lights must be an array");
         }
         if (lights.length > this.maxLights)
         {
             throw new Error(
-                `CewgLightList.SetLights: ${lights.length} lights exceeds capacity of ${this.maxLights}`
+                `Tw2CarbonLightList.SetLights: ${lights.length} lights exceeds capacity of ${this.maxLights}`
             );
         }
 
@@ -279,8 +279,8 @@ class CewgLightList
 
         if (lights.length > 0)
         {
-            const start = CewgLightList.FLOATS_PER_LIGHT;
-            const end = (lights.length + 1) * CewgLightList.FLOATS_PER_LIGHT - 1;
+            const start = Tw2CarbonLightList.FLOATS_PER_LIGHT;
+            const end = (lights.length + 1) * Tw2CarbonLightList.FLOATS_PER_LIGHT - 1;
             this._markDirtyB(start, end);
         }
     }
@@ -293,7 +293,7 @@ class CewgLightList
      */
     _writeLight(index, light)
     {
-        const base = index * CewgLightList.FLOATS_PER_LIGHT;
+        const base = index * Tw2CarbonLightList.FLOATS_PER_LIGHT;
         const f = this._bufferBFloat;
 
         const position = light.position || [ 0, 0, 0 ];
@@ -328,7 +328,7 @@ class CewgLightList
     /**
      * Culls and ranks a light array against a bounding sphere, returning 1-based Buffer B indices
      *
-     * Thin pass-through to `CewgLightCuller.Cull` - see that module for
+     * Thin pass-through to `Tw2CarbonLightCuller.Cull` - see that module for
      * the contribution heuristic. The result is ready to pass directly
      * to `WriteDrawList`.
      * @param {Array<{position:number[], radius:number}>} lights source light array (0-based, same order as SetLights)
@@ -339,7 +339,7 @@ class CewgLightList
      */
     CullLights(lights, center, boundingRadius, maxCount)
     {
-        return CewgLightCuller.Cull(lights, center, boundingRadius, maxCount);
+        return Tw2CarbonLightCuller.Cull(lights, center, boundingRadius, maxCount);
     }
 
     /**
@@ -350,7 +350,7 @@ class CewgLightList
      */
     GetTileHeaderIndex(tx, ty)
     {
-        return (ty * this._tilesPerRow + tx) * CewgLightList.ELEMENTS_PER_HEADER;
+        return (ty * this._tilesPerRow + tx) * Tw2CarbonLightList.ELEMENTS_PER_HEADER;
     }
 
     /**
@@ -601,21 +601,21 @@ function Float32ToFloat16Bits(value)
     return sign | ((exponent + 15) << 10) | (mantissa & 0x03FF);
 }
 /** Buffer B floats per light (position.xyz+radius, color.rgb+flags, params x4) */
-CewgLightList.FLOATS_PER_LIGHT = 12;
+Tw2CarbonLightList.FLOATS_PER_LIGHT = 12;
 
 /** Buffer A elements per tile header record */
-CewgLightList.ELEMENTS_PER_HEADER = 3;
+Tw2CarbonLightList.ELEMENTS_PER_HEADER = 3;
 
 /** Buffer A elements per list node ([lightIndex, next]) */
-CewgLightList.ELEMENTS_PER_NODE = 2;
+Tw2CarbonLightList.ELEMENTS_PER_NODE = 2;
 
 /** Buffer B index reserved as the always-disabled null light */
-CewgLightList.NULL_LIGHT_INDEX = 0;
+Tw2CarbonLightList.NULL_LIGHT_INDEX = 0;
 
 /** Default maximum number of real lights (Buffer B indices 1..maxLights) */
-CewgLightList.DEFAULT_MAX_LIGHTS = 254;
+Tw2CarbonLightList.DEFAULT_MAX_LIGHTS = 254;
 
 /** Default fixed texel width for both emulated RGBA32UI textures */
-CewgLightList.DEFAULT_TEXTURE_WIDTH = 2048;
+Tw2CarbonLightList.DEFAULT_TEXTURE_WIDTH = 2048;
 
-module.exports = { CewgLightList };
+module.exports = { Tw2CarbonLightList };

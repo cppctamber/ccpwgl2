@@ -2,7 +2,7 @@ import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
-import { GetAverageAxisScale } from "unsupported/core/lighting/CewgLightMath";
+import { GetAverageAxisScale } from "unsupported/core/lighting/Tw2CarbonLightMath";
 
 
 @meta.type("EveChildContainer", true)
@@ -365,16 +365,16 @@ export class EveChildContainer extends EveChild
     }
 
     /**
-     * Collects this container's owned lights into a CewgLightCollector
+     * Collects this container's owned lights into a Tw2CarbonLightCollector
      *
      * Additive hook: not called by any per-frame code yet (the render-loop /
      * EveSpaceScene call site is separate scene-wiring work). For each
-     * populated light (i.e. one with the CEWG light API added in
-     * src/unsupported/core/lighting - `Update`/`GetCewgLightData`), updates
+     * populated light (i.e. one with the Carbon light API added in
+     * src/unsupported/core/lighting - `Update`/`GetCarbonLightData`), updates
      * its world position against this container's own `_worldTransform`
      * (computed each `Update()`, see above) and collects its
-     * `GetCewgLightData` row. Plain deserialized lights that predate that
-     * API (missing `Update`/`GetCewgLightData`) are skipped silently, so
+     * `GetCarbonLightData` row. Plain deserialized lights that predate that
+     * API (missing `Update`/`GetCarbonLightData`) are skipped silently, so
      * populated and un-populated lights can coexist in `this.lights`.
      *
      * Recurses into `this.objects`: light owners can sit at any depth
@@ -383,11 +383,11 @@ export class EveChildContainer extends EveChild
      * containers would otherwise never be visited. Each child's own
      * `_worldTransform` was refreshed by this container's `Update()` (which
      * updates `this.objects`), so recursion only needs to forward the collect.
-     * @param {CewgLightCollector} collector
+     * @param {Tw2CarbonLightCollector} collector
      * @param {object} [parentContext]
      * @param {number} [parentContext.dt=0] forwarded to `light.Update` - 0 until scene wiring threads a real per-frame delta through
      * @param {Array} [parentContext.bones=null] forwarded to `light.Update` - null until scene wiring threads real bone matrices through
-     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCewgLightData`
+     * @param {number} [parentContext.parentBrightness=1] forwarded to `light.GetCarbonLightData`
      */
     GetLights(collector, parentContext = {})
     {
@@ -401,10 +401,10 @@ export class EveChildContainer extends EveChild
         for (let i = 0; i < this.lights.length; i++)
         {
             const light = this.lights[i];
-            if (!light || typeof light.Update !== "function" || typeof light.GetCewgLightData !== "function") continue;
+            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
 
             light.Update(dt, this._worldTransform, bones);
-            collector.Collect([ light.GetCewgLightData({ parentBrightness, parentScale }) ]);
+            collector.Collect([ light.GetCarbonLightData({ parentBrightness, parentScale }) ]);
         }
 
         for (let i = 0; i < this.objects.length; i++)
