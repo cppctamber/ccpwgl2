@@ -578,10 +578,10 @@ export class Model
      * @param {String} option              - option name, e.g. "BLEND_MODE"
      * @param {String} value               - option value, e.g. "BLEND_MODE_SUBTRACT"
      * @param {Function} [filter]          - optional predicate `(effect) => boolean`
-     * @param {Boolean} [autoPopulate=true] - rebuild each loaded effect after setting
+     * @param {Boolean} [skipRebind=false] - set values without rebinding each effect
      * @returns {Array} the effects whose option value changed
      */
-    SetEffectsOption(option, value, filter, autoPopulate = true)
+    SetEffectsOption(option, value, filter, skipRebind = false)
     {
         const updated = [];
         this.Traverse((opt) =>
@@ -595,7 +595,7 @@ export class Model
             const supports = typeof struct.HasOption === "function" && struct.HasOption(option);
             if (loaded && !supports) return;
 
-            if (struct.SetOption({ [option]: value }, autoPopulate)) updated.push(struct);
+            if (struct.SetOption({ [option]: value }, skipRebind)) updated.push(struct);
         });
         return updated;
     }

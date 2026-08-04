@@ -76,7 +76,10 @@ export class Tw2CarbonPackageReader
 
             const magic = readAscii(bytes, offset, 4);
             offset += 4;
-            if (magic !== "Carbon") throw new Error(`Invalid Carbon magic: ${magic}`);
+            // Four bytes on disk, not vocabulary. The CEWG *name* is retired but
+            // the magic in already-written files is unchanged, so this literal
+            // must keep its old spelling or nothing parses.
+            if (magic !== "CEWG") throw new Error(`Invalid CEWG magic: ${magic}`);
 
             this.version = view.getUint32(offset, true);
             offset += 4;
@@ -493,7 +496,17 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
     for (const resource of bindings.filter((entry) => entry.kind === "resource"))
     {
         if (nonTextureRegisters.has(resource.registerIndex)) continue;
-        const name = resource.metadataName || resource.carbon?.name || resource.generatedSymbol || `Texture${resource.registerIndex}`;
+        // `name` is what the container reader emits (Carbon's own resource
+        // name); the others are the older chunk-manifest spellings. Without
+        // `name` in this chain every texture falls through to the positional
+        // `Texture<n>`, nothing binds AlbedoMap/NormalMap/etc, every sampler
+        // reads an unbound texture and the surface renders pure black - while
+        // the shader still links, draws and reports no error.
+        const name = resource.name
+            || resource.metadataName
+            || resource.carbon?.name
+            || resource.generatedSymbol
+            || `Texture${resource.registerIndex}`;
         const type = resource.carbon?.type || TEXTURE_2D;
         const texture = Tw2ShaderStageTexture.fromJSON({
             name,

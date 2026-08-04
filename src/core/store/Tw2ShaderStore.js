@@ -19,6 +19,50 @@ export class Tw2ShaderStore extends Tw2GenericStore
     }
 
     /**
+     * Empties the store: registered shader definitions and the `replaces`
+     * overrides that swap a resolved effect path for a hand-written
+     * `manual:/...sm_json` shader.
+     *
+     * The overrides are keyed on `graphics/effect.gles2/...` and are consulted
+     * before the effect profile is, so while they are registered a hull always
+     * loads its JSON shader and never reaches a Carbon container - whatever
+     * `effectProfile` says. Clearing them is how the Carbon path gets exercised
+     * on a hull; `Tw2Effect.UNPACKED_TEXTURES` must stay true, since it decides
+     * textures rather than shaders.
+     *
+     * @returns {Number} Number of overrides removed.
+     */
+    Clear()
+    {
+        const store = STORE.get(this);
+        const removed = store.overrides.size;
+
+        store.overrides.clear();
+        store.map.clear();
+        this.list.splice(0);
+        return removed;
+    }
+
+    /**
+     * Removes only the `replaces` overrides, leaving registered shader
+     * definitions in place.
+     *
+     * Distinguishing the two matters when diagnosing: `Clear` also drops the
+     * definition map, so anything still looking a shader up by name loses it,
+     * and a blank frame afterwards could be either cause.
+     *
+     * @returns {Number} Number of overrides removed.
+     */
+    ClearOverrides()
+    {
+        const store = STORE.get(this);
+        const removed = store.overrides.size;
+
+        store.overrides.clear();
+        return removed;
+    }
+
+    /**
      * Sets a shader definition
      * @param {String} key
      * @param {Object} shader

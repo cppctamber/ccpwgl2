@@ -157,7 +157,7 @@ export const config = {
         "shaderQuality": DeviceShaderQuality.MEDIUM,
 
         // Selects the protected compiled-effect namespace
-        "effectProfile": "effect.gles2",
+        "effectProfile": "effect.dx11",
 
         // Enables antialiasing (can affect performance)
         "antialiasing": true,

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, Saturate, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
+import { ComposeNoiseBrightness, Saturate, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 
 /**
@@ -217,7 +217,7 @@ export class Tr2FactionLight
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this._color[0] * brightness, this._color[1] * brightness, this._color[2] * brightness ],
-            flags: enabled ? Carbon_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

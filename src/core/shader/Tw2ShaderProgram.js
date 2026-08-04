@@ -62,10 +62,19 @@ export class Tw2ShaderProgram
         {
             if (!skipError)
             {
-                throw new ErrShaderLink({
-                    path: context.path,
-                    infoLog: gl.getProgramInfoLog(program.program)
-                });
+                const infoLog = gl.getProgramInfoLog(program.program);
+
+                // The driver's reason is the only useful part and it is buried
+                // in the error's data, so surface it directly - link limits are
+                // driver-specific and do not reproduce under SwiftShader.
+                console.error(
+                    "Shader link failed:", context.path,
+                    "\n  driver log:", infoLog,
+                    "\n  vertex log:", gl.getShaderInfoLog(vertexShader),
+                    "\n  fragment log:", gl.getShaderInfoLog(fragmentShader)
+                );
+
+                throw new ErrShaderLink({ path: context.path, infoLog });
             }
             return null;
         }

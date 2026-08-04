@@ -58,7 +58,7 @@ function makeRow(overrides = {})
         position: [ 0, 0, 0 ],
         radius: 10,
         color: [ 1, 1, 1 ],
-        flags: Tw2CarbonLightCollector.FLAG_ENABLED,
+        flags: Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES,
         params: [ 0, 0, 0, 0 ]
     }, overrides);
 }

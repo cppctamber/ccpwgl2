@@ -198,7 +198,19 @@ export class EveSOFDataGeneric extends meta.Model
             effectFilePath = effectFilePath.replace("quadheatdetail", "quaddetail");
         }
 
-        return shader.Assign({ effectFilePath, hasPatternMaskMaps, overrides: {} }, provided);
+        // A shader that declares pattern mask maps needs its pattern permutation
+        // on, or the textures bind and nothing samples them.
+        //
+        // The legacy JSON shaders had patterns compiled in and exposed no
+        // permutation, so nothing ever had to ask for this - `hasPatternMaskMaps`
+        // was computed and then unused. Carbon effects carry the choice as
+        // SPACE_OBJECT_PPT_ENABLED, whose default option is SOPPT_DISABLED, so
+        // the default resolves to a body that ignores PatternMask1Map/2Map.
+        const options = hasPatternMaskMaps
+            ? { SPACE_OBJECT_PPT_ENABLED: "SOPPT_ENABLED" }
+            : undefined;
+
+        return shader.Assign({ effectFilePath, hasPatternMaskMaps, overrides: {}, options }, provided);
     }
 
     /**

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
+import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 
 /**
@@ -174,7 +174,7 @@ export class Tr2SpotLight extends meta.Model
      * a direction vector and cos(inner/outerAngle) (Tr2Light.cpp:75-77), but
      * Tw2CarbonLightList's Buffer B struct has only 4 spare `params` floats total
      * and no confirmed field for a 3-component direction alongside those
-     * angles (see Tw2CarbonLightMath.js `Carbon_FLAG_ENABLED` doc - only bit
+     * angles (see Tw2CarbonLightMath.js `Carbon_FLAG_AFFECTS_SURFACES` doc - only bit
      * 0x10000 of `flags` and no specific `params` layout are confirmed from
      * the shipped bytecode). It is not yet known whether the Carbon tiled
      * shader path supports spotlight cones at all (it may treat every light
@@ -200,7 +200,7 @@ export class Tr2SpotLight extends meta.Model
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? Carbon_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

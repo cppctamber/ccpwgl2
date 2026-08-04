@@ -18,7 +18,7 @@ const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
  * `Tr2LightManager::AddLight`, lines 334-368 per the prior source survey):
  *   1. Reject if radius <= 0. This module receives already-composed rows
  *      (not raw brightness), so the "brightness <= 0" half of Carbon's test
- *      is represented here by the Carbon_FLAG_ENABLED bit
+ *      is represented here by the Carbon_FLAG_AFFECTS_SURFACES bit (Carbon FLAG_AFFECTS_SURFACES)
  *      (src/unsupported/core/lighting/Tw2CarbonLightMath.js) being unset -
  *      `Tr2PointLight#GetCarbonLightData` clears that bit whenever
  *      `radius <= 0 || composedBrightness <= 0`. Rows missing the bit are
@@ -151,7 +151,7 @@ class Tw2CarbonLightCollector
 
             // Step 1: brightness<=0 (unset enabled bit) / radius<=0.
             if (radius <= 0) continue;
-            if (!(flags & Tw2CarbonLightCollector.FLAG_ENABLED)) continue;
+            if (!(flags & Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES)) continue;
 
             const position = row.position || [ 0, 0, 0 ];
 
@@ -293,8 +293,8 @@ class Tw2CarbonLightCollector
 
 }
 
-/** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_ENABLED (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/unsupported/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
-Tw2CarbonLightCollector.FLAG_ENABLED = 0x10000;
+/** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/unsupported/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
+Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES = 0x10000;
 
 /** Default pixel-size cutoff (Carbon: `CUTOFF_PIXEL_SIZE`, Tr2LightManager.cpp) */
 Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE = 7;

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
 import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
-import { ComposeNoiseBrightness, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
+import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
 
 export class EvePointLightBatch extends Tw2RenderBatch
@@ -245,7 +245,7 @@ export class Tr2PointLight extends meta.Model
      *
      * TODO(flags/params): Tw2CarbonLightList's flags/params were reverse
      * engineered from shipped DX11 bytecode and only bit 0x10000 (enabled)
-     * is confirmed (see Tw2CarbonLightMath.js `Carbon_FLAG_ENABLED` doc). Carbon's
+     * is confirmed (see Tw2CarbonLightMath.js `Carbon_FLAG_AFFECTS_SURFACES` doc). Carbon's
      * own PerLightData additionally packs shadow-casting/volumetric flag
      * bits and a light-profile index into `flags` (Tr2LightManager.h:100-105,
      * Tr2Light.cpp:52,64,66) and packs innerRadius/direction/angles into
@@ -271,7 +271,7 @@ export class Tr2PointLight extends meta.Model
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? Carbon_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

@@ -216,25 +216,64 @@ export function Saturate(color, saturation, out = [ 0, 0, 0, 0 ])
 }
 
 /**
- * Tw2CarbonLightList (src/core/carbon/Tw2CarbonLightList.js) reverse-engineered its
- * Buffer B "flags" field from shipped DX11 bytecode and only confirmed a
- * single bit: 0x10000 = enabled. Any other bits (shadow casting, volumetric,
- * light-profile index etc - all of which exist in Carbon's own
- * Tr2LightManager::PerLightData/flags, see Tr2LightManager.h:100-105 and
- * Tr2Light.cpp:52,64,66) are NOT confirmed for the Carbon shader contract, so
- * GetCarbonLightData() implementations in this folder only ever set this one
- * bit - see the TODOs on each GetCarbonLightData() for details.
+ * Buffer B's third word packs two fields: `Float_16 innerRadius` in the low 16
+ * bits and Carbon's `uint16_t flags` in the high 16. Every constant below is
+ * therefore a flag bit already shifted into word space - flags bit N is word
+ * bit N+16.
+ *
+ * The layout was previously reverse-engineered from shipped bytecode, which
+ * confirmed only bit 0 and named it "enabled". It is now read directly from
+ * Carbon: `Tr2LightManager::PerLightData` and its flag constants at
+ * `Tr2LightManager.h:55-84` and `:100-105`. Bit 0 is not a general enable, it
+ * is AFFECTS_SURFACES, and the three bits beside it are meaningful.
+ *
+ * See /docs/contracts/carbon-light-data.md.
  * @type {Number}
  */
-export const Carbon_FLAG_ENABLED = 0x10000;
+export const Carbon_FLAG_AFFECTS_SURFACES = 0x10000;
+
+/** Carbon `FLAG_AFFECTS_PARTICLES` (flags bit 1). Not yet produced here. */
+export const Carbon_FLAG_AFFECTS_PARTICLES = 0x20000;
+
+/** Carbon `FLAG_CASTS_SHADOWS` (flags bit 2). Not yet produced here. */
+export const Carbon_FLAG_CASTS_SHADOWS = 0x40000;
+
+/** Carbon `FLAG_IS_VOLUMETRIC` (flags bit 3). Not yet produced here. */
+export const Carbon_FLAG_IS_VOLUMETRIC = 0x80000;
+
+/**
+ * Word-space shift of the light-profile index: flags bits 4-15, so word bits
+ * 20-31. This is the `>> 20u` the translated shaders perform on the packed
+ * word - `>> 16` to reach the flags, then `>> 4` past the four booleans.
+ * @type {Number}
+ */
+export const Carbon_LIGHT_PROFILE_SHIFT = 20;
+
+/**
+ * Encodes a light-profile index into word-space flag bits.
+ *
+ * The index is stored biased by one so that zero means "no profile": the
+ * shader guards the whole profile lookup on the raw bits being non-zero and
+ * subtracts one before using the result as an array slice. Writing a bare
+ * index would silently shift every light onto the wrong profile and give
+ * profile 0 no way to be expressed.
+ *
+ * @param {Number} index Zero-based profile index, or -1 for none.
+ * @returns {Number} Word-space bits to OR into the flags word.
+ */
+export function ComposeLightProfileBits(index)
+{
+    if (!Number.isInteger(index) || index < 0) return 0;
+    return (index + 1) << Carbon_LIGHT_PROFILE_SHIFT;
+}
 
 /**
  * Per-light shadow-casting mode. Matches Carbon's PerLightShadowSetting enum
  * (carbonengine trinity/trinity/Lights/Tr2Light.h:20-25) and is confirmed as
  * the canonical `LightData.castsShadows` type by the format-black schema
- * (@carbonenginejs/format-black - `castsShadows: enum`). The Carbon tile path
- * does not consume per-light shadow settings yet (shadow flag bits are
- * unconfirmed in the shader contract - see Carbon_FLAG_ENABLED).
+ * (@carbonenginejs/format-black - `castsShadows: enum`). This three-state
+ * setting is not the same thing as the single `Carbon_FLAG_CASTS_SHADOWS` bit:
+ * the bit says whether a light casts at all, and nothing here writes it yet.
  * @enum {Number}
  */
 export const PerLightShadowSetting = {

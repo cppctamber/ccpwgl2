@@ -1351,21 +1351,36 @@ export class Tw2Effect extends meta.Model
     /**
      * Sets one or more permutation options.
      *
-     * By default this repopulates (rebuilds the shader for the new
-     * permutation) so the change takes effect immediately. Pass
-     * autoPopulate=false to batch several option changes without rebuilding
-     * - set every option first, THEN Rebind()/PopulateParameters() once.
+     * By default this rebinds (re-resolves the shader for the new permutation)
+     * so the change takes effect immediately. Pass skipRebind=true to batch
+     * several option changes without rebinding - set every option first, THEN
+     * Rebind() once.
      * This is the correct order of operations when swapping an effect to a
      * permutation-gated shader: set the options before the resource binds,
      * so the intended permutation is chosen from the first bind and no
      * transient default-permutation bind is needed.
      *
-     * @param {Object} options - e.g. { SPACE_OBJECT_PPT_ENABLED: "SOPPT_ENABLED" }
-     * @param {Boolean} [autoPopulate=true] - rebuild after setting
+     * @param {Object|String} options - e.g. { SPACE_OBJECT_PPT_ENABLED: "SOPPT_ENABLED" },
+     *   or an option name with its value as the second argument
+     * @param {Boolean|String} [skipRebind=false] - set the values without
+     *   rebinding, or the option value when the first argument is a name
+     * @param {Boolean} [skipRebindWhenNamed=false] - skip rebinding in the
+     *   name/value form
      * @returns {Boolean} true if any option value changed
      */
-    SetOption(options, autoPopulate = true)
+    SetOption(options, skipRebind = false, skipRebindWhenNamed = false)
     {
+        // Accept both `SetOption({ NAME: value })` and `SetOption(name, value)`.
+        // Without this a string first argument is iterated by `for...in` and its
+        // character indices become option keys - `{ "0": "S", "1": "P", ... }` -
+        // while the option it names is never set. It corrupts `options` silently
+        // and the effect keeps rendering the old permutation.
+        if (typeof options === "string")
+        {
+            options = { [options]: skipRebind };
+            skipRebind = skipRebindWhenNamed;
+        }
+
         let changed = false;
         for (const name in options)
         {
@@ -1376,7 +1391,14 @@ export class Tw2Effect extends meta.Model
                 changed = true;
             }
         }
-        if (changed && autoPopulate) this.PopulateParameters();
+
+        // Rebind, not PopulateParameters. An option selects a permutation, and
+        // only Rebind re-runs `res.GetShader(this.options)`; PopulateParameters
+        // routes to AutoPopulate, which creates and prunes parameters against
+        // the shader already resolved. So the old default set the value and
+        // left the effect on its previous permutation - silently, since
+        // `this.options` reported the new value the whole time.
+        if (changed && !skipRebind) this.Rebind();
         return changed;
     }
 

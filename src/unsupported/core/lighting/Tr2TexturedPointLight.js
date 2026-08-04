@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
-import { ComposeNoiseBrightness, Carbon_FLAG_ENABLED, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
+import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 // NOTE: `Saturate` (also exported from ./Tw2CarbonLightMath, ported 1:1 from
 // carbonengine math/include/Color_inline.h:161-172) is what
 // `UpdateColorFromTexture` below should use once a texture average-color
@@ -255,7 +255,7 @@ export class Tr2TexturedPointLight extends meta.Model
             position: [ this._worldPosition[0], this._worldPosition[1], this._worldPosition[2] ],
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
-            flags: enabled ? Carbon_FLAG_ENABLED : 0,
+            flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }
