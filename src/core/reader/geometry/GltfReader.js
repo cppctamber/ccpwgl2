@@ -1,4 +1,4 @@
-import CjsFormatGltf from "@carbonenginejs/format-gltf";
+import CjsFormatGltf from "@carbonenginejs/runtime-resource/formats/gltf";
 import { Gr2Reader } from "./Gr2Reader";
 
 

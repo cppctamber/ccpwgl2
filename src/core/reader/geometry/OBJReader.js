@@ -1,4 +1,4 @@
-import CjsFormatObj from "@carbonenginejs/format-obj";
+import CjsFormatObj from "@carbonenginejs/runtime-resource/formats/obj";
 import { Gr2Reader } from "./Gr2Reader";
 
 
