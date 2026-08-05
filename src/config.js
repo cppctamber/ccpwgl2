@@ -157,7 +157,9 @@ export const config = {
         "shaderQuality": DeviceShaderQuality.MEDIUM,
 
         // Selects the protected compiled-effect namespace
-        "effectProfile": "effect.dx11",
+        // ("effect.dx11" routes hull shaders through the Carbon path,
+        // "effect.gles2" the legacy/manual path)
+        "effectProfile": "effect.gles2",
 
         // Enables antialiasing (can affect performance)
         "antialiasing": true,
