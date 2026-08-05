@@ -1536,6 +1536,7 @@ export class EveShip2 extends EveObject
         delete out.boundingSphereRadiusSq;
         delete out.clipSphereCenter;
         delete out.clipSphereSignedRadiusSq;
+        delete out.customMaskBlending;
         delete out.jointMatrices;
 
         const

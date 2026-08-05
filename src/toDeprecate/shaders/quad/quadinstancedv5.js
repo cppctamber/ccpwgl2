@@ -2,7 +2,7 @@ import { constant, ps, texture, vs } from "./shared";
 import { quadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5 } from "./quadpickingv5";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
-import { clampToBorder } from "../shared/func";
+import { clampToBorder, customMaskBlendModes } from "../shared/func";
 import { quadnormalv5 } from "./quadnormalv5";
 
 
@@ -97,13 +97,13 @@ export const quadInstancedV5 = {
                     uniform sampler2D s11;  // DustNoiseMap
 
                     uniform vec4 cb2[22];
-                    uniform vec4 cb4[16];
+                    uniform vec4 cb4[17];
                     uniform vec4 cb7[23];
 
-                    // customMaskBlendModes removed: custom-mask blend mode is a Carbon permutation
-                    // option, not per-object data. It lived in cb4[14] only because this WebGL path
-                    // had no permutations. Nothing reads cb4[14] now, freeing Carbon reg 26 for
-                    // customMaskClamps. See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                    // Blend modes read cb4[16] (CustomMaskBlending) - reg 16 is outside the
+                    // Carbon-packed 0-15 window, so Carbon reg 26 (customMaskClamps) stays free.
+                    // See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                    ${customMaskBlendModes}
 
                     void main()
                     {
@@ -246,7 +246,7 @@ export const quadInstancedV5 = {
 
                         r8=r8.xxxx*cb4[12];
                         r10=r10.xxxx*cb4[13];
-                        // applyCustomMaskBlendMode(r8, r10);  // removed with cb4[14]
+                        applyCustomMaskBlendMode(r8, r10);
                         r9.xyz=mix(cb7[6].xyz,r5.xyz,r8.yyy);
                         r11.xyz=mix(r9.xyz,r2.xzw,r10.yyy);
                         r9=r0.yyyy+c21;

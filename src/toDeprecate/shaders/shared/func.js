@@ -242,16 +242,16 @@ export const saturate = `
 `;
 
 /**
- * DEAD as of 2026-08-03 — no longer injected by any shader.
+ * Custom-mask blend modes for the manual GLES quad shaders.
  *
- * This is the only thing in ccpwgl that ever read `cb4[14]`, and it exists only
- * because this WebGL path had no permutations: custom-mask blend mode is a
- * compile-time permutation option in Carbon, so it was demoted to a runtime
- * vec4 and branched over here. That slot is Carbon's `customMaskClamps`
- * (per-object PS reg 26).
+ * This exists because this WebGL path has no permutations: custom-mask blend
+ * mode is a compile-time permutation option in Carbon, so it is demoted to a
+ * runtime vec4 and branched over here.
  *
- * Kept commented-out rather than deleted so the removal is reversible. Do not
- * re-inject it: reading `cb4[14]` re-occupies the clamps register.
+ * Reads `cb4[16]` (CustomMaskBlending). It previously read `cb4[14]`, but that
+ * slot is Carbon's `customMaskClamps` (per-object PS reg 26 - the Carbon
+ * packer shifts GLES regs 0-15 to 12-27), so the register moved to 16, which
+ * stays outside the Carbon-packed window.
  * See `/docs/contracts/ccpwgl-per-object-layout-delta.md`.
  */
 export const customMaskBlendModes = `
@@ -261,7 +261,7 @@ export const customMaskBlendModes = `
         vec4 a = saturate(layer1);
         vec4 b = saturate(layer2);
 
-        if (cb4[14].y > 0.5)
+        if (cb4[16].y > 0.5)
         {
             vec4 tmp = a;
             a = b;
@@ -270,7 +270,7 @@ export const customMaskBlendModes = `
 
         vec4 srcA = a;
         vec4 srcB = b;
-        float mode = floor(cb4[14].x + 0.5);
+        float mode = floor(cb4[16].x + 0.5);
 
         if (mode == 2.0)
         {

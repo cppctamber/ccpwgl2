@@ -1,5 +1,5 @@
 import { constant, texture, vs, ps } from "./shared";
-import { clampToBorder } from "../shared/func";
+import { clampToBorder, customMaskBlendModes } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
@@ -105,13 +105,13 @@ export const quadV5 = {
                         uniform sampler2D s11;  // DustNoiseMap
 
                         uniform vec4 cb2[22];
-                        uniform vec4 cb4[16];
+                        uniform vec4 cb4[17];
                         uniform vec4 cb7[24];
 
-                        // customMaskBlendModes removed: custom-mask blend mode is a Carbon permutation
-                        // option, not per-object data. It lived in cb4[14] only because this WebGL path
-                        // had no permutations. Nothing reads cb4[14] now, freeing Carbon reg 26 for
-                        // customMaskClamps. See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                        // Blend modes read cb4[16] (CustomMaskBlending) - reg 16 is outside the
+                        // Carbon-packed 0-15 window, so Carbon reg 26 (customMaskClamps) stays free.
+                        // See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                        ${customMaskBlendModes}
 
                         vec3 stripColor(vec3 rgb, float amount)
                         {
@@ -277,7 +277,7 @@ export const quadV5 = {
                             r9=clampToBorder(s10,v6.zw,cb4[11].yz,c34.wwww);
 
                             r9=r9.xxxx*cb4[13];
-                            // applyCustomMaskBlendMode(r7, r9);  // removed with cb4[14]
+                            applyCustomMaskBlendMode(r7, r9);
                             r4.w=mix(cb7[10].x,r3.w,r7.x);
                             r5.w=mix(r4.w,r3.z,r9.x);
                             r4.w=mix(cb7[11].x,r3.w,r7.y);

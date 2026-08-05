@@ -131,7 +131,15 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             // to Carbon 12-27, so reg 14 lands exactly on Carbon reg 26 and the
             // packer needs no special case. The GLES shaders do not read it.
             [ "CustomMaskClamps", 4 ],
-            [ "Screensize", 4 ]             // custom
+            [ "Screensize", 4 ],            // custom
+            // ccpwgl's own blend mode + swapped flag for the manual GLES quad
+            // shaders (applyCustomMaskBlendMode, cb4[16]): this path has no
+            // permutations, so Carbon's compile-time blend-mode option is a
+            // runtime register here. Deliberately at reg 16, OUTSIDE the
+            // window PackPerObjectPS copies to Carbon (GLES 0-15 -> 12-27),
+            // so it can never collide with Carbon's customMaskClamps again -
+            // its previous home at reg 14 did exactly that.
+            [ "CustomMaskBlending", 4 ]     // custom
         ]
     });
 
@@ -195,6 +203,7 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             if (bag.customMaskTarget0) ps.Set("CustomMaskTarget0", bag.customMaskTarget0);
             if (bag.customMaskTarget1) ps.Set("CustomMaskTarget1", bag.customMaskTarget1);
             if (bag.customMaskClamps) ps.Set("CustomMaskClamps", bag.customMaskClamps);
+            if (bag.customMaskBlending) ps.Set("CustomMaskBlending", bag.customMaskBlending);
             if (bag.screenSize) ps.Set("Screensize", bag.screenSize);
         }
 
@@ -239,6 +248,7 @@ export class GLESPerObjectDataEveSpaceObject extends GLESPerObjectData
             if (ps.Has("CustomMaskMaterialID1")) out.customMaskMaterialID1 = ps.Get("CustomMaskMaterialID1");
             if (ps.Has("CustomMaskTarget0")) out.customMaskTarget0 = ps.Get("CustomMaskTarget0");
             if (ps.Has("CustomMaskTarget1")) out.customMaskTarget1 = ps.Get("CustomMaskTarget1");
+            if (ps.Has("CustomMaskBlending")) out.customMaskBlending = ps.Get("CustomMaskBlending");
             if (ps.Has("Screensize")) out.screenSize = ps.Get("Screensize");
             this.UnpackShipData(ps, out);
             this.UnpackClipData(ps, out);

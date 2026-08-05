@@ -1,7 +1,7 @@
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
 import { vs, ps, texture, constant } from "./shared";
-import { clampToBorder } from "../shared/func";
+import { clampToBorder, customMaskBlendModes } from "../shared/func";
 import { DustNoiseMap, EveSpaceSceneEnvMap, EveSpaceSceneShadowMap } from "../shared/texture";
 import { quadEmissiveV5, skinnedQuadEmissiveV5 } from "./extended/quadEmissiveV5";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
@@ -108,13 +108,13 @@ export const quadDetailV5 = {
                     uniform sampler2D s14;  // Detail3Map
 
                     uniform vec4 cb2[22];
-                    uniform vec4 cb4[16];
+                    uniform vec4 cb4[17];
                     uniform vec4 cb7[30];
 
-                    // customMaskBlendModes removed: custom-mask blend mode is a Carbon permutation
-                    // option, not per-object data. It lived in cb4[14] only because this WebGL path
-                    // had no permutations. Nothing reads cb4[14] now, freeing Carbon reg 26 for
-                    // customMaskClamps. See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                    // Blend modes read cb4[16] (CustomMaskBlending) - reg 16 is outside the
+                    // Carbon-packed 0-15 window, so Carbon reg 26 (customMaskClamps) stays free.
+                    // See /docs/contracts/ccpwgl-per-object-layout-delta.md
+                    ${customMaskBlendModes}
 
                     void main()
                     {
@@ -288,7 +288,7 @@ export const quadDetailV5 = {
 
                         r10=r10.xxxx*cb4[12];
                         r12=r12.xxxx*cb4[13];
-                        // applyCustomMaskBlendMode(r10, r12);  // removed with cb4[14]
+                        applyCustomMaskBlendMode(r10, r12);
                         r11.xyz=mix(cb7[6].xyz,r7.xyz,r10.xxx);
                         r13.xyz=mix(r11.xyz,r6.xyz,r12.xxx);
                         r11.xyz=mix(cb7[7].xyz,r7.xyz,r10.yyy);
