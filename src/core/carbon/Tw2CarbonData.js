@@ -150,9 +150,9 @@ function PackPerObjectPS(out, glesVs, glesPs)
 /**
  * Packs a decal's per-object VS data (b3) into Carbon DecalVSPerObjectData.
  * The decal per-object schema is already that layout (worldMatrix@0,
- * invWorldMatrix@4, decalMatrix@8, inverseDecalMatrix@12, parentBoneMatrix@16),
- * so this is a direct copy — unlike the hull PackPerObjectVS. Registers past
- * the decal data are zeroed (invParentBoneMatrix has no ccpwgl source yet).
+ * invWorldMatrix@4, decalMatrix@8, inverseDecalMatrix@12, parentBoneMatrix@16,
+ * invParentBoneMatrix@20), so this is a direct copy — unlike the hull
+ * PackPerObjectVS. Registers past the decal data are zeroed.
  * @param {Float32Array} out - PER_OBJECT_REGS * 4 floats
  * @param {Float32Array} glesVs - decal per-object vs data
  * @returns {Float32Array} out

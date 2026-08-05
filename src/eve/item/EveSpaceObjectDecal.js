@@ -484,10 +484,19 @@ export class EveSpaceObjectDecal extends meta.Model
                 if (!this._offsetTransform) this._offsetTransform = mat4.create();
                 mat4.fromJointMatIndex(this._offsetTransform, bones, this.parentBoneIndex);
                 mat4.transpose(this._perObjectData.vs.Get("parentBoneMatrix"), this._offsetTransform);
+                const invBone = mat4.alloc();
+                mat4.invert(invBone, this._offsetTransform);
+                mat4.transpose(this._perObjectData.vs.Get("invParentBoneMatrix"), invBone);
+                mat4.unalloc(invBone);
                 hasBone = true;
             }
         }
-        if (!hasBone) this._offsetTransform = null;
+        if (!hasBone)
+        {
+            this._offsetTransform = null;
+            mat4.identity(this._perObjectData.vs.Get("parentBoneMatrix"));
+            mat4.identity(this._perObjectData.vs.Get("invParentBoneMatrix"));
+        }
 
         this.PackPerObjectData(
             this.GetPerObjectDataBagOfStuff(parentPerObjectData, this._perObjectDataBagOfStuff, counter),
@@ -661,7 +670,11 @@ export class EveSpaceObjectDecal extends meta.Model
             [ "decalMatrix", 16 ],
             [ "invDecalMatrix", 16 ],
             [ "parentBoneMatrix", mat4.create() ],
-            [ "clampDecalToEdge", 4 ]
+            // Carbon DecalVSPerObjectData ends with m_invParentBoneMatrix
+            // (EveSpaceObjectDecal.h:34). decalholev5 transforms the camera
+            // through it (regs 20-23) to ray-trace the hole interior, so a
+            // missing/zero matrix flattens hole decals.
+            [ "invParentBoneMatrix", mat4.create() ]
         ],
         ps: [
             // .x = kill counter, .y = decal visibility/fade, .z = unused, .w = unused
