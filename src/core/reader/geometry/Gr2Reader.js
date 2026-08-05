@@ -79,7 +79,13 @@ export class Gr2Reader
 
     static DEFAULT_OPTIONS = {
         firstMeshOnly: true,
-        aoGenerate: true,
+        // The GPU AO bake (geo-ambient-occlusion) blocks on ReadPixels at
+        // load; on large hulls the stall trips the OS GPU watchdog (~2s TDR
+        // on Windows), the driver resets, and the WebGL context is lost -
+        // every shader compiled afterwards then fails with glError 0x9242.
+        // Opt in per load (or flip this back) only for scenes small enough
+        // to bake within the watchdog budget.
+        aoGenerate: false,
         aoResolution: 512,
         aoBias: 0.5,
         aoSamples: 256,
