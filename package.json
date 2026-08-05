@@ -80,6 +80,6 @@
     "@carbonenginejs/format-gltf": "0.1.0",
     "@carbonenginejs/format-obj": "0.1.0",
     "@carbonenginejs/runtime-audio": "^0.3.0",
-    "@carbonenginejs/runtime-resource": "^0.12.0"
+    "@carbonenginejs/runtime-resource": "^0.13.0"
   }
 }
