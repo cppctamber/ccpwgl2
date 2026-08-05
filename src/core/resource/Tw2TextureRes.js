@@ -152,7 +152,9 @@ export class Tw2TextureRes extends Tw2Resource
                 ? d.GetFallbackCubeMap()
                 : this._target === gl.TEXTURE_3D
                     ? d.GetFallbackVolumeTexture()
-                    : d.GetFallbackTexture();
+                    : this._target === gl.TEXTURE_2D_ARRAY
+                        ? d.GetFallbackArrayTexture()
+                        : d.GetFallbackTexture();
             gl.bindTexture(this._target, tex);
             return;
         }

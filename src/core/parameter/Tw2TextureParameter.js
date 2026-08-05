@@ -266,6 +266,20 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     Apply(stage, sampler, slices)
     {
+        // A 2D-array sampler with no resource must still receive a correctly
+        // typed texture: binding nothing (or a 2D fallback) to an array unit
+        // makes WebGL2 reject the whole draw with INVALID_OPERATION. This
+        // reaches auto-registered Carbon scene arrays (EveSceneFogVolumeMap)
+        // that ccpwgl does not produce; the fallback's transparent black is
+        // their neutral. Legacy samplers are never array-typed, so the
+        // historical bind-nothing behaviour is untouched.
+        if (!this.textureRes && sampler && sampler.samplerType === device.gl.TEXTURE_2D_ARRAY)
+        {
+            device.gl.activeTexture(device.gl.TEXTURE0 + stage);
+            device.gl.bindTexture(device.gl.TEXTURE_2D_ARRAY, device.GetFallbackArrayTexture());
+            return;
+        }
+
         if (this.textureRes)
         {
             if (this.overrides)

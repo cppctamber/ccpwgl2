@@ -90,6 +90,9 @@ function output(file, extra = {})
         format: "umd",
         name: "CCPWGL2",
         exports: "named",
+        // runtime-audio lazily imports the wem reader with a dynamic import;
+        // a single-file UMD build must inline it or rollup refuses the format.
+        inlineDynamicImports: true,
         footer: "if (typeof globalThis !== 'undefined' && globalThis.CCPWGL2) Object.assign(globalThis, globalThis.CCPWGL2);",
         sourcemap: false,
         freeze: false,

@@ -10,6 +10,7 @@ export const GL_STENCIL_BUFFER_BIT = 1024;
 export const GL_TEXTURE_2D = 3553;
 export const GL_TEXTURE_CUBE_MAP = 34067;
 export const GL_TEXTURE_3D = 32879;
+export const GL_TEXTURE_2D_ARRAY = 35866;
 
 export const GL_TEXTURE_MAG_FILTER = 10240;
 export const GL_TEXTURE_MIN_FILTER = 10241;

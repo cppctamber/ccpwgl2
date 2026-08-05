@@ -1,5 +1,11 @@
 import { device } from "global";
 import {
+    GL_TEXTURE_2D,
+    GL_TEXTURE_2D_ARRAY,
+    GL_TEXTURE_3D,
+    GL_TEXTURE_CUBE_MAP
+} from "constant";
+import {
     ErrShaderCompile,
     Tw2Shader,
     Tw2ShaderPass,
@@ -16,6 +22,21 @@ import { Tw2VertexElement } from "core/vertex";
 const STAGE_VERTEX = Tw2ShaderStage.Type.VERTEX;
 const STAGE_FRAGMENT = Tw2ShaderStage.Type.FRAGMENT;
 const TEXTURE_2D = 2;
+
+/**
+ * GL binding target per emitted GLSL sampler keyword. The emitter is the only
+ * authority that knows a resource's real dimensionality — see the note at the
+ * sampler construction below.
+ */
+const GLSL_SAMPLER_TARGETS = {
+    sampler2D: GL_TEXTURE_2D,
+    sampler2DShadow: GL_TEXTURE_2D,
+    sampler3D: GL_TEXTURE_3D,
+    samplerCube: GL_TEXTURE_CUBE_MAP,
+    samplerCubeShadow: GL_TEXTURE_CUBE_MAP,
+    sampler2DArray: GL_TEXTURE_2D_ARRAY,
+    sampler2DArrayShadow: GL_TEXTURE_2D_ARRAY
+};
 
 /**
  * Carbon metadata -> ccpwgl/SOF constant-name aliases.
@@ -525,12 +546,21 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
             : samplersByRegister.get(resource.registerIndex)
                 || (samplersByRegister.size === 1 ? samplersByRegister.values().next().value : samplersByRegister.get(0));
         const sampler = samplerBinding?.carbon?.sampler || {};
+        // The emitted GLSL declaration is the binding-target authority.
+        // Carbon's own reflection cannot express a 2D array: the shader
+        // compiler has no Texture2DArray case and stamps those resources
+        // TEX_TYPE_TYPELESS (5), which the d3d table maps to TEXTURE_2D —
+        // and binding a 2D texture to a sampler2DArray uniform makes WebGL2
+        // reject the draw. When the emitter named the sampler type, use it;
+        // `type` is withheld from the JSON in that case so ResolveModes
+        // cannot re-derive the target from the typeless byte.
+        const emittedTarget = GLSL_SAMPLER_TARGETS[emittedResource?.samplerType];
         const samplerState = Tw2SamplerState.fromJSON({
             name: samplerBinding?.metadataName || `${name}Sampler`,
             registerIndex: samplerBinding?.registerIndex ?? texture.registerIndex,
-            samplerType: texture.glType,
+            samplerType: emittedTarget ?? texture.glType,
             isVolume: texture.isVolume,
-            type,
+            ...(emittedTarget === undefined ? { type } : {}),
             comparison: emittedResource?.comparison === true,
             comparisonFunc: sampler.comparisonFunc,
             addressUMode: sampler.addressU,

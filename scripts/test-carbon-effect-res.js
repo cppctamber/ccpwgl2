@@ -20,6 +20,7 @@ global.window = global;
 global.self = global;
 global.navigator = { userAgent: "node" };
 global.document = {
+    baseURI: "http://localhost/",
     createElement: () => ({ getContext: () => null, style: {}, addEventListener: () => {} }),
     addEventListener: () => {},
     removeEventListener: () => {}

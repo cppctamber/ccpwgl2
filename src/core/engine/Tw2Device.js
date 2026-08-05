@@ -160,6 +160,7 @@ export class Tw2Device extends Tw2EventEmitter
     _currentRenderMode = RM_ANY;
     _fallbackCube = null;
     _fallbackVolume = null;
+    _fallbackArray = null;
     _fallbackTexture = null;
     _blitEffect = null;
     _Date = Date;
@@ -994,6 +995,23 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Gets a fallback 2D array texture
+     *
+     * Transparent black is the correct neutral for the Carbon scene arrays
+     * that reach this (EveSceneFogVolumeMap: the shaders compute their fog
+     * factor as 1 - sample.w * strength, so alpha 0 means "no fog").
+     * @returns {*}
+     */
+    GetFallbackArrayTexture()
+    {
+        if (!this._fallbackArray)
+        {
+            this._fallbackArray = this.CreateSolidArrayTexture();
+        }
+        return this._fallbackArray;
+    }
+
+    /**
      * Creates a solid colored texture
      * @param {vec4|Array} [rgba] - The colour to create, if omitted defaults to completely transparent
      * @returns {WebGLTexture}
@@ -1058,6 +1076,27 @@ export class Tw2Device extends Tw2EventEmitter
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.bindTexture(gl.TEXTURE_3D, null);
+        return texture;
+    }
+
+    /**
+     * Creates a solid colored 1x1x1 2D array texture
+     * @param {vec4|Array} rgba
+     * @returns {WebGLTexture}
+     */
+    CreateSolidArrayTexture(rgba = [ 0, 0, 0, 0 ])
+    {
+        const
+            gl = this.gl,
+            texture = this.gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+        gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, 1, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
         return texture;
     }
 

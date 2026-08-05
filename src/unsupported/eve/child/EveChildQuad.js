@@ -116,6 +116,8 @@ export class EveChildQuad extends EveChild
         return out;
     }
 
+    _srtScratch = mat4.create();
+
     /**
      * Per frame update
      * @param {Number} dt
@@ -138,8 +140,14 @@ export class EveChildQuad extends EveChild
 
         if (this.useSRT)
         {
-            mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
-            this._dirty = true;
+            // Only rebuild when the SRT actually changed; an unconditional
+            // dirty here rebuilt the GL buffer every frame.
+            mat4.fromRotationTranslationScale(this._srtScratch, this.rotation, this.translation, this.scaling);
+            if (!mat4.equals(this._srtScratch, this.localTransform))
+            {
+                mat4.copy(this.localTransform, this._srtScratch);
+                this._dirty = true;
+            }
         }
 
         if (this._dirty)
@@ -153,7 +161,7 @@ export class EveChildQuad extends EveChild
      */
     Rebuild()
     {
-        //this.Unload();
+        this.Unload();
 
         const { gl } = device;
         let array = new Float32Array(4 * this.constructor.vertexSize);
@@ -232,7 +240,9 @@ export class EveChildQuad extends EveChild
 
     _indexBuffer = null;
 
-    static indices = [ 0,1,2,2,3,0 ];
+    // Carbon's quad index order (Tr2QuadRenderer.cpp:222). ubershaderquad
+    // bakes RS_CULLMODE CULL_CW, so a reversed winding culls those quads away.
+    static indices = [ 0, 2, 1, 0, 3, 2 ];
 
     /**
      * Gets render batches
@@ -288,7 +298,10 @@ export class EveChildQuad extends EveChild
 
     static count = 4;
     static alphaMultiplier = 1;
-    static vertexSize = 30;
+    // 1 index + 6x4 transform rows + 4 color + 2 data = 31 floats. At 30 the
+    // last vertex's TEXCOORD1 read past the buffer, and WebGL2 rejects the
+    // whole draw when an attribute range exceeds its buffer.
+    static vertexSize = 31;
 
     static perObjectData = {
         vs: [],
