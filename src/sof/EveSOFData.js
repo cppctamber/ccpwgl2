@@ -2196,6 +2196,13 @@ export class EveSOFData extends meta.Model
                 decal.decalEffect = decal.decalEffect || new Tw2Effect();
                 decal.decalEffect.SetValues(effect);
 
+                // Decal textures must clamp, not wrap; skipUpdate because
+                // PopulateParameters below rebinds
+                decal.decalEffect.SetSamplerOverrides(
+                    srcItem.GetSamplerOverrides(Object.keys(effect.textures || {})),
+                    true
+                );
+
                 // Override the default
                 if (decal.decalEffect.parameters.NormalMap)
                 {

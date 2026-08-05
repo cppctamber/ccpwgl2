@@ -174,6 +174,59 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     }
 
     /**
+     * Gets the sampler overrides for this item's usage, keyed by sampler name
+     * ("<TextureName>Sampler"), for Tw2Effect.SetSamplerOverrides. Decal
+     * textures are projected onto the hull, so sampling outside [0,1] must
+     * clamp; the shipped samplers default to wrap. Usage-specific settings
+     * (OverridesByUsage, e.g. killmark repeat) win over the clamp default.
+     * Overrides for samplers the resolved shader doesn't declare are pruned
+     * by the effect's next clean pass, so a superset here is harmless.
+     * @param {Array<String>} [textureNames] - texture names from the effect config
+     * @returns {Object}
+     */
+    GetSamplerOverrides(textureNames = [])
+    {
+        const names = new Set(EveSOFDataHullDecalSetItem.DecalTextureNames);
+        textureNames.forEach(name =>
+        {
+            if (name.indexOf("Decal") === 0) names.add(name);
+        });
+
+        const out = {};
+        names.forEach(name =>
+        {
+            // Border clamp (transparent border kills the decal outside its
+            // projected square), matching the legacy manual shaders'
+            // clampToBorder; falls back to edge without
+            // EXT_texture_border_clamp. The hole map and interior cube sample
+            // inside the decal only, and use edge like the legacy definitions.
+            const mode = EveSOFDataHullDecalSetItem.EdgeClampTextureNames.includes(name)
+                ? WrapMode.CLAMP_TO_EDGE
+                : WrapMode.CLAMP_TO_BORDER;
+
+            out[`${name}Sampler`] = {
+                addressUMode: mode,
+                addressVMode: mode,
+                addressWMode: mode
+            };
+        });
+
+        const byUsage = EveSOFDataHullDecalSetItem.OverridesByUsage[this.usage];
+        if (byUsage)
+        {
+            for (const name in byUsage)
+            {
+                if (byUsage.hasOwnProperty(name))
+                {
+                    out[`${name}Sampler`] = Object.assign(out[`${name}Sampler`] || {}, byUsage[name]);
+                }
+            }
+        }
+
+        return out;
+    }
+
+    /**
      * Gets a decal type by usage
      * @param {Number} usage
      * @returns {String}
@@ -205,7 +258,35 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     static Usage = Usage;
 
     /**
-     * Overrides by usage
+     * Decal texture names across the decal shader family, used as the
+     * clamp-to-edge default set in GetSamplerOverrides
+     * @type {Array<String>}
+     */
+    static DecalTextureNames = [
+        "DecalAtMap",
+        "DecalAlbedoMap",
+        "DecalFresnelMap",
+        "DecalGlowMap",
+        "DecalHoleMap",
+        "DecalInsideCubeMap",
+        "DecalNormalMap",
+        "DecalRoughnessMap",
+        "DecalTransparencyMap"
+    ];
+
+    /**
+     * Decal textures that clamp to edge rather than border, per the legacy
+     * manual shader definitions
+     * @type {Array<String>}
+     */
+    static EdgeClampTextureNames = [
+        "DecalHoleMap",
+        "DecalInsideCubeMap"
+    ];
+
+    /**
+     * Usage-specific sampler settings, keyed by texture name; these win over
+     * the clamp-to-edge default in GetSamplerOverrides
      * @type {Object}
      */
     static OverridesByUsage = {
