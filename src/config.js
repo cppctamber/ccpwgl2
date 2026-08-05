@@ -35,7 +35,7 @@ export const config = {
     // Enables audio on initialization: the library fetches the audio
     // library document (aud:/library.json) and enables the audio manager,
     // with audible output starting on the first user gesture
-    audioEnabled: true,
+    audioEnabled: false,
 
     // Enables experimental EveSpaceScene shadow rendering path
     enableExperimentalShadows: false,

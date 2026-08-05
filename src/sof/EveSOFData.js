@@ -2777,6 +2777,16 @@ export class EveSOFData extends meta.Model
     {
         const { soundEmitters = [], audioPosition } = sof.hull;
 
+        // Audio is optional: with audio disabled (or the library document not
+        // installed) emitter creation throws, and an uncaught rejection here
+        // kills the whole SOF build. A ship without sound is a ship; a ship
+        // that never appears is not.
+        if (!tw2.audMan || !tw2.audMan.library)
+        {
+            obj.audioEmitters = obj.audioEmitters || [];
+            return obj.audioEmitters;
+        }
+
         if (obj.audioEmitters)
         {
             for (let i = 0; i < obj.audioEmitters.length; i++)
