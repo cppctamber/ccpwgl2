@@ -379,13 +379,19 @@ export class Tw2Effect extends meta.Model
             this.effectFilePath = this.effectFilePath ? this.effectFilePath.toLowerCase() : "";
             if (this.effectFilePath)
             {
-                // Auto shader replacement
+                // Auto fx quality FIRST: the JSON shader overrides are keyed
+                // on explicit graphics/effect.gles2/ paths, so the effect
+                // profile must qualify the path before the store is consulted.
+                // Looking up the unresolved /effect/ path let a gles-keyed
+                // JSON shader shadow the Carbon container whatever
+                // effectProfile said - the dx11 path could never be reached
+                // for any hull with a hand-written shader.
+                if (getPathExtension(this.effectFilePath) === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
+                // Auto shader replacement, on the resolved path only
                 if (Tw2Effect.USE_SHADER_OVERRIDES && getPathExtension(this.effectFilePath) !== "sm_json")
                 {
                     this.effectFilePath = Tw2Effect.getOverriddenShaderPath(this.effectFilePath);
                 }
-                // Auto fx quality
-                if (getPathExtension(this.effectFilePath) === "fx") this.effectFilePath = device.ToEffectPath(this.effectFilePath);
 
                 res = tw2.GetResource(this.effectFilePath);
             }
