@@ -460,6 +460,18 @@ function buildConstants(stage, manifestStage, shaderRecord)
     stage.constantValues = new Float32Array(constantValueSize);
     stage.constantSize = constantValueSize;
 
+    // Seed the exact authored default bytes the container carries. Without
+    // them every constant the scene does not override reads zero - the
+    // background effect multiplies its output by Tint * NebulaIntensity, so
+    // zero defaults render pure black while drawing "correctly", and hull
+    // material factors go dark the same way.
+    const defaultBytes = binding?.carbon?.constantValues;
+    if (defaultBytes && defaultBytes.length >= 4)
+    {
+        const authored = new Float32Array(new Uint8Array(defaultBytes).buffer);
+        stage.constantValues.set(authored.subarray(0, Math.min(authored.length, stage.constantValues.length)));
+    }
+
     for (const item of constants)
     {
         const size = bytesToFloats(item.size || 0);
@@ -475,7 +487,9 @@ function buildConstants(stage, manifestStage, shaderRecord)
             isSRGB: item.isSRGB || false,
             isAutoregister: item.isAutoregister || false,
             type: item.type || 0,
-            value: item.value || []
+            // Authored defaults from the seeded buffer, so parameters built
+            // from these constants start at the values the artist shipped.
+            value: item.value || Array.from(stage.constantValues.subarray(offset, offset + size))
         }, null));
     }
 
