@@ -7,7 +7,6 @@ import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
     Tw2BatchAccumulator,
-    tw2BatchSorter,
     Tw2RawData,
     Tw2Frustum,
     Tw2BatchAccumulator2,
@@ -243,14 +242,7 @@ export class EveSpaceScene extends meta.Model
     _backgroundTexture = null;
 
     _localTransform = mat4.create();
-    // Batches are collected per object, all four render modes at a time, so an
-    // object's additive batches are committed before the next object's opaque
-    // ones. Without a sorter they then render in that order, and opaque
-    // geometry paints colour and depth over glows that were already
-    // composited - the glow simply vanishes, with nothing visible doing it.
-    // Sort by render mode, which is what the batch-context path already does
-    // via the same comparator.
-    _accumulator = new Tw2BatchAccumulator(tw2BatchSorter);
+    _accumulator = new Tw2BatchAccumulator();
     _batchContext = null;
     _batchContextReport = null;
     _depthContext = null;
