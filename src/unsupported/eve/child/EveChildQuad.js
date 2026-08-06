@@ -116,8 +116,6 @@ export class EveChildQuad extends EveChild
         return out;
     }
 
-    _srtScratch = mat4.create();
-
     /**
      * Per frame update
      * @param {Number} dt
@@ -140,14 +138,8 @@ export class EveChildQuad extends EveChild
 
         if (this.useSRT)
         {
-            // Only rebuild when the SRT actually changed; an unconditional
-            // dirty here rebuilt the GL buffer every frame.
-            mat4.fromRotationTranslationScale(this._srtScratch, this.rotation, this.translation, this.scaling);
-            if (!mat4.equals(this._srtScratch, this.localTransform))
-            {
-                mat4.copy(this.localTransform, this._srtScratch);
-                this._dirty = true;
-            }
+            mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+            this._dirty = true;
         }
 
         if (this._dirty)
@@ -161,7 +153,6 @@ export class EveChildQuad extends EveChild
      */
     Rebuild()
     {
-        this.Unload();
 
         const { gl } = device;
         let array = new Float32Array(4 * this.constructor.vertexSize);
@@ -220,9 +211,13 @@ export class EveChildQuad extends EveChild
             array[offset + 30] = 0;
         }
 
-        this._vertices = gl.createBuffer();
+        // Reuse one buffer: creating a fresh buffer per rebuild leaked one
+        // VBO per frame on a moving parent, and deleting the old one instead
+        // poisons any attribute slot it is still attached to, silently
+        // killing unrelated draws for the rest of the frame.
+        if (!this._vertices) this._vertices = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertices);
-        gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         if (!this._indexBuffer)
