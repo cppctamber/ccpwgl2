@@ -555,8 +555,14 @@ class Tw2CarbonResourceBinder
 
 }
 
-/** First texture unit used for Carbon data textures (legacy s0-15 use 0-15, vs0-15 use 12-27) */
-Tw2CarbonResourceBinder.FIRST_DATA_TEXTURE_UNIT = 28;
+/**
+ * Carbon data textures no longer sit at a fixed base unit.
+ *
+ * They used to start at 28, which a fragment sampler cannot address whenever
+ * MAX_TEXTURE_IMAGE_UNITS is 16 - common hardware. Tw2ShaderProgram now
+ * allocates them the lowest free units below that limit and records the choice
+ * on `program.carbonDataTextures`; this binder binds whatever unit it is told.
+ */
 
 /** structuredTexture stride identifying Buffer A (tile headers / list nodes) */
 Tw2CarbonResourceBinder.INDEX_BUFFER_STRIDE = 4;

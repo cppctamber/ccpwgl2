@@ -204,26 +204,13 @@ export class Tw2ShaderProgram
      */
     static SetupCarbonSamplerUnits(program, pass, gl)
     {
-        const MAX_UNITS = 16;
+        const MAX_UNITS = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
         const remap = new Map();    // sampler registerIndex -> texture unit
-        const occupied = new Set(); // units already claimed in [0, MAX_UNITS)
+        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, MAX_UNITS);
 
-        // In-range regular samplers keep unit == registerIndex; volume samplers
-        // occupy registerIndex + 12 (see the vs# loop in SetupGLSLShader).
-        for (let s = 0; s < pass.stages.length; ++s)
-        {
-            for (const texture of pass.stages[s].textures || [])
-            {
-                if (texture.registerIndex < MAX_UNITS) occupied.add(texture.registerIndex);
-            }
-            for (const sampler of pass.stages[s].samplers || [])
-            {
-                if (sampler.isVolume && sampler.registerIndex + 12 < MAX_UNITS)
-                {
-                    occupied.add(sampler.registerIndex + 12);
-                }
-            }
-        }
+        // SetupCarbonResources runs first and allocates from the same low
+        // range, so its units are already spoken for.
+        for (const entry of program.carbonDataTextures || []) occupied.add(entry.unit);
 
         for (let s = 0; s < pass.stages.length; ++s)
         {
@@ -256,6 +243,55 @@ export class Tw2ShaderProgram
      * @param {Tw2ShaderPass} pass
      * @param {WebGL2RenderingContext} gl
      */
+    /**
+     * Reads the per-fragment-stage sampler limit.
+     *
+     * This is the ceiling a sampler uniform's value must stay under. It is NOT
+     * MAX_COMBINED_TEXTURE_IMAGE_UNITS, which only bounds how many units may be
+     * bound across every stage at once.
+     * @param {WebGL2RenderingContext} gl
+     * @returns {Number}
+     */
+    static GetMaxTextureImageUnits(gl)
+    {
+        const value = typeof gl.getParameter === "function"
+            ? gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
+            : 0;
+
+        return value > 0 ? value : 16;
+    }
+
+    /**
+     * Collects the texture units a pass's ordinary samplers already claim.
+     *
+     * Regular samplers keep unit == registerIndex and volume samplers sit at
+     * registerIndex + 12, both matching the s#/vs# loops in SetupGLSLShader.
+     * @param {Tw2ShaderPass} pass
+     * @param {Number} maxUnits
+     * @returns {Set<Number>}
+     */
+    static OccupiedTextureUnits(pass, maxUnits)
+    {
+        const occupied = new Set();
+
+        for (let s = 0; s < pass.stages.length; ++s)
+        {
+            for (const texture of pass.stages[s].textures || [])
+            {
+                if (texture.registerIndex < maxUnits) occupied.add(texture.registerIndex);
+            }
+            for (const sampler of pass.stages[s].samplers || [])
+            {
+                if (sampler.isVolume && sampler.registerIndex + 12 < maxUnits)
+                {
+                    occupied.add(sampler.registerIndex + 12);
+                }
+            }
+        }
+
+        return occupied;
+    }
+
     static SetupCarbonResources(program, pass, gl)
     {
         program.carbonUniformBlocks = [];
@@ -263,7 +299,24 @@ export class Tw2ShaderProgram
 
         const seen = new Set();
         let bindingPoint = 0;
-        let unit = 28; // keep in sync with Tw2CarbonResourceBinder.FIRST_DATA_TEXTURE_UNIT
+
+        // A fragment sampler uniform may only name a unit below
+        // MAX_TEXTURE_IMAGE_UNITS, which is 16 on plenty of hardware.
+        // MAX_COMBINED_TEXTURE_IMAGE_UNITS (32) governs how many units may be
+        // BOUND across all stages, not which ones a sampler can address - so
+        // binding a data texture high and pointing the sampler at it raises no
+        // error anywhere, and the shader silently reads zero. Allocate these
+        // out of the same low range every other sampler uses.
+        const maxUnits = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
+        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, maxUnits);
+        const nextFreeUnit = () =>
+        {
+            for (let candidate = 0; candidate < maxUnits; ++candidate)
+            {
+                if (!occupied.has(candidate)) return candidate;
+            }
+            return -1;
+        };
 
         for (let s = 0; s < pass.stages.length; ++s)
         {
@@ -295,7 +348,17 @@ export class Tw2ShaderProgram
                 {
                     const location = gl.getUniformLocation(program.program, binding.name);
                     if (!location) continue;
+
+                    const unit = nextFreeUnit();
+                    if (unit < 0)
+                    {
+                        // eslint-disable-next-line no-console
+                        console.warn(`Tw2ShaderProgram: no free texture unit for ${binding.name} (limit ${maxUnits}); it will read zero`);
+                        continue;
+                    }
+
                     seen.add(key);
+                    occupied.add(unit);
                     gl.uniform1i(location, unit);
                     program.carbonDataTextures.push({
                         name: binding.name,
@@ -307,7 +370,6 @@ export class Tw2ShaderProgram
                         cjsSemantic: binding.cjsSemantic || null,
                         dataTexelBase: binding.dataTexelBase || 0
                     });
-                    unit++;
                 }
             }
         }
