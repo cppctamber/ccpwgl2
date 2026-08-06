@@ -277,6 +277,29 @@ export class EveSpaceSceneAO extends meta.Model
         }
         catch (err) { /* ignore */ }
 
+        // Rescan when the scene's object set changes: the cache otherwise
+        // pins the previous ship's parameters, so a newly loaded hull never
+        // receives the AO output and anything bound before the swap is never
+        // restored to white.
+        const objects = this.scene ? [].concat(this.scene.objects || [], this.scene.backgroundObjects || []) : [];
+        const previous = this._ssaoObjects;
+        const changed = !previous
+            || previous.length !== objects.length
+            || objects.some((o, i) => o !== previous[i]);
+        if (changed)
+        {
+            // Restore anything the stale list still drives before dropping it.
+            if (this._bound && this._ssaoParams)
+            {
+                for (const p of this._ssaoParams)
+                {
+                    if (p && p._ssaoWhiteRes) p.textureRes = p._ssaoWhiteRes;
+                }
+            }
+            this._ssaoParams = null;
+            this._ssaoObjects = objects;
+        }
+
         if ((!this._ssaoParams || !this._ssaoParams.length) && this.scene)
         {
             this._ssaoParams = this._FindSsaoParams();
