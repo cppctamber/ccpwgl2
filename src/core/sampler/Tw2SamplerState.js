@@ -369,8 +369,18 @@ export class Tw2SamplerState extends meta.Model
         const resolveWrap = (mode) =>
             (mode === GL_CLAMP_TO_BORDER && !borderExt) ? gl.CLAMP_TO_EDGE : mode;
 
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? resolveWrap(this.addressV) : gl.CLAMP_TO_EDGE);
+        // A cube map is six separate images, and neither WebGL1 nor WebGL2
+        // filters across their shared edges. Any wrap other than CLAMP_TO_EDGE
+        // makes a texel fetch near a face boundary wrap around to the far side
+        // of that same face, so a reflection vector sweeping across an edge
+        // pulls in unrelated texels and leaves a bright streak along the seam.
+        // The authored wrap describes a 2D surface and has no cube meaning.
+        const isCube = targetType === gl.TEXTURE_CUBE_MAP;
+
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S,
+            hasMipMaps && !isCube ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T,
+            hasMipMaps && !isCube ? resolveWrap(this.addressV) : gl.CLAMP_TO_EDGE);
 
         if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY)
         {
