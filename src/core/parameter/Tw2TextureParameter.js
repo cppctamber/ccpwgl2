@@ -266,18 +266,31 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     Apply(stage, sampler, slices)
     {
-        // A 2D-array sampler with no resource must still receive a correctly
-        // typed texture: binding nothing (or a 2D fallback) to an array unit
-        // makes WebGL2 reject the whole draw with INVALID_OPERATION. This
-        // reaches auto-registered Carbon scene arrays (EveSceneFogVolumeMap)
-        // that ccpwgl does not produce; the fallback's transparent black is
-        // their neutral. Legacy samplers are never array-typed, so the
-        // historical bind-nothing behaviour is untouched.
-        if (!this.textureRes && sampler && sampler.samplerType === device.gl.TEXTURE_2D_ARRAY)
+        // A sampler with no resource must still receive a correctly typed
+        // texture. The array case was forced on us - binding nothing (or a 2D
+        // fallback) to an array unit makes WebGL2 reject the whole draw with
+        // INVALID_OPERATION - but the same reasoning applies to every type,
+        // and the other types fail quietly instead of loudly: an unbound
+        // sampler does not read black, it reads whatever texture the previous
+        // draw left on its unit. That has produced Carbon scene textures
+        // appearing on unrelated geometry, screen-locked and camera-angle
+        // dependent, with no error anywhere.
+        //
+        // Transparent black is the neutral for the resources that reach here
+        // (EveSceneFogVolumeMap computes fog as 1 - sample.w * strength, so
+        // alpha 0 means "no fog"). Resources whose neutral is not black -
+        // DepthMap, where 0 means "occluded by the near plane" - are given a
+        // real texture through the config variables instead, because the right
+        // value is a property of the shader, not of the binding layer.
+        if (!this.textureRes && sampler)
         {
-            device.gl.activeTexture(device.gl.TEXTURE0 + stage);
-            device.gl.bindTexture(device.gl.TEXTURE_2D_ARRAY, device.GetFallbackArrayTexture());
-            return;
+            const fallback = Tw2TextureParameter.FallbackFor(sampler.samplerType);
+            if (fallback)
+            {
+                device.gl.activeTexture(device.gl.TEXTURE0 + stage);
+                device.gl.bindTexture(fallback.target, fallback.texture);
+                return;
+            }
         }
 
         if (this.textureRes)
@@ -408,6 +421,37 @@ export class Tw2TextureParameter extends Tw2Parameter
     static isValue(a)
     {
         return isString(a);
+    }
+
+    /**
+     * Gets the neutral fallback texture for a sampler target
+     *
+     * Returns null for an unrecognised target rather than guessing, so an
+     * unknown sampler type keeps the historical bind-nothing behaviour instead
+     * of being bound something of the wrong shape.
+     * @param {Number} samplerType - gl texture target
+     * @returns {{target:Number, texture:WebGLTexture}|null}
+     */
+    static FallbackFor(samplerType)
+    {
+        const gl = device.gl;
+        switch (samplerType)
+        {
+            case gl.TEXTURE_2D:
+                return { target: gl.TEXTURE_2D, texture: device.GetFallbackTexture() };
+
+            case gl.TEXTURE_2D_ARRAY:
+                return { target: gl.TEXTURE_2D_ARRAY, texture: device.GetFallbackArrayTexture() };
+
+            case gl.TEXTURE_CUBE_MAP:
+                return { target: gl.TEXTURE_CUBE_MAP, texture: device.GetFallbackCubeMap() };
+
+            case gl.TEXTURE_3D:
+                return { target: gl.TEXTURE_3D, texture: device.GetFallbackVolumeTexture() };
+
+            default:
+                return null;
+        }
     }
 
 }

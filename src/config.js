@@ -421,6 +421,20 @@ export const config = {
         "EveSpaceSceneShadowMap": "res:/texture/global/white.dds",
         "EveSpaceSceneCascadedShadowMap": "",
 
+        // WHITE, for the same reason the shadow map above is white, but with
+        // different arithmetic behind it. Carbon's `DepthMap` is a scene depth
+        // sample; the soft-particle shaders linearise it as
+        // `sceneZ = m32 / (sample - m22)` and fade the particle out as the
+        // scene approaches it. 0 resolves to the NEAR plane, so a black or
+        // unbound default means "fully occluded" and the quad softs render at
+        // zero brightness. 1 resolves to the far plane - nothing in front -
+        // which is the only value meaning "always visible".
+        //
+        // Carbon itself leaves this null outside impostor atlas updates, where
+        // it points at the impostor item depth-stencil; ccpwgl runs no depth
+        // pass at all, so the neutral value is what we want permanently.
+        "DepthMap": "res:/texture/global/white.dds",
+
         // Carbon per-effect SSAO map has no producer yet; default to the
         // same real white texture EveSpaceScene.GetEmptyTexture() style
         // code already relies on (no occlusion), lazily resolved.

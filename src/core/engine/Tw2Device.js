@@ -162,6 +162,8 @@ export class Tw2Device extends Tw2EventEmitter
     _fallbackVolume = null;
     _fallbackArray = null;
     _fallbackTexture = null;
+    _fallbackWhite = null;
+    _fallbackWhiteArray = null;
     _blitEffect = null;
     _Date = Date;
 
@@ -1009,6 +1011,45 @@ export class Tw2Device extends Tw2EventEmitter
             this._fallbackArray = this.CreateSolidArrayTexture();
         }
         return this._fallbackArray;
+    }
+
+    /**
+     * Gets a fallback white 2D texture
+     *
+     * Every other fallback here is transparent black, which is the right
+     * neutral for colour and for fog. It is exactly wrong for depth: the
+     * soft-particle shaders linearise the sample as
+     * `sceneZ = m32 / (sample - m22)`, so 0 resolves to the near plane and the
+     * shader concludes everything is occluded, rendering nothing. 1 resolves
+     * to the far plane, which is "nothing in front of me" - the only value
+     * that means always visible. See `DepthMap` in the config variables.
+     * @returns {*}
+     */
+    GetFallbackWhiteTexture()
+    {
+        if (!this._fallbackWhite)
+        {
+            this._fallbackWhite = this.CreateSolidTexture([ 255, 255, 255, 255 ]);
+        }
+        return this._fallbackWhite;
+    }
+
+    /**
+     * Gets a fallback white 2D array texture
+     *
+     * The array counterpart of `GetFallbackWhiteTexture`, for Carbon scene
+     * arrays whose neutral is "full" rather than "empty". A 2D texture cannot
+     * bind to a `sampler2DArray` uniform - WebGL2 rejects the draw - so the
+     * array form has to exist separately.
+     * @returns {*}
+     */
+    GetFallbackWhiteArrayTexture()
+    {
+        if (!this._fallbackWhiteArray)
+        {
+            this._fallbackWhiteArray = this.CreateSolidArrayTexture([ 255, 255, 255, 255 ]);
+        }
+        return this._fallbackWhiteArray;
     }
 
     /**
