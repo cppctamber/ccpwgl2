@@ -1115,33 +1115,7 @@ export class EveSpaceSceneShadowHandler
 
     DirtyDeviceState()
     {
-        device._currentRenderMode = null;
-
-        if (device._alphaBlendState)
-        {
-            device._alphaBlendState.dirty = true;
-        }
-
-        if (device._alphaTestState)
-        {
-            device._alphaTestState.dirty = true;
-        }
-
-        if (device._depthOffsetState)
-        {
-            device._depthOffsetState.dirty = true;
-        }
-
-        if (device._renderStates)
-        {
-            for (const mode of Object.keys(device._renderStates))
-            {
-                if (device._renderStates[mode])
-                {
-                    device._renderStates[mode].dirty = true;
-                }
-            }
-        }
+        device.InvalidateStandardStates();
     }
 
     static ApplyDisabledFrameData(scene)

@@ -128,6 +128,16 @@ export class EveSpaceSceneAO extends meta.Model
         if (prevDepth) gl.enable(gl.DEPTH_TEST); else gl.disable(gl.DEPTH_TEST);
         if (prevBlend) gl.enable(gl.BLEND); else gl.disable(gl.BLEND);
 
+        // This pass drives GL directly - `_RenderDepth` turns depth writes on
+        // and `_RunPasses` turns blending off - so the device's cached view of
+        // render state no longer describes the context. Without this, the next
+        // `SetStandardStates(RM_ADDITIVE)` sees its mode already current and
+        // clean, re-applies nothing, and every additive draw that follows runs
+        // with blending disabled and depth writes enabled: banners, plane sets
+        // and light flares then write opaque black plus depth, hiding whatever
+        // is behind them instead of adding to it.
+        device.InvalidateStandardStates();
+
         this._report.ok = true;
         this._report.status = "rendered";
         return true;

@@ -1460,6 +1460,36 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Discards the cached view of GL render state.
+     *
+     * `SetStandardStates` skips its work whenever the requested mode is already
+     * current and clean, so anything that drives GL directly - the AO and
+     * shadow passes call `gl.disable(gl.BLEND)`, `gl.depthMask()` and friends
+     * on their own - leaves the cache describing state the context no longer
+     * has. The next additive draw then re-applies nothing and renders with
+     * blending off and depth writes on: it writes opaque black and occludes
+     * everything behind it instead of adding to it.
+     *
+     * Call this after any raw GL state manipulation so the next mode change
+     * writes every state again.
+     */
+    InvalidateStandardStates()
+    {
+        // null rather than RM_ANY: no requested mode can compare equal to it,
+        // so the next SetStandardStates re-applies whichever mode it is given.
+        this._currentRenderMode = null;
+
+        for (const mode in this._renderStates)
+        {
+            if (this._renderStates.hasOwnProperty(mode)) this._renderStates[mode].dirty = true;
+        }
+
+        if (this._alphaBlendState) this._alphaBlendState.dirty = true;
+        if (this._alphaTestState) this._alphaTestState.dirty = true;
+        if (this._depthOffsetState) this._depthOffsetState.dirty = true;
+    }
+
+    /**
      * Sets a render mode
      * @param {number} renderMode
      */
