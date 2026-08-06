@@ -1950,6 +1950,22 @@ export class EveSpaceScene extends meta.Model
             {
                 envMap = this._envMapRes;
             }
+
+            // Carbon's hull shaders choose a mip from roughness and sample this
+            // cube with an explicit LOD, up to level 7. A single-level cube has
+            // no chain to choose from, so every roughness resolves to the
+            // sharpest level and rough metal reads as a mirror.
+            //
+            // The background cube is authored without mips (it is only ever
+            // sampled at level 0), so using it as the reflection source - which
+            // is what useNebulaAsReflection does - leaves the shader nothing to
+            // blur with. CCP ships a prefiltered reflection cube beside it for
+            // exactly this purpose; prefer that whenever the chosen source
+            // cannot answer a LOD query.
+            if (envMap && !envMap._hasMipMaps && this._envMap1Res && this._envMap1Res._hasMipMaps)
+            {
+                envMap = this._envMap1Res;
+            }
         }
 
         tw2.GetVariable("EveSpaceSceneEnvMap").AttachTextureRes(envMap);
