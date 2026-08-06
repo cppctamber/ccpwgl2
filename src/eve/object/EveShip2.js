@@ -155,15 +155,21 @@ export class EveShip2 extends EveObject
 
     /**
      * Embedder-set maximum ship speed, backing the `ShipMaxSpeed()` builtin. Used by expressions
-     * that normalize `speed` into a 0..1 input (e.g. warp-state mixers). ccpwgl does not receive
-     * real ship max speeds, so this follows CCP's frontend/editor default: 1 is unmodified max
-     * speed, 2 approximates a ship with one propulsion modifier.
+     * that normalize `speed` into a 0..1 input (e.g. warp-state mixers).
+     *
+     * This is the hull's maximum speed WITHOUT a propulsion module, so `speed` is not bounded
+     * by it: `speed / maxSpeed` reaches 1 at an unmodified hull's top speed and carries on to
+     * roughly 2 with a propulsion module fitted, which is where expressions peak. Defaulting
+     * maxSpeed to 1 and sweeping `speed` to 2 therefore exercises the whole domain.
+     *
+     * Both values stand in for the real ship's speed and max speed until an embedder supplies
+     * them; these defaults give the correct normalised range in the meantime.
      * Runtime-only: not persisted.
      * @type {Number}
      */
     @meta.ui({ group: "Speed", index: 2 })
     @meta.float
-    maxSpeed = 2;
+    maxSpeed = 1;
 
     _enableCurves = false;
     _pixelSizeAcross = 0;
