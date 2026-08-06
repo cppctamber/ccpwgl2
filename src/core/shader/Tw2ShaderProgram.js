@@ -309,9 +309,16 @@ export class Tw2ShaderProgram
         // out of the same low range every other sampler uses.
         const maxUnits = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
         const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, maxUnits);
+        // Allocate DOWNWARD from the ceiling. Texture bindings are global GL
+        // state shared by every program, while ordinary material samplers take
+        // unit == registerIndex counting up from zero. Handing a data texture a
+        // low unit therefore parks it exactly where some other shader's albedo
+        // or roughness map lives, and whichever binds last wins - the hull then
+        // samples the light buffer as if it were a material map. Starting at
+        // the top keeps them clear of the range materials actually use.
         const nextFreeUnit = () =>
         {
-            for (let candidate = 0; candidate < maxUnits; ++candidate)
+            for (let candidate = maxUnits - 1; candidate >= 0; --candidate)
             {
                 if (!occupied.has(candidate)) return candidate;
             }

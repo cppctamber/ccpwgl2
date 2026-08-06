@@ -55,6 +55,12 @@ export class EveChildQuad extends EveChild
     _vertices = null;
     _parentTransform = mat4.create();
 
+    // Last values written into the instance buffer, so a colour or brightness
+    // change can mark it dirty the same way a transform change does. NaN forces
+    // the first Update to build.
+    _lastBrightness = NaN;
+    _lastColor = vec4.create();
+
     /**
      * Initializes the object
      */
@@ -139,6 +145,18 @@ export class EveChildQuad extends EveChild
         if (this.useSRT)
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+            this._dirty = true;
+        }
+
+        // Colour and brightness live in the same instance buffer as the
+        // transforms, so a change to either has to rebuild it. Without this the
+        // buffer only refreshes when something moves: a stationary ship keeps
+        // whatever brightness was last uploaded, and the moment it starts
+        // moving every accumulated change lands at once.
+        if (this.brightness !== this._lastBrightness || !vec4.equals(this.color, this._lastColor))
+        {
+            this._lastBrightness = this.brightness;
+            vec4.copy(this._lastColor, this.color);
             this._dirty = true;
         }
 
