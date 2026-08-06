@@ -509,13 +509,32 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
     // Registers the emitter lowered to non-texture GLSL bindings (bone UBOs,
     // light/index data textures, post-fx buffer textures) are not sampler
     // uniforms — their upload path is the Carbon binding layer, not Tw2Effect.
-    const nonTextureRegisters = new Set(
-        (shaderRecord?.bindings || [])
-            .filter((entry) => entry.kind === "structuredUbo"
-                || entry.kind === "structuredTexture"
-                || entry.kind === "bufferTexture")
-            .map((entry) => entry.registerIndex)
-    );
+    const nonTextureRegisters = new Set();
+    for (const entry of shaderRecord?.bindings || [])
+    {
+        if (entry.kind === "structuredUbo"
+            || entry.kind === "structuredTexture"
+            || entry.kind === "bufferTexture")
+        {
+            nonTextureRegisters.add(entry.registerIndex);
+        }
+
+        // A lowering can stand in for more Carbon registers than the one it
+        // declares. The packed local-light texture folds LightIndexBuffer,
+        // LightBuffer and LightProfileArray into a single usampler2D, so it
+        // reports only the index register. The other two are still described
+        // by Carbon's reflection, and treating them as ordinary textures
+        // fails hard: a structured buffer's Carbon type has no GL texture
+        // target, so Tw2ShaderStageTexture rejects the definition outright.
+        for (const register of [
+            entry.lightIndexRegister,
+            entry.lightDataRegister,
+            entry.lightProfileRegister
+        ])
+        {
+            if (Number.isInteger(register)) nonTextureRegisters.add(register);
+        }
+    }
 
     const samplersByRegister = new Map(
         bindings

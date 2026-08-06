@@ -374,7 +374,15 @@ export class Tw2ShaderProgram
                         registerIndex: binding.registerIndex,
                         strideBytes: binding.strideBytes || 0,
                         width: binding.width || 0,
+                        // Two spellings of the same fact. The emitter names the
+                        // lowering `cjsSemantic` in memory, but the container
+                        // wire format deliberately does not carry that name -
+                        // it writes `localLightRole` with its own vocabulary
+                        // ("packed-texture", not "packedLocalLights"). Anything
+                        // loaded from bytes therefore only ever has the latter,
+                        // so both must survive to the binder.
                         cjsSemantic: binding.cjsSemantic || null,
+                        localLightRole: binding.localLightRole || null,
                         dataTexelBase: binding.dataTexelBase || 0
                     });
                 }

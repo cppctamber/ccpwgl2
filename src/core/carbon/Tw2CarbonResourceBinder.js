@@ -239,7 +239,11 @@ class Tw2CarbonResourceBinder
                 const entry = dataTextures[i];
                 if (entry.kind === "structuredTexture")
                 {
-                    if (entry.cjsSemantic === "packedLocalLights")
+                    // `localLightRole` is the container's spelling and the only
+                    // one present when the package came from bytes;
+                    // `cjsSemantic` is the emitter's in-memory spelling.
+                    if (entry.localLightRole === "packed-texture"
+                        || entry.cjsSemantic === "packedLocalLights")
                     {
                         this._UpdatePackedLightTexture(device, entry);
                         this._BindPackedLightTexture(entry);

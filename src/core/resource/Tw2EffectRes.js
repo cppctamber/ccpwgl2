@@ -320,7 +320,16 @@ export class Tw2EffectRes extends Tw2Resource
                 // Translating at load is a build step running at runtime. It is
                 // correct but not cheap; a pre-translated effect.webgl2 tree
                 // takes the branch below and skips it entirely.
-                const built = CjsWebglFormat.buildEffect(bytes, { source: this.path });
+                // WebGL 2 has no structured buffers, so the local-light family
+                // has to be lowered or the shader cannot bind its lights at
+                // all. `packed-texture` folds LightIndexBuffer, LightBuffer and
+                // LightProfileArray into one usampler2D, which is what keeps
+                // the detail quad shaders inside the 16-unit sampler limit.
+                // See /docs/contracts/webgl2-texture-budget.md.
+                const built = CjsWebglFormat.buildEffect(bytes, {
+                    source: this.path,
+                    localLights: "packed-texture"
+                });
                 container = built.bytes;
                 permutationGraph = built.permutationGraph;
             }
