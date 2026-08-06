@@ -582,8 +582,33 @@ export const TextureFormatDDS =
             depth = Math.max(depth >> 1, 1);
         }
 
+        this.DeclareLevelRange(res, gl, info);
+
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
         gl.bindTexture(res._target, null);
+    },
+
+    /**
+     * Declares the exact level range a DDS supplied, so a partial chain is
+     * still mip-complete.
+     *
+     * A DDS often stops short of 1x1. Without a max level, GL treats such a
+     * texture as incomplete under a mipmapped min filter and every sample
+     * reads black — which is why mip filtering had been disabled outright for
+     * every texture. Only DDS may do this: the formats that call
+     * generateMipmap record a marker mip count rather than a true one, and
+     * clamping from that marker would throw away the levels GL just built.
+     *
+     * @param {Tw2TextureRes} res
+     * @param {WebGLRenderingContext|WebGL2RenderingContext} gl
+     * @param {Object} info Parsed DDS info carrying the authored level count.
+     */
+    DeclareLevelRange(res, gl, info)
+    {
+        if (device.glVersion < 2 || !info.mipmaps) return;
+
+        gl.texParameteri(res._target, gl.TEXTURE_BASE_LEVEL, 0);
+        gl.texParameteri(res._target, gl.TEXTURE_MAX_LEVEL, info.mipmaps - 1);
     },
 
     AssignResourceInfo(res, gl, info)
@@ -723,6 +748,8 @@ export const TextureFormatDDS =
             }
         }
 
+        this.DeclareLevelRange(res, gl, info);
+
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
         gl.bindTexture(res._target, null);
     },
@@ -779,6 +806,8 @@ export const TextureFormatDDS =
             }
         }
 
+        this.DeclareLevelRange(res, gl, info);
+
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, prevUnpack);
         gl.bindTexture(res._target, null);
     },
@@ -813,6 +842,8 @@ export const TextureFormatDDS =
                     rgba.data
                 );
             }
+
+            this.DeclareLevelRange(res, gl, info);
         }
         catch (err)
         {

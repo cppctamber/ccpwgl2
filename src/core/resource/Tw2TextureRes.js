@@ -102,29 +102,23 @@ export class Tw2TextureRes extends Tw2Resource
 
         format.Prepare(this, gl, data);
 
-        /*
-
-        // Post-prepare invariants
+        // A volume atlas is one flat sheet of slices, so a mip chain would
+        // filter neighbouring slices into each other.
         if (this._isVolumeAtlas)
         {
             this._useNoMipFilter = true;
-            // Optional but consistent: ensure we don't claim mipmaps
             this._hasMipMaps = false;
             this._mipCount = 1;
         }
 
-        // Disabled by true, and expected for run time
-        // however it can be overwritten
+        // A runtime that rewrites its own level 0 each frame cannot keep a
+        // chain in step with it.
         if (this._runtime && this._runtime.disableMipSampling)
         {
             this._useNoMipFilter = true;
             this._hasMipMaps = false;
             this._mipCount = 1;
         }
-
-         */
-
-        this._useNoMipFilter = true;
 
         this._isAttached = false;
         this.OnPrepared();
