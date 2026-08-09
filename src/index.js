@@ -12,6 +12,7 @@ tw2.Register(config);
 tw2.Register({ shaders: deprecatedShaders });
 
 export { tiny } from "./wrapped";
+export { EveSOFDataHandler } from "./sof/EveSOFDataHandler";
 export { deprecatedShaders };
 export { tw2, tw2 as CCPWGL };
 

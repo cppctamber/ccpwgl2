@@ -1,6 +1,9 @@
-import { meta } from "utils";
+import { isDNA, isNumber, isString, meta } from "utils";
 import { box3, mat4, sph3, vec3 } from "math";
+import { tw2 } from "global";
 import { WglTransform } from "core/WglTransform";
+import { getApiService } from "../api";
+import { TnySlot } from "./TnySlot";
 
 
 @meta.tny.type("TnySpaceObject")
@@ -13,6 +16,19 @@ export class TnySpaceObject extends WglTransform
 
     @meta.plain
     custom = {};
+
+    /** @type {Array<TnySlot>} */
+    turrets = [];
+    /** @type {Array<TnySlot>} */
+    xlTurrets = [];
+    /** @type {Array<TnySlot>} */
+    launchers = [];
+    /** @type {Array<TnySlot>} */
+    chains = [];
+    /** @type {Array<TnySlot>} */
+    atomics = [];
+    /** @type {Array<TnySlot>} */
+    bombs = [];
 
     get display()
     {
@@ -260,6 +276,78 @@ export class TnySpaceObject extends WglTransform
     static FromWrapped(wrapped, values)
     {
         return new this(wrapped, values);
+    }
+
+    /**
+     * Fetches a space object async, building through tw2.Fetch so a
+     * registered dna handler (lazy sof loading) is honoured.
+     * @param {String|Number|Object} options - dna/res path string, typeID, or options object
+     * @param {String} [options.dna]
+     * @param {String} [options.resPath]
+     * @param {Number} [options.typeID]        - resolved to dna via the api service
+     * @param {Number} [options.skinID]
+     * @param {Boolean|Function} [options.awaitResources] - await (or watch) resource loading
+     * @returns {Promise<TnySpaceObject>}
+     */
+    static async Fetch(options = {})
+    {
+        if (isString(options))
+        {
+            options = isDNA(options) ? { dna: options } : { resPath: options };
+        }
+        else if (isNumber(options))
+        {
+            options = { typeID: options };
+        }
+
+        let { dna, resPath, typeID, skinID, awaitResources, ...values } = options;
+
+        if (typeID !== undefined && typeID !== null)
+        {
+            const resolved = await getApiService().ResolveDna({ typeID, skinID });
+            if (!values.name) values.name = resolved.name;
+            dna = resolved.dna;
+        }
+
+        const source = dna || resPath;
+        if (!source) throw new ReferenceError("Could not identify a dna or resource path");
+
+        const wrapped = await tw2.Fetch(source, awaitResources);
+        wrapped._resPath = source;
+        const object = new this(wrapped, values);
+        await object.RebuildSlots();
+        return object;
+    }
+
+    /**
+     * Reconciles the weapon/utility slot arrays from the wrapped object's
+     * locators. Call again after the wrapped object (or its parts) change.
+     * @param {*|Array} [parts=this.wrapped] - wrapped source object(s)
+     * @returns {Promise<this>}
+     */
+    async RebuildSlots(parts = this.wrapped)
+    {
+        if (!parts) return this;
+        await Promise.all([
+            TnySlot.RebuildLocatorSlots(this, parts, "turret", this.turrets),
+            TnySlot.RebuildLocatorSlots(this, parts, "xl", this.xlTurrets),
+            TnySlot.RebuildLocatorSlots(this, parts, "launcher", this.launchers),
+            TnySlot.RebuildLocatorSlots(this, parts, "chain", this.chains),
+            TnySlot.RebuildLocatorSlots(this, parts, "atomic", this.atomics),
+            TnySlot.RebuildLocatorSlots(this, parts, "bomb", this.bombs)
+        ]);
+        return this;
+    }
+
+    /**
+     * Gets all slot arrays as one list
+     * @param {Array} [out=[]]
+     * @returns {Array<TnySlot>}
+     */
+    GetSlots(out = [])
+    {
+        out.push(...this.turrets, ...this.xlTurrets, ...this.launchers, ...this.chains, ...this.atomics, ...this.bombs);
+        return out;
     }
 
     static GetWrapped(item)

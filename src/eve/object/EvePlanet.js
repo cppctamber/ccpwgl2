@@ -20,6 +20,11 @@ export class EvePlanet extends EveObject
     @meta.list("Tw2CurveSet")
     curveSets = [];
 
+    // Current planet templates drive scale and colour through controllers
+    // (Tr2Controller state machines) authored on the planet itself.
+    @meta.list("Tr2Controller")
+    controllers = [];
+
     @meta.struct("EveTransform")
     highDetail = new EveTransform();
 
@@ -148,8 +153,26 @@ export class EvePlanet extends EveObject
         this._atmosphere = atmosphere;
         this.zOnlyModel = zOnly;
 
-        this.highDetail.children[0] = planet;
-        if (atmosphere) this.highDetail.children[1] = atmosphere;
+        // Current templates are authored as EvePlanet objects that carry their
+        // model in `effectChildren`, not as a plain transform. Adopt what one
+        // carries rather than nesting a planet inside a planet, which leaves
+        // `highDetail.children[0]` an EvePlanet with no `children` at all.
+        if (planet instanceof EvePlanet)
+        {
+            this.effectChildren.push(...planet.effectChildren);
+            this.curveSets.push(...planet.curveSets);
+            this.controllers.push(...planet.controllers);
+            this.highDetail.children.push(...planet.highDetail.children);
+            // Effect children stay in effectChildren: EvePlanet updates those
+            // with a parent transform and per-object data, while an
+            // EveTransform child is updated with a delta time alone.
+        }
+        else
+        {
+            this.highDetail.children[0] = planet;
+        }
+
+        if (atmosphere) this.highDetail.children.push(atmosphere);
 
         return this.Rebuild();
     }
@@ -221,6 +244,11 @@ export class EvePlanet extends EveObject
         if (!this.display) return;
 
         this.highDetail.Update(dt);
+
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            this.controllers[i].Update(dt);
+        }
 
         for (let i = 0; i < this.curveSets.length; i++)
         {
@@ -301,7 +329,9 @@ export class EvePlanet extends EveObject
             }
         }
 
-        const planet = this.highDetail.children[0];
+        // The model root is a high-detail child on older templates and an
+        // effect child on current ones.
+        const planet = this.highDetail.children[0] || this.effectChildren[0];
 
         let originalEffect = planet ? getMainEffect(planet) : null,
             resPath = "res:/Graphics/Effect/Managed/Space/Planet/EarthlikePlanet.fx";
@@ -312,9 +342,11 @@ export class EvePlanet extends EveObject
             copyParameters(effectHeight, originalEffect);
         }
 
-        for (let i = 0; planet && i < planet.children.length; ++i)
+        // Not every model root has children (an EveChildMesh has none).
+        const children = planet && Array.isArray(planet.children) ? planet.children : [];
+        for (let i = 0; i < children.length; ++i)
         {
-            let effect = getMainEffect(planet.children[i]);
+            let effect = getMainEffect(children[i]);
             if (effect) copyParameters(effectHeight, effect);
         }
 

@@ -1,38 +1,23 @@
 import { meta } from "utils";
-import { vec3 } from "math";
-import { EvePlanet } from "eve/object";
-import { TnySpaceObject } from "./TnySpaceObject";
+import { TnyMoon } from "./TnyMoon";
 
 
+/**
+ * A planet: a moon with atmospherics. Same wrapped EvePlanet and the same
+ * fetch, keeping the aurora child the templates carry.
+ */
 @meta.tny.type("TnyPlanet")
 @meta.tny.define("TnyPlanet")
-export class TnyPlanet extends TnySpaceObject
+export class TnyPlanet extends TnyMoon
 {
 
-    get isPlanet()
-    {
-        return true;
-    }
+    static celestialKey = "planetID";
 
-    SetWrapped(wrapped)
-    {
-        if (wrapped && !(wrapped instanceof EvePlanet))
-        {
-            throw new TypeError("Invalid wrapped planet");
-        }
+    static aurora = true;
 
-        return super.SetWrapped(wrapped);
-    }
-
-    GetLongAxis()
+    get isMoon()
     {
-        const worldScale = this.GetWorldScaling(TnySpaceObject.global.vec3_1);
-        return Math.max(worldScale[0], worldScale[1], worldScale[2]);
-    }
-
-    GetSize(out = vec3.create())
-    {
-        return this.GetScale(out);
+        return false;
     }
 
 }

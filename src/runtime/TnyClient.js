@@ -2,6 +2,10 @@ import { mat4 } from "math";
 import { Tw2BatchAccumulator } from "core/batch";
 import { device, tw2 } from "global";
 import { meta } from "utils";
+import { TnyShip } from "./objects/TnyShip";
+import { TnyPlanet } from "./objects/TnyPlanet";
+import { TnyMoon } from "./objects/TnyMoon";
+import { TnyScene } from "./TnyScene";
 
 
 @meta.tny.type("TnyClient")
@@ -171,7 +175,65 @@ export class TnyClient extends meta.Model
     SetScene(scene)
     {
         this.scene = scene || null;
+
+        // Objects added before the scene arrived move into it, so they are
+        // lit like everything added afterwards.
+        if (this.scene && this.scene.AddObject && this.objects.length)
+        {
+            const migrating = this.objects.splice(0);
+            for (let i = 0; i < migrating.length; i++) this.scene.AddObject(migrating[i]);
+        }
+
         return this;
+    }
+
+    /**
+     * Fetches a scene and sets it as the client's scene
+     * @param {String|Object|Array} options - see TnyScene.Fetch
+     * @returns {Promise<TnyScene>} the fetched scene
+     */
+    async FetchScene(options)
+    {
+        const scene = await TnyScene.Fetch(options);
+        this.SetScene(scene);
+        return scene;
+    }
+
+    /**
+     * Fetches a ship (dna string, typeID or options object) and adds it to
+     * the client's objects
+     * @param {String|Number|Object} options - see TnySpaceObject.Fetch
+     * @returns {Promise<TnyShip>}
+     */
+    async FetchShip(options)
+    {
+        const ship = await TnyShip.Fetch(options);
+        this.AddObject(ship);
+        return ship;
+    }
+
+    /**
+     * Fetches a planet (or moon) and adds it to the scene
+     * @param {Number|Object} options - see TnyPlanet.Fetch
+     * @returns {Promise<TnyPlanet>}
+     */
+    async FetchPlanet(options)
+    {
+        const planet = await TnyPlanet.Fetch(options);
+        this.AddObject(planet);
+        return planet;
+    }
+
+    /**
+     * Fetches a moon and adds it to the scene
+     * @param {Number|Object} options - see TnyMoon.Fetch
+     * @returns {Promise<TnyMoon>}
+     */
+    async FetchMoon(options)
+    {
+        const moon = await TnyMoon.Fetch(options);
+        this.AddObject(moon);
+        return moon;
     }
 
     GetScene()
@@ -197,7 +259,17 @@ export class TnyClient extends meta.Model
             this.AddCamera(camera);
         }
 
+        // Only the active camera listens: the outgoing one stops taking input
+        // and the incoming one starts, which is what makes a camera swap feel
+        // like a swap rather than two cameras fighting over the pointer.
+        if (this.camera && this.camera !== camera && this.camera.controller)
+        {
+            this.camera.controller.enabled = false;
+        }
+
         this.camera = camera || null;
+        if (this.camera && this.camera.controller) this.camera.controller.enabled = true;
+
         return this;
     }
 
@@ -241,14 +313,29 @@ export class TnyClient extends meta.Model
         return this.AddObject(objects);
     }
 
+    /**
+     * Adds an object. When a scene is set the object goes into the scene:
+     * EveSpaceScene applies per-frame lighting and environment data before
+     * collecting batches, so an object rendered beside it comes out unlit.
+     * Without a scene the client renders it from its own list.
+     * @param {*} object
+     * @returns {TnyClient}
+     */
     AddObject(object)
     {
+        if (this.scene && this.scene.AddObject)
+        {
+            this.scene.AddObject(object);
+            return this;
+        }
+
         this.constructor.AddItems(this.objects, object);
         return this;
     }
 
     RemoveObject(object)
     {
+        if (this.scene && this.scene.RemoveObject) this.scene.RemoveObject(object);
         this.constructor.RemoveItem(this.objects, object);
         return this;
     }

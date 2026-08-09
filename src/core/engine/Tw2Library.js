@@ -267,6 +267,17 @@ export class Tw2Library extends Tw2EventEmitter
     eveSof = null;
 
     /**
+     * Optional DNA handler, registered before Initialize.
+     * Called with a DNA string (or null at boot) and must resolve to an
+     * EveSOFData instance with that DNA's components available; Fetch then
+     * builds from the returned instance. Enables lazy/partial SOF loading —
+     * when set, Initialize does not fetch the full data.black.
+     * @type {null|Function}
+     * @private
+     */
+    _dnaHandler = null;
+
+    /**
      * Constructor
      */
     constructor()
@@ -352,9 +363,33 @@ export class Tw2Library extends Tw2EventEmitter
             this.device.RequestAnimationFrame(tick);
         }
 
-        this.Log({ type: "Space Object Factory", message: "Loading space object factory data" });
-        this.eveSof = await this.resMan.FetchObject(this.constructor.spaceObjectFactoryResPath);
+        if (this._dnaHandler)
+        {
+            this.Log({ type: "Space Object Factory", message: "Booting space object factory data (lazy)" });
+            this.eveSof = await this._dnaHandler(null);
+        }
+        else
+        {
+            this.Log({ type: "Space Object Factory", message: "Loading space object factory data" });
+            this.eveSof = await this.resMan.FetchObject(this.constructor.spaceObjectFactoryResPath);
+        }
         this.eveSof.Register(sof);
+    }
+
+    /**
+     * Sets a DNA handler, which Fetch calls for DNA values instead of the
+     * default eveSof. The handler receives the DNA string (or null during
+     * Initialize) and must resolve to an EveSOFData instance that can build
+     * it; when set, Initialize skips fetching the full data.black.
+     * @param {null|Function} handler - async (dna|null) => EveSOFData
+     */
+    SetDnaHandler(handler)
+    {
+        if (handler !== null && typeof handler !== "function")
+        {
+            throw new TypeError("Invalid dna handler: expected function or null");
+        }
+        this._dnaHandler = handler;
     }
 
     /**
@@ -564,11 +599,12 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);
+        if (opt.dnaHandler) this.SetDnaHandler(opt.dnaHandler);
         if (opt.black) this.RegisterBlackPathHandlers(opt.black);
         if (opt.variableTypes) this.variableTypes.Register(opt.variableTypes);
         if (opt.constructors) this.constructors.Register(opt.constructors);
         // paths/dynamicPaths/extensions must be registered before variables:
-        // a real (non-"", non-"rgba:/...") texture path in `variables` (e.g.
+        // a non-empty texture path in `variables` (e.g.
         // config.js's SSAOMap/EveSpaceSceneShadowMap defaults) eagerly calls
         // GetResource() -> GetExtensionFromPath() while constructing its
         // Tw2TextureParameter, which throws ErrStoreKeyUnregistered if the
@@ -1109,7 +1145,8 @@ export class Tw2Library extends Tw2EventEmitter
         {
             if (util.isDNA(value))
             {
-                result = await this.eveSof.Build(value);
+                const eveSof = this._dnaHandler ? await this._dnaHandler(value) : this.eveSof;
+                result = await eveSof.Build(value);
             }
             else if (util.isString(value))
             {

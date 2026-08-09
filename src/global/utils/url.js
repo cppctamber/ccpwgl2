@@ -53,6 +53,9 @@ export function normalizeResourcePath(path)
 {
     path = path.toLowerCase();
     path = path.replace(/\\/g, "/");
+    // Everything ships as .black; .red is the legacy name for the same file
+    // and is still what the SDE and older scenes ask for.
+    path = path.replace(/\.red$/, ".black");
     return path;
 }
 
