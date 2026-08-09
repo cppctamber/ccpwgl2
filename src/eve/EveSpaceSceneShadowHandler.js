@@ -1140,12 +1140,12 @@ export class EveSpaceSceneShadowHandler
     {
         if (!tw2.HasVariable("EveSpaceSceneShadowMap"))
         {
-            tw2.SetVariable("EveSpaceSceneShadowMap", "rgba:/255,255,255,255");
+            tw2.SetVariable("EveSpaceSceneShadowMap", "dynamic:/color/1,1,1,1");
         }
 
         if (!tw2.HasVariable("EveSpaceSceneCascadedShadowMap"))
         {
-            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "rgba:/0,0,0,255");
+            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "dynamic:/color/0,0,0,1");
         }
     }
 
@@ -1153,20 +1153,20 @@ export class EveSpaceSceneShadowHandler
     {
         if (tw2.HasVariable("EveSpaceSceneShadowMap"))
         {
-            tw2.SetVariable("EveSpaceSceneShadowMap", "rgba:/255,255,255,255");
+            tw2.SetVariable("EveSpaceSceneShadowMap", "dynamic:/color/1,1,1,1");
         }
         else
         {
-            tw2.SetVariable("EveSpaceSceneShadowMap", "rgba:/255,255,255,255");
+            tw2.SetVariable("EveSpaceSceneShadowMap", "dynamic:/color/1,1,1,1");
         }
 
         if (tw2.HasVariable("EveSpaceSceneCascadedShadowMap"))
         {
-            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "rgba:/0,0,0,255");
+            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "dynamic:/color/0,0,0,1");
         }
         else
         {
-            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "rgba:/0,0,0,255");
+            tw2.SetVariable("EveSpaceSceneCascadedShadowMap", "dynamic:/color/0,0,0,1");
         }
     }
 

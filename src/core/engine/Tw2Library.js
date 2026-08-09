@@ -335,6 +335,19 @@ export class Tw2Library extends Tw2EventEmitter
 
         this.device.Create({ canvas, canvas3d, canvas2d, glParams });
 
+        // Everything above is configuration; from here the library may fetch.
+        // Nothing registered before this point has touched the network, so the
+        // paths just registered are the ones every url resolves against - see
+        // Tw2ResMan._loadGateOpen for why that matters.
+        const released = this.resMan.OpenLoadGate();
+        if (released)
+        {
+            this.Log({
+                type: "Resource manager",
+                message: `Releasing ${released} resource${released === 1 ? "" : "s"} held until initialization`
+            });
+        }
+
         if (input !== false)
         {
             this.input.BindDevice(this.device, input || {});

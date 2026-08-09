@@ -414,11 +414,15 @@ export const config = {
         // black default silently kills all sunlight and the hull is lit
         // only by the env cubemap ("melted brown" look). White matches
         // both the old hslswebgl adapter's forced per-effect fallback and
-        // EveSpaceSceneShadowHandler's own resets ("rgba:/255,255,255,255").
-        // Real file path (not "rgba:/...") so it resolves lazily through
-        // the resource pipeline instead of eagerly creating a GL texture
-        // at module-load time, before device.gl exists.
-        "EveSpaceSceneShadowMap": "res:/texture/global/white.dds",
+        // EveSpaceSceneShadowHandler's own resets ("dynamic:/color/1,1,1,1").
+        // A dynamic colour rather than a file: the old "rgba:/" branch of
+        // Tw2TextureParameter builds a GL texture during construction, which
+        // at module-load time is before device.gl exists, and builds a
+        // separate one per parameter besides. "dynamic:/color/..." resolves
+        // through the resource manager like any other path, so it is created
+        // once the device exists and every user of the colour shares it.
+        // Carbon spells it the same way (trinity SolidColorTexture).
+        "EveSpaceSceneShadowMap": "dynamic:/color/1,1,1,1",
         "EveSpaceSceneCascadedShadowMap": "",
 
         // WHITE, for the same reason the shadow map above is white, but with
@@ -433,12 +437,11 @@ export const config = {
         // Carbon itself leaves this null outside impostor atlas updates, where
         // it points at the impostor item depth-stencil; ccpwgl runs no depth
         // pass at all, so the neutral value is what we want permanently.
-        "DepthMap": "res:/texture/global/white.dds",
+        "DepthMap": "dynamic:/color/1,1,1,1",
 
-        // Carbon per-effect SSAO map has no producer yet; default to the
-        // same real white texture EveSpaceScene.GetEmptyTexture() style
-        // code already relies on (no occlusion), lazily resolved.
-        "SSAOMap": "res:/texture/global/white.dds",
+        // Carbon per-effect SSAO map has no producer yet; default to the same
+        // shared white the shadow and depth maps use above (no occlusion).
+        "SSAOMap": "dynamic:/color/1,1,1,1",
 
         "EnvMap1": "",
         "EnvMap2": "",

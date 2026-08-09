@@ -2,7 +2,6 @@ import { meta, isString } from "utils";
 import { tw2, device } from "global";
 import { Tw2SamplerOverride } from "../sampler/Tw2SamplerOverride";
 import { Tw2Parameter } from "./Tw2Parameter";
-import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2Resource } from "core/resource";
 
 
@@ -136,7 +135,10 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     GetValue()
     {
-        return this.isAttached && this.resourcePath.indexOf("rgba:") !== 0 ? null : this.resourcePath;
+        // An attached texture has no path to report. The exception used to be
+        // "rgba:" paths, which were attached but still meaningful; colours are
+        // ordinary resources now, so they are never attached here.
+        return this.isAttached ? null : this.resourcePath;
     }
 
     /**
@@ -233,25 +235,12 @@ export class Tw2TextureParameter extends Tw2Parameter
         // Don't update res when a texture is attached
         this.resourcePath = this.resourcePath ? this.resourcePath.toLowerCase() : "";
 
-        if (this.resourcePath.indexOf("rgba:/") === 0)
-        {
-            if (!this.textureRes || this.textureRes.path !== this.resourcePath)
-            {
-                const
-                    color = this.resourcePath.replace("rgba:/", "").split(","),
-                    texture = device.CreateSolidTexture([
-                        parseFloat(color[0]),
-                        parseFloat(color[1]),
-                        parseFloat(color[2]),
-                        color[3] !== undefined ? parseFloat(color[3]) : 255
-                    ]);
-
-                const res = new Tw2TextureRes();
-                this._SetTextureRes(res);
-                res.Attach(texture, this.resourcePath);
-            }
-        }
-        else if (!this.isAttached)
+        // Constant colours are "dynamic:/color/r,g,b,a" and resolve through
+        // the resource manager like any other path, so they are built once a
+        // device exists and shared by every parameter asking for that colour.
+        // The old "rgba:/" branch did neither: it created a GL texture during
+        // construction, and a separate one per parameter.
+        if (!this.isAttached)
         {
             const res = this.resourcePath ? tw2.GetResource(this.resourcePath) : null;
             this._SetTextureRes(res);

@@ -3,6 +3,7 @@ import { Tw2ResManMainThreadLoader } from "./Tw2ResManMainThreadLoader";
 import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
+import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, normalizeResourcePath } from "utils";
@@ -65,6 +66,21 @@ export class Tw2ResMan extends Tw2EventEmitter
     _pendingLoads = new Set();
     /** Prevents enqueuing duplicate raw-load requests for same resource. */
     _queuedLoads = new Set();
+    /**
+     * Nothing is fetched until tw2.Initialize opens this gate. Registration is
+     * declarative: tw2.Register(config) runs at import and builds parameters
+     * whose values are resource paths, and those constructors reach
+     * GetResource() -> LoadResource(). Loading there would resolve every url
+     * against whatever paths the library happens to ship with, freezing them
+     * before the host application has had a chance to configure anything -
+     * which is how a public page ended up requesting textures from the
+     * developer's local resource server.
+     */
+    _loadGateOpen = false;
+    /** Resources registered before the gate opened, loaded when it does. */
+    _deferredLoads = new Set();
+    /** Constructors for `dynamic:/<name>/<query>` resources, keyed by name. */
+    _dynamicConstructors = new Map();
     /** Consecutive-frame counter used by IsLoading(). */
     _noLoadFrames = 0;
     /** Backing field for system mirror toggle. */
@@ -127,6 +143,11 @@ export class Tw2ResMan extends Tw2EventEmitter
         this._mainThreadLoader = new Tw2ResManMainThreadLoader(this);
         this._workerLoader = new Tw2ResManWorkerLoader(this);
         this._loader = this._mainThreadLoader;
+
+        // Built in, as Carbon registers its own from a static constructor.
+        this.RegisterResourceConstructor("color", {
+            GetResource: query => Tw2ColorTextureRes.FromQuery(query)
+        });
     }
 
     /**
@@ -592,18 +613,49 @@ export class Tw2ResMan extends Tw2EventEmitter
         let res;
         path = Tw2ResMan.NormalizePath(path);
 
-        // TODO: Dynamic resources
-        if (path.indexOf("dynamic:/") === 0)
-        {
-            throw new ErrFeatureNotImplemented({ feature: "Dynamic resources" });
-        }
-
         // Check if already loaded
         res = this.motherLode.Find(path);
         if (res)
         {
             res.RegisterCallbacks(onResolved, onRejected);
             return res;
+        }
+
+        // Dynamic resources: `dynamic:/<name>/<query>` is handed to whichever
+        // constructor registered <name>, and the result is cached under the
+        // full path like any other resource - so identical queries share one
+        // resource instead of each building its own. This has to sit BELOW the
+        // cache lookup, as it does in Carbon's BlueResMan, or every request
+        // constructs another copy and the sharing is lost.
+        if (path.indexOf(Tw2ResMan.DYNAMIC_PREFIX) === 0)
+        {
+            const
+                rest = path.substring(Tw2ResMan.DYNAMIC_PREFIX.length),
+                slash = rest.indexOf("/"),
+                name = slash === -1 ? rest : rest.substring(0, slash),
+                query = slash === -1 ? "" : rest.substring(slash + 1),
+                constructor = this._dynamicConstructors.get(name);
+
+            if (!constructor)
+            {
+                const err = new ErrFeatureNotImplemented({ feature: `Dynamic resource "${name}"` });
+                this.OnPathError(path, err);
+                if (onRejected) onRejected(err);
+                return null;
+            }
+
+            res = constructor.GetResource(query);
+            if (!res)
+            {
+                const err = new Tw2Error({ message: `Could not construct dynamic resource: ${path}` });
+                this.OnPathError(path, err);
+                if (onRejected) onRejected(err);
+                return null;
+            }
+
+            res.path = path;
+            res.RegisterCallbacks(onResolved, onRejected);
+            return this.LoadResource(res);
         }
 
         // Manually created resources
@@ -723,9 +775,22 @@ export class Tw2ResMan extends Tw2EventEmitter
             return res;
         }
 
+        // Before tw2.Initialize, hold the resource without touching the
+        // network: its url is resolved when the gate opens, by which point
+        // paths are final. See _loadGateOpen.
+        if (!this._loadGateOpen)
+        {
+            this._deferredLoads.add(res);
+            return res;
+        }
+
         try
         {
-            const url = this.tw2.GetURL(res.path);
+            // A dynamic resource rasterizes itself from its own path; there is
+            // no url to resolve, and asking for one throws on the prefix.
+            const url = res.path.indexOf(Tw2ResMan.DYNAMIC_PREFIX) === 0
+                ? res.path
+                : this.tw2.GetURL(res.path);
 
             if (!res.OnRequested(eventLog))
             {
@@ -750,6 +815,51 @@ export class Tw2ResMan extends Tw2EventEmitter
         }
 
         return res;
+    }
+
+    /**
+     * Registers a constructor for `dynamic:/<name>/<query>` resources. The
+     * constructor is handed the query and returns an unloaded resource; it
+     * must not touch the device, since registration can happen before one
+     * exists. Mirrors Carbon's IBlueResMan::RegisterResourceConstructor.
+     * @param {String} name
+     * @param {{ GetResource: Function }} constructor
+     */
+    RegisterResourceConstructor(name, constructor)
+    {
+        if (!constructor || !isFunction(constructor.GetResource))
+        {
+            throw new Tw2Error({ message: `Dynamic resource constructor "${name}" must implement GetResource` });
+        }
+        this._dynamicConstructors.set(name.toLowerCase(), constructor);
+    }
+
+    /**
+     * Removes a dynamic resource constructor
+     * @param {String} name
+     * @returns {Boolean} whether one was registered
+     */
+    UnregisterResourceConstructor(name)
+    {
+        return this._dynamicConstructors.delete(name.toLowerCase());
+    }
+
+    /**
+     * Opens the load gate and flushes everything registered before it, so the
+     * urls are resolved against the paths the host application configured
+     * rather than the library's shipped defaults. Called by tw2.Initialize
+     * once paths are registered and the device exists; safe to call again.
+     * @returns {Number} how many held resources were released
+     */
+    OpenLoadGate()
+    {
+        if (this._loadGateOpen) return 0;
+        this._loadGateOpen = true;
+
+        const held = [ ...this._deferredLoads ];
+        this._deferredLoads.clear();
+        for (const res of held) this.LoadResource(res);
+        return held.length;
     }
 
     /**
@@ -905,6 +1015,13 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         return normalizeResourcePath(path);
     }
+
+    /**
+     * Path prefix for resources built by a registered constructor rather than
+     * fetched, as in Carbon: `dynamic:/<name>/<query>`
+     * @type {String}
+     */
+    static DYNAMIC_PREFIX = "dynamic:/";
 
     /**
      * Log type
