@@ -9,7 +9,6 @@ import {
 import { TnyCameraTest } from "./cameras";
 import { TnyRotationGizmo, TnyScalingGizmo, TnyTransformGizmo, TnyTranslationGizmo } from "./debug";
 import { TnyLensflare, TnyMoon, TnyPlanet, TnyShip, TnySpaceObject, TnyStrategicCruiser } from "./objects";
-import { TnyResService } from "./providers";
 import { TnyClient } from "./TnyClient";
 import { TnyScene } from "./TnyScene";
 
@@ -43,7 +42,6 @@ export const tnyServiceConstructors = {
     TnyCharacterApiProvider,
     TnyClient,
     TnyESIApiProvider,
-    TnyResService,
     TnySDEApiProvider,
     TnySkinApiProvider,
     TnyToolsApiProvider

@@ -8,7 +8,7 @@ This folder is not a finished public API yet. It is not exported from `src/index
 ## Purpose
 
 - Keep application-facing convenience classes separate from core reader/runtime classes.
-- Provide a small client/service/render shape through `TnyClient`, `TnyApiService`, and `TnyResService`.
+- Provide a small client/service/render shape through `TnyClient` and `TnyApiService`.
 - Wrap existing reader-resolved objects with simpler `TnySpaceObject`, `TnyShip`, `TnyPlanet`, `TnyLensflare`, and `TnyStrategicCruiser` controls.
 - Keep the only currently proven camera candidate in `TnyCameraTest`.
 - Register `Tny` constructors through `RegisterTnyConstructors(...)` when a runtime chooses to use them.
@@ -26,7 +26,6 @@ They should wrap existing reader-resolved objects until a concrete translation n
 
 - `TnyClient` has a minimal object/camera/render workflow, with client-owned objects, camera selection, optional scene/post/renderer hooks, and batch rendering for objects that expose `GetBatches(...)`.
 - `api/` contains provisional ESI and SDE/static-data-shaped provider adapters.
-- `providers/TnyResService.js` is a placeholder provider boundary for future resource/path/fact services.
 - `objects/` contains provisional front-facing object wrappers over existing EVE objects.
 - `cameras/TnyCameraTest.js` wraps `WrappedTestCamera`; other wrapped camera experiments are not promoted here.
 - `debug/TnyRenderDebugOverlay.js` is an opt-in viewport helper for console debugging. It can install after a scene `Render` method and draw pass textures/reports in the bottom-left of the WebGL/canvas stack:

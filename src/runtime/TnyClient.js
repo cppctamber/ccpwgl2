@@ -29,10 +29,6 @@ export class TnyClient extends meta.Model
         const {
             api,
             apiService,
-            resource,
-            resourceService,
-            res,
-            resService,
             camera,
             cameras,
             objects,
@@ -59,11 +55,6 @@ export class TnyClient extends meta.Model
         if (api || apiService)
         {
             this.SetApiService(api || apiService);
-        }
-
-        if (resource || resourceService || res || resService)
-        {
-            this.SetResourceService(resource || resourceService || res || resService);
         }
 
         if (scene)
@@ -107,16 +98,6 @@ export class TnyClient extends meta.Model
         this.SetApiService(service);
     }
 
-    get resource()
-    {
-        return this.GetResourceService();
-    }
-
-    set resource(service)
-    {
-        this.SetResourceService(service);
-    }
-
     SetService(name, service)
     {
         if (!name)
@@ -139,16 +120,6 @@ export class TnyClient extends meta.Model
     GetService(name)
     {
         return this.services.get(name) || null;
-    }
-
-    SetResourceService(service)
-    {
-        return this.SetService("resource", service);
-    }
-
-    GetResourceService()
-    {
-        return this.GetService("resource");
     }
 
     SetApiService(service)

@@ -1,1 +1,0 @@
-export { TnyResService } from "./TnyResService";
