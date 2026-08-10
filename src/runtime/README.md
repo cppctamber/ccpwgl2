@@ -11,7 +11,7 @@ This folder is not a finished public API yet. It is not exported from `src/index
 - Provide a small client/service/render shape through `TnyClient` and `TnyApiService`.
 - Wrap existing reader-resolved objects with simpler `TnySpaceObject`, `TnyShip`, `TnyPlanet`, `TnyLensflare`, and `TnyStrategicCruiser` controls.
 - Keep the only currently proven camera candidate in `TnyCameraTest`.
-- Register `Tny` constructors through `RegisterTnyConstructors(...)` when a runtime chooses to use them.
+- Register `Tny` constructors on the exported `tny` client, which owns a constructor store separate from `tw2`: Tny wrappers resolve through `tny.GetClass()`, engine classes through `tw2.GetClass()`.
 
 ## Boundaries
 
