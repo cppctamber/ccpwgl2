@@ -1,7 +1,6 @@
 import { resMan, tw2 } from "global";
 import { isString, isVector, meta } from "utils";
 import { EveSpaceScene } from "eve/EveSpaceScene";
-import { Tr2InteriorScene } from "interior/scene/Tr2InteriorScene";
 
 
 /**
@@ -76,10 +75,11 @@ export class TnyScene extends meta.Model
      */
     SetWrapped(wrapped)
     {
-        // There are two scenes: space and interior.
-        if (wrapped && !(wrapped instanceof EveSpaceScene) && !(wrapped instanceof Tr2InteriorScene))
+        // Space only. The interior scene is TnyCharacterScene's to own, and a
+        // wrapper that accepts both ends up speaking for neither.
+        if (wrapped && !(wrapped instanceof EveSpaceScene))
         {
-            throw new TypeError("Invalid wrapped scene");
+            throw new TypeError("TnyScene requires an EveSpaceScene");
         }
 
         this.wrapped = wrapped || null;

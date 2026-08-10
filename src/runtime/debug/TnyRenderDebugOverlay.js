@@ -1,4 +1,5 @@
 import { device, tw2 } from "global";
+import { GetDefaultClient } from "../defaultClient";
 
 
 /**
@@ -923,7 +924,7 @@ export class TnyRenderDebugOverlay
      */
     static ResolveScene(scene)
     {
-        scene = scene || window.tiny?.scene || null;
+        scene = scene || GetDefaultClient()?.GetScene?.() || null;
         return scene?.wrapped || scene;
     }
 
@@ -933,7 +934,7 @@ export class TnyRenderDebugOverlay
      */
     static ResolveInstallTarget()
     {
-        return window.tiny?.scene || TnyRenderDebugOverlay.ResolveScene();
+        return GetDefaultClient()?.GetScene?.() || TnyRenderDebugOverlay.ResolveScene();
     }
 
     /**

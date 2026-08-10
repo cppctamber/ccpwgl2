@@ -1,4 +1,5 @@
 import { WglTransform } from "core";
+import { GetDefaultClient } from "../defaultClient";
 import { EveCurveLineSet } from "eve/item";
 import { device, tw2 } from "global";
 import { mat4, quat, ray3, vec3, vec4 } from "math";
@@ -2306,8 +2307,7 @@ export class TnyTransformGizmo extends WglTransform
      */
     static ResolveDefaultInstallTarget()
     {
-        if (typeof window === "undefined" || !window.tiny) return null;
-        return window.tiny;
+        return GetDefaultClient();
     }
 
     /**
@@ -2344,10 +2344,11 @@ export class TnyTransformGizmo extends WglTransform
         if (typeof window !== "undefined")
         {
             if (window.tw2 && window.tw2.canvas2d) return window.tw2.canvas2d;
-            if (window.tiny)
-            {
-                return window.tiny.canvas2d || window.tiny.canvas || window.tiny.domElement || null;
-            }
+        }
+
+        {
+            const client = GetDefaultClient();
+            if (client) return client.canvas2d || client.canvas || client.domElement || null;
         }
 
         return null;
@@ -2393,7 +2394,8 @@ export class TnyTransformGizmo extends WglTransform
         if (typeof window !== "undefined")
         {
             if (window.tw2 && window.tw2.input) return window.tw2.input;
-            if (window.tiny && window.tiny.input) return window.tiny.input;
+            const client = GetDefaultClient();
+            if (client && client.input) return client.input;
         }
 
         return null;
