@@ -966,6 +966,92 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Uploads the emulated texture-addressing buffer.
+     *
+     * WebGL2 has no CLAMP_TO_BORDER and no MIRROR_ONCE, so translated shaders
+     * honour those in GLSL and read the mode from this buffer. Repeat, mirrored
+     * repeat and clamp-to-edge are native and need nothing here — they are still
+     * uploaded, because the shader tests for the modes it emulates rather than
+     * for "is emulated", so an unremarkable mode must read as itself.
+     *
+     * Indexed by RESOURCE register, not sampler register: several textures can
+     * share one D3D sampler and still resolve to different modes, and the wrap
+     * state belongs to the texture in GL anyway.
+     *
+     * The mode is taken from the RESOLVED sampler, which is already
+     * "the override if there is one, else the shader's own" — so the fallback is
+     * never reimplemented here and cannot drift from what the sampler does.
+     *
+     * Uploaded only when the linked program actually declares the buffer. A
+     * shader that emulates nothing declares nothing, and getUniformLocation
+     * returns null for it — writing anyway would be a silent no-op that looks
+     * like it worked.
+     *
+     * @param {WebGL2RenderingContext} gl
+     * @param {Tw2ShaderProgram} program
+     * @param {Object} p - the resolved pass
+     * @private
+     */
+    _ApplyEmulatedAddressing(gl, program, p)
+    {
+        const register = program.emulatedAddressingRegister;
+
+        if (register === undefined || register === null) return;
+
+        const handle = program.constantBufferHandles[register];
+
+        if (!handle) return;
+
+        // Clipped to the linked size, like every other cb upload: the emitter
+        // declares the array only as long as the highest addressed register.
+        const rows = program.constantBufferSizes?.[register] ?? 0;
+
+        if (!rows) return;
+
+        let buffer = program.emulatedAddressingBuffer;
+
+        if (!buffer || buffer.length !== rows * 4)
+        {
+            buffer = new Float32Array(rows * 4);
+            program.emulatedAddressingBuffer = buffer;
+        }
+
+        buffer.fill(0);
+
+        for (const stages of p.stages)
+        {
+            for (let j = 0; j < stages.textures.length; ++j)
+            {
+                const tex = stages.textures[j];
+                const slot = tex.slot;
+
+                if (!(slot >= 0) || slot >= rows) continue;
+
+                // Resolve exactly as Tw2TextureParameter.Apply does, because the
+                // shader must be told the mode GL was actually given. A texture
+                // parameter applies its own overrides over the pass sampler at
+                // bind time, so reading `tex.sampler` alone reports the mode
+                // BEFORE that override - which is why wrap, mirrored repeat and
+                // clamp-to-edge worked (GL honoured them from the overridden
+                // sampler) while border and mirror-once did not (they need this
+                // buffer, and it carried the un-overridden value).
+                const base = tex.sampler;
+
+                if (!base) continue;
+
+                const overrides = tex.parameter && tex.parameter.overrides;
+                const sampler = overrides ? overrides.GetSampler(base) : base;
+                const offset = slot * 4;
+                buffer[offset] = sampler.addressUMode;
+                buffer[offset + 1] = sampler.addressVMode;
+                buffer[offset + 2] = sampler.addressWMode;
+            }
+        }
+
+        gl.uniform4fv(handle, buffer);
+    }
+
+    /**
      * ApplyPass
      * @param technique {String} - technique name
      * @param pass {Number}
@@ -1040,6 +1126,8 @@ export class Tw2Effect extends meta.Model
         }
 
         this._RunAdapterHook("OnAfterApplyParameters", context);
+
+        this._ApplyEmulatedAddressing(gl, program, p);
 
         const cbh = program.constantBufferHandles;
         const pod = d.perObjectData;

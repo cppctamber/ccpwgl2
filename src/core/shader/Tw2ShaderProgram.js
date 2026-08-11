@@ -3,6 +3,14 @@ import { device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { ErrShaderLink } from "./Tw2Shader";
 
+/**
+ * Highest constant-buffer register Carbon itself uses.
+ *
+ * Measured across all 537 shipped dx11 effects on 2026-08-11: declared registers
+ * are 0-4, 6 and 7 only. Anything above this is an emitter-owned buffer.
+ */
+const CARBON_LAST_CB_REGISTER = 7;
+
 
 @meta.type("Tw2ShaderProgram")
 @meta.wgl.define("Tw2ShaderProgram")
@@ -335,6 +343,26 @@ export class Tw2ShaderProgram
                 const binding = bindings[i];
                 const key = `${binding.kind}:${binding.name}`;
                 if (seen.has(key)) continue;
+
+                // The emulated-addressing buffer is an ordinary constantBuffer
+                // binding with no marker field. It cannot carry one: `cjsSemantic`
+                // is reserved vocabulary for the local-light family and the block
+                // writer throws on any other value, and the wire drops fields it
+                // does not encode — so an invented marker would vanish for every
+                // effect loaded from bytes, which is exactly how the packed-light
+                // branch came to be silently dead.
+                //
+                // It is identified by register instead. Carbon declares only
+                // cb0-4, 6 and 7 across all 537 shipped effects, so a constant
+                // buffer at 8 or above is the emitter's. Reading the register off
+                // the binding rather than hardcoding 8 keeps this working if the
+                // emitter's default ever moves.
+                if (binding.kind === "constantBuffer" && binding.registerIndex > CARBON_LAST_CB_REGISTER)
+                {
+                    program.emulatedAddressingRegister = binding.registerIndex;
+                    seen.add(key);
+                    continue;
+                }
 
                 if (binding.kind === "structuredUbo")
                 {

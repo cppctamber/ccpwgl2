@@ -23,13 +23,24 @@ import {
 const GL_CLAMP_TO_BORDER = 0x812D;
 
 // Texture Wrap modes
+// MIRROR_CLAMP_TO_EDGE, the desktop-GL enum for D3D's MIRROR_ONCE: mirror once
+// about zero, then clamp. Core WebGL2 does not have it, so like CLAMP_TO_BORDER
+// it is emulated in the shader and Apply degrades it to CLAMP_TO_EDGE.
+//
+// It must be a DISTINCT value even though GL will never see it. This slot used
+// to hold GL_CLAMP_TO_EDGE as a fallback, which made `addressUMode` - defined as
+// `WrapModes.indexOf(addressU)` - report mode 5 as mode 3, so a mirror-once
+// sampler could not be told from a clamp-to-edge one anywhere downstream. That
+// erased the mode before any consumer could act on it.
+const GL_MIRROR_CLAMP_TO_EDGE = 0x8743;
+
 const WrapModes = [
     0,
     GL_REPEAT,
     GL_MIRRORED_REPEAT,
     GL_CLAMP_TO_EDGE,
-    GL_CLAMP_TO_BORDER, // Clamp to Border (via EXT_texture_border_clamp; Apply falls back to edge)
-    GL_CLAMP_TO_EDGE  // Unknown MIRROR_ONCE
+    GL_CLAMP_TO_BORDER,      // via EXT_texture_border_clamp; Apply falls back to edge
+    GL_MIRROR_CLAMP_TO_EDGE  // MIRROR_ONCE; no WebGL2 equivalent, Apply falls back to edge
 ];
 
 // Mip filter mode conversions
@@ -363,11 +374,21 @@ export class Tw2SamplerState extends meta.Model
             borderExt = device.GetExtension("EXT_texture_border_clamp"),
             minFilter = useNoMipFilter ? this.minFilterNoMips : this.minFilter;
 
-        // CLAMP_TO_BORDER only exists with EXT_texture_border_clamp; without it,
-        // degrade to CLAMP_TO_EDGE (never pass 0x812D to a context that would
-        // reject it with INVALID_ENUM and leave the wrap at REPEAT).
+        // Neither of the emulated modes may reach GL as itself. CLAMP_TO_BORDER
+        // exists only with EXT_texture_border_clamp, and MIRROR_CLAMP_TO_EDGE
+        // has no WebGL2 form at all - passing either to a context that rejects
+        // it raises INVALID_ENUM and leaves the wrap at REPEAT, which is worse
+        // than the clamp we substitute.
+        //
+        // Correctness for both comes from the shader, which reads the authored
+        // mode from the emulated-addressing buffer. That is why the value stays
+        // distinct on this object and is only flattened here, at the boundary.
         const resolveWrap = (mode) =>
-            (mode === GL_CLAMP_TO_BORDER && !borderExt) ? gl.CLAMP_TO_EDGE : mode;
+        {
+            if (mode === GL_CLAMP_TO_BORDER) return borderExt ? mode : gl.CLAMP_TO_EDGE;
+            if (mode === GL_MIRROR_CLAMP_TO_EDGE) return gl.CLAMP_TO_EDGE;
+            return mode;
+        };
 
         // A cube map is six separate images, and neither WebGL1 nor WebGL2
         // filters across their shared edges. Any wrap other than CLAMP_TO_EDGE
@@ -377,6 +398,30 @@ export class Tw2SamplerState extends meta.Model
         // The authored wrap describes a 2D surface and has no cube meaning.
         const isCube = targetType === gl.TEXTURE_CUBE_MAP;
 
+        // `hasMipMaps` gating the WRAP looks like a filter concern leaking into
+        // an unrelated one, and on WebGL2 alone it would be: there, NPOT
+        // textures support every wrap mode and mipmapping freely. It stays
+        // because it is doing TWO jobs, and only the first is obvious.
+        //
+        // 1. WebGL1 NPOT completeness. An NPOT texture with anything but
+        //    CLAMP_TO_EDGE is incomplete and samples black, and `glVersion === 1`
+        //    is still a live branch. `_isPowerOfTwo` exists on Tw2TextureRes but
+        //    is never passed here, so `hasMipMaps` is the only available proxy
+        //    for "is POT" - which is why the condition names the wrong quantity.
+        //
+        // 2. A blanket edge clamp over every non-mipped texture: render targets
+        //    (Tw2RenderTarget sets _hasMipMaps = false), video, HTML, targa and
+        //    generated images. Their declared wrap has never been exercised,
+        //    because this line has always overridden it. Lifting the gate would
+        //    hand every screen-space pass its authored mode at once, and any
+        //    that currently look correct BECAUSE of the clamp would change
+        //    together, silently.
+        //
+        // So do not "fix" this by deleting it. A real fix plumbs _isPowerOfTwo
+        // through for job 1 and validates the render-target/video wrap modes for
+        // job 2, and it is worth nothing until something is actually observed to
+        // be wrong: no border-addressing bug can live here, because border is
+        // emulated in the shader and never reaches sampler state.
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S,
             hasMipMaps && !isCube ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T,
