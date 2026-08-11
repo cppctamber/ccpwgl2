@@ -103,6 +103,27 @@ export class EveLensflare extends meta.Model
     {
         if (!this.doOcclusionQueries) return;
 
+        // The sample collector's effect does not exist in shipped data. It asks
+        // for res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx,
+        // which CCP replaced with occludermanagement.fx; the lensflares folder
+        // ships flare, lensflare, lensflareoccludert, lensgrime and
+        // occludermanagement, and nothing else.
+        //
+        // EveOccluder.CollectSamples already bails on that, so occlusionIntensity
+        // stays 1 and lensflares are simply never occluded. What it does NOT skip
+        // is everything below: a full-viewport copyTexImage2D per occluder and a
+        // readPixels stall, every frame, feeding a result that cannot be produced.
+        //
+        // Bailing here also keeps this method off the back buffer entirely, which
+        // matters beyond the wasted work: the loop below clears the bound
+        // framebuffer's alpha and copies from it, so it would scribble on any
+        // render target the scene is drawing into rather than the canvas.
+        const occluder = EveOccluder.global;
+        if (!occluder || !occluder.effect || !occluder.effect.effectRes || !occluder.effect.effectRes.IsGood())
+        {
+            return;
+        }
+
         const
             d = device,
             gl = d.gl,
