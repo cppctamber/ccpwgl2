@@ -149,7 +149,12 @@ export class EveSpaceScene extends meta.Model
     @meta.isPrivate
     lowQualityNebulaResPath = "";
 
-    @meta.notImplemented
+    /**
+     * Scales environment reflections. Every shipped nebula authors 1.55.
+     * Uploaded as Carbon's SceneData.ReflectionIntensity, which shares a vec4
+     * with SceneData.AmbientColor.
+     * @type {Number}
+     */
     @meta.float
     reflectionIntensity = 1;
 
@@ -2041,7 +2046,22 @@ export class EveSpaceScene extends meta.Model
         ps.Set("EnvMapRotationMat", envMapTransform);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-        ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
+
+        // This slot is Carbon's ReflectionIntensity, not the nebula intensity.
+        // Carbon's PerFramePSData packs `Vector3 AmbientColor` immediately
+        // followed by `float ReflectionIntensity` into one vec4
+        // (EveSpaceScene.h:246-247, filled at EveSpaceScene.cpp:3092), and the
+        // shaders read it there. It was previously fed this.nebulaIntensity, so
+        // every Carbon-derived shader has been scaling reflections by the wrong
+        // authored value - 1.25 instead of 1.55 on every shipped nebula.
+        ps.SetIndex("SceneData.ReflectionIntensity", 0, this.reflectionIntensity);
+
+        // The nebula intensity is a global shader VARIABLE in Carbon, not part
+        // of the per-frame data (`m_nebulaIntensityVar( "NebulaIntensity", ... )`,
+        // EveSpaceScene.cpp:202). The background effect multiplies its output by
+        // Tint * NebulaIntensity.
+        if (!tw2.HasVariable("NebulaIntensity")) tw2.SetVariable("NebulaIntensity", this.nebulaIntensity);
+        else tw2.SetVariableValue("NebulaIntensity", this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
 
@@ -2142,7 +2162,10 @@ export class EveSpaceScene extends meta.Model
             [ "SunData.DirWorld", 4 ],
             [ "SunData.DiffuseColor", 4 ],
             [ "SceneData.AmbientColor", 3 ],
-            [ "SceneData.NebulaIntensity", 1 ],
+            // Carbon: Vector3 AmbientColor followed by float ReflectionIntensity,
+            // sharing one vec4. Named NebulaIntensity here until 2026-08-12, which
+            // fed the wrong authored value to every shader reading it.
+            [ "SceneData.ReflectionIntensity", 1 ],
             [ "SceneData.FogColor", 4 ],
             [ "ViewportOffset", 2 ],
             [ "ViewportSize", 2 ],
