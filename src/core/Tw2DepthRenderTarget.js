@@ -402,12 +402,19 @@ export class Tw2DepthRenderTarget
     {
         if (!this.IsGood()) throw new Error("Invalid frame buffer");
         const { gl } = tw2;
+
+        // Restore what was bound rather than assuming the canvas — see the same
+        // note on Tw2RenderTarget.Clear.
+        const prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+        const prevViewport = gl.getParameter(gl.VIEWPORT);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
         if (clearColor) tw2.SetClearColor(clearColor);
         tw2.ClearBufferBits(color, depth, stencil);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, tw2.width, tw2.height);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, prevFramebuffer);
+        gl.viewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
     }
 
 
@@ -491,6 +498,8 @@ export class Tw2DepthRenderTarget
         if (!this.IsGood()) return null;
 
         const { gl } = tw2;
+        const prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.readPixels(
             Math.floor(x),
@@ -502,7 +511,7 @@ export class Tw2DepthRenderTarget
             uint8array
         );
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, prevFramebuffer);
         return uint8array;
     }
 
