@@ -13,7 +13,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcessRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RM_DECAL,
@@ -199,6 +199,23 @@ export class EveSpaceScene extends meta.Model
     @meta.boolean
     hdr = false;
 
+    /**
+     * Runs Carbon's composite pass in place of the plain resolve to the canvas.
+     * Requires `hdr`, since against an 8-bit target a tone curve operates on
+     * values already clamped to 0..1.
+     * @type {Boolean}
+     */
+    @meta.boolean
+    compositeEnabled = false;
+
+    /**
+     * The modern post process effect set, as shipped environment templates carry
+     * it. Distinct from `postprocess`, which is the legacy stage list.
+     * @type {Tw2PostProcess2|null}
+     */
+    @meta.struct("Tw2PostProcess2")
+    postProcess2 = null;
+
     @meta.boolean
     depthCalculation = false;
 
@@ -274,6 +291,7 @@ export class EveSpaceScene extends meta.Model
     _internalEffect = null;
     _internalRenderTarget = null;
     _sceneTarget = null;
+    _postProcessRenderer = null;
     _depthAccumulator = null;
     _depthContext = null;
     _depthContextReport = null;
@@ -1227,6 +1245,16 @@ export class EveSpaceScene extends meta.Model
         if (!sceneTarget) return;
 
         sceneTarget.Unset();
+
+        // Carbon runs the composite even with no post process object at all, so
+        // presence of `postProcess2` is not the gate - having a working composite
+        // effect is. The plain blit is the fallback for the frames before the
+        // effect has loaded, and for a device that cannot compile it.
+        if (this.compositeEnabled)
+        {
+            if (!this._postProcessRenderer) this._postProcessRenderer = new Tw2PostProcessRenderer();
+            if (this._postProcessRenderer.Render(sceneTarget, this.postProcess2)) return;
+        }
 
         const { gl } = tw2;
         gl.disable(gl.DEPTH_TEST);
