@@ -2065,6 +2065,20 @@ export class EveSpaceScene extends meta.Model
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
         ps.SetIndex("ViewportSize", 1, d.viewportHeight);
 
+        // The environment maps are bound as raw texture res rather than through
+        // texture parameters, so nothing marks them in use and the resource
+        // manager eventually purges them. A purged blur cube leaves the diffuse
+        // environment term sampling nothing, which reads as hard black patches
+        // that rotate with the hull like a reflection - worst on Amarr, whose
+        // surfaces are the most reflective. It survives a nebula change, because
+        // the replacement is purged in turn.
+        //
+        // KeepAlive also reloads a resource that is already purged, so this both
+        // prevents the fault and recovers from it.
+        if (this._envMapRes) this._envMapRes.KeepAlive();
+        if (this._envMap1Res) this._envMap1Res.KeepAlive();
+        if (this._envMap2Res) this._envMap2Res.KeepAlive();
+
         let envMap = this.GetEmptyTexture(),
             // These are texture res not texture parameters
             // We may have done something fancy here, rather than being explicit
