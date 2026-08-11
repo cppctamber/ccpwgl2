@@ -97,6 +97,7 @@ export class Tw2PostProcessRenderer
 {
 
     _effect = null;
+    _populated = false;
 
     /**
      * Gets or creates the composite effect
@@ -154,20 +155,25 @@ export class Tw2PostProcessRenderer
             fade = get("fade"),
             luts = postProcess ? postProcess.GetAvailableLuts() : [];
 
-        // SetOption, never `effect.options = {...}`. Assigning the object sets
-        // the values and leaves the effect on its PREVIOUS permutation, because
-        // only Rebind re-runs GetShader(options) - and `options` reports the new
-        // values the whole time, so nothing looks wrong. Getting this wrong
-        // leaves the default all-enabled body running, which samples an Exposure
-        // buffer texture nothing has bound and multiplies the image by zero.
-        effect.SetOption({
+        // Tw2Effect documents the order for a permutation-gated swap:
+        // SetOption first, THEN set values, THEN AutoPopulate once. Options are
+        // batched with skipRebind so the rebind happens exactly once, at the end,
+        // with the values already in place.
+        //
+        // Two traps this order avoids. Assigning `effect.options = {...}` sets
+        // the values but leaves the effect on its previous permutation, because
+        // only Rebind re-runs GetShader(options). And a parameter created after
+        // the effect first bound is never wired to a constant, because
+        // OnValueChanged only rebinds when the effect RESOURCE changed - it then
+        // holds the value while the shader keeps reading its own default.
+        const optionsChanged = effect.SetOption({
             COLOR_CORRECTION_TOGGLE: TOGGLE("COLOR_CORRECTION", !!colorCorrection),
             DESATURATE_TOGGLE: TOGGLE("DESATURATE", !!desaturate),
             VIGNETTE_TOGGLE: TOGGLE("VIGNETTE", !!vignette),
             LUT_TOGGLE: TOGGLE("LUT", luts.length > 0),
             // Compute-only in Carbon; see the class note.
             DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", false)
-        });
+        }, true);
 
         const p = effect.parameters;
 
@@ -245,6 +251,20 @@ export class Tw2PostProcessRenderer
         {
             this.SetParameter(p, `LUTInfluence_${i}`, i < luts.length ? luts[i].influence : 0);
             if (i < luts.length) effect.SetTextures({ [`TexLUT_${i}`]: luts[i].path });
+        }
+
+        // The single rebind, after the values are in place, and only when the
+        // permutation actually changed - it re-resolves the shader, so running
+        // it every frame would too.
+        //
+        // AutoPopulate(false), not PopulateParameters(): the cleaning variant
+        // prunes parameters the permutation does not declare, which would drop
+        // BlitOriginal's attachment to the scene render target. Create and keep
+        // is what this needs.
+        if (optionsChanged || !this._populated)
+        {
+            effect.AutoPopulate(false);
+            this._populated = true;
         }
     }
 
