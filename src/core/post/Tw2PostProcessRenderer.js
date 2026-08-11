@@ -10,6 +10,64 @@ const TOGGLE = (name, on) => on ? `${name}_ENABLED` : `${name}_DISABLED`;
 
 
 /**
+ * Every constant the composite uses, in any permutation, at Carbon's defaults.
+ *
+ * These MUST all exist before the first bind. `Tw2Effect.OnValueChanged` only
+ * calls `BindParameters` when the effect RESOURCE changed, so a parameter
+ * created after the effect first bound is never wired to a constant - it holds
+ * the value you set while the shader keeps reading its own default, and the
+ * symptom is a parameter that appears set and does nothing.
+ *
+ * A parameter absent from the current permutation is simply unused, so listing
+ * them all costs nothing and removes the ordering trap entirely.
+ */
+const DEFAULT_PARAMETERS = {
+    ExposureAdjust: 1,
+    ExposureInfluence: 1,
+    ExposureMiddleValue: 0.55,
+    BloomBrightness: 0,
+    GrimeWeight: 0,
+
+    FadeColor: [ 0, 0, 0 ],
+    FadeAmount: 0,
+
+    SaturationFactor: 1,
+
+    LUTInfluence_0: 0,
+    LUTInfluence_1: 0,
+    LUTInfluence_2: 0,
+    LUTInfluence_3: 0,
+
+    ShoulderStrength: 0.125,
+    LinearStrength: 0.25,
+    LinearAngle: 0.1,
+    ToeStrength: 0.15,
+    ToeNumerator: 0.021,
+    ToeDenominator: 0.3,
+    WhiteScale: 2.5,
+
+    SplitScreenRatio: 0,
+    AutoSwipe: [ 0, 0 ],
+    OutputGamma: 1,
+
+    ColorSaturation: 1,
+    ColorContrast: 1,
+    ColorGamma: 1,
+    ColorGain: [ 1, 1, 1 ],
+    ColorOffset: [ 0, 0, 0 ],
+    WhiteTemperature: 6500,
+    WhiteTint: 0,
+
+    VignetteIntensity: [ 0, 0 ],
+    VignetteColor: [ 1, 1, 1 ],
+    VignetteDetailSize: [ 16, 16, 16, 16 ],
+    VignetteDetailScroll: [ 0, 0, 0, 0 ],
+    VignetteSineFrequency: 1,
+    VignetteSineRange: [ 0, 1 ]
+};
+
+
+/**
  * Draws Carbon's composite pass
  *
  * Carbon separates `Tr2PostProcess2` — the effect slots, which hydrate from a
@@ -51,7 +109,7 @@ export class Tw2PostProcessRenderer
             this._effect = Tw2Effect.from({
                 name: "Tonemapping",
                 effectFilePath: EFFECT_PATH,
-                parameters: {},
+                parameters: { ...DEFAULT_PARAMETERS },
                 textures: {
                     // BlitCurrent is the bloom result and Grime the dirt
                     // overlay. The composite samples both unconditionally, so
@@ -204,8 +262,19 @@ export class Tw2PostProcessRenderer
      */
     SetParameter(parameters, name, value)
     {
-        if (parameters[name]) parameters[name].SetValue(value);
-        else this._effect.SetParameters({ [name]: value });
+        if (parameters[name])
+        {
+            parameters[name].SetValue(value);
+            return;
+        }
+
+        // Should not happen: everything the composite sets is in
+        // DEFAULT_PARAMETERS so that it exists before the first bind. Creating
+        // one here needs an explicit BindParameters, because OnValueChanged
+        // only rebinds when the effect resource changed - without it the
+        // parameter holds the value and the shader keeps its own default.
+        this._effect.SetParameters({ [name]: value });
+        this._effect.BindParameters();
     }
 
     /**
