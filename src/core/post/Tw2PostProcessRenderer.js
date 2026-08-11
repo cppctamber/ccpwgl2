@@ -52,7 +52,16 @@ export class Tw2PostProcessRenderer
                 name: "Tonemapping",
                 effectFilePath: EFFECT_PATH,
                 parameters: {},
-                textures: {}
+                textures: {
+                    // BlitCurrent is the bloom result and Grime the dirt
+                    // overlay. The composite samples both unconditionally, so
+                    // both must be bound even with no bloom chain; black is the
+                    // identity for each, and Carbon binds a black grime texture
+                    // itself when no bloom effect exists. Set once here rather
+                    // than per frame, since SetTextures triggers UpdateValues.
+                    BlitCurrent: "res:/texture/global/black.dds",
+                    Grime: "res:/texture/global/black.dds"
+                }
             });
         }
         return this._effect;
@@ -87,14 +96,20 @@ export class Tw2PostProcessRenderer
             fade = get("fade"),
             luts = postProcess ? postProcess.GetAvailableLuts() : [];
 
-        effect.options = {
+        // SetOption, never `effect.options = {...}`. Assigning the object sets
+        // the values and leaves the effect on its PREVIOUS permutation, because
+        // only Rebind re-runs GetShader(options) - and `options` reports the new
+        // values the whole time, so nothing looks wrong. Getting this wrong
+        // leaves the default all-enabled body running, which samples an Exposure
+        // buffer texture nothing has bound and multiplies the image by zero.
+        effect.SetOption({
             COLOR_CORRECTION_TOGGLE: TOGGLE("COLOR_CORRECTION", !!colorCorrection),
             DESATURATE_TOGGLE: TOGGLE("DESATURATE", !!desaturate),
             VIGNETTE_TOGGLE: TOGGLE("VIGNETTE", !!vignette),
             LUT_TOGGLE: TOGGLE("LUT", luts.length > 0),
             // Compute-only in Carbon; see the class note.
             DYNAMIC_EXPOSURE_TOGGLE: TOGGLE("DYNAMIC_EXPOSURE", false)
-        };
+        });
 
         const p = effect.parameters;
 
@@ -209,27 +224,19 @@ export class Tw2PostProcessRenderer
 
         const { gl } = tw2;
 
-        // BlitCurrent is the bloom result and Grime the dirt overlay; with no
-        // bloom chain both must still be bound, because the composite samples
-        // them unconditionally. Black is the identity for both - Carbon binds a
-        // black grime texture itself when no bloom effect exists.
-        effect.SetTextures({
-            BlitCurrent: "res:/texture/global/black.dds",
-            Grime: "res:/texture/global/black.dds"
-        });
-
         // BlitOriginal is the scene, which is a live render target rather than a
         // resource path, so it is attached rather than set.
-        if (!effect.parameters.BlitOriginal && effect.shader && effect.shader.HasTexture("BlitOriginal"))
+        // Created unconditionally rather than gated on shader.HasTexture: an
+        // unused parameter is harmless, whereas failing to create it binds no
+        // scene at all and the composite tone maps black - which looks like a
+        // broken shader rather than a missing binding.
+        if (!effect.parameters.BlitOriginal)
         {
             effect.parameters.BlitOriginal = new Tw2TextureParameter("BlitOriginal");
             effect.BindParameters();
         }
 
-        if (effect.parameters.BlitOriginal)
-        {
-            effect.parameters.BlitOriginal.AttachTextureRes(sceneTarget.texture);
-        }
+        effect.parameters.BlitOriginal.AttachTextureRes(sceneTarget.texture);
 
         gl.disable(gl.DEPTH_TEST);
         const drew = device.RenderFullScreenQuad(effect);
