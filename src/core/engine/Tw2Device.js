@@ -139,6 +139,12 @@ export class Tw2Device extends Tw2EventEmitter
     alphaBlendBackBuffer = false;
     antialiasing = true;
     msaaSamples = 0;
+
+    // Float render-target capabilities, probed on WebGL2 only and left false on
+    // WebGL1, where a float colour target is not reachable by these extensions.
+    canRenderToFloat = false;
+    canRenderToHalfFloat = false;
+    canFilterFloat = false;
     wrapModes = [];
 
     perFrameVSData = null;
@@ -533,6 +539,19 @@ export class Tw2Device extends Tw2EventEmitter
         else
         {
             gl.hasInstancedArrays = returnTrue;
+
+            // Rendering INTO a float texture is an extension even on WebGL2, and
+            // it is what an HDR scene target needs - sampling one is core, so a
+            // context that loads float textures fine can still fail to render to
+            // them. Half float is the useful tier: RGBA16F is linear-filterable
+            // in core WebGL2, while RGBA32F additionally needs
+            // OES_texture_float_linear before a LINEAR min filter is legal.
+            const colorBufferFloat = this.GetExtension("EXT_color_buffer_float");
+            const colorBufferHalfFloat = colorBufferFloat || this.GetExtension("EXT_color_buffer_half_float");
+
+            this.canRenderToFloat = !!colorBufferFloat;
+            this.canRenderToHalfFloat = !!colorBufferHalfFloat;
+            this.canFilterFloat = !!this.GetExtension("OES_texture_float_linear");
         }
 
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");

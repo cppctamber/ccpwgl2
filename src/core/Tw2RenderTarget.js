@@ -20,6 +20,13 @@ export class Tw2RenderTarget
     @meta.boolean
     hasDepth = false;
 
+    /**
+     * Colour format name, null being the historical 8-bit RGBA target
+     * @type {String|null}
+     */
+    @meta.string
+    colorFormat = null;
+
     _frameBuffer = null;
     _renderBuffer = null;
     _texture = null;
@@ -51,14 +58,16 @@ export class Tw2RenderTarget
      * @param {Number} [width]
      * @param {Number} [height]
      * @param {Boolean} [depth=false]
+     * @param {String} [colorFormat=null] - "rgba8" (default), "rgba16f" or "rgba32f"
      */
-    constructor(name="", width, height, depth=false)
+    constructor(name="", width, height, depth=false, colorFormat=null)
     {
         this.name = name;
         if (width) this.width = width;
         if (height) this.height = height;
         this.hasDepth = depth;
-        if (this.width && this.height) this.Create(this.width, this.height, this.hasDepth);
+        this.colorFormat = colorFormat;
+        if (this.width && this.height) this.Create(this.width, this.height, this.hasDepth, this.colorFormat);
     }
 
     /**
@@ -117,13 +126,19 @@ export class Tw2RenderTarget
      * @param {Number} targetWidth
      * @param {Number} targetHeight
      * @param {Boolean} [hasDepth=this.hasDepth]
+     * @param {String} [colorFormat=this.colorFormat]
      * @returns {boolean} true if updated
      */
-    Update(targetWidth, targetHeight, hasDepth=this.hasDepth)
+    Update(targetWidth, targetHeight, hasDepth=this.hasDepth, colorFormat=this.colorFormat)
     {
-        if (this.width !== targetWidth || this.height !== targetHeight || hasDepth !== this.hasDepth)
+        if (
+            this.width !== targetWidth ||
+            this.height !== targetHeight ||
+            hasDepth !== this.hasDepth ||
+            colorFormat !== this.colorFormat
+        )
         {
-            this.Create(targetWidth, targetHeight, hasDepth);
+            this.Create(targetWidth, targetHeight, hasDepth, colorFormat);
             return true;
         }
         return false;
@@ -135,11 +150,13 @@ export class Tw2RenderTarget
      * @param {Number} height    - The resulting texture's height
      * @param {Boolean} hasDepth - Optional flag to enable a depth buffer
      */
-    Create(width, height, hasDepth)
+    Create(width, height, hasDepth, colorFormat=this.colorFormat)
     {
         const { gl } = tw2;
 
         this.Destroy();
+
+        const { internalFormat, format, type } = Tw2RenderTarget.ResolveColorFormat(colorFormat);
 
         if (!this._texture) this._texture = new Tw2TextureRes();
         this._texture.suppressLogging = true;
@@ -147,8 +164,9 @@ export class Tw2RenderTarget
 
         const res = this._texture;
         res._target = gl.TEXTURE_2D;
-        res._format = gl.RGBA;
-        res._type = gl.UNSIGNED_BYTE;
+        res._internalFormat = internalFormat;
+        res._format = format;
+        res._type = type;
         res._hasMipMaps = false;
         res._forceMipMaps = false;
         res._width = this.width = width;
@@ -157,7 +175,7 @@ export class Tw2RenderTarget
         this._frameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.bindTexture(gl.TEXTURE_2D, res.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
         //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -184,6 +202,53 @@ export class Tw2RenderTarget
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         this.hasDepth = hasDepth;
+        this.colorFormat = colorFormat;
+    }
+
+    /**
+     * Resolves a colour format name to its gl enums
+     *
+     * `null` is the historical 8-bit target and must stay the default: every
+     * existing caller relies on it, and two of them (`Tw2Picker` and
+     * `EveLensflare`) read back with `RGBA`/`UNSIGNED_BYTE` and would break
+     * outright on a float target.
+     *
+     * A float target is NOT guaranteed even on WebGL2 — rendering into one needs
+     * `EXT_color_buffer_float`, which `Tw2Device` probes. This throws rather than
+     * silently falling back, because a silent 8-bit fallback under an HDR
+     * pipeline looks like a tone-mapping bug rather than a missing extension.
+     *
+     * @param {String|null} [colorFormat]
+     * @returns {{ internalFormat: Number, format: Number, type: Number }}
+     */
+    static ResolveColorFormat(colorFormat)
+    {
+        const { gl, device } = tw2;
+
+        switch (colorFormat)
+        {
+            case undefined:
+            case null:
+            case "rgba8":
+                return { internalFormat: gl.RGBA, format: gl.RGBA, type: gl.UNSIGNED_BYTE };
+
+            case "rgba16f":
+                if (!device.canRenderToHalfFloat)
+                {
+                    throw new ReferenceError("Cannot create an rgba16f render target: EXT_color_buffer_float is unavailable");
+                }
+                return { internalFormat: gl.RGBA16F, format: gl.RGBA, type: gl.HALF_FLOAT };
+
+            case "rgba32f":
+                if (!device.canRenderToFloat)
+                {
+                    throw new ReferenceError("Cannot create an rgba32f render target: EXT_color_buffer_float is unavailable");
+                }
+                return { internalFormat: gl.RGBA32F, format: gl.RGBA, type: gl.FLOAT };
+
+            default:
+                throw new TypeError(`Unknown render target colour format: ${colorFormat}`);
+        }
     }
 
     /**
@@ -283,6 +348,15 @@ export class Tw2RenderTarget
         const len = width * height * 4;
         for (let i = 0; i < len; i++) uint8array[i] = 0;
         if (!this.IsGood()) return null;
+
+        // The read below is fixed at RGBA/UNSIGNED_BYTE, which is right for the
+        // callers that exist (picker ids, lensflare occlusion) and wrong for a
+        // float target. Fail loudly: readPixels would otherwise return zeroes,
+        // and a picker that silently always picks nothing is a miserable bug.
+        if (this.colorFormat)
+        {
+            throw new TypeError(`ReadPixels does not support the "${this.colorFormat}" colour format`);
+        }
 
         const { gl } = tw2;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);

@@ -2,6 +2,7 @@ import { Tw2TextureRes } from "core/resource";
 import { tw2 } from "global";
 import { meta } from "utils";
 import { Tw2TextureParameter } from "./parameter";
+import { Tw2RenderTarget } from "./Tw2RenderTarget";
 
 
 @meta.type("Tw2DepthRenderTarget")
@@ -20,6 +21,14 @@ export class Tw2DepthRenderTarget
 
     @meta.uint
     precision = 16;
+
+    /**
+     * Colour attachment format, null being the historical 8-bit RGBA target.
+     * The depth attachment is governed by `precision` and is unaffected.
+     * @type {String|null}
+     */
+    @meta.string
+    colorFormat = null;
 
     _attached = false;
     _internalFormat = null;
@@ -151,14 +160,20 @@ export class Tw2DepthRenderTarget
      * @param {Number} targetWidth
      * @param {Number} targetHeight
      * @param {Number} precision
+     * @param {String} [colorFormat=this.colorFormat]
      * @returns {boolean} true if updated
      */
-    Update(targetWidth, targetHeight, precision=this.precision)
+    Update(targetWidth, targetHeight, precision=this.precision, colorFormat=this.colorFormat)
     {
         if (precision === true || precision === false) precision = this.precision;
-        if (this.width !== targetWidth || this.height !== targetHeight || this.precision !== precision)
+        if (
+            this.width !== targetWidth ||
+            this.height !== targetHeight ||
+            this.precision !== precision ||
+            this.colorFormat !== colorFormat
+        )
         {
-            this.Create(targetWidth, targetHeight, precision);
+            this.Create(targetWidth, targetHeight, precision, colorFormat);
             return true;
         }
         return false;
@@ -228,10 +243,12 @@ export class Tw2DepthRenderTarget
      * @param {Number} width
      * @param {Number} height
      * @param {Number} [precision=this.precision]
+     * @param {String} [colorFormat=this.colorFormat] - colour attachment format
      */
-    Create(width, height, precision = this.precision)
+    Create(width, height, precision = this.precision, colorFormat = this.colorFormat)
     {
         this.Destroy();
+        this.colorFormat = colorFormat;
 
         const { gl, glVersion } = tw2.device;
 
@@ -340,13 +357,16 @@ export class Tw2DepthRenderTarget
             col = this._colorTexture,
             colorTexture = this._colorTexture.texture;
 
+        const colorFormats = Tw2RenderTarget.ResolveColorFormat(colorFormat);
+
         col._hasMipMaps = false;
         col._forceMipMaps = false;
         col._target = gl.TEXTURE_2D;
-        col._internalFormat = gl.RGBA;
+        col._internalFormat = colorFormats.internalFormat;
         col._width = width;
         col._height = height;
-        col._type = gl.UNSIGNED_BYTE;
+        col._format = colorFormats.format;
+        col._type = colorFormats.type;
 
         gl.bindTexture(gl.TEXTURE_2D, colorTexture);
         gl.texImage2D(
@@ -356,7 +376,7 @@ export class Tw2DepthRenderTarget
             col._width,
             col._height,
             0,
-            gl.RGBA,
+            col._format,
             col._type,
             null,
         );
