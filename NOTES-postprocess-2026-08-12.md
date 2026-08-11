@@ -5,20 +5,26 @@ demo; the lighting passes are not started.
 
 ## The rule that bit us, and will again
 
-**Every post process class must define EVERY Blue-exposed property, including
-ones we cannot support.** The black reader fails on the first unknown property,
-so a class missing one field makes the whole asset unloadable — it does not
-degrade, it throws.
+**A post process class must define its properties even when we cannot support
+the effect.** The black reader fails on the first unknown property, so a class
+missing one field makes the whole asset unloadable — it does not degrade, it
+throws.
 
 The stubs previously here carried a fraction of their properties: vignette had
 one of twelve, fade had none. 147 of the 177 shipped environment templates
 populate `godRays` and 141 `fog`, so almost every template was unloadable until
 those classes were completed.
 
-Authority is the **Blue exposure** (`*_Blue.cpp`), not the C++ header. The two
-disagree in ways that matter: `Tr2PPTonemappingEffect` nests `m_aces` and
-`m_uncharted2` in the header while Blue exposes them flat in one namespace, so a
-class shaped like the header cannot read shipped data.
+**Match the CarbonEngineJS classes** in
+`carbonenginejs-org/runtime-trinity/src/postProcess/`. They are maintained and
+Carbon-verified, and they are the standard to copy — not the Carbon headers, and
+not these stubs.
+
+If you ever do go back to Carbon directly, the Blue exposure (`*_Blue.cpp`) is
+what the wire follows, not the C++ header: `Tr2PPTonemappingEffect` nests
+`m_aces` and `m_uncharted2` in the header while Blue exposes them flat in one
+namespace, so a class shaped like the header cannot read shipped data. The
+maintained classes already reflect this.
 
 ## Still to define
 
