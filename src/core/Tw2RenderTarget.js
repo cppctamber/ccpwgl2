@@ -188,7 +188,13 @@ export class Tw2RenderTarget
         {
             this._renderBuffer = gl.createRenderbuffer();
             gl.bindRenderbuffer(gl.RENDERBUFFER, this._renderBuffer);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+
+            // 24 bits where it is available. The canvas's own depth buffer is
+            // typically 24, so a 16-bit target is a downgrade rather than parity,
+            // and a scene spanning kilometres to millions of kilometres z-fights
+            // visibly at 16. DEPTH_COMPONENT24 is core in WebGL2.
+            const depthFormat = tw2.device.glVersion > 1 ? gl.DEPTH_COMPONENT24 : gl.DEPTH_COMPONENT16;
+            gl.renderbufferStorage(gl.RENDERBUFFER, depthFormat, width, height);
         }
 
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, res.texture, 0);

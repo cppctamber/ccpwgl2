@@ -188,6 +188,17 @@ export class EveSpaceScene extends meta.Model
     @meta.uint
     depthPrecision = 16;
 
+    /**
+     * Renders the scene into an HDR target rather than straight to the canvas.
+     *
+     * Off by default: on its own it changes nothing visible, because the target
+     * is resolved back to the canvas immediately. It exists so the composite
+     * pass has something with range left in it to work on.
+     * @type {Boolean}
+     */
+    @meta.boolean
+    hdr = false;
+
     @meta.boolean
     depthCalculation = false;
 
@@ -262,6 +273,7 @@ export class EveSpaceScene extends meta.Model
 
     _internalEffect = null;
     _internalRenderTarget = null;
+    _sceneTarget = null;
     _depthAccumulator = null;
     _depthContext = null;
     _depthContextReport = null;
@@ -903,6 +915,12 @@ export class EveSpaceScene extends meta.Model
 
         this.ApplyPerFrameData();
 
+        // Everything from here to EndSceneTarget draws into the HDR target when
+        // one is active. The bind has to happen BEFORE the background, not at
+        // RenderCollectedBatches: the background texture, the background effect
+        // and the planets all draw immediately, so a later bind would strand
+        // them on the canvas and composite the ships over an empty sky.
+        const sceneTarget = this.BeginSceneTarget();
 
         if (this.backgroundTexturePath && this.visible.backgroundTexture)
         {
@@ -1065,6 +1083,10 @@ export class EveSpaceScene extends meta.Model
 
         this.RenderCollectedBatches(mainAccumulator);
 
+        // Resolve before the lensflare, post process, depth and distortion steps
+        // below, all of which expect to find the drawn scene on the canvas.
+        this.EndSceneTarget(sceneTarget);
+
         if (this.starfield)
         {
             // TODO: Implement starfield
@@ -1148,6 +1170,68 @@ export class EveSpaceScene extends meta.Model
         }
 
         return this.aoHandler || null;
+    }
+
+    /**
+     * Begins drawing the scene into an HDR render target
+     *
+     * Returns null when the scene should draw straight to the canvas, which is
+     * both the default and the fallback. An HDR target is what exposure, bloom
+     * and a tone curve need in order to have anything to work on; against the
+     * 8-bit canvas they operate on values already clamped to 0..1.
+     *
+     * Rendering INTO a float texture is an extension even on WebGL2 — sampling
+     * one is core — so this is capability-gated. Note that is not the same as a
+     * silent format fallback: the feature is either available or absent, and an
+     * absent one leaves today's behaviour exactly intact rather than producing a
+     * differently-wrong image.
+     *
+     * @returns {Tw2RenderTarget|null}
+     */
+    BeginSceneTarget()
+    {
+        if (!this.hdr || !device.canRenderToHalfFloat) return null;
+
+        const { width, height } = tw2;
+        if (!width || !height) return null;
+
+        if (!this._sceneTarget)
+        {
+            this._sceneTarget = new Tw2RenderTarget("EveSpaceSceneHDR", width, height, true, "rgba16f");
+        }
+        else
+        {
+            this._sceneTarget.Update(width, height, true, "rgba16f");
+        }
+
+        if (!this._sceneTarget.IsGood()) return null;
+
+        this._sceneTarget.Set();
+        tw2.ClearBufferBits(true, true, true);
+        return this._sceneTarget;
+    }
+
+    /**
+     * Finishes the HDR target and puts the result on the canvas
+     *
+     * Everything after the main pass — lensflares, the legacy post process,
+     * depth and distortion — expects the drawn scene to be on the canvas, so the
+     * resolve happens here rather than at the end of the frame. That also means
+     * the HDR range does not survive past this point today; the composite pass
+     * will consume the target directly and replace this blit.
+     *
+     * @param {Tw2RenderTarget|null} sceneTarget
+     */
+    EndSceneTarget(sceneTarget)
+    {
+        if (!sceneTarget) return;
+
+        sceneTarget.Unset();
+
+        const { gl } = tw2;
+        gl.disable(gl.DEPTH_TEST);
+        device.RenderTexture(sceneTarget.texture);
+        gl.enable(gl.DEPTH_TEST);
     }
 
     /**
