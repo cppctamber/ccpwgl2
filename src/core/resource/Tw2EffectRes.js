@@ -60,8 +60,9 @@ export class Tw2EffectRes extends Tw2Resource
     static IsCarbonData(data)
     {
         // The version dword, which is what Carbon itself branches on. This
-        // replaced a "CEWG" magic sniff: that format is gone, and it had
-        // claimed version 9 in CCP's namespace to get itself read.
+        // replaced a four-byte magic sniff for the retired chunk format: that
+        // format is gone, and it had claimed version 9 in CCP's namespace to
+        // get itself read.
         //
         // 2-8 is the legacy gles2 range PrepareCCP owns. 15 is the current
         // Carbon container, whether it carries DXBC or already-translated

@@ -59,90 +59,6 @@ const CARBON_TO_SOF_CONSTANT_NAMES = {
     Mtl6Gloss: "PMtl2Gloss"
 };
 
-const textDecoder = new TextDecoder("utf-8", { fatal: false });
-
-
-/**
- * Carbon v1 package reader (chunked container of JSON + binary chunks).
- *
- * Package layout: "Carbon" magic, uint32 version, uint32 chunk count, then per
- * chunk a 4-char tag, uint32 size and raw bytes. Standard chunks: INFO, META,
- * GLSL (JSON) and optional TR2E (original effect bytes).
- */
-export class Tw2CarbonPackageReader
-{
-
-    version = 0;
-    chunks = [];
-    chunkMap = new Map();
-    readError = null;
-
-    /**
-     * Reads Carbon bytes.
-     * @param {ArrayBuffer|ArrayBufferView} source
-     * @returns {boolean} true when read successfully
-     */
-    Read(source)
-    {
-        this.version = 0;
-        this.chunks = [];
-        this.chunkMap = new Map();
-        this.readError = null;
-
-        try
-        {
-            const bytes = normalizeBytes(source);
-            const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-            let offset = 0;
-
-            const magic = readAscii(bytes, offset, 4);
-            offset += 4;
-            // Four bytes on disk, not vocabulary. The CEWG *name* is retired but
-            // the magic in already-written files is unchanged, so this literal
-            // must keep its old spelling or nothing parses.
-            if (magic !== "CEWG") throw new Error(`Invalid CEWG magic: ${magic}`);
-
-            this.version = view.getUint32(offset, true);
-            offset += 4;
-            if (this.version !== 1) throw new Error(`Unsupported Carbon version: ${this.version}`);
-
-            const chunkCount = view.getUint32(offset, true);
-            offset += 4;
-            for (let i = 0; i < chunkCount; i++)
-            {
-                const tag = readAscii(bytes, offset, 4);
-                offset += 4;
-                const size = view.getUint32(offset, true);
-                offset += 4;
-                const chunk = { tag, size, bytes: bytes.subarray(offset, offset + size) };
-                offset += size;
-                this.chunks.push(chunk);
-                this.chunkMap.set(tag, chunk);
-            }
-
-            if (offset !== bytes.length) throw new Error(`Carbon trailing bytes: ${bytes.length - offset}`);
-            return true;
-        }
-        catch (err)
-        {
-            this.readError = err;
-            return false;
-        }
-    }
-
-    /**
-     * Gets a chunk as JSON
-     * @param {String} tag
-     * @returns {Object|null}
-     */
-    GetJson(tag)
-    {
-        const chunk = this.chunkMap.get(tag) || null;
-        return chunk ? JSON.parse(textDecoder.decode(chunk.bytes)) : null;
-    }
-}
-
-
 /**
  * Builds ccpwgl shader objects from Carbon package data.
  *
@@ -846,36 +762,6 @@ function compileShader(stageType, shaderCode, path)
         });
     }
     return shader;
-}
-
-/**
- * Normalizes a binary source to a Uint8Array view
- * @param {ArrayBuffer|ArrayBufferView} source
- * @returns {Uint8Array}
- */
-function normalizeBytes(source)
-{
-    if (source instanceof Uint8Array) return source;
-    if (source instanceof ArrayBuffer) return new Uint8Array(source);
-    if (ArrayBuffer.isView(source)) return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);
-    throw new Error("Unsupported Carbon source bytes");
-}
-
-/**
- * Reads ASCII text
- * @param {Uint8Array} bytes
- * @param {Number} offset
- * @param {Number} size
- * @returns {String}
- */
-function readAscii(bytes, offset, size)
-{
-    let out = "";
-    for (let i = 0; i < size; i++)
-    {
-        out += String.fromCharCode(bytes[offset + i]);
-    }
-    return out;
 }
 
 /**
