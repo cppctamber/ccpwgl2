@@ -352,11 +352,15 @@ export class Tw2CarbonShaderFactory
         stage.shaderCode = shaderRecord.source;
         stage.inputDefinition = buildInputDefinition(shaderRecord, manifestStage, stageType);
         buildConstants(stage, manifestStage, shaderRecord);
-        buildTexturesAndSamplers(stage, manifestStage, shaderRecord);
+        buildTexturesAndSamplers(stage, manifestStage, shaderRecord, stageType, glslStage.transforms);
         // New-format binding kinds (structuredUbo bones, structuredTexture
         // lights, bufferTexture post-fx) ride along for the Carbon program/
         // upload layer; legacy Tw2Effect binding ignores them.
         stage.carbonBindings = shaderRecord.bindings || [];
+        // The pass's resource transforms (detail-map merges and deliberate
+        // drops), beside the bindings they rewrote. The transform is the only
+        // record of what merged - the emitted GLSL just has the result.
+        stage.transforms = glslStage.transforms || [];
         stage.shader = compileShader(stageType, stage.shaderCode, path);
         return stage;
     }
@@ -501,8 +505,10 @@ function buildConstants(stage, manifestStage, shaderRecord)
  * @param {Tw2ShaderStage} stage
  * @param {Object} manifestStage
  * @param {Object} shaderRecord emitter shader record (binding manifest)
+ * @param {Number} stageType
+ * @param {Array<Object>} [transforms] the pass's resource transforms
  */
-function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
+function buildTexturesAndSamplers(stage, manifestStage, shaderRecord, stageType, transforms)
 {
     const bindings = manifestStage?.bindings || [];
 
@@ -547,7 +553,20 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
             .map((entry) => [ entry.registerIndex, entry ])
     );
 
-    for (const resource of bindings.filter((entry) => entry.kind === "resource"))
+    let resources = bindings.filter((entry) => entry.kind === "resource");
+
+    // The detail-map merge is RECORDED on the pass, never re-derived: fold the
+    // member resources into one array-shaped resource per transform before the
+    // ordinary construction below runs. Fragment only - the transform's stage
+    // is "fragment", and a vertex register with the same number is unrelated.
+    if (stageType === STAGE_FRAGMENT)
+    {
+        resources = applyTextureArrayTransforms(
+            resources, transforms, emittedResourcesByRegister, samplersByRegister
+        );
+    }
+
+    for (const resource of resources)
     {
         if (nonTextureRegisters.has(resource.registerIndex)) continue;
         // `name` is what the container reader emits (Carbon's own resource
@@ -573,6 +592,21 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
         stage.textures.push(texture);
 
         const emittedResource = emittedResourcesByRegister.get(resource.registerIndex);
+
+        // A merged binding stands for its ordered logical layers; Tw2Effect
+        // keeps the named parameters public and bridges them to one aggregate.
+        if (resource.arrayLayers) texture.arrayLayers = resource.arrayLayers;
+
+        // Most emitted sampler uniforms are positional (s#/vs#) and the
+        // program's own setup loops find them. A merged array is declared under
+        // its own symbol, so carry it or the uniform's unit is never assigned
+        // and it samples unit 0.
+        if (emittedResource?.name
+            && emittedResource.name !== `s${resource.registerIndex}`
+            && emittedResource.name !== `vs${resource.registerIndex}`)
+        {
+            texture._glslSymbol = emittedResource.name;
+        }
         const pairedRegister = getSamplerRegisterIndex(resource, emittedResource);
         // Matching t# against s# by number is meaningless - it is what gave
         // NormalMap the clamp sampler - so it is only reachable when the package
@@ -633,6 +667,114 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
 
     stage.textures.sort((a, b) => a.registerIndex - b.registerIndex);
     stage.samplers.sort((a, b) => a.registerIndex - b.registerIndex);
+}
+
+/**
+ * Folds each recorded texture-array transform's member resources into one
+ * array-shaped resource entry.
+ *
+ * The transform is the single source of truth for what merged
+ * (/docs/contracts/detail-map-array.md): its input list's length is the layer
+ * count (2 or 3 in the shipped v5 quad families - never assume 3), its entries
+ * are the source parameters in layer order, and layer order is decided by
+ * NAME, not register. The description's records are only consulted to
+ * cross-check and to carry per-layer isSRGB.
+ *
+ * @param {Array<Object>} resources manifest resource bindings
+ * @param {Array<Object>} [transforms] the pass's resource transforms
+ * @param {Map<Number, Object>} emittedResourcesByRegister
+ * @param {Map<Number, Object>} samplersByRegister
+ * @returns {Array<Object>} resources with merged members replaced
+ */
+function applyTextureArrayTransforms(resources, transforms, emittedResourcesByRegister, samplersByRegister)
+{
+    for (const transform of transforms || [])
+    {
+        if (transform.kind !== "texture-2d-array") continue;
+
+        // The array's physical register is wherever the emitter declared it -
+        // the first merged member seen. A transform whose registers carry no
+        // array declaration was never sampled in this body, so there is
+        // nothing to bind and the members are left as the harmless unsampled
+        // textures they already were.
+        const outputRegister = (transform.inputs || [])
+            .map((input) => input.registerIndex)
+            .find((register) =>
+            {
+                const samplerType = emittedResourcesByRegister.get(register)?.samplerType;
+                return samplerType === "sampler2DArray" || samplerType === "sampler2DArrayShadow";
+            });
+        if (outputRegister === undefined) continue;
+
+        const membersByRegister = new Map();
+        for (const input of transform.inputs)
+        {
+            const record = resources.find((entry) => entry.registerIndex === input.registerIndex);
+            membersByRegister.set(input.registerIndex, record || null);
+
+            const recordName = record?.name || record?.metadataName || record?.carbon?.name;
+            if (record && recordName && recordName !== input.parameter)
+            {
+                console.warn(
+                    `Tw2CarbonEffectReader: detail-array layer ${input.layer} is `
+                    + `'${input.parameter}' in the transform but '${recordName}' in the description`
+                );
+            }
+        }
+
+        // One array carries one sampler state. The emitter unioned the
+        // members' pairings onto the array binding; more than one register in
+        // that union is only sound if the sampler states agree, so check and
+        // say so when they do not (binding still proceeds - the lowest
+        // register wins, exactly as multi-sampler textures already resolve).
+        const paired = emittedResourcesByRegister.get(outputRegister)?.pairedSamplerRegisters || [];
+        if (paired.length > 1)
+        {
+            const describe = (register) =>
+            {
+                const sampler = samplersByRegister.get(register)?.carbon?.sampler || {};
+                return JSON.stringify([
+                    sampler.addressU, sampler.addressV, sampler.addressW,
+                    sampler.minFilter, sampler.magFilter, sampler.mipFilter,
+                    sampler.maxAnisotropy
+                ]);
+            };
+            const states = new Set(paired.map(describe));
+            if (states.size > 1)
+            {
+                console.warn(
+                    "Tw2CarbonEffectReader: detail-array layers pair with samplers "
+                    + `s${paired.join(", s")} whose states disagree; the array binds one state for all layers`
+                );
+            }
+        }
+
+        const merged = {
+            kind: "resource",
+            registerIndex: outputRegister,
+            name: transform.output?.name || "DetailArrayMap",
+            carbon: {
+                type: TEXTURE_2D,
+                isSRGB: false,
+                isAutoregister: false
+            },
+            // Ordered by the transform's layer indices: the name decides the
+            // layer, whatever register order the reflection listed.
+            arrayLayers: [ ...transform.inputs ]
+                .sort((a, b) => a.layer - b.layer)
+                .map((input) => ({
+                    name: input.parameter,
+                    layer: input.layer,
+                    isSRGB: membersByRegister.get(input.registerIndex)?.carbon?.isSRGB || false
+                }))
+        };
+
+        const mergedRegisters = new Set(transform.inputs.map((input) => input.registerIndex));
+        resources = resources.filter((entry) => !mergedRegisters.has(entry.registerIndex));
+        resources.push(merged);
+    }
+
+    return resources;
 }
 
 /**

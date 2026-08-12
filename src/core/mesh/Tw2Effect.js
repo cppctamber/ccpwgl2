@@ -1,6 +1,7 @@
 import { meta, assignIfExists, getKeyFromValue, getPathExtension, isPlain, isString } from "utils";
 import { device, tw2 } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
+import { Tw2TextureArrayBridge } from "../parameter/Tw2TextureArrayBridge";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 import { fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { Tw2EffectRes, Tw2Resource } from "core/resource";
@@ -820,10 +821,18 @@ export class Tw2Effect extends meta.Model
 
                         for (let k = 0; k < stageRes.textures.length; ++k)
                         {
-                            const { name, isAutoregister } = stageRes.textures[k];
+                            const { name, isAutoregister, arrayLayers } = stageRes.textures[k];
 
                             let texture = null;
-                            if (name in this.parameters)
+                            if (arrayLayers)
+                            {
+                                // A merged binding (the detail-map array). The
+                                // named layer parameters stay the public
+                                // surface; the private bridge owns the one
+                                // physical array bind.
+                                texture = this._GetTextureArrayBridge(stageRes.textures[k]);
+                            }
+                            else if (name in this.parameters)
                             {
                                 texture = this.parameters[name];
                             }
@@ -974,6 +983,57 @@ export class Tw2Effect extends meta.Model
         }
 
         return true;
+    }
+
+    /**
+     * Gets (or builds) the private bridge for a merged texture-array binding.
+     *
+     * Every logical layer keeps - or gains - its ordinary named
+     * Tw2TextureParameter, marked used so the pruning pass cannot delete what
+     * SOF assigned, and stays individually settable by name. The bridge holds
+     * them in the recorded layer order and resolves the shared aggregate from
+     * their current paths at bind time.
+     *
+     * Layer parameters are created when absent regardless of autoParameter:
+     * the shader's one physical binding is unusable until every layer has a
+     * source, so the named slots must exist for SOF (or anyone) to fill.
+     *
+     * @param {Tw2ShaderStageTexture} definition - merged binding definition
+     * @returns {Tw2TextureArrayBridge}
+     * @private
+     */
+    _GetTextureArrayBridge(definition)
+    {
+        const layers = [];
+        for (const layer of definition.arrayLayers)
+        {
+            let parameter;
+            if (layer.name in this.parameters)
+            {
+                parameter = this.parameters[layer.name];
+            }
+            else if (tw2.HasVariable(layer.name))
+            {
+                parameter = tw2.GetVariable(layer.name);
+            }
+            else
+            {
+                parameter = this.parameters[layer.name] = new Tw2TextureParameter(layer.name);
+            }
+            parameter.usedByCurrentEffect = true;
+            layers.push(parameter);
+        }
+
+        const key = `${definition.name}:${definition.arrayLayers.map(x => x.name).join(",")}`;
+        this._textureArrayBridges = this._textureArrayBridges || {};
+
+        let bridge = this._textureArrayBridges[key];
+        if (!bridge)
+        {
+            bridge = this._textureArrayBridges[key] = new Tw2TextureArrayBridge(definition.name);
+        }
+        bridge.SetLayers(layers);
+        return bridge;
     }
 
     /**

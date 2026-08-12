@@ -184,6 +184,22 @@ export class Tw2ShaderProgram
 
         if (pass.isCarbon)
         {
+            // Sampler uniforms the emitter declared under their own symbol
+            // (the merged detail array's sDetailArrayMap) are invisible to the
+            // positional s#/vs# loops above, so their unit would stay at the
+            // default 0 and collide with whatever samples unit 0. Point them
+            // at their register's unit, matching the bind in Tw2Effect.
+            for (let j = 0; j < pass.stages.length; ++j)
+            {
+                for (const texture of pass.stages[j].textures || [])
+                {
+                    if (!texture._glslSymbol) continue;
+                    const location = gl.getUniformLocation(program.program, texture._glslSymbol);
+                    const unit = j === 0 ? texture.registerIndex + 12 : texture.registerIndex;
+                    if (location) gl.uniform1i(location, unit);
+                }
+            }
+
             Tw2ShaderProgram.SetupCarbonResources(program, pass, gl);
             Tw2ShaderProgram.SetupCarbonSamplerUnits(program, pass, gl);
         }
@@ -233,7 +249,7 @@ export class Tw2ShaderProgram
 
                 occupied.add(unit);
                 remap.set(reg, unit);
-                const location = gl.getUniformLocation(program.program, "s" + reg);
+                const location = gl.getUniformLocation(program.program, texture._glslSymbol || ("s" + reg));
                 if (location) gl.uniform1i(location, unit);
             }
         }

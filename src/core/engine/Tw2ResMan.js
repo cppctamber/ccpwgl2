@@ -4,6 +4,7 @@ import { Tw2ResManWorkerLoader } from "./Tw2ResManWorkerLoader";
 import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
+import { Tw2TextureArrayRes } from "../resource/Tw2TextureArrayRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, normalizeResourcePath } from "utils";
@@ -147,6 +148,13 @@ export class Tw2ResMan extends Tw2EventEmitter
         // Built in, as Carbon registers its own from a static constructor.
         this.RegisterResourceConstructor("color", {
             GetResource: query => Tw2ColorTextureRes.FromQuery(query)
+        });
+
+        // Ordered layer paths -> one shared 2D array texture. Keying the
+        // cache on the full ordered path list is the point: two effects
+        // naming the same detail maps resolve to the same array.
+        this.RegisterResourceConstructor("texturearray", {
+            GetResource: query => Tw2TextureArrayRes.FromQuery(query)
         });
     }
 
