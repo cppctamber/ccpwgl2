@@ -108,6 +108,40 @@ and it is supplied by ccpwgl. A wrong transform would normally break both
 halves, so if it is the cause it must interact with handedness. That asymmetry
 is the next thing to explain, and it is the last unexamined link.
 
+## CAUSE FOUND 2026-08-12 (maintainer)
+
+**The normal map's sampler state has `addressU` = 3 (CLAMP_TO_EDGE) instead of
+1 (WRAP)**, on the dx11 -> webgl2 path only. The mirrored half's UVs are 96%
+outside [0,1], so a clamped U pins them to the edge texel and the normal map
+smears along the hull — which reads as a stretched reflection, because the
+perturbed normal is what the reflection vector depends on.
+
+**gles2 renders correctly**, so CCP's own shaders and their sampler
+declarations are fine. The fault is in the dx11 translate-at-load path.
+
+Narrowed, on evidence:
+
+- `Tw2SamplerState` defaults every address mode to `GL_REPEAT`, so the 3 is
+  real data rather than an unset field falling back.
+- **Our emitter records no sampler pairing at all** — every resource binding in
+  the translated container has `samplerRegisterIndex` and
+  `samplerRegisterIndices` undefined. So `getSamplerRegisterIndex`
+  (`Tw2CarbonEffectReader.js`) cannot be getting the pairing from us.
+- With no pairing, that function falls through to
+  `samplersByRegister.get(resource.registerIndex)`, then to `get(0)`. The DXBC
+  declares only two samplers — register 0 `WRAP/WRAP`, register 1
+  `CLAMP/CLAMP/CLAMP` — so `NormalMap` at resource register 3 should land on
+  register 0 and come out WRAP.
+
+So either `samplersByRegister` is keyed by something other than the DXBC
+sampler register, or `resource.carbon` carries a pairing that selects the clamp
+sampler. That is the next thing to read, and it is a small read.
+
+Whichever it is, it is a **binding** fault, not a translation one — the third
+today, after the composite's permutation and parameter bindings. The emitted
+GLSL merges resource and sampler into one uniform, so a wrong pairing is
+invisible in the shader source and only shows up in the reader.
+
 ## First tests, cheapest first
 
 1. **Compare an affected hull against an unaffected one** — vertex declaration
