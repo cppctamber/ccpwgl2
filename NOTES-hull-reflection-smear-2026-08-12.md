@@ -137,6 +137,39 @@ So either `samplersByRegister` is keyed by something other than the DXBC
 sampler register, or `resource.carbon` carries a pairing that selects the clamp
 sampler. That is the next thing to read, and it is a small read.
 
+**The observed state matches no declared sampler.** It reads
+`U CLAMP(3), V CLAMP(3), W REPEAT(1)`, while sampler 0 is `1,1,3` and sampler 1
+is `3,3,3`. The same values appear in the wrong slots, and `GL_REPEAT` is also
+`Tw2SamplerState`'s default for an unset field — so this is assembled, not
+selected.
+
+## Working theory (maintainer, 2026-08-12)
+
+ccpwgl carries a pile of sampler, override and mip defaults that were needed to
+make WebGL work originally — WebGL1-era compensations, several of which
+conflate unrelated concerns. **They were bugs written to cancel other bugs, and
+as the shader path gets more correct they stop cancelling and start showing.**
+
+The mip/wrap gate in `Tw2SamplerState.Apply` is a documented example: it uses
+`hasMipMaps` as a proxy for power-of-two because `_isPowerOfTwo` is never passed
+in, and its own comment warns that lifting it would hand every screen-space pass
+its authored wrap mode at once, changing together anything that currently looks
+right BECAUSE of the clamp.
+
+Consequences for how to approach this:
+
+- A sampler's final state may be the product of several compensations rather
+  than of any single declaration, which is why it can match nothing declared.
+- The fix is not "correct the decode" but "work out which compensation is still
+  earning its place". They cannot all be lifted at once.
+- Expect more of these to surface as the dx11 path improves. A defect that
+  appears when something else is fixed is the signature, and it will look like a
+  regression caused by the improvement.
+
+The discriminator gets sharper under this theory: **dump every sampler, not just
+the normal map.** All shifted the same way means one decode bug. Only some wrong
+means the pile — and which ones are wrong identifies the compensation that fired.
+
 Whichever it is, it is a **binding** fault, not a translation one — the third
 today, after the composite's permutation and parameter bindings. The emitted
 GLSL merges resource and sampler into one uniform, so a wrong pairing is
