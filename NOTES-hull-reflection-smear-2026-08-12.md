@@ -19,10 +19,21 @@ Observed properties, all from the maintainer:
   having the strongest specular response rather than with anything Amarr-specific.
 - **All hulls have mirrored UVs**, so mirroring alone cannot be the
   discriminator between affected and unaffected hulls.
-- Present with the environment maps loaded and good, so it is distinct from the
-  purge bug fixed on 2026-08-12 (`EveSpaceScene` now calls `KeepAlive` on the
-  env maps; a purged blur cube produced hard BLACK patches, not a smear — do not
-  conflate the two).
+- The hard black patches seen earlier are, on the maintainer's later reading,
+  **the environment itself — stretched out of proportion**. So the "black
+  patches" and the "smear" are most likely ONE fault, not two: a dark region of
+  the cube smeared across a large area of hull reads as a black patch with a
+  hard edge.
+
+  Do not treat blackness and stretching as separate symptoms needing separate
+  causes. An earlier draft of this note asserted they were distinct; that was
+  wrong.
+
+  Separately, the blur cube WAS being purged — measured, state -2 PURGED with
+  `good: false` — and `EveSpaceScene` now calls `KeepAlive` on the env maps.
+  That fix stands on its own: a silently evicted resource is a defect whatever
+  else is true. But it should not be assumed to have fixed this, and the
+  reflection artifact should be re-checked now that the maps stay resident.
 
 ## What a smear implies
 
