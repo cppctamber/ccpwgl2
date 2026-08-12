@@ -58,6 +58,34 @@ them has been marked accordingly.
 Treat the translator, the bindings, the mesh data and the shader maths as all
 still open.
 
+## Established first-hand 2026-08-12 (not inherited)
+
+Measured on `ab1_t1.gr2`, 10,144 vertices, decoded offline with
+`@carbonenginejs/runtime-utils/tangent`:
+
+- The mesh carries **only** a packed TANGENT stream — `normal` and `binormal`
+  are empty, so the whole frame comes from the packed angles. `isPacked` true.
+- **Every decoded frame is unit-length and orthogonal, on both sides.** No
+  degenerate binormals, no null tangents, mean `|T·B|` about 0.007 in every
+  bucket. The data is not the fault.
+- Handedness tracks the side, as a mirrored hull should:
+
+      LEFT  (x<0)   sign=+1   196    sign=-1  4458
+      RIGHT (x>=0)  sign=+1  5105    sign=-1   385
+
+  The reported bad side is the RIGHT, which is the `sign=+1` population.
+- **CCP's vertex shader decode matches our CPU codec exactly.** Read from the
+  translated `quaddetailv5.sm_depth` vertex stage: angles are `TANGENT*2pi - pi`,
+  the handedness test is `(0 < a1) && (0 < a3)` — the same asymmetric AND — and
+  the sign is applied to **N only**; T and B pass through unflipped. All three
+  are then transformed by `cb3[0..2].xyz` into varyings.
+
+So the tangent data and the vertex-stage decode are both **excluded**, on
+evidence gathered here rather than on the withdrawn claims.
+
+What remains: the pixel stage's use of the TBN varyings, and what `cb3` actually
+supplies — the per-object transform rows the frame is rotated by.
+
 ## First tests, cheapest first
 
 1. **Compare an affected hull against an unaffected one** — vertex declaration
