@@ -57,3 +57,7 @@ artifacts/
 # test fixtures containing real extracted CCP/EVE game assets (.black, .sm_hi,
 # and .webgl.cewg packages built from them) - not safe to commit
 test/fixtures/
+
+# Working notes stay local - durable content belongs in the org /docs tree
+NOTES-*.md
+src/**/README.md

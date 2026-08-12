@@ -574,10 +574,21 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
 
         const emittedResource = emittedResourcesByRegister.get(resource.registerIndex);
         const pairedRegister = getSamplerRegisterIndex(resource, emittedResource);
+        // Matching t# against s# by number is meaningless - it is what gave
+        // NormalMap the clamp sampler - so it is only reachable when the package
+        // carries no emitter data at all. When the emitter IS present and
+        // recorded no pair, the texture is simply never sampled in this body
+        // (SSAOMap and the shadow map in the pattern permutation), and the
+        // shared default sampler is the honest answer rather than whichever
+        // sampler happens to share its number.
+        const defaultSampler = samplersByRegister.size === 1
+            ? samplersByRegister.values().next().value
+            : samplersByRegister.get(0);
         const samplerBinding = pairedRegister !== null
             ? samplersByRegister.get(pairedRegister)
-            : samplersByRegister.get(resource.registerIndex)
-                || (samplersByRegister.size === 1 ? samplersByRegister.values().next().value : samplersByRegister.get(0));
+            : emittedResource
+                ? defaultSampler
+                : samplersByRegister.get(resource.registerIndex) || defaultSampler;
         const sampler = samplerBinding?.carbon?.sampler || {};
         // The emitted GLSL declaration is the binding-target authority.
         // Carbon's own reflection cannot express a 2D array: the shader
@@ -588,8 +599,15 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
         // `type` is withheld from the JSON in that case so ResolveModes
         // cannot re-derive the target from the typeless byte.
         const emittedTarget = GLSL_SAMPLER_TARGETS[emittedResource?.samplerType];
+        // Carbon addresses a sampler override BY NAME, and only a dynamic
+        // sampler keeps its name to be found by. So the authored name is the
+        // override target when there is one; otherwise `<Texture>Sampler` is a
+        // display label only, and `isDynamic` false stops it being registered as
+        // an override target it cannot be in Carbon.
+        const isDynamicSampler = sampler.isDynamic !== false && !!samplerBinding?.carbon?.name;
         const samplerState = Tw2SamplerState.fromJSON({
-            name: samplerBinding?.metadataName || `${name}Sampler`,
+            name: samplerBinding?.carbon?.name || samplerBinding?.metadataName || `${name}Sampler`,
+            isDynamic: isDynamicSampler,
             registerIndex: samplerBinding?.registerIndex ?? texture.registerIndex,
             samplerType: emittedTarget ?? texture.glType,
             isVolume: texture.isVolume,
@@ -625,6 +643,25 @@ function buildTexturesAndSamplers(stage, manifestStage, shaderRecord)
  */
 function getSamplerRegisterIndex(resource, emittedResource)
 {
+    // `pairedSamplerRegisters` is the general pairing the emitter recovers from
+    // every DXBC sample instruction, and it is the ONLY correct source. Carbon's
+    // reflection relates textures and samplers nowhere, so without it the caller
+    // falls back to matching t# against s# by number - which is coincidence, and
+    // which silently hands NormalMap the clamp sampler on every patterned hull.
+    // See /docs/contracts/texture-sampler-pairing.md.
+    const paired = emittedResource?.pairedSamplerRegisters;
+    if (Array.isArray(paired))
+    {
+        const registers = [ ...new Set(paired.filter(Number.isInteger)) ].sort((a, b) => a - b);
+        // A texture sampled through more than one sampler cannot be expressed by
+        // one GLSL uniform, which carries a single sampler state. Ten shipped
+        // effects do it (earthlikeplanet wrap+mirror, ssao mirror+clamp, the
+        // point-filtered blits). Take the lowest register so the choice is at
+        // least deterministic rather than declaration-order dependent; properly
+        // supporting it means emitting one uniform per pair.
+        if (registers.length) return registers[0];
+    }
+
     const sources = [ emittedResource, resource, resource?.carbon ];
     for (const source of sources)
     {

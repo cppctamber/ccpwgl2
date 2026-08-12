@@ -10,14 +10,11 @@
   "scripts": {
     "build": "npm run build:rollup",
     "build:rollup": "rollup -c rollup.config.mjs",
-    "lint": "eslint src --ignore-pattern src/experiments/ssao/console-test.js --ignore-pattern src/wrapped/BackUpToClean.js --ignore-pattern src/wrapped/camera/CameraOrbitControls_Broken.js",
+    "lint": "eslint src --ignore-pattern src/wrapped/BackUpToClean.js --ignore-pattern src/wrapped/camera/CameraOrbitControls_Broken.js",
     "test:carbon-pending": "node scripts/test-carbon-pending.js",
-    "test:black-sampler-override": "node scripts/test-black-sampler-override.js",
     "test:carbon-light-list": "node scripts/test-carbon-light-list.js",
     "test:carbon-light-collector": "node scripts/test-carbon-light-collector.js",
-    "test:carbon-effect-res": "node scripts/test-carbon-effect-res.js",
     "test:carbon-resource-binder": "node scripts/test-carbon-resource-binder.js",
-    "test:carbon-comparison-sampler": "node scripts/test-carbon-comparison-sampler.js",
     "test:carbon-interior-per-object-data": "node scripts/test-carbon-interior-per-object-data.js",
     "test:eve-stretch2": "node scripts/test-eve-stretch2.js",
     "test:get-resources": "node scripts/test-get-resources-contract.js",
@@ -35,8 +32,6 @@
     "test:interior-viseme-binding": "node scripts/test-interior-viseme-binding.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
     "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",
-    "test:parity": "node scripts/parityCarbonVsLegacy.js",
-    "testbed:carbon": "node scripts/testbed/carbon-diagnostics.js",
     "test:carbon-data": "node scripts/test-carbon-data.js",
     "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs"
   },
@@ -77,7 +72,7 @@
     "rollup": "^4.62.2"
   },
   "dependencies": {
-    "@carbonenginejs/runtime-audio": "^0.3.0",
-    "@carbonenginejs/runtime-resource": "^0.13.0"
+    "@carbonenginejs/runtime-audio": "^0.3.1",
+    "@carbonenginejs/runtime-resource": "^0.16.0"
   }
 }

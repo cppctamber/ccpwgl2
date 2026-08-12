@@ -859,9 +859,17 @@ export class Tw2Effect extends meta.Model
 
                             for (let n = 0; n < stageRes.samplers.length; ++n)
                             {
-                                const { registerIndex, name } = stageRes.samplers[n];
+                                const { registerIndex, name, isDynamic } = stageRes.samplers[n];
 
-                                if (samplerOverrideNames.indexOf(name) === -1)
+                                // Only a dynamic sampler is an override target.
+                                // Carbon resolves overrides through
+                                // FindSamplerByName and nulls a non-dynamic
+                                // sampler's name at load, so a non-dynamic one
+                                // can never be found. Offering `AlbedoMapSampler`
+                                // here would invent a target Carbon does not
+                                // have. The gles2 path leaves isDynamic true, so
+                                // it is unaffected.
+                                if (isDynamic !== false && samplerOverrideNames.indexOf(name) === -1)
                                 {
                                     if (!this.samplerOverrides[name])
                                     {
@@ -882,7 +890,10 @@ export class Tw2Effect extends meta.Model
                                     else
                                     {
                                         p.sampler = stageRes.samplers[n];
-                                        this.samplerOverrides[name] = null;
+                                        // Same gate: do not resurrect a
+                                        // non-dynamic name as a null override
+                                        // slot the pruning pass would then keep.
+                                        if (isDynamic !== false) this.samplerOverrides[name] = null;
                                     }
                                     break;
                                 }

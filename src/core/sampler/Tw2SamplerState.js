@@ -103,6 +103,20 @@ export class Tw2SamplerState extends meta.Model
     isVolume = false;
 
     /**
+     * Whether this sampler may be addressed by a sampler override.
+     *
+     * Carbon's rule: an override is resolved BY NAME through
+     * `FindSamplerByName`, and a non-dynamic sampler has its name nulled while
+     * reading, so only dynamic samplers can ever be found. Twelve samplers in
+     * the whole dx11 corpus are dynamic; the rest are anonymous and shared.
+     *
+     * Defaults true so the gles2 path is unchanged: those containers name every
+     * sampler and carry no dynamic flag, so all of them stay addressable.
+     */
+    @meta.boolean
+    isDynamic = true;
+
+    /**
      * Enables hardware depth comparison for GLSL shadow samplers. This is a
      * Carbon-facing field; legacy CCP binary comparison bytes remain on the
      * historical private fields below so existing EVE sampler behaviour is
@@ -188,7 +202,12 @@ export class Tw2SamplerState extends meta.Model
      */
     set addressWMode(mode)
     {
-        if (this.addressUMode !== mode && mode !== undefined)
+        // Compares addressWMode, not addressUMode. The original compared against
+        // U - a copy-paste slip - so W was skipped whenever it already agreed
+        // with U, silently keeping the GL_REPEAT default. A CLAMP/CLAMP/CLAMP
+        // sampler therefore read back as CLAMP/CLAMP/REPEAT, matching no
+        // declared sampler and making the real fault harder to recognise.
+        if (this.addressWMode !== mode && mode !== undefined)
         {
             this.addressW = WrapModes[mode];
             this.hash = null;
@@ -523,7 +542,7 @@ export class Tw2SamplerState extends meta.Model
         const sampler = new Tw2SamplerState();
         assignIfExists(sampler, json, [
             "name", "registerIndex", "samplerType", "isVolume",
-            "comparison", "comparisonFunc"
+            "comparison", "comparisonFunc", "isDynamic"
         ]);
         sampler.ResolveModes(json);
         return sampler;
