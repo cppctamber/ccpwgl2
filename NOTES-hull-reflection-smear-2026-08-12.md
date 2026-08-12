@@ -80,11 +80,33 @@ Measured on `ab1_t1.gr2`, 10,144 vertices, decoded offline with
   the sign is applied to **N only**; T and B pass through unflipped. All three
   are then transformed by `cb3[0..2].xyz` into varyings.
 
-So the tangent data and the vertex-stage decode are both **excluded**, on
-evidence gathered here rather than on the withdrawn claims.
+- **UVs confirm which half is mirrored.** `texcoord0` on the model's LEFT half
+  (x<0) runs to u = -0.999 with **95.9% of vertices outside [0,1]**; the right
+  half is 7.0%. The out-of-range count (4461) matches the `sign=-1` bucket
+  (4458), so mirroring and handedness are one population. Viewed from the front
+  the model's left appears on the viewer's right, which is the reported side.
+- **The wrap-mode gate is NOT firing.** `Tw2SamplerState.Apply` forces
+  CLAMP_TO_EDGE on any texture without mipmaps — a real trap, documented in
+  place — but measured at runtime every hull map reports `mips: true` and
+  `pot: true`, and the container declares `U WRAP, V WRAP` for the material
+  sampler. Checked because clamped wrap on a half whose UVs are 96% out of
+  range would smear exactly like this; it is not the cause here.
+- **The pixel stage honours the authored handedness.** It uses the supplied
+  binormal varying rather than recomputing `cross(N, T)`:
+  `normal = T*n.x + B*n.y + N*n.z`, reading `vs_r3`, `vs_r4`, `vs_r2`. A
+  recomputed binormal would have inverted the mirrored half; it does not.
+- **The BC5 normal map is read correctly** — only `.xy` is sampled from the
+  ATI2 texture and decoded to [-1,1], which is right for two-channel BC5.
 
-What remains: the pixel stage's use of the TBN varyings, and what `cb3` actually
-supplies — the per-object transform rows the frame is rotated by.
+So excluded, all on evidence gathered here: the tangent data, the vertex-stage
+decode, the pixel-stage TBN application, the mip/wrap gate, and the normal-map
+channel read.
+
+What remains: whether the TBN varyings arrive carrying what the vertex stage
+computed — `cb3[0..2].xyz` is the per-object transform the frame is rotated by,
+and it is supplied by ccpwgl. A wrong transform would normally break both
+halves, so if it is the cause it must interact with handedness. That asymmetry
+is the next thing to explain, and it is the last unexamined link.
 
 ## First tests, cheapest first
 
