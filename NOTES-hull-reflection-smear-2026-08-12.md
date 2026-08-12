@@ -175,6 +175,55 @@ today, after the composite's permutation and parameter bindings. The emitted
 GLSL merges resource and sampler into one uniform, so a wrong pairing is
 invisible in the shader source and only shows up in the reader.
 
+## What to check next, in order
+
+The fault is in how the dx11 path turns Carbon's sampler model into a
+per-texture one. DXBC itself carries **no** address modes — in D3D11 they are
+runtime API state, and `dcl_sampler s0` declares nothing about wrapping. So
+every wrap mode in our metadata came from Carbon's reflection, and the question
+is only whether we carried it across intact.
+
+**0. Which sampler table is which.** Our emitted contract lists **two** samplers
+with `name: null`, while ccpwgl reads one *called* `NormalMapSampler` at
+register 3. Those are different tables. Establish whether Carbon's reflection
+holds per-texture named samplers (17) or two shared ones, and which of them we
+are emitting. Everything below depends on the answer, and it is a read.
+
+**1. Are the real names of textures and samplers stored?** Partially answered
+already: our emitted resource bindings **do** carry texture names — `AlbedoMap`,
+`NormalMap`, `PaintMaskMap` and so on — while the sampler entries come back
+`name: null`. Confirm that holds for the Carbon reflection we read from, not
+just for what we emit.
+
+**2. If texture names are stored, the sampler names are derivable.** Carbon's
+convention is `<TextureName>Sampler` — `EveSOF` builds override names exactly
+that way, `std::string( textureName ) + "Sampler"`. So `NormalMap` implies
+`NormalMapSampler` without needing the name stored twice. Note this gives the
+NAME only; it does not by itself say which shared sampler's values to copy.
+
+**3. If the names are not stored, the pairing must be.** We currently store
+neither: every resource binding has `samplerRegisterIndex` and
+`samplerRegisterIndices` undefined. The pairing exists in the DXBC `sample`
+instruction operands — resource register and sampler register are both there —
+so it can be recovered and emitted as an index alongside the correct U/V/W, and
+`Tw2Shader` can reassemble the pair. The consumer side is already written and
+waiting: `getSamplerRegisterIndex` in `Tw2CarbonEffectReader` looks for exactly
+those fields, and its comment says it exists so "Carbon can preserve t#/s#
+pairs".
+
+**4. A shared sampler split for WebGL must produce duplicates.** WebGL has no
+separate sampler objects here, so one Carbon sampler used by several textures
+becomes several per-texture samplers — and each must carry the SAME values,
+copied from its source. Any derived sampler whose U/V/W does not match the
+sampler it came from is wrong by construction. That is the invariant to assert,
+and today's state fails it: the observed `CLAMP/CLAMP/REPEAT` matches neither
+source sampler.
+
+A useful reference throughout: the gles2 path is correct, and CCP's containers
+there declare one sampler per texture register with all three modes read as
+`UInt8`s (`Tw2SamplerState.fromCCPBinary`). That is the shape the dx11 path has
+to end up equivalent to, so it can be diffed against rather than reasoned about.
+
 ## First tests, cheapest first
 
 1. **Compare an affected hull against an unaffected one** — vertex declaration
