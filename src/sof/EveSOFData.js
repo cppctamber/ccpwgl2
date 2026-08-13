@@ -37,6 +37,7 @@ import {
 } from "eve";
 
 import { EveStation2 } from "../unsupported/eve/object";
+import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
@@ -100,6 +101,14 @@ export class EveSOFData extends meta.Model
         // Allow reverting to old spotlight sets
         useSpotlightPool: true,
 
+        // Allow reverting to the first generation booster set.
+        //
+        // Set 2 is the Carbon shape: one instanced draw for the whole set, the
+        // per booster point lights, and the volumetric trails, which only it
+        // can drive because the trail ribbon is swept from the five spline
+        // control points it writes into the per object constants.
+        useBoosterSet2: true,
+
         devColor: [ 0, 0, 0, 0 ],
 
         banners: {
@@ -162,6 +171,7 @@ export class EveSOFData extends meta.Model
             spotlightGlowPool: "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglowpool.fx",
             boosterVolumetric: "res:/graphics/effect/managed/space/booster/boostervolumetric.fx",
             boosterGlow: "res:/graphics/effect/managed/space/booster/boosterglowanimated.fx",
+            boosterTrails: "res:/graphics/effect/managed/space/booster/volumetrictrails.fx",
             spriteSet: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
             banner: "res:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"
         },
@@ -2258,6 +2268,24 @@ export class EveSOFData extends meta.Model
      * @param {Object} sof
      * @param {Object} [options={}]
      */
+    /**
+     * Whether the device resolves effects through the Carbon (translated dx11)
+     * namespace rather than the hand written GLES one
+     * @returns {Boolean}
+     */
+    static WantsCarbonEffects()
+    {
+        const dir = tw2.device ? tw2.device.effectDir : "";
+        return typeof dir === "string" && (dir.includes("effect.dx11") || dir.includes("effect.dx12"));
+    }
+
+    /**
+     *
+     * @param {EveSOFData} data
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} sof
+     * @param {Object} [options={}]
+     */
     static SetupBoosters(data, obj, sof, options)
     {
         const { hull, race } = sof;
@@ -2281,54 +2309,78 @@ export class EveSOFData extends meta.Model
         Color0[3] = boosterAlpha;
         Color1[3] = boosterAlpha;
 
+        // The volumetric effect is identical whichever generation of set owns
+        // it, so it is described once and handed to both paths.
+        const boosterEffect = {
+            effectFilePath: options.effectPath.boosterVolumetric,
+            autoParameter: true,
+            parameters: {
+                NoiseFunction0: shape0.noiseFunction,
+                NoiseSpeed0: shape0.noiseSpeed,
+                NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
+                NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
+                NoiseFrequency0: shape0.noiseFrequency,
+                Color0,
+                NoiseFunction1: shape1.noiseFunction,
+                NoiseSpeed1: shape1.noiseSpeed,
+                NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
+                NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
+                NoiseFrequency1: shape1.noiseFrequency,
+                Color1,
+                WarpNoiseFunction0: warpShape0.noiseFunction,
+                WarpNoiseSpeed0: warpShape0.noiseSpeed,
+                WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
+                WarpNoiseAmplitudeEnd0: warpShape0.noiseAmplitureEnd,
+                WarpNoiseFrequency0: warpShape0.noiseFrequency,
+                WarpColor0: warpShape0.color,
+                WarpNoiseFunction1: warpShape1.noiseFunction,
+                WarpNoiseSpeed1: warpShape1.noiseSpeed,
+                WarpNoiseAmplitudeStart1: warpShape1.noiseAmplitureStart,
+                WarpNoiseAmplitudeEnd1: warpShape1.noiseAmplitureEnd,
+                WarpNoiseFrequency1: warpShape1.noiseFrequency,
+                WarpColor1: warpShape1.color,
+                ShapeAtlasSize: [ src.shapeAtlasHeight, src.shapeAtlasCount, 0, 0 ],
+                BoosterScale: src.scale,
+            },
+            textures: {
+                // Carbon's own shaders declare ShapeMap as a sampler2DArray and
+                // index it with the booster's atlas slot; the hand written GLES
+                // ones sample the same file as a flat sheet and do the tile
+                // arithmetic themselves. A texture bound against the wrong
+                // target is silently skipped, so the strip is realized as a real
+                // array only for the profile that asks for one.
+                ShapeMap: EveSOFData.WantsCarbonEffects()
+                    ? `dynamic:/textureatlasarray/${src.shapeAtlasCount};${src.shapeAtlasResPath}`
+                    : src.shapeAtlasResPath,
+                GradientMap0: src.gradient0ResPath,
+                GradientMap1: src.gradient1ResPath,
+                NoiseMap: options.texturePath.noise32
+            }
+        };
+
+        const boosterGlows = {
+            useQuads: true,
+            effect: {
+                effectFilePath: options.effectPath.boosterGlow,
+                textures: {
+                    DiffuseMap: options.texturePath.whiteSharp,
+                    NoiseMap: options.texturePath.noise
+                }
+            }
+        };
+
         if (obj.boosters)
         {
-            obj.boosters.effect.SetValues({
-                effectFilePath: options.effectPath.boosterVolumetric,
-                autoParameter: true,
-                parameters: {
-                    NoiseFunction0: shape0.noiseFunction,
-                    NoiseSpeed0: shape0.noiseSpeed,
-                    NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
-                    NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
-                    NoiseFrequency0: shape0.noiseFrequency,
-                    Color0,
-                    NoiseFunction1: shape1.noiseFunction,
-                    NoiseSpeed1: shape1.noiseSpeed,
-                    NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
-                    NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
-                    NoiseFrequency1: shape1.noiseFrequency,
-                    Color1,
-                    WarpNoiseFunction0: warpShape0.noiseFunction,
-                    WarpNoiseSpeed0: warpShape0.noiseSpeed,
-                    WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
-                    WarpNoiseAmplitudeEnd0: warpShape0.noiseAmplitureEnd,
-                    WarpNoiseFrequency0: warpShape0.noiseFrequency,
-                    WarpColor0: warpShape0.color,
-                    WarpNoiseFunction1: warpShape1.noiseFunction,
-                    WarpNoiseSpeed1: warpShape1.noiseSpeed,
-                    WarpNoiseAmplitudeStart1: warpShape1.noiseAmplitureStart,
-                    WarpNoiseAmplitudeEnd1: warpShape1.noiseAmplitureEnd,
-                    WarpNoiseFrequency1: warpShape1.noiseFrequency,
-                    WarpColor1: warpShape1.color,
-                    ShapeAtlasSize: [ src.shapeAtlasHeight, src.shapeAtlasCount, 0, 0 ],
-                    BoosterScale: src.scale,
-                },
-                textures: {
-                    ShapeMap: src.shapeAtlasResPath,
-                    GradientMap0: src.gradient0ResPath,
-                    GradientMap1: src.gradient1ResPath,
-                    NoiseMap: options.texturePath.noise32
-                }
-            });
+            obj.boosters.effect.SetValues(boosterEffect);
             return;
         }
 
+        if (options.useBoosterSet2)
+        {
+            EveSOFData.SetupBoosterSet2(obj, hull, src, boosterEffect, boosterGlows, options);
+            return;
+        }
 
-        // obj.boosters = obj.boosters || new EveBoosterSet();
-        // obj.boosters.SetValues({
-        // TODO: Update to eve booster set 2
-        // TODO: Boosters are slightly too big
 
         obj.boosters = EveBoosterSet.from({
             name: src.name,
@@ -2351,56 +2403,74 @@ export class EveSOFData extends meta.Model
             trailSize: src.trailSize,
             warpGlowColor: src.warpGlowColor,
             warpHaloColor: src.warpHalpColor,
-            effect: {
-                effectFilePath: options.effectPath.boosterVolumetric,
-                autoParameter: true,
-                parameters: {
-                    NoiseFunction0: shape0.noiseFunction,
-                    NoiseSpeed0: shape0.noiseSpeed,
-                    NoiseAmplitudeStart0: shape0.noiseAmplitureStart,
-                    NoiseAmplitudeEnd0: shape0.noiseAmplitureEnd,
-                    NoiseFrequency0: shape0.noiseFrequency,
-                    Color0,
-                    NoiseFunction1: shape1.noiseFunction,
-                    NoiseSpeed1: shape1.noiseSpeed,
-                    NoiseAmplitudeStart1: shape1.noiseAmplitureStart,
-                    NoiseAmplitudeEnd1: shape1.noiseAmplitureEnd,
-                    NoiseFrequency1: shape1.noiseFrequency,
-                    Color1,
-                    WarpNoiseFunction0: warpShape0.noiseFunction,
-                    WarpNoiseSpeed0: warpShape0.noiseSpeed,
-                    WarpNoiseAmplitudeStart0: warpShape0.noiseAmplitureStart,
-                    WarpNoiseAmplitudeEnd0: warpShape0.noiseAmplitureEnd,
-                    WarpNoiseFrequency0: warpShape0.noiseFrequency,
-                    WarpColor0: warpShape0.color,
-                    WarpNoiseFunction1: warpShape1.noiseFunction,
-                    WarpNoiseSpeed1: warpShape1.noiseSpeed,
-                    WarpNoiseAmplitudeStart1: warpShape1.noiseAmplitureStart,
-                    WarpNoiseAmplitudeEnd1: warpShape1.noiseAmplitureEnd,
-                    WarpNoiseFrequency1: warpShape1.noiseFrequency,
-                    WarpColor1: warpShape1.color,
-                    ShapeAtlasSize: [ src.shapeAtlasHeight, src.shapeAtlasCount, 0, 0 ],
-                    BoosterScale: src.scale,
-                },
-                textures: {
-                    ShapeMap: src.shapeAtlasResPath,
-                    GradientMap0: src.gradient0ResPath,
-                    GradientMap1: src.gradient1ResPath,
-                    NoiseMap: options.texturePath.noise32
-                }
-            },
-            glows: {
-                useQuads: true,
+            effect: boosterEffect,
+            glows: boosterGlows
+        });
+
+    }
+
+    /**
+     * Builds a second generation booster set.
+     *
+     * The placements are not seeded here. `SetupLocators` already emits one
+     * `locator_booster_n` per hull booster item carrying the transform, atlas
+     * slots, functionality, trail flag and light scale, and `EveShip2` feeds
+     * those to the set - so this only has to describe the set itself.
+     *
+     * @param {EveStation2|EveShip2} obj
+     * @param {Object} hull
+     * @param {EveSOFDataBooster} src - the race booster data
+     * @param {Object} boosterEffect
+     * @param {Object} boosterGlows
+     * @param {Object} options
+     */
+    static SetupBoosterSet2(obj, hull, src, boosterEffect, boosterGlows, options)
+    {
+        const {
+            boosterGlowScale = 1,
+            boosterHaloScale = 1,
+            boosterSymHalo = 1
+        } = options.multiplier;
+
+        const boosters = EveBoosterSet2.from({
+            name: src.name,
+            alwaysOn: !!hull.booster.alwaysOn,
+            glowColor: src.glowColor,
+            glowScale: src.glowScale * boosterGlowScale,
+            haloColor: src.haloColor,
+            haloScaleX: src.haloScaleX * boosterHaloScale,
+            haloScaleY: src.haloScaleY * boosterHaloScale,
+            symHaloScale: src.symHaloScale * boosterSymHalo,
+            warpGlowColor: src.warpGlowColor,
+            warpHaloColor: src.warpHalpColor,
+            lightColor: src.lightColor,
+            lightFlickerAmplitude: src.lightFlickerAmplitude,
+            lightFlickerFrequency: src.lightFlickerFrequency,
+            lightOffset: src.lightOffset,
+            lightRadius: src.lightRadius,
+            lightWarpColor: src.lightWarpColor,
+            lightWarpRadius: src.lightWarpRadius,
+            effect: boosterEffect,
+            glows: boosterGlows,
+            // Carbon gates the trail set on the hull's `hasTrails`, but every
+            // ship hull in the shipped data trails, and the per item `hasTrail`
+            // flag is the one that decides which boosters emit. So the set is
+            // always built and the items gate themselves.
+            trails: {
+                geometryResPath: EveTrailsSet.defaultGeometryResPath,
                 effect: {
-                    effectFilePath: options.effectPath.boosterGlow,
-                    textures: {
-                        DiffuseMap: options.texturePath.whiteSharp,
-                        NoiseMap: options.texturePath.noise
+                    effectFilePath: options.effectPath.boosterTrails,
+                    autoParameter: true,
+                    parameters: {
+                        TrailSize: src.trailSize,
+                        TrailColor: src.trailColor
                     }
                 }
             }
         });
 
+        boosters.RebuildItemsFromLocators();
+        obj.boosters = boosters;
     }
 
     /**

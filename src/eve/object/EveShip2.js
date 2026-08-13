@@ -701,6 +701,14 @@ export class EveShip2 extends EveObject
         {
             this.effectChildren[i].UpdateLod(frustum, this._lod);
         }
+
+        // The booster set 2 has its own lod: the boosters, the trails and the
+        // set's own visibility are three independent gates, and a trail can
+        // keep the set on screen after the hull has left it.
+        if (this.boosters && this.boosters.UpdateLod)
+        {
+            this.boosters.UpdateLod(frustum, this._lod);
+        }
     }
 
     /**
@@ -1205,7 +1213,9 @@ export class EveShip2 extends EveObject
                 this.RebuildBoosterSet();
             }
 
-            this.boosters.Update(dt, this._worldTransform);
+            this.boosters.Update(dt, this._worldTransform, {
+                gain: Math.max(Math.min(this.visible.boosters ? this.boosterGain : 0, 1), 0)
+            });
 
             if (this.boosters._boundsDirty)
             {

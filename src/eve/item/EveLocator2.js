@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { vec3, quat, mat4, box3, sph3 } from "math";
+import { vec3, vec4, quat, mat4, box3, sph3 } from "math";
 
 
 @meta.type("EveLocator2")
@@ -24,6 +24,23 @@ export class EveLocator2 extends meta.Model
     @meta.uint
     @meta.todo("Move to EveLocator only?")
     atlasIndex1 = 0;
+
+    /**
+     * The three booster properties a hull's booster item carries that the
+     * first generation set had no use for. `EveBoosterSet2` reads them off the
+     * locator, so the locator is the only thing SOF has to populate.
+     */
+    @meta.vector4
+    @meta.todo("Move to EveLocator only?")
+    functionality = vec4.fromValues(0, 1, 1, 1);
+
+    @meta.boolean
+    @meta.todo("Move to EveLocator only?")
+    hasTrail = false;
+
+    @meta.float
+    @meta.todo("Move to EveLocator only?")
+    lightScale = 1;
 
     _bone = null;
     _meshIndex = -1;
