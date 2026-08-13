@@ -1,4 +1,6 @@
 import { precision, saturate } from "../shared/func";
+import { WidgetType } from "../shared/util";
+import { RS_CULLMODE, CULL_CW } from "constant/d3d";
 
 const vs = `
 
@@ -605,3 +607,62 @@ const ps = `
     }
 
 `;
+const TrailSize = {
+    name: "TrailSize",
+    value: [ 1, 0, 1, 1 ],
+    ui: {
+        group: "Trail",
+        description: "Trail size",
+        widget: WidgetType.MIXED
+    }
+};
+
+const TrailColor = {
+    name: "TrailColor",
+    value: [ 1, 1, 1, 1 ],
+    ui: {
+        group: "Trail",
+        description: "Trail colour",
+        widget: WidgetType.COLOR
+    }
+};
+
+/**
+ * Volumetric booster trails.
+ *
+ * The mesh is drawn once per trail; the ribbon itself is swept out in the
+ * vertex shader from the five spline control points the owning
+ * `EveBoosterSet2` writes into cb3, so `attr2` (TEXCOORD1) is the per instance
+ * stream carrying (origin.xyz, size) and nothing about the shape is on the CPU.
+ *
+ * The shadow/alpha-test blocks are inlined in the bodies above rather than
+ * pulled from the shared headers, because this pair was transpiled whole.
+ */
+export const volumetrictrails = {
+    name: "volumetrictrails",
+    replaces: "graphics/effect.gles2/managed/space/booster/volumetrictrails",
+    description: "volumetric booster trails",
+    techniques: {
+        Main: {
+            vs: {
+                inputDefinitions: [
+                    { usage: "POSITION", usageIndex: 0, elements: 3 },
+                    { usage: "TEXCOORD", usageIndex: 0, elements: 2 },
+                    { usage: "TEXCOORD", usageIndex: 1, elements: 4 }
+                ],
+                constants: [ TrailSize ],
+                shader: vs
+            },
+            ps: {
+                constants: [ TrailSize, TrailColor ],
+                shader: ps
+            },
+            // The container's own render state. It declares only the cull mode -
+            // the trail ribbon is one sided, and unculled it draws its far face
+            // over its near one.
+            states: {
+                [RS_CULLMODE]: CULL_CW
+            }
+        }
+    }
+};
