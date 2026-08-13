@@ -32,12 +32,24 @@ export class Tw2ShaderStageTexture extends meta.Model
     }
 
     /**
+     * An explicit volume flag, when the type alone does not say it.
+     *
+     * Normally the type answers this, but the two come apart for a volume
+     * sampled by an ESSL1 program: ESSL1 has no `sampler3D`, so those shaders
+     * `#define sampler3D sampler2D` and read the volume as a flat sheet of
+     * slices. Such a texture binds as 2D - so its type is `TEX_2D` - yet it
+     * still needs the slice count that only the volume flag asks for.
+     * @type {null|Boolean}
+     */
+    isVolumeOverride = null;
+
+    /**
      * Identifies if the texture is a volume
      * @return {boolean}
      */
     get isVolume()
     {
-        return this.type === TEX_VOLUME;
+        return this.isVolumeOverride === null ? this.type === TEX_VOLUME : !!this.isVolumeOverride;
     }
 
     /**
@@ -60,6 +72,7 @@ export class Tw2ShaderStageTexture extends meta.Model
     {
         const texture = new Tw2ShaderStageTexture();
         assignIfExists(texture, json, [ "name", "registerIndex", "type", "isSRGB", "isAutoregister" ]);
+        if (json.isVolume !== undefined) texture.isVolumeOverride = !!json.isVolume;
         if (texture.registerIndex === -1 || texture.glType === 0)
         {
             throw new ReferenceError("Invalid shader texture definition");
