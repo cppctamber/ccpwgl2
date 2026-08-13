@@ -384,7 +384,18 @@ export class Tw2SamplerState extends meta.Model
      * @param {Boolean} hasMipMaps
      * @param {Boolean} [useNoMipFilter] Testing DDS files...
      */
-    Apply(device, hasMipMaps, useNoMipFilter)
+    /**
+     * @param {Tw2Device} device
+     * @param {Boolean} hasMipMaps
+     * @param {Boolean} useNoMipFilter
+     * @param {Boolean} [allowAuthoredWrap] - lets a texture keep its authored
+     * wrap despite having no mip chain. Only the volume atlas passes this: its
+     * sheet is deliberately mip-less, because a chain would filter neighbouring
+     * slices into each other, but the shader that samples it wraps only V
+     * itself and needs the sampler's REPEAT for U. Clamped, its noise
+     * degenerates into a constant along X.
+     */
+    Apply(device, hasMipMaps, useNoMipFilter, allowAuthoredWrap)
     {
         const
             targetType = this.samplerType,
@@ -441,10 +452,12 @@ export class Tw2SamplerState extends meta.Model
         // job 2, and it is worth nothing until something is actually observed to
         // be wrong: no border-addressing bug can live here, because border is
         // emulated in the shader and never reaches sampler state.
+        const mayWrap = (hasMipMaps || allowAuthoredWrap) && !isCube;
+
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S,
-            hasMipMaps && !isCube ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
+            mayWrap ? resolveWrap(this.addressU) : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T,
-            hasMipMaps && !isCube ? resolveWrap(this.addressV) : gl.CLAMP_TO_EDGE);
+            mayWrap ? resolveWrap(this.addressV) : gl.CLAMP_TO_EDGE);
 
         if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY)
         {

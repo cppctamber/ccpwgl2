@@ -223,6 +223,20 @@ export const TextureFormatDDS =
         {
             const info = this.ParseDDS(arrayBuffer, gl);
             if (device.tw2.GetDebugMode()) res._debugInfo = this.GetDebugInfo(res, info);
+
+            // A volume is consumed two different ways and the file cannot say
+            // which: Carbon's translated shaders declare a real sampler3D,
+            // while the hand written GLES ones predate 3D textures and sample
+            // the same volume as one flat sheet of slices with a slice-count
+            // uniform. Uploading as 3D and leaving it there is why the GLES
+            // noise stopped working - `Tw2TextureRes.Bind` silently skips a
+            // texture whose target disagrees with the sampler, so the shader
+            // sampled nothing at all.
+            //
+            // 3D is the default because it is the lossless one; the source is
+            // retained so the first bind that wants a sheet can re-realize it
+            // rather than the format having to guess up front.
+            res._volumeSource = arrayBuffer;
             this.PrepareVolume3D(res, gl, arrayBuffer, info);
             return;
         }
