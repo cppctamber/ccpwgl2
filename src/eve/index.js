@@ -7,3 +7,5 @@ export * from "./EveMissile";
 export * from "./EveTurretTarget";
 export * from "./EveSpaceScene";
 export * from "./EveSpaceSceneShadowHandler";
+export * from "./EveSpaceSceneDepthHandler";
+export * from "./EveSceneNearFar";

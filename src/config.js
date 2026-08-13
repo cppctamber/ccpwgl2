@@ -18,7 +18,14 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // this library). Routes follow /{provider|target}/{build}/{topic}: provider
 // routes ("ccp") serve the res:/ file tree, target routes ("eve") serve
 // query/answer topics like audio. Only one build is passed everywhere.
-const RES_SERVER = "http://127.0.0.1:3000/";
+//
+// 5510 is the service's OWN default port, so this matches a plain
+// `cjs-tools-service` with no arguments. It also has to agree with the ESI
+// callback the service registers (`http://localhost:5510/v1/auth/esi/callback`),
+// which EVE matches exactly - running the service on another port to suit this
+// file breaks the login rather than the resources, and the service warns about
+// it at startup.
+const RES_SERVER = "http://127.0.0.1:5510/";
 const RES_PROVIDER = "ccp";
 const RES_TARGET = "eve";
 const RES_BUILD = "latest";
@@ -423,7 +430,25 @@ export const config = {
         // once the device exists and every user of the colour shares it.
         // Carbon spells it the same way (trinity SolidColorTexture).
         "EveSpaceSceneShadowMap": "dynamic:/color/1,1,1,1",
-        "EveSpaceSceneCascadedShadowMap": "",
+
+        // WHITE, and 2D: Carbon declares this Texture2D (type 2) in all 8
+        // shaders that take it, all volumetric clouds, and they sample it as
+        // cascade DEPTH - not as the visibility the map above carries.
+        //
+        // Same arithmetic as the DepthMap note below: 0 is the near plane, so
+        // black reads as "everything is occluding" and 1 is the far plane,
+        // which is the only value meaning "nothing casts here".
+        //
+        // Carbon registers this one with no fallback at all
+        // (Tr2ShadowMap.cpp:288, EveSpaceScene.cpp:4258) - unlike
+        // EveSpaceSceneShadowMap and EveSpaceSceneDynamicShadowMap, which both
+        // get an explicit white 1x1 R8 - so there is no Carbon value to copy
+        // and the neutral has to be reasoned from what the consumer does.
+        //
+        // EveSpaceSceneShadowHandler resets this to black, and that is NOT the
+        // authority here: it attaches its light-space atlas to this slot and to
+        // the screen-space visibility slot alike, which cannot both be right.
+        "EveSpaceSceneCascadedShadowMap": "dynamic:/color/1,1,1,1",
 
         // WHITE, for the same reason the shadow map above is white, but with
         // different arithmetic behind it. Carbon's `DepthMap` is a scene depth
@@ -447,9 +472,38 @@ export const config = {
         "EnvMap2": "",
         "EnvMap3": "",
         "ShadowLightness": 0,
+
         "OccluderValue": [ 1, 1, 0, 0 ],
-        "LensflareFxOccScale": [ 1, 1, 0, 0 ],
+        // The Y IS AN INDEX, NOT A SCALE, and it is bit-reinterpreted. The god
+        // ray shader ends with
+        //   texelFetch(bt0, ivec2(floatBitsToInt(y) & 2047, floatBitsToInt(y) >> 11))
+        // so the float's BIT PATTERN addresses a width-2048-wrapped buffer.
+        // A y of 1.0 reads as 1065353216, which is texel (0, 520192) - far
+        // outside the 1x1 FlareOcclusionBuffer, and an out-of-range texelFetch
+        // returns 0, which multiplies the whole god ray pass to black. Only 0.0
+        // addresses texel (0, 0), which is the entire buffer we have.
+        //
+        // Carbon stores a per-flare counter index here, so this is right only
+        // while there is one occlusion slot. See EveLensflare, which writes the
+        // occlusion intensity into X and must leave Y alone for the same reason.
+        "LensflareFxOccScale": [ 1, 0, 0, 0 ],
         "LensflareFxDirectionScale": [ 0, 0, 0, 0 ],
+
+        // WHITE, and the one global here whose neutral is not black. Carbon
+        // declares it a Buffer (type 6), which the WebGL emitter reads with a
+        // width-wrapped texelFetch on an ordinary 2D texture, so a 1x1 colour
+        // is the right shape. The god ray shader ends with
+        // `output *= texelFetch(FlareOcclusionBuffer, LensflareFxOccScale.y)`,
+        // so 0 here multiplies god rays to black with nothing to attribute it
+        // to. 1 means "unoccluded", which is also all we can honestly claim:
+        // the real buffer is written by lensflareoccludert with atomic_iadd,
+        // which has no WebGL2 lowering and no working ccpwgl equivalent.
+        "FlareOcclusionBuffer": "dynamic:/color/1,1,1,1",
+
+        // OcclusionFogWeight is deliberately absent. It reads like a texture
+        // slot but Carbon registers it as a FLOAT, per-draw, inside
+        // EveOccluder::RunQuery - and only lensflareoccludert consumes it.
+        // Declaring it here as a path would give it the wrong type globally.
 
         // Custom
         "g_pixel_adjustment": [ 0.05, 1, 1, 1 ],
@@ -461,9 +515,35 @@ export const config = {
             0.0
         ],
         "g_transparent_background": [ 0, 0.3, 0, 0 ],
+
+        // Custom shader stuff - should delete
+        "SelectorColor": [ 0.5, 0.25, 0.0, 1.0 ],
+        
+        
         "EveSpaceSceneDepthMap": "",
         "EveSpaceSceneNormalMap": "",
-        "SelectorColor": [ 0.5, 0.25, 0.0, 1.0 ]
+
+        // BLACK, and a 2D ARRAY rather than a plain colour. 47 shaders take
+        // this as an autoregistered input - particles, stretch, boosters,
+        // wormholes, atmosphere, plane glow, the ubershaders - and every one
+        // of them declares it a `sampler2DArray`, so `dynamic:/color/` would
+        // bind a 1x1 2D texture to an array sampler and fail the draw.
+        //
+        // Black is the absent value: Carbon's froxel sibling falls back to a
+        // 1x1x1 black volume (Tr2VolumetricsRenderer::GetEmptyFogTexture)
+        // rather than leaving the slot unbound. The real map is written by
+        // Tr2VolumetricsRenderer, which we do not have - not by the
+        // post-process fog effect.
+        "EveSceneFogVolumeMap": "dynamic:/colorarray/0,0,0,0",
+
+        // The froxel sibling of the above, and a THIRD target again: Carbon
+        // declares it Texture3D (type 3). Only clipspherecloud and applyfroxels
+        // read it. Same producer, same absence, same black.
+        "EveSceneFroxelFogMap": "dynamic:/colorvolume/0,0,0,0",
+
+        // Mie scattering environment for the same two volumetric shaders, and
+        // a CUBE (type 4). Black is no scattering contribution.
+        "EveSceneMieEnvironmentMap": "dynamic:/colorcube/0,0,0,0"
     }
 };
 

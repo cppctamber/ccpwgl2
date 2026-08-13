@@ -213,7 +213,14 @@ export class EveLensflare extends meta.Model
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
-        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
+        // Y is NOT a second copy of the intensity - it is a buffer INDEX, read
+        // by bit pattern (`floatBitsToInt(y) & 2047`, `>> 11`) in every shader
+        // that samples FlareOcclusionBuffer. Writing 1.0 there addresses texel
+        // (0, 520192), which is out of range on the 1x1 buffer ccpwgl binds, and
+        // an out-of-range texelFetch returns 0 - silently multiplying the god
+        // ray pass to black. 0 is the only index that buffer has. See the note
+        // on `LensflareFxOccScale` in config.js.
+        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, 0, 0, 0 ]);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 

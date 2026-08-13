@@ -3,7 +3,10 @@ import { device, tw2 } from "global";
 import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2CarbonLightCollector } from "core/carbon/Tw2CarbonLightCollector";
 import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
+import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
+import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
+import { ComputeAutoNearFar, GetSceneBoundingSphere } from "./EveSceneNearFar";
 import { EveSpaceSceneAO, DEFAULT_AO_POST_EFFECT } from "./post/ao";
 import {
     Tw2BatchAccumulator,
@@ -13,7 +16,7 @@ import {
     Tw2RenderBatchContext,
     Tw2DepthRenderTarget,
     Tw2Effect,
-    Tw2PostProcess, Tw2PostProcessRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
+    Tw2PostProcess, Tw2PostProcessRenderer, Tw2GodRaysRenderer, Tw2TextureRes, Tw2TextureParameter, Tw2RenderTarget
 } from "core";
 import {
     RM_DECAL,
@@ -44,6 +47,90 @@ export class EveSpaceScene extends meta.Model
     @meta.notImplemented
     @meta.boolean
     enableShadows = true;
+
+    /**
+     * Carbon cascaded sun shadows (dx11 profile only).
+     *
+     * These forward to `Tw2CarbonShadowRenderer`, which draws casters into a
+     * cascade atlas and resolves it to the screen-space R8 visibility buffer
+     * that object shaders sample. Contract:
+     * `/docs/contracts/carbon-shadow-resolve.md`.
+     *
+     * Nothing here has any effect on the gles2 profile: the registers these
+     * drive live in Carbon's PerFramePS, which is only uploaded for Carbon
+     * passes.
+     */
+    @meta.boolean
+    carbonShadows = false;
+
+    /**
+     * How far shadows reach, in scene units.
+     *
+     * **This is deliberately NOT derived from the camera far plane.** EVE
+     * cameras see millions of metres, and cascades spread over that range are
+     * useless: at a 100000 range the four splits land near 18, 316, 5600 and
+     * 100000, so a 300m ship sits in a cascade about 5km wide - roughly 5m per
+     * texel at 1024. The shadow map then resolves nothing and the result reads
+     * as "shadows are too light" rather than as a resolution problem.
+     *
+     * Size it to the SUBJECT, not the scene. A few times the largest caster is
+     * the useful range; the default suits a ship-scale view. Texel size is
+     * roughly `distance / tileSize` in the outermost cascade, so halving this
+     * doubles the detail everywhere.
+     */
+    @meta.float
+    carbonShadowDistance = 5000;
+
+    /**
+     * Where the first cascade starts, in scene units.
+     *
+     * Separate from the camera near plane for the same reason as above: a near
+     * of 1 against any sensible distance wastes the first cascade or two on a
+     * volume nothing occupies. Raise it to the closest distance that actually
+     * needs a shadow.
+     */
+    @meta.float
+    carbonShadowNear = 10;
+
+    /** Cascades to build. More range or more detail, at a tile each. */
+    @meta.uint
+    carbonShadowCascades = 4;
+
+    /** Atlas tile edge in texels. The atlas is this by cascades, so 4x1024 = 4096x1024. */
+    @meta.uint
+    carbonShadowTileSize = 2048;
+
+    /**
+     * Snaps cascades to their own texel grid so shadow edges do not crawl as
+     * the camera moves. Carbon has this on by default; turning it off makes
+     * the shimmer obvious, which is occasionally useful for diagnosing whether
+     * a cascade is being rebuilt every frame.
+     */
+    @meta.boolean
+    carbonShadowStabilize = true;
+
+    /**
+     * Colour-codes each cascade instead of writing visibility.
+     *
+     * This is `ShadowDepth.fx`'s own `SDM_COLOR` permutation, so it costs a
+     * shader option rather than an implementation. It is the fastest way to
+     * answer "are the cascades where I think they are" - if the bands do not
+     * move with the camera, or the whole screen is one colour, the cascade
+     * selection is wrong rather than the shadow projection.
+     */
+    @meta.boolean
+    carbonShadowDebug = false;
+
+    /**
+     * Sizes the cascade range to the visible objects instead of using
+     * `carbonShadowDistance`.
+     *
+     * On, because the fixed default spends most of its texels on empty space -
+     * see the note in {@link GetCarbonShadowRenderer}. Turn it off to drive the
+     * range by hand.
+     */
+    @meta.boolean
+    carbonShadowAutoDistance = true;
 
     @meta.path
     @meta.isPrivate
@@ -194,6 +281,14 @@ export class EveSpaceScene extends meta.Model
     depthPrecision = 16;
 
     /**
+     * Tuning for {@link GetAutoNearFar}. `minNear` is the hard floor, `margin`
+     * the fractional slack either side of the measured bounds.
+     * @type {Object}
+     */
+    @meta.plain
+    autoNearFarOptions = { minNear: 0.1, maxFar: 1e9, margin: 0.05 };
+
+    /**
      * Renders the scene into an HDR target rather than straight to the canvas.
      *
      * Off by default: on its own it changes nothing visible, because the target
@@ -255,6 +350,23 @@ export class EveSpaceScene extends meta.Model
         post: true,
         shadow: true,
         ao: true,
+
+        // The Carbon `DepthMap` prepass (EveSpaceSceneDepthHandler). Distinct
+        // from `depthCalculation`, which drives the legacy 16-bit RenderDepth
+        // pass for distortion and publishes the unread `EveSpaceSceneDepthMap`.
+        //
+        // It collects every visible object's `Main` technique through the
+        // shared depth context, ahead of the colour pass. God rays need it, and
+        // AO shares it instead of running its own equivalent prepass.
+        //
+        // It was briefly suspected of causing a `Tw2Vector4Parameter.Apply`
+        // constant-buffer overflow on an instanced hull (angde1_t1:crisis_angel)
+        // on 2026-08-13, and defaulted off. That attribution did not survive:
+        // the evidence was two single reloads, one of which turned out to be a
+        // cached bundle. Left ON, which is what it was when the crash was first
+        // seen - the crash is not currently reproducing at all, so switching it
+        // off would only hide whichever variable actually changed.
+        sceneDepth: true,
     };
 
     /**
@@ -297,10 +409,13 @@ export class EveSpaceScene extends meta.Model
     _internalRenderTarget = null;
     _sceneTarget = null;
     _postProcessRenderer = null;
+    _godRaysRenderer = null;
     _depthAccumulator = null;
     _depthContext = null;
     _depthContextReport = null;
     _depthTexture = null;
+    _carbonShadowRenderer = null;
+    _carbonShadowError = null;
     _distortionAccumulator = null;
     _distortionContext = null;
     _distortionContextReport = null;
@@ -311,6 +426,9 @@ export class EveSpaceScene extends meta.Model
 
     @meta.struct("EveSpaceSceneAO")
     aoHandler = null;
+
+    @meta.struct("EveSpaceSceneDepthHandler")
+    depthHandler = null;
 
     // ----------------------------------------------------------------------------[ Shadow ]---------------------- //
 
@@ -1077,6 +1195,68 @@ export class EveSpaceScene extends meta.Model
             shadowHandler.RenderShadowPass(dt, this);
         }
 
+        // Carbon scene depth (`DepthMap`), before every consumer of it below:
+        // the shadow resolve unprojects it, AO shares its prepass, and the god
+        // ray and fog post passes march and blend by it.
+        //
+        // ORDERING, deliberately: ccpwgl's own `RenderDepth` runs AFTER the
+        // colour pass, because distortion is its only consumer and distortion
+        // wants the drawn frame. That pass stays where it is. This one is a
+        // separate 32-bit target rendered here, rather than a forced early
+        // `RenderDepth(dt, true)`, because forcing the shared pass early also
+        // changes what distortion sees - a side effect, not a decision.
+        //
+        // On by default, and in the default configuration that costs nothing:
+        // AO was already running an equivalent prepass every frame and now reads
+        // this one instead. With AO off it is one extra scene pass, which is the
+        // price of the 96 shaders that sample `DepthMap` getting a real value.
+        const depthHandler = this.GetDepthHandler();
+        if (depthHandler)
+        {
+            if (show.sceneDepth)
+            {
+                try
+                {
+                    depthHandler.Render(dt, this);
+                }
+                catch (err)
+                {
+                    this.visible.sceneDepth = false;
+                    depthHandler.ResetOutput();
+                    if (tw2.Warning) tw2.Warning({ name: "Scene depth", description: String(err && err.message || err) });
+                }
+            }
+            else
+            {
+                // No depth this frame: put `DepthMap` back to white, so
+                // consumers read "nothing in front" rather than a stale frame.
+                depthHandler.ResetOutput();
+            }
+        }
+
+        // Carbon cascaded sun shadows, before the main colour pass samples the
+        // visibility buffer they produce. Self-disables on error for the same
+        // reason the AO prepass below does.
+        if (this.carbonShadows && show.shadow)
+        {
+            try
+            {
+                this.GetCarbonShadowRenderer().Render(dt, this);
+            }
+            catch (err)
+            {
+                this.carbonShadows = false;
+
+                // Kept for inspection: self-disabling on the first throw means
+                // the console line is the ONLY record, and "carbonShadows keeps
+                // turning itself off" is otherwise indistinguishable from a pass
+                // that renders nothing. Read `scene.GetCarbonShadowError()`.
+                this._carbonShadowError = err;
+                console.error("[carbon shadows] disabled by:", err);
+                if (tw2.Warning) tw2.Warning({ name: "Carbon shadows", description: String(err && err.message || err) });
+            }
+        }
+
         // Ambient occlusion prepass (produces SSAOMap) before the main colour
         // pass samples it. Self-disables on error so a broken AO can't take the
         // whole scene render down.
@@ -1108,6 +1288,18 @@ export class EveSpaceScene extends meta.Model
 
         // Resolve before the lensflare, post process, depth and distortion steps
         // below, all of which expect to find the drawn scene on the canvas.
+        // God rays go over the scene image BEFORE the composite, matching
+        // Carbon's order - it applies them to `nonMsaaSource` and tone maps the
+        // result. They read the `DepthMap` prepass, so they are one of the three
+        // features that were blocked on it existing.
+        //
+        // Called HERE rather than inside EndSceneTarget, which returns early
+        // when there is no HDR target - that placement silently disabled god
+        // rays for every default (`hdr=0`) session. `sceneTarget` may be null,
+        // and the pass then blits additively onto the canvas, which is the same
+        // thing Carbon does to its own scene image.
+        this.RenderGodRays(sceneTarget);
+
         this.EndSceneTarget(sceneTarget);
 
         if (this.starfield)
@@ -1148,6 +1340,13 @@ export class EveSpaceScene extends meta.Model
             shadowHandler.RenderDebug();
         }
 
+        // After the colour pass, not inside the resolve - the resolve runs
+        // before the scene draws, so a blit there is painted over by the ship.
+        if (this._carbonShadowRenderer)
+        {
+            this._carbonShadowRenderer.RenderDebug();
+        }
+
     }
 
     /**
@@ -1180,6 +1379,70 @@ export class EveSpaceScene extends meta.Model
      * @param {Boolean} [create=true]
      * @returns {EveSpaceSceneAO|null}
      */
+    /**
+     * Gets the Carbon shadow renderer, creating and installing it on first use.
+     *
+     * Installing puts the per-frame producer on the device's Carbon binder,
+     * which is what makes the cascade registers reach the shader. Without it
+     * the resolve reads zeros and writes "fully lit" everywhere - a complete
+     * pipeline rendering nothing.
+     *
+     * The scene's `carbonShadow*` properties are the authority, copied onto the
+     * producer each call so UI edits take effect without a rebuild.
+     * @returns {Tw2CarbonShadowRenderer}
+     */
+    GetCarbonShadowRenderer()
+    {
+        if (!this._carbonShadowRenderer)
+        {
+            this._carbonShadowRenderer = new Tw2CarbonShadowRenderer();
+            this._carbonShadowRenderer.Install();
+        }
+
+        const
+            renderer = this._carbonShadowRenderer,
+            producer = renderer.producer;
+
+        renderer.enabled = this.carbonShadows;
+        renderer.tileSize = this.carbonShadowTileSize;
+        renderer.debug = this.carbonShadowDebug;
+
+        // Fit the cascades to the SUBJECT, not to the camera frustum.
+        //
+        // Carbon sizes cascades from the camera's own frustum slices, which is
+        // right for a game that draws a whole system. Here the camera sees one
+        // ship against empty space, and a frustum-sized cascade spends almost
+        // all its texels on nothing: at 300m with four cascades the containing
+        // slice spans ~834m, so a hull feature lands on well under a metre of
+        // texel and the self-shadowing that IS the visible effect in space
+        // disappears into the grid.
+        //
+        // There is no ground in space. A ship's shadow only ever falls on
+        // itself or on another object, so "shadows are invisible unless you are
+        // next to the hull" is a resolution problem, not a missing shadow -
+        // sizing the range to what is actually there is what fixes it.
+        if (this.carbonShadowAutoDistance)
+        {
+            const bounds = this.GetAutoNearFar({ minNear: 1, margin: 0.25 });
+            if (bounds) producer.shadowDistance = Math.max(bounds.far, this.carbonShadowNear * 8);
+        }
+        else
+        {
+            producer.shadowDistance = this.carbonShadowDistance;
+        }
+
+        producer.enabled = this.carbonShadows;
+        producer.cascadeCount = this.carbonShadowCascades;
+        producer.cellsX = this.carbonShadowCascades;
+        producer.cellsY = 1;
+        producer.tileSize = this.carbonShadowTileSize;
+        // shadowDistance is set above - auto-fitted or from carbonShadowDistance.
+        producer.shadowNear = this.carbonShadowNear;
+        producer.disableShimmer = this.carbonShadowStabilize;
+
+        return renderer;
+    }
+
     GetAOHandler(create = true)
     {
         if (!this.aoHandler && create)
@@ -1193,6 +1456,78 @@ export class EveSpaceScene extends meta.Model
         }
 
         return this.aoHandler || null;
+    }
+
+    /**
+     * Measures near/far planes that enclose the visible scene objects.
+     *
+     * Exposed for a camera to pull from rather than pushed onto one: the scene
+     * knows what is visible, the camera owns the projection, and nothing here
+     * changes unless a camera opts in. Planets and the background are excluded
+     * on purpose - see {@link ComputeAutoNearFar}.
+     * @param {Object} [options] - forwarded to ComputeAutoNearFar
+     * @returns {{near:Number, far:Number}|null} null when nothing is measurable
+     */
+    GetAutoNearFar(options)
+    {
+        const cameraPosition = vec3.alloc();
+        mat4.getTranslation(cameraPosition, device.viewInverse);
+
+        const objects = this.visible.objects ? this.objects : [];
+        const result = ComputeAutoNearFar(objects, cameraPosition, options || this.autoNearFarOptions);
+
+        vec3.unalloc(cameraPosition);
+        return result;
+    }
+
+    /**
+     * Applies {@link GetAutoNearFar} to a camera.
+     *
+     * Duck-typed on `nearPlane`/`farPlane` rather than on a camera class: every
+     * camera here exposes those two, they mean the same thing in all of them,
+     * and requiring a base class would mean editing each one to gain nothing.
+     *
+     * Call it before the camera's projection is read for the frame. Returns the
+     * planes it applied, or null if it had nothing to measure or the camera does
+     * not carry them - in which case the camera keeps whatever it had.
+     * @param {*} camera
+     * @param {Object} [options]
+     * @returns {{near:Number, far:Number}|null}
+     */
+    ApplyAutoNearFar(camera, options)
+    {
+        if (!camera || !Number.isFinite(camera.nearPlane) || !Number.isFinite(camera.farPlane))
+        {
+            return null;
+        }
+
+        const result = this.GetAutoNearFar(options);
+        if (!result) return null;
+
+        camera.nearPlane = result.near;
+        camera.farPlane = result.far;
+        return result;
+    }
+
+    /**
+     * Gets or creates the Carbon scene-depth handler, which produces the
+     * `DepthMap` global that shadows, god rays and fog all read.
+     * @param {Boolean} [create=true]
+     * @returns {EveSpaceSceneDepthHandler|null}
+     */
+    GetDepthHandler(create = true)
+    {
+        if (!this.depthHandler && create)
+        {
+            this.depthHandler = new EveSpaceSceneDepthHandler(this);
+        }
+
+        if (this.depthHandler)
+        {
+            this.depthHandler.scene = this;
+        }
+
+        return this.depthHandler || null;
     }
 
     /**
@@ -1265,6 +1600,98 @@ export class EveSpaceScene extends meta.Model
         gl.disable(gl.DEPTH_TEST);
         device.RenderTexture(sceneTarget.texture);
         gl.enable(gl.DEPTH_TEST);
+    }
+
+    /**
+     * Renders god rays over the scene image.
+     *
+     * Self-disables on error, like the shadow and AO passes: a post effect
+     * should not be able to take the whole scene render down.
+     * @param {Tw2RenderTarget|null} sceneTarget - null draws into the canvas
+     * @returns {Boolean}
+     */
+    RenderGodRays(sceneTarget)
+    {
+        if (!this.visible.post || !this.postProcess2) return false;
+
+        const godRays = this.postProcess2.GetIfAvailable("godRays");
+        if (!godRays) return false;
+
+        if (!this._godRaysRenderer) this._godRaysRenderer = new Tw2GodRaysRenderer();
+
+        // The Carbon prepass, not the legacy 16-bit one - god rays march the
+        // depth and compare distances, which is exactly what 16 bits cannot do
+        // at EVE's far plane.
+        const depthHandler = this.GetDepthHandler(false);
+        const depth = depthHandler && depthHandler.rendered ? depthHandler.depthTextureRes : null;
+
+        try
+        {
+            return this._godRaysRenderer.Render(godRays, depth, sceneTarget);
+        }
+        catch (err)
+        {
+            this.visible.post = false;
+            if (tw2.Warning) tw2.Warning({ name: "God rays", description: String(err && err.message || err) });
+            return false;
+        }
+    }
+
+    /**
+     * The error that disabled `carbonShadows`, if one did.
+     * @returns {?Error}
+     */
+    GetCarbonShadowError()
+    {
+        return this._carbonShadowError || null;
+    }
+
+    /**
+     * The world-space sphere the shadow cascade should be fitted to.
+     *
+     * Carbon fits cascades to camera frustum slices, which suits a client
+     * drawing a whole system. A ship viewer shows one object in empty space, and
+     * there the only shadow that can be SEEN is the object shadowing itself -
+     * there is no ground to catch anything else. Fitting the cascade to the
+     * object rather than to the frustum makes texel density depend on the ship's
+     * size instead of on how far the camera is standing back.
+     * @returns {?{center: vec3, radius: Number, far: Number}}
+     */
+    GetShadowSubject()
+    {
+        const objects = this.visible.objects ? this.objects : [];
+        if (!objects.length) return null;
+
+        const bounds = GetSceneBoundingSphere(objects);
+        if (!bounds) return null;
+
+        const cameraPosition = vec3.alloc();
+        mat4.getTranslation(cameraPosition, device.viewInverse);
+        const distance = vec3.distance(cameraPosition, bounds.center);
+        vec3.unalloc(cameraPosition);
+
+        // `far` is the split value, compared against a fragment's view distance.
+        // It must clear the subject by a margin, for two reasons: fragments past
+        // the last split read as lit, and the resolve ramps the FINAL 5% of the
+        // shadow distance to lit so cascades do not end on a hard line. With
+        // subject fitting there is only one cascade, so every fragment is in the
+        // last one and that fade is always live - a `far` that merely reaches
+        // the object puts its far side inside the ramp and washes the shadows
+        // out. Dividing by 0.9 leaves the whole subject clear of the band.
+        return {
+            center: bounds.center,
+            radius: bounds.radius,
+            far: (distance + bounds.radius) / 0.9
+        };
+    }
+
+    /**
+     * Gets the last god ray report, for the debug overlay.
+     * @returns {?Object}
+     */
+    GetGodRaysReport()
+    {
+        return this._godRaysRenderer ? this._godRaysRenderer.GetReport() : null;
     }
 
     /**
@@ -1926,45 +2353,30 @@ export class EveSpaceScene extends meta.Model
             const shadowViewTranspose = mat4.transpose(EveSpaceScene.global.mat4_0, this._shadowView);
             const shadowViewProjectionTranspose = mat4.transpose(EveSpaceScene.global.mat4_1, this._shadowViewProjection);
 
-            this._perFrameVS.Set("ShadowViewMat", shadowViewTranspose);
-            this._perFrameVS.Set("ShadowViewProjectionMat", shadowViewProjectionTranspose);
-
+            // Shadow matrices go in the dedicated shadow container only. GLES
+            // does not use shadows, so writing them into the GLES per-frame VS
+            // fed slots nothing reads - and on the dx11 path it fed them
+            // through Tw2CarbonData's wholesale copy of VS regs 0-27, which
+            // lands them in Carbon's ShadowViewMat/ShadowViewProjectionMat as a
+            // side effect of a transcode rather than as authored Carbon values.
+            // Carbon's shadow registers are authored directly instead.
             this._perFrameShadowVS.Set("ShadowView", shadowViewTranspose);
             this._perFrameShadowVS.Set("ShadowViewProjection", shadowViewProjectionTranspose);
             this._perFrameShadowVS.Set("ShadowNearFar", [ device.nearPlane, device.farPlane || 1, 0, 0 ]);
 
         }
 
-        // Use scene values by default
-        const shadowMapSettings = [
-                this._shadowMapOffsetX,
-                this._shadowMapOffsetY,
-                this._shadowDepthBias,
-                this.shadowFadeThreshold
-            ],
-            shadowCameraRange = [
-                this._shadowCameraNear,
-                this._shadowCameraFar,
-                this._shadowMinimumVisibility,
-                0
-            ];
-
-        // For debugging, we'll guess the correct values
-        if (this._enableShadowAutoSettings)
-        {
-            shadowMapSettings[0] = this.enableShadows ? 0 : 0;
-            shadowMapSettings[1] = this.enableShadows ? 0 : 0;
-            shadowMapSettings[2] = this.enableShadows ? 0 : 0;
-            shadowMapSettings[3] = this.enableShadows ? 0 : 0;
-
-            shadowCameraRange[0] = this.enableShadows ? 0 : 1; // Switches on/off shadows
-            shadowCameraRange[1] = this.enableShadows ? this._shadowCameraFar : 1;
-            shadowCameraRange[2] = this._shadowMinimumVisibility;
-        }
-
-        this._perFramePS.Set("ShadowMapSettings", shadowMapSettings);
-        this._perFramePS.Set("ShadowCameraRange", shadowCameraRange);
-
+        // ShadowMapSettings and ShadowCameraRange are NOT written into the GLES
+        // per-frame PS. GLES does not use shadows, and the values that were
+        // written there were guesses - the auto-settings branch below wrote
+        // literal zeros through a `enableShadows ? 0 : 0` conditional, which is
+        // its own admission.
+        //
+        // They are real registers on the Carbon side (PerFramePS 18 and 19,
+        // where 19 carries ShadowCameraRange.xy, ShadowLightness and a uint
+        // ShadowQuality), so they must be authored from Carbon's meanings by
+        // the dx11 producer rather than inherited from these slots through
+        // Tw2CarbonData's wholesale copy of regs 0-20.
     }
 
     /**
@@ -2023,7 +2435,21 @@ export class EveSpaceScene extends meta.Model
             const f = 1.0 / distance;
 
             vs.Set("FogFactors", [ this.fogEnd * f, f, this.fogMax, 1 ]);
-            ps.Set("SceneData.FogColor", this.fogColor);
+
+            // W IS fogMax, NOT the colour's alpha. Carbon builds this constant
+            // as `Vector4( fogColor.rgb, m_fogMax )` (EveSpaceScene.cpp:3093),
+            // and the pixel shader reads the w as the fog density:
+            // `transmittance = exp(-1e-5 * FogColor.w * viewDistance)`.
+            //
+            // Passing fogColor whole sent the colour's alpha instead, which
+            // defaults to 1 where fogMax defaults to 0 - so scenes that author
+            // no fog got dense fog anyway, at EVE's distances. It shows up as
+            // ambient occlusion turning the fog colour rather than black,
+            // because the quad shader applies AO as
+            // `mix(FogColor, lit * AO, transmittance)` - so as AO approaches 0
+            // the pixel approaches the fog colour, while true black (no object,
+            // no shader) stays black.
+            ps.Set("SceneData.FogColor", [ this.fogColor[0], this.fogColor[1], this.fogColor[2], this.fogMax ]);
             ps.Set("MiscSettings", [
                 d.currentTime,
                 this.fogType,
@@ -2184,16 +2610,22 @@ export class EveSpaceScene extends meta.Model
             [ "ViewportOffset", 2 ],
             [ "ViewportSize", 2 ],
             [ "TargetResolution", 4 ],
+            // RESERVED, NEVER WRITTEN. GLES does not use shadows. Both slots
+            // stay declared because removing them would shift every register
+            // after them, and the GLES shaders were compiled against these
+            // positions.
+            //
+            // They align with Carbon PerFramePS 18 and 19, but do not treat
+            // that as a shortcut: the dx11 producer authors those from Carbon's
+            // meanings - 19 is ShadowCameraRange.xy, ShadowLightness, and a
+            // uint ShadowQuality - rather than letting Tw2CarbonData's copy of
+            // the head registers carry whatever happens to sit here.
+            //
+            // The per-field descriptions that used to annotate these were
+            // guesses from ccpwgl's experimental shadow path and have been
+            // removed rather than left to read as measured facts.
             [ "ShadowMapSettings", 4 ],
-            // shadow atlas offset x (high)
-            // shadow atlas offset y (high)
-            // shadow depth bias (very high)
-            // shadow fade threshold (medium-high)
             [ "ShadowCameraRange", 4 ],
-            // shadow camera range (very high) - shadow enable/ mode switch : 0 shadows on, 1 no shadows
-            // shadow depth normalisation max (high)
-            // shadow minimum shadow visibility (very high) - 0: full darkness, 0.2 - 0.4 soft, lifted shadows
-            // unused (correct)
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
             [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1

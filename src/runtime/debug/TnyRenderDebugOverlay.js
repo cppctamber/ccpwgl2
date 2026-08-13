@@ -1,5 +1,4 @@
 import { device, tw2 } from "global";
-import { tny } from "../tny";
 
 
 /**
@@ -7,6 +6,9 @@ import { tny } from "../tny";
  */
 export class TnyRenderDebugOverlay
 {
+
+    /** The client this overlay belongs to, injected by TnyClient.Create. */
+    client = null;
     enabled = true;
     mode = "all";
     x = 8;
@@ -32,6 +34,13 @@ export class TnyRenderDebugOverlay
     domZIndex = 2147483000;
 
     slots = [];
+
+    /**
+     * The scene this overlay reads, unwrapped. Set from the `scene` option, and
+     * the fallback for {@link ResolveScene} when no client is attached.
+     */
+    scene = null;
+
     _target = null;
     _method = null;
     _original = null;
@@ -45,7 +54,10 @@ export class TnyRenderDebugOverlay
         this.SetOptions(rest);
         if (mode) this.SetMode(mode);
         if (slots) this.AddSlots(slots);
-        if (scene) this.AddScenePasses(scene);
+        // Remembered, not just used: ResolveInstallTarget needs it later, and
+        // without a client there is nothing else for it to fall back to.
+        if (scene) this.scene = this.ResolveScene(scene);
+        if (scene) this.AddScenePasses(this.scene);
         if (install) this.Install(target);
     }
 
@@ -182,6 +194,36 @@ export class TnyRenderDebugOverlay
     }
 
     /**
+     * Resizes a named slot's tile.
+     *
+     * Slots that resolve their own texture at display size (the scene depth
+     * view) re-resolve at the new size, so this enlarges the picture rather
+     * than upscaling it.
+     * @param {String} name
+     * @param {Number} width
+     * @param {Number} [height] - defaults to the viewport aspect of `width`
+     * @returns {TnyRenderDebugOverlay}
+     */
+    SetSlotSize(name, width, height)
+    {
+        const slot = this.slots.find(s => s && s.name === name);
+        if (!slot) return this;
+
+        if (Number.isFinite(width) && width > 0) slot.width = Math.floor(width);
+
+        if (Number.isFinite(height) && height > 0)
+        {
+            slot.height = Math.floor(height);
+        }
+        else if (device.viewportWidth && device.viewportHeight)
+        {
+            slot.height = Math.max(1, Math.floor(slot.width * device.viewportHeight / device.viewportWidth));
+        }
+
+        return this;
+    }
+
+    /**
      * Removes slots with a matching tag.
      * @param {String} tag
      * @returns {TnyRenderDebugOverlay}
@@ -208,9 +250,9 @@ export class TnyRenderDebugOverlay
      * @param {Object} [options]
      * @returns {TnyRenderDebugOverlay}
      */
-    AddScenePasses(scene = TnyRenderDebugOverlay.ResolveScene(), options = {})
+    AddScenePasses(scene = this.ResolveScene(), options = {})
     {
-        const eveScene = TnyRenderDebugOverlay.ResolveScene(scene);
+        const eveScene = this.ResolveScene(scene);
         this.RemoveSlotsByTag("scene");
         if (!eveScene) return this;
 
@@ -221,6 +263,31 @@ export class TnyRenderDebugOverlay
                 label: "internal",
                 modes: [ "all", "internal", "depth", "distortion" ],
                 getLines: () => this.GetSceneInternalLines(eveScene)
+            });
+        }
+
+        if (options.sceneDepth !== false)
+        {
+            // Carbon's `DepthMap` prepass. Shown as a resolved colour tile, not
+            // the depth texture itself: `RenderTexture` blits through blit.fx,
+            // which cannot sample a depth texture, and an unprocessed depth view
+            // is a white rectangle whether or not the buffer is any good.
+            // Resolved at the size it will be shown at, so enlarging the slot
+            // enlarges the picture instead of upscaling a thumbnail.
+            this.AddTexture("sceneDepth", (slot) => TnyRenderDebugOverlay
+                .GetSceneDepthHandler(eveScene)
+                ?.RenderDebugView(slot.width || this.width, slot.height || this.height), {
+                tag: "scene",
+                label: "depth (DepthMap)",
+                modes: [ "all", "sceneDepth", "depth" ],
+                width: options.depthWidth || this.width,
+                height: options.depthHeight || this.height,
+                // Shown even with no texture. A missing tile is the interesting
+                // case here - it means the pass did not run - and silently
+                // dropping the slot would report that as an empty screen, which
+                // is the failure this whole slot exists to make legible.
+                alwaysShow: true,
+                getLines: () => this.GetSceneDepthLines(eveScene)
             });
         }
 
@@ -253,11 +320,14 @@ export class TnyRenderDebugOverlay
      * @param {String} [method="Render"]
      * @returns {TnyRenderDebugOverlay}
      */
-    Install(target = TnyRenderDebugOverlay.ResolveInstallTarget(), method = "Render")
+    Install(target = this.ResolveInstallTarget(), method = "Render")
     {
         if (!target || typeof target[method] !== "function")
         {
-            throw new TypeError("Invalid render target");
+            throw new TypeError(
+                `Invalid render target: got ${target === null ? "null" : typeof target}`
+                + ` with no ${method}(). Pass { scene } or { target }, or attach a client.`
+            );
         }
 
         this.Uninstall();
@@ -875,6 +945,18 @@ export class TnyRenderDebugOverlay
     }
 
     /**
+     * Gets Carbon scene-depth report lines.
+     * @param {*} scene
+     * @returns {String[]}
+     */
+    GetSceneDepthLines(scene)
+    {
+        const handler = TnyRenderDebugOverlay.GetSceneDepthHandler(scene);
+        if (!handler) return [ "handler: none" ];
+        return handler.GetDebugLines();
+    }
+
+    /**
      * Gets standard scene report lines.
      * @param {*} scene
      * @returns {String[]}
@@ -888,6 +970,11 @@ export class TnyRenderDebugOverlay
             `batch: ${report ? `${report.rendered}/${report.batches}` : "-"}`,
             `depth: ${depth ? `${depth.rendered}/${depth.batches}` : scene._depthAccumulator?.length ?? "-"}`,
             `dist: ${distortion ? `${distortion.rendered}/${distortion.batches}` : scene._distortionAccumulator?.length ?? "-"}`,
+            // God rays decline to draw for several distinct reasons and all of
+            // them look identical on screen, so the status string is the only
+            // way to tell "switched off" from "wrong quality tier" from "no
+            // depth". See Tw2GodRaysRenderer.
+            `rays: ${scene.GetGodRaysReport?.()?.status || "-"}`,
             `mode: ${this.mode}`
         ];
     }
@@ -908,12 +995,10 @@ export class TnyRenderDebugOverlay
      */
     static Install(options = {})
     {
-        const overlay = new this({
-            scene: options.scene || TnyRenderDebugOverlay.ResolveScene(),
-            ...options,
-            install: false
-        });
-        overlay.Install(options.target || TnyRenderDebugOverlay.ResolveInstallTarget(), options.method || "Render");
+        const overlay = new this({ ...options, install: false });
+        if (options.client) overlay.client = options.client;
+        if (!overlay.scene) overlay.scene = overlay.ResolveScene(options.scene);
+        overlay.Install(options.target || overlay.ResolveInstallTarget(), options.method || "Render");
         return overlay;
     }
 
@@ -922,9 +1007,12 @@ export class TnyRenderDebugOverlay
      * @param {*} [scene]
      * @returns {*}
      */
-    static ResolveScene(scene)
+    ResolveScene(scene)
     {
-        scene = scene || tny?.GetScene?.() || null;
+        // `this.scene` has to be in this chain. Without it, installing with a
+        // plain `{ scene }` and no client resolved to null and threw "Invalid
+        // render target" - the scene was known, just never consulted.
+        scene = scene || this.scene || this.client?.GetScene?.() || null;
         return scene?.wrapped || scene;
     }
 
@@ -932,9 +1020,9 @@ export class TnyRenderDebugOverlay
      * Resolves the default install target.
      * @returns {*}
      */
-    static ResolveInstallTarget()
+    ResolveInstallTarget()
     {
-        return tny?.GetScene?.() || TnyRenderDebugOverlay.ResolveScene();
+        return this.client?.GetScene?.() || this.ResolveScene();
     }
 
     /**
@@ -945,6 +1033,16 @@ export class TnyRenderDebugOverlay
     static GetSceneShadowHandler(scene)
     {
         return scene?.GetShadowHandler?.(false) || scene?.shadowHandler || null;
+    }
+
+    /**
+     * Gets a scene's Carbon depth handler without creating one.
+     * @param {*} scene
+     * @returns {*}
+     */
+    static GetSceneDepthHandler(scene)
+    {
+        return scene?.GetDepthHandler?.(false) || scene?.depthHandler || null;
     }
 
     /**

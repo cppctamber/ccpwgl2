@@ -320,6 +320,9 @@ export class Tw2DepthRenderTarget
         res._hasMipMaps = false;
         res._forceMipMaps = false;
         res._target = gl.TEXTURE_2D;
+        // Depth formats are not filterable; the res forces NEAREST when an
+        // effect's sampler asks for LINEAR, which every authored one does.
+        res._isDepth = true;
         res._internalFormat = internalFormat;
         res._width = this.width = width;
         res._height = this.height = height;

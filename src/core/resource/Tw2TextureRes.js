@@ -53,6 +53,33 @@ export class Tw2TextureRes extends Tw2Resource
     _isSRGB = false;
 
     /**
+     * True when the attached texture is a depth format (`DEPTH_COMPONENT*`).
+     *
+     * WebGL2 depth textures are NOT filterable. A sampler that asks for LINEAR
+     * makes them incomplete, and an incomplete texture samples (0,0,0,1) - which
+     * for depth is the NEAR plane, so every consumer reads "fully occluded" and
+     * shows a plausible, entirely wrong image rather than an error. Every
+     * authored sampler in the corpus asks for LINEAR by default, so this is the
+     * normal case, not the corner case: see the forcing in {@link Bind}.
+     * @type {Boolean}
+     */
+    _isDepth = false;
+
+    /**
+     * Forces NEAREST sampling for a texture that is renderable but not
+     * filterable.
+     *
+     * `EXT_color_buffer_float` makes RGBA32F a legal render target; it does NOT
+     * make it filterable - that is `OES_texture_float_linear`, a separate
+     * extension. A LINEAR sampler on a float texture without it is a
+     * format/sampler mismatch, and `Tw2RenderTarget.Create` hardcodes LINEAR on
+     * every colour target. Distinct from `_isDepth` because the cause differs
+     * even though the remedy is the same.
+     * @type {Boolean}
+     */
+    _forceNearest = false;
+
+    /**
      * Debug-only source metadata
      * @type {Object|null}
      */
@@ -96,6 +123,8 @@ export class Tw2TextureRes extends Tw2Resource
         this._volumeSlices = 1;
         this._useNoMipFilter = false;
         this._debugInfo = null;
+        this._volumeSource = null;
+        this._volumeRealizeFailed = null;
 
         const format = Tw2TextureRes.GetFormat(this._extension);
         if (!format) throw new ErrResourceFormatUnsupported({ format: this._extension });
@@ -124,6 +153,62 @@ export class Tw2TextureRes extends Tw2Resource
         this.OnPrepared();
     }
 
+    /**
+     * Rebuilds a retained volume source into whichever representation a
+     * sampler asks for: a real `TEXTURE_3D`, or the flat slice sheet the GLES
+     * shaders address with a slice count.
+     * @param {Tw2SamplerState} sampler
+     * @returns {Boolean} true when the texture now matches the sampler
+     */
+    _RealizeVolumeFor(sampler)
+    {
+        const { gl } = device;
+
+        if (!this._volumeSource) return false;
+        if (sampler.samplerType !== gl.TEXTURE_2D && sampler.samplerType !== gl.TEXTURE_3D) return false;
+
+        // Never retry a representation that already failed, or a frame with
+        // two disagreeing consumers would rebuild the texture on every bind.
+        if (this._volumeRealizeFailed === sampler.samplerType) return false;
+        this._volumeRealizeFailed = sampler.samplerType;
+
+        const format = Tw2TextureRes.GetFormat(this._extension);
+        if (!format) return false;
+
+        const info = format.ParseDDS(this._volumeSource, gl);
+
+        if (this.texture) gl.deleteTexture(this.texture);
+        this.texture = null;
+
+        try
+        {
+            if (sampler.samplerType === gl.TEXTURE_2D)
+            {
+                format.PrepareVolumeAtlas(this, gl, this._volumeSource, info);
+                // A sheet of slices cannot be mip filtered without bleeding
+                // neighbouring slices into each other.
+                this._useNoMipFilter = true;
+                this._hasMipMaps = false;
+                this._mipCount = 1;
+            }
+            else
+            {
+                format.PrepareVolume3D(this, gl, this._volumeSource, info);
+            }
+        }
+        catch (err)
+        {
+            console.warn(`Tw2TextureRes: '${this.path}' could not be realized for this sampler: ${err.message}`);
+            return false;
+        }
+
+        this._isAttached = false;
+
+        const matched = this._target === sampler.samplerType;
+        if (matched) this._volumeRealizeFailed = null;
+        return matched;
+    }
+
     Bind(sampler, slicesUniform)
     {
         const d = device, { gl } = device;
@@ -137,7 +222,11 @@ export class Tw2TextureRes extends Tw2Resource
         }
         else if (sampler.samplerType !== this._target)
         {
-            return;
+            // A volume DDS can serve either a real sampler3D or the flat sheet
+            // of slices the older GLES shaders expect, and only the sampler
+            // knows which. Re-realize rather than skip - skipping is silent,
+            // and a shader sampling nothing looks like broken shader maths.
+            if (!this._RealizeVolumeFor(sampler)) return;
         }
 
         if (!this.texture)
@@ -175,7 +264,20 @@ export class Tw2TextureRes extends Tw2Resource
 
         if (sampler.hash === null || sampler.hash !== this._currentSampler)
         {
-            sampler.Apply(d, this._hasMipMaps, this._useNoMipFilter);
+            sampler.Apply(d, this._hasMipMaps, this._useNoMipFilter, this._isVolumeAtlas && this._isPowerOfTwo);
+
+            // A depth texture cannot be filtered, and `Apply` has just asked for
+            // LINEAR - it defaults to it and every non-mipped texture takes the
+            // `minFilterNoMips` branch. Left alone, the texture is incomplete and
+            // reads as the near plane everywhere. Comparison samplers are exempt:
+            // COMPARE_REF_TO_TEXTURE makes LINEAR legal (and meaningful - it is
+            // the hardware PCF the shadow samplers want).
+            if ((this._isDepth || this._forceNearest) && !sampler.comparison)
+            {
+                gl.texParameteri(this._target, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(this._target, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            }
+
             this._currentSampler = sampler.hash;
         }
     }
@@ -184,6 +286,8 @@ export class Tw2TextureRes extends Tw2Resource
     {
         this._extension = null;
         this._isAttached = false;
+        this._isDepth = false;
+        this._forceNearest = false;
 
         this._width = 0;
         this._height = 0;

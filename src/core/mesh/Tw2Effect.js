@@ -673,6 +673,63 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Stages a parameter for per-draw upload, refusing one that cannot fit.
+     *
+     * `Tw2VectorParameter.Apply` is a bare `constantBuffer.set(value, offset)`,
+     * so a parameter whose value is longer than the space left in the buffer
+     * throws `RangeError: offset is out of bounds` - once per draw, per frame,
+     * from inside the render loop, with a stack naming neither the effect nor
+     * the parameter.
+     *
+     * This is a REAL data or reflection mismatch, not a condition to paper
+     * over. It was hit on 2026-08-13 by `angde1_t1:crisis_angel`, and it is kept
+     * because a crash every frame prevents finding anything else - it reports
+     * once per (effect, parameter) so the offender is NAMED rather than
+     * inferred from a stack that mentions neither.
+     *
+     * What was NOT established is which change provoked it: the one experiment
+     * that seemed to isolate a cause turned out to have been run against a
+     * cached bundle. If this warning ever fires, treat the named effect as the
+     * lead and do not assume the guard itself is load-bearing.
+     *
+     * Dropping the parameter is the conservative half: a partial write would
+     * corrupt whichever constant follows it in the buffer, turning one bad
+     * parameter into an unrelated-looking bug in the same shader.
+     *
+     * @param {Object} stage
+     * @param {Tw2Parameter} parameter
+     * @param {Float32Array} constantBuffer
+     * @param {Number} offset
+     * @param {Number} size - floats the shader declared for this constant
+     * @param {String} name
+     * @private
+     */
+    _PushStageParameter(stage, parameter, constantBuffer, offset, size, name)
+    {
+        const
+            value = parameter && parameter.value,
+            length = value && value.length !== undefined ? value.length : size;
+
+        if (!constantBuffer || offset + length > constantBuffer.length)
+        {
+            if (!this._overflowWarned) this._overflowWarned = {};
+            if (!this._overflowWarned[name])
+            {
+                this._overflowWarned[name] = true;
+                tw2.Warning({
+                    name: "Effect parameter",
+                    description: `${this.name || this.effectFilePath}: "${name}" needs ${length} floats at offset ${offset}`
+                        + ` but its constant buffer holds ${constantBuffer ? constantBuffer.length : 0}`
+                        + ` (declared size ${size}) - not bound`
+                });
+            }
+            return;
+        }
+
+        stage.parameters.push({ parameter, constantBuffer, offset, size });
+    }
+
+    /**
      * Binds parameters
      * @param {Object} [opt]
      * @returns {Boolean}
@@ -759,7 +816,7 @@ export class Tw2Effect extends meta.Model
                                     }
                                     else
                                     {
-                                        stage.parameters.push({ parameter, constantBuffer, offset, size });
+                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
                                     }
                                 }
                                 catch(err)
@@ -769,12 +826,7 @@ export class Tw2Effect extends meta.Model
                             }
                             else if (tw2.HasVariable(name))
                             {
-                                stage.parameters.push({
-                                    parameter: tw2.GetVariable(name),
-                                    constantBuffer,
-                                    offset,
-                                    size
-                                });
+                                this._PushStageParameter(stage, tw2.GetVariable(name), constantBuffer, offset, size, name);
                             }
                             else if (isAutoregister && type)
                             {
@@ -783,7 +835,7 @@ export class Tw2Effect extends meta.Model
                                 if (parameter)
                                 {
                                     this.parameters[name] = parameter;
-                                    stage.parameters.push({ parameter, constantBuffer, offset, size });
+                                    this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
                                 }
                             }
                             else if (this.autoParameter && elements === 1)
@@ -808,7 +860,7 @@ export class Tw2Effect extends meta.Model
                                     }
                                     else
                                     {
-                                        stage.parameters.push({ parameter, constantBuffer, offset, size });
+                                        this._PushStageParameter(stage, parameter, constantBuffer, offset, size, name);
                                     }
                                 }
                             }

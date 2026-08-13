@@ -16,10 +16,12 @@ import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
  * (see {@link ./ssaoPostEffect.js}).
  *
  * Per frame:
- *   1. own depth prepass — render the whole ship's `Main` technique into a 32F
- *      depth texture via `scene.GetDepthContext()` (skinned bones resolve). We
- *      don't read the scene's depth pass: the Carbon `"Depth"` technique is a
- *      normal-prepass, and EVE's ~1e8 far plane makes 16-bit scene depth useless.
+ *   1. depth prepass — the scene's `DepthMap` prepass
+ *      ({@link EveSpaceSceneDepthHandler}) when it ran, otherwise our own:
+ *      render the whole ship's `Main` technique into a 32F depth texture via
+ *      `scene.GetDepthContext()` (skinned bones resolve). Neither reads
+ *      `RenderDepth`: the Carbon `"Depth"` technique is a normal-prepass, and
+ *      EVE's ~1e8 far plane makes that pass's 16-bit depth useless.
  *   2. run the config passes (AO → blur) into ping-friendly RGBA8 targets.
  *   3. bind the `output` target into `SSAOMap`.
  *
@@ -144,7 +146,36 @@ export class EveSpaceSceneAO extends meta.Model
     }
 
     /**
+     * The depth texture the AO passes read.
+     *
+     * Prefers the scene's `DepthMap` prepass when it produced a buffer at our
+     * size this frame: it renders exactly the set below (`Main` over RM_OPAQUE
+     * and RM_DECAL, plus opaque background) into a 32F target, so one prepass
+     * serving both is strictly better than two. Falls back to our own whenever
+     * it did not run, was disabled, or is a different size.
+     * @returns {WebGLTexture}
+     * @private
+     */
+    _GetDepthTexture()
+    {
+        const shared = this.scene && this.scene.GetDepthHandler
+            ? this.scene.GetDepthHandler(false)
+            : null;
+
+        if (shared && shared.rendered && shared.width === this._width && shared.height === this._height)
+        {
+            const tex = shared.depthTextureGL;
+            if (tex) return tex;
+        }
+
+        return this._depth.depthTex;
+    }
+
+    /**
      * Own `Main`-technique depth prepass of the whole scene into the 32F target.
+     *
+     * Skipped when the scene's depth handler already produced an equivalent
+     * buffer this frame - see {@link _GetDepthTexture}.
      * @param {Number} dt
      * @private
      */
@@ -152,6 +183,9 @@ export class EveSpaceSceneAO extends meta.Model
     {
         const { gl } = device;
         const scene = this.scene;
+
+        if (this._GetDepthTexture() !== this._depth.depthTex) return;
+
         const ctx = scene.GetDepthContext();
         const objs = scene.objectsByDistance || scene.objects || [];
         const opt = { techniqueFilter: "Main", techniqueOverride: "Main" };
@@ -193,7 +227,7 @@ export class EveSpaceSceneAO extends meta.Model
             for (const uniformName in pass.samplers)
             {
                 const src = pass.samplers[uniformName];
-                const tex = src === "depth" ? this._depth.depthTex : (this._targets.get(src) || {}).tex;
+                const tex = src === "depth" ? this._GetDepthTexture() : (this._targets.get(src) || {}).tex;
                 const loc = pass.loc(uniformName);
                 if (loc && tex)
                 {
