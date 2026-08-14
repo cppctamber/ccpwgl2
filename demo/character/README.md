@@ -622,9 +622,14 @@ unresolved rather than fabricated. Its exact specular overlay is admitted to
 the skin-only body specular target. Its plain `comp_body_n` remains retained but
 unapplied because only additive `tn` and masked-replacement `mn` semantics are
 currently proved; interpreting a plain `n` as replacement would be a guess.
-`makeup/eyebrowbase` is likewise not a selectable part in the reviewed library:
-the old GLES editor used it as a brow-support dependency/carrier. The current
-adapter must resolve that ownership rather than inventing a cosmetic selection.
+`makeup/eyebrowbase` is not a selectable part in the reviewed library. The
+selected head metadata instead retains one typed `accessories/browbase/cd`
+dependency for the selected Deteis archetype. The adapter resolves that exact
+part source, attaches its sole retained configuration/geometry pair, and keeps
+it outside the selectable garment list. Its authored detail supplies carrier
+alpha while the completed head diffuse supplies RGB; the resulting full-atlas
+target is bound with identity UVs and alpha test. This proves the dependency
+and consumer topology for this fixture, not a universal brow-source rule.
 Arm/body tattoo resources and body-enabled projection definitions are indexed,
 but no reviewed paper doll selects them. A body tattoo therefore remains an
 explicit projection-executor fixture gap, not a missing file or a silently

@@ -277,6 +277,8 @@ export class TnyGlesCharacterAdapter
         staged.foundationResources = new Map();
         staged.configuredFoundations = [];
         staged.configuredFoundationBindings = [];
+        staged.configuredFoundationSupports = [];
+        staged.configuredFoundationSupportBindings = [];
         staged.configuredParts = [];
         staged.configuredPartBindings = [];
         staged.deferredContributions = [];
@@ -308,6 +310,10 @@ export class TnyGlesCharacterAdapter
                 RestoreConfiguredMeshBindings(binding.resolvedMeshBindings);
             }
             for (const binding of staged.configuredFoundationBindings)
+            {
+                RestoreConfiguredMeshBindings(binding.resolvedMeshBindings);
+            }
+            for (const binding of staged.configuredFoundationSupportBindings)
             {
                 RestoreConfiguredMeshBindings(binding.resolvedMeshBindings);
             }
@@ -497,6 +503,9 @@ export class TnyGlesCharacterAdapter
             foundationGeometryCount: staged.geometryPaths.length,
             configuredFoundationCount: staged.configuredFoundations.length,
             configuredFoundations: staged.configuredFoundations.map(CloneDiagnosticValue),
+            configuredFoundationSupportCount: staged.configuredFoundationSupports.length,
+            configuredFoundationSupports: staged.configuredFoundationSupports
+                .map(CloneDiagnosticValue),
             configuredPartCount: staged.configuredParts.length,
             configuredParts: staged.configuredParts.map(value => ({ ...value })),
             deferredContributionCount: staged.deferredContributions.length,
@@ -855,6 +864,9 @@ export class TnyGlesCharacterAdapter
                     });
                 }
                 break;
+            case "configured-foundation-support":
+                await this._AttachConfiguredFoundationSupport(staged, operation);
+                break;
             case "configured-part":
                 await this._AttachConfiguredPart(staged, operation);
                 break;
@@ -1028,6 +1040,39 @@ export class TnyGlesCharacterAdapter
             configuredPart,
             configuredMeshes
         );
+    }
+
+    async _AttachConfiguredFoundationSupport(staged, operation)
+    {
+        const partCount = staged.configuredParts.length;
+        const bindingCount = staged.configuredPartBindings.length;
+        await this._AttachConfiguredPart(staged, {
+            ...operation,
+            operation: "configured-part",
+            groupID: "makeup/eyebrowbase",
+            layerIndex: -1,
+            partIndex: -1
+        });
+
+        if (staged.configuredParts.length !== partCount + 1
+            || staged.configuredPartBindings.length !== bindingCount + 1)
+        {
+            throw new Error("Configured foundation support did not attach exactly one part");
+        }
+        const support = staged.configuredParts.pop();
+        const binding = staged.configuredPartBindings.pop();
+        support.role = operation.role;
+        support.evidence = { ...operation.evidence };
+        for (const mesh of binding.configuredMeshes)
+        {
+            mesh._characterFoundationSupportRole = operation.role;
+        }
+        staged.configuredFoundationSupports.push(support);
+        staged.configuredFoundationSupportBindings.push({
+            ...binding,
+            role: operation.role,
+            evidence: { ...operation.evidence }
+        });
     }
 
     async _AttachConfiguredFoundation(staged, operation)
@@ -1227,7 +1272,10 @@ export class TnyGlesCharacterAdapter
 
     _FinalizeConfiguredParts(staged)
     {
-        for (const binding of staged.configuredPartBindings)
+        for (const binding of [
+            ...staged.configuredPartBindings,
+            ...staged.configuredFoundationSupportBindings
+        ])
         {
             binding.configuredPart.renderStatus = IsConfiguredPartRenderable(
                 binding.configuredMeshes
@@ -1902,6 +1950,35 @@ function ValidateConstruction(construction)
             throw new Error("Configured foundation must replace its exact foundation geometry operation");
         }
         configuredFoundationRoles.add(role);
+    }
+
+    const configuredFoundationSupportRoles = new Set();
+    while (operations[cursor]?.operation === "configured-foundation-support")
+    {
+        const operation = operations[cursor++];
+        const role = String(operation.role ?? "").trim();
+        if (role !== "eyebrowbase" || configuredFoundationSupportRoles.has(role))
+        {
+            throw new Error("Configured foundation supports require one exact eyebrowbase role");
+        }
+        RequireResourcePath(
+            operation.configurationPath,
+            `configured foundation support ${role} configurationPath`
+        );
+        RequireResourcePath(
+            operation.geometryPath,
+            `configured foundation support ${role} geometryPath`
+        );
+        if (!String(operation.partSourceRecordID ?? "").trim()
+            || operation.evidence?.status !== "derived"
+            || operation.evidence?.rule
+                !== "exact-head-archetype-brow-support-dependency-v1")
+        {
+            throw new Error(
+                "Configured eyebrow support requires an exact retained head dependency"
+            );
+        }
+        configuredFoundationSupportRoles.add(role);
     }
 
     const contributions = operations.slice(cursor, -1);

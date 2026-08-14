@@ -201,6 +201,19 @@ export class TnyGlesFoundationConstruction
                 }
             });
         }
+        const browSupport = ResolveSelectedBrowSupport(
+            sex,
+            selectedSkin?.evidence?.archetypeSourceRecordID,
+            library
+        );
+        if (browSupport)
+        {
+            operations.push({
+                operation: "configured-foundation-support",
+                role: "eyebrowbase",
+                ...browSupport
+            });
+        }
 
         operations.push({
             operation: "bind-animation"
@@ -220,6 +233,79 @@ export class TnyGlesFoundationConstruction
             operations
         };
     }
+}
+
+/** Resolves one exact authored brow carrier through the selected head metadata. */
+export function ResolveSelectedBrowSupport(sex, archetypeSourceRecordID, library)
+{
+    if (!library || typeof library.GetDocument !== "function") return null;
+
+    const archetypeID = String(archetypeSourceRecordID ?? "").trim().toLowerCase();
+    const prefix = `${sex}/archetypes/`;
+    if (!archetypeID.startsWith(prefix)) return null;
+    const relativeArchetype = archetypeID.slice(`${sex}/`.length);
+    const heads = (library.GetDocument("characterPartSources") ?? []).filter(source =>
+    {
+        if (!String(source?.recordID ?? "").toLowerCase().startsWith(`${sex}/head/`))
+        {
+            return false;
+        }
+        const metadata = ResolveEffectiveMetadata(source);
+        return metadata?.dependentModifiers?.some(value =>
+            StripDependencyWeight(value).toLowerCase() === relativeArchetype);
+    });
+    if (heads.length !== 1) return null;
+
+    const metadata = ResolveEffectiveMetadata(heads[0]);
+    const matches = (metadata?.dependencies ?? []).filter(relation =>
+    {
+        const authored = StripDependencyWeight(relation?.authoredValue).toLowerCase();
+        return authored.startsWith("accessories/browbase/")
+            && relation?.partSource
+            && String(relation.partSource.recordID ?? "").toLowerCase()
+                === `${sex}/${authored}`;
+    });
+    if (matches.length !== 1) return null;
+
+    const target = matches[0].partSource;
+    const versions = (target?.versions ?? []).filter(Boolean);
+    if (versions.length !== 1) return null;
+    const version = versions[0];
+    if (version.configurationCandidates?.length !== 1
+        || version.geometryCandidates?.length !== 1)
+    {
+        return null;
+    }
+
+    return {
+        partSourceRecordID: target.recordID,
+        configurationPath: version.configurationCandidates[0],
+        geometryPath: version.geometryCandidates[0],
+        evidence: {
+            status: "derived",
+            rule: "exact-head-archetype-brow-support-dependency-v1",
+            headPartSourceRecordID: heads[0].recordID,
+            metadataRecordID: metadata.recordID,
+            authoredDependency: matches[0].authoredValue,
+            archetypeSourceRecordID
+        }
+    };
+}
+
+function ResolveEffectiveMetadata(source)
+{
+    const versions = (source?.versions ?? []).filter(Boolean);
+    return versions.length === 1 && versions[0].metadata
+        ? versions[0].metadata
+        : source?.metadata ?? null;
+}
+
+function StripDependencyWeight(value)
+{
+    return String(value ?? "").replace(
+        /###[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/u,
+        ""
+    );
 }
 
 /** Resolves one selected skintone through retained base, PRS, and archetype records. */

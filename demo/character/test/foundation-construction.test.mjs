@@ -163,10 +163,46 @@ test("foundation construction resolves the selected skintone through retained so
             ]
         } ]
     };
+    const browSource = {
+        recordID: "female/accessories/browbase/cd",
+        versions: [ {
+            configurationCandidates: [
+                "res:/graphics/character/female/paperdoll/accessories/browbase/cd/cd.black"
+            ],
+            geometryCandidates: [
+                "res:/graphics/character/female/paperdoll/accessories/browbase/cd/cd.gr2"
+            ]
+        } ]
+    };
+    const headSource = {
+        recordID: "female/head/caldari_deteis",
+        metadata: {
+            recordID: "res:/graphics/character/female/paperdoll/head/caldari_deteis/metadata.yaml",
+            dependentModifiers: [
+                "archetypes/cdshape###1.2",
+                "accessories/browbase/cd",
+                "head/head_generic"
+            ],
+            dependencies: [ {
+                authoredValue: "archetypes/cdshape###1.2"
+            }, {
+                authoredValue: "accessories/browbase/cd",
+                partSource: browSource
+            }, {
+                authoredValue: "head/head_generic"
+            } ]
+        },
+        versions: [ {} ]
+    };
     const library = {
         GetDocument(name)
         {
-            return name === "characterDefinitions" ? definitions : null;
+            if (name === "characterDefinitions") return definitions;
+            if (name === "characterPartSources")
+            {
+                return [ source, headSource, browSource ];
+            }
+            return null;
         },
         Get(name, recordID)
         {
@@ -184,6 +220,9 @@ test("foundation construction resolves the selected skintone through retained so
         value.operation === "configured-foundation" && value.role === "head");
     const body = construction.operations.find(value =>
         value.operation === "configured-foundation" && value.role === "body");
+    const brow = construction.operations.find(value =>
+        value.operation === "configured-foundation-support"
+        && value.role === "eyebrowbase");
 
     assert.deepEqual(head.skinTextures, {
         DiffuseMap: "res:/graphics/character/female/paperdoll/archetypes/cdshape/cd_female_head_d_4k.png",
@@ -228,6 +267,24 @@ test("foundation construction resolves the selected skintone through retained so
     });
     assert.equal(body.skinEvidence.normalStatus, "unresolved-neutral");
     assert.equal(body.skinEvidence.normalRule, "legacy-opengl-neutral-body-normal-v1");
+    assert.deepEqual(brow, {
+        operation: "configured-foundation-support",
+        role: "eyebrowbase",
+        partSourceRecordID: "female/accessories/browbase/cd",
+        configurationPath:
+            "res:/graphics/character/female/paperdoll/accessories/browbase/cd/cd.black",
+        geometryPath:
+            "res:/graphics/character/female/paperdoll/accessories/browbase/cd/cd.gr2",
+        evidence: {
+            status: "derived",
+            rule: "exact-head-archetype-brow-support-dependency-v1",
+            headPartSourceRecordID: "female/head/caldari_deteis",
+            metadataRecordID:
+                "res:/graphics/character/female/paperdoll/head/caldari_deteis/metadata.yaml",
+            authoredDependency: "accessories/browbase/cd",
+            archetypeSourceRecordID: "female/archetypes/cdshape"
+        }
+    });
 });
 
 test("foundation construction rejects absent or mixed character sex", () =>

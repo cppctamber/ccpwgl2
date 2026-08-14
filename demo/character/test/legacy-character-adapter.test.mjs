@@ -378,6 +378,54 @@ test("configured head replaces only the skin carrier textures and preserves auth
     assert.equal(skinEffect, authoredSkinEffect);
 });
 
+test("configured foundation attaches one exact retained eyebrow support carrier", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndex: 0,
+        configuredMeshNames: [ "BrowBaseShape" ],
+        geometryMeshNames: [ "BrowBaseShape" ],
+        configuredEffectNames: [ "C_SkinShiny_BrowBase" ]
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female", [
+        [ "head", "res:/custom/female-head.gr2" ]
+    ]);
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation-support",
+        role: "eyebrowbase",
+        partSourceRecordID: "female/accessories/browbase/cd",
+        configurationPath: "res:/custom/browbase.black",
+        geometryPath: "res:/custom/browbase.gr2",
+        evidence: {
+            status: "derived",
+            rule: "exact-head-archetype-brow-support-dependency-v1"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+    const diagnostics = adapter.GetDiagnostics(staged);
+
+    assert.equal(diagnostics.configuredFoundationSupportCount, 1);
+    assert.equal(diagnostics.configuredPartCount, 0);
+    assert.equal(
+        diagnostics.configuredFoundationSupports[0].partSourceRecordID,
+        "female/accessories/browbase/cd"
+    );
+    assert.equal(
+        staged.configuredFoundationSupportBindings[0].configuredMeshes[0]
+            ._characterFoundationSupportRole,
+        "eyebrowbase"
+    );
+    assert.deepEqual(fixture.fetches.slice(-2), [
+        "res:/custom/browbase.black",
+        "res:/custom/browbase.gr2"
+    ]);
+});
+
 test("configured female body preserves only the exact authored basenude carrier", async () =>
 {
     const fixture = CreateFixture({
@@ -905,6 +953,8 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
         foundationGeometryCount: 1,
         configuredFoundationCount: 0,
         configuredFoundations: [],
+        configuredFoundationSupportCount: 0,
+        configuredFoundationSupports: [],
         configuredPartCount: 1,
         configuredParts: staged.configuredParts,
         deferredContributionCount: 0,

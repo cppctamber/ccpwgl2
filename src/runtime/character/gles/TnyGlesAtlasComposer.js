@@ -935,6 +935,13 @@ export class TnyGlesAtlasComposer
                     });
                 }
             }
+            report.browSupport = await this._ComposeConfiguredBrowSupport(
+                staged,
+                browFallback,
+                bindings.DiffuseMap ?? null,
+                report.channels.find(value => value.name === "DiffuseMap")?.targetSize,
+                targets
+            );
             const committed = await commitLegacyConfiguredHeadBindings(effects, bindings);
             report.faceTextures = applyLegacyConfiguredFaceTextures(
                 binding,
@@ -958,6 +965,89 @@ export class TnyGlesAtlasComposer
             for (const target of targets.reverse()) target.Destroy?.();
             report.deferred.push({ reason: error.message });
             return report;
+        }
+    }
+
+    async _ComposeConfiguredBrowSupport(
+        staged,
+        browFallback,
+        headDiffuseTexture,
+        targetSize,
+        targets
+    )
+    {
+        const binding = staged?.configuredFoundationSupportBindings?.find(value =>
+            value?.role === "eyebrowbase");
+        if (!binding)
+        {
+            return { status: "deferred", reason: "configured-brow-support-unavailable" };
+        }
+        if (browFallback?.status !== "ready" || !headDiffuseTexture
+            || !Array.isArray(targetSize))
+        {
+            return { status: "deferred", reason: "configured-brow-material-unavailable" };
+        }
+
+        const effects = GetEffects(binding.configuredMeshes).filter(effect =>
+            typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function"
+            && typeof effect?.SetParameters === "function");
+        if (!effects.length)
+        {
+            return { status: "deferred", reason: "configured-brow-effect-unavailable" };
+        }
+
+        const alphaPath = browFallback.operation.candidate.detail.path;
+        const passes = [
+            await this._CreateAuthoredConsumerCopyPass(alphaPath, targetSize),
+            await this._CreateSharedConsumerRgbPass(headDiffuseTexture, targetSize)
+        ];
+        const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
+        const target = new RenderTarget(
+            `character-${staged.sex}-head-eyebrowbase`,
+            targetSize[0],
+            targetSize[1],
+            false
+        );
+        if (!target.IsGood?.())
+        {
+            throw new Error(`Unable to create ${targetSize.join("x")} eyebrow support target`);
+        }
+
+        try
+        {
+            RenderPasses(tw2, target, passes);
+            const attachedEffects = commitLegacyConfiguredConsumerBindings(
+                effects,
+                target.texture,
+                {
+                    alphaTest: true,
+                    neutralizeDiffuseColor: true,
+                    preserveAlphaBlend: true
+                }
+            );
+            targets.push(target);
+            const support = staged.configuredFoundationSupports?.find(value =>
+                value?.role === "eyebrowbase");
+            if (support)
+            {
+                support.materialStatus = "brow-support-policy";
+                support.compositionStatus = "brow-support-attached";
+            }
+            return {
+                status: "applied",
+                rule: "exact-head-archetype-brow-support-dependency-v1",
+                partSourceRecordID: support?.partSourceRecordID ?? null,
+                alphaPath,
+                targetSize: [ ...targetSize ],
+                alphaEvidence: ReadTargetAlphaEvidence(target),
+                attachedEffects,
+                passes: passes.map(value => value.report)
+            };
+        }
+        catch (error)
+        {
+            target.Destroy?.();
+            throw error;
         }
     }
 
@@ -4669,13 +4759,15 @@ export function commitLegacyConfiguredConsumerBindings(
         neutralizeDiffuseColor = false,
         alphaTest = false,
         depthTest = true,
+        preserveAlphaBlend = false,
         transformUV0 = null
     } = {}
 )
 {
     if (typeof neutralizeDiffuseColor !== "boolean"
         || typeof alphaTest !== "boolean"
-        || typeof depthTest !== "boolean")
+        || typeof depthTest !== "boolean"
+        || typeof preserveAlphaBlend !== "boolean")
     {
         throw new TypeError("Configured consumer options must be boolean");
     }
@@ -4709,7 +4801,13 @@ export function commitLegacyConfiguredConsumerBindings(
         {
             for (const effect of effects)
             {
-                if (effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] }) === false)
+                const parameter = effect.parameters?.MaterialDiffuseColor;
+                if (typeof parameter?.SetValue === "function")
+                {
+                    parameter.SetValue([ 1, 1, 1, 1 ]);
+                }
+                else if (parameter
+                    && effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] }) === false)
                 {
                     throw new Error("Configured consumer does not accept MaterialDiffuseColor");
                 }
@@ -4719,7 +4817,7 @@ export function commitLegacyConfiguredConsumerBindings(
         {
             for (const effect of effects)
             {
-                ApplyLegacyConsumerAlphaTest(tw2.const, effect);
+                ApplyLegacyConsumerAlphaTest(tw2.const, effect, !preserveAlphaBlend);
             }
         }
         if (!depthTest)
@@ -5182,15 +5280,15 @@ function RestoreTechniquePassStates(snapshots)
     return failures;
 }
 
-function ApplyLegacyConsumerAlphaTest(d3d, effect)
+function ApplyLegacyConsumerAlphaTest(d3d, effect, disableBlend = true)
 {
     const required = [
         "RS_ALPHATESTENABLE",
         "RS_ALPHAREF",
         "RS_ALPHAFUNC",
-        "RS_ALPHABLENDENABLE",
         "CMP_GREATER"
     ];
+    if (disableBlend) required.push("RS_ALPHABLENDENABLE");
     if (!d3d || required.some(name => !Number.isFinite(d3d[name])))
     {
         throw new Error("Configured consumer alpha test requires ccpwgl D3D constants");
@@ -5203,7 +5301,15 @@ function ApplyLegacyConsumerAlphaTest(d3d, effect)
             effect.SetTechniquePassStateOverride(technique, pass, d3d.RS_ALPHATESTENABLE, 1);
             effect.SetTechniquePassStateOverride(technique, pass, d3d.RS_ALPHAREF, 0);
             effect.SetTechniquePassStateOverride(technique, pass, d3d.RS_ALPHAFUNC, d3d.CMP_GREATER);
-            effect.SetTechniquePassStateOverride(technique, pass, d3d.RS_ALPHABLENDENABLE, 0);
+            if (disableBlend)
+            {
+                effect.SetTechniquePassStateOverride(
+                    technique,
+                    pass,
+                    d3d.RS_ALPHABLENDENABLE,
+                    0
+                );
+            }
         }
     }
 }

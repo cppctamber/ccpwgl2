@@ -917,7 +917,12 @@ test("configured head restores eyebrow fallback at its ordered position", async 
         texture: { path: "#skin-diffuse" },
         transform: [ 0.5, 0, 1, 0.5 ]
     });
+    const browCarrier = AtomicEffectFixture({
+        texture: { path: "#brow-authored" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
     skin.name = "C_Skin_blinn1";
+    browCarrier.name = "C_SkinShiny_BrowBase";
     const staged = {
         sex: "female",
         configuredFoundations: [ {
@@ -938,6 +943,14 @@ test("configured head restores eyebrow fallback at its ordered position", async 
                 meshName: "meshShape",
                 geometryMeshName: "meshShape"
             } ]
+        } ],
+        configuredFoundationSupports: [ {
+            role: "eyebrowbase",
+            partSourceRecordID: "female/accessories/browbase/cd"
+        } ],
+        configuredFoundationSupportBindings: [ {
+            role: "eyebrowbase",
+            configuredMeshes: [ MeshFixture(browCarrier) ]
         } ],
         textureContributions: [ {
             layerIndex: 1,
@@ -984,6 +997,16 @@ test("configured head restores eyebrow fallback at its ordered position", async 
         "makeup/eyebrows",
         "makeup/lipstick"
     ]);
+    assert.equal(report.browSupport.status, "applied", JSON.stringify(report));
+    assert.equal(report.browSupport.partSourceRecordID, "female/accessories/browbase/cd");
+    assert.equal(report.browSupport.attachedEffects, 1);
+    assert.strictEqual(
+        browCarrier.parameters.DiffuseMap.textureRes,
+        staged.compositionTargets.at(-1).texture
+    );
+    assert.deepEqual(browCarrier.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(browCarrier.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.equal(browCarrier.stateOverrides.length, 3);
     assert.deepEqual(diffuse.passes.at(-1).materialControls, {
         layerWeight: 1,
         colorSelectionWeight: 0.3258,
@@ -2803,6 +2826,35 @@ test("legacy configured consumer attachment rolls every effect back on partial f
     assert.deepEqual(second.transform, [ 0.2, 0.1, 0.4, 0.3 ]);
     assert.deepEqual(first.materialDiffuseColor, [ 0.1, 0.2, 0.3, 1 ]);
     assert.deepEqual(second.materialDiffuseColor, [ 0.4, 0.5, 0.6, 1 ]);
+});
+
+test("legacy configured consumer accepts a shader with no diffuse tint control", () =>
+{
+    const replacement = { path: "#configured-consumer" };
+    const effect = AtomicEffectFixture({
+        texture: { path: "#authored-consumer" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
+    delete effect.parameters.MaterialDiffuseColor;
+    effect.SetParameters = values =>
+    {
+        if (values.TransformUV0)
+        {
+            effect.transform = [ ...values.TransformUV0 ];
+            return true;
+        }
+        return false;
+    };
+
+    const attached = commitLegacyConfiguredConsumerBindings(
+        [ effect ],
+        replacement,
+        { neutralizeDiffuseColor: true }
+    );
+
+    assert.equal(attached, 1);
+    assert.strictEqual(effect.parameters.DiffuseMap.textureRes, replacement);
+    assert.deepEqual(effect.transform, [ 0, 0, 1, 1 ]);
 });
 
 test("legacy configured consumer pixel contract cuts alpha before replacing RGB", () =>
