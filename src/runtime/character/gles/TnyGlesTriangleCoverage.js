@@ -5,7 +5,7 @@ const coverageStates = new WeakMap();
  * coverage policy. Cached geometry can be shared by overlapping revisions, so
  * leases keep the mask active until the final committed consumer releases it.
  */
-export class CcpwglLegacyTriangleCoverage
+export class TnyGlesTriangleCoverage
 {
     /** Acquires one exact triangle-coverage lease and returns its detached report. */
     static async Acquire(geometryResource, policy, { gl = null } = {})
@@ -73,7 +73,9 @@ export class CcpwglLegacyTriangleCoverage
             const reapplyFailures = TryApplyPrepared(state.prepared, gl);
             state.leases.add(lease);
             failures.push(...reapplyFailures);
-            throw new AggregateError(failures, "Legacy triangle coverage restore failed");
+            const error = new Error("Legacy triangle coverage restore failed");
+            error.errors = failures;
+            throw error;
         }
         geometryResource.RebuildBounds?.(true);
         coverageStates.delete(geometryResource);
@@ -237,7 +239,10 @@ function ValidatePolicy(policy)
     if (policy?.strategy !== "triangle-mask"
         || policy?.triangleRule !== "legacy-opengl-exact-foundation-triangle-coverage-v1"
         || policy?.evidence?.status !== "policy"
-        || policy?.evidence?.rule !== "legacy-opengl-exact-foundation-coverage-v1"
+        || ![
+            "legacy-opengl-exact-foundation-coverage-v1",
+            "legacy-opengl-authored-footwear-coverage-v1"
+        ].includes(policy?.evidence?.rule)
         || !Array.isArray(policy?.bonePrefixes)
         || policy.bonePrefixes.length !== expected.length
         || expected.some((value, index) => policy.bonePrefixes[index] !== value))
@@ -254,5 +259,3 @@ function CloneReport(value)
         meshReports: value.meshReports.map(report => ({ ...report }))
     };
 }
-
-export default CcpwglLegacyTriangleCoverage;

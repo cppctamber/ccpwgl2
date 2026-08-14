@@ -14,6 +14,10 @@ export class CharacterDemoView
         this.paperdollID = RequireElement(root, "paperdoll-id");
         this.paperdollSamples = RequireElement(root, "paperdoll-samples");
         this.resolvePaperdoll = RequireElement(root, "resolve-paperdoll");
+        this.canvas = RequireElement(root, "character-canvas");
+        this.canvas.addEventListener("wheel", event => event.preventDefault(), {
+            passive: false
+        });
     }
 
     SetStatus(message, state = "working")
@@ -87,6 +91,7 @@ export class CharacterDemoView
             layers: snapshot.plan?.layers ?? 0,
             textures: snapshot.plan?.textures ?? 0,
             coverages: snapshot.plan?.coverages ?? 0,
+            morphTargets: snapshot.plan?.morphTargets ?? 0,
             targets: snapshot.plan?.targets ?? 0,
             bindings: snapshot.plan?.bindings ?? 0
         }, null, 2);

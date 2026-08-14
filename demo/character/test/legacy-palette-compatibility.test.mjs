@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-    CcpwglLegacyPaletteCompatibility
-} from "../src/character/CcpwglLegacyPaletteCompatibility.mjs";
+    TnyGlesPaletteCompatibility
+} from "./runtime-character-modules.mjs";
 
 const POLICY = {
     status: "policy",
@@ -16,7 +16,7 @@ const POLICY = {
 test("legacy palette compatibility masks only triangles influenced by the declared bone family", async () =>
 {
     const fixture = CreateFixture();
-    const report = await CcpwglLegacyPaletteCompatibility.Apply(
+    const report = await TnyGlesPaletteCompatibility.Apply(
         fixture.geometry,
         POLICY,
         { gl: fixture.gl }
@@ -36,15 +36,15 @@ test("legacy palette compatibility is idempotent and fails when the GPU mutation
 {
     const fixture = CreateFixture();
 
-    await CcpwglLegacyPaletteCompatibility.Apply(fixture.geometry, POLICY, { gl: fixture.gl });
-    await CcpwglLegacyPaletteCompatibility.Apply(fixture.geometry, POLICY, { gl: fixture.gl });
+    await TnyGlesPaletteCompatibility.Apply(fixture.geometry, POLICY, { gl: fixture.gl });
+    await TnyGlesPaletteCompatibility.Apply(fixture.geometry, POLICY, { gl: fixture.gl });
 
     assert.deepEqual([ ...fixture.mesh.indexData ], [ 0, 0, 0, 1, 1, 1 ]);
     assert.equal(fixture.uploads.length, 2);
 
     const unavailable = CreateFixture();
     await assert.rejects(
-        CcpwglLegacyPaletteCompatibility.Apply(unavailable.geometry, POLICY),
+        TnyGlesPaletteCompatibility.Apply(unavailable.geometry, POLICY),
         /could not be applied/u
     );
 });

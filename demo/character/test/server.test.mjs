@@ -37,7 +37,7 @@ test("character demo server exposes only its allowlisted files", async context =
     assert.equal(page.status, 200);
     assert.match(await page.text(), /Character runtime/);
 
-    const source = await fetch(`${origin}/demo/character/src/character/CcpwglCharacter.mjs`);
+    const source = await fetch(`${origin}/src/runtime/character/TnyCharacter.js`);
     assert.equal(source.status, 200);
     assert.match(source.headers.get("content-type"), /javascript/);
 

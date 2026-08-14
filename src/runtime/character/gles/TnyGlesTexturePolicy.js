@@ -9,9 +9,9 @@ const QUALITY_SCORE = {
  * Labels exact retained character textures for the temporary legacy demo.
  * Filename roles are explicit ccpwgl policy, not runtime-character source facts.
  */
-export class CcpwglLegacyTexturePolicy
+export class TnyGlesTexturePolicy
 {
-    #modifierOrder;
+    _modifierOrder;
 
     constructor({ modifierOrder = null } = {})
     {
@@ -22,7 +22,7 @@ export class CcpwglLegacyTexturePolicy
             throw new TypeError("Legacy texture policy modifierOrder must expose sort and resolveCategories");
         }
 
-        this.#modifierOrder = modifierOrder;
+        this._modifierOrder = modifierOrder;
     }
 
     /** Resolves every plan layer without omitting unrecognized source candidates. */
@@ -48,13 +48,15 @@ export class CcpwglLegacyTexturePolicy
             layerIndex
         ));
 
-        if (!this.#modifierOrder) return contributions;
+        const ordered = this._modifierOrder
+            ? this._modifierOrder.sort(contributions, {
+                categories: this._modifierOrder.resolveCategories(),
+                getCategory: value => SplitGroup(value.groupID)[0],
+                getGroup: value => SplitGroup(value.groupID)[1]
+            })
+            : contributions;
 
-        return this.#modifierOrder.sort(contributions, {
-            categories: this.#modifierOrder.resolveCategories(),
-            getCategory: value => SplitGroup(value.groupID)[0],
-            getGroup: value => SplitGroup(value.groupID)[1]
-        });
+        return AnnotateAuthoredOcclusions(ordered);
     }
 }
 
@@ -110,11 +112,21 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
         ));
     }
 
-    const materialDefinition = ResolveMaterialDefinition(
+    const typeMaterialDefinition = ResolveMaterialDefinition(
         library,
         typeDefinition.record,
         partType?.colorVariant
     );
+    const colorSelection = ResolveColorSelection(plan, groupID);
+    const colorMaterialResolution = typeMaterialDefinition
+        ? null
+        : ResolveColorSelectionDefinition(
+            library,
+            colorSelection,
+            sex,
+            partSource
+        );
+    const materialDefinition = typeMaterialDefinition ?? colorMaterialResolution?.record;
 
     if (partType?.colorVariant && !materialDefinition)
     {
@@ -125,10 +137,16 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
     }
 
     const classified = ClassifyTextures(
-        Array.isArray(part?.texturePaths) && part.texturePaths.length
-            ? part.texturePaths
-            : version?.textureCandidates ?? []
+        ResolveTexturePaths(part, partSource, version),
+        ResolveTextureTargetHint(groupID)
     );
+    const weight = layer?.weight === null || layer?.weight === undefined
+        ? 1
+        : Number(layer.weight);
+    if (!Number.isFinite(weight))
+    {
+        throw new TypeError(`Legacy texture layer ${layerIndex} has a non-finite weight`);
+    }
 
     if (classified.every(value => !value.recognized) && classified.length)
     {
@@ -141,6 +159,7 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
     return {
         layerIndex,
         partIndex,
+        weight,
         ownerSelectionIndex: Array.isArray(plan.selections)
             ? plan.selections.indexOf(layer.owner)
             : -1,
@@ -149,9 +168,20 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
             partSourceRecordID: partSource?.recordID ?? null,
             versionIndex,
             typeDefinitionPath: typeDefinition.record?.sourcePath ?? null,
-            materialDefinitionPath: materialDefinition?.sourcePath ?? null
+            materialDefinitionPath: materialDefinition?.sourcePath ?? null,
+            occludesModifiers: Array.isArray(version?.metadata?.occludesModifiers)
+                ? [ ...version.metadata.occludesModifiers ]
+                : [],
+            ...(Array.isArray(version?.metadata?.occlusions)
+                && version.metadata.occlusions.length ? { occlusions:
+                    version.metadata.occlusions.map(value => ({
+                        authoredValue: value?.authoredValue ?? null,
+                        modifierKey: value?.modifierLocation?.modifierKey ?? null
+                    }))
+                } : {})
         },
         materialValues: materialDefinition?.values ?? null,
+        colorSelection: colorSelection ? { ...colorSelection } : null,
         textureCandidates: classified,
         selectedTextures: classified
             .filter(value => value.selected)
@@ -164,11 +194,67 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
         diagnostics,
         evidence: {
             status: "policy",
-            rule: "legacy-opengl-texture-filename-v1",
+            rule: "legacy-opengl-texture-filename-v2",
             definitionRule: "exact-retained-definition-v1",
-            materialRule: "exact-sibling-color-definition-v1"
+            materialRule: typeMaterialDefinition
+                ? "exact-sibling-color-definition-v1"
+                : colorMaterialResolution
+                    ? colorMaterialResolution.rule
+                    : "unresolved"
         }
     };
+}
+
+function AnnotateAuthoredOcclusions(contributions)
+{
+    for (const contribution of contributions)
+    {
+        contribution.occludedBy = [];
+    }
+
+    for (const owner of contributions)
+    {
+        const occlusions = [
+            ...(owner.source.occlusions ?? []),
+            ...(owner.source.occludesModifiers ?? []).map(authoredValue => ({
+                authoredValue,
+                modifierKey: null
+            }))
+        ];
+        const matchedIdentities = new Set();
+        for (const value of occlusions)
+        {
+            const identity = NormalizeModifierIdentity(
+                value.modifierKey ?? value.authoredValue
+            );
+            if (!identity || matchedIdentities.has(identity)) continue;
+            matchedIdentities.add(identity);
+
+            for (const target of contributions)
+            {
+                if (target === owner
+                    || NormalizeModifierIdentity(target.groupID) !== identity) continue;
+
+                target.occludedBy.push({
+                    partIndex: owner.partIndex,
+                    groupID: owner.groupID,
+                    partSourceRecordID: owner.source.partSourceRecordID,
+                    authoredValue: value.authoredValue
+                });
+            }
+        }
+    }
+
+    return contributions;
+}
+
+function NormalizeModifierIdentity(value)
+{
+    const identity = String(value ?? "").trim().replaceAll("\\", "/").toLowerCase();
+    // Female TanktopF01 retains the legacy authored category name while the
+    // active paper-doll selection is exposed through the current location.
+    if (identity === "topunderwear") return "topinner";
+    return identity;
 }
 
 function ResolveTypeDefinition(library, partType, sex)
@@ -214,7 +300,65 @@ function ResolveMaterialDefinition(library, typeDefinition, colorVariant)
     return record?.extension === ".color" ? record : null;
 }
 
-function ClassifyTextures(paths)
+function ResolveColorSelection(plan, groupID)
+{
+    const matches = (plan?.colorSelections ?? []).filter(value =>
+        NormalizeModifierIdentity(value?.colorKey) === NormalizeModifierIdentity(groupID));
+    return matches.length === 1 ? matches[0] : null;
+}
+
+function ResolveColorSelectionDefinition(library, selection, sex, partSource)
+{
+    const colorKey = NormalizeModifierIdentity(selection?.colorKey);
+    const colorName = NormalizeModifierIdentity(selection?.colorNameA);
+    if (!sex || !colorKey || !colorName) return null;
+
+    const sourcePath = String(partSource?.sourcePath ?? "").replace(/\/+$/u, "");
+    const candidates = [
+        sourcePath && {
+            path: `${sourcePath}/${colorName}.color`,
+            rule: "exact-part-source-color-selection-v1"
+        },
+        {
+            path: `res:/graphics/character/${sex}/paperdoll/${colorKey}`
+                + `/colors/${colorName}.color`,
+            rule: "exact-group-color-selection-v1"
+        }
+    ].filter(Boolean);
+
+    for (const candidate of candidates)
+    {
+        const record = library.Get("characterDefinitions", candidate.path);
+        if (record?.extension === ".color") return { ...candidate, record };
+    }
+    return null;
+}
+
+function ResolveTexturePaths(part, partSource, version)
+{
+    const exact = Array.isArray(part?.texturePaths) && part.texturePaths.length
+        ? part.texturePaths
+        : version?.textureCandidates ?? [];
+    const base = partSource?.versions?.find(value => value?.resourceVersion == null);
+
+    if (!base || base === version || !Array.isArray(base.textureCandidates))
+    {
+        return [ ...exact ];
+    }
+
+    // A version folder is an overlay, not a complete replacement. CCP commonly
+    // publishes only the channels changed by a color/version variant (for
+    // example a version-specific specular map), leaving the other families at
+    // the part root. Retain the exact version for every family it provides and
+    // inherit only missing families from the unversioned source.
+    const overridden = new Set(exact.map(TextureFamily));
+    return [
+        ...exact,
+        ...base.textureCandidates.filter(path => !overridden.has(TextureFamily(path)))
+    ];
+}
+
+function ClassifyTextures(paths, targetHint = null)
 {
     if (!Array.isArray(paths))
     {
@@ -229,7 +373,7 @@ function ClassifyTextures(paths)
         if (match) targetHints.add(match[1]);
     }
 
-    const inferredTarget = targetHints.size === 1 ? [ ...targetHints ][0] : null;
+    const inferredTarget = targetHints.size === 1 ? [ ...targetHints ][0] : targetHint;
     const result = paths.map(path => ClassifyTexture(path, inferredTarget));
     const winners = new Map();
 
@@ -252,6 +396,21 @@ function ClassifyTextures(paths)
     return result;
 }
 
+function ResolveTextureTargetHint(groupID)
+{
+    // Direct garment maps such as jacketmf01_d do not encode body/head in the
+    // filename. The selected modifier location supplies the missing semantic
+    // target without guessing from the asset's arbitrary family name.
+    return SplitGroup(groupID)[0] === "outer" ? "body" : null;
+}
+
+function TextureFamily(path)
+{
+    const stem = FileStem(path);
+    const qualityMatch = stem.match(/_(4k|512|256)$/u);
+    return qualityMatch ? stem.slice(0, -qualityMatch[0].length) : stem;
+}
+
 function ClassifyTexture(path, inferredTarget)
 {
     const exactPath = RequireResourcePath(path);
@@ -270,13 +429,17 @@ function ClassifyTexture(path, inferredTarget)
     }
     else
     {
-        match = family.match(/^comp_(body|head)_([dnsm])$/u);
+        match = family.match(/^comp_(body|head)_(tn|mn|[dnsm])$/u);
         if (match)
         {
             target = match[1];
             role = match[2] === "m"
                 ? "cut-mask"
-                : ChannelRole(match[2], "overlay");
+                : match[2] === "tn"
+                    ? "twist-normal"
+                    : match[2] === "mn"
+                        ? "normal-overlay"
+                        : ChannelRole(match[2], "overlay");
         }
         else
         {
@@ -347,10 +510,12 @@ function NormalizeOptional(value)
 function RequireLibrary(value)
 {
     if (!value || value.schema !== "carbonenginejs.characterLibrary"
-        || (value.schemaVersion !== 7 && value.schemaVersion !== 8)
+        || ![ 7, 8, 9, 10 ].includes(value.schemaVersion)
         || typeof value.Get !== "function")
     {
-        throw new TypeError("Legacy texture policy requires a schema-v7 or schema-v8 character library");
+        throw new TypeError(
+            "Legacy texture policy requires a schema-v7, schema-v8, schema-v9, or schema-v10 character library"
+        );
     }
 }
 
@@ -374,5 +539,3 @@ function SplitGroup(value)
     const [ category = "", group = "" ] = String(value ?? "").toLowerCase().split("/");
     return [ category, group ];
 }
-
-export default CcpwglLegacyTexturePolicy;

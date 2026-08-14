@@ -81,6 +81,19 @@ test("view distinguishes working, rendered, deferred, and failed stages", () =>
     assert.throws(() => view.SetStage("Invalid", "gated"), /Unknown character demo stage/);
 });
 
+test("view keeps camera-wheel input from scrolling the page", () =>
+{
+    const root = CreateRoot();
+    new CharacterDemoView(root);
+    const canvas = root.elements.get("character-canvas");
+    const wheel = canvas.listeners.get("wheel");
+    let prevented = false;
+
+    assert.deepEqual(wheel.options, { passive: false });
+    wheel.listener({ preventDefault() { prevented = true; } });
+    assert.equal(prevented, true);
+});
+
 function CreateRoot()
 {
     const ids = [
@@ -94,7 +107,8 @@ function CreateRoot()
         "plan-diagnostics",
         "paperdoll-id",
         "paperdoll-samples",
-        "resolve-paperdoll"
+        "resolve-paperdoll",
+        "character-canvas"
     ];
     const elements = new Map(ids.map(id => [ id, CreateElement() ]));
 
@@ -112,10 +126,14 @@ function CreateElement()
     return {
         children: [],
         dataset: {},
+        listeners: new Map(),
         span: null,
         textContent: "",
         value: "",
-        addEventListener() {},
+        addEventListener(type, listener, options)
+        {
+            this.listeners.set(type, { listener, options });
+        },
         append(value)
         {
             this.children.push(value);

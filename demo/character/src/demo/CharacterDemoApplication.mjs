@@ -1,4 +1,6 @@
-import { CcpwglCharacter } from "../character/CcpwglCharacter.mjs";
+import { tw2 } from "global";
+import { tnyCharacterConstructors } from "/src/runtime/character/register.js";
+import { formatCommittedStage } from "./CharacterDemoFormatting.mjs";
 
 /** Connects browser controls to the runtime-character library and resolver. */
 export class CharacterDemoApplication
@@ -13,6 +15,8 @@ export class CharacterDemoApplication
 
     #renderer;
 
+    #routePaperdollSelection;
+
     #view;
 
     constructor({
@@ -20,6 +24,7 @@ export class CharacterDemoApplication
         appearanceResolver,
         constructionResolver,
         renderer,
+        routePaperdollSelection = null,
         view
     } = {})
     {
@@ -44,8 +49,11 @@ export class CharacterDemoApplication
         this.#appearanceResolver = appearanceResolver;
         this.#constructionResolver = constructionResolver;
         this.#renderer = renderer;
+        this.#routePaperdollSelection = routePaperdollSelection;
         this.#view = view;
-        this.#view.BindResolve(recordID => this.SelectPaperdoll(recordID));
+        this.#view.BindResolve(recordID => this.#routePaperdollSelection
+            ? this.#routePaperdollSelection(recordID)
+            : this.SelectPaperdoll(recordID));
     }
 
     GetCharacter()
@@ -53,11 +61,24 @@ export class CharacterDemoApplication
         return this.#character;
     }
 
-    async Start({ libraryURL, paperdollID = null } = {})
+    async Start({ libraryURL, paperdollID = null, prepareLibrary = null } = {})
     {
         this.#view.SetStatus("Loading character library");
         const manager = await this.#libraryClient.Load(libraryURL);
-        const character = new CcpwglCharacter({
+        if (prepareLibrary !== null)
+        {
+            if (typeof prepareLibrary !== "function")
+            {
+                throw new TypeError("Character demo prepareLibrary must be a function or null");
+            }
+            await prepareLibrary(manager);
+        }
+        const Character = tnyCharacterConstructors.TnyCharacter;
+        if (typeof Character !== "function")
+        {
+            throw new Error("The character constructor catalog does not contain TnyCharacter");
+        }
+        const character = new Character({
             libraryManager: manager,
             appearanceResolver: this.#appearanceResolver,
             constructionResolver: this.#constructionResolver,
@@ -115,19 +136,6 @@ export class CharacterDemoApplication
             throw error;
         }
     }
-}
-
-export function formatCommittedStage(details = {})
-{
-    const configured = details?.configuredPartCount ?? 0;
-    const composition = details?.composition;
-
-    if (!composition || !Number.isInteger(composition.contributionCount))
-    {
-        return `${configured} exact configured part(s) attached; ${details?.deferredContributionCount ?? 0} contribution(s) retained/deferred`;
-    }
-
-    return `${configured} exact configured part(s) attached; body diffuse applied ${composition.composedContributionCount ?? 0}/${composition.contributionCount} contribution(s); ${composition.deferredContributionCount ?? 0} retained/deferred`;
 }
 
 export default CharacterDemoApplication;

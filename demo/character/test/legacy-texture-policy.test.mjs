@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CcpwglLegacyTexturePolicy } from "../src/character/CcpwglLegacyTexturePolicy.mjs";
+import { TnyGlesTexturePolicy } from "./runtime-character-modules.mjs";
 
 const root = "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01";
 const typePath = `${root}/types/shirtcf01_generic02.type`;
@@ -10,7 +10,7 @@ const materialPath = `${root}/generic02.color`;
 test("legacy texture policy joins exact retained type and color definitions without dropping candidates", () =>
 {
     const fixture = CreateFixture();
-    const result = new CcpwglLegacyTexturePolicy().Resolve(
+    const result = new TnyGlesTexturePolicy().Resolve(
         fixture.library,
         fixture.paperdoll,
         fixture.plan
@@ -18,11 +18,13 @@ test("legacy texture policy joins exact retained type and color definitions with
 
     assert.equal(result.length, 1);
     assert.equal(result[0].ownerSelectionIndex, 0);
+    assert.equal(result[0].weight, 1);
     assert.deepEqual(result[0].source, {
         partSourceRecordID: "female/topmiddle/shirtcf01",
         versionIndex: 0,
         typeDefinitionPath: typePath,
-        materialDefinitionPath: materialPath
+        materialDefinitionPath: materialPath,
+        occludesModifiers: []
     });
     assert.strictEqual(result[0].materialValues, fixture.materialValues);
     assert.equal(result[0].textureCandidates.length, 9);
@@ -46,7 +48,187 @@ test("legacy texture policy joins exact retained type and color definitions with
         }
     );
     assert.deepEqual(result[0].diagnostics, []);
-    assert.equal(result[0].evidence.rule, "legacy-opengl-texture-filename-v1");
+    assert.equal(result[0].evidence.rule, "legacy-opengl-texture-filename-v2");
+});
+
+test("legacy texture policy preserves an authored dependency layer weight", () =>
+{
+    const fixture = CreateFixture();
+    fixture.plan.layers[0].weight = 0.4;
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.weight, 0.4);
+});
+
+test("legacy texture policy treats version folders as family overlays", () =>
+{
+    const fixture = CreateFixture();
+    const base = fixture.partSource.versions[0];
+    const version = {
+        resourceVersion: "v2",
+        metadata: null,
+        configurationCandidates: [],
+        geometryCandidates: [],
+        textureCandidates: [ `${root}/v2/shirtcf01_s_4k.png` ]
+    };
+
+    fixture.partSource.versions.push(version);
+    fixture.plan.parts[0].origin.jsonPointer = "/versions/1";
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType.resourceVersion = "v2";
+    fixture.definitions.get(typePath).values[1] = "v2";
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.versionIndex, 1);
+    assert.ok(result.textureCandidates.some(value =>
+        value.path === `${root}/v2/shirtcf01_s_4k.png` && value.selected));
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/shirtcf01_s_4k.png`), false);
+    assert.ok(result.textureCandidates.some(value =>
+        value.path === base.textureCandidates[1] && value.selected));
+});
+
+test("legacy texture policy resolves an exact paper-doll eye colour definition", () =>
+{
+    const fixture = CreateFixture();
+    const eyeRoot = "res:/graphics/character/female/paperdoll/makeup/eyes/eyes_06";
+    const colorPath = "res:/graphics/character/female/paperdoll/makeup/eyes/colors/darkbrown_abc.color";
+    const colorValues = {
+        colors: [ [ 0.2, 0.1, 0.07, 1 ], [ 0.5, 0.5, 0.5, 1 ], [ 0.17, 0.1, 0.07, 1 ] ]
+    };
+    fixture.plan.layers[0].owner.groupID = "makeup/eyes";
+    fixture.plan.colorSelections = [ {
+        colorKey: "makeup/eyes",
+        colorNameA: "darkbrown_abc",
+        colorNameBC: null,
+        gloss: 0,
+        weight: 0
+    } ];
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType = {
+        sourcePath: `${eyeRoot}/types/eyes_06.type`,
+        sourcePaths: [ `${eyeRoot}/types/eyes_06.type` ],
+        partPath: "makeup/eyes/eyes_06",
+        resourceVersion: null,
+        colorVariant: null
+    };
+    fixture.partSource.versions[0].textureCandidates = [
+        `${eyeRoot}/colorize_head_l_4k.png`,
+        `${eyeRoot}/colorize_head_z_4k.png`
+    ];
+    fixture.definitions.set(`${eyeRoot}/types/eyes_06.type`, {
+        sourcePath: `${eyeRoot}/types/eyes_06.type`,
+        extension: ".type",
+        values: [ "makeup/eyes/eyes_06", "", "" ]
+    });
+    fixture.definitions.set(colorPath, {
+        sourcePath: colorPath,
+        extension: ".color",
+        values: colorValues
+    });
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.materialDefinitionPath, colorPath);
+    assert.strictEqual(result.materialValues, colorValues);
+    assert.equal(result.evidence.materialRule, "exact-group-color-selection-v1");
+});
+
+test("legacy texture policy resolves paper-doll makeup colour beside the exact selected part", () =>
+{
+    const fixture = CreateFixture();
+    const lipstickRoot = "res:/graphics/character/female/paperdoll/makeup/lipstick/lipstick_04";
+    const colorPath = `${lipstickRoot}/silver_light_matte.color`;
+    const colorValues = {
+        colors: [ [ 0.7, 0.7, 0.7, 1 ], [ 0.4, 0.4, 0.4, 1 ], [ 0.2, 0.2, 0.2, 1 ] ]
+    };
+    fixture.plan.layers[0].owner.groupID = "makeup/lipstick";
+    fixture.plan.colorSelections = [ {
+        colorKey: "makeup/lipstick",
+        colorNameA: "silver_light_matte",
+        colorNameBC: null,
+        gloss: 0.36,
+        weight: 0.3258
+    } ];
+    fixture.partSource.recordID = "female/makeup/lipstick/lipstick_04";
+    fixture.partSource.sourcePath = lipstickRoot;
+    fixture.plan.parts[0].origin.recordID = fixture.partSource.recordID;
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType = {
+        sourcePath: `${lipstickRoot}/types/lipstick_04.type`,
+        sourcePaths: [ `${lipstickRoot}/types/lipstick_04.type` ],
+        partPath: "makeup/lipstick/lipstick_04",
+        resourceVersion: null,
+        colorVariant: null
+    };
+    fixture.partSource.versions[0].textureCandidates = [
+        `${lipstickRoot}/colorize_head_l_4k.png`,
+        `${lipstickRoot}/colorize_head_z_4k.png`
+    ];
+    fixture.definitions.set(`${lipstickRoot}/types/lipstick_04.type`, {
+        sourcePath: `${lipstickRoot}/types/lipstick_04.type`,
+        extension: ".type",
+        values: [ "makeup/lipstick/lipstick_04", "", "" ]
+    });
+    fixture.definitions.set(colorPath, {
+        sourcePath: colorPath,
+        extension: ".color",
+        values: colorValues
+    });
+    fixture.library.Get = (documentName, recordID) =>
+    {
+        if (documentName === "characterDefinitions")
+        {
+            return fixture.definitions.get(recordID) ?? null;
+        }
+        if (documentName === "characterPartSources"
+            && recordID === fixture.partSource.recordID) return fixture.partSource;
+        return null;
+    };
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.materialDefinitionPath, colorPath);
+    assert.strictEqual(result.materialValues, colorValues);
+    assert.equal(result.evidence.materialRule, "exact-part-source-color-selection-v1");
+});
+
+test("legacy texture policy uses the outer modifier location for direct garment maps", () =>
+{
+    const fixture = CreateFixture();
+    const directRoot = "res:/graphics/character/female/paperdoll/outer/jacketmf01";
+
+    fixture.plan.layers[0].owner.groupID = "outer";
+    fixture.partSource.versions[0].textureCandidates = [
+        `${directRoot}/jacketmf01_d.png`,
+        `${directRoot}/jacketmf01_s.png`
+    ];
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result.selectedTextures.map(value => [ value.role, value.target ]), [
+        [ "diffuse-source", "body" ],
+        [ "specular-source", "body" ]
+    ]);
 });
 
 test("legacy texture policy reports missing material evidence while retaining all texture paths", () =>
@@ -54,7 +236,7 @@ test("legacy texture policy reports missing material evidence while retaining al
     const fixture = CreateFixture();
 
     fixture.definitions.delete(materialPath);
-    const [ result ] = new CcpwglLegacyTexturePolicy().Resolve(
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
         fixture.library,
         fixture.paperdoll,
         fixture.plan
@@ -76,7 +258,7 @@ test("schema-v8 plan texture paths retain and classify dependency cut masks", ()
         "res:/graphics/character/female/paperdoll/dependants/masktuck/tuckmaskmid/comp_body_m_512.png"
     ];
 
-    const [ result ] = new CcpwglLegacyTexturePolicy().Resolve(
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
         fixture.library,
         fixture.paperdoll,
         fixture.plan
@@ -88,6 +270,181 @@ test("schema-v8 plan texture paths retain and classify dependency cut masks", ()
         role: "cut-mask",
         target: "body",
         quality: "standard"
+    } ]);
+});
+
+test("legacy texture policy classifies authored composite normal variants", () =>
+{
+    const fixture = CreateFixture();
+    const paths = [
+        "res:/graphics/character/female/paperdoll/makeup/augmentations/face_01/comp_head_mn.png",
+        "res:/graphics/character/female/paperdoll/makeup/augmentations/face_01/comp_head_tn.png",
+        "res:/graphics/character/female/paperdoll/makeup/augmentations/face_01/comp_body_tn_4k.png"
+    ];
+    fixture.partSource.versions[0].textureCandidates = paths;
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result.selectedTextures, [
+        {
+            path: paths[0],
+            role: "normal-overlay",
+            target: "head",
+            quality: "standard"
+        },
+        {
+            path: paths[1],
+            role: "twist-normal",
+            target: "head",
+            quality: "standard"
+        },
+        {
+            path: paths[2],
+            role: "twist-normal",
+            target: "body",
+            quality: "4k"
+        }
+    ]);
+});
+
+test("schema-v9 libraries remain compatible with the retained texture policy", () =>
+{
+    const fixture = CreateFixture();
+
+    fixture.library.schemaVersion = 9;
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.partSourceRecordID, "female/topmiddle/shirtcf01");
+    assert.equal(result.textureCandidates.length, 9);
+});
+
+test("schema-v10 libraries remain compatible with the retained texture policy", () =>
+{
+    const fixture = CreateFixture();
+    fixture.library.schemaVersion = 10;
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.partSourceRecordID, "female/topmiddle/shirtcf01");
+});
+
+test("legacy texture policy retains and applies exact authored modifier occlusions", () =>
+{
+    const fixture = CreateFixture();
+    const target = structuredClone(fixture.plan.layers[0]);
+    const targetPart = structuredClone(fixture.plan.parts[0]);
+
+    fixture.partSource.versions[0].metadata = {
+        occludesModifiers: [ "bottominner" ]
+    };
+    target.owner.groupID = "bottominner";
+    target.contributor = targetPart;
+    targetPart.origin = {
+        recordID: fixture.partSource.recordID,
+        jsonPointer: "/versions/0"
+    };
+    fixture.plan.parts.push(targetPart);
+    fixture.plan.layers.push(target);
+    fixture.paperdoll.modifiers.push(fixture.paperdoll.modifiers[0]);
+
+    const result = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result[0].source.occludesModifiers, [ "bottominner" ]);
+    assert.deepEqual(result[1].occludedBy, [ {
+        partIndex: 0,
+        groupID: fixture.plan.layers[0].owner.groupID,
+        partSourceRecordID: fixture.partSource.recordID,
+        authoredValue: "bottominner"
+    } ]);
+});
+
+test("legacy texture policy resolves legacy topunderwear through its hydrated modifier location", () =>
+{
+    const fixture = CreateFixture();
+    const target = structuredClone(fixture.plan.layers[0]);
+    const targetPart = structuredClone(fixture.plan.parts[0]);
+
+    fixture.partSource.versions[0].metadata = {
+        occludesModifiers: [ "topunderwear" ],
+        occlusions: [ {
+            authoredValue: "topunderwear",
+            modifierLocation: { modifierKey: "topinner" }
+        } ]
+    };
+    target.owner.groupID = "topinner";
+    target.contributor = targetPart;
+    targetPart.origin = {
+        recordID: fixture.partSource.recordID,
+        jsonPointer: "/versions/0"
+    };
+    fixture.plan.parts.push(targetPart);
+    fixture.plan.layers.push(target);
+    fixture.paperdoll.modifiers.push(fixture.paperdoll.modifiers[0]);
+
+    const result = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result[1].occludedBy, [ {
+        partIndex: 0,
+        groupID: fixture.plan.layers[0].owner.groupID,
+        partSourceRecordID: fixture.partSource.recordID,
+        authoredValue: "topunderwear"
+    } ]);
+});
+
+test("legacy texture policy resolves retained topunderwear when its location keeps the legacy key", () =>
+{
+    const fixture = CreateFixture();
+    const target = structuredClone(fixture.plan.layers[0]);
+    const targetPart = structuredClone(fixture.plan.parts[0]);
+
+    fixture.partSource.versions[0].metadata = {
+        occludesModifiers: [ "topunderwear" ],
+        occlusions: [ {
+            authoredValue: "topunderwear",
+            modifierLocation: { modifierKey: "topunderwear" }
+        } ]
+    };
+    target.owner.groupID = "topinner";
+    target.contributor = targetPart;
+    targetPart.origin = {
+        recordID: fixture.partSource.recordID,
+        jsonPointer: "/versions/0"
+    };
+    fixture.plan.parts.push(targetPart);
+    fixture.plan.layers.push(target);
+    fixture.paperdoll.modifiers.push(fixture.paperdoll.modifiers[0]);
+
+    const result = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result[1].occludedBy, [ {
+        partIndex: 0,
+        groupID: fixture.plan.layers[0].owner.groupID,
+        partSourceRecordID: fixture.partSource.recordID,
+        authoredValue: "topunderwear"
     } ]);
 });
 
@@ -171,5 +528,5 @@ function CreateFixture()
         }
     };
 
-    return { definitions, library, materialValues, paperdoll, plan };
+    return { definitions, library, materialValues, paperdoll, partSource, plan };
 }

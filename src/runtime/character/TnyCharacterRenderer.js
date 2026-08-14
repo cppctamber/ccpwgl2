@@ -2,17 +2,17 @@
  * Serializes appearance realization and publishes only complete staged
  * revisions. A renderer-specific adapter owns resource and GPU work.
  */
-export class CcpwglCharacterRenderer
+export class TnyCharacterRenderer
 {
-    #adapter;
+    _adapter;
 
-    #committed = null;
+    _committed = null;
 
-    #requestedRevision = 0;
+    _requestedRevision = 0;
 
-    #tail = Promise.resolve();
+    _tail = Promise.resolve();
 
-    #lastResult = null;
+    _lastResult = null;
 
     constructor({
         adapter = null,
@@ -26,7 +26,7 @@ export class CcpwglCharacterRenderer
             throw new TypeError("Character renderer adapter must expose Prepare(plan, context)");
         }
 
-        this.#adapter = adapter;
+        this._adapter = adapter;
         this.backend = String(backend);
         this.maximumBones = RequirePositiveInteger(maximumBones, "maximumBones");
         this.requiredBones = RequirePositiveInteger(requiredBones, "requiredBones");
@@ -40,7 +40,7 @@ export class CcpwglCharacterRenderer
             maximumBones: this.maximumBones,
             requiredBones: this.requiredBones,
             completeBonePalette: this.maximumBones >= this.requiredBones,
-            adapterConnected: this.#adapter !== null
+            adapterConnected: this._adapter !== null
         };
     }
 
@@ -49,30 +49,50 @@ export class CcpwglCharacterRenderer
     {
         return {
             ...this.GetCapabilities(),
-            lastResult: this.#lastResult ? { ...this.#lastResult } : null
+            lastResult: this._lastResult ? { ...this._lastResult } : null
         };
     }
 
     /** Toggles one committed configured part for controlled demo comparisons. */
     SetConfiguredPartDisplay(partSourceRecordID, display)
     {
-        if (!this.#committed)
+        if (!this._committed)
         {
             throw new Error("Character renderer has no committed appearance");
         }
-        if (typeof this.#adapter?.SetConfiguredPartDisplay !== "function")
+        if (typeof this._adapter?.SetConfiguredPartDisplay !== "function")
         {
             throw new Error("Character renderer adapter cannot isolate configured parts");
         }
-        const result = this.#adapter.SetConfiguredPartDisplay(
-            this.#committed,
+        const result = this._adapter.SetConfiguredPartDisplay(
+            this._committed,
             partSourceRecordID,
             display
         );
-        if (this.#lastResult?.status === "committed"
-            && typeof this.#adapter.GetDiagnostics === "function")
+        if (this._lastResult?.status === "committed"
+            && typeof this._adapter.GetDiagnostics === "function")
         {
-            this.#lastResult.details = this.#adapter.GetDiagnostics(this.#committed);
+            this._lastResult.details = this._adapter.GetDiagnostics(this._committed);
+        }
+        return result;
+    }
+
+    /** Toggles one committed foundation role for controlled demo comparisons. */
+    SetFoundationDisplay(role, display)
+    {
+        if (!this._committed)
+        {
+            throw new Error("Character renderer has no committed appearance");
+        }
+        if (typeof this._adapter?.SetFoundationDisplay !== "function")
+        {
+            throw new Error("Character renderer adapter cannot isolate foundations");
+        }
+        const result = this._adapter.SetFoundationDisplay(this._committed, role, display);
+        if (this._lastResult?.status === "committed"
+            && typeof this._adapter.GetDiagnostics === "function")
+        {
+            this._lastResult.details = this._adapter.GetDiagnostics(this._committed);
         }
         return result;
     }
@@ -87,23 +107,23 @@ export class CcpwglCharacterRenderer
             return Promise.reject(new TypeError("Character renderer requires a construction sequence"));
         }
 
-        const requestRevision = ++this.#requestedRevision;
-        const operation = this.#tail.then(() => this.#Apply(
+        const requestRevision = ++this._requestedRevision;
+        const operation = this._tail.then(() => this._Apply(
             construction,
             requestRevision,
             options
         ));
-        this.#tail = operation.catch(() => undefined);
+        this._tail = operation.catch(() => undefined);
         return operation.then(result =>
         {
-            this.#lastResult = result;
+            this._lastResult = result;
             return result;
         });
     }
 
-    async #Apply(construction, requestRevision, options)
+    async _Apply(construction, requestRevision, options)
     {
-        if (!this.#adapter)
+        if (!this._adapter)
         {
             return {
                 status: "deferred",
@@ -118,35 +138,35 @@ export class CcpwglCharacterRenderer
             appearancePlan: options.appearancePlan ?? null,
             source: options.source ?? this
         };
-        const staged = await this.#adapter.Prepare(construction, context);
+        const staged = await this._adapter.Prepare(construction, context);
 
-        if (requestRevision !== this.#requestedRevision)
+        if (requestRevision !== this._requestedRevision)
         {
-            await this.#Release(staged, { ...context, reason: "stale" });
+            await this._Release(staged, { ...context, reason: "stale" });
             return { status: "stale", revision: requestRevision };
         }
 
-        const previous = this.#committed;
+        const previous = this._committed;
 
         try
         {
-            if (typeof this.#adapter.Commit !== "function")
+            if (typeof this._adapter.Commit !== "function")
             {
                 throw new TypeError("Character renderer adapter must expose Commit(staged, context)");
             }
 
-            await this.#adapter.Commit(staged, context);
-            this.#committed = staged;
+            await this._adapter.Commit(staged, context);
+            this._committed = staged;
         }
         catch (error)
         {
-            await this.#Release(staged, { ...context, reason: "commit-failed" });
+            await this._Release(staged, { ...context, reason: "commit-failed" });
             throw error;
         }
 
         if (previous && previous !== staged)
         {
-            await this.#Release(previous, { ...context, reason: "replaced" });
+            await this._Release(previous, { ...context, reason: "replaced" });
         }
 
         const result = {
@@ -154,19 +174,19 @@ export class CcpwglCharacterRenderer
             revision: requestRevision
         };
 
-        if (typeof this.#adapter.GetDiagnostics === "function")
+        if (typeof this._adapter.GetDiagnostics === "function")
         {
-            result.details = this.#adapter.GetDiagnostics(staged);
+            result.details = this._adapter.GetDiagnostics(staged);
         }
 
         return result;
     }
 
-    async #Release(value, context)
+    async _Release(value, context)
     {
-        if (value && typeof this.#adapter?.Release === "function")
+        if (value && typeof this._adapter?.Release === "function")
         {
-            await this.#adapter.Release(value, context);
+            await this._adapter.Release(value, context);
         }
     }
 }
@@ -182,5 +202,3 @@ function RequirePositiveInteger(value, label)
 
     return result;
 }
-
-export default CcpwglCharacterRenderer;

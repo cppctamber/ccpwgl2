@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { formatCommittedStage } from "../src/demo/CharacterDemoApplication.mjs";
+import { formatCommittedStage } from "../src/demo/CharacterDemoFormatting.mjs";
 
 test("committed stage distinguishes applied body-diffuse contributions from retained work", () =>
 {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CharacterLibraryClient } from "../src/demo/CharacterLibraryClient.mjs";
+import { SetTestTw2, TnyCharacterLibraryClient } from "./runtime-character-modules.mjs";
 
 test("library client delegates schema validation and hydration to the runtime manager", async () =>
 {
@@ -15,48 +15,50 @@ test("library client delegates schema validation and hydration to the runtime ma
         }
     }
 
-    const client = new CharacterLibraryClient({
-        LibraryManager: FakeManager,
-        fetch: async url => ({
-            ok: true,
-            async json()
+    SetTestTw2({
+        resMan: {
+            async FetchRaw(url, responseType)
             {
                 assert.equal(url, "/library.json");
+                assert.equal(responseType, "json");
                 return values;
             }
-        })
+        }
     });
+    const client = new TnyCharacterLibraryClient({ LibraryManager: FakeManager });
     const manager = await client.Load("/library.json");
 
     assert.equal(manager.input, values);
 });
 
-test("library client exposes failed HTTP status without converting the payload", async () =>
+test("library client exposes resource-manager load failures", async () =>
 {
-    const client = new CharacterLibraryClient({
-        LibraryManager: class {},
-        fetch: async () => ({ ok: false, status: 404 })
+    SetTestTw2({
+        resMan: {
+            async FetchRaw()
+            {
+                throw new Error("Character library request failed with HTTP 404");
+            }
+        }
     });
+    const client = new TnyCharacterLibraryClient({ LibraryManager: class {} });
 
     await assert.rejects(
         client.Load("/missing.json"),
-        /HTTP 404/
+        /HTTP 404/u
     );
 });
 
-test("library client preserves a caller-required fetch receiver", async () =>
+test("library client preserves the resource-manager receiver", async () =>
 {
-    const receiver = {
-        async fetch()
+    let receiver = null;
+    const resMan = {
+        async FetchRaw(url, responseType)
         {
-            assert.equal(this, receiver);
-            return {
-                ok: true,
-                async json()
-                {
-                    return { schemaVersion: 7 };
-                }
-            };
+            receiver = this;
+            assert.equal(url, "/library.json");
+            assert.equal(responseType, "json");
+            return { schemaVersion: 7 };
         }
     };
 
@@ -68,11 +70,10 @@ test("library client preserves a caller-required fetch receiver", async () =>
         }
     }
 
-    const client = new CharacterLibraryClient({
-        LibraryManager: FakeManager,
-        fetch: receiver.fetch.bind(receiver)
-    });
+    const installed = SetTestTw2({ resMan });
+    const client = new TnyCharacterLibraryClient({ LibraryManager: FakeManager });
     const manager = await client.Load("/library.json");
 
+    assert.equal(receiver, installed.resMan);
     assert.deepEqual(manager.values, { schemaVersion: 7 });
 });

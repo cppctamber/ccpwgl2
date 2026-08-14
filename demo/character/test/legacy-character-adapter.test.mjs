@@ -1,14 +1,199 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CcpwglLegacyCharacterAdapter } from "../src/character/CcpwglLegacyCharacterAdapter.mjs";
+import {
+    applyLegacyConfiguredCardAreas,
+    applyLegacyProofGarmentMaterial,
+    SetTestTw2,
+    TnyGlesCharacterAdapter
+} from "./runtime-character-modules.mjs";
+
+test("legacy eyelash card policy collapses an authored reversed pair", () =>
+{
+    const states = [];
+    const createEffect = () => ({
+        name: "C_SkinShiny_EyeLashes",
+        effectFilePath: "res:/graphics/effect.gles2/managed/interior/avatar/skinnedavatar.sm_hi",
+        techniques: { Main: [ {} ] },
+        GetPassCount: () => 1,
+        SetTechniquePassStateOverride(...value)
+        {
+            states.push(value);
+        }
+    });
+    const forward = {
+        name: "lashes",
+        meshIndex: 1,
+        index: 2,
+        count: 3,
+        effect: createEffect()
+    };
+    const reversed = {
+        ...forward,
+        reversed: true,
+        effect: createEffect()
+    };
+    const d3d = { RS_CULLMODE: 22, CULL_NONE: 1, CULL_CCW: 3 };
+    const result = applyLegacyConfiguredCardAreas([ {
+        name: "Eyelashes_GeoShape",
+        transparentAreas: [ forward, reversed ]
+    } ], d3d);
+
+    assert.equal(result.status, "applied");
+    assert.equal(result.reversedAreas, 1);
+    assert.equal(result.collapsedPairs, 1);
+    assert.equal(reversed.display, false);
+    assert.deepEqual(states, [ [ "Main", 0, d3d.RS_CULLMODE, d3d.CULL_NONE ] ]);
+});
+
+test("legacy proof material colors only a retained non-skin garment surface", () =>
+{
+    const updates = [];
+    const textures = [];
+    const createEffect = (materialLibraryID, material2LibraryID = 0) => ({
+        _characterAuthoredEffect: {
+            parameters: {
+                MaterialLibraryID: { value: [ materialLibraryID, 0, 0, 0 ] },
+                Material2LibraryID: { value: [ material2LibraryID, 0, 0, 0 ] }
+            }
+        },
+        SetParameters(values)
+        {
+            updates.push(values);
+        },
+        SetTextures(values)
+        {
+            textures.push(values);
+        }
+    });
+    const garment = createEffect(14);
+    const hybrid = createEffect(0, 14);
+    const skin = createEffect(0);
+    const report = applyLegacyProofGarmentMaterial([ garment, hybrid, skin ], {
+        source: { materialDefinitionPath: "res:/pants.color" },
+        materialValues: {
+            colors: [ [ 0.1, 0.2, 0.3, 1 ] ],
+            specularColors: [ [ 0.4, 0.5, 0.6, 1 ] ]
+        }
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.appliedEffects, 2);
+    assert.equal(report.privateEffects, 1);
+    assert.equal(report.hybridEffects, 1);
+    assert.deepEqual(report.authoredColor, [ 0.1, 0.2, 0.3, 1 ]);
+    assert.deepEqual(report.fallbackColor, [ 1, 0, 1, 1 ]);
+    assert.deepEqual(updates, [ {
+        MaterialDiffuseColor: [ 1, 0, 1, 1 ],
+        MaterialSpecularColor: [ 0.4, 0.5, 0.6, 1 ]
+    }, {
+        MaterialDiffuseColor: [ 1, 0, 1, 1 ],
+        MaterialSpecularColor: [ 0.4, 0.5, 0.6, 1 ]
+    } ]);
+    assert.deepEqual(textures, [ {
+        DiffuseMap: "res:/dx9/model/decal/shared/bw_000_000_100.dds"
+    }, {
+        DiffuseMap: "res:/dx9/model/decal/shared/bw_000_000_100.dds"
+    } ]);
+    assert.equal(garment._characterGarmentMaterialFallback, true);
+    assert.equal(hybrid._characterGarmentBodyFallback, true);
+    assert.equal(skin._characterGarmentMaterialFallback, undefined);
+});
+
+test("GLES adapter constructs its scene and camera through the Tny client store", async () =>
+{
+    class CharacterScene
+    {
+        lights = [];
+
+        wrapped = {
+            SetValues: values =>
+            {
+                this.sceneValues = values;
+            }
+        };
+
+        AddLight(light)
+        {
+            this.lights.push(light);
+        }
+
+        ClearLights()
+        {
+            this.lights.splice(0);
+        }
+
+        Initialize()
+        {
+            this.initialized = true;
+        }
+    }
+
+    class Camera
+    {
+        constructor(values)
+        {
+            this.values = values;
+        }
+    }
+
+    class Light
+    {
+        SetValues(values)
+        {
+            this.values = values;
+        }
+
+        Initialize() {}
+    }
+
+    const classes = {
+        TnyCameraTest: Camera,
+        TnyCharacterScene: CharacterScene,
+        TnySpaceObject: class {}
+    };
+    const client = {
+        scene: null,
+        camera: null,
+        GetClass: name => classes[name],
+        HasClass: name => !!classes[name],
+        async Initialize(options)
+        {
+            this.initializeOptions = options;
+            this.scene = options.scene;
+            this.camera = options.camera;
+        }
+    };
+
+    SetTestTw2({
+        Fetch() {},
+        Gr2Reader: { DEFAULT_OPTIONS: {} },
+        Tr2InteriorLightSource: Light
+    });
+    const adapter = new TnyGlesCharacterAdapter({ client, cameraDistance: 0.8 });
+    await adapter._Initialize();
+
+    assert.ok(client.scene instanceof CharacterScene);
+    assert.ok(client.camera instanceof Camera);
+    assert.equal(client.scene.initialized, true);
+    assert.equal(client.initializeOptions.scene, client.scene);
+    assert.equal(client.initializeOptions.camera, client.camera);
+    assert.equal(client.camera.values.distance, 0.8);
+    assert.equal(client.initializeOptions.scene.wrapped, client.scene.wrapped);
+    assert.deepEqual(client.scene.lights.map(light => light.values.name), [
+        "character_front",
+        "character_left",
+        "character_right",
+        "character_back"
+    ]);
+});
 
 test("legacy adapter stages and commits the exact female LOD0 foundation", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
     const construction = CreateConstruction("female", [
         [ "head", "res:/custom/female-head.gr2" ],
@@ -20,7 +205,7 @@ test("legacy adapter stages and commits the exact female LOD0 foundation", async
     assert.equal(fixture.initializeCalls.length, 1);
     assert.equal(
         fixture.initializeCalls[0].paths.res,
-        "http://127.0.0.1:3000/ccp/3453885/resources"
+        "http://127.0.0.1:5510/ccp/3453885/resources"
     );
     assert.equal(staged.sex, "female");
     assert.deepEqual(fixture.fetches, [
@@ -39,32 +224,32 @@ test("legacy adapter stages and commits the exact female LOD0 foundation", async
         {
             name: "character_front",
             primaryLighting: true,
-            position: [ 0, 190, 135 ],
-            color: [ 2.2, 2.2, 2.2, 1 ],
+            position: [ 0, 135, 190 ],
+            color: [ 4.4, 4.4, 4.4, 1 ],
             radius: 300,
             falloff: 1
         },
         {
             name: "character_left",
             primaryLighting: true,
-            position: [ -190, 0, 115 ],
-            color: [ 1.8, 1.8, 1.8, 1 ],
+            position: [ -190, 115, 0 ],
+            color: [ 2.15, 2.15, 2.15, 1 ],
             radius: 280,
             falloff: 1
         },
         {
             name: "character_right",
             primaryLighting: true,
-            position: [ 190, 0, 115 ],
-            color: [ 1.8, 1.8, 1.8, 1 ],
+            position: [ 190, 115, 0 ],
+            color: [ 2.15, 2.15, 2.15, 1 ],
             radius: 280,
             falloff: 1
         },
         {
             name: "character_back",
             primaryLighting: true,
-            position: [ 0, -200, 150 ],
-            color: [ 1.6, 1.6, 1.6, 1 ],
+            position: [ 0, 150, -200 ],
+            color: [ 4.8, 4.8, 4.8, 1 ],
             radius: 320,
             falloff: 1
         }
@@ -78,12 +263,402 @@ test("legacy adapter stages and commits the exact female LOD0 foundation", async
     assert.equal(fixture.scene.objects.length, 0);
 });
 
+test("legacy adapter replaces a generic head carrier with exact configured face meshes", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndices: [ 0, 1 ],
+        configuredMeshNames: [ "zero", "one" ],
+        geometryBindingIndex: 0
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("male", [
+        [ "head", "res:/custom/male-head.gr2" ]
+    ]);
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation",
+        role: "head",
+        index: 0,
+        configurationPath: "res:/custom/male-head.black",
+        geometryPath: "res:/custom/male-head.gr2",
+        skinTextures: {
+            DiffuseMap: "res:/custom/male-head-d.png",
+            NormalMap: "res:/custom/male-head-n.png",
+            SpecularMap: "res:/custom/male-head-s.png"
+        },
+        skinEvidence: {
+            status: "derived",
+            rule: "exact-skintone-prs-archetype-foundation-v1",
+            correctness: "test-fixture"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+    const diagnostics = adapter.GetDiagnostics(staged);
+    const heads = staged.backend.visualModel.meshes.filter(mesh =>
+        mesh._characterFoundationRole === "head");
+
+    assert.equal(heads.length, 2);
+    assert.deepEqual(heads.map(mesh => mesh.name), [ "zero", "one" ]);
+    assert.equal(diagnostics.configuredFoundationCount, 1);
+    assert.equal(diagnostics.configuredFoundations[0].meshCount, 2);
+    assert.deepEqual(
+        diagnostics.configuredFoundations[0].meshes.map(value => value.geometryMeshName),
+        [ "zero", "one" ]
+    );
+    assert.equal(fixture.fetches.filter(value => value === "res:/custom/male-head.gr2").length, 2);
+});
+
+test("configured head replaces only the skin carrier textures and preserves authored face materials", async () =>
+{
+    const eyeTextures = {
+        DiffuseMap: "res:/custom/eye-authored-d.png",
+        CutMaskMap: "res:/custom/eye-authored-mask.png"
+    };
+    const fixture = CreateFixture({
+        configuredMeshIndices: [ 0, 1 ],
+        configuredMeshNames: [ "zero", "one" ],
+        configuredEffectNames: [ "C_Skin_blinn1", "C_Eyes" ],
+        configuredTransforms: [ [ 0.5, 0, 1, 0.5 ], [ 0, 0, 1, 1 ] ],
+        configuredInitialTextures: [
+            { DiffuseMap: "res:/custom/head-authored-d.png" },
+            eyeTextures
+        ]
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female", [
+        [ "head", "res:/custom/female-head.gr2" ]
+    ]);
+    const skinTextures = {
+        DiffuseMap: "res:/custom/female-head-d.png",
+        NormalMap: "res:/custom/female-head-n.png",
+        SpecularMap: "res:/custom/female-head-s.png"
+    };
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation",
+        role: "head",
+        index: 0,
+        configurationPath: "res:/custom/female-head.black",
+        geometryPath: "res:/custom/female-head.gr2",
+        skinTextures,
+        skinEvidence: {
+            status: "retained",
+            rule: "exact-head-generic-texture-inventory-v1",
+            correctness: "test-fixture"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+
+    const [ authoredSkinEffect, eyeEffect ] = fixture.configuredEffects;
+    const skinEffect = staged.configuredFoundationBindings[0]
+        .resolvedMeshBindings[0].mesh.opaqueAreas[0].effect;
+    assert.deepEqual(skinEffect.textures, skinTextures);
+    assert.deepEqual(eyeEffect.textures, eyeTextures);
+    assert.equal(eyeEffect.setTexturesCalls, 0);
+    assert.equal(skinEffect.effectFilePath, "res:/custom/female-avatar.sm_hi");
+    assert.deepEqual(
+        skinEffect.parameters.TransformUV0.GetValue([]),
+        [ 0.5, 0, 1, 0.5 ]
+    );
+    assert.deepEqual(skinEffect._characterAuthoredTransformUV0, [ 0.5, 0, 1, 0.5 ]);
+    assert.deepEqual(skinEffect._characterFoundationSkinShader, {
+        status: "applied",
+        rule: "legacy-opengl-shared-foundation-skin-shader-v1",
+        shaderPath: "res:/custom/female-avatar.sm_hi"
+    });
+    assert.equal(eyeEffect.effectFilePath, "");
+    assert.equal(skinEffect, authoredSkinEffect);
+});
+
+test("configured female body preserves only the exact authored basenude carrier", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndex: 0,
+        configuredMeshNames: [ "BasenudeShape" ],
+        geometryMeshNames: [ "BasenudeShape" ],
+        configuredEffectNames: [ "C_Skin_body" ],
+        configuredBodyEffect: true
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female");
+    const skinTextures = {
+        DiffuseMap: "res:/custom/cd-female-body-d.png",
+        NormalMap: "res:/graphics/shared_texture/global/normal_flat.dds",
+        SpecularMap: "res:/custom/cd-female-body-s.png"
+    };
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation",
+        role: "body",
+        index: 0,
+        configurationPath: "res:/custom/basenude.black",
+        geometryPath: "res:/custom/female-body.gr2",
+        skinTextures,
+        skinEvidence: {
+            status: "derived",
+            rule: "exact-skintone-prs-archetype-foundation-v1",
+            correctness: "test-fixture"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+
+    assert.deepEqual(fixture.configuredEffects[0].textures, skinTextures);
+    assert.equal(staged.configuredFoundations[0].role, "body");
+    assert.equal(staged.configuredFoundations[0].meshes[0].meshName, "BasenudeShape");
+});
+
+test("unavailable authored body retains and reports the prepared body fallback", async () =>
+{
+    const fixture = CreateFixture({ configuredFetchFailure: true });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female");
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation",
+        role: "body",
+        index: 0,
+        configurationPath: "res:/custom/basenude.black",
+        geometryPath: "res:/custom/female-body.gr2",
+        fallbackOnFailure: true,
+        skinTextures: {
+            DiffuseMap: "res:/custom/cd-female-body-d.png",
+            NormalMap: "res:/graphics/shared_texture/global/normal_flat.dds",
+            SpecularMap: "res:/custom/cd-female-body-s.png"
+        },
+        skinEvidence: {
+            status: "derived",
+            rule: "exact-skintone-prs-archetype-foundation-v1",
+            correctness: "test-fixture"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+
+    assert.equal(staged.backend.visualModel.meshes.some(mesh =>
+        mesh._characterFoundationRole === "body"), true);
+    assert.equal(staged.configuredFoundations[0].status, "deferred");
+    assert.match(staged.configuredFoundations[0].reason, /fixture configured fetch failure/u);
+});
+
+test("visually unqualified authored body remains retained without replacing the GLES carrier", async () =>
+{
+    const fixture = CreateFixture();
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female");
+    construction.operations.splice(-1, 0, {
+        operation: "configured-foundation",
+        role: "body",
+        index: 0,
+        configurationPath: "res:/custom/basenude.black",
+        geometryPath: "res:/custom/female-body.gr2",
+        renderConfiguredCarrier: false,
+        renderEvidence: {
+            status: "observed",
+            rule: "legacy-opengl-authored-body-carrier-unqualified-v1"
+        },
+        skinTextures: {
+            DiffuseMap: "res:/custom/cd-female-body-d.png",
+            NormalMap: "res:/graphics/shared_texture/global/normal_flat.dds",
+            SpecularMap: "res:/custom/cd-female-body-s.png"
+        },
+        skinEvidence: {
+            status: "derived",
+            rule: "exact-skintone-prs-archetype-foundation-v1",
+            correctness: "test-fixture"
+        }
+    });
+
+    const staged = await adapter.Prepare(construction);
+
+    assert.equal(staged.backend.visualModel.meshes.some(mesh =>
+        mesh._characterFoundationRole === "body"), true);
+    assert.equal(staged.configuredFoundations[0].status, "retained-not-rendered");
+    assert.equal(
+        staged.configuredFoundations[0].reason,
+        "configured-body-carrier-visually-unqualified"
+    );
+    assert.equal(fixture.fetches.includes("res:/custom/basenude.black"), false);
+});
+
+test("legacy adapter applies exact morph requests only during atomic commit and restores on release", async () =>
+{
+    const fixture = CreateFixture();
+    const calls = [];
+    const morphDeformation = {
+        HasAnyTarget(resource, targets)
+        {
+            calls.push([ "match", resource.path, targets[0].targetName ]);
+            return true;
+        },
+        async Acquire(resource, targets)
+        {
+            calls.push([ "acquire", resource.path, targets.map(value => value.weight) ]);
+            return {
+                lease: { id: 1 },
+                report: { status: "applied", matchedTargets: [ "pushhemmidshape" ] }
+            };
+        },
+        Release(resource, lease)
+        {
+            calls.push([ "release", resource.path, lease.id ]);
+            return true;
+        }
+    };
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        morphDeformation
+    });
+    const construction = CreateConstruction("male");
+    construction.morphTargets = [ {
+        modifierPath: "utilityshapes/pushhemmidshape",
+        targetName: "PushHemMidShape",
+        weight: 0.35,
+        ownerGroupID: "bottomouter",
+        evidence: {
+            status: "policy",
+            rule: "legacy-gles-unique-normalized-morph-target-match-v1"
+        }
+    } ];
+
+    const staged = await adapter.Prepare(construction);
+    assert.deepEqual(calls.map(value => value[0]), [ "match" ]);
+    assert.equal(staged.morphDeformation.at(-1).status, "pending-commit");
+
+    await adapter.Commit(staged);
+    assert.deepEqual(calls.map(value => value[0]), [ "match", "acquire" ]);
+    assert.equal(staged.morphDeformation.at(-1).status, "applied");
+
+    adapter.Release(staged);
+    assert.deepEqual(calls.map(value => value[0]), [ "match", "acquire", "release" ]);
+});
+
+test("legacy adapter can isolate authored morph deformation without dropping requests", async () =>
+{
+    const fixture = CreateFixture();
+    const calls = [];
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        morphDeformationEnabled: false,
+        morphDeformation: {
+            HasAnyTarget(...args)
+            {
+                calls.push([ "match", ...args ]);
+                return true;
+            },
+            async Acquire(...args)
+            {
+                calls.push([ "acquire", ...args ]);
+                return { lease: {}, report: { status: "applied" } };
+            },
+            Release(...args)
+            {
+                calls.push([ "release", ...args ]);
+                return true;
+            }
+        }
+    });
+    const construction = CreateConstruction("female");
+    construction.morphTargets = [ {
+        modifierPath: "utilityshapes/pinchlefthipsshape",
+        targetName: "PinchLeftHips",
+        weight: 1,
+        ownerGroupID: "topmiddle",
+        evidence: {
+            status: "policy",
+            rule: "legacy-gles-unique-normalized-morph-target-match-v1"
+        }
+    } ];
+
+    const staged = await adapter.Prepare(construction);
+    await adapter.Commit(staged);
+
+    assert.equal(staged.morphTargets.length, 1);
+    assert.deepEqual(staged.morphDeformation, []);
+    assert.deepEqual(calls, []);
+    adapter.Release(staged);
+});
+
+test("legacy adapter can isolate one authored morph target without dropping its request", async () =>
+{
+    const fixture = CreateFixture();
+    const calls = [];
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        morphDeformationSkippedTargets: [ "PinchLeftHips" ],
+        morphDeformation: {
+            HasAnyTarget(...args)
+            {
+                calls.push([ "match", ...args ]);
+                return true;
+            },
+            async Acquire(...args)
+            {
+                calls.push([ "acquire", ...args ]);
+                return { lease: {}, report: { status: "applied" } };
+            },
+            Release(...args)
+            {
+                calls.push([ "release", ...args ]);
+                return true;
+            }
+        }
+    });
+    const construction = CreateConstruction("female");
+    construction.morphTargets = [ {
+        modifierPath: "utilityshapes/pinchlefthipsshape",
+        targetName: "PinchLeftHips",
+        weight: 1,
+        ownerGroupID: "topmiddle",
+        evidence: {
+            status: "policy",
+            rule: "legacy-gles-unique-normalized-morph-target-match-v1"
+        }
+    } ];
+
+    const staged = await adapter.Prepare(construction);
+    await adapter.Commit(staged);
+
+    assert.equal(staged.morphTargets.length, 1);
+    assert.deepEqual(staged.morphDeformation, [ {
+        ...construction.morphTargets[0],
+        evidence: { ...construction.morphTargets[0].evidence },
+        status: "diagnostic-target-skipped",
+        reason: "explicit-diagnostic-target-exclusion",
+        resourcePaths: []
+    } ]);
+    assert.deepEqual(calls, []);
+    adapter.Release(staged);
+});
+
 test("legacy adapter initializes once and routes a male paper doll to male sources", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
     const construction = CreateConstruction("male", [
         [ "head", "res:/custom/male-head.gr2" ],
@@ -109,9 +684,9 @@ test("legacy adapter applies and reports only the exact female LOD0 palette poli
 {
     const fixture = CreateFixture();
     const calls = [];
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         paletteCompatibility: {
             async Apply(resource, policy, options)
             {
@@ -158,7 +733,7 @@ test("legacy adapter applies and reports only the exact female LOD0 palette poli
     invalid.operations[1].compatibility = construction.operations[2].compatibility;
     await assert.rejects(
         adapter.Prepare(invalid),
-        /restricted to the exact female LOD0 body policy/u
+        /restricted to an exact female LOD0 foundation policy/u
     );
 
     adapter.Release(staged);
@@ -167,9 +742,9 @@ test("legacy adapter applies and reports only the exact female LOD0 palette poli
 test("legacy adapter rejects malformed construction before loading assets", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
 
     await assert.rejects(
@@ -192,9 +767,9 @@ test("legacy adapter rejects malformed construction before loading assets", asyn
 test("legacy adapter rejects mutated texture contribution identity before loading assets", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
     const construction = CreateAppearanceConstruction();
 
@@ -210,9 +785,9 @@ test("legacy adapter rejects mutated texture contribution identity before loadin
 test("legacy adapter rejects non-contiguous geometry and unsupported LOD", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
     const badGeometry = CreateConstruction("female");
 
@@ -232,9 +807,9 @@ test("legacy adapter rejects non-contiguous geometry and unsupported LOD", async
 test("legacy adapter attaches exact configured pairs without replacing authored effects", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const construction = CreateConstruction("female");
@@ -311,8 +886,25 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
         () => adapter.SetConfiguredPartDisplay(staged, "female/feet/missing", false),
         /not attached/u
     );
+    const foundationMesh = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "body");
+    assert.ok(foundationMesh);
+    assert.deepEqual(adapter.SetFoundationDisplay(staged, "body", false), {
+        role: "body",
+        display: false,
+        meshCount: 1
+    });
+    assert.equal(foundationMesh.display, false);
+    adapter.SetFoundationDisplay(staged, "body", true);
+    assert.equal(foundationMesh.display, true);
+    assert.throws(
+        () => adapter.SetFoundationDisplay(staged, "missing", false),
+        /not attached/u
+    );
     assert.deepEqual(adapter.GetDiagnostics(staged), {
         foundationGeometryCount: 1,
+        configuredFoundationCount: 0,
+        configuredFoundations: [],
         configuredPartCount: 1,
         configuredParts: staged.configuredParts,
         deferredContributionCount: 0,
@@ -321,6 +913,14 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
         foundationCoverage: [],
         paletteCompatibilityCount: 0,
         paletteCompatibility: [],
+        configuredGarmentMaterials: {
+            status: "deferred",
+            reason: "configured-garment-composer-unavailable"
+        },
+        configuredHeadMaterials: {
+            status: "deferred",
+            reason: "configured-head-composer-unavailable"
+        },
         tuckSupport: {
             status: "deferred",
             reason: "exact-tuck-composer-unavailable"
@@ -337,6 +937,7 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
             status: "deferred",
             reason: "foundation-cut-composer-unavailable"
         },
+        morphDeformation: [],
         textureContributionCount: 1,
         textureContributions: staged.textureContributions,
         composition: {
@@ -351,6 +952,50 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
     adapter.Release(staged);
 });
 
+test("legacy adapter restores exact multi-mesh bindings after resource watches", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndices: [ 0, 0 ],
+        configuredMeshNames: [ "zero", "one" ],
+        geometryBindingIndex: 0,
+        resetConfiguredMeshIndicesOnWatch: true
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateConstruction("female");
+
+    construction.evidence = {
+        status: "policy",
+        rule: "legacy-opengl-appearance-v1"
+    };
+    construction.resolvedPartCount = 1;
+    construction.configuredPartCount = 1;
+    construction.deferredContributionCount = 0;
+    construction.textureContributions = [ IdentityContribution("outer") ];
+    construction.operations.splice(-1, 0, {
+        operation: "configured-part",
+        layerIndex: 0,
+        partIndex: 0,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/robe",
+        configurationPath: "res:/custom/robe.black",
+        geometryPath: "res:/custom/robe.gr2",
+        evidence: { status: "derived", rule: "unique-version-candidates" }
+    });
+
+    const staged = await adapter.Prepare(construction);
+    const meshes = fixture.configuredModels[0].meshes;
+
+    assert.deepEqual(meshes.map(mesh => mesh.meshIndex), [ 0, 1 ]);
+    assert.deepEqual(meshes.map(mesh => mesh.opaqueAreas[0].meshIndex), [ 0, 1 ]);
+    assert.equal(staged.configuredParts[0].namedMeshIndexCount, 1);
+    assert.equal(staged.configuredParts[0].authoredMeshIndexCount, 1);
+    assert.equal(staged.configuredParts[0].modelBindingMeshIndexCount, 0);
+});
+
 test("legacy adapter applies exact material policies only after final configured readiness", async () =>
 {
     const fixture = CreateFixture({ configuredEffectReady: false });
@@ -362,11 +1007,17 @@ test("legacy adapter applies exact material policies only after final configured
             this.destroyed = true;
         }
     };
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         foundationCutMaskEnabled: false,
         lowerSleeveMaterialEnabled: false,
+        tuckAuthoredUvEnabled: true,
+        tuckCutMaskEnabled: false,
+        tuckDetailMaskEnabled: false,
+        tuckMaterialBaseEnabled: true,
+        tuckAlphaMode: "opaque",
+        tuckBlendDetailEnabled: true,
         tuckPantsRgbEnabled: false,
         upperSleeveMaterialEnabled: false,
         atlasComposer: {
@@ -381,7 +1032,17 @@ test("legacy adapter applies exact material policies only after final configured
             {
                 calls.push("tuck");
                 assert.equal(staged.configuredParts[0].renderStatus, "ready");
-                assert.deepEqual(options, { usePantsRgb: false });
+                assert.deepEqual(options, {
+                    applyCutMask: false,
+                    alphaMode: "opaque",
+                    blendDetail: true,
+                    depthTest: true,
+                    fillMaterialBase: true,
+                    useAuthoredTransform: true,
+                    useDetailMask: false,
+                    usePantsRgb: false,
+                    useSharedBodyRgb: false
+                });
                 return { status: "applied", rule: "test-exact-tuck" };
             },
             async ComposeExactFemaleUpperSleeve(staged, options)
@@ -433,9 +1094,9 @@ test("legacy adapter applies exact material policies only after final configured
 test("legacy adapter visualizes a failed authored effect with the verified GLES proof shader", async () =>
 {
     const fixture = CreateFixture({ configuredEffectReady: false });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const construction = CreateAppearanceConstruction();
@@ -463,9 +1124,9 @@ test("legacy adapter visualizes a failed authored effect with the verified GLES 
 test("legacy adapter does not treat a linked shader without DiffuseMap as a renderable garment", async () =>
 {
     const fixture = CreateFixture({ configuredDiffusePath: "" });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const staged = await adapter.Prepare(CreateAppearanceConstruction());
@@ -502,9 +1163,9 @@ test("legacy adapter hides every exact male feet carrier after reviewed boots at
         }
         return watch(value);
     };
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: {
             async Compose(staged)
             {
@@ -574,6 +1235,78 @@ test("legacy adapter hides every exact male feet carrier after reviewed boots at
     adapter.Release(rebuilt);
 });
 
+test("legacy adapter hides exact male nude legs only after PantsAM01 is render-ready", async () =>
+{
+    const fixture = CreateFixture();
+    let compositionSawVisibleLegs = false;
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: {
+            async Compose(staged)
+            {
+                compositionSawVisibleLegs = staged.backend.visualModel.meshes
+                    .filter(mesh => mesh._characterFoundationRole === "legs")
+                    .every(mesh => mesh.display !== false);
+                return { status: "composed", passes: [] };
+            }
+        }
+    });
+    const staged = await adapter.Prepare(CreateMalePantsCoverageConstruction());
+    const legs = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "legs");
+    const pants = staged.configuredPartBindings[0].configuredMeshes[0];
+
+    assert.equal(compositionSawVisibleLegs, true);
+    assert.equal(legs.display, false);
+    assert.notEqual(pants.display, false);
+    assert.equal(staged.foundationCoverage[0].status, "applied");
+    assert.equal(staged.foundationCoverage[0].evidence.partSourceRecordID,
+        "male/bottomouter/pantsam01");
+    assert.equal(staged.foundationCoverage[0].evidence.groupID, "bottomouter");
+    assert.equal(staged.foundationCoverage[0].authoredOcclusion, "bottominner");
+
+    adapter.Release(staged);
+});
+
+test("legacy adapter hides the male torso for typed topinner coverage and retains head and hands", async () =>
+{
+    const fixture = CreateFixture();
+    let compositionSawVisibleTorso = false;
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: {
+            async Compose(staged)
+            {
+                compositionSawVisibleTorso = staged.backend.visualModel.meshes
+                    .filter(mesh => mesh._characterFoundationRole === "torso")
+                    .every(mesh => mesh.display !== false);
+                return { status: "composed", passes: [] };
+            }
+        }
+    });
+    const staged = await adapter.Prepare(CreateMaleTorsoCoverageConstruction());
+    const meshes = staged.backend.visualModel.meshes;
+    const torso = meshes.find(mesh => mesh._characterFoundationRole === "torso");
+    const head = meshes.find(mesh => mesh._characterFoundationRole === "head");
+    const hands = meshes.find(mesh => mesh._characterFoundationRole === "hands");
+    const robe = staged.configuredPartBindings[0].configuredMeshes[0];
+
+    assert.equal(compositionSawVisibleTorso, true);
+    assert.equal(torso.display, false);
+    assert.equal(head.display, true);
+    assert.equal(hands.display, true);
+    assert.notEqual(robe.display, false);
+    assert.equal(staged.foundationCoverage[0].status, "applied");
+    assert.equal(staged.foundationCoverage[0].evidence.modifierLocationKey, "topinner");
+    assert.equal(staged.foundationCoverage[0].applied[0].role, "torso");
+
+    adapter.Release(staged);
+});
+
 test("legacy adapter commits and releases exact female boot triangle coverage", async () =>
 {
     const fixture = CreateFixture();
@@ -593,9 +1326,9 @@ test("legacy adapter commits and releases exact female boot triangle coverage", 
             partSourceRecordID: "female/feet/bootscf01"
         }
     };
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER,
         triangleCoverage: {
             async Acquire(resource, policy, options)
@@ -645,9 +1378,9 @@ test("legacy adapter defers exact coverage when the configured boot is not rende
         configuredEffectReady: false,
         configuredEffectInitializesReady: false
     });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const staged = await adapter.Prepare(CreateMaleBootCoverageConstruction());
@@ -685,9 +1418,9 @@ test("legacy adapter leaves male foundation visible when configured footwear fai
         configuredMeshIndex: 3,
         geometryBindingIndex: null
     });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
 
     await assert.rejects(
@@ -705,9 +1438,9 @@ test("legacy adapter leaves male foundation visible when configured footwear fai
 test("legacy adapter retains a deferred texture-only contribution without fetching fabricated geometry", async () =>
 {
     const fixture = CreateFixture();
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const construction = CreateConstruction("female");
@@ -765,10 +1498,16 @@ test("legacy adapter carries retained texture evidence through the injected comp
 {
     const fixture = CreateFixture();
     let composedStage = null;
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    let textureMetadataSource = null;
+    const libraryManager = { Get() {} };
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: {
+            SetTextureMetadataSource(source)
+            {
+                textureMetadataSource = source;
+            },
             async Compose(staged)
             {
                 composedStage = staged;
@@ -828,10 +1567,15 @@ test("legacy adapter carries retained texture evidence through the injected comp
         evidence: { rule: "exact-retained-definition-v1" }
     } ];
 
-    const staged = await adapter.Prepare(construction);
+    const staged = await adapter.Prepare(construction, {
+        source: {
+            GetLibraryManager() { return libraryManager; }
+        }
+    });
     const diagnostics = adapter.GetDiagnostics(staged);
 
     assert.strictEqual(composedStage, staged);
+    assert.strictEqual(textureMetadataSource, libraryManager);
     assert.notStrictEqual(staged.textureContributions, construction.textureContributions);
     assert.deepEqual(staged.textureContributions, construction.textureContributions);
     assert.notStrictEqual(
@@ -860,9 +1604,9 @@ test("legacy adapter uses the skinned-model geometry binding when the Black inde
         configuredMeshIndex: 3,
         geometryBindingIndex: 0
     });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2,
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
         atlasComposer: DEFERRED_ATLAS_COMPOSER
     });
     const construction = CreateConstruction("female");
@@ -902,9 +1646,9 @@ test("legacy adapter rejects configured parts without an authored or model-resol
         configuredMeshIndex: 3,
         geometryBindingIndex: null
     });
-    const adapter = new CcpwglLegacyCharacterAdapter({
-        tiny: fixture.tiny,
-        tw2: fixture.tw2
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
     });
     const construction = CreateConstruction("female");
 
@@ -1029,6 +1773,89 @@ function CreateMaleBootCoverageConstruction()
     return construction;
 }
 
+function CreateMalePantsCoverageConstruction()
+{
+    const construction = CreateConstruction("male", [
+        [ "torso", "res:/custom/male-torso.gr2" ],
+        [ "legs", "res:/custom/male-legs.gr2" ]
+    ]);
+
+    construction.evidence = {
+        status: "policy",
+        rule: "legacy-opengl-appearance-v1"
+    };
+    construction.resolvedPartCount = 1;
+    construction.configuredPartCount = 1;
+    construction.deferredContributionCount = 0;
+    construction.textureContributions = [ IdentityContribution("bottomouter") ];
+    construction.operations.splice(-1, 0, {
+        operation: "configured-part",
+        layerIndex: 0,
+        partIndex: 0,
+        groupID: "bottomouter",
+        partSourceRecordID: "male/bottomouter/pantsam01",
+        configurationPath: "res:/custom/pants.black",
+        geometryPath: "res:/custom/pants.gr2",
+        foundationCoverage: {
+            strategy: "hide-carrier",
+            roles: [ "legs" ],
+            authoredOcclusion: "bottominner",
+            evidence: {
+                status: "policy",
+                rule: "legacy-opengl-exact-foundation-coverage-v1",
+                sex: "male",
+                groupID: "bottomouter",
+                partSourceRecordID: "male/bottomouter/pantsam01"
+            }
+        }
+    });
+
+    return construction;
+}
+
+function CreateMaleTorsoCoverageConstruction()
+{
+    const construction = CreateConstruction("male", [
+        [ "head", "res:/custom/male-head.gr2" ],
+        [ "torso", "res:/custom/male-torso.gr2" ],
+        [ "hands", "res:/custom/male-hands.gr2" ]
+    ]);
+
+    construction.evidence = {
+        status: "policy",
+        rule: "legacy-opengl-appearance-v1"
+    };
+    construction.resolvedPartCount = 1;
+    construction.configuredPartCount = 1;
+    construction.deferredContributionCount = 0;
+    construction.textureContributions = [ IdentityContribution("outer") ];
+    construction.operations.splice(-1, 0, {
+        operation: "configured-part",
+        layerIndex: 0,
+        partIndex: 0,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/robe-fixture",
+        configurationPath: "res:/custom/robe.black",
+        geometryPath: "res:/custom/robe.gr2",
+        foundationCoverage: {
+            strategy: "hide-carrier",
+            roles: [ "torso" ],
+            evidence: {
+                status: "policy",
+                rule: "legacy-opengl-authored-modifier-coverage-v1",
+                sex: "male",
+                groupID: "outer",
+                partSourceRecordID: "male/outer/robe-fixture",
+                authoredValue: "topinner",
+                modifierLocationKey: "topinner",
+                relation: "typed-modifier-location"
+            }
+        }
+    });
+
+    return construction;
+}
+
 const DEFERRED_ATLAS_COMPOSER = {
     async Compose()
     {
@@ -1053,10 +1880,19 @@ function IdentityContribution(groupID, layerIndex = 0, partIndex = 0)
 
 function CreateFixture({
     configuredMeshIndex = 1,
+    configuredMeshIndices = null,
+    configuredMeshNames = null,
+    geometryMeshNames = null,
     geometryBindingIndex = 0,
+    resetConfiguredMeshIndicesOnWatch = false,
     configuredEffectReady = true,
     configuredEffectInitializesReady = true,
     configuredDiffusePath = "res:/custom/authored-diffuse.png",
+    configuredEffectNames = null,
+    configuredTransforms = null,
+    configuredInitialTextures = null,
+    configuredBodyEffect = false,
+    configuredFetchFailure = false,
     expandMaleFeetFoundation = false
 } = {})
 {
@@ -1162,6 +1998,48 @@ function CreateFixture({
             distortionAreas = [];
             pickableAreas = [];
         },
+        Tw2Effect: class
+        {
+            static from(values)
+            {
+                const effect = new this();
+                Object.assign(effect, values);
+                effect.Initialize();
+                return effect;
+            }
+            parameters = {};
+            IsGood()
+            {
+                return this.ready === true;
+            }
+            Initialize()
+            {
+                this.initialized = true;
+                this.ready = configuredEffectInitializesReady;
+            }
+            SetTextures(value)
+            {
+                this.textures = value;
+            }
+            SetParameters(values)
+            {
+                for (const [ name, value ] of Object.entries(values))
+                {
+                    this.parameters[name] = {
+                        value: [ ...value ],
+                        GetValue(out)
+                        {
+                            out.push(...this.value);
+                            return out;
+                        },
+                        SetValue(next)
+                        {
+                            this.value = [ ...next ];
+                        }
+                    };
+                }
+            }
+        },
         TnySpaceObject: class
         {
             constructor(wrapped)
@@ -1187,6 +2065,7 @@ function CreateFixture({
     };
     const fixture = {
         configuredModels: [],
+        configuredEffects: [],
         createdMeshes,
         initializeCalls,
         fetches,
@@ -1194,6 +2073,9 @@ function CreateFixture({
         watched: null,
         tiny,
         tw2: {
+            Gr2Reader: {
+                DEFAULT_OPTIONS: {}
+            },
             GetClass: name => classes[name] ?? null,
             async Fetch(resourcePath)
             {
@@ -1201,57 +2083,116 @@ function CreateFixture({
 
                 if (resourcePath.endsWith(".black"))
                 {
+                    if (configuredFetchFailure)
+                    {
+                        throw new Error("fixture configured fetch failure");
+                    }
                     const model = new classes.Tr2SkinnedModel();
-                    const mesh = new classes.Tw2Mesh();
-                    const effect = {
-                        ready: configuredEffectReady,
-                        parameters: {
-                            DiffuseMap: {
-                                resourcePath: configuredDiffusePath
+                    const meshIndices = configuredMeshIndices ?? [ configuredMeshIndex ];
+                    for (let meshOffset = 0; meshOffset < meshIndices.length; meshOffset++)
+                    {
+                        const mesh = new classes.Tw2Mesh();
+                        const effect = {
+                            name: configuredEffectNames?.[meshOffset] ?? "C_Skin_blinn1",
+                            effectFilePath: configuredBodyEffect
+                                ? "res:/graphics/effect.gles2/managed/interior/avatar/skinnedavatarbrdflinear.sm_hi"
+                                : "",
+                            ready: configuredEffectReady,
+                            textures: configuredInitialTextures?.[meshOffset],
+                            setTexturesCalls: 0,
+                            parameters: {
+                                DiffuseMap: {
+                                    resourcePath: configuredInitialTextures?.[meshOffset]?.DiffuseMap
+                                        ?? configuredDiffusePath
+                                },
+                                TransformUV0: {
+                                    value: [ ...(configuredTransforms?.[meshOffset]
+                                        ?? [ 0, 0, 0.5, 1 ]) ],
+                                    GetValue(out)
+                                    {
+                                        out.push(...this.value);
+                                        return out;
+                                    },
+                                    SetValue(value)
+                                    {
+                                        this.value = [ ...value ];
+                                    }
+                                },
+                                ...(configuredBodyEffect ? {
+                                    WrinkleParams: {},
+                                    Material2LibraryID: {},
+                                    ColorCorrectionSource: {}
+                                } : {})
                             },
-                            TransformUV0: {
-                                GetValue(out)
+                            IsGood()
+                            {
+                                return this.ready;
+                            },
+                            SetValues(values)
+                            {
+                                Object.assign(this, values);
+                            },
+                            SetParameters(values)
+                            {
+                                for (const [ name, value ] of Object.entries(values))
                                 {
-                                    out.push(0, 0, 0.5, 1);
-                                    return out;
+                                    const parameter = this.parameters[name];
+                                    if (typeof parameter?.SetValue === "function")
+                                    {
+                                        parameter.SetValue(value);
+                                    }
                                 }
+                            },
+                            Initialize()
+                            {
+                                this.initialized = true;
+                                if (configuredEffectInitializesReady) this.ready = true;
+                            },
+                            SetTextures(value)
+                            {
+                                this.setTexturesCalls++;
+                                this.textures = value;
                             }
-                        },
-                        IsGood()
+                        };
+                        for (const [ name, resourcePath ] of Object.entries(
+                            configuredInitialTextures?.[meshOffset] ?? {}
+                        ))
                         {
-                            return this.ready;
-                        },
-                        SetValues(values)
-                        {
-                            Object.assign(this, values);
-                        },
-                        Initialize()
-                        {
-                            this.initialized = true;
-                            if (configuredEffectInitializesReady) this.ready = true;
-                        },
-                        SetTextures(value)
-                        {
-                            this.textures = value;
+                            effect.parameters[name] = { resourcePath };
                         }
-                    };
 
-                    mesh.meshIndex = configuredMeshIndex;
-                    mesh.opaqueAreas.push({ meshIndex: 99, effect });
-                    model.meshes.push(mesh);
+                        mesh.meshIndex = meshIndices[meshOffset];
+                        mesh.name = configuredMeshNames?.[meshOffset] ?? "";
+                        mesh.opaqueAreas.push({ meshIndex: 99, effect });
+                        model.meshes.push(mesh);
+                        fixture.configuredEffects.push(effect);
+                    }
                     fixture.configuredModels.push(model);
                     return model;
                 }
 
                 return {
                     path: resourcePath,
-                    meshes: [ { name: "zero" }, { name: "one" } ]
+                    meshes: (geometryMeshNames ?? [ "zero", "one" ])
+                        .map(name => ({ name }))
                 };
             },
             resMan: {
                 async Watch(value)
                 {
                     fixture.watched = value;
+                    if (resetConfiguredMeshIndicesOnWatch
+                        && fixture.configuredModels.includes(value))
+                    {
+                        for (const mesh of value.meshes)
+                        {
+                            mesh.meshIndex = geometryBindingIndex;
+                            for (const area of mesh.opaqueAreas)
+                            {
+                                area.meshIndex = geometryBindingIndex;
+                            }
+                        }
+                    }
                 }
             },
             runtime: {}

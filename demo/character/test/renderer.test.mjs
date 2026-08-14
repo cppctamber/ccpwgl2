@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CcpwglCharacterRenderer } from "../src/character/CcpwglCharacterRenderer.mjs";
+import { TnyCharacterRenderer } from "./runtime-character-modules.mjs";
 
 test("renderer reports the temporary legacy OpenGL bone limitation", () =>
 {
-    const renderer = new CcpwglCharacterRenderer();
+    const renderer = new TnyCharacterRenderer();
 
     assert.deepEqual(renderer.GetCapabilities(), {
         backend: "legacy-opengl",
@@ -43,7 +43,7 @@ test("renderer releases a stale staged revision and commits only the newest cons
             released.push({ staged, reason: context.reason });
         }
     };
-    const renderer = new CcpwglCharacterRenderer({ adapter });
+    const renderer = new TnyCharacterRenderer({ adapter });
     const first = renderer.ApplyConstruction(CreateConstruction(1));
 
     await Promise.resolve();
@@ -76,7 +76,7 @@ test("renderer retains the last complete revision when a replacement commit fail
             released.push([ staged.construction.id, context.reason ]);
         }
     };
-    const renderer = new CcpwglCharacterRenderer({ adapter });
+    const renderer = new TnyCharacterRenderer({ adapter });
 
     assert.equal((await renderer.ApplyConstruction(CreateConstruction(1))).status, "committed");
     await assert.rejects(
@@ -101,9 +101,14 @@ test("renderer delegates configured-part isolation only to the committed appeara
         {
             calls.push({ staged, identity, display });
             return { identity, display };
+        },
+        SetFoundationDisplay(staged, role, display)
+        {
+            calls.push({ staged, role, display });
+            return { role, display };
         }
     };
-    const renderer = new CcpwglCharacterRenderer({ adapter });
+    const renderer = new TnyCharacterRenderer({ adapter });
 
     assert.throws(
         () => renderer.SetConfiguredPartDisplay("female/dependants/tuck/basic", false),
@@ -116,6 +121,11 @@ test("renderer delegates configured-part isolation only to the committed appeara
     );
     assert.equal(calls.length, 1);
     assert.deepEqual(renderer.GetState().lastResult.details, { isolated: 0 });
+    assert.deepEqual(renderer.SetFoundationDisplay("body", false), {
+        role: "body",
+        display: false
+    });
+    assert.equal(calls.length, 2);
 });
 
 function CreateConstruction(id, values = {})

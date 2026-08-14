@@ -37,6 +37,11 @@ export function createCharacterDemoServer(options = {})
 
     const moduleRoutes = [
         {
+            prefix: "/src/runtime/character/",
+            root: resolve(repositoryRoot, "src/runtime/character"),
+            extensions: new Set([ ".js" ])
+        },
+        {
             prefix: "/demo/character/src/",
             root: resolve(characterRoot, "src"),
             extensions: new Set([ ".mjs" ])

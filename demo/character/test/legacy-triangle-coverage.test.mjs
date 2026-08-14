@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-    CcpwglLegacyTriangleCoverage
-} from "../src/character/CcpwglLegacyTriangleCoverage.mjs";
+    TnyGlesTriangleCoverage
+} from "./runtime-character-modules.mjs";
 
 const POLICY = {
     strategy: "triangle-mask",
@@ -20,12 +20,12 @@ test("triangle coverage masks exact semantic triangles and restores after the fi
 {
     const fixture = CreateFixture();
     const original = [ ...fixture.mesh.indexData ];
-    const first = await CcpwglLegacyTriangleCoverage.Acquire(
+    const first = await TnyGlesTriangleCoverage.Acquire(
         fixture.geometry,
         POLICY,
         { gl: fixture.gl }
     );
-    const second = await CcpwglLegacyTriangleCoverage.Acquire(
+    const second = await TnyGlesTriangleCoverage.Acquire(
         fixture.geometry,
         POLICY,
         { gl: fixture.gl }
@@ -36,13 +36,13 @@ test("triangle coverage masks exact semantic triangles and restores after the fi
     assert.equal(first.report.maskedVertexCount, 1);
     assert.equal(first.report.maskedTriangleCount, 1);
     assert.deepEqual(second.report, first.report);
-    assert.equal(CcpwglLegacyTriangleCoverage.Release(
+    assert.equal(TnyGlesTriangleCoverage.Release(
         fixture.geometry,
         first.lease,
         { gl: fixture.gl }
     ), true);
     assert.deepEqual([ ...fixture.mesh.indexData ], [ 0, 0, 0, 1, 2, 3 ]);
-    assert.equal(CcpwglLegacyTriangleCoverage.Release(
+    assert.equal(TnyGlesTriangleCoverage.Release(
         fixture.geometry,
         second.lease,
         { gl: fixture.gl }
@@ -58,7 +58,7 @@ test("triangle coverage rolls CPU indices back when the GPU upload fails", async
     const original = [ ...fixture.mesh.indexData ];
 
     await assert.rejects(
-        CcpwglLegacyTriangleCoverage.Acquire(
+        TnyGlesTriangleCoverage.Acquire(
             fixture.geometry,
             POLICY,
             { gl: fixture.gl }

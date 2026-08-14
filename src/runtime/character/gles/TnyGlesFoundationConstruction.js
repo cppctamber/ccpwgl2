@@ -1,0 +1,368 @@
+const DEFAULT_SHADER = "res:/graphics/effect.gles2/managed/interior/avatar/skinnedavatar.sm_hi";
+const NEUTRAL_NORMAL = "res:/graphics/shared_texture/global/normal_flat.dds";
+const FEMALE_BODY_FOUNDATION = {
+    role: "body",
+    index: 1,
+    configurationPath: "res:/graphics/character/female/paperdoll/basenude/basenude.black",
+    geometryPath: "res:/graphics/character/female/paperdoll/basenude/basenude.gr2"
+};
+const FEMALE_SPLIT_HANDS_PATH =
+    "res:/graphics/character/female/paperdoll/hands/hands_nude/hands_nude.gr2";
+
+const FEMALE_SPLIT_LOD0_GEOMETRY = [
+    [ "head", "res:/graphics/character/female/paperdoll/head/head_generic/head_generic.gr2" ],
+    [ "torso", "res:/graphics/character/female/paperdoll/topinner/torso_nude/torso_nude.gr2" ],
+    [ "sleevesUpper", "res:/graphics/character/female/paperdoll/dependants/sleevesupper/standard/standard.gr2" ],
+    [ "sleevesLower", "res:/graphics/character/female/paperdoll/dependants/sleeveslower/standard/standard.gr2" ],
+    [ "legs", "res:/graphics/character/female/paperdoll/bottominner/legs_nude/legs_nude.gr2" ],
+    [ "hands", FEMALE_SPLIT_HANDS_PATH, {
+        status: "policy",
+        rule: "legacy-opengl-bone-capacity-mask-v1",
+        shaderCapacity: 58,
+        requiredBoneCount: 69,
+        bonePrefixes: [ "RightHand" ]
+    } ],
+    [ "feet", "res:/graphics/character/female/paperdoll/feet/feet_nude/feet_nude.gr2" ]
+];
+
+const FOUNDATIONS = {
+    female: {
+        resourceGender: 0,
+        skeletonPath: "res:/graphics/character/female/skeleton/masterskeletonfemale.gr2",
+        configuredFoundations: [ {
+            role: "head",
+            index: 0,
+            configurationPath: "res:/graphics/character/female/paperdoll/head/head_generic/head_generic.black",
+            geometryPath: "res:/graphics/character/female/paperdoll/head/head_generic/head_generic.gr2",
+            skinTextures: {
+                DiffuseMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_d_4k.png",
+                NormalMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_n_4k.png",
+                SpecularMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_s_4k.png"
+            },
+            skinEvidence: {
+                status: "retained",
+                rule: "exact-head-generic-texture-inventory-v1",
+                correctness: "exact-folder-inventory"
+            }
+        } ],
+        geometry: [
+            [ "head", "res:/graphics/character/female/paperdoll/head/head_generic/head_generic.gr2" ],
+            [ "body", "res:/graphics/character/female/paperdoll/basenude/basenude.gr2", {
+                status: "policy",
+                rule: "legacy-opengl-bone-capacity-mask-v1",
+                shaderCapacity: 58,
+                requiredBoneCount: 69,
+                bonePrefixes: [ "RightHand" ]
+            } ]
+        ]
+    },
+    male: {
+        resourceGender: 1,
+        skeletonPath: "res:/graphics/character/male/skeleton/masterskeletonmale.gr2",
+        configuredFoundations: [ {
+            role: "head",
+            index: 0,
+            configurationPath: "res:/graphics/character/male/paperdoll/head/head_generic/head_generic.black",
+            geometryPath: "res:/graphics/character/male/paperdoll/head/head_generic/head_generic.gr2",
+            skinTextures: {
+                DiffuseMap: "res:/graphics/character/male/paperdoll/head/head_generic/genericmale_head_d_4k.png",
+                NormalMap: "res:/graphics/character/male/paperdoll/head/head_generic/genericmale_head_n_4k.png",
+                SpecularMap: "res:/graphics/character/male/paperdoll/head/head_generic/genericmale_head_s_4k.png"
+            },
+            skinEvidence: {
+                status: "retained",
+                rule: "exact-head-generic-texture-inventory-v1",
+                correctness: "exact-folder-inventory"
+            }
+        } ],
+        geometry: [
+            [ "head", "res:/graphics/character/male/paperdoll/head/head_generic/head_generic.gr2" ],
+            [ "torso", "res:/graphics/character/male/paperdoll/topinner/torso_nude/torso_nude.gr2" ],
+            [ "legs", "res:/graphics/character/male/paperdoll/bottominner/legs_nude/legs_nude.gr2" ],
+            [ "hands", "res:/graphics/character/male/paperdoll/hands/hands_nude/hands_nude.gr2" ],
+            [ "feet", "res:/graphics/character/male/paperdoll/feet/feet_nude/feet_nude.gr2" ]
+        ]
+    }
+};
+
+/**
+ * Describes the isolated demo's temporary legacy OpenGL foundation policy.
+ * This is deliberately separate from the runtime-character appearance plan.
+ */
+export class TnyGlesFoundationConstruction
+{
+    _femaleFoundationLayout;
+
+    _shaderPath;
+
+    constructor({
+        shaderPath = DEFAULT_SHADER,
+        femaleFoundationLayout = "combined"
+    } = {})
+    {
+        if (![ "combined", "split-lod0" ].includes(femaleFoundationLayout))
+        {
+            throw new TypeError("Legacy foundation construction femaleFoundationLayout is invalid");
+        }
+        this._femaleFoundationLayout = femaleFoundationLayout;
+        this._shaderPath = RequireResourcePath(shaderPath, "shaderPath");
+    }
+
+    /** Produces the exact ordered operations the temporary adapter will consume. */
+    Resolve(paperdoll, appearancePlan, library = null)
+    {
+        if (!paperdoll || typeof paperdoll !== "object")
+        {
+            throw new TypeError("Legacy foundation construction requires a paper doll");
+        }
+        if (!appearancePlan || typeof appearancePlan !== "object")
+        {
+            throw new TypeError("Legacy foundation construction requires an appearance plan");
+        }
+
+        const sex = ResolvePaperdollSex(paperdoll);
+        const definition = FOUNDATIONS[sex];
+
+        if (!definition)
+        {
+            throw new Error("The selected paper doll does not resolve to one character sex");
+        }
+
+        const operations = [ {
+            operation: "skeleton",
+            resourcePath: definition.skeletonPath
+        } ];
+
+        const geometry = sex === "female" && this._femaleFoundationLayout === "split-lod0"
+            ? FEMALE_SPLIT_LOD0_GEOMETRY
+            : definition.geometry;
+
+        for (let index = 0; index < geometry.length; index++)
+        {
+            const [ role, resourcePath, compatibility ] = geometry[index];
+
+            operations.push({
+                operation: "geometry",
+                role,
+                index,
+                resourcePath,
+                ...(compatibility ? { compatibility: CloneCompatibility(compatibility) } : {})
+            });
+        }
+
+        operations.push({
+            operation: "rebuild-areas",
+            shaderPath: this._shaderPath
+        }, {
+            operation: "proof-textures",
+            profile: "neutral"
+        });
+
+        const selectedSkin = ResolveSelectedFoundationSkin(paperdoll, sex, library);
+        for (const configured of definition.configuredFoundations)
+        {
+            const resolved = configured.role === "head" && selectedSkin
+                ? {
+                    ...configured,
+                    skinTextures: { ...selectedSkin.headTextures },
+                    ...(selectedSkin.skinColorization ? { skinColorization: {
+                        ...selectedSkin.skinColorization,
+                        colors: selectedSkin.skinColorization.colors.map(color => [ ...color ])
+                    } } : {}),
+                    skinEvidence: { ...selectedSkin.evidence }
+                }
+                : configured;
+            operations.push({
+                operation: "configured-foundation",
+                ...resolved
+            });
+        }
+        if (sex === "female"
+            && this._femaleFoundationLayout === "combined"
+            && selectedSkin?.bodyTextures)
+        {
+            operations.push({
+                operation: "configured-foundation",
+                ...FEMALE_BODY_FOUNDATION,
+                renderConfiguredCarrier: false,
+                renderEvidence: {
+                    status: "observed",
+                    rule: "legacy-opengl-authored-body-carrier-unqualified-v1"
+                },
+                skinTextures: { ...selectedSkin.bodyTextures },
+                ...(selectedSkin.skinColorization ? { skinColorization: {
+                    ...selectedSkin.skinColorization,
+                    colors: selectedSkin.skinColorization.colors.map(color => [ ...color ])
+                } } : {}),
+                skinEvidence: {
+                    ...selectedSkin.evidence,
+                    normalStatus: "unresolved-neutral",
+                    normalRule: "legacy-opengl-neutral-body-normal-v1"
+                }
+            });
+        }
+
+        operations.push({
+            operation: "bind-animation"
+        });
+
+        return {
+            backend: "legacy-opengl",
+            evidence: {
+                status: "policy",
+                rule: "legacy-opengl-foundation-v1",
+                layout: sex === "female" ? this._femaleFoundationLayout : "split-lod0"
+            },
+            paperdollRecordID: String(paperdoll.recordID ?? ""),
+            sourceBuild: appearancePlan.sourceBuild ?? null,
+            sex,
+            lod: 0,
+            operations
+        };
+    }
+}
+
+/** Resolves one selected skintone through retained base, PRS, and archetype records. */
+export function ResolveSelectedFoundationSkin(paperdoll, sex, library)
+{
+    if (!library || typeof library.Get !== "function"
+        || typeof library.GetDocument !== "function") return null;
+
+    const selections = (paperdoll?.colorSelections ?? []).filter(value =>
+        value?.colorID?.colorKey === "skintone"
+        && typeof value?.colorNameA?.colorName === "string");
+    if (selections.length !== 1) return null;
+
+    const colorName = selections[0].colorNameA.colorName.trim().toLowerCase();
+    const root = `res:/graphics/character/${sex}/paperdoll/skintone/basic/`;
+    const families = (library.GetDocument("characterDefinitions") ?? [])
+        .map(value => String(value?.recordID ?? "").toLowerCase())
+        .filter(value => value.startsWith(root) && value.endsWith(".base"))
+        .map(value => value.slice(root.length, -".base".length))
+        .filter(value => colorName === value || colorName.startsWith(`${value}_`))
+        .sort((left, right) => right.length - left.length);
+    if (families.length !== 1) return null;
+
+    const family = families[0];
+    const basePath = `${root}${family}.base`;
+    const baseDefinition = library.Get("characterDefinitions", basePath);
+    const materialDefinitionPath = `${root}${colorName}.color`;
+    const materialDefinition = library.Get("characterDefinitions", materialDefinitionPath);
+    const colors = materialDefinition?.values?.colors;
+    const hasSkinColorization = Array.isArray(baseDefinition?.values)
+        && baseDefinition.values.length === 4
+        && Array.isArray(colors)
+        && colors.length === 3
+        && colors.every(color => Array.isArray(color) && color.length === 4);
+    const definitionPath = "res:/graphics/character/dnafiles/characterselect/"
+        + `${family}${sex}clothing.prs`;
+    const definition = library.Get("characterDefinitions", definitionPath);
+    if (!Array.isArray(definition?.values) || definition.values[0] !== sex) return null;
+
+    const sources = definition.values.slice(1)
+        .filter(value => value?.category === "bodyshapes"
+            && typeof value?.path === "string")
+        .map(value => value.path.replace(/^bodyshapes\//iu, "").toLowerCase())
+        .map(value => ({
+            identity: `${sex}/archetypes/${value}`,
+            source: library.Get("characterPartSources", `${sex}/archetypes/${value}`)
+        }))
+        .filter(value => value.source);
+    if (sources.length !== 1) return null;
+
+    const texturePaths = sources[0].source.versions
+        ?.flatMap(value => value?.textureCandidates ?? []) ?? [];
+    const archetypeToken = sources[0].identity.split("/").at(-1)?.replace(/shape$/iu, "");
+    if (!archetypeToken) return null;
+    const prefix = `${archetypeToken}_${sex}_head_`;
+    const headTextures = {
+        DiffuseMap: SelectExactFoundationTexture(texturePaths, `${prefix}d_4k.png`),
+        NormalMap: SelectExactFoundationTexture(texturePaths, `${prefix}n_4k.png`),
+        SpecularMap: SelectExactFoundationTexture(texturePaths, `${prefix}s_4k.png`)
+    };
+    if (Object.values(headTextures).some(value => !value)) return null;
+
+    const bodyPrefix = `${archetypeToken}_${sex}_body_`;
+    const bodyDiffusePath = SelectExactFoundationTexture(
+        texturePaths,
+        `${bodyPrefix}d_4k.png`
+    );
+    const bodySpecularPath = SelectExactFoundationTexture(
+        texturePaths,
+        `${bodyPrefix}s_4k.png`
+    );
+
+    return {
+        headTextures,
+        ...(hasSkinColorization ? { skinColorization: {
+            materialDefinitionPath,
+            colors: colors.map(color => [ ...color ]),
+            headDetailPath: `${root}colorize_head_l.png`,
+            headZonePath: `${root}colorize_head_z.png`,
+            bodyDetailPath: `${root}colorize_body_l.png`,
+            bodyZonePath: `${root}colorize_body_z.png`
+        } } : {}),
+        ...(bodyDiffusePath && bodySpecularPath ? {
+            bodyTextures: {
+                DiffuseMap: bodyDiffusePath,
+                NormalMap: NEUTRAL_NORMAL,
+                SpecularMap: bodySpecularPath
+            }
+        } : {}),
+        evidence: {
+            status: "derived",
+            rule: "exact-skintone-prs-archetype-foundation-v1",
+            correctness: "retained-source-join",
+            colorName,
+            basePath,
+            ...(hasSkinColorization ? {
+                baseColor: [ ...baseDefinition.values ],
+                materialDefinitionPath
+            } : {}),
+            definitionPath,
+            archetypeSourceRecordID: sources[0].identity,
+            ...(bodyDiffusePath ? { bodyDiffusePath } : {}),
+            ...(bodySpecularPath ? { bodySpecularPath } : {})
+        }
+    };
+}
+
+function SelectExactFoundationTexture(paths, fileName)
+{
+    const matches = paths.filter(value => String(value).toLowerCase().endsWith(`/${fileName}`));
+    return matches.length === 1 ? matches[0] : null;
+}
+
+function CloneCompatibility(value)
+{
+    return {
+        ...value,
+        bonePrefixes: [ ...value.bonePrefixes ]
+    };
+}
+
+function ResolvePaperdollSex(paperdoll)
+{
+    const genders = new Set();
+
+    for (const modifier of paperdoll.modifiers ?? [])
+    {
+        const value = modifier?.paperdollResourceID?.resGender;
+        if (value === 0 || value === 1) genders.add(value);
+    }
+
+    if (genders.size !== 1) return null;
+    return genders.has(0) ? "female" : "male";
+}
+
+function RequireResourcePath(value, label)
+{
+    const result = String(value ?? "").trim();
+
+    if (!/^res:\//iu.test(result))
+    {
+        throw new TypeError(`Legacy foundation construction ${label} must be a res:/ path`);
+    }
+
+    return result;
+}

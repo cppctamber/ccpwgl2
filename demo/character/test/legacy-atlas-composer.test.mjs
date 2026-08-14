@@ -2,23 +2,1490 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+    SetTestTw2,
+    applyLegacyConfiguredFaceTextures,
     attachLegacyBodyDiffuse,
-    CcpwglLegacyAtlasComposer,
+    attachLegacyBodyNormal,
+    TnyGlesAtlasComposer,
     commitLegacyConfiguredConsumerBindings,
+    commitLegacyConfiguredHeadBindings,
     commitLegacyFoundationCutMaskBindings,
     composeLegacyConfiguredConsumerPixel,
     composeLegacyFoundationCutMaskPixel,
     getLegacyConfiguredConsumerPassContract,
     isLegacyConfiguredBodyConsumerEffect,
     parsePngAtlasMetadata,
+    ReadLibraryAtlasMetadata,
     planLegacyConfiguredBodyConsumers,
     planLegacyBodyDiffuseOperations,
     planLegacyExactFemaleLowerSleeve,
     planLegacyExactFemaleUpperSleeve,
     planLegacyExactFemaleTuckSupport,
     planLegacyFemaleFoundationCutMask,
-    resolveLegacyBodyDiffuseContribution
-} from "../src/character/CcpwglLegacyAtlasComposer.mjs";
+    resolveLegacyBodyDiffuseContribution,
+    resolveLegacyBodyMaterialChannels,
+    resolveLegacyDefaultBrowCandidate,
+    resolveLegacyDefaultEyelashCandidate,
+    resolveLegacyBodyFoundationPath,
+    resolveLegacyCroppedTextureTransform,
+    resolveLegacyHeadMaterialChannels,
+    summarizeLegacyTextureAlpha
+} from "./runtime-character-modules.mjs";
+
+SetTestTw2({});
+
+test("body foundation follows the exact selected archetype evidence", () =>
+{
+    const bodyDiffusePath = "res:/graphics/character/female/paperdoll/archetypes/cdshape/cd_female_body_d_4k.png";
+    assert.equal(resolveLegacyBodyFoundationPath({
+        sex: "female",
+        construction: {
+            operations: [ {
+                operation: "configured-foundation",
+                role: "head",
+                skinEvidence: {
+                    rule: "exact-skintone-prs-archetype-foundation-v1",
+                    bodyDiffusePath
+                }
+            } ]
+        }
+    }), bodyDiffusePath);
+    assert.equal(resolveLegacyBodyFoundationPath({ sex: "male" }),
+        "res:/graphics/character/male/paperdoll/archetypes/ccshape/cd_male_body_d_4k.png");
+});
+
+test("body lighting planner retains augmentation normals without inventing freckle normals", () =>
+{
+    const plan = resolveLegacyBodyMaterialChannels([ {
+        layerIndex: 4,
+        groupID: "makeup/freckles",
+        selectedTextures: [
+            { path: "res:/freckles-body-d.png", role: "diffuse-overlay", target: "body" }
+        ]
+    }, {
+        layerIndex: 5,
+        groupID: "makeup/augmentations",
+        weight: 0.75,
+        source: { partSourceRecordID: "female/makeup/augmentations/face_01" },
+        selectedTextures: [
+            { path: "res:/augmentation-body-d.png", role: "diffuse-overlay", target: "body" },
+            { path: "res:/augmentation-body-tn.png", role: "twist-normal", target: "body" }
+        ]
+    } ]);
+
+    assert.deepEqual(plan.normal.map(value => ({
+        path: value.path,
+        op: value.op,
+        weight: value.weight,
+        order: value.layerOrder
+    })), [ {
+        path: "res:/augmentation-body-tn.png",
+        op: "normal-add",
+        weight: 0.75,
+        order: 50
+    } ]);
+    assert.equal(plan.specular.length, 0);
+    assert.equal(plan.deferred.length, 0);
+});
+
+test("body normal attachment includes split standard sleeve carriers only once", () =>
+{
+    const attached = [];
+    const sharedEffect = {
+        parameters: {
+            NormalMap: { AttachTextureRes: texture => attached.push(texture) }
+        }
+    };
+    const ignored = {
+        parameters: {
+            NormalMap: { AttachTextureRes: () => assert.fail("garment normal changed") }
+        }
+    };
+    const texture = { id: "body-normal" };
+    const count = attachLegacyBodyNormal({
+        meshes: [
+            { _characterFoundationRole: "torso", opaqueAreas: [ { effect: sharedEffect } ] },
+            { _characterFoundationRole: "sleevesUpper", opaqueAreas: [ { effect: sharedEffect } ] },
+            { _characterFoundationRole: "sleevesLower", opaqueAreas: [ { effect: {
+                parameters: {
+                    NormalMap: { AttachTextureRes: value => attached.push(value) }
+                }
+            } } ] },
+            { _characterPartIndex: 2, opaqueAreas: [ { effect: ignored } ] }
+        ]
+    }, texture);
+
+    assert.equal(count, 2);
+    assert.deepEqual(attached, [ texture, texture ]);
+});
+
+test("head lighting planner preserves ordered known makeup channels and defers unresolved colors", () =>
+{
+    const plan = resolveLegacyHeadMaterialChannels([ {
+        layerIndex: 2,
+        groupID: "makeup/eyes",
+        source: { partSourceRecordID: "female/makeup/eyes/eyes_06" },
+        selectedTextures: [
+            { path: "res:/eyes-l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/eyes-n.png", role: "normal-overlay", target: "head" },
+            { path: "res:/eyes-s.png", role: "specular-overlay", target: "head" }
+        ]
+    }, {
+        layerIndex: 8,
+        groupID: "makeup/eyebrows",
+        source: { partSourceRecordID: "female/makeup/eyebrows/eyebrows_03" },
+        textureCandidates: [
+            { path: "res:/brows-n.png", family: "comp_head_n", role: "normal-overlay", target: "head", recognized: true, selected: true },
+            { path: "res:/brows-n-512.png", family: "comp_head_n", role: "normal-overlay", target: "head", recognized: true, selected: false },
+            { path: "res:/brows-s.png", family: "comp_head_s", role: "specular-overlay", target: "head", recognized: true, selected: true },
+            { path: "res:/brows-s-512.png", family: "comp_head_s", role: "specular-overlay", target: "head", recognized: true, selected: false }
+        ],
+        selectedTextures: [
+            { path: "res:/brows-n.png", role: "normal-overlay", target: "head" },
+            { path: "res:/brows-s.png", role: "specular-overlay", target: "head" }
+        ]
+    } ]);
+
+    assert.deepEqual(plan.normal.map(value => value.path), [
+        "res:/eyes-n.png",
+        "res:/brows-n.png"
+    ]);
+    assert.deepEqual(plan.specular.map(value => value.path), [
+        "res:/eyes-s.png",
+        "res:/brows-s.png"
+    ]);
+    assert.deepEqual(plan.normal.map(value => value.op), [
+        "normal-replace",
+        "normal-replace"
+    ]);
+    assert.deepEqual(plan.specular.map(value => value.compositionIndex), [ 0, 1 ]);
+    assert.equal(plan.order.status, "experimental-policy");
+    assert.equal(plan.order.rule, "experimental-head-composition-order-v1");
+    assert.deepEqual(plan.order.layers.slice(0, 3), [
+        { groupID: "base-skin-colours", order: 0 },
+        { groupID: "makeup/aging", order: 10 },
+        { groupID: "makeup/blemish", order: 20 }
+    ]);
+    assert.deepEqual(plan.targets.map(value => value.output), [
+        "diffuse",
+        "normal",
+        "specular"
+    ]);
+    assert.deepEqual(plan.normal[1].candidatePaths, [
+        "res:/brows-n.png",
+        "res:/brows-n-512.png"
+    ]);
+    assert.deepEqual(plan.specular[1].candidatePaths, [
+        "res:/brows-s.png",
+        "res:/brows-s-512.png"
+    ]);
+    assert.equal(plan.deferred.length, 1);
+    assert.equal(plan.deferred[0].reason, "head-color-selection-unresolved");
+});
+
+test("head lighting planner admits known freckles, blush, and scarring in the experimental order", () =>
+{
+    const plan = resolveLegacyHeadMaterialChannels([ {
+        layerIndex: 5,
+        groupID: "makeup/freckles",
+        source: { partSourceRecordID: "female/makeup/freckles/freckles_02" },
+        selectedTextures: [
+            { path: "res:/freckles-d.png", role: "diffuse-overlay", target: "head" }
+        ]
+    }, {
+        layerIndex: 4,
+        groupID: "makeup/blush",
+        weight: 1,
+        source: {
+            partSourceRecordID: "female/makeup/blush/blush_02",
+            materialDefinitionPath: "res:/blush/purple.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.5, 0.1, 0.5, 1 ],
+                [ 0.5, 0.5, 0.5, 1 ],
+                [ 0.5, 0.5, 0.5, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: "res:/blush-l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/blush-z.png", role: "colorize-zones", target: "head" }
+        ]
+    }, {
+        layerIndex: 13,
+        groupID: "makeup/scarring",
+        source: { partSourceRecordID: "female/makeup/scarring/scarring_03" },
+        selectedTextures: [
+            { path: "res:/scar-s.png", role: "specular-overlay", target: "head" },
+            { path: "res:/scar-tn.png", role: "twist-normal", target: "head" }
+        ]
+    }, {
+        layerIndex: 3,
+        groupID: "makeup/lipstick",
+        source: { partSourceRecordID: "female/makeup/lipstick/lipstick_04" },
+        selectedTextures: [
+            { path: "res:/lip-l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/lip-z.png", role: "colorize-zones", target: "head" }
+        ]
+    }, {
+        layerIndex: 14,
+        groupID: "scars/head",
+        source: { partSourceRecordID: "female/scars/head/scar_03" },
+        selectedTextures: [
+            { path: "res:/scar-category-d.png", role: "diffuse-overlay", target: "head" }
+        ]
+    } ]);
+
+    assert.deepEqual(plan.diffuse.map(value => value.path), [
+        "res:/scar-category-d.png",
+        "res:/freckles-d.png",
+        "res:/blush-l.png"
+    ]);
+    assert.deepEqual(plan.diffuse.map(value => value.op), [
+        "alpha-overlay",
+        "alpha-overlay",
+        "colorize"
+    ]);
+    assert.deepEqual(plan.specular.map(value => value.path), [ "res:/scar-s.png" ]);
+    assert.deepEqual(plan.normal.map(value => [ value.path, value.op ]), [
+        [ "res:/scar-tn.png", "normal-add" ]
+    ]);
+    assert.deepEqual(plan.deferred.map(value => value.reason), [
+        "head-color-selection-unresolved"
+    ]);
+});
+
+test("head planner applies the complete experimental cosmetic order while retaining tattoo projection", () =>
+{
+    const groups = [
+        "makeup/lipstick",
+        "makeup/implants",
+        "makeup/aging",
+        "makeup/eyebrows",
+        "tattoo/head",
+        "makeup/scarring",
+        "makeup/blush",
+        "makeup/augmentations",
+        "makeup/eyes",
+        "makeup/blemish",
+        "makeup/eyeliner",
+        "makeup/freckles",
+        "makeup/eyeshadow",
+        "makeup/eyebrowbase"
+    ];
+    const plan = resolveLegacyHeadMaterialChannels(groups.map((groupID, layerIndex) => ({
+        layerIndex,
+        groupID,
+        source: { partSourceRecordID: `female/${groupID}/proof` },
+        selectedTextures: [ {
+            path: `res:/${groupID}.png`,
+            role: "diffuse-overlay",
+            target: "head"
+        } ]
+    })));
+
+    assert.deepEqual(plan.diffuse.map(value => value.groupID), [
+        "makeup/aging",
+        "makeup/blemish",
+        "makeup/scarring",
+        "makeup/freckles",
+        "makeup/augmentations",
+        "makeup/eyes",
+        "makeup/eyeshadow",
+        "makeup/eyebrowbase",
+        "makeup/eyebrows",
+        "makeup/implants",
+        "makeup/blush",
+        "makeup/eyeliner",
+        "makeup/lipstick"
+    ]);
+    assert.deepEqual(plan.diffuse.map(value => value.layerOrder), [
+        10, 20, 30, 40, 50, 70, 80, 90, 100, 110, 120, 130, 140
+    ]);
+    assert.deepEqual(plan.deferred.map(value => [ value.groupID, value.reason ]), [
+        [ "tattoo/head", "head-tattoo-projection-unresolved" ]
+    ]);
+});
+
+test("head planner schedules an exact mode-1 facial tattoo for mesh projection baking", () =>
+{
+    const definitionPath = "res:/graphics/character/female/paperdoll/tattoo/head/tattoofacem07/projection.proj";
+    const texturePath = "res:/graphics/character/decals/tattoos/face/tattoofacem07/tattoofacem07_d.dds";
+    const plan = resolveLegacyHeadMaterialChannels([ {
+        layerIndex: 7,
+        weight: 1,
+        groupID: "tattoo/head",
+        source: { partSourceRecordID: "female/tattoo/head/tattoofacem07" },
+        materialValues: {
+            colors: [
+                [ 0.07, 0.16, 0.25, 1 ],
+                [ 0.18, 0.22, 0.29, 1 ],
+                [ 0.18, 0.22, 0.29, 1 ]
+            ]
+        },
+        selectedTextures: []
+    } ], {
+        Get(documentName, recordID)
+        {
+            assert.equal(documentName, "characterDefinitions");
+            assert.equal(recordID, definitionPath);
+            return {
+                values: {
+                    headEnabled: true,
+                    bodyEnabled: false,
+                    mode: 1,
+                    flipx: true,
+                    flipy: true,
+                    texturePath
+                }
+            };
+        }
+    });
+
+    assert.deepEqual(plan.diffuse.map(value => [
+        value.groupID,
+        value.op,
+        value.layerOrder,
+        value.path,
+        value.projectionDefinitionPath,
+        value.colors[0]
+    ]), [ [
+        "tattoo/head",
+        "mesh-projected-head-decal",
+        60,
+        texturePath,
+        definitionPath,
+        [ 0.07, 0.16, 0.25, 1 ]
+    ] ]);
+    assert.deepEqual(plan.deferred, []);
+});
+
+test("configured head bakes a proved mode-1 tattoo with an explicit texture offset", async () =>
+{
+    const definitionPath = "res:/graphics/character/female/paperdoll/tattoo/head/tattoofacem07/projection.proj";
+    const texturePath = "res:/graphics/character/decals/tattoos/face/tattoofacem07/tattoofacem07_d.dds";
+    const maskPath = "res:/graphics/character/global/tattoomask/tattoomask.dds";
+    const fixture = AtlasComposerFixture({
+        headNormalMode: "detail",
+        tattooTextureOffsetY: 0.25
+    });
+    fixture.composer.SetTextureMetadataSource({
+        Get(documentName, recordID)
+        {
+            if (documentName === "characterDefinitions" && recordID === definitionPath)
+            {
+                return {
+                    values: {
+                        headEnabled: true,
+                        bodyEnabled: false,
+                        mode: 1,
+                        posx: 0,
+                        posy: 1.642,
+                        posz: 0.031,
+                        radius: 0.12,
+                        height: 0.22956,
+                        aspectRatio: 1,
+                        flipx: true,
+                        flipy: true,
+                        maskPathEnabled: true,
+                        maskPath,
+                        texturePath
+                    }
+                };
+            }
+            return null;
+        }
+    });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    const geometryRenders = [];
+    const geometry = {
+        RenderAreas(...args)
+        {
+            geometryRenders.push(args);
+            return true;
+        }
+    };
+    const mesh = MeshFixture(skin);
+    mesh.meshIndex = 0;
+    mesh.geometryResource = geometry;
+    Object.assign(mesh.opaqueAreas[0], {
+        name: "C_Skin_blinn1",
+        meshIndex: 0,
+        index: 0,
+        count: 1
+    });
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials({
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh,
+                geometry,
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            } ]
+        } ],
+        backend: {
+            GetPerMeshObjectData()
+            {
+                return { name: "head-pod" };
+            }
+        },
+        textureContributions: [ {
+            layerIndex: 7,
+            weight: 1,
+            groupID: "tattoo/head",
+            source: { partSourceRecordID: "female/tattoo/head/tattoofacem07" },
+            materialValues: {
+                colors: [
+                    [ 0.07, 0.16, 0.25, 1 ],
+                    [ 0.18, 0.22, 0.29, 1 ],
+                    [ 0.18, 0.22, 0.29, 1 ]
+                ]
+            },
+            selectedTextures: []
+        } ],
+        compositionTargets: []
+    });
+    const diffuse = report.channels.find(value => value.name === "DiffuseMap");
+    const tattoo = diffuse.passes.find(value => value.mode === "mesh-projected-head-tattoo");
+    const bake = fixture.effects.find(value =>
+        value.effectFilePath.includes("skinnedavatartattoobaking"));
+
+    assert.equal(report.status, "applied");
+    assert.equal(tattoo.path, texturePath);
+    assert.equal(tattoo.projectionDefinitionPath, definitionPath);
+    assert.deepEqual(tattoo.color, [ 0.07, 0.16, 0.25, 1 ]);
+    assert.deepEqual(tattoo.bake.constants.position, [ 0, 1.642, 0.031, 0 ]);
+    assert.deepEqual(tattoo.bake.constants.options, [ 0, 1, 0.25, 0 ]);
+    assert.equal(tattoo.bake.constants.textureOffsetY, 0.25);
+    assert.deepEqual(tattoo.sourceBounds, [ 0, 0, 1, 1 ]);
+    const tattooComposite = fixture.effects.find(value =>
+        value.effectFilePath.includes("simpleblit")
+        && value.parameters?.MaskMap?.textureRes);
+    assert.deepEqual(tattooComposite.parameters.SourceUVs, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(tattooComposite.parameters.MaskReverseUV, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(
+        fixture.targets.map(value => [ value.width, value.height ]),
+        [ [ 2048, 2048 ], [ 2048, 2048 ], [ 2048, 2048 ], [ 2048, 2048 ] ]
+    );
+    assert.equal(geometryRenders.length, 1);
+});
+
+test("head planner retains an eyeliner-owned eyelash dependency for the separate face-card path", () =>
+{
+    const plan = resolveLegacyHeadMaterialChannels([ {
+        layerIndex: 8,
+        groupID: "makeup/eyeliner",
+        source: {
+            partSourceRecordID: "female/makeup/eyelashes/eyelashes_02"
+        },
+        selectedTextures: [
+            { path: "res:/lashes-l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/lashes-s.png", role: "specular-overlay", target: "head" }
+        ]
+    } ]);
+
+    assert.deepEqual(plan.diffuse, []);
+    assert.deepEqual(plan.specular, []);
+    assert.deepEqual(plan.deferred.map(value => value.reason), [
+        "head-separate-face-card-contribution",
+        "head-separate-face-card-contribution"
+    ]);
+});
+
+test("configured head uses distinct masked-replace and additive twist-normal shaders", async () =>
+{
+    const fixture = AtlasComposerFixture({ headNormalMode: "authored" });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    const staged = {
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh: MeshFixture(skin),
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            } ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 4,
+            weight: 0.75,
+            groupID: "makeup/eyebrows",
+            source: { partSourceRecordID: "female/makeup/eyebrows/eyebrows_03" },
+            selectedTextures: [
+                { path: "res:/brows-n.png", role: "normal-overlay", target: "head" }
+            ]
+        }, {
+            layerIndex: 6,
+            weight: 0.5,
+            groupID: "makeup/scarring",
+            source: { partSourceRecordID: "female/makeup/scarring/scarring_03" },
+            selectedTextures: [
+                { path: "res:/scar-tn.png", role: "twist-normal", target: "head" }
+            ]
+        } ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials(staged);
+    const normal = report.channels.find(value => value.name === "NormalMap");
+
+    assert.equal(report.status, "applied");
+    assert.deepEqual(normal.passes.slice(1).map(value => [
+        value.mode,
+        value.shader,
+        value.strength
+    ]), [
+        [
+            "configured-head-normal-add",
+            "res:/graphics/effect.gles2/utility/compositing/twistnormalblit.sm_hi",
+            0.5
+        ],
+        [
+            "configured-head-normal-replace",
+            "res:/graphics/effect.gles2/utility/compositing/maskednormalblit.sm_hi",
+            0.75
+        ]
+    ]);
+});
+
+test("configured head detail mode keeps additive aging while withholding replacement normals", async () =>
+{
+    const fixture = AtlasComposerFixture({ headNormalMode: "detail" });
+    fixture.composer.SetTextureMetadataSource({
+        Get(documentName, recordID)
+        {
+            if (documentName !== "characterTextureMetadata"
+                || !recordID.includes("/skintone/")) return null;
+            return {
+                recordID,
+                sourcePath: `${recordID}.png`,
+                width: 1024,
+                height: 1024,
+                hasOffsetMetadata: false,
+                hasPlacementMetadata: false,
+                offsetX: 0,
+                offsetY: 0,
+                extentX: 1,
+                extentY: 1
+            };
+        }
+    });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    const staged = {
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                },
+                colorization: {
+                    materialDefinitionPath: "res:/skintone/deteis_dark.color",
+                    colors: [
+                        [ 0.3, 0.12, 0.01, 1 ],
+                        [ 0.1, 0.15, 0.14, 1 ],
+                        [ 0.21, 0.21, 0.21, 1 ]
+                    ],
+                    headDetailPath: "res:/skintone/colorize_head_l.png",
+                    headZonePath: "res:/skintone/colorize_head_z.png",
+                    bodyDetailPath: "res:/skintone/colorize_body_l.png",
+                    bodyZonePath: "res:/skintone/colorize_body_z.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh: MeshFixture(skin),
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            } ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 4,
+            weight: 0.75,
+            groupID: "makeup/eyebrows",
+            source: { partSourceRecordID: "female/makeup/eyebrows/eyebrows_03" },
+            selectedTextures: [
+                { path: "res:/brows-n.png", role: "normal-overlay", target: "head" }
+            ]
+        }, {
+            layerIndex: 6,
+            weight: 0.5,
+            groupID: "makeup/aging",
+            source: { partSourceRecordID: "female/makeup/aging/aging_03" },
+            selectedTextures: [
+                { path: "res:/aging-tn.png", role: "twist-normal", target: "head" }
+            ]
+        } ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials(staged);
+    const diffuse = report.channels.find(value => value.name === "DiffuseMap");
+    const normal = report.channels.find(value => value.name === "NormalMap");
+
+    assert.deepEqual(diffuse.passes.slice(1).map(value => [
+        value.mode,
+        value.groupID,
+        value.detailPath,
+        value.zonePath
+    ]), [ [
+        "colorized",
+        "base-skin-colours",
+        "res:/skintone/colorize_head_l.png",
+        "res:/skintone/colorize_head_z.png"
+    ] ]);
+    assert.equal(normal.diagnosticMode, "authored-additive-detail-normal");
+    assert.deepEqual(normal.passes.slice(1).map(value => [
+        value.mode,
+        value.path,
+        value.strength
+    ]), [ [ "configured-head-normal-add", "res:/aging-tn.png", 0.5 ] ]);
+});
+
+test("eyebrow fallback resolves only the exact retained sibling default color", () =>
+{
+    const contribution = {
+        layerIndex: 8,
+        groupID: "makeup/eyebrows",
+        source: { partSourceRecordID: "female/makeup/eyebrows/eyebrows_03" },
+        selectedTextures: [ {
+            path: "res:/brows/colorize_head_l_4k.png",
+            role: "colorize-layer",
+            target: "head"
+        }, {
+            path: "res:/brows/colorize_head_z.png",
+            role: "colorize-zones",
+            target: "head"
+        } ],
+        textureCandidates: [ {
+            path: "res:/brows/colorize_head_z.png",
+            role: "colorize-zones",
+            target: "head",
+            recognized: true
+        }, {
+            path: "res:/brows/colorize_head_z_512.png",
+            role: "colorize-zones",
+            target: "head",
+            recognized: true
+        } ]
+    };
+    const expectedPath = "res:/graphics/character/female/paperdoll/makeup/eyebrows/eyebrows_03/default.color";
+    const resolved = resolveLegacyDefaultBrowCandidate([ contribution ], {
+        Get(documentName, recordID)
+        {
+            if (documentName === "characterTextureMetadata")
+            {
+                return recordID.endsWith("_512")
+                    ? { width: 40, height: 21 }
+                    : { width: 16, height: 16 };
+            }
+            assert.equal(documentName, "characterDefinitions");
+            assert.equal(recordID, expectedPath);
+            return {
+                values: {
+                    colors: [
+                        [ 0.12, 0.12, 0.12, 1 ],
+                        [ 0.5, 0.5, 0.5, 1 ],
+                        [ 0.5, 0.5, 0.5, 1 ]
+                    ]
+                }
+            };
+        }
+    });
+
+    assert.equal(resolved.status, "ready");
+    assert.equal(resolved.correctness, "authored-presentation-fallback");
+    assert.equal(resolved.materialDefinitionPath, expectedPath);
+    assert.equal(
+        resolved.operation.candidate.zones.path,
+        "res:/brows/colorize_head_z_512.png"
+    );
+    assert.deepEqual(resolved.operation.candidate.colors[0], [ 0.12, 0.12, 0.12, 1 ]);
+    assert.equal(
+        resolved.operation.candidate.contribution.source.materialDefinitionPath,
+        expectedPath
+    );
+});
+
+test("eyebrow colour follows the selected family preset before the sibling fallback", () =>
+{
+    const contribution = {
+        layerIndex: 8,
+        groupID: "makeup/eyebrows",
+        source: { partSourceRecordID: "female/makeup/eyebrows/eyebrows_03" },
+        selectedTextures: [ {
+            path: "res:/brows/colorize_head_l_4k.png",
+            role: "colorize-layer",
+            target: "head"
+        } ],
+        textureCandidates: [ {
+            path: "res:/brows/colorize_head_z.png",
+            role: "colorize-zones",
+            target: "head",
+            recognized: true
+        } ]
+    };
+    const presetPath = "res:/graphics/character/dnafiles/characterselect/deteisfemaleclothing.prs";
+    const resolved = resolveLegacyDefaultBrowCandidate([ contribution ], {
+        Get(documentName, recordID)
+        {
+            if (documentName === "characterTextureMetadata")
+            {
+                return { width: 16, height: 16 };
+            }
+            assert.equal(documentName, "characterDefinitions");
+            assert.equal(recordID, presetPath);
+            return {
+                values: [ "female", {
+                    category: "makeup",
+                    path: "makeup/eyebrows/eyebrows_01",
+                    colors: "[(0.384314, 0.345098, 0.317647, 1), (0.5, 0.5, 0.5, 1), (0.5, 0.5, 0.5, 1)]",
+                    weight: 1
+                } ]
+            };
+        }
+    }, presetPath);
+
+    assert.equal(resolved.status, "ready");
+    assert.equal(resolved.correctness, "retained-preset");
+    assert.equal(resolved.rule, "legacy-opengl-selected-preset-eyebrow-color-v1");
+    assert.equal(resolved.materialDefinitionPath, presetPath);
+    assert.deepEqual(
+        resolved.operation.candidate.colors[0],
+        [ 0.384314, 0.345098, 0.317647, 1 ]
+    );
+    assert.equal(
+        resolved.operation.candidate.contribution.source.partSourceRecordID,
+        "female/makeup/eyebrows/eyebrows_03"
+    );
+});
+
+test("eyelash fallback resolves its retained placement and black sibling color", () =>
+{
+    const contribution = {
+        layerIndex: 9,
+        groupID: "makeup/eyeliner",
+        source: { partSourceRecordID: "female/makeup/eyelashes/eyelashes_02" },
+        selectedTextures: [ {
+            path: "res:/lashes/colorize_head_l_4k.png",
+            role: "colorize-layer",
+            target: "head"
+        }, {
+            path: "res:/lashes/colorize_head_z.png",
+            role: "colorize-zones",
+            target: "head"
+        } ],
+        textureCandidates: [ {
+            path: "res:/lashes/colorize_head_z.png",
+            role: "colorize-zones",
+            target: "head",
+            recognized: true
+        }, {
+            path: "res:/lashes/colorize_head_z_512.png",
+            role: "colorize-zones",
+            target: "head",
+            recognized: true
+        } ]
+    };
+    const expectedPath = "res:/graphics/character/female/paperdoll/makeup/eyelashes/eyelashes_02/default.color";
+    const resolved = resolveLegacyDefaultEyelashCandidate([ contribution ], {
+        Get(documentName, recordID)
+        {
+            if (documentName === "characterTextureMetadata")
+            {
+                return recordID.endsWith("_512")
+                    ? { width: 95, height: 128 }
+                    : { width: 372, height: 512 };
+            }
+            assert.equal(documentName, "characterDefinitions");
+            assert.equal(recordID, expectedPath);
+            return {
+                values: {
+                    colors: [
+                        [ 0, 0, 0, 1 ],
+                        [ 0, 0, 0, 1 ],
+                        [ 0, 0, 0, 1 ]
+                    ]
+                }
+            };
+        }
+    });
+
+    assert.equal(resolved.status, "ready");
+    assert.equal(resolved.correctness, "authored-presentation-fallback");
+    assert.equal(resolved.materialDefinitionPath, expectedPath);
+    assert.equal(
+        resolved.operation.candidate.zones.path,
+        "res:/lashes/colorize_head_z.png"
+    );
+    assert.deepEqual(resolved.operation.candidate.colors[0], [ 0, 0, 0, 1 ]);
+});
+
+test("eyelash composition preserves source alpha instead of using detail luminance", async () =>
+{
+    const fixture = AtlasComposerFixture({ headNormalMode: "base" });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    const lashes = AtomicEffectFixture({
+        texture: { path: "#lash-neutral" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    lashes.name = "C_SkinShiny_EyeLashes";
+    const detailPath = "res:/lashes/colorize_head_l_4k.png";
+    const zonePath = "res:/lashes/colorize_head_z.png";
+    const materialPath = "res:/graphics/character/female/paperdoll/makeup/eyelashes/eyelashes_02/default.color";
+    fixture.composer.SetTextureMetadataSource({
+        Get(documentName, recordID)
+        {
+            if (documentName === "characterTextureMetadata")
+            {
+                if (!recordID.includes("/lashes/")) return null;
+                return {
+                    recordID,
+                    sourcePath: `${recordID}.png`,
+                    width: recordID.includes("colorize_head_l") ? 741 : 372,
+                    height: recordID.includes("colorize_head_l") ? 1024 : 512,
+                    hasOffsetMetadata: true,
+                    hasPlacementMetadata: true,
+                    offsetX: recordID.includes("colorize_head_l") ? 0.279297 : 0.27832,
+                    offsetY: 0,
+                    extentX: recordID.includes("colorize_head_l") ? 0.361816 : 0.363281,
+                    extentY: 1
+                };
+            }
+            if (documentName === "characterDefinitions" && recordID === materialPath)
+            {
+                return {
+                    values: {
+                        colors: [
+                            [ 0, 0, 0, 1 ],
+                            [ 0, 0, 0, 1 ],
+                            [ 0, 0, 0, 1 ]
+                        ]
+                    }
+                };
+            }
+            return null;
+        }
+    });
+    const staged = {
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh: MeshFixture(skin),
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            }, {
+                mesh: MeshFixture(lashes),
+                meshIndex: 1,
+                meshName: "Eyelashes_GeoShape",
+                geometryMeshName: "Eyelashes_GeoShape"
+            } ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 8,
+            weight: 0.4,
+            groupID: "makeup/eyeliner",
+            source: {
+                partSourceRecordID: "female/makeup/eyelashes/eyelashes_02"
+            },
+            selectedTextures: [
+                { path: detailPath, role: "colorize-layer", target: "head" },
+                { path: zonePath, role: "colorize-zones", target: "head" }
+            ],
+            textureCandidates: [ {
+                path: zonePath,
+                role: "colorize-zones",
+                target: "head",
+                recognized: true
+            } ]
+        } ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials(staged);
+    assert.ok(report.eyelashFallback, JSON.stringify(report));
+    const lashPass = report.eyelashFallback.passes[0];
+    const lashEffect = fixture.effects.find(value => value.textures?.DetailMap === detailPath);
+
+    assert.equal(report.faceTextures.eyelashes.status, "applied");
+    assert.equal(lashPass.detailMask, "disabled");
+    assert.equal(lashPass.weight, 0.4);
+    assert.deepEqual(lashEffect.parameters.UseMask, [ 0, 0, 0, 0 ]);
+    assert.deepEqual(lashEffect.parameters.Strength, [ 0.4, 0, 0, 0 ]);
+    assert.equal(lashEffect.textures.MaskMap, "dynamic:/color/0,0,0,0");
+});
+
+test("eyelash alpha evidence retains sparse bounds without retaining pixels", () =>
+{
+    const pixels = new Uint8Array([
+        0, 0, 0, 0,
+        0, 0, 0, 30,
+        0, 0, 0, 70,
+        0, 0, 0, 0
+    ]);
+
+    assert.deepEqual(summarizeLegacyTextureAlpha(pixels, 2, 2), {
+        nonzeroPixels: 2,
+        alphaSum: 100,
+        maximumAlpha: 70,
+        bounds: [ 0, 0, 1, 1 ]
+    });
+});
+
+test("configured head lighting binds independent targets atomically", async () =>
+{
+    AtlasComposerFixture();
+    const effect = AtomicEffectFixture({
+        texture: { path: "#head-diffuse" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
+    const normal = { path: "#head-normal", IsGood: () => true };
+    const specular = { path: "#head-specular", IsGood: () => true };
+
+    const result = await commitLegacyConfiguredHeadBindings([ effect ], {
+        NormalMap: normal,
+        SpecularMap: specular
+    });
+
+    assert.equal(result.status, "applied");
+    assert.strictEqual(effect.parameters.NormalMap.textureRes, normal);
+    assert.strictEqual(effect.parameters.SpecularMap.textureRes, specular);
+    assert.strictEqual(effect.parameters.DiffuseMap.textureRes.path, "#head-diffuse");
+    assert.deepEqual(effect.transform, [ 0, 0, 1, 1 ]);
+});
+
+test("cropped lash transform inverts retained atlas placement", () =>
+{
+    const transform = resolveLegacyCroppedTextureTransform({
+        width: 741,
+        height: 1024,
+        offset: [ 0.279297, 0 ],
+        extent: [ 0.361816, 1 ],
+        hasPlacementMetadata: true
+    });
+
+    assert.ok(Math.abs(transform[0] - -0.7719309) < 1e-6);
+    assert.equal(transform[1], 0);
+    assert.ok(Math.abs(transform[2] - 1.9919047) < 1e-6);
+    assert.equal(transform[3], 1);
+});
+
+test("configured face textures bind only exact eye and eyelash carriers", () =>
+{
+    const eye = AtomicEffectFixture({
+        texture: { path: "#eye-neutral" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    const lashes = AtomicEffectFixture({
+        texture: { path: "#lash-neutral" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
+    const eyeShadow = AtomicEffectFixture({
+        texture: { path: "#eye-shadow-neutral" },
+        transform: [ 0, 0, 0.5, 1 ]
+    });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    eye.name = "C_Eyes";
+    lashes.name = "C_SkinShiny_EyeLashes";
+    eyeShadow.name = "C_SkinShiny_EyeLashes";
+    skin.name = "C_Skin_blinn1";
+    const composedEye = { path: "#composed-eye", IsGood: () => true };
+    const composedLashes = { path: "#composed-lashes", IsGood: () => true };
+    const report = applyLegacyConfiguredFaceTextures({
+        resolvedMeshBindings: [ {
+            meshName: "Eyeball_Right_GeoShape",
+            mesh: MeshFixture(eye)
+        }, {
+            meshName: "Eyelashes_GeoShape",
+            mesh: MeshFixture(lashes)
+        }, {
+            meshName: "EyeShadow_GeoShape",
+            mesh: MeshFixture(eyeShadow)
+        }, {
+            meshName: "meshShape",
+            mesh: MeshFixture(skin)
+        } ]
+    }, [ {
+        groupID: "makeup/eyes",
+        source: { partSourceRecordID: "female/makeup/eyes/eyes_06" },
+        selectedTextures: [ {
+            path: "res:/eyes/colorize_head_l_4k.png",
+            role: "colorize-layer",
+            target: "head"
+        } ]
+    }, {
+        groupID: "makeup/eyeliner",
+        source: { partSourceRecordID: "female/makeup/eyelashes/eyelashes_02" },
+        selectedTextures: [ {
+            path: "res:/lashes/colorize_head_l_4k.png",
+            role: "colorize-layer",
+            target: "head"
+        }, {
+            path: "res:/lashes/comp_head_s.png",
+            role: "specular-overlay",
+            target: "head"
+        } ]
+    } ], {
+        headDiffuseTexture: composedEye,
+        eyelashTexture: composedLashes
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.appliedEffects, 3);
+    assert.strictEqual(eye.parameters.DiffuseMap.textureRes, composedEye);
+    assert.strictEqual(lashes.parameters.DiffuseMap.textureRes, composedLashes);
+    assert.strictEqual(eyeShadow.parameters.DiffuseMap.textureRes, composedLashes);
+    assert.equal(lashes.parameters.SpecularMap.resourcePath, "res:/lashes/comp_head_s.png");
+    assert.equal(eyeShadow.parameters.SpecularMap.resourcePath, "res:/lashes/comp_head_s.png");
+    assert.equal(report.eyelashes.binding, "colorized-transparent-head-atlas");
+    assert.equal(report.eyelashes.specularPath, "res:/lashes/comp_head_s.png");
+    assert.equal(report.eyelashes.transform, "carrier-specific");
+    assert.deepEqual(report.eyelashes.carriers.map(value => value.meshName), [
+        "Eyelashes_GeoShape",
+        "EyeShadow_GeoShape"
+    ]);
+    assert.equal(skin.parameters.DiffuseMap.resourcePath, "");
+    assert.deepEqual(eye.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(lashes.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(eyeShadow.transform, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(skin.transform, [ 0.5, 0, 1, 0.5 ]);
+});
+
+test("configured head composition binds only the exact authored skin carrier", async () =>
+{
+    const fixture = AtlasComposerFixture({ headNormalMode: "base" });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    const eye = AtomicEffectFixture({
+        texture: { path: "#eye-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    const tongue = AtomicEffectFixture({
+        texture: { path: "#tongue-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    const teeth = AtomicEffectFixture({
+        texture: { path: "#teeth-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    eye.name = "EyeShader";
+    tongue.name = "C_Skin_blinn1";
+    teeth.name = "PortraitBasic";
+    const original = [ eye, tongue, teeth ].map(effect => ({
+        diffuse: effect.parameters.DiffuseMap.textureRes,
+        normal: effect.parameters.NormalMap.textureRes,
+        specular: effect.parameters.SpecularMap.textureRes,
+        transform: [ ...effect.transform ]
+    }));
+    const staged = {
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh: MeshFixture(skin),
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            }, {
+                mesh: MeshFixture(eye),
+                meshIndex: 1,
+                meshName: "eyeShape",
+                geometryMeshName: "eyeShape"
+            }, {
+                mesh: MeshFixture(tongue),
+                meshIndex: 2,
+                meshName: "tongueShape",
+                geometryMeshName: "tongueShape"
+            }, {
+                mesh: MeshFixture(teeth),
+                meshIndex: 3,
+                meshName: "teethShape",
+                geometryMeshName: "teethShape"
+            } ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 1,
+            groupID: "makeup/eyes",
+            selectedTextures: [ {
+                path: "res:/eyes_n.png",
+                role: "normal-overlay",
+                target: "head"
+            } ]
+        } ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.attachedEffects, 1);
+    assert.equal(
+        report.channels.find(value => value.name === "NormalMap").diagnosticMode,
+        "authored-base-normal"
+    );
+    assert.equal(report.channels.find(value => value.name === "NormalMap").overlayCount, 0);
+    assert.deepEqual(skin.transform, [ 0, 0, 1, 1 ]);
+    for (let index = 0; index < original.length; index++)
+    {
+        const effect = [ eye, tongue, teeth ][index];
+        assert.strictEqual(effect.parameters.DiffuseMap.textureRes, original[index].diffuse);
+        assert.strictEqual(effect.parameters.NormalMap.textureRes, original[index].normal);
+        assert.strictEqual(effect.parameters.SpecularMap.textureRes, original[index].specular);
+        assert.deepEqual(effect.transform, original[index].transform);
+    }
+});
+
+test("diffuse-only skin diagnostic neutralizes head normal and specular channels", async () =>
+{
+    const fixture = AtlasComposerFixture({ skinLightingMode: "diffuse" });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-diffuse" },
+        transform: [ 0.5, 0, 1, 0.5 ]
+    });
+    skin.name = "C_Skin_blinn1";
+    const staged = {
+        sex: "female",
+        configuredFoundations: [ {
+            role: "head",
+            skinTextureBindings: {
+                textures: {
+                    DiffuseMap: "res:/head_d.png",
+                    NormalMap: "res:/head_n.png",
+                    SpecularMap: "res:/head_s.png"
+                }
+            }
+        } ],
+        configuredFoundationBindings: [ {
+            role: "head",
+            resolvedMeshBindings: [ {
+                mesh: MeshFixture(skin),
+                meshIndex: 0,
+                meshName: "meshShape",
+                geometryMeshName: "meshShape"
+            } ]
+        } ],
+        textureContributions: [],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredHeadMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(
+        report.channels.find(value => value.name === "NormalMap").diagnosticMode,
+        "neutral-normal"
+    );
+    assert.equal(
+        report.channels.find(value => value.name === "SpecularMap").diagnosticMode,
+        "black-specular"
+    );
+});
+
+test("configured garment fallback uses its own colorized target without touching skin", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const garment = AtomicEffectFixture({
+        texture: { path: "#neutral-proof" },
+        transform: [ 0.2, 0.3, 0.4, 0.5 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    const skin = AtomicEffectFixture({
+        texture: { path: "#skin-proof" },
+        transform: [ 0.1, 0.1, 0.8, 0.8 ]
+    });
+    const hybrid = AtomicEffectFixture({
+        texture: { path: "#hybrid-proof" },
+        transform: [ 0, 0, 1, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    garment._characterGarmentMaterialFallback = true;
+    garment._characterAuthoredEffect = {
+        parameters: {
+            DiffuseMap: { resourcePath: "" },
+            NormalMap: {
+                resourcePath: "res:/garment-normal.dds",
+                textureRes: { path: "res:/garment-normal.dds", IsGood: () => true },
+                isAttached: true
+            },
+            SpecularMap: { resourcePath: "res:/garment-specular.dds" }
+        }
+    };
+    hybrid._characterGarmentBodyFallback = true;
+    const part = {
+        partIndex: 13,
+        groupID: "bottomouter",
+        partSourceRecordID: "female/bottomouter/pantscf01",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "female",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [
+                MeshFixture(garment),
+                MeshFixture(hybrid),
+                MeshFixture(skin)
+            ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 13,
+            partIndex: 13,
+            groupID: "bottomouter",
+            source: {
+                partSourceRecordID: "female/bottomouter/pantscf01",
+                materialDefinitionPath: "res:/pants.color"
+            },
+            materialValues: {
+                colors: [
+                    [ 0.1, 0.2, 0.3, 1 ],
+                    [ 0.4, 0.5, 0.6, 1 ],
+                    [ 0.7, 0.8, 0.9, 1 ]
+                ],
+                pattern: ""
+            },
+            selectedTextures: [
+                { path: "res:/pants/colorize_body_l.png", role: "colorize-layer", target: "body" },
+                { path: "res:/pants/colorize_body_z.png", role: "colorize-zones", target: "body" },
+                { path: "res:/pants/pants_n.png", role: "normal-source", target: "body" },
+                { path: "res:/pants/pants_s.png", role: "specular-source", target: "body" }
+            ]
+        } ],
+        compositionTargets: [],
+        composedBodyDiffuseTexture: { path: "#shared-body" }
+    };
+    const originalSkinTexture = skin.parameters.DiffuseMap.textureRes;
+    const originalSkinTransform = [ ...skin.transform ];
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied.length, 1);
+    assert.equal(report.applied[0].attachedEffects, 2);
+    assert.deepEqual(report.applied[0].materialChannels, {
+        status: "ready",
+        rule: "legacy-opengl-retained-garment-lighting-v1",
+        correctness: "retained-source-policy",
+        normalPath: "res:/pants/pants_n.png",
+        specularPath: "res:/pants/pants_s.png"
+    });
+    assert.deepEqual(report.applied[0].surfaces.map(value => value.surface), [
+        "private-garment",
+        "body-garment-hybrid"
+    ]);
+    assert.deepEqual(report.applied[0].surfaces[0].passes.map(value => value.mode), [
+        "configured-garment-clear",
+        "configured-authored-rgba",
+        "colorized-rgb"
+    ]);
+    assert.deepEqual(report.applied[0].surfaces[0].passes[0].placement, [ 0, 0, 1, 1 ]);
+    assert.equal(report.applied[0].surfaces[0].passes[2].detailMask, "disabled");
+    assert.equal(report.applied[0].surfaces[0].passes[2].blend, "disabled");
+    assert.deepEqual(report.applied[0].surfaces[1].passes.map(value => value.mode), [
+        "configured-garment-clear",
+        "configured-shared-rgba",
+        "colorized"
+    ]);
+    assert.equal(report.applied[0].surfaces[1].passes[2].detailMask, "enabled");
+    assert.equal(report.applied[0].surfaces[1].passes[2].blend, "source-alpha");
+    assert.deepEqual(report.applied[0].bindings[0].authoredTextureSlots, [
+        {
+            name: "DiffuseMap",
+            resourcePath: null,
+            attached: false,
+            ready: null,
+            status: "unbound"
+        }, {
+            name: "NormalMap",
+            resourcePath: "res:/garment-normal.dds",
+            attached: true,
+            ready: true,
+            status: "ready"
+        }, {
+            name: "SpecularMap",
+            resourcePath: "res:/garment-specular.dds",
+            attached: false,
+            ready: null,
+            status: "path-only"
+        }
+    ]);
+    const colorizedEffect = fixture.effects.find(value =>
+        /colorizedblit\.sm_hi$/u.test(value.effectFilePath));
+    assert.deepEqual(colorizedEffect.parameters.UseMask, [ 0, 0, 0, 0 ]);
+    assert.deepEqual(colorizedEffect.parameters.MaskReverseUV2, [ 0, 0, 1, 1 ]);
+    assert.equal(colorizedEffect.textures.MaskMap, "dynamic:/color/0,0,0,0");
+    assert.ok(colorizedEffect.stateOverrides.some(value =>
+        value[2] === 27 && value[3] === 0));
+    assert.strictEqual(garment.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.deepEqual(garment.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(garment.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.strictEqual(garment.parameters.NormalMap.textureRes, staged.compositionTargets[1].texture);
+    assert.strictEqual(garment.parameters.SpecularMap.textureRes, staged.compositionTargets[2].texture);
+    assert.strictEqual(hybrid.parameters.DiffuseMap.textureRes, staged.compositionTargets[3].texture);
+    assert.strictEqual(hybrid.parameters.NormalMap.textureRes, staged.compositionTargets[4].texture);
+    assert.strictEqual(hybrid.parameters.SpecularMap.textureRes, staged.compositionTargets[5].texture);
+    assert.deepEqual(hybrid.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.strictEqual(skin.parameters.DiffuseMap.textureRes, originalSkinTexture);
+    assert.deepEqual(skin.transform, originalSkinTransform);
+    assert.equal(part.materialStatus, "configured-garment-colorized-policy");
+    assert.equal(part.compositionStatus, "configured-garment-colorized-attached");
+});
+
+test("configured outer garment uses its authored pattern while preserving private alpha", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const garment = AtomicEffectFixture({
+        texture: { path: "#neutral-proof" },
+        transform: [ 0, 0, 1, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    garment._characterGarmentMaterialFallback = true;
+    const part = {
+        partIndex: 5,
+        groupID: "outer",
+        partSourceRecordID: "female/outer/jacketaf01",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "female",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [ MeshFixture(garment) ]
+        } ],
+        textureContributions: [ {
+            layerIndex: 5,
+            partIndex: 5,
+            groupID: "outer",
+            source: {
+                partSourceRecordID: "female/outer/jacketaf01",
+                materialDefinitionPath: "res:/jacket.color"
+            },
+            materialValues: {
+                colors: [
+                    [ 0.1, 0.2, 0.3, 1 ],
+                    [ 0.4, 0.5, 0.6, 1 ],
+                    [ 0.7, 0.8, 0.9, 1 ]
+                ],
+                pattern: "Amarr_B",
+                patternColors: [
+                    [ 0.2, 0.1, 0.2, 1 ],
+                    [ 0.3, 0.2, 0.3, 1 ],
+                    [ 0.4, 0.3, 0.4, 1 ],
+                    [ 0, 0, 0, 1 ],
+                    [ 0, 0, 0, 1 ],
+                    [ 0, 0, 8, 8 ],
+                    15
+                ]
+            },
+            selectedTextures: [
+                { path: "res:/jacket/colorize_body_l.png", role: "colorize-layer", target: "body" },
+                { path: "res:/jacket/colorize_body_z.png", role: "colorize-zones", target: "body" }
+            ]
+        } ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.deepEqual(report.applied[0].surfaces[0].passes.map(value => value.mode), [
+        "configured-garment-clear",
+        "configured-authored-rgba",
+        "patterned-rgb"
+    ]);
+    const patternPass = report.applied[0].surfaces[0].passes[2];
+    assert.equal(patternPass.pattern.name, "Amarr_B");
+    assert.equal(patternPass.pattern.path, "res:/graphics/character/patterns/amarr_b_z.dds");
+    assert.deepEqual(patternPass.pattern.transform, [ 0, 0, 8, 8 ]);
+    assert.equal(patternPass.pattern.rotation, 15);
+    assert.equal(patternPass.rgbOperation, "replace");
+    assert.equal(patternPass.blend, "disabled");
+    const patternEffect = fixture.effects.find(value =>
+        /patternblit\.sm_hi$/u.test(value.effectFilePath));
+    assert.equal(patternEffect.textures.PatternMap,
+        "res:/graphics/character/patterns/amarr_b_z.dds");
+    assert.deepEqual(patternEffect.parameters.PatternColor1, [ 0.2, 0.1, 0.2, 1 ]);
+    assert.deepEqual(patternEffect.parameters.PatternTransform, [ 0, 0, 8, 8 ]);
+    assert.equal(patternEffect.parameters.PatternRotation, 15);
+    assert.strictEqual(garment.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.deepEqual(garment.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+});
 
 test("legacy exact upper sleeve uses the selected top from the same owner", () =>
 {
@@ -289,12 +1756,23 @@ test("legacy exact female tuck uses selected-top alpha and only its same-owner m
         partIndex: 16,
         ownerSelectionIndex: 13,
         groupID: "topmiddle",
-        source: { partSourceRecordID: "female/topmiddle/shirtcf01" },
+        source: {
+            partSourceRecordID: "female/topmiddle/shirtcf01",
+            materialDefinitionPath: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/generic02.color"
+        },
         selectedTextures: [ {
             path: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_l_4k.png",
             role: "colorize-layer",
             target: "body"
-        } ]
+        }, {
+            path: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_z_4k.png",
+            role: "colorize-zones",
+            target: "body"
+        } ],
+        materialValues: {
+            colors: [ [ 0.04, 0.05, 0.05 ], [ 0.08, 0.09, 0.1 ], [ 0.12, 0.13, 0.14 ] ],
+            pattern: ""
+        }
     } ];
     const planned = planLegacyExactFemaleTuckSupport(
         "female",
@@ -390,24 +1868,61 @@ test("legacy exact female tuck refuses authored and ambiguous fallback effects",
     ).reason, "exact-female-tuck-effect-shared");
 });
 
-test("legacy exact female stomach tuck keeps the shared body RGB by default", async () =>
+test("legacy exact female stomach tuck uses the selected top RGB by default", async () =>
 {
     const fixture = AtlasComposerFixture();
     const staged = ExactFemaleTuckStaged();
     const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged);
 
     assert.equal(report.status, "applied");
-    assert.equal(report.rgbSource, "shared-body-comparison");
+    assert.equal(report.rgbSource, "selected-top-colorized");
+    assert.equal(report.renderStateRule, "authored-decal-area-state-v1");
     assert.equal(report.pantsPartSourceRecordID, "female/bottomouter/pantscf01");
     assert.deepEqual(report.passes.map(value => value.mode), [
         "configured-authored-rgba",
         "configured-cut-alpha",
-        "configured-shared-rgb"
+        "colorized-rgb"
     ]);
     assert.strictEqual(
         staged.tuckEffect.parameters.DiffuseMap.textureRes,
         staged.compositionTargets[0].texture
     );
+    assert.equal(report.depthTest, "enabled-comparison");
+    assert.deepEqual(staged.tuckEffect.stateOverrides, []);
+});
+
+test("legacy exact female stomach tuck retains the rejected depth-disabled comparison", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        depthTest: false
+    });
+
+    assert.equal(report.depthTest, "disabled-exact-decal-coverage-workaround");
+    assert.deepEqual(staged.tuckEffect.stateOverrides, [
+        [ "Main", 0, 7, 0 ],
+        [ "Main", 0, 14, 0 ]
+    ]);
+});
+
+test("legacy exact female stomach tuck can reproduce the committed shared-body RGB path", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        useSharedBodyRgb: true
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.rgbSource, "historical-shared-body-comparison");
+    assert.equal(report.depthTest, "enabled-comparison");
+    assert.deepEqual(report.passes.map(value => value.mode), [
+        "configured-authored-rgba",
+        "configured-cut-alpha",
+        "configured-shared-rgb"
+    ]);
+    assert.deepEqual(staged.tuckEffect.stateOverrides, []);
 });
 
 test("legacy exact female stomach tuck pants-RGB experiment changes only its final RGB pass", async () =>
@@ -426,6 +1941,118 @@ test("legacy exact female stomach tuck pants-RGB experiment changes only its fin
         "colorized-rgb"
     ]);
     assert.equal(report.passes[2].rgbOperation, "replace");
+});
+
+test("legacy exact female stomach tuck mask comparison retains the mask without applying it", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        applyCutMask: false
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.maskApplication, "retained-not-applied-comparison");
+    assert.match(report.maskPath, /masktuck\/tuckmaskmid\/comp_body_m\.png$/u);
+    assert.deepEqual(report.passes.map(value => value.mode), [
+        "configured-authored-rgba",
+        "colorized-rgb"
+    ]);
+});
+
+test("legacy exact female stomach tuck can compare RGB without the body detail mask", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        useDetailMask: false
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.detailMask, "disabled-comparison");
+    assert.equal(report.passes.at(-1).detailMask, "disabled");
+});
+
+test("legacy exact female stomach tuck can compare an authored material RGB base", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        fillMaterialBase: true
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.baseRgbPolicy, "selected-top-material-color1-comparison");
+    assert.deepEqual(report.passes.map(value => value.mode), [
+        "configured-authored-rgba",
+        "configured-material-base-rgb-comparison",
+        "configured-cut-alpha",
+        "colorized-rgb"
+    ]);
+});
+
+test("legacy exact female stomach tuck can layer detail over its authored material RGB base", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        blendDetail: true,
+        fillMaterialBase: true
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.detailRgbOperation, "source-alpha-blend");
+    assert.equal(report.passes.at(-1).rgbOperation, "source-alpha-blend");
+});
+
+test("legacy exact female stomach tuck can isolate selected-top alpha", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        alphaMode: "opaque"
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.alphaPolicy, "opaque-comparison");
+    assert.deepEqual(report.alphaEvidence, {
+        status: "unavailable",
+        reason: "render-target-readback-unavailable"
+    });
+    assert.deepEqual(report.passes.map(value => value.mode), [
+        "configured-authored-rgba",
+        "configured-cut-alpha",
+        "colorized-rgb",
+        "configured-opaque-alpha-comparison"
+    ]);
+});
+
+test("legacy exact female stomach tuck can isolate inverse decal alpha", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        alphaMode: "transparent"
+    });
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.alphaPolicy, "transparent-comparison");
+    assert.equal(report.passes.at(-1).mode, "configured-transparent-alpha-comparison");
+});
+
+test("legacy exact female stomach tuck can compare its authored transform", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const staged = ExactFemaleTuckStaged();
+    staged.tuckEffect._characterAuthoredTransformUV0 = [ 0, 0, 0.5, 1 ];
+    const report = await fixture.composer.ComposeExactFemaleTuckSupport(staged, {
+        useAuthoredTransform: true
+    });
+
+    assert.equal(report.status, "applied");
+    assert.deepEqual(report.authoredSampleBounds, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(report.sampleBounds, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(staged.tuckEffect.transform, [ 0, 0, 0.5, 1 ]);
 });
 
 test("legacy female foundation cut selects only the exact ready boot-owned mask", () =>
@@ -460,12 +2087,15 @@ test("legacy female foundation cut selects only the exact ready boot-owned mask"
         planLegacyFemaleFoundationCutMask("female", configuredParts, contributions),
         {
             status: "ready",
-            bootPartIndex: 9,
-            bootPartSourceRecordID: "female/feet/bootscf01",
-            bootOwnerSelectionIndex: 7,
-            maskLayerIndex: 10,
-            maskPartSourceRecordID: "female/dependants/bootmasks/bootmaskshin",
-            maskPath: "res:/graphics/character/female/paperdoll/dependants/bootmasks/bootmaskshin/comp_body_m.png"
+            masks: [ {
+                owner: "female-bootscf01",
+                ownerPartIndex: 9,
+                ownerPartSourceRecordID: "female/feet/bootscf01",
+                ownerSelectionIndex: 7,
+                maskLayerIndex: 10,
+                maskPartSourceRecordID: "female/dependants/bootmasks/bootmaskshin",
+                maskPath: "res:/graphics/character/female/paperdoll/dependants/bootmasks/bootmaskshin/comp_body_m.png"
+            } ]
         }
     );
     assert.equal(
@@ -477,11 +2107,47 @@ test("legacy female foundation cut selects only the exact ready boot-owned mask"
         planLegacyFemaleFoundationCutMask("female", configuredParts, contributions).reason,
         "exact-female-boot-not-render-ready"
     );
-    configuredParts[0].renderStatus = "ready";
-    contributions[0].ownerSelectionIndex = -1;
+});
+
+test("legacy female foundation cut uses authored full-leg occlusion rather than garment names", () =>
+{
+    const configuredParts = [ {
+        groupID: "bottomouter",
+        partIndex: 15,
+        partSourceRecordID: "female/bottomouter/trousersfixture",
+        renderStatus: "ready"
+    } ];
+    const contributions = [ {
+        layerIndex: 15,
+        partIndex: 15,
+        ownerSelectionIndex: 13,
+        source: {
+            partSourceRecordID: "female/bottomouter/trousersfixture",
+            occludesModifiers: [ "tattoo/leftleg", "tattoo/rightleg" ]
+        },
+        selectedTextures: [ {
+            path: "res:/graphics/character/female/paperdoll/bottomouter/trousersfixture/colorize_body_l_4k.png",
+            role: "colorize-layer",
+            target: "body"
+        } ]
+    } ];
+
+    const planned = planLegacyFemaleFoundationCutMask(
+        "female",
+        configuredParts,
+        contributions
+    );
+    assert.equal(planned.status, "ready");
+    assert.equal(planned.masks[0].owner, "female-authored-full-leg-garment");
+    assert.match(planned.masks[0].maskPath, /trousersfixture\/colorize_body_l_4k\.png$/u);
+
+    contributions[0].source.occludesModifiers = [
+        "dependants/boottucking",
+        "dependants/pantstuck/medium"
+    ];
     assert.equal(
-        planLegacyFemaleFoundationCutMask("female", configuredParts, contributions).reason,
-        "exact-female-boot-owner-unresolved"
+        planLegacyFemaleFoundationCutMask("female", configuredParts, contributions).status,
+        "deferred"
     );
 });
 
@@ -720,12 +2386,14 @@ test("legacy configured consumer attachment rolls every effect back on partial f
     const replacement = { path: "#configured-consumer" };
     const first = AtomicEffectFixture({
         texture: { path: "#shared-body" },
-        transform: [ 0.1, 0.2, 0.3, 0.4 ]
+        transform: [ 0.1, 0.2, 0.3, 0.4 ],
+        materialDiffuseColor: [ 0.1, 0.2, 0.3, 1 ]
     });
     const second = AtomicEffectFixture({
         texture: { path: "#shared-body-2" },
         transform: [ 0.2, 0.1, 0.4, 0.3 ],
-        rejectTexture: replacement
+        rejectTexture: replacement,
+        materialDiffuseColor: [ 0.4, 0.5, 0.6, 1 ]
     });
     const firstTexture = first.parameters.DiffuseMap.textureRes;
     const secondTexture = second.parameters.DiffuseMap.textureRes;
@@ -733,7 +2401,11 @@ test("legacy configured consumer attachment rolls every effect back on partial f
     let failure = null;
     try
     {
-        commitLegacyConfiguredConsumerBindings([ first, second ], replacement);
+        commitLegacyConfiguredConsumerBindings(
+            [ first, second ],
+            replacement,
+            { neutralizeDiffuseColor: true }
+        );
     }
     catch (error)
     {
@@ -746,6 +2418,8 @@ test("legacy configured consumer attachment rolls every effect back on partial f
     assert.strictEqual(second.parameters.DiffuseMap.textureRes, secondTexture);
     assert.deepEqual(first.transform, [ 0.1, 0.2, 0.3, 0.4 ]);
     assert.deepEqual(second.transform, [ 0.2, 0.1, 0.4, 0.3 ]);
+    assert.deepEqual(first.materialDiffuseColor, [ 0.1, 0.2, 0.3, 1 ]);
+    assert.deepEqual(second.materialDiffuseColor, [ 0.4, 0.5, 0.6, 1 ]);
 });
 
 test("legacy configured consumer pixel contract cuts alpha before replacing RGB", () =>
@@ -760,25 +2434,37 @@ test("legacy configured consumer pixel contract cuts alpha before replacing RGB"
     assert.ok(Math.abs(result[3] - 0.3) < 1e-12);
 });
 
-test("legacy body atlas preserves authored consumers and updates only configured proof fallbacks", () =>
+test("legacy body atlas updates only proof fallbacks with a proven authored body-atlas contract", () =>
 {
     const texture = { path: "#composed-body" };
     const foundation = EffectFixture(false, [ 0, 0, 0.5, 1 ]);
-    const configuredProof = EffectFixture(true);
+    const configuredProof = EffectFixture(true, [ 0.2, 0.1, 0.6, 0.8 ]);
+    configuredProof._characterAuthoredBodyAtlasConsumer = true;
+    const ordinaryGarmentProof = EffectFixture(true);
     const configuredAuthored = EffectFixture(false);
+    const configuredBodyCarrier = EffectFixture(false);
+    configuredBodyCarrier._characterAuthoredBodyAtlasConsumer = true;
     const result = attachLegacyBodyDiffuse({
         meshes: [
             MeshFixture(foundation, { _characterFoundationRole: "body" }),
-            MeshFixture(configuredProof, { _characterPartIndex: 4 }),
-            MeshFixture(configuredAuthored, { _characterPartIndex: 5 })
+            MeshFixture(configuredProof, {
+                _characterPartIndex: 4,
+                _characterPartSourceRecordID: "female/dependants/tuck/basic"
+            }),
+            MeshFixture(ordinaryGarmentProof, { _characterPartIndex: 6 }),
+            MeshFixture(configuredAuthored, { _characterPartIndex: 5 }),
+            MeshFixture(configuredBodyCarrier, {
+                _characterPartIndex: 7,
+                _characterPartSourceRecordID: "female/bottomouter/pantscf01"
+            })
         ]
     }, texture);
 
     assert.deepEqual(result, {
-        total: 2,
+        total: 3,
         foundation: 1,
-        configuredProof: 1,
-        configuredPartIndices: [ 4 ],
+        configuredProof: 2,
+        configuredPartIndices: [ 4, 7 ],
         foundationBindings: [ {
             status: "retained",
             rule: "authored-transform-retained-v1",
@@ -790,52 +2476,90 @@ test("legacy body atlas preserves authored consumers and updates only configured
         } ],
         configuredProofBindings: [ {
             status: "experimental-policy",
-            rule: "legacy-opengl-full-atlas-identity-v1",
+            rule: "authored-transform-retained-v1",
             correctness: "unverified",
             partIndex: 4,
             groupID: null,
-            partSourceRecordID: null,
+            partSourceRecordID: "female/dependants/tuck/basic",
+            effectFilePath: null,
+            previousSampleBounds: [ 0.2, 0.1, 0.6, 0.8 ],
+            sampleBounds: [ 0.2, 0.1, 0.6, 0.8 ],
+            source: "shared-body-diffuse-target"
+        }, {
+            status: "experimental-policy",
+            rule: "authored-transform-retained-v1",
+            correctness: "unverified",
+            partIndex: 7,
+            groupID: null,
+            partSourceRecordID: "female/bottomouter/pantscf01",
             effectFilePath: null,
             previousSampleBounds: null,
-            sampleBounds: [ 0, 0, 1, 1 ],
+            sampleBounds: null,
             source: "shared-body-diffuse-target"
         } ]
     });
     assert.strictEqual(foundation.attachedTexture, texture);
     assert.equal(foundation.transform, null);
     assert.strictEqual(configuredProof.attachedTexture, texture);
-    assert.deepEqual(configuredProof.transform, [ 0, 0, 1, 1 ]);
+    assert.strictEqual(configuredBodyCarrier.attachedTexture, texture);
+    assert.equal(configuredProof.transform, null);
+    assert.equal(ordinaryGarmentProof.attachedTexture, null);
+    assert.equal(ordinaryGarmentProof.transform, null);
     assert.equal(configuredAuthored.attachedTexture, null);
 });
 
-test("legacy atlas composer preserves the browser fetch receiver", async () =>
+test("legacy body diffuse diagnostic can neutralize foundation lighting maps", () =>
 {
-    const originalFetch = globalThis.fetch;
-    let receiver = null;
+    const texture = { path: "#composed-body" };
+    const foundation = EffectFixture(false, [ 0, 0, 0.5, 1 ]);
 
-    try
-    {
-        globalThis.fetch = function()
-        {
-            receiver = this;
-            return Promise.resolve({ ok: false, status: 418 });
-        };
+    attachLegacyBodyDiffuse({
+        meshes: [ MeshFixture(foundation, { _characterFoundationRole: "body" }) ]
+    }, texture, { neutralLighting: true });
 
-        const composer = new CcpwglLegacyAtlasComposer({
-            tw2: { GetClass() {} },
-            resourceRoot: "http://127.0.0.1:3000/ccp/3453885/resources"
-        });
+    assert.strictEqual(foundation.attachedTexture, texture);
+    assert.equal(
+        foundation.parameters.NormalMap.resourcePath,
+        "res:/graphics/shared_texture/global/normal_flat.dds"
+    );
+    assert.equal(foundation.parameters.SpecularMap.resourcePath, "dynamic:/color/0,0,0,1");
+});
 
-        await assert.rejects(
-            composer.Compose({ sex: "female", textureContributions: [] }),
-            /HTTP 418/u
-        );
-        assert.strictEqual(receiver, globalThis);
-    }
-    finally
-    {
-        globalThis.fetch = originalFetch;
-    }
+test("GLES atlas composer loads resource bytes through tw2.resMan", async () =>
+{
+    const requests = [];
+    SetTestTw2({
+        GetClass() {},
+        resMan: {
+            BuildUrl(path)
+            {
+                requests.push([ "url", path ]);
+                return `/resources/${path.slice(5)}`;
+            },
+            async FetchRaw(url, responseType)
+            {
+                requests.push([ "fetch", url, responseType ]);
+                return new Uint8Array([ 1, 2, 3 ]).buffer;
+            }
+        }
+    });
+
+    const composer = new TnyGlesAtlasComposer();
+    await assert.rejects(
+        composer.Compose({ sex: "female", textureContributions: [] }),
+        /no readable PNG atlas metadata/u
+    );
+    assert.deepEqual(requests, [
+        [
+            "url",
+            "res:/graphics/character/female/paperdoll/archetypes/ccshape/cd_female_body_d_4k.png"
+        ],
+        [
+            "fetch",
+            "/resources/graphics/character/female/paperdoll/archetypes/ccshape/cd_female_body_d_4k.png",
+            "arraybuffer"
+        ]
+    ]);
 });
 
 test("legacy atlas composer reads exact normalized PNG placement metadata", () =>
@@ -857,6 +2581,47 @@ test("legacy atlas composer reads exact normalized PNG placement metadata", () =
         hasOffsetMetadata: true,
         hasPlacementMetadata: true
     });
+});
+
+test("GLES atlas composer resolves DDS placement from the hydrated library", async () =>
+{
+    const requested = [];
+    SetTestTw2({
+        GetClass() {},
+        resMan: {
+            BuildUrl(path) { requested.push(path); return path; },
+            async FetchRaw() { throw new Error("PNG fallback must not run"); }
+        }
+    });
+    const record = {
+        recordID: "res:/example/garment/colorize_body_l",
+        sourcePath: "res:/example/garment/colorize_body_l.png",
+        width: 1672,
+        height: 1191,
+        offsetX: 0.091797,
+        offsetY: 0.119629,
+        extentX: 0.816406,
+        extentY: 0.581543,
+        hasOffsetMetadata: true,
+        hasPlacementMetadata: true,
+        placementEncoding: "png-oFFs-pHYs-millionths",
+        placementPolicy: "ccp-character-atlas-millionths-v1",
+        placementStatus: "experimental-policy"
+    };
+    const source = {
+        Get(documentName, recordID)
+        {
+            assert.equal(documentName, "characterTextureMetadata");
+            assert.equal(recordID, record.recordID);
+            return record;
+        }
+    };
+    const composer = new TnyGlesAtlasComposer().SetTextureMetadataSource(source);
+
+    assert.deepEqual(await composer._ReadMetadata(
+        "RES:/Example/Garment/Colorize_Body_L.DDS"
+    ), ReadLibraryAtlasMetadata(record));
+    assert.deepEqual(requested, []);
 });
 
 test("legacy atlas composer rejects non-PNG bytes without fabricating placement", () =>
@@ -938,7 +2703,37 @@ test("legacy atlas composer explicitly defers every contribution it cannot compo
 
     assert.deepEqual(resolveLegacyBodyDiffuseContribution(patterned), {
         status: "deferred",
-        reason: "pattern-composition-unresolved"
+        reason: "pattern-colors-unresolved"
+    });
+
+    const fullyPatterned = resolveLegacyBodyDiffuseContribution({
+        ...patterned,
+        materialValues: {
+            ...patterned.materialValues,
+            pattern: "Amarr_B",
+            patternColors: [
+                [ 0.1, 0.2, 0.3, 1 ],
+                [ 0.4, 0.5, 0.6, 1 ],
+                [ 0.7, 0.8, 0.9, 1 ],
+                null,
+                null,
+                [ 0, 0, 8, 8 ],
+                20
+            ]
+        }
+    });
+
+    assert.equal(fullyPatterned.status, "ready");
+    assert.deepEqual(fullyPatterned.candidate.pattern, {
+        name: "Amarr_B",
+        path: "res:/graphics/character/patterns/amarr_b_z.dds",
+        colors: [
+            [ 0.1, 0.2, 0.3, 1 ],
+            [ 0.4, 0.5, 0.6, 1 ],
+            [ 0.7, 0.8, 0.9, 1 ]
+        ],
+        transform: [ 0, 0, 8, 8 ],
+        rotation: 20
     });
 
     const ready = resolveLegacyBodyDiffuseContribution({
@@ -984,6 +2779,29 @@ test("legacy atlas composer restores a typed owner cut mask before its colorized
         [ "colorized", 2 ],
         [ "colorized", 4 ]
     ]);
+    assert.deepEqual(planned.deferred, []);
+});
+
+test("legacy body atlas admits exact body diffuse overlays without a makeup exception", () =>
+{
+    const freckles = {
+        layerIndex: 20,
+        groupID: "makeup/freckles",
+        weight: 0.75,
+        selectedTextures: [ {
+            path: "res:/graphics/character/female/paperdoll/makeup/freckles/freckles_03/comp_body_d_4k.png",
+            target: "body",
+            role: "diffuse-overlay"
+        } ],
+        materialValues: null
+    };
+    const planned = planLegacyBodyDiffuseOperations([ freckles ]);
+
+    assert.deepEqual(planned.operations, [ {
+        operation: "alpha-overlay",
+        contribution: freckles,
+        texture: freckles.selectedTextures[0]
+    } ]);
     assert.deepEqual(planned.deferred, []);
 });
 
@@ -1039,6 +2857,47 @@ test("legacy atlas composer retains an ownerless cut mask as deferred", () =>
         layerIndex: 7,
         groupID: "bottomouter",
         reason: "cut-mask-owner-unresolved"
+    } ]);
+});
+
+test("legacy atlas keeps configured garment materials out of the shared body target", () =>
+{
+    const skinLayer = ColorizedContribution(2, 1, "topmiddle");
+    skinLayer.partIndex = 2;
+    const pants = ColorizedContribution(15, 12, "bottomouter");
+    pants.partIndex = 15;
+    pants.source = { partSourceRecordID: "male/bottomouter/pantsam01" };
+
+    const planned = planLegacyBodyDiffuseOperations([ skinLayer, pants ], {
+        excludePartIndices: new Set([ 15 ])
+    });
+
+    assert.deepEqual(planned.operations.map(value => value.contribution.partIndex), [ 2 ]);
+    assert.deepEqual(planned.deferred, [ {
+        layerIndex: 15,
+        groupID: "bottomouter",
+        reason: "configured-garment-material-owned-separately"
+    } ]);
+});
+
+test("legacy atlas retains authored-occluded layers without composing them", () =>
+{
+    const underwear = ColorizedContribution(13, 12, "bottomunderwear");
+    underwear.occludedBy = [ {
+        partIndex: 15,
+        groupID: "bottomouter",
+        partSourceRecordID: "male/bottomouter/pantsam01",
+        authoredValue: "bottomunderwear"
+    } ];
+    const skinLayer = ColorizedContribution(2, 1, "skin");
+
+    const planned = planLegacyBodyDiffuseOperations([ skinLayer, underwear ]);
+
+    assert.deepEqual(planned.operations.map(value => value.contribution.layerIndex), [ 2 ]);
+    assert.deepEqual(planned.deferred, [ {
+        layerIndex: 13,
+        groupID: "bottomunderwear",
+        reason: "authored-modifier-occluded"
     } ]);
 });
 
@@ -1109,12 +2968,23 @@ function ExactFemaleTuckContributions()
         partIndex: 16,
         ownerSelectionIndex: 13,
         groupID: "topmiddle",
-        source: { partSourceRecordID: "female/topmiddle/shirtcf01" },
+        source: {
+            partSourceRecordID: "female/topmiddle/shirtcf01",
+            materialDefinitionPath: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/generic02.color"
+        },
         selectedTextures: [ {
             path: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_l_4k.png",
             role: "colorize-layer",
             target: "body"
-        } ]
+        }, {
+            path: "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_z_4k.png",
+            role: "colorize-zones",
+            target: "body"
+        } ],
+        materialValues: {
+            colors: [ [ 0.04, 0.05, 0.05 ], [ 0.08, 0.09, 0.1 ], [ 0.12, 0.13, 0.14 ] ],
+            pattern: ""
+        }
     } ];
 }
 
@@ -1252,7 +3122,12 @@ function ExactFemaleLowerSleeveStaged()
     };
 }
 
-function AtlasComposerFixture({ renderSucceeds = true } = {})
+function AtlasComposerFixture({
+    renderSucceeds = true,
+    headNormalMode = "authored",
+    skinLightingMode = "authored",
+    tattooTextureOffsetY = 0
+} = {})
 {
     const renderedModes = [];
     const targets = [];
@@ -1278,15 +3153,24 @@ function AtlasComposerFixture({ renderSucceeds = true } = {})
     {
         static from(values)
         {
-            const texture = {
-                textureRes: null,
-                AttachTextureRes(value) { this.textureRes = value; }
-            };
+            const textureParameters = Object.fromEntries(
+                Object.keys(values.textures ?? {}).map(name => [ name, {
+                    textureRes: null,
+                    AttachTextureRes(value) { this.textureRes = value; }
+                } ])
+            );
             const effect = {
                 ...values,
                 techniques: { Main: {} },
                 stateOverrides: [],
-                parameters: { ...(values.parameters ?? {}), Texture: texture },
+                parameters: {
+                    ...(values.parameters ?? {}),
+                    ...textureParameters,
+                    Texture: textureParameters.Texture ?? {
+                        textureRes: null,
+                        AttachTextureRes(value) { this.textureRes = value; }
+                    }
+                },
                 GetPassCount() { return 1; },
                 SetTechniquePassStateOverride(...state)
                 {
@@ -1305,7 +3189,7 @@ function AtlasComposerFixture({ renderSucceeds = true } = {})
             this.name = name;
             this.width = width;
             this.height = height;
-            this.texture = { path: `#${name}` };
+            this.texture = { path: `#${name}`, IsGood: () => true };
             this.destroyed = false;
             targets.push(this);
         }
@@ -1319,9 +3203,25 @@ function AtlasComposerFixture({ renderSucceeds = true } = {})
         {
             return name === "Tw2Effect" ? Tw2Effect : Tw2RenderTarget;
         },
-        resMan: { async Watch() {} },
+        resMan: {
+            async Watch() {},
+            BuildUrl(path)
+            {
+                return path.replace(
+                    /^res:\//u,
+                    "http://127.0.0.1:3000/ccp/3453885/resources/"
+                );
+            },
+            async FetchRaw(path, responseType)
+            {
+                assert.match(path, /^http:\/\/127\.0\.0\.1:3000\/ccp\/3453885\/resources\//u);
+                assert.equal(responseType, "arraybuffer");
+                return arrayBuffer;
+            }
+        },
         device: {
             gl,
+            perObjectData: null,
             RenderFullScreenQuad(effect)
             {
                 renderedModes.push(effect.effectFilePath);
@@ -1335,11 +3235,12 @@ function AtlasComposerFixture({ renderSucceeds = true } = {})
         Chunk("IEND", Buffer.alloc(0))
     ]);
     const arrayBuffer = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength);
+    SetTestTw2(tw2);
     return {
-        composer: new CcpwglLegacyAtlasComposer({
-            tw2,
-            resourceRoot: "http://127.0.0.1:3000/ccp/3453885/resources",
-            fetchImpl: async () => ({ ok: true, arrayBuffer: async () => arrayBuffer })
+        composer: new TnyGlesAtlasComposer({
+            headNormalMode,
+            skinLightingMode,
+            tattooTextureOffsetY
         }),
         renderedModes,
         targets,
@@ -1361,11 +3262,21 @@ function EffectFixture(proofFallback, sampleBounds = null, resourcePath = "")
                     this.owner.attachedTexture = texture;
                 },
                 owner: null
-            }
+            },
+            NormalMap: TextureParameterFixture("res:/authored-normal.dds"),
+            SpecularMap: TextureParameterFixture("res:/authored-specular.dds")
         },
         SetParameters(values)
         {
             this.transform = [ ...values.TransformUV0 ];
+            return true;
+        },
+        SetTextures(values)
+        {
+            for (const [ name, value ] of Object.entries(values))
+            {
+                this.parameters[name]?.SetValue?.(value);
+            }
             return true;
         }
     };
@@ -1394,10 +3305,18 @@ function UseAllRetainedCutMasks({ retainedCutMaskPaths })
     return retainedCutMaskPaths;
 }
 
-function AtomicEffectFixture({ texture, transform, rejectTexture = null })
+function AtomicEffectFixture({
+    texture,
+    transform,
+    rejectTexture = null,
+    materialDiffuseColor = [ 1, 1, 1, 1 ]
+})
 {
     const effect = {
         transform: [ ...transform ],
+        materialDiffuseColor: [ ...materialDiffuseColor ],
+        techniques: { Main: [] },
+        stateOverrides: [],
         parameters: {
             DiffuseMap: {
                 textureRes: texture,
@@ -1408,23 +3327,81 @@ function AtomicEffectFixture({ texture, transform, rejectTexture = null })
                     if (value === rejectTexture) throw new Error("fixture texture rejection");
                     this.textureRes = value;
                     this.isAttached = Boolean(value);
+                },
+                SetValue(value)
+                {
+                    this.resourcePath = value;
+                    this.textureRes = { path: value, IsGood: () => true };
+                    this.isAttached = false;
+                    return true;
                 }
             },
+            NormalMap: TextureParameterFixture("res:/neutral-normal.dds"),
+            SpecularMap: TextureParameterFixture("res:/neutral-specular.dds"),
             TransformUV0: {
                 GetValue(out)
                 {
                     out.push(...effect.transform);
                     return out;
                 }
+            },
+            MaterialDiffuseColor: {
+                GetValue(out)
+                {
+                    out.push(...effect.materialDiffuseColor);
+                    return out;
+                }
             }
         },
         SetParameters(values)
         {
-            this.transform = [ ...values.TransformUV0 ];
+            if (values.TransformUV0) this.transform = [ ...values.TransformUV0 ];
+            if (values.MaterialDiffuseColor)
+            {
+                this.materialDiffuseColor = [ ...values.MaterialDiffuseColor ];
+            }
             return true;
+        },
+        GetPassCount()
+        {
+            return 1;
+        },
+        SetTechniquePassStateOverride(technique, pass, state, value)
+        {
+            this.techniques[technique][pass] ??= { state: [] };
+            const states = this.techniques[technique][pass].state;
+            const current = states.find(candidate => candidate.state === state);
+            if (current) current.value = value;
+            else states.push({ state, value });
+            this.stateOverrides.push([ technique, pass, state, value ]);
         }
     };
     return effect;
+}
+
+function TextureParameterFixture(resourcePath)
+{
+    return {
+        textureRes: { path: resourcePath, IsGood: () => true },
+        resourcePath,
+        isAttached: false,
+        AttachTextureRes(value)
+        {
+            this.textureRes = value;
+            this.isAttached = Boolean(value);
+        },
+        SetValue(value)
+        {
+            this.resourcePath = value;
+            this.textureRes = { path: value, IsGood: () => true };
+            this.isAttached = false;
+            return true;
+        },
+        IsGood()
+        {
+            return this.textureRes?.IsGood?.() === true;
+        }
+    };
 }
 
 function MeshFixture(effect, fields)

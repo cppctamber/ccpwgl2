@@ -1,27 +1,27 @@
 import {
-    CcpwglLegacyFoundationConstruction
-} from "./CcpwglLegacyFoundationConstruction.mjs";
+    TnyGlesFoundationConstruction
+} from "./TnyGlesFoundationConstruction.js";
 import {
-    CcpwglLegacyFoundationCoveragePolicy
-} from "./CcpwglLegacyFoundationCoveragePolicy.mjs";
-import { CcpwglLegacyTexturePolicy } from "./CcpwglLegacyTexturePolicy.mjs";
+    TnyGlesFoundationCoveragePolicy
+} from "./TnyGlesFoundationCoveragePolicy.js";
+import { TnyGlesTexturePolicy } from "./TnyGlesTexturePolicy.js";
 import {
     ValidateLegacyTextureContributions
-} from "./CcpwglLegacyTextureContributions.mjs";
+} from "./TnyGlesTextureContributions.js";
 
 /** Combines explicit legacy foundation policy with exact resolved plan parts. */
-export class CcpwglLegacyAppearanceConstruction
+export class TnyGlesAppearanceConstruction
 {
-    #foundationResolver;
+    _foundationResolver;
 
-    #foundationCoveragePolicy;
+    _foundationCoveragePolicy;
 
-    #texturePolicy;
+    _texturePolicy;
 
     constructor({
-        foundationResolver = new CcpwglLegacyFoundationConstruction(),
-        foundationCoveragePolicy = new CcpwglLegacyFoundationCoveragePolicy(),
-        texturePolicy = new CcpwglLegacyTexturePolicy()
+        foundationResolver = new TnyGlesFoundationConstruction(),
+        foundationCoveragePolicy = new TnyGlesFoundationCoveragePolicy(),
+        texturePolicy = new TnyGlesTexturePolicy()
     } = {})
     {
         if (typeof foundationResolver?.Resolve !== "function")
@@ -37,9 +37,9 @@ export class CcpwglLegacyAppearanceConstruction
             throw new TypeError("Legacy appearance construction requires a foundation coverage policy");
         }
 
-        this.#foundationResolver = foundationResolver;
-        this.#foundationCoveragePolicy = foundationCoveragePolicy;
-        this.#texturePolicy = texturePolicy;
+        this._foundationResolver = foundationResolver;
+        this._foundationCoveragePolicy = foundationCoveragePolicy;
+        this._texturePolicy = texturePolicy;
     }
 
     /** Produces foundation operations followed by every exact resolved part. */
@@ -72,13 +72,18 @@ export class CcpwglLegacyAppearanceConstruction
             }
             return { layerIndex, partIndex, groupID };
         });
-        const foundation = this.#foundationResolver.Resolve(paperdoll, appearancePlan);
+        const foundation = this._foundationResolver.Resolve(
+            paperdoll,
+            appearancePlan,
+            library
+        );
         const operations = foundation.operations.slice(0, -1);
-        const textureContributions = this.#texturePolicy.Resolve(
+        const textureContributions = this._texturePolicy.Resolve(
             library,
             paperdoll,
             appearancePlan
         );
+        const morphTargets = ResolveMorphTargets(appearancePlan);
         ValidateLegacyTextureContributions(
             textureContributions,
             expectedContributions,
@@ -113,10 +118,17 @@ export class CcpwglLegacyAppearanceConstruction
 
             if (configurationPath && geometryPath)
             {
-                const foundationCoverage = this.#foundationCoveragePolicy.Resolve({
+                const metadata = ResolvePartMetadata(
+                    library,
+                    common.partSourceRecordID,
+                    part.origin?.jsonPointer
+                );
+                const foundationCoverage = this._foundationCoveragePolicy.Resolve({
                     sex: foundation.sex,
+                    foundationLayout: foundation.evidence?.layout ?? null,
                     groupID,
-                    partSourceRecordID: common.partSourceRecordID
+                    partSourceRecordID: common.partSourceRecordID,
+                    metadata
                 });
 
                 configuredPartCount++;
@@ -154,9 +166,58 @@ export class CcpwglLegacyAppearanceConstruction
             configuredPartCount,
             deferredContributionCount,
             textureContributions,
+            morphTargets,
             operations
         };
     }
+}
+
+function ResolveMorphTargets(appearancePlan)
+{
+    if (!Array.isArray(appearancePlan.morphTargets)) return [];
+
+    return appearancePlan.morphTargets.map((value, index) =>
+    {
+        const modifierPath = String(value?.modifierPath ?? "").trim().toLowerCase();
+        const targetName = String(value?.targetName ?? "").trim();
+        const weight = Number(value?.weight);
+        const ownerGroupID = String(value?.owner?.groupID ?? "").trim();
+
+        if (!modifierPath.startsWith("utilityshapes/")
+            || !targetName
+            || !Number.isFinite(weight)
+            || !ownerGroupID)
+        {
+            throw new TypeError(
+                `Legacy appearance morph target ${index} is not an exact resolved request`
+            );
+        }
+
+        return {
+            modifierPath,
+            targetName,
+            weight,
+            ownerGroupID,
+            evidence: {
+                status: "policy",
+                rule: "legacy-gles-unique-normalized-morph-target-match-v1",
+                sourceStatus: value.origin?.kind ?? null,
+                document: value.origin?.document ?? null,
+                recordID: value.origin?.recordID ?? null,
+                jsonPointer: value.origin?.jsonPointer ?? null,
+                sourceRule: value.origin?.rule ?? null
+            }
+        };
+    });
+}
+
+function ResolvePartMetadata(library, recordID, jsonPointer)
+{
+    if (!recordID || typeof library?.Get !== "function") return null;
+    const source = library.Get("characterPartSources", recordID);
+    const match = String(jsonPointer ?? "").match(/^\/versions\/(\d+)$/u);
+    const version = match ? source?.versions?.[Number(match[1])] : null;
+    return version?.metadata ?? source?.metadata ?? null;
 }
 
 function RequireResourcePath(value, label)
@@ -177,5 +238,3 @@ function OptionalResourcePath(value)
     if (!result) return null;
     return RequireResourcePath(result, "optional contribution path");
 }
-
-export default CcpwglLegacyAppearanceConstruction;

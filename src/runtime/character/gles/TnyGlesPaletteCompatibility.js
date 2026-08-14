@@ -4,7 +4,7 @@ const originalIndices = new WeakMap();
  * Applies explicit geometry compatibility policies required by the temporary
  * legacy OpenGL character renderer.
  */
-export class CcpwglLegacyPaletteCompatibility
+export class TnyGlesPaletteCompatibility
 {
     /** Applies one declared compatibility policy to a fetched geometry resource. */
     static async Apply(geometryResource, policy, { gl = null } = {})
@@ -42,7 +42,6 @@ export class CcpwglLegacyPaletteCompatibility
         return report;
     }
 }
-
 function MaskMesh(mesh, bonePrefixes, gl)
 {
     const indices = mesh?.indexData;
@@ -167,5 +166,3 @@ function ValidatePolicy(policy)
         throw new TypeError("Unsupported legacy palette compatibility policy");
     }
 }
-
-export default CcpwglLegacyPaletteCompatibility;

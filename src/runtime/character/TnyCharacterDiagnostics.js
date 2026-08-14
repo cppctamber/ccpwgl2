@@ -30,6 +30,7 @@ export function createCharacterDiagnostics(character)
             layers: plan.layers.length,
             textures: plan.textures.length,
             coverages: plan.coverages.length,
+            morphTargets: plan.morphTargets?.length ?? 0,
             targets: plan.targets.length,
             bindings: plan.bindings.length,
             diagnostics: plan.diagnostics.map(value => ({
@@ -49,6 +50,14 @@ export function createCharacterDiagnostics(character)
             configuredPartCount: construction.configuredPartCount ?? 0,
             deferredContributionCount: construction.deferredContributionCount ?? 0,
             textureContributionCount: construction.textureContributions?.length ?? 0,
+            morphTargetCount: construction.morphTargets?.length ?? 0,
+            morphTargets: construction.morphTargets?.map(value => ({
+                modifierPath: value.modifierPath,
+                targetName: value.targetName,
+                weight: value.weight,
+                ownerGroupID: value.ownerGroupID,
+                evidence: value.evidence ? { ...value.evidence } : null
+            })) ?? [],
             textureContributions: construction.textureContributions?.map(value => ({
                 ...value,
                 source: { ...value.source },

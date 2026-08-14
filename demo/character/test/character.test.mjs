@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CcpwglCharacter } from "../src/character/CcpwglCharacter.mjs";
+import { TnyCharacter } from "./runtime-character-modules.mjs";
 
 function CreateFixture()
 {
@@ -12,6 +12,7 @@ function CreateFixture()
         layers: [],
         textures: [],
         coverages: [],
+        morphTargets: [ { targetName: "PinchLeftHips", weight: 1 } ],
         targets: [],
         bindings: [],
         diagnostics: [
@@ -51,6 +52,13 @@ function CreateFixture()
         sourceBuild: "1",
         sex: "female",
         lod: 0,
+        morphTargets: [ {
+            modifierPath: "utilityshapes/pinchlefthipsshape",
+            targetName: "PinchLeftHips",
+            weight: 1,
+            ownerGroupID: "topmiddle",
+            evidence: { status: "derived", rule: "test" }
+        } ],
         operations: [ { operation: "test" } ]
     };
     const constructionResolver = {
@@ -75,7 +83,7 @@ function CreateFixture()
 test("character resolves only a library-owned paper doll and exposes a proof snapshot", () =>
 {
     const fixture = CreateFixture();
-    const character = new CcpwglCharacter({
+    const character = new TnyCharacter({
         libraryManager: fixture.manager,
         appearanceResolver: fixture.resolver,
         constructionResolver: fixture.constructionResolver
@@ -96,12 +104,20 @@ test("character resolves only a library-owned paper doll and exposes a proof sna
         character.GetDiagnostics().construction.paperdollRecordID,
         "3000001"
     );
+    assert.equal(character.GetDiagnostics().plan.morphTargets, 1);
+    assert.deepEqual(character.GetDiagnostics().construction.morphTargets, [ {
+        modifierPath: "utilityshapes/pinchlefthipsshape",
+        targetName: "PinchLeftHips",
+        weight: 1,
+        ownerGroupID: "topmiddle",
+        evidence: { status: "derived", rule: "test" }
+    } ]);
 });
 
 test("character leaves its previous selection intact when resolution fails", () =>
 {
     const fixture = CreateFixture();
-    const character = new CcpwglCharacter({
+    const character = new TnyCharacter({
         libraryManager: fixture.manager,
         appearanceResolver: fixture.resolver,
         constructionResolver: fixture.constructionResolver
@@ -128,7 +144,7 @@ test("character publishes paper doll, plan, and construction atomically", () =>
             return fixture.construction;
         }
     };
-    const character = new CcpwglCharacter({
+    const character = new TnyCharacter({
         libraryManager: fixture.manager,
         appearanceResolver: fixture.resolver,
         constructionResolver
@@ -158,7 +174,7 @@ test("character sends the exact construction and plan to its renderer", async ()
             return Promise.resolve({ status: "committed" });
         }
     };
-    const character = new CcpwglCharacter({
+    const character = new TnyCharacter({
         libraryManager: fixture.manager,
         appearanceResolver: fixture.resolver,
         constructionResolver: fixture.constructionResolver,
