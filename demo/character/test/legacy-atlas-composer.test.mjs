@@ -307,7 +307,7 @@ test("head planner applies the complete experimental cosmetic order while retain
     ]);
 });
 
-test("head planner schedules an exact mode-1 facial tattoo for mesh projection baking", () =>
+test("head planner schedules an exact mode-1 facial tattoo as an authored atlas", () =>
 {
     const definitionPath = "res:/graphics/character/female/paperdoll/tattoo/head/tattoofacem07/projection.proj";
     const texturePath = "res:/graphics/character/decals/tattoos/face/tattoofacem07/tattoofacem07_d.dds";
@@ -351,7 +351,7 @@ test("head planner schedules an exact mode-1 facial tattoo for mesh projection b
         value.colors[0]
     ]), [ [
         "tattoo/head",
-        "mesh-projected-head-decal",
+        "alpha-overlay",
         60,
         texturePath,
         definitionPath,
@@ -360,7 +360,7 @@ test("head planner schedules an exact mode-1 facial tattoo for mesh projection b
     assert.deepEqual(plan.deferred, []);
 });
 
-test("configured head bakes a proved mode-1 tattoo with an explicit texture offset", async () =>
+test("configured head composites a shipped facial tattoo as one authored atlas", async () =>
 {
     const definitionPath = "res:/graphics/character/female/paperdoll/tattoo/head/tattoofacem07/projection.proj";
     const texturePath = "res:/graphics/character/decals/tattoos/face/tattoofacem07/tattoofacem07_d.dds";
@@ -463,28 +463,23 @@ test("configured head bakes a proved mode-1 tattoo with an explicit texture offs
         compositionTargets: []
     });
     const diffuse = report.channels.find(value => value.name === "DiffuseMap");
-    const tattoo = diffuse.passes.find(value => value.mode === "mesh-projected-head-tattoo");
+    const tattoo = diffuse.passes.find(value =>
+        value.mode === "configured-head-authored-tattoo-atlas");
     const bake = fixture.effects.find(value =>
         value.effectFilePath.includes("skinnedavatartattoobaking"));
 
     assert.equal(report.status, "applied");
     assert.equal(tattoo.path, texturePath);
     assert.equal(tattoo.projectionDefinitionPath, definitionPath);
-    assert.deepEqual(tattoo.color, [ 0.07, 0.16, 0.25, 1 ]);
-    assert.deepEqual(tattoo.bake.constants.position, [ 0, 1.642, 0.031, 0 ]);
-    assert.deepEqual(tattoo.bake.constants.options, [ 0, 1, 0.25, 0 ]);
-    assert.equal(tattoo.bake.constants.textureOffsetY, 0.25);
-    assert.deepEqual(tattoo.sourceBounds, [ 0, 0, 1, 1 ]);
-    const tattooComposite = fixture.effects.find(value =>
-        value.effectFilePath.includes("simpleblit")
-        && value.parameters?.MaskMap?.textureRes);
-    assert.deepEqual(tattooComposite.parameters.SourceUVs, [ 0, 0, 1, 1 ]);
-    assert.deepEqual(tattooComposite.parameters.MaskReverseUV, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(tattoo.authoredColorSelection[0], [ 0.07, 0.16, 0.25, 1 ]);
+    assert.equal(tattoo.colorSelectionApplication, "retained-not-applied");
+    assert.deepEqual(tattoo.placement, [ 0, 0, 1, 1 ]);
+    assert.equal(bake, undefined);
     assert.deepEqual(
         fixture.targets.map(value => [ value.width, value.height ]),
-        [ [ 2048, 2048 ], [ 2048, 2048 ], [ 2048, 2048 ], [ 2048, 2048 ] ]
+        [ [ 2048, 2048 ], [ 2048, 2048 ], [ 2048, 2048 ] ]
     );
-    assert.equal(geometryRenders.length, 1);
+    assert.equal(geometryRenders.length, 0);
 });
 
 test("head planner retains an eyeliner-owned eyelash dependency for the separate face-card path", () =>

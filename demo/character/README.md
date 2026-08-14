@@ -423,19 +423,18 @@ separate face-card binding rather than an atlas layer. Tattoo `comp_head_z`
 inputs are not mislabeled as ordinary colourized atlas layers. For an exact
 `tattoo/head` source, the GLES proof resolves and retains its
 `projection.proj`, projected DDS, selected linear colours, weight, and sparse
-order. The older demo was inspected as a guide and uses a complete-atlas route,
-but reproducing its source-alpha contract in the current compositor visibly
-darkens the whole head. DDS decoding confirms A01 is a valid 2048x1024 DXT5
-texture with sparse authored alpha, so the failure is a compositor-contract
-mismatch rather than missing data. The GLES adapter therefore retains the
-visible mode-1 mesh-projection checkpoint. Shader inspection proves the
-projection position controls the coverage cylinder while `TattooOptions.z`
-offsets the artwork within that cylinder. The demo-only `tattooV` query tests
-that texture offset without changing authored records; `+0.25` visibly moves
-the mark down and `-0.25` moves it up in the GLES result. No nonzero default is
-accepted yet. Other projection modes and the wider corpus remain open.
-Unsupported projection modes remain
-deferred with every authored field retained.
+order. The older demo was inspected as a guide and uses a complete-atlas route.
+Independent shader inspection then disproved the replacement path: mode-1
+projection maps a raw decal through the head mesh, while the shipped 2048x1024
+DXT5 head-tattoo DDS already contains sparse authored alpha in the complete
+head-atlas layout. Applying both is a second placement operation and produced
+the persistent vertical error. The GLES adapter now alpha-composites the
+shipped atlas directly with identity placement. It retains the projection
+definition and selected linear colours in the report, but deliberately records
+the colour selection as not applied because the working reference consumes the
+authored colour texture. Projection parameters remain available for an engine
+that proves it has a raw projector decal. Other projection modes and the wider
+corpus remain open; unsupported modes retain every authored field.
 
 Live sampler inspection confirms both authored tattoo inputs use clamp-to-edge;
 changing their wrap mode is neither required nor supported by the observed
@@ -535,24 +534,16 @@ the library, and its identity prevents it being mistaken for a game character.
 Eyeshadow, augmentation, and blemish exercise ordinary retained head inputs.
 The tattoo exercises a separate projection-backed operation. The fixture's
 exact `TattooFaceA01` definition resolves its retained projection definition,
-projected DDS, neutral selected colour, and priority `60`. A live comparison of
-the former `TattooFaceM07` fixture disproved the
-earlier full-atlas interpretation: it coloured nearly the whole head instead
-of placing the authored facial mark. The replacement mesh-to-atlas bake uses
-the retained mode-1 transform `[-0.5, 0, 2, 2]`, which expands the authored head
-bounds into the complete local target. Independent decoding proves that this
-specific retained m07 DDS authors a broad bilateral eye band, so that wide
-result is source content rather than a wrap-mode failure. The new A01 fixture
-exposed a separate WebGL render-target convention: sampling the mesh-bake
-target with a newly added vertical flip displayed the tattoo upside down. The
-operator report disproved that flip. Its final composite now uses upright
-`[0, 0, 1, 1]` source bounds. Shader inspection also proves the decimal option
-encoding is `10 * flipY + flipX`; the GLES carrier already supplies the
-vertical texture convention, so this adapter applies A01's X bit (`1`) without
-applying its Y bit a second time. The authored pair (`11`) remains retained in
-the bake report. Other projection
-modes, ink presentation across skin tones, and the broader tattoo corpus remain
-open.
+authored DDS, neutral selected colour, and priority `60`. Earlier experiments
+sent that already positioned atlas through the mode-1 mesh projector, producing
+upside-down or vertically displaced results as flip and offset values changed.
+The working legacy route and the shipped texture dimensions agree on the safer
+interpretation: this input is a complete authored head atlas. The current GLES
+proof therefore uses one upright `[0, 0, 1, 1]` alpha overlay and creates no
+tattoo-baking render target. The exact projection record remains attached as
+provenance rather than being discarded or reinterpreted. Ink presentation
+across skin tones and the broader tattoo corpus still require live comparison
+against the old editor before parity is claimed.
 
 The selected foundation skin is no longer guessed from the generic head
 folder. For paper doll `3000001`, the retained source join is

@@ -2156,7 +2156,9 @@ export class TnyGlesAtlasComposer
             effect,
             viewport: Viewport(targetSize, placement),
             report: {
-                mode: `configured-${operation?.target ?? "head"}-source-alpha-overlay`,
+                mode: operation?.projectionDefinitionPath
+                    ? "configured-head-authored-tattoo-atlas"
+                    : `configured-${operation?.target ?? "head"}-source-alpha-overlay`,
                 shader: COPY_BLIT_SHADER,
                 path,
                 groupID: operation.groupID,
@@ -2164,6 +2166,11 @@ export class TnyGlesAtlasComposer
                 role: operation.role,
                 weight,
                 placement,
+                projectionDefinitionPath: operation?.projectionDefinitionPath ?? null,
+                authoredColorSelection: operation?.colors?.map(value => [ ...value ]) ?? null,
+                colorSelectionApplication: operation?.projectionDefinitionPath
+                    ? "retained-not-applied"
+                    : null,
                 uv: DescribeUvDecision(metadata, targetSize, placement)
             }
         };
@@ -2667,7 +2674,10 @@ function ResolveLegacyHeadTattooProjection(contribution, source)
     const operation = {
         path: projection.texturePath,
         candidatePaths: [ projection.texturePath ],
-        op: "mesh-projected-head-decal",
+        // Shipped head-tattoo textures are already authored in the complete
+        // head-atlas layout. Keep the projection definition as provenance,
+        // but do not apply its mesh projection a second time in this adapter.
+        op: "alpha-overlay",
         role: "projection-decal",
         groupID: contribution.groupID,
         layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID),
