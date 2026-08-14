@@ -516,8 +516,10 @@ already known to be incorrect.
 `demo:synthetic-head-layers`. It clones hydrated `3000001` and adds exact
 retained donor selections for `Freckles_03` (`3003877`), the female
 `TanktopF01` singlet (`3020292`), eyeshadow (`3003957`), female face
-augmentation (`3020032`), the retained female `TattooFaceA01` resource, and
-the exact female `Light_01` blemish record. `TattooFaceA01` is paired with the
+augmentation (`3020032`), `HeroScar03` (`3019595`), female body augmentation
+`BodyAugmentationF01_GoldCamo` (`3020068`), the retained female
+`TattooFaceG10` resource, and the exact female `Light_01` blemish record.
+`TattooFaceG10` is paired with the
 retained neutral `default_a` tattoo colour so placement can be reviewed without
 the authored `blue_a` ink used by paper doll `3019595`. The singlet replaces
 only the base paper doll's
@@ -534,7 +536,7 @@ dropped. The remaining mismatch is an unresolved shared-skin/carrier-boundary
 problem; this adapter must not duplicate or stretch either authored overlay to
 hide it.
 The tattoo exercises a separate projection-backed operation. The fixture's
-exact `TattooFaceA01` definition resolves its retained projection definition,
+exact `TattooFaceG10` definition resolves its retained projection definition,
 authored DDS, neutral selected colour, and priority `60`. Earlier experiments
 sent that already positioned atlas through the mode-1 mesh projector, producing
 upside-down or vertically displaced results as flip and offset values changed.
@@ -603,6 +605,30 @@ leaving underwear and garment specular maps on their own materials; those maps
 are never copied onto nude foundation carriers. Missing or ambiguous foundation
 evidence defers the target instead of inventing a sex-wide path. This is a GLES
 renderer realization with structural tests; live pixel parity remains pending.
+The expanded fixture also exercises both scar families rather than treating
+their names as aliases. `makeup/scarring` supplies retained twist-normal and
+specular contributions, while `scars/head/HeroScar03` independently supplies
+diffuse, twist-normal, and specular inputs. Its authored specular control is an
+explicit full-normalized 16x16 constant PNG. Full-normalized placement owns
+the destination in that case, so the adapter stretches it over the head target
+instead of rejecting it solely because its control-map pixel aspect is square.
+The same rule covers other explicitly full-normalized low-resolution control
+maps without a path-specific scar exception.
+
+The selected body augmentation retains a body colourize layer plus plain normal
+and specular inputs. It does not retain a zone selector or selected material
+join in the delivered library, so diffuse colourization remains diagnosed as
+unresolved rather than fabricated. Its exact specular overlay is admitted to
+the skin-only body specular target. Its plain `comp_body_n` remains retained but
+unapplied because only additive `tn` and masked-replacement `mn` semantics are
+currently proved; interpreting a plain `n` as replacement would be a guess.
+`makeup/eyebrowbase` is likewise not a selectable part in the reviewed library:
+the old GLES editor used it as a brow-support dependency/carrier. The current
+adapter must resolve that ownership rather than inventing a cosmetic selection.
+Arm/body tattoo resources and body-enabled projection definitions are indexed,
+but no reviewed paper doll selects them. A body tattoo therefore remains an
+explicit projection-executor fixture gap, not a missing file or a silently
+dropped head-atlas pass.
 The older prototype confirms only the useful topology of separate head/body
 diffuse, normal, and specular outputs. Its changing numeric layer tables,
 lexical makeup ordering, default colours, and projection-strength controls are

@@ -36,6 +36,10 @@ const HEAD_COMPOSITION_GROUP_ORDER = new Map([
 const PROVED_HEAD_SKIN_MAKEUP_GROUPS = new Set([
     ...[ ...HEAD_COMPOSITION_GROUP_ORDER.keys() ].filter(value => value !== "tattoo/head")
 ]);
+const PROVED_BODY_SKIN_MAKEUP_GROUPS = new Set([
+    ...PROVED_HEAD_SKIN_MAKEUP_GROUPS,
+    "makeup/bodyaugmentations"
+]);
 const NEUTRAL_SPECULAR = "res:/dx9/model/decal/shared/bw_000_000_015.dds";
 const FEMALE_BOOT_PART = "female/feet/bootscf01";
 const FEMALE_BOOT_MASK_PART = "female/dependants/bootmasks/bootmaskshin";
@@ -2294,7 +2298,11 @@ export class TnyGlesAtlasComposer
     {
         const metadata = await this._ReadMetadata(path);
         const placement = Placement(metadata);
-        RequireCompatibleTargetAspect(path, ResolveTargetSize(metadata), targetSize);
+        const fullNormalized = BoundsEqual(placement, [ 0, 0, 1, 1 ]);
+        if (!fullNormalized)
+        {
+            RequireCompatibleTargetAspect(path, ResolveTargetSize(metadata), targetSize);
+        }
         const Effect = RequireClass(tw2, "Tw2Effect");
         const weight = Number.isFinite(operation?.weight) ? operation.weight : 1;
         const effect = Effect.from({
@@ -2325,6 +2333,9 @@ export class TnyGlesAtlasComposer
                 materialControls: operation.materialControls ?? null,
                 weight,
                 placement,
+                samplingContract: fullNormalized
+                    ? "full-normalized-stretch"
+                    : "authored-atlas-placement",
                 projectionDefinitionPath: operation?.projectionDefinitionPath ?? null,
                 authoredColorSelection: operation?.colors?.map(value => [ ...value ]) ?? null,
                 colorSelectionApplication: operation?.projectionDefinitionPath
@@ -2601,6 +2612,12 @@ function SortLegacyCompositionOperations(operations, orderRule)
 /** Resolves one retained contribution for the bounded legacy body-diffuse proof. */
 export function resolveLegacyBodyDiffuseContribution(contribution)
 {
+    const targetsBody = contribution?.selectedTextures?.some(value =>
+        value?.target === "body");
+    if (!targetsBody)
+    {
+        return { status: "deferred", reason: "body-target-unavailable" };
+    }
     const detail = contribution?.selectedTextures?.find(value =>
         value.target === "body" && value.role === "colorize-layer");
     const zones = contribution?.selectedTextures?.find(value =>
@@ -2848,7 +2865,7 @@ export function resolveLegacyBodyMaterialChannels(contributions)
 
     for (const { contribution } of ordered)
     {
-        const currentProof = PROVED_HEAD_SKIN_MAKEUP_GROUPS.has(contribution?.groupID);
+        const currentProof = PROVED_BODY_SKIN_MAKEUP_GROUPS.has(contribution?.groupID);
         for (const texture of (contribution?.selectedTextures ?? []).filter(value =>
             value?.target === "body"
             && [ "normal-overlay", "twist-normal", "specular-overlay" ].includes(value?.role)))
@@ -2878,7 +2895,14 @@ export function resolveLegacyBodyMaterialChannels(contributions)
             }
             else if (texture.role === "normal-overlay")
             {
-                result.normal.push({ ...operation, op: "normal-replace" });
+                if (contribution?.groupID === "makeup/bodyaugmentations")
+                {
+                    result.deferred.push({
+                        ...operation,
+                        reason: "body-normal-replacement-unproved"
+                    });
+                }
+                else result.normal.push({ ...operation, op: "normal-replace" });
             }
             else
             {

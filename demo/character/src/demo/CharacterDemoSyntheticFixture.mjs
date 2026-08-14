@@ -11,6 +11,8 @@ export function InstallSyntheticHeadLayerFixture(manager)
     const singletDonor = RequireRecord(manager, "paperdolls", "3020292");
     const eyeshadowDonor = RequireRecord(manager, "paperdolls", "3003957");
     const augmentationDonor = RequireRecord(manager, "paperdolls", "3020032");
+    const heroScarDonor = RequireRecord(manager, "paperdolls", "3019595");
+    const bodyAugmentationDonor = RequireRecord(manager, "paperdolls", "3020068");
     // Keep projection placement independent from the blue_a ink authored on
     // paper doll 3019595. These are retained female catalog records, not demo
     // identities or hand-authored resource paths.
@@ -28,13 +30,15 @@ export function InstallSyntheticHeadLayerFixture(manager)
     };
     const modifiers = [
         ...base.modifiers.filter(value =>
-            ![ "makeup/freckles", "topmiddle" ].includes(
+            ![ "makeup/freckles", "makeup/bodyaugmentations", "scars/head", "topmiddle" ].includes(
                 value?.modifierLocationID?.modifierKey
             )),
         RequireModifier(frecklesDonor, "makeup/freckles"),
         RequireModifier(singletDonor, "topmiddle"),
         RequireModifier(eyeshadowDonor, "makeup/eyeshadow"),
         RequireModifier(augmentationDonor, "makeup/augmentations"),
+        RequireModifier(heroScarDonor, "scars/head"),
+        RequireModifier(bodyAugmentationDonor, "makeup/bodyaugmentations"),
         tattooModifier,
         {
             modifierLocationID: RequireRecord(manager, "characterModifierLocations", "129"),

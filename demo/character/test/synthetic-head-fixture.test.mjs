@@ -11,6 +11,8 @@ test("synthetic head fixture combines exact retained donors without changing the
     const eyeshadow = Modifier("makeup/eyeshadow", "415");
     const freckles = Modifier("makeup/freckles", "38");
     const augmentation = Modifier("makeup/augmentations", "15635");
+    const heroScar = Modifier("scars/head", "124");
+    const bodyAugmentation = Modifier("makeup/bodyaugmentations", "2195");
     const tattooLocation = { recordID: "30", modifierKey: "tattoo/head" };
     const tattooResource = {
         recordID: "527",
@@ -49,6 +51,8 @@ test("synthetic head fixture combines exact retained donors without changing the
         [ "paperdolls/3020292", Donor("3020292", singlet) ],
         [ "paperdolls/3003957", Donor("3003957", eyeshadow, eyeshadowColor) ],
         [ "paperdolls/3020032", Donor("3020032", augmentation) ],
+        [ "paperdolls/3019595", Donor("3019595", heroScar) ],
+        [ "paperdolls/3020068", Donor("3020068", bodyAugmentation) ],
         [ "characterModifierLocations/30", tattooLocation ],
         [ "characterResources/527", tattooResource ],
         [ "characterColorLocations/26", tattooColorLocation ],
@@ -85,11 +89,13 @@ test("synthetic head fixture combines exact retained donors without changing the
         eyeshadow
     ]);
     assert.strictEqual(result.modifiers[4], augmentation);
-    assert.deepEqual(result.modifiers[5], tattoo);
-    assert.strictEqual(result.modifiers[5].modifierLocationID, tattooLocation);
-    assert.strictEqual(result.modifiers[5].paperdollResourceID, tattooResource);
-    assert.equal(result.modifiers[6].modifierLocationID.modifierKey, "makeup/blemish");
-    assert.equal(result.modifiers[6].paperdollResourceID.recordID, "3744");
+    assert.strictEqual(result.modifiers[5], heroScar);
+    assert.strictEqual(result.modifiers[6], bodyAugmentation);
+    assert.deepEqual(result.modifiers[7], tattoo);
+    assert.strictEqual(result.modifiers[7].modifierLocationID, tattooLocation);
+    assert.strictEqual(result.modifiers[7].paperdollResourceID, tattooResource);
+    assert.equal(result.modifiers[8].modifierLocationID.modifierKey, "makeup/blemish");
+    assert.equal(result.modifiers[8].paperdollResourceID.recordID, "3744");
     assert.equal(result.modifiers.includes(baseFreckles), false);
     assert.equal(result.modifiers.includes(baseTop), false);
     assert.deepEqual(result.colorSelections, [ baseColor, eyeshadowColor, tattooColor ]);

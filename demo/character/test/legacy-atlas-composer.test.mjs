@@ -150,6 +150,31 @@ test("body lighting planner admits proved skin specular and defers garment specu
     } ]);
 });
 
+test("body augmentation keeps plain normals unresolved while admitting exact specular", () =>
+{
+    const plan = resolveLegacyBodyMaterialChannels([ {
+        layerIndex: 8,
+        groupID: "makeup/bodyaugmentations",
+        source: {
+            partSourceRecordID: "female/makeup/bodyaugmentations/bodyaugmentation_f01"
+        },
+        selectedTextures: [
+            { path: "res:/body-augmentation-n.png", role: "normal-overlay", target: "body" },
+            { path: "res:/body-augmentation-s.png", role: "specular-overlay", target: "body" }
+        ]
+    } ]);
+
+    assert.deepEqual(plan.normal, []);
+    assert.deepEqual(plan.specular.map(value => ({ path: value.path, op: value.op })), [ {
+        path: "res:/body-augmentation-s.png",
+        op: "alpha-overlay"
+    } ]);
+    assert.deepEqual(plan.deferred.map(value => ({ path: value.path, reason: value.reason })), [ {
+        path: "res:/body-augmentation-n.png",
+        reason: "body-normal-replacement-unproved"
+    } ]);
+});
+
 test("body normal attachment includes split standard sleeve carriers only once", () =>
 {
     const attached = [];
@@ -967,6 +992,44 @@ test("configured head restores eyebrow fallback at its ordered position", async 
         applied: [ "layerWeight" ],
         retainedNotApplied: [ "colorSelectionWeight", "gloss", "specularColors" ]
     });
+});
+
+test("full-normalized control overlays may stretch independently of pixel aspect", async () =>
+{
+    const fixture = AtlasComposerFixture({ headNormalMode: "detail" });
+    fixture.composer.SetTextureMetadataSource({
+        Get(documentName, recordID)
+        {
+            assert.equal(documentName, "characterTextureMetadata");
+            return {
+                recordID,
+                sourcePath: `${recordID}.png`,
+                width: 16,
+                height: 16,
+                hasOffsetMetadata: true,
+                hasPlacementMetadata: true,
+                offsetX: 0,
+                offsetY: 0,
+                extentX: 1,
+                extentY: 1
+            };
+        }
+    });
+
+    const pass = await fixture.composer._CreateAuthoredOverlayPass(
+        "res:/scar/comp_head_s.png",
+        [ 2048, 1024 ],
+        {
+            target: "head",
+            groupID: "scars/head",
+            layerIndex: 3,
+            role: "specular-overlay",
+            weight: 1
+        }
+    );
+
+    assert.deepEqual(pass.viewport, [ 0, 0, 2048, 1024 ]);
+    assert.equal(pass.report.samplingContract, "full-normalized-stretch");
 });
 
 test("eyebrow colour follows the selected family preset before the sibling fallback", () =>
@@ -2979,7 +3042,7 @@ test("legacy atlas composer explicitly defers every contribution it cannot compo
 
     assert.deepEqual(resolveLegacyBodyDiffuseContribution(base), {
         status: "deferred",
-        reason: "body-colorize-layer-unresolved"
+        reason: "body-target-unavailable"
     });
 
     const detail = {
