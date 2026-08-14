@@ -16,7 +16,7 @@ export function InstallSyntheticHeadLayerFixture(manager)
     // identities or hand-authored resource paths.
     const tattooModifier = {
         modifierLocationID: RequireRecord(manager, "characterModifierLocations", "30"),
-        paperdollResourceID: RequireRecord(manager, "characterResources", "505"),
+        paperdollResourceID: RequireRecord(manager, "characterResources", "527"),
         paperdollResourceVariation: 0
     };
     const tattooColor = {

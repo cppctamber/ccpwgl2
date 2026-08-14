@@ -80,6 +80,17 @@ export function resolveLegacyBodyFoundationPath(staged)
     return BODY_FOUNDATIONS[staged?.sex] ?? null;
 }
 
+/** Resolves the exact retained body specular foundation without inventing a path. */
+export function resolveLegacyBodyFoundationSpecularPath(staged)
+{
+    const selected = (staged?.construction?.operations ?? []).filter(operation =>
+        operation?.operation === "configured-foundation"
+        && operation?.role === "head"
+        && operation?.skinEvidence?.rule === "exact-skintone-prs-archetype-foundation-v1"
+        && /^res:\//iu.test(String(operation?.skinEvidence?.bodySpecularPath ?? "")));
+    return selected.length === 1 ? selected[0].skinEvidence.bodySpecularPath : null;
+}
+
 /** Composes the temporary legacy body diffuse atlas from retained library evidence. */
 export class TnyGlesAtlasComposer
 {
@@ -243,6 +254,11 @@ export class TnyGlesAtlasComposer
                 contributions,
                 targetSize
             );
+            const bodySpecular = await this._ComposeBodySpecular(
+                staged,
+                contributions,
+                targetSize
+            );
             const attachments = attachLegacyBodyDiffuse(
                 staged.backend?.visualModel,
                 target.texture,
@@ -282,10 +298,15 @@ export class TnyGlesAtlasComposer
             staged.compositionTargets.push(
                 target,
                 ...bodyNormal.targets,
+                ...bodySpecular.targets,
                 ...configuredConsumers.targets
             );
             staged.composedBodyDiffuseTexture = target.texture;
             if (bodyNormal.texture) staged.composedBodyNormalTexture = bodyNormal.texture;
+            if (bodySpecular.texture)
+            {
+                staged.composedBodySpecularTexture = bodySpecular.texture;
+            }
             return {
                 status: "composed",
                 rule: "legacy-opengl-body-diffuse-atlas-v1",
@@ -303,6 +324,7 @@ export class TnyGlesAtlasComposer
                 configuredAuthoredBindings: configuredConsumers.bindings,
                 configuredAuthoredDeferred: configuredConsumers.deferred,
                 bodyNormal: bodyNormal.report,
+                bodySpecular: bodySpecular.report,
                 contributionCount: contributions.length,
                 composedContributionCount: composedContributions.size,
                 deferredContributionCount: new Set(deferred.map(value => value.layerIndex)).size,
@@ -396,6 +418,120 @@ export class TnyGlesAtlasComposer
                     rule: "legacy-opengl-body-normal-atlas-v1",
                     correctness: "retained-source-policy-live-proof-pending",
                     diagnosticMode: operations.length ? "authored-additive-detail-normal" : "neutral-normal",
+                    targetSize: [ ...targetSize ],
+                    attachedEffects,
+                    operationCount: operations.length,
+                    passes: passes.map(value => value.report),
+                    deferred
+                }
+            };
+        }
+        catch (error)
+        {
+            target.Destroy?.();
+            return {
+                texture: null,
+                targets: [],
+                report: { status: "deferred", reason: error.message, deferred }
+            };
+        }
+    }
+
+    async _ComposeBodySpecular(staged, contributions, targetSize)
+    {
+        const planned = resolveLegacyBodyMaterialChannels(contributions);
+        const neutral = [ "body-diffuse", "diffuse" ].includes(this._skinLightingMode);
+        const basePath = resolveLegacyBodyFoundationSpecularPath(staged);
+        if (!neutral && !basePath)
+        {
+            return {
+                texture: null,
+                targets: [],
+                report: {
+                    status: "deferred",
+                    reason: "body-specular-foundation-unresolved",
+                    deferred: [ ...planned.deferred ]
+                }
+            };
+        }
+
+        const operations = neutral ? [] : planned.specular;
+        const passes = [ neutral
+            ? await this._CreateSolidCopyPass(SOLID_BLACK, targetSize)
+            : await this._CreateAuthoredConsumerCopyPass(basePath, targetSize) ];
+        const deferred = [ ...planned.deferred ];
+
+        for (const operation of operations)
+        {
+            let accepted = false;
+            const failures = [];
+            for (const path of operation.candidatePaths ?? [ operation.path ])
+            {
+                try
+                {
+                    passes.push(await this._CreateAuthoredOverlayPass(
+                        path,
+                        targetSize,
+                        operation
+                    ));
+                    accepted = true;
+                    break;
+                }
+                catch (error)
+                {
+                    failures.push({ ...operation, path, reason: error.message });
+                }
+            }
+            if (!accepted)
+            {
+                deferred.push({
+                    ...operation,
+                    reason: failures.map(value => value.reason).join("; ")
+                });
+            }
+        }
+
+        const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
+        const target = new RenderTarget(
+            `character-${staged.sex}-body-specular`,
+            targetSize[0],
+            targetSize[1],
+            false
+        );
+        if (!target.IsGood?.())
+        {
+            return {
+                texture: null,
+                targets: [],
+                report: { status: "deferred", reason: "body-specular-target-unavailable" }
+            };
+        }
+
+        try
+        {
+            RenderPasses(tw2, target, passes);
+            const attachedEffects = attachLegacyBodySpecular(
+                staged.backend?.visualModel,
+                target.texture
+            );
+            if (!attachedEffects)
+            {
+                target.Destroy?.();
+                return {
+                    texture: null,
+                    targets: [],
+                    report: { status: "deferred", reason: "body-specular-consumer-unavailable" }
+                };
+            }
+            return {
+                texture: target.texture,
+                targets: [ target ],
+                report: {
+                    status: "applied",
+                    rule: "legacy-opengl-body-specular-atlas-v1",
+                    correctness: "retained-source-policy-live-proof-pending",
+                    diagnosticMode: neutral ? "black-specular" : "authored",
+                    basePath: basePath ?? null,
                     targetSize: [ ...targetSize ],
                     attachedEffects,
                     operationCount: operations.length,
@@ -560,7 +696,8 @@ export class TnyGlesAtlasComposer
         );
         const eyelashFallback = resolveLegacyDefaultEyelashCandidate(
             staged.textureContributions,
-            this._textureMetadataSource
+            this._textureMetadataSource,
+            staged.sex
         );
         report.browFallback = browFallback;
         report.eyelashFallback = eyelashFallback;
@@ -568,6 +705,7 @@ export class TnyGlesAtlasComposer
         {
             plan.diffuse.push(browFallback.operation);
             RemoveResolvedHeadColorizedDeferrals(plan, browFallback.operation);
+            SortLegacyCompositionOperations(plan.diffuse, plan.order.rule);
         }
         else if (browFallback.status !== "not-present") report.deferred.push(browFallback);
         if (eyelashFallback.status !== "ready"
@@ -655,18 +793,24 @@ export class TnyGlesAtlasComposer
                         {
                             passes.push(operation.candidate
                                 ? await this._CreateColorizedPass(operation.candidate, targetSize)
-                                : operation.op === "normal-replace"
-                                    || operation.op === "normal-add"
-                                    ? await this._CreateAuthoredNormalPass(
+                                : operation.op === "authored-head-tattoo-atlas"
+                                    ? await this._CreateAuthoredHeadTattooPass(
                                         path,
                                         targetSize,
                                         operation
                                     )
-                                    : await this._CreateAuthoredOverlayPass(
-                                        path,
-                                        targetSize,
-                                        operation
-                                    ));
+                                    : operation.op === "normal-replace"
+                                        || operation.op === "normal-add"
+                                        ? await this._CreateAuthoredNormalPass(
+                                            path,
+                                            targetSize,
+                                            operation
+                                        )
+                                        : await this._CreateAuthoredOverlayPass(
+                                            path,
+                                            targetSize,
+                                            operation
+                                        ));
                             accepted = true;
                             break;
                         }
@@ -741,18 +885,21 @@ export class TnyGlesAtlasComposer
                         eyelashFallback.operation.candidate.detail.path
                     );
                     const targetSize = ResolveTargetSize(eyelashMetadata);
-                    const pass = await this._CreateColorizedPass(
-                        eyelashFallback.operation.candidate,
-                        targetSize,
-                        {
-                            blend: false,
-                            // Eyelash detail RGB is uniform mid-grey; the
-                            // authored card silhouette lives in source alpha.
-                            // The generic detail-mask branch would replace
-                            // that sparse alpha with one translucent rectangle.
-                            useDetailMask: false
-                        }
-                    );
+                    const passes = [
+                        // The authored lash detail owns the sparse card alpha.
+                        // Colourization owns RGB only; asking the generic
+                        // colorizer to synthesize both channels turns the crop
+                        // into an opaque or incorrectly weighted carrier.
+                        await this._CreateAuthoredConsumerCopyPass(
+                            eyelashFallback.operation.candidate.detail.path,
+                            targetSize
+                        ),
+                        await this._CreateColorizedPass(
+                            eyelashFallback.operation.candidate,
+                            targetSize,
+                            { rgbOnly: true, blend: false, useDetailMask: false }
+                        )
+                    ];
                     const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
                     const target = new RenderTarget(
                         `character-${staged.sex}-head-eyelashes`,
@@ -764,7 +911,7 @@ export class TnyGlesAtlasComposer
                     {
                         throw new Error(`Unable to create ${targetSize.join("x")} eyelash target`);
                     }
-                    RenderPasses(tw2, target, [ pass ]);
+                    RenderPasses(tw2, target, passes);
                     targets.push(target);
                     eyelashTexture = target.texture;
                     report.eyelashFallback = {
@@ -772,7 +919,7 @@ export class TnyGlesAtlasComposer
                         binding: "colorized-transparent-head-atlas",
                         targetSize,
                         alphaEvidence: ReadTargetAlphaEvidence(target),
-                        passes: [ pass.report ]
+                        passes: passes.map(value => value.report)
                     };
                 }
                 catch (error)
@@ -790,7 +937,10 @@ export class TnyGlesAtlasComposer
                 staged.textureContributions,
                 {
                     headDiffuseTexture: bindings.DiffuseMap ?? null,
-                    eyelashTexture
+                    eyelashTexture,
+                    eyelashSourcePath: eyelashFallback.status === "ready"
+                        ? eyelashFallback.operation.candidate.detail.path
+                        : null
                 }
             );
             staged.compositionTargets ??= [];
@@ -1949,21 +2099,28 @@ export class TnyGlesAtlasComposer
         const detailPlacement = Placement(detailMetadata);
         const zonePlacement = Placement(zoneMetadata);
 
-        // Colorization inputs are authored as normalized atlases and may be a
+        // Detail inputs are authored atlas regions. Zone maps are normalized
+        // palette selectors, not atlas surfaces: valid authored inputs include
+        // uniform 16x16 maps for a 2048x1024 lash target, so their pixel aspect
+        // is deliberately free.
+
+        // Colorization detail inputs are authored as normalized atlases and may be a
         // lower resolution than the destination (for example 1024² masks over
         // a 2048² skin atlas). Their placement metadata, not pixel equality,
-        // defines where they sample; only the atlas aspect must agree.
+        // defines where the detail samples; its atlas aspect must agree.
         RequireCompatibleTargetAspect(
             candidate.detail.path,
             ResolveTargetSize(detailMetadata),
             targetSize
         );
-        RequireCompatibleTargetAspect(
-            candidate.zones.path,
-            ResolveTargetSize(zoneMetadata),
-            targetSize
-        );
-
+        if (!BoundsEqual(zonePlacement, [ 0, 0, 1, 1 ]))
+        {
+            RequireCompatibleTargetAspect(
+                candidate.zones.path,
+                ResolveTargetSize(zoneMetadata),
+                targetSize
+            );
+        }
         const pattern = candidate.pattern ?? null;
         const weight = candidate.contribution?.weight ?? 1;
         if (!Number.isFinite(weight))
@@ -2031,6 +2188,7 @@ export class TnyGlesAtlasComposer
                 groupID: candidate.contribution.groupID,
                 weight,
                 materialDefinitionPath: candidate.contribution.source.materialDefinitionPath,
+                materialControls: DescribeRetainedMaterialControls(candidate.contribution),
                 detailPath: candidate.detail.path,
                 zonePath: candidate.zones.path,
                 pattern: pattern ? {
@@ -2164,6 +2322,7 @@ export class TnyGlesAtlasComposer
                 groupID: operation.groupID,
                 layerIndex: operation.layerIndex,
                 role: operation.role,
+                materialControls: operation.materialControls ?? null,
                 weight,
                 placement,
                 projectionDefinitionPath: operation?.projectionDefinitionPath ?? null,
@@ -2173,6 +2332,68 @@ export class TnyGlesAtlasComposer
                     : null,
                 uv: DescribeUvDecision(metadata, targetSize, placement)
             }
+        };
+    }
+
+    async _CreateAuthoredHeadTattooPass(path, targetSize, operation)
+    {
+        const placement = [ 0, 0, 1, 1 ];
+        const weight = Number.isFinite(operation?.weight) ? operation.weight : 1;
+        const ink = operation?.colors?.[0];
+        if (!Array.isArray(ink) || ink.length < 4
+            || ink.slice(0, 4).some(value => !Number.isFinite(Number(value))))
+        {
+            throw new TypeError("Authored head tattoo requires one retained RGBA ink colour");
+        }
+        const alphaMask = await CreateLegacyBc3AlphaMaskTexture(tw2, path);
+        const inkPath = `dynamic:/color/${ink.slice(0, 4).map(Number).join(",")}`;
+        const Effect = RequireClass(tw2, "Tw2Effect");
+        const effect = Effect.from({
+            effectFilePath: SIMPLE_BLIT_SHADER,
+            autoParameter: true,
+            parameters: {
+                SourceUVs: [ 0, 0, 1, 1 ],
+                TextureReverseUV: [ 0, 0, 1, 1 ],
+                MaskReverseUV: [ 0, 0, 1, 1 ],
+                Strength: [ weight, 0, 0, 0 ],
+                MultAlpha: [ 1, 0, 0, 0 ]
+            },
+            textures: {
+                Texture: inkPath,
+                MaskMap: TRANSPARENT
+            }
+        });
+
+        await PrepareEffect(tw2, effect, SIMPLE_BLIT_SHADER);
+        effect.parameters?.MaskMap?.AttachTextureRes?.(alphaMask.resource);
+        // The shipped head tattoo is already laid out in full head-atlas UVs.
+        // Blend its authored alpha into RGB while preserving the foundation
+        // alpha that controls the skin carrier's cutout coverage.
+        ApplyRenderStates(this._d3d, effect, true, {
+            colorWrite: COLOR_WRITE_RGB
+        });
+        return {
+            effect,
+            viewport: [ 0, 0, targetSize[0], targetSize[1] ],
+            report: {
+                mode: "configured-head-authored-tattoo-atlas",
+                shader: SIMPLE_BLIT_SHADER,
+                path,
+                inkPath,
+                groupID: operation.groupID,
+                layerIndex: operation.layerIndex,
+                role: operation.role,
+                weight,
+                placement,
+                projectionDefinitionPath: operation?.projectionDefinitionPath ?? null,
+                authoredColorSelection: operation?.colors?.map(value => [ ...value ]) ?? null,
+                colorSelectionApplication: "retained-ink-over-authored-alpha",
+                alphaOperation: "source-alpha-rgb-preserve-foundation-alpha",
+                sourceLayout: "authored-complete-head-atlas",
+                alphaRealization: alphaMask.report,
+                renderStates: DescribeConfiguredFaceCarrier(null, effect).techniques
+            },
+            cleanup: alphaMask.destroy
         };
     }
 
@@ -2211,12 +2432,15 @@ export class TnyGlesAtlasComposer
             effect,
             viewport: Viewport(targetSize, placement),
             report: {
-                mode: additive ? "configured-head-normal-add" : "configured-head-normal-replace",
+                mode: `configured-${operation?.target ?? "head"}-normal-${
+                    additive ? "add" : "replace"
+                }`,
                 shader,
                 path,
                 groupID: operation.groupID,
                 layerIndex: operation.layerIndex,
                 role: operation.role,
+                materialControls: operation.materialControls ?? null,
                 strength,
                 placement,
                 uv: DescribeUvDecision(metadata, targetSize, placement)
@@ -2358,6 +2582,20 @@ export class TnyGlesAtlasComposer
         metadata.sourcePath = metadataPath;
         return metadata;
     }
+}
+
+function SortLegacyCompositionOperations(operations, orderRule)
+{
+    operations.sort((a, b) =>
+        (a.layerOrder ?? Number.MAX_SAFE_INTEGER)
+        - (b.layerOrder ?? Number.MAX_SAFE_INTEGER)
+        || (a.compositionIndex ?? Number.MAX_SAFE_INTEGER)
+        - (b.compositionIndex ?? Number.MAX_SAFE_INTEGER));
+    operations.forEach((operation, compositionIndex) =>
+    {
+        operation.compositionIndex = compositionIndex;
+        operation.orderRule = orderRule;
+    });
 }
 
 /** Resolves one retained contribution for the bounded legacy body-diffuse proof. */
@@ -2531,7 +2769,9 @@ export function resolveLegacyHeadMaterialChannels(contributions, source = null)
                 path: texture.path,
                 candidatePaths: ResolveFamilyCandidatePaths(contribution, texture),
                 role: texture.role,
+                target: texture.target,
                 groupID: contribution.groupID,
+                materialControls: DescribeRetainedMaterialControls(contribution),
                 layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID) ?? null,
                 layerIndex: contribution.layerIndex,
                 weight: Number.isFinite(contribution?.weight) ? contribution.weight : 1,
@@ -2617,7 +2857,9 @@ export function resolveLegacyBodyMaterialChannels(contributions)
                 path: texture.path,
                 candidatePaths: ResolveFamilyCandidatePaths(contribution, texture),
                 role: texture.role,
+                target: texture.target,
                 groupID: contribution.groupID,
+                materialControls: DescribeRetainedMaterialControls(contribution),
                 layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID) ?? null,
                 layerIndex: contribution.layerIndex,
                 weight: Number.isFinite(contribution?.weight) ? contribution.weight : 1,
@@ -2677,7 +2919,7 @@ function ResolveLegacyHeadTattooProjection(contribution, source)
         // Shipped head-tattoo textures are already authored in the complete
         // head-atlas layout. Keep the projection definition as provenance,
         // but do not apply its mesh projection a second time in this adapter.
-        op: "alpha-overlay",
+        op: "authored-head-tattoo-atlas",
         role: "projection-decal",
         groupID: contribution.groupID,
         layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID),
@@ -2823,11 +3065,15 @@ function ResolveSkinColorizationCandidate(staged, region)
     };
 }
 
-/** Binds full-atlas eyes and colorized lash atlases to exact face carriers. */
+/** Binds full-atlas eyes and one retained colorized lash atlas to exact face carriers. */
 export function applyLegacyConfiguredFaceTextures(
     binding,
     contributions,
-    { headDiffuseTexture = null, eyelashTexture = null } = {}
+    {
+        headDiffuseTexture = null,
+        eyelashTexture = null,
+        eyelashSourcePath = null
+    } = {}
 )
 {
     const result = {
@@ -2838,7 +3084,8 @@ export function applyLegacyConfiguredFaceTextures(
         eyelashes: { status: "deferred", reason: "eyelash-texture-unresolved" }
     };
     const eyePath = ResolveConfiguredFaceTexturePath(contributions, "eyes");
-    const eyelashPath = ResolveConfiguredFaceTexturePath(contributions, "eyelashes");
+    const eyelashPath = ResolveConfiguredFaceTexturePath(contributions, "eyelashes")
+        ?? eyelashSourcePath;
     const eyelashSpecularPath = ResolveConfiguredFaceTexturePath(
         contributions,
         "eyelashes",
@@ -2939,17 +3186,103 @@ export function resolveLegacyDefaultBrowCandidate(
 }
 
 /** Resolves the authored eyelash default beside its exact retained source. */
-export function resolveLegacyDefaultEyelashCandidate(contributions, source)
+export function resolveLegacyDefaultEyelashCandidate(contributions, source, sex = null)
 {
-    const eyelashes = (contributions ?? []).filter(value =>
+    let eyelashes = (contributions ?? []).filter(value =>
         /^(?:female|male)\/makeup\/eyelashes\/[^/]+$/iu.test(
             String(value?.source?.partSourceRecordID ?? "")
         ));
+    let rule = "legacy-opengl-explicit-eyelash-default-color-v1";
+    let correctness = "authored-presentation-fallback";
+    let material = null;
+    if (!eyelashes.length && /^(?:female|male)$/u.test(String(sex ?? "")))
+    {
+        const fallback = ResolveLegacyReferenceEyelashContribution(source, sex);
+        if (fallback.status !== "ready") return fallback;
+        eyelashes = [ fallback.contribution ];
+        rule = "legacy-opengl-sex-default-eyelash-01-v1";
+        correctness = "reference-fallback";
+        material = {
+            definitionPath: null,
+            colors: Array.from({ length: 3 }, () => [ 0, 0, 0, 1 ])
+        };
+    }
     return ResolveLegacyExactDefaultColorCandidate(eyelashes, source, {
         label: "eyelash",
         identity: /^(?:female|male)\/makeup\/eyelashes\/[^/]+$/iu,
-        rule: "legacy-opengl-explicit-eyelash-default-color-v1"
+        rule,
+        correctness,
+        material
     });
+}
+
+function ResolveLegacyReferenceEyelashContribution(source, sex)
+{
+    const sourceID = `${sex}/makeup/eyelashes/eyelashes_01`;
+    const partSource = source?.Get?.("characterPartSources", sourceID);
+    const texturePaths = (partSource?.versions ?? [])
+        .flatMap(value => value?.textureCandidates ?? [])
+        .filter((value, index, all) => typeof value === "string"
+            && all.indexOf(value) === index);
+    const textureCandidates = texturePaths
+        .map(ClassifyLegacyReferenceEyelashTexture)
+        .filter(Boolean);
+    const selectedTextures = [ "colorize-layer", "colorize-zones" ]
+        .map(role => SelectLegacyReferenceTexture(textureCandidates, role))
+        .filter(Boolean)
+        .map(value => ({
+            path: value.path,
+            role: value.role,
+            target: value.target,
+            quality: value.quality
+        }));
+    if (selectedTextures.length !== 2)
+    {
+        return {
+            status: "deferred",
+            reason: "eyelash-reference-colorize-inputs-unresolved",
+            sourceID
+        };
+    }
+    return {
+        status: "ready",
+        contribution: {
+            layerIndex: null,
+            groupID: "makeup/eyelashes",
+            weight: 1,
+            source: { partSourceRecordID: sourceID },
+            textureCandidates,
+            selectedTextures
+        }
+    };
+}
+
+function ClassifyLegacyReferenceEyelashTexture(path)
+{
+    const exactPath = String(path ?? "");
+    const stem = exactPath.replaceAll("\\", "/").split("/").at(-1)
+        ?.replace(/\.[^.]+$/u, "").toLowerCase();
+    const match = stem?.match(/^colorize_head_([lz])(?:_(4k|512|256))?$/u);
+    if (!match) return null;
+    return {
+        path: exactPath,
+        family: `colorize_head_${match[1]}`,
+        quality: match[2] ?? "standard",
+        role: match[1] === "l" ? "colorize-layer" : "colorize-zones",
+        target: "head",
+        recognized: true,
+        selected: false
+    };
+}
+
+function SelectLegacyReferenceTexture(candidates, role)
+{
+    const scores = { "4k": 4, standard: 3, "512": 2, "256": 1 };
+    const selected = candidates
+        .filter(value => value.role === role)
+        .sort((a, b) => scores[b.quality] - scores[a.quality])[0] ?? null;
+    if (selected) selected.selected = true;
+    return selected;
 }
 
 function ResolveLegacyExactDefaultColorCandidate(
@@ -2994,11 +3327,14 @@ function ResolveLegacyExactDefaultColorCandidate(
         return { status: "deferred", reason: `${label}-source-identity-unresolved` };
     }
     const separator = sourceID.indexOf("/");
-    const materialDefinitionPath = material?.definitionPath
-        ?? (`res:/graphics/character/${sourceID.slice(0, separator)}`
+    const hasProvidedMaterial = Array.isArray(material?.colors);
+    const materialDefinitionPath = hasProvidedMaterial
+        ? material.definitionPath
+        : (`res:/graphics/character/${sourceID.slice(0, separator)}`
             + `/paperdoll/${sourceID.slice(separator + 1)}/default.color`);
-    const definition = material
-        ?? source?.Get?.("characterDefinitions", materialDefinitionPath);
+    const definition = hasProvidedMaterial
+        ? material
+        : source?.Get?.("characterDefinitions", materialDefinitionPath);
     const colors = material?.colors ?? definition?.values?.colors;
     if (!Array.isArray(colors) || colors.length < 3
         || colors.slice(0, 3).some(color => !Array.isArray(color)
@@ -3021,6 +3357,7 @@ function ResolveLegacyExactDefaultColorCandidate(
             path: detail[0].path,
             role: detail[0].role,
             groupID: contribution.groupID,
+            layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID) ?? null,
             layerIndex: contribution.layerIndex,
             candidate: {
                 contribution: candidateContribution,
@@ -3105,7 +3442,7 @@ function ResolveConfiguredFaceTexturePath(
 function SetConfiguredFaceDiffuse(
     effect,
     resource,
-    { transform = null, preserveTransform = false } = {}
+    { color = null, transform = null, preserveTransform = false } = {}
 )
 {
     if (typeof resource === "string") SetConfiguredFaceTexturePath(effect, "DiffuseMap", resource);
@@ -3116,6 +3453,10 @@ function SetConfiguredFaceDiffuse(
     if (!preserveTransform)
     {
         effect?.SetParameters?.({ TransformUV0: transform ?? [ 0, 0, 1, 1 ] });
+    }
+    if (Array.isArray(color) && color.length === 4 && color.every(Number.isFinite))
+    {
+        effect?.SetParameters?.({ MaterialDiffuseColor: color });
     }
 }
 
@@ -3165,6 +3506,11 @@ function DescribeConfiguredFaceCarrier(mesh, effect, meshName = "")
         meshName,
         effectName: String(effect?.name ?? ""),
         effectFilePath: String(effect?.effectFilePath ?? ""),
+        materialDiffuseColor: ReadEffectVectorParameter(
+            effect,
+            "MaterialDiffuseColor",
+            4
+        ),
         transformUV0: ReadTransformUV0(effect),
         areas,
         techniques
@@ -3929,6 +4275,35 @@ function NormalizeColors(values)
     return result;
 }
 
+function DescribeRetainedMaterialControls(contribution)
+{
+    const layerWeight = Number.isFinite(contribution?.weight)
+        ? contribution.weight
+        : 1;
+    const colorSelectionWeight = Number.isFinite(contribution?.colorSelection?.weight)
+        ? contribution.colorSelection.weight
+        : null;
+    const gloss = Number.isFinite(contribution?.colorSelection?.gloss)
+        ? contribution.colorSelection.gloss
+        : null;
+    const specularColors = Array.isArray(contribution?.materialValues?.specularColors)
+        ? contribution.materialValues.specularColors.map(color =>
+            Array.isArray(color) ? color.map(Number) : color)
+        : null;
+    const retainedNotApplied = [];
+    if (colorSelectionWeight !== null) retainedNotApplied.push("colorSelectionWeight");
+    if (gloss !== null) retainedNotApplied.push("gloss");
+    if (specularColors !== null) retainedNotApplied.push("specularColors");
+    return {
+        layerWeight,
+        colorSelectionWeight,
+        gloss,
+        specularColors,
+        applied: [ "layerWeight" ],
+        retainedNotApplied
+    };
+}
+
 function ResolvePattern(materialValues)
 {
     const name = String(materialValues?.pattern ?? "").trim();
@@ -4606,6 +4981,27 @@ export function attachLegacyBodyNormal(visualModel, texture)
     return attachedEffects;
 }
 
+/** Attaches one composed body specular atlas only to explicit nude-foundation carriers. */
+export function attachLegacyBodySpecular(visualModel, texture)
+{
+    const seen = new Set();
+    let attachedEffects = 0;
+    for (const mesh of visualModel?.meshes ?? [])
+    {
+        if (!BODY_ROLES.has(mesh?._characterFoundationRole)) continue;
+        for (const effect of GetEffects([ mesh ]))
+        {
+            if (seen.has(effect)) continue;
+            const parameter = effect?.parameters?.SpecularMap;
+            if (typeof parameter?.AttachTextureRes !== "function") continue;
+            parameter.AttachTextureRes(texture);
+            seen.add(effect);
+            attachedEffects++;
+        }
+    }
+    return attachedEffects;
+}
+
 function IsConfiguredBodyAtlasDependency(value)
 {
     const source = String(value?._characterPartSourceRecordID
@@ -5175,9 +5571,16 @@ function RenderPasses(tw2, target, passes)
             for (const pass of passes)
             {
                 gl.viewport(...pass.viewport);
-                if (!tw2.device.RenderFullScreenQuad(pass.effect))
+                try
                 {
-                    throw new Error(`${pass.effect.effectFilePath} did not render`);
+                    if (!tw2.device.RenderFullScreenQuad(pass.effect))
+                    {
+                        throw new Error(`${pass.effect.effectFilePath} did not render`);
+                    }
+                }
+                finally
+                {
+                    pass.cleanup?.();
                 }
             }
         }
@@ -5257,6 +5660,132 @@ function ReadTargetAlphaEvidence(target)
         status: "readback",
         rgbaFnv1a: (hash >>> 0).toString(16).padStart(8, "0"),
         ...summarizeLegacyTextureAlpha(pixels, target.width, target.height)
+    };
+}
+
+/** Decodes one authored BC3/DXT5 DDS into an RGBA mask without changing its layout. */
+export function decodeLegacyBc3AlphaMask(buffer)
+{
+    const bytes = new Uint8Array(buffer);
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    if (bytes.length < 128
+        || view.getUint32(0, true) !== 0x20534444
+        || view.getUint32(84, true) !== 0x35545844)
+    {
+        throw new TypeError("Authored tattoo alpha requires a BC3/DXT5 DDS");
+    }
+    const height = view.getUint32(12, true);
+    const width = view.getUint32(16, true);
+    if (!width || !height) throw new TypeError("Authored tattoo DDS has invalid dimensions");
+
+    const blocksX = Math.ceil(width / 4);
+    const blocksY = Math.ceil(height / 4);
+    const required = 128 + blocksX * blocksY * 16;
+    if (bytes.length < required) throw new TypeError("Authored tattoo DDS is truncated");
+
+    const rgba = new Uint8Array(width * height * 4);
+    let source = 128;
+    for (let blockY = 0; blockY < blocksY; blockY++)
+    {
+        for (let blockX = 0; blockX < blocksX; blockX++, source += 16)
+        {
+            const alpha0 = bytes[source];
+            const alpha1 = bytes[source + 1];
+            const palette = CreateBc3AlphaPalette(alpha0, alpha1);
+            for (let pixel = 0; pixel < 16; pixel++)
+            {
+                const bit = pixel * 3;
+                const byte = source + 2 + (bit >> 3);
+                const index = ((bytes[byte] | ((bytes[byte + 1] ?? 0) << 8))
+                    >> (bit & 7)) & 7;
+                const x = blockX * 4 + (pixel & 3);
+                const y = blockY * 4 + (pixel >> 2);
+                if (x >= width || y >= height) continue;
+                const target = (y * width + x) * 4;
+                rgba[target] = 255;
+                rgba[target + 1] = 255;
+                rgba[target + 2] = 255;
+                rgba[target + 3] = palette[index];
+            }
+        }
+    }
+    return { width, height, rgba };
+}
+
+function CreateBc3AlphaPalette(alpha0, alpha1)
+{
+    const values = new Uint8Array(8);
+    values[0] = alpha0;
+    values[1] = alpha1;
+    if (alpha0 > alpha1)
+    {
+        for (let index = 2; index < 8; index++)
+        {
+            values[index] = Math.round(
+                ((8 - index) * alpha0 + (index - 1) * alpha1) / 7
+            );
+        }
+    }
+    else
+    {
+        for (let index = 2; index < 6; index++)
+        {
+            values[index] = Math.round(
+                ((6 - index) * alpha0 + (index - 1) * alpha1) / 5
+            );
+        }
+        values[6] = 0;
+        values[7] = 255;
+    }
+    return values;
+}
+
+async function CreateLegacyBc3AlphaMaskTexture(tw2, path)
+{
+    const url = tw2.resMan.BuildUrl(path);
+    const buffer = await tw2.resMan.FetchRaw(url, "arraybuffer");
+    const decoded = decodeLegacyBc3AlphaMask(buffer);
+    const gl = tw2.device.gl;
+    const texture = gl.createTexture();
+    if (!texture) throw new Error("Unable to allocate authored tattoo alpha texture");
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        decoded.width,
+        decoded.height,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        decoded.rgba
+    );
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    const TextureRes = RequireClass(tw2, "Tw2TextureRes");
+    const resource = new TextureRes();
+    resource.Attach(texture, `#character-tattoo-alpha:${path}`);
+    resource._target = gl.TEXTURE_2D;
+    resource._width = decoded.width;
+    resource._height = decoded.height;
+    resource._format = gl.RGBA;
+    resource._internalFormat = gl.RGBA;
+    resource._type = gl.UNSIGNED_BYTE;
+    resource._hasMipMaps = false;
+    resource._useNoMipFilter = true;
+    return {
+        resource,
+        report: {
+            status: "decoded",
+            rule: "gles-bc3-alpha-mask-realization-v1",
+            sourcePath: path,
+            sourceFormat: "BC3/DXT5",
+            size: [ decoded.width, decoded.height ]
+        },
+        destroy()
+        {
+            resource.DeleteGL?.();
+        }
     };
 }
 

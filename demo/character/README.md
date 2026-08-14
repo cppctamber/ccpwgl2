@@ -436,6 +436,14 @@ authored colour texture. Projection parameters remain available for an engine
 that proves it has a raw projector decal. Other projection modes and the wider
 corpus remain open; unsupported modes retain every authored field.
 
+Each colourized pass now also reports the retained layer weight, colour-selection
+weight, gloss, and specular colours independently. Only the layer weight has a
+qualified shader meaning in this adapter today. The other values remain
+`retainedNotApplied`: the older prototype retained some of them but did not
+consistently consume `specularColors`, and its colour-selection strength
+semantics have not been independently proved. Values are not clamped or folded
+into one guessed opacity merely to make the fixture look plausible.
+
 Live sampler inspection confirms both authored tattoo inputs use clamp-to-edge;
 changing their wrap mode is neither required nor supported by the observed
 effect.
@@ -469,47 +477,32 @@ skintone family rather than a guessed ancestry-ID table. The rebuilt prepared
 library also resolves the eyeliner's
 weighted `makeup/eyelashes/eyelashes_02###0.4` dependency without dropping the
 weight and publishes its exact part source. Binding the cropped 741x1024 detail
-with identity UVs is visually disproved for this selection: it produced a grey
-lower-only fringe. Direct-crop inspection therefore uses the inverse retained
-placement transform `[-0.771931, 0, 1.991905, 1]`; it confirmed the placement
-but still exposed the unprocessed grayscale detail. The current bounded path
-instead colorizes that exact detail and zone map with the exact sibling
-`default.color`, writes it into an otherwise transparent 2048x1024 head-atlas
-target, applies identity UVs, and passes the
-dependency's authored `0.4` layer weight to the compositor's `Strength`
-parameter. The exact detail PNG has uniform mid-grey RGB and a sparse authored
-alpha silhouette. The eyelash pass therefore disables the generic detail-
-luminance mask and uses source alpha multiplied by `Strength`; enabling the
-generic mask produced one uniformly translucent carrier and no distinct lash
-fibres. The previous GLES projection had retained that weight in the
-appearance plan but omitted it from the texture contribution and therefore
-rendered the dependency at full alpha. It also
+directly is visually disproved for this selection: identity UVs produced a grey
+lower-only fringe, while applying the inverse retained placement still exposed
+the unprocessed mid-grey source. The active comparison instead colourizes the
+retained detail with its exact sibling zone and colour records into a
+transparent target. Source alpha, rather than detail luminance, owns the lash
+silhouette. The lash carrier samples that processed target using its own proved
+UV contract: the lash mesh uses identity sampling while the eye-shadow carrier
+retains its authored transform. When the selected paper doll exposes no lash
+source, the labelled sex-default `eyelashes_01` input supplies the same complete
+data shape; this remains GLES adapter policy rather than a character-library
+interpretation. The current path also
 collapses the Black's paired forward/reversed transparent areas to one
 two-sided draw so the same translucent card is not blended twice. The live
-report records five applied face effects, the colorized transparent-atlas
-binding, weight `0.4`, and one collapsed eyelash card pair. Geometry inspection
-proves why the full-atlas identity transform is required: the lash carrier's
-UV0 bounds (`U=0.279800..0.641252`) already match the retained PNG placement
-(`U=0.279297..0.641113`). The Black-authored `[0,0,0.5,1]` transform shifts
-those samples into `U=0.139900..0.320626`, leaving only a narrow overlap with
-the composed lash pixels. This identity conclusion applies specifically to
-`Eyelashes_GeoShape`. The separate `EyeShadow_GeoShape` is also an authored
-lash-atlas consumer: its UVs and retained `[0,0,0.5,1]` transform address the
-bottom-edge `_02` mask correctly. It therefore receives the same composed lash
-target while preserving that transform. Previously it retained the opaque grey
-proof diffuse, producing the two white upper-eye cards. The exact
-`_02/comp_head_s.png` is also bound to both lash carriers instead of leaving
-their empty Black slots on the generic 15% proof map.
-That retained 16x16 input is uniform black RGB with alpha 128 and is content-
-identical to `_01/comp_head_s.png`; the selected material's primary specular
-zone is black. The generic proof map was structurally wrong beneath the Black's
-strong white specular multiplier and produced pale card-shaped highlights.
-The `faceproof=32` comparison removes the opaque upper-eye cards and makes the
-authored lash fibres visible on both carriers. The remaining lash tips still
-look visibly cut off, however. Their exact selected source, `0.4` dependency
-weight, alpha silhouette, carrier UVs, and carrier-specific transforms are now
-retained and tested, so that presentation defect is recorded as unresolved and
-deferred rather than adjusted with another guessed crop or opacity. The older demo's
+target is deliberately composed in two passes: an authored RGBA copy preserves
+the sparse lash silhouette, then colourization replaces RGB only. The live
+report records both retained inputs, both passes, source-alpha evidence, and
+one collapsed eyelash card pair. The retained zone selector is an authored
+uniform 16x16, full-normalized palette map rather than an atlas-shaped image;
+its pixel aspect is therefore independent of the destination atlas even though
+the PNG carries explicit full-extent placement metadata. Cropped zone inputs
+and the detail input remain aspect-checked. Both
+`Eyelashes_GeoShape` and `EyeShadow_GeoShape` receive the explicit lash binding;
+leaving the second carrier on its proof diffuse produced opaque white upper-eye
+cards. An exact retained lash specular source is bound when one resolves; no
+invented normal or specular fallback is installed. Final colour, crop, and tip
+length remain unresolved pending live qualification. The older demo's
 `eyelashes_01` is a sex-wide
 hard-coded fallback rather than the exact `3000001` dependency. It is a valid
 compatible asset, and its raw integrated alpha is close to `_02` after the
@@ -532,6 +525,14 @@ only the base paper doll's
 than invented geometry. The source records are not changed, the fixture is not serialized into
 the library, and its identity prevents it being mistaken for a game character.
 Eyeshadow, augmentation, and blemish exercise ordinary retained head inputs.
+`Freckles_03` contributes two distinct authored overlays rather than one image
+copied between atlases: `comp_head_d_4k.png` targets the head atlas and
+`comp_body_d_4k.png` targets the body atlas. Both are present in the resolved
+plan and both are composed. Their painted alpha regions differ, so the visible
+freckle transition at the neck is not evidence that either contribution was
+dropped. The remaining mismatch is an unresolved shared-skin/carrier-boundary
+problem; this adapter must not duplicate or stretch either authored overlay to
+hide it.
 The tattoo exercises a separate projection-backed operation. The fixture's
 exact `TattooFaceA01` definition resolves its retained projection definition,
 authored DDS, neutral selected colour, and priority `60`. Earlier experiments
@@ -593,6 +594,19 @@ and implant selections do author `comp_body_tn` maps; the GLES adapter now
 adds those retained twist-normal inputs over a neutral body normal target and
 binds it to all six split nude body carriers. This is structurally tested and
 live-executed; the final relief is not yet visually qualified.
+The same strict carrier boundary now has a separate body specular target. It
+starts only from the exact `bodySpecularPath` retained by the selected
+skintone/archetype foundation and applies only typed body
+`specular-overlay` contributions admitted by the current skin-layer proof.
+For the synthetic fixture this admits the retained implant specular map while
+leaving underwear and garment specular maps on their own materials; those maps
+are never copied onto nude foundation carriers. Missing or ambiguous foundation
+evidence defers the target instead of inventing a sex-wide path. This is a GLES
+renderer realization with structural tests; live pixel parity remains pending.
+The older prototype confirms only the useful topology of separate head/body
+diffuse, normal, and specular outputs. Its changing numeric layer tables,
+lexical makeup ordering, default colours, and projection-strength controls are
+reference experiments rather than character-library policy.
 The older prototype hard-coded a Civire/CC body base and did not consume paper
 doll `3000001`, so it is not authority for the selected source join. It is
 useful execution evidence for the shared final skin-shader boundary described
@@ -710,6 +724,18 @@ LOD0 layout by default; `?foundation=combined` retains the earlier complete
 nude comparison. This is not the old LOD1 split fallback and does not reduce
 the authored LOD0 morph inventory. The existing GLES 58-bone right-hand mask
 is transferred to the exact split hand carrier.
+
+The active and older GLES demos both load the exact authored
+`head/head_generic/head_generic.gr2` head. Their body layouts differ: the older
+LOD0 reference paired it with the monolithic `basenude.gr2`, while the active
+demo defaults to the six authored split LOD0 carriers above. A small visible
+head/neck size discontinuity therefore is not evidence that the active demo
+selected a lower-quality or alternate head asset. The retained paper doll has
+14 face-sculpt selections, but the current CPU appearance plan does not yet
+turn those records into head/body sculpt requests. Until that programmatic
+stage exists, the seam remains unresolved; the GLES adapter must not hide it
+with an invented head scale or hand-tuned neck transform. The body remains on
+the higher-quality selected CD texture/composition path.
 
 Paper doll `3000001` also has one exact, structurally tested upper-sleeve
 material policy. The ready

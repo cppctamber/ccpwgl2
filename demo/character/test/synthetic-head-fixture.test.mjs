@@ -13,8 +13,8 @@ test("synthetic head fixture combines exact retained donors without changing the
     const augmentation = Modifier("makeup/augmentations", "15635");
     const tattooLocation = { recordID: "30", modifierKey: "tattoo/head" };
     const tattooResource = {
-        recordID: "505",
-        resPath: "Tattoo/Head/TattooFaceA01/Types/TattooFaceA01.type",
+        recordID: "527",
+        resPath: "Tattoo/Head/TattooFaceG10/Types/TattooFaceG10.type",
         resGender: 0
     };
     const tattoo = {
@@ -50,7 +50,7 @@ test("synthetic head fixture combines exact retained donors without changing the
         [ "paperdolls/3003957", Donor("3003957", eyeshadow, eyeshadowColor) ],
         [ "paperdolls/3020032", Donor("3020032", augmentation) ],
         [ "characterModifierLocations/30", tattooLocation ],
-        [ "characterResources/505", tattooResource ],
+        [ "characterResources/527", tattooResource ],
         [ "characterColorLocations/26", tattooColorLocation ],
         [ "characterColorNames/243", tattooColorName ],
         [ "characterModifierLocations/129", { recordID: "129", modifierKey: "makeup/blemish" } ],
