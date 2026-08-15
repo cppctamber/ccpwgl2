@@ -15,9 +15,11 @@ import { tw2BatchSorter } from "core/batch";
 const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 
 // Default resource serving (the local tools-core service, not provided with
-// this library). Routes follow /{provider|target}/{build}/{topic}: provider
-// routes ("ccp") serve the res:/ file tree, target routes ("eve") serve
-// query/answer topics like audio. Only one build is passed everywhere.
+// this library). Routes are /{target}/{build}/{topic} throughout. They were
+// split - provider routes ("ccp") for the res:/ file tree, target routes
+// ("eve") for topics like audio - which meant knowing two keys for one service.
+// A target is the identity; a provider is something it has. Only one build is
+// passed everywhere.
 //
 // 5510 is the service's OWN default port, so this matches a plain
 // `cjs-tools-service` with no arguments. It also has to agree with the ESI
@@ -26,7 +28,6 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // file breaks the login rather than the resources, and the service warns about
 // it at startup.
 const RES_SERVER = "http://127.0.0.1:5510/";
-const RES_PROVIDER = "ccp";
 const RES_TARGET = "eve";
 const RES_BUILD = "latest";
 
@@ -280,8 +281,8 @@ export const config = {
 
     paths: {
 
-        "api": `${RES_SERVER}${RES_PROVIDER}/${RES_BUILD}/`,
-        "res": `${RES_SERVER}${RES_PROVIDER}/${RES_BUILD}/resources/`,
+        "api": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/`,
+        "res": `${RES_SERVER}${RES_TARGET}/${RES_BUILD}/resources/`,
 
         // The audio route family root. "res" must remain the standard eve
         // resource path; "aud" can target a tools-core audio endpoint root.
