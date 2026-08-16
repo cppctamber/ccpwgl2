@@ -1,3 +1,4 @@
+export * from "./animation";
 export * from "./lighting";
 export * from "./mesh";
 export * from "./parameter";

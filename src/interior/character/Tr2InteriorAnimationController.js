@@ -18,7 +18,6 @@ import {
 
 
 @meta.type("Tr2InteriorAnimationController")
-@meta.ccp.define("Tr2GrannyAnimation")
 export class Tr2InteriorAnimationController extends Tw2AnimationController
 {
 

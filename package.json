@@ -28,6 +28,7 @@
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
+    "test:granny-mesh-animation": "node scripts/test-granny-mesh-animation.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
     "test:interior-viseme-binding": "node scripts/test-interior-viseme-binding.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
