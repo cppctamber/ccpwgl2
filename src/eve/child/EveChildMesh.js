@@ -34,6 +34,27 @@ export class EveChildMesh extends EveChild
     @meta.struct([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
 
+    /**
+     * Granny animation exposure — Carbon's `Tr2GrannyAnimationPtr
+     * m_animationUpdater` (`EveChildMesh.h:231`, mapped at
+     * `EveChildMesh_Blue.cpp:34-38`), which `Tr2InteriorAnimationController`
+     * already answers to.
+     *
+     * Declared so the container can be READ. Without it the reader refuses the
+     * whole file — `dragon_keepstar_fx.black` fails on this property and takes
+     * every child object in it down, so an animation nobody drives cost the
+     * entire effect.
+     *
+     * `notImplemented` because it is not driven here: Carbon steps it from
+     * `updateAnimation` and binds it to the mesh's geometry
+     * (`EveChildMesh.cpp:211-222`), and none of that is ported. Reading a
+     * property and animating with it are different claims, and only the first
+     * is being made.
+     */
+    @meta.notImplemented
+    @meta.struct("Tr2GrannyAnimation")
+    animationUpdater = null;
+
     @meta.notImplemented
     @meta.float
     minScreenSize = 0;
