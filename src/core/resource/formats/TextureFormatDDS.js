@@ -506,18 +506,31 @@ export const TextureFormatDDS =
             });
         }
 
-        if (info.isCompressed)
+        // A block-compressed volume is decoded on the CPU and uploaded as RGBA8.
+        //
+        // Not a shortcut taken to avoid work - it is the only thing GL permits.
+        // S3TC has no 3D form: the extension allows its formats through
+        // compressedTexImage3D only for TEXTURE_2D_ARRAY, and a 2D array is not
+        // a substitute here, because these are sampled with 3D coordinates and
+        // an array does not filter between its slices. Uploading one would swap
+        // a hard failure for a subtly wrong image.
+        //
+        // EVE ships these as BC3 at 128x128x128 with 8 mips, so decoding costs
+        // about 9 MB of RGBA per texture and happens once, at load.
+        const decodeCompressed = info.isCompressed && this.CanDecodeBlocks(info);
+
+        if (info.isCompressed && !decodeCompressed)
         {
             throw new ErrResourceFormatUnsupported({
                 format: "DDS",
-                reason: "Compressed volume DDS not supported",
+                reason: `Volume DDS decode not implemented for ${info.name || "this block format"}`,
                 data: info
             });
         }
 
-        res._type = info.type ?? gl.UNSIGNED_BYTE;
-        res._format = info.format;
-        res._internalFormat = info.internalFormat;
+        res._type = decodeCompressed ? gl.UNSIGNED_BYTE : (info.type ?? gl.UNSIGNED_BYTE);
+        res._format = decodeCompressed ? gl.RGBA : info.format;
+        res._internalFormat = decodeCompressed ? gl.RGBA8 : info.internalFormat;
         res._target = gl.TEXTURE_3D;
 
         res._mipCount = info.mipmaps;
@@ -563,7 +576,19 @@ export const TextureFormatDDS =
 
             for (let z = 0; z < depth; z++)
             {
+                if (decodeCompressed)
+                {
+                    const size = this.GetCompressedMipSize(width, height, info.blockBytes);
+
+                    this.EnsureRange(arrayBuffer, offset, size, info);
+                    slices[z] = this.DecodeBlockSlice(arrayBuffer, offset, width, height, info);
+                    totalElements += slices[z].length;
+                    offset += size;
+                    continue;
+                }
+
                 const level = this.ReadUncompressedLevel(arrayBuffer, offset, width, height, info);
+
                 slices[z] = level.bytes;
                 totalElements += level.bytes.length;
                 offset += level.size;
@@ -581,13 +606,13 @@ export const TextureFormatDDS =
             gl.texImage3D(
                 gl.TEXTURE_3D,
                 mip,
-                info.internalFormat,
+                res._internalFormat,
                 width,
                 height,
                 depth,
                 0,
-                info.format,
-                info.type ?? gl.UNSIGNED_BYTE,
+                res._format,
+                res._type,
                 pixels
             );
 
@@ -701,6 +726,199 @@ export const TextureFormatDDS =
                 clientSupport: info.clientSupport
             }
         };
+    },
+
+    /**
+     * Whether a block format can be decoded to RGBA here.
+     *
+     * The DXT family only. BC4/BC5 are one- and two-channel and would need a
+     * decided channel mapping rather than a decode; BC6H/BC7 are a different
+     * order of work. Anything else keeps failing loudly, which is the point -
+     * an unsupported volume should say so rather than arrive as noise.
+     * @param {Object} info
+     * @returns {Boolean}
+     */
+    CanDecodeBlocks(info)
+    {
+        return [ "DXT1/BC1", "DXT3/BC2", "DXT5/BC3" ].includes(info.name);
+    },
+
+    /**
+     * Decodes one block-compressed 2D slice to RGBA8.
+     *
+     * Written out rather than pulled from runtime-resource, which has these
+     * decoders already: its RGBA path reads a whole file down to one
+     * subresource, and a volume needs each slice of each mip separately. The
+     * two want different shapes, and a reader that hands back one image is the
+     * wrong seam for a 128-slice volume.
+     * @param {ArrayBuffer} arrayBuffer
+     * @param {Number} offset - byte offset of this slice
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Object} info
+     * @returns {Uint8Array} width * height * 4 bytes, row-major, top-left origin
+     */
+    DecodeBlockSlice(arrayBuffer, offset, width, height, info)
+    {
+        const src = new Uint8Array(arrayBuffer, offset, this.GetCompressedMipSize(width, height, info.blockBytes));
+        const out = new Uint8Array(width * height * 4);
+        const blocksX = Math.max(1, Math.ceil(width / 4));
+        const blocksY = Math.max(1, Math.ceil(height / 4));
+        const hasBc2Alpha = info.name === "DXT3/BC2";
+        const hasBc3Alpha = info.name === "DXT5/BC3";
+        const colorOffset = hasBc2Alpha || hasBc3Alpha ? 8 : 0;
+
+        // Reused across every block rather than allocated per block: a 128-cube
+        // mip chain is 87,381 blocks per slice-set, and the garbage from
+        // per-block arrays dwarfs the decode itself.
+        const colors = new Uint8Array(16);
+        const alpha = new Uint8Array(8);
+
+        for (let by = 0; by < blocksY; by++)
+        {
+            for (let bx = 0; bx < blocksX; bx++)
+            {
+                let at = (by * blocksX + bx) * info.blockBytes;
+
+                if (hasBc3Alpha) this.DecodeBc3AlphaEndpoints(src, at, alpha);
+
+                const color = at + colorOffset;
+                const c0 = src[color] | (src[color + 1] << 8);
+                const c1 = src[color + 2] | (src[color + 3] << 8);
+
+                this.DecodeBc1Palette(c0, c1, colors, !hasBc2Alpha && !hasBc3Alpha);
+
+                const bits = src[color + 4] | (src[color + 5] << 8) | (src[color + 6] << 16) | (src[color + 7] << 24);
+
+                for (let py = 0; py < 4; py++)
+                {
+                    const y = by * 4 + py;
+
+                    if (y >= height) break;
+
+                    for (let px = 0; px < 4; px++)
+                    {
+                        const x = bx * 4 + px;
+
+                        if (x >= width) break;
+
+                        const texel = py * 4 + px;
+                        const index = (bits >>> (texel * 2)) & 3;
+                        const to = (y * width + x) * 4;
+
+                        out[to] = colors[index * 4];
+                        out[to + 1] = colors[index * 4 + 1];
+                        out[to + 2] = colors[index * 4 + 2];
+
+                        if (hasBc3Alpha)
+                        {
+                            out[to + 3] = alpha[this.ReadBc3AlphaIndex(src, at, texel)];
+                        }
+                        else if (hasBc2Alpha)
+                        {
+                            // Four bits per texel, low nibble first, scaled so
+                            // 0xF reaches 255 rather than 240.
+                            const nibble = src[at + (texel >> 1)];
+                            const value = texel & 1 ? nibble >> 4 : nibble & 0x0f;
+
+                            out[to + 3] = value * 17;
+                        }
+                        else
+                        {
+                            out[to + 3] = colors[index * 4 + 3];
+                        }
+                    }
+                }
+            }
+        }
+
+        return out;
+    },
+
+    /**
+     * Expands two RGB565 endpoints into the four-colour palette a BC1 block
+     * indexes into.
+     *
+     * `punchThrough` is BC1's one-bit alpha mode, selected by c0 <= c1: the
+     * fourth entry becomes transparent black and the third is a half mix rather
+     * than a third. BC2 and BC3 carry their own alpha and always use the
+     * four-colour form, which is why they pass false — reading the mode from
+     * the colours there would make some blocks silently transparent.
+     * @param {Number} c0 - RGB565
+     * @param {Number} c1 - RGB565
+     * @param {Uint8Array} out - 16 bytes, four RGBA entries
+     * @param {Boolean} punchThrough
+     */
+    DecodeBc1Palette(c0, c1, out, punchThrough)
+    {
+        // Rounded, not truncated, at every step. Writing into a Uint8Array
+        // truncates, which is half a level low on most texels and differed from
+        // the reference decoder on a third of them.
+        const round = Math.round;
+        const r0 = round(((c0 >> 11) & 0x1f) * 255 / 31), g0 = round(((c0 >> 5) & 0x3f) * 255 / 63), b0 = round((c0 & 0x1f) * 255 / 31);
+        const r1 = round(((c1 >> 11) & 0x1f) * 255 / 31), g1 = round(((c1 >> 5) & 0x3f) * 255 / 63), b1 = round((c1 & 0x1f) * 255 / 31);
+
+        out[0] = r0; out[1] = g0; out[2] = b0; out[3] = 255;
+        out[4] = r1; out[5] = g1; out[6] = b1; out[7] = 255;
+
+        if (punchThrough && c0 <= c1)
+        {
+            out[8] = round((r0 + r1) / 2); out[9] = round((g0 + g1) / 2); out[10] = round((b0 + b1) / 2); out[11] = 255;
+            out[12] = 0; out[13] = 0; out[14] = 0; out[15] = 0;
+
+            return;
+        }
+
+        out[8] = round((2 * r0 + r1) / 3); out[9] = round((2 * g0 + g1) / 3); out[10] = round((2 * b0 + b1) / 3); out[11] = 255;
+        out[12] = round((r0 + 2 * r1) / 3); out[13] = round((g0 + 2 * g1) / 3); out[14] = round((b0 + 2 * b1) / 3); out[15] = 255;
+    },
+
+    /**
+     * Expands BC3's two alpha endpoints into its eight-entry ramp.
+     * @param {Uint8Array} src
+     * @param {Number} at - byte offset of the block
+     * @param {Uint8Array} out - 8 bytes
+     */
+    DecodeBc3AlphaEndpoints(src, at, out)
+    {
+        const a0 = src[at], a1 = src[at + 1];
+
+        out[0] = a0;
+        out[1] = a1;
+
+        // Six interpolated steps when a0 > a1, otherwise four plus explicit
+        // 0 and 255 - the same endpoint-order trick BC1 uses for its alpha mode.
+        if (a0 > a1)
+        {
+            for (let i = 1; i < 7; i++) out[i + 1] = Math.round(((7 - i) * a0 + i * a1) / 7);
+
+            return;
+        }
+
+        for (let i = 1; i < 5; i++) out[i + 1] = Math.round(((5 - i) * a0 + i * a1) / 5);
+        out[6] = 0;
+        out[7] = 255;
+    },
+
+    /**
+     * Reads one texel's 3-bit alpha index out of BC3's 48-bit index block.
+     *
+     * Read as two 24-bit halves. The whole 48 bits will not fit in a JS bitwise
+     * operand, and an index that straddles the 24-bit boundary has to be
+     * stitched from both — which is the bug this shape exists to avoid.
+     * @param {Uint8Array} src
+     * @param {Number} at - byte offset of the block
+     * @param {Number} texel - 0..15
+     * @returns {Number} 0..7
+     */
+    ReadBc3AlphaIndex(src, at, texel)
+    {
+        const bit = texel * 3;
+        const byte = at + 2 + (bit >> 3);
+        const shift = bit & 7;
+        const pair = src[byte] | (src[byte + 1] << 8);
+
+        return (pair >> shift) & 7;
     },
 
     UploadTexture(res, gl, arrayBuffer, info)
