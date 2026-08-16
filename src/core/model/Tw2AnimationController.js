@@ -439,11 +439,19 @@ export class Tw2AnimationController extends meta.Model
 
                 if (boneRes.parentIndex !== -1)
                 {
-                    mat4.multiply(bone.worldTransform, bone.localTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform);
+                    // `child * parent` in Carbon's row-vector convention, which
+                    // is (parent, local) here because mat4 is stock gl-matrix.
+                    // Matches Update at :707; this site had it reversed, which
+                    // is invisible on a flat hierarchy and wrong on a real one.
+                    mat4.multiply(bone.worldTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform, bone.localTransform);
                 }
                 else
                 {
-                    mat4.set(bone.worldTransform, bone.localTransform);
+                    // gl-matrix's mat4.set takes sixteen values, not a matrix —
+                    // called with one it wrote the matrix object into element 0
+                    // and undefined into the rest, so every root bone came out
+                    // of here as sixteen NaNs.
+                    mat4.copy(bone.worldTransform, bone.localTransform);
                 }
                 mat4.identity(bone.offsetTransform);
             }
@@ -551,7 +559,7 @@ export class Tw2AnimationController extends meta.Model
         const mesh = geometryResource.meshes[meshIndex];
         for (let i = 0; i < this.models.length; ++i)
         {
-            for (let j = 0; j < this.models[i].modelRes.meshBindings.length; ++i)
+            for (let j = 0; j < this.models[i].modelRes.meshBindings.length; ++j)
             {
                 if (this.models[i].modelRes.meshBindings[j].mesh === mesh)
                 {
@@ -878,7 +886,10 @@ export class Tw2AnimationController extends meta.Model
             {
                 if (controller.animations[j].animationRes === resource.animations[i])
                 {
-                    animation = controller.animations[i];
+                    // The match is on j; taking i only agreed while the two
+                    // lists stayed index-aligned, which they do until a second
+                    // geometry resource is added.
+                    animation = controller.animations[j];
                     break;
                 }
             }

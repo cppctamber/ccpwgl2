@@ -25,6 +25,7 @@
     "test:dds-adapter": "node scripts/test-dds-adapter.js",
     "test:eve-turret-tracking": "node scripts/test-eve-turret-tracking.js",
     "test:eve-turret-targeting": "node scripts/test-eve-turret-targeting.js",
+    "test:animation-controller-fixes": "node scripts/test-animation-controller-fixes.js",
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
