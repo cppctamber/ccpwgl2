@@ -37,22 +37,25 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * `READWRITE` without `PERSIST`, so they are runtime state and never on the
  * wire. They are deliberately absent rather than declared and ignored.
  *
- * ## What it does so far
+ * ## What it does
  *
- * The mesh-bound case only: an updater serialised with **no `resPath`**, which
+ * The mesh-bound case: an updater serialised with **no `resPath`**, which
  * animates from the geometry its child mesh has already loaded. That is how
  * `dragon_keepstar_fx.black` serialises it — zero properties, the string table
  * running `animationUpdater` → `Tr2GrannyAnimation` → `scaling`.
  *
- * Implemented here: binding to a shared geometry resource, resolving the
- * skeleton, and posing it. **No animation is sampled yet** — the pose is the
- * rest pose, which Carbon also produces for this case (`RebuildCachedData` ends
- * with an immediate `PrePhysicsAnimation`, guarded on the geometry res, so a
- * mesh-bound updater that is never stepped still yields a valid pose; a
- * `resPath` updater that is never stepped yields null transforms).
+ * It binds to the shared resource, resolves the skeleton, poses it, plays one
+ * clip at a time and emits the bone palette. Before anything is played the pose
+ * is the rest pose, which Carbon also produces for this case
+ * (`RebuildCachedData` ends with an immediate `PrePhysicsAnimation`, guarded on
+ * the geometry res, so a mesh-bound updater that is never stepped still yields a
+ * valid pose; a `resPath` updater that is never stepped yields null transforms).
  *
- * Not implemented: the `resPath_` load path, `boneOffset`, animation sampling,
- * layers, masks and debug rendering.
+ * Nothing here starts a clip. The container's own controller graph does, through
+ * `Tr2ActionPlayMeshAnimation`.
+ *
+ * Not implemented: the `resPath_` load path, `boneOffset`, animation layers,
+ * masks, crossfades and debug rendering.
  *
  * ## Ordering is load-bearing
  *
@@ -62,14 +65,20 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * a warm resource initialises in the wrong mode.
  */
 @meta.type("Tr2GrannyAnimation")
-@meta.notImplemented
 export class Tr2GrannyAnimation extends meta.Model
 {
 
     @meta.string
     name = "";
 
-    /** The granny file holding the animations. `PERSISTONLY` in Carbon. */
+    /**
+     * The granny file holding the animations. `PERSISTONLY` in Carbon.
+     *
+     * Marked because an updater carrying one loads its own geometry, and that
+     * path is not ported — `EveChildMesh` leaves such an updater alone rather
+     * than binding it to the wrong resource.
+     */
+    @meta.notImplemented
     @meta.path
     resPath_ = "";
 
