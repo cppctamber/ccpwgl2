@@ -222,6 +222,20 @@ export class EvePlaneSet extends EveObjectSet
     @meta.byte
     pickBufferID = 0;
 
+    /**
+     * Carried from the hull's plane set data, because it decides whether this
+     * set shows video — see `EveSOFDataHullPlaneSet.Usage`.
+     *
+     * Kept on the runtime set rather than read from the SOF data at the point of
+     * use, so the object can answer for itself afterwards: `RandomizeBillboards`
+     * is a public method that runs long after the build, and reaching back into
+     * the source data from there would tie a rendered object to the catalogue it
+     * came from.
+     * @type {Number}
+     */
+    @meta.uint
+    usage = 0;
+
     _vertexBuffer = null;
     _indexBuffer = null;
     _decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);

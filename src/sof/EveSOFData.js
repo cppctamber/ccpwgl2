@@ -43,6 +43,7 @@ import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
+import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
 
 
 @meta.type("EveSOFData")
@@ -236,6 +237,19 @@ export class EveSOFData extends meta.Model
      * stale with it.
      * @type {String}
      */
+    /**
+     * The plane-set usages that show video, from `EveSOFDataHullPlaneSet.Usage`.
+     *
+     * Named here rather than inlined because the numbers mean nothing on sight
+     * and the gaps in them are Carbon's, not a mistake: 0 STANDARD, 2 SPACE
+     * VIDEO, 3 HANGAR VIDEO, 5 HAZE, with 1 and 4 undefined.
+     * @type {Array<Number>}
+     */
+    static VIDEO_PLANE_USAGES = Object.freeze([
+        EveSOFDataHullPlaneSet.Usage.SPACE_VIDEO,
+        EveSOFDataHullPlaneSet.Usage.HANGAR_VIDEO
+    ]);
+
     static DEFAULT_FALLBACK_MATERIAL_NAME = "grey_iron_matt";
 
     /**
@@ -2058,7 +2072,28 @@ export class EveSOFData extends meta.Model
     }
 
     /**
-     * Temporary billboard handler
+     * Points a hull's video planes at something to show.
+     *
+     * Carbon does this by `usage` (`EveSOF.cpp:996-1005`): a plane set declares
+     * itself SPACE_VIDEO or HANGAR_VIDEO and its `ImageMap` is set to
+     * `dynamic:/inspacevideos` or `dynamic:/hangarvideos` — one provider path,
+     * no list, no choosing. `MaskMap` is authored data and Carbon never touches
+     * it here.
+     *
+     * This used to find the sets by NAME, matching anything containing
+     * "BILLBOARD" or "VIDEOS", and then wrote the chosen path over `MaskMap` —
+     * the wrong parameter, so the mask was replaced and the image slot left
+     * alone. It also crashed outright when no list was supplied, which is the
+     * default: an empty array indexed at `randomInt(0, -1)` gives undefined, and
+     * the `res:/` prefix check called `.indexOf` on it. Any hull with a plane
+     * set so named was therefore unrenderable.
+     *
+     * What remains ours is the *source*. We have no video pipeline and no
+     * playlist, so a random still from `options.billboards` stands in for what
+     * the provider would supply. That is a stand-in for a `dynamic:/` factory
+     * rather than a different design, and it is why the selection survives when
+     * the name-matching did not.
+     *
      * @param {*} obj
      * @param {Object} options
      */
@@ -2070,14 +2105,10 @@ export class EveSOFData extends meta.Model
 
         arr.forEach(set =>
         {
-            if (set.constructor === EvePlaneSet)
+            // `usage` is carried on the set, and it is what Carbon reads.
+            if (set.constructor === EvePlaneSet && EveSOFData.VIDEO_PLANE_USAGES.includes(set.usage))
             {
-                // Try to guess billboards
-                const nameUpper = set.name.split(" ").join("").toUpperCase();
-                if (nameUpper.includes("BILLBOARD") || nameUpper.includes("VIDEOS"))
-                {
-                    found.push(set);
-                }
+                found.push(set);
             }
         });
 
@@ -2086,12 +2117,34 @@ export class EveSOFData extends meta.Model
         {
             obj.RandomizeBillboards = function ()
             {
+                const { billboards = [] } = options;
+
+                // Nothing to choose from is the normal case, not a failure.
+                //
+                // This read `billboards[randomInt(0, billboards.length - 1)]`
+                // against an empty list, which indexes an empty array and gives
+                // undefined, and then called `.indexOf` on it — so any hull
+                // carrying a plane set whose name contains BILLBOARD or VIDEOS
+                // threw and took the entire SOF build with it, unless the caller
+                // happened to have supplied a billboard list. Almost nobody does:
+                // the option defaults to an empty array.
+                //
+                // A billboard is decoration. Leaving the mask as authored is the
+                // right answer when there is nothing to swap in.
+                if (!billboards.length) return;
+
                 found.forEach(billboard =>
                 {
-                    const { billboards = [] } = options;
                     let bb = billboards[num.randomInt(0, billboards.length - 1)];
+
+                    // A list entry is whatever a caller put there, so a bad one
+                    // declines rather than throwing.
+                    if (typeof bb !== "string" || !bb) return;
                     if (bb.indexOf(":") === -1) bb = "res:/" + bb;
-                    billboard.effect.parameters.MaskMap.SetValue(bb);
+
+                    // ImageMap, which is the slot Carbon fills. MaskMap is
+                    // authored on the plane set and stays as it was.
+                    billboard.effect?.parameters?.ImageMap?.SetValue(bb);
                 });
             };
 
@@ -2154,7 +2207,10 @@ export class EveSOFData extends meta.Model
 
             set.SetValues({
                 // TODO: handle missing properties
-                // TODO: handle usage
+                // `usage` decides whether this set shows video, so it has to
+                // reach the runtime object — HandleBillboards reads it off the
+                // set, the way Carbon reads it off the plane set data.
+                usage: srcSet.usage,
                 display: true,
                 /*
                 items: srcSet.items,
