@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const { readFileSync } = require("node:fs");
+const { pathToFileURL } = require("node:url");
 const path = require("node:path");
 const test = require("node:test");
 
@@ -9,8 +10,10 @@ const helperPath = path.join(
     root,
     "src/interior/character/Tr2InteriorAdditiveAnimation.js"
 );
-const helperSource = readFileSync(helperPath, "utf8");
-const helperPromise = import(`data:text/javascript;base64,${Buffer.from(helperSource).toString("base64")}`);
+// Imported by path rather than inlined as a data: module — the sampler now
+// lives in core and this file re-exports it, so its one relative import has to
+// resolve.
+const helperPromise = import(pathToFileURL(helperPath).href);
 const IDENTITY_SCALE = [ 1, 0, 0, 0, 1, 0, 0, 0, 1 ];
 
 

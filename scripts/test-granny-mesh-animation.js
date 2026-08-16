@@ -2,9 +2,12 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { transformSync } = require("@babel/core");
-const { mat4, quat, vec3 } = require("gl-matrix");
+const { mat3, mat4, quat, vec3 } = require("gl-matrix");
 
 // Rounds away float noise, and -0 with it, so identity compares as identity.
+const closeTo = (actual, expected, message) =>
+    assert.ok(Math.abs(actual - expected) < 1e-5, `${message} (${actual} vs ${expected})`);
+
 const round = value =>
 {
     const rounded = Math.round(value * 1e6) / 1e6;
@@ -21,6 +24,9 @@ testRestPoseAndPaletteLayout();
 testUnmappedBonesAreIdentity();
 testChildMeshBindsOnUpdate();
 testChildMeshOverridesTheParentPalette();
+testPlaybackMovesTheBoneAndThePalette();
+testPlaybackQueuesUntilTheGeometryArrives();
+testCyclingAndEnding();
 console.log("Granny mesh-bound animation verified");
 
 
@@ -213,15 +219,136 @@ function testChildMeshOverridesTheParentPalette()
     assert.equal(bag.jointCount, 2, "the count travels with the palette");
 }
 
+/**
+ * A clip only matters if it reaches the palette. `Child` slides 0 to 10 over two
+ * seconds, so at one second it is halfway — and the skin matrix carries it into
+ * the bind pose's world frame, where the parent's quarter turn puts it on y.
+ */
+function testPlaybackMovesTheBoneAndThePalette()
+{
+    const updater = new Tr2GrannyAnimation();
+    updater.SetUseMeshBinding(true);
+    updater.SetSharedGeometryRes(makeResource());
+
+    assert.deepEqual(updater.GetAnimations().map(a => a.name), [ "NormalLoop" ]);
+    assert.equal(updater.PlayAnimation("NoSuchClip"), false, "an unknown clip is refused");
+    assert.equal(updater.IsPlaying(), false);
+
+    assert.equal(updater.PlayAnimation("NormalLoop", { cycle: true }), true);
+    assert.equal(updater.IsPlaying(), true);
+
+    // Nothing has advanced yet, so the palette is still the rest pose.
+    assert.equal(round(updater.GetBoneMatrices(0)[12 + 7]), 0);
+
+    updater.Update(1);
+    assert.deepEqual(
+        Array.from(updater._bones[1].localTransform.slice(12, 15)).map(round),
+        [ 5, 0, 0 ],
+        "the sampled position lands in the bone's local transform"
+    );
+    closeTo(updater.GetBoneMatrices(0)[12 + 7], 5, "and reaches the palette");
+
+    // Bones the clip does not carry a track for stay at rest rather than drift.
+    assert.deepEqual(
+        Array.from(updater.GetBoneMatrices(0).slice(0, 12)).map(round),
+        [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0 ],
+        "an untracked bone is untouched"
+    );
+}
+
+/**
+ * The container's state machine starts on its owner's first update, which is
+ * routinely before the geometry has loaded. A clip asked for then has to survive
+ * rather than be dropped.
+ */
+function testPlaybackQueuesUntilTheGeometryArrives()
+{
+    const updater = new Tr2GrannyAnimation();
+    updater.SetUseMeshBinding(true);
+
+    assert.equal(updater.PlayAnimation("NormalLoop", { cycle: true }), false, "nothing to play from yet");
+    assert.equal(updater.IsPlaying(), false);
+
+    updater.SetSharedGeometryRes(makeResource());
+    assert.equal(updater.IsPlaying(), true, "the queued clip starts once the geometry is good");
+
+    updater.Update(1);
+    closeTo(updater.GetBoneMatrices(0)[12 + 7], 5);
+}
+
+function testCyclingAndEnding()
+{
+    const cycling = new Tr2GrannyAnimation();
+    cycling.SetUseMeshBinding(true);
+    cycling.SetSharedGeometryRes(makeResource());
+    cycling.PlayAnimation("NormalLoop", { cycle: true });
+
+    cycling.Update(3);
+    assert.equal(round(cycling._player.time), 1, "a cycling clip wraps rather than clamping");
+    assert.equal(cycling.IsPlaying(), true);
+
+    const once = new Tr2GrannyAnimation();
+    once.SetUseMeshBinding(true);
+    once.SetSharedGeometryRes(makeResource());
+
+    let ended = null;
+    once.PlayAnimation("NormalLoop", { callback: (updater, name) => { ended = name; } });
+    once.Update(3);
+
+    assert.equal(once.IsPlaying(), false, "a one-shot clip stops at its duration");
+    assert.equal(ended, "NormalLoop", "and fires its callback once");
+    closeTo(once.GetBoneMatrices(0)[12 + 7], 10, "holding the last frame rather than snapping to rest");
+
+    once.Update(1);
+    closeTo(once.GetBoneMatrices(0)[12 + 7], 10, "a stopped clip no longer advances");
+
+    // Stopping leaves the pose where it stopped, which is what Carbon does.
+    const stopped = new Tr2GrannyAnimation();
+    stopped.SetUseMeshBinding(true);
+    stopped.SetSharedGeometryRes(makeResource());
+    stopped.PlayAnimation("NormalLoop", { cycle: true });
+    stopped.Update(1);
+    assert.equal(stopped.StopAnimation("Other"), false, "a different clip name does not stop it");
+    assert.equal(stopped.StopAnimation("NormalLoop"), true);
+    stopped.Update(1);
+    closeTo(stopped.GetBoneMatrices(0)[12 + 7], 5, "the pose holds where it stopped");
+}
+
 function makeBone(name, parentIndex, x = 0)
 {
-    const localTransform = mat4.fromTranslation(mat4.create(), [ x, 0, 0 ]);
     return {
         name,
         parentIndex,
-        localTransform,
+        // The reader carries both the decomposed rest pose and the matrix it
+        // composes to; sampling reads the first, the rest pose reads the second.
+        position: vec3.fromValues(x, 0, 0),
+        orientation: quat.create(),
+        scaleShear: mat3.create(),
+        localTransform: mat4.fromTranslation(mat4.create(), [ x, 0, 0 ]),
         worldTransform: mat4.create(),
         worldTransformInv: mat4.create()
+    };
+}
+
+/**
+ * One clip, `NormalLoop`, two seconds long, sliding `Child` from its rest
+ * position out to 10 along x.
+ */
+function makeAnimation(model)
+{
+    return {
+        name: "NormalLoop",
+        duration: 2,
+        trackGroups: [ {
+            name: model.name,
+            model,
+            transformTracks: [ {
+                name: "Child",
+                position: { degree: 1, dimension: 3, knots: [ 0, 2 ], controls: [ 0, 0, 0, 10, 0, 0 ] },
+                orientation: null,
+                scaleShear: null
+            } ]
+        } ]
     };
 }
 
@@ -235,7 +362,8 @@ function makeResource()
 
     // A quarter turn about z on the parent, so that composition order is
     // observable — with pure translations both orders give the same answer.
-    mat4.fromRotationTranslation(bones[0].localTransform, quat.setAxisAngle(quat.create(), [ 0, 0, 1 ], Math.PI / 2), [ 10, 0, 0 ]);
+    quat.setAxisAngle(bones[0].orientation, [ 0, 0, 1 ], Math.PI / 2);
+    mat4.fromRotationTranslation(bones[0].localTransform, bones[0].orientation, [ 10, 0, 0 ]);
 
     for (const bone of bones)
     {
@@ -251,15 +379,16 @@ function makeResource()
     }
 
     const mesh = { name: "Mesh", boneBindings: bones.map(bone => bone.name) };
+    const model = {
+        name: "Root",
+        skeleton: { bones },
+        meshBindings: [ { mesh, bones: bones.slice() } ]
+    };
 
     return {
         meshes: [ mesh ],
-        models: [ {
-            name: "Root",
-            skeleton: { bones },
-            meshBindings: [ { mesh, bones: bones.slice() } ]
-        } ],
-        animations: [],
+        models: [ model ],
+        animations: [ makeAnimation(model) ],
         registered: [],
         unregistered: [],
         IsGood() { return true; },
@@ -280,7 +409,9 @@ function loadGrannyAnimation()
         "../src/unsupported/core/animation/Tr2GrannyAnimation.js",
         {
             utils: { meta: makeMeta() },
-            math: { mat4 }
+            math: { mat3, mat4: withCcpwglMat4Extensions(), quat, vec3 },
+            // The real sampler, not a stub — the point is the curve behaviour.
+            "core/geometry/sampleDegreeOneCurve.js": loadModule("../src/core/geometry/sampleDegreeOneCurve.js", {})
         }
     );
 }
@@ -316,6 +447,25 @@ function loadChildMesh()
             "./EveChild": { EveChild }
         }
     );
+}
+
+/**
+ * ccpwgl's `mat4` is stock gl-matrix plus a handful of additions; `fromMat3` is
+ * one of them (`src/global/math/mat4.js:149`).
+ */
+function withCcpwglMat4Extensions()
+{
+    return Object.assign(Object.create(mat4), {
+        fromMat3(out, m)
+        {
+            out[0] = m[0]; out[1] = m[1]; out[2] = m[2];
+            out[4] = m[3]; out[5] = m[4]; out[6] = m[5];
+            out[8] = m[6]; out[9] = m[7]; out[10] = m[8];
+            out[3] = out[7] = out[11] = out[12] = out[13] = out[14] = 0;
+            out[15] = 1;
+            return out;
+        }
+    });
 }
 
 function loadModule(relativePath, modules)

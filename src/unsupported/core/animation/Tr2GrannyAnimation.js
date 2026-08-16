@@ -1,5 +1,6 @@
 import { meta } from "utils";
-import { mat4 } from "math";
+import { mat3, mat4, quat, vec3 } from "math";
+import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
 
 
 /**
@@ -111,6 +112,16 @@ export class Tr2GrannyAnimation extends meta.Model
     /** The resource `_bones` and `_palettes` were built from, so a re-notify is cheap. */
     _rebuiltFrom = null;
 
+    /**
+     * The clip being played, or null. One at a time: Carbon's layers, masks and
+     * crossfades are not ported, and nothing on the ship path asks for them.
+     * @type {?{ res: Tw2GeometryAnimation, name: String, duration: Number, time: Number, cycle: Boolean, timeScale: Number, playing: Boolean, callback: ?Function, tracks: Array }}
+     */
+    _player = null;
+
+    /** A clip asked for before the geometry arrived, replayed once it does. */
+    _pending = null;
+
 
     /**
      * Sets whether the updater poses the geometry its mesh already owns, rather
@@ -212,7 +223,231 @@ export class Tr2GrannyAnimation extends meta.Model
         this._rebuiltFrom = res;
         this.ResetBoneTransforms();
         this.UpdateBoneMatrices();
+
+        // A clip asked for before the geometry arrived. The controller graph
+        // starts on its owner's first update, which is routinely earlier than
+        // the resource being good, so this is the normal path rather than a
+        // corner case.
+        if (this._pending)
+        {
+            const pending = this._pending;
+            this._pending = null;
+            this.PlayAnimation(pending.name, pending.options);
+        }
+
         return true;
+    }
+
+    /**
+     * Gets the clips the geometry carries.
+     * @returns {Array<Tw2GeometryAnimation>}
+     */
+    GetAnimations()
+    {
+        const res = this._geometryRes;
+        return res && res.animations ? res.animations : [];
+    }
+
+    /**
+     * Finds a clip by name.
+     * @param {String} name
+     * @returns {?Tw2GeometryAnimation}
+     */
+    GetAnimation(name)
+    {
+        return this.GetAnimations().find(animation => animation.name === name) || null;
+    }
+
+    /**
+     * @returns {Boolean} true while a clip is advancing
+     */
+    IsPlaying()
+    {
+        return !!(this._player && this._player.playing);
+    }
+
+    /**
+     * Plays a clip carried by the mesh's geometry.
+     *
+     * Called by `Tr2ActionPlayMeshAnimation` when the container's state machine
+     * enters the state that owns the action, which happens on its own — nothing
+     * here or in `EveChildMesh` starts a clip.
+     * @param {String} name
+     * @param {Object} [options]
+     * @param {Boolean} [options.cycle]
+     * @param {Number} [options.timeScale=1]
+     * @param {Function} [options.callback] - fired once a non-cycling clip ends
+     * @returns {Boolean} true if the clip is now playing
+     */
+    PlayAnimation(name, options = {})
+    {
+        if (!this._rebuiltFrom && !this.RebuildCachedData())
+        {
+            // Queue rather than refuse: the resource is simply not here yet.
+            this._pending = { name, options };
+            return false;
+        }
+
+        const res = this.GetAnimation(name);
+        if (!res) return false;
+
+        const tracks = this.BuildTrackBindings(res);
+        this._player = {
+            res,
+            name,
+            duration: res.duration || 0,
+            time: 0,
+            cycle: !!options.cycle,
+            timeScale: Number.isFinite(options.timeScale) ? options.timeScale : 1,
+            callback: typeof options.callback === "function" ? options.callback : null,
+            playing: true,
+            tracks
+        };
+
+        return true;
+    }
+
+    /**
+     * Stops the current clip, leaving the pose where it stopped.
+     *
+     * Carbon holds the last sampled frame rather than snapping back to rest, and
+     * so does this.
+     * @param {String} [name] - only stops if it matches the playing clip
+     * @returns {Boolean} true if a clip was stopped
+     */
+    StopAnimation(name)
+    {
+        if (!this._player) return false;
+        if (name !== undefined && this._player.name !== name) return false;
+
+        this._player.playing = false;
+        return true;
+    }
+
+    /**
+     * Binds a clip's transform tracks to skeleton bone indices.
+     *
+     * A clip carries a track group per model; only the group naming this
+     * updater's model applies, and within it only tracks whose name matches a
+     * bone. Anything unmatched is dropped here rather than tested per frame.
+     * @param {Tw2GeometryAnimation} animation
+     * @returns {Array<{ index: Number, track: Tw2GeometryTransformTrack }>}
+     */
+    BuildTrackBindings(animation)
+    {
+        const
+            model = this._geometryRes.models[this._modelIndex],
+            bones = this._bones,
+            out = [];
+
+        for (let g = 0; g < animation.trackGroups.length; g++)
+        {
+            const group = animation.trackGroups[g];
+            if (group.model && group.model !== model) continue;
+            if (!group.model && group.name && model.name && group.name !== model.name) continue;
+
+            for (let t = 0; t < group.transformTracks.length; t++)
+            {
+                const
+                    track = group.transformTracks[t],
+                    index = bones.findIndex(bone => bone.boneRes.name === track.name);
+
+                if (index !== -1) out.push({ index, track });
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Advances the current clip and re-poses the skeleton.
+     *
+     * With nothing playing this is inert — the pose persists, which is what
+     * Carbon does too.
+     * @param {Number} dt
+     */
+    Update(dt)
+    {
+        const player = this._player;
+        if (!player || !player.playing) return;
+
+        player.time += (Number.isFinite(dt) ? dt : 0) * player.timeScale;
+
+        if (player.duration > 0)
+        {
+            if (player.cycle)
+            {
+                player.time = ((player.time % player.duration) + player.duration) % player.duration;
+            }
+            else if (player.time >= player.duration)
+            {
+                player.time = player.duration;
+                player.playing = false;
+            }
+        }
+
+        this.SampleBoneTransforms(player);
+        this.UpdateWorldTransforms();
+        this.UpdateBoneMatrices();
+
+        if (!player.playing && player.callback)
+        {
+            const callback = player.callback;
+            player.callback = null;
+            callback(this, player.name);
+        }
+    }
+
+    /**
+     * Writes a clip's sampled pose into the bone local transforms.
+     *
+     * Every bone starts from its rest local, because a clip animates only the
+     * bones it carries tracks for and the rest must not drift.
+     * @param {Object} player
+     */
+    SampleBoneTransforms(player)
+    {
+        for (let i = 0; i < this._bones.length; i++)
+        {
+            mat4.copy(this._bones[i].localTransform, this._bones[i].boneRes.localTransform);
+        }
+
+        const { position, orientation, scaleShear, rotation } = Tr2GrannyAnimation.global;
+
+        for (let i = 0; i < player.tracks.length; i++)
+        {
+            const
+                { index, track } = player.tracks[i],
+                bone = this._bones[index],
+                rest = bone.boneRes;
+
+            vec3.copy(position, rest.position);
+            quat.copy(orientation, rest.orientation);
+            for (let m = 0; m < 9; m++) scaleShear[m] = rest.scaleShear[m];
+
+            if (track.position)
+            {
+                sampleDegreeOneCurve(position, track.position, player.time, player.cycle, player.duration);
+            }
+
+            if (track.orientation)
+            {
+                sampleDegreeOneCurve(orientation, track.orientation, player.time, player.cycle, player.duration, true);
+            }
+
+            if (track.scaleShear)
+            {
+                sampleDegreeOneCurve(scaleShear, track.scaleShear, player.time, player.cycle, player.duration);
+            }
+
+            // Same composition as Tw2GeometryBone.UpdateTransform: scale/shear,
+            // then rotation, then translation written into the fourth row.
+            mat4.fromMat3(bone.localTransform, scaleShear);
+            mat4.multiply(bone.localTransform, bone.localTransform, mat4.fromQuat(rotation, orientation));
+            bone.localTransform[12] = position[0];
+            bone.localTransform[13] = position[1];
+            bone.localTransform[14] = position[2];
+        }
     }
 
     /**
@@ -227,11 +462,24 @@ export class Tr2GrannyAnimation extends meta.Model
     {
         for (let i = 0; i < this._bones.length; i++)
         {
+            mat4.copy(this._bones[i].localTransform, this._bones[i].boneRes.localTransform);
+        }
+
+        this.UpdateWorldTransforms();
+    }
+
+    /**
+     * Recomputes world and offset transforms from the current bone locals.
+     *
+     * Bones are in parent-before-child order, so one pass suffices.
+     */
+    UpdateWorldTransforms()
+    {
+        for (let i = 0; i < this._bones.length; i++)
+        {
             const
                 bone = this._bones[i],
                 parentIndex = bone.boneRes.parentIndex;
-
-            mat4.copy(bone.localTransform, bone.boneRes.localTransform);
 
             if (parentIndex !== -1 && this._bones[parentIndex])
             {
@@ -312,5 +560,12 @@ export class Tr2GrannyAnimation extends meta.Model
     }
 
     static EMPTY = new Float32Array(0);
+
+    static global = {
+        position: vec3.create(),
+        orientation: quat.create(),
+        scaleShear: mat3.create(),
+        rotation: mat4.create()
+    };
 
 }
