@@ -2,7 +2,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { transformSync } = require("@babel/core");
-const { mat4, quat } = require("gl-matrix");
+const { mat4, quat, vec3 } = require("gl-matrix");
 
 // Rounds away float noise, and -0 with it, so identity compares as identity.
 const round = value =>
@@ -13,11 +13,14 @@ const round = value =>
 
 
 const { Tr2GrannyAnimation } = loadGrannyAnimation();
+const { EveChildMesh } = loadChildMesh();
 
 testMeshBindingOrderIsLoadBearing();
 testRebuildIsOncePerResource();
 testRestPoseAndPaletteLayout();
 testUnmappedBonesAreIdentity();
+testChildMeshBindsOnUpdate();
+testChildMeshOverridesTheParentPalette();
 console.log("Granny mesh-bound animation verified");
 
 
@@ -148,6 +151,68 @@ function testUnmappedBonesAreIdentity()
 }
 
 
+/**
+ * The resource is fetched asynchronously, so the child mesh cannot bind at
+ * construction — it binds on the first tick the resource is good.
+ */
+function testChildMeshBindsOnUpdate()
+{
+    const child = new EveChildMesh();
+    child.animationUpdater = new Tr2GrannyAnimation();
+    child.mesh = { meshIndex: 0, geometryResource: null };
+
+    child.Update(0, mat4.create(), {});
+    assert.equal(child.animationUpdater.GetBoneCount(0), 0, "nothing to bind to yet");
+
+    child.mesh.geometryResource = makeResource();
+    child.Update(0, mat4.create(), {});
+    assert.equal(child.animationUpdater.GetBoneCount(0), 2);
+    assert.equal(child.animationUpdater._useMeshBinding, true);
+
+    const bones = child.animationUpdater._bones;
+    child.Update(0, mat4.create(), {});
+    assert.equal(child.animationUpdater._bones, bones, "a bound resource is not rebound every tick");
+
+    // An updater with a resPath loads its own geometry, which is not ported.
+    const withPath = new EveChildMesh();
+    withPath.animationUpdater = new Tr2GrannyAnimation();
+    withPath.animationUpdater.resPath_ = "res:/some/clip.gr2";
+    withPath.mesh = { meshIndex: 0, geometryResource: makeResource() };
+    withPath.Update(0, mat4.create(), {});
+    assert.equal(withPath.animationUpdater.GetBoneCount(0), 0, "the resPath case is left alone");
+
+    // Carbon gates stepping on updateAnimation.
+    const disabled = new EveChildMesh();
+    disabled.animationUpdater = new Tr2GrannyAnimation();
+    disabled.updateAnimation = false;
+    disabled.mesh = { meshIndex: 0, geometryResource: makeResource() };
+    disabled.Update(0, mat4.create(), {});
+    assert.equal(disabled.animationUpdater.GetBoneCount(0), 0, "updateAnimation gates the step");
+}
+
+/**
+ * A child mesh with its own skeleton must send its own palette. Inheriting the
+ * parent's means indexing the parent's bones with this mesh's bindings.
+ */
+function testChildMeshOverridesTheParentPalette()
+{
+    const parentPalette = new Float32Array(24).fill(9);
+
+    const withoutUpdater = new EveChildMesh();
+    const inherited = withoutUpdater.GetPerObjectDataBagOfStuff({ jointMatrices: parentPalette });
+    assert.equal(inherited.jointMatrices, parentPalette, "without an updater the parent's palette stands");
+
+    const child = new EveChildMesh();
+    child.animationUpdater = new Tr2GrannyAnimation();
+    child.mesh = { meshIndex: 0, geometryResource: makeResource() };
+    child.Update(0, mat4.create(), {});
+
+    const bag = child.GetPerObjectDataBagOfStuff({ jointMatrices: parentPalette });
+    assert.notEqual(bag.jointMatrices, parentPalette, "the parent's palette is replaced");
+    assert.equal(bag.jointMatrices, child.animationUpdater.GetBoneMatrices(0));
+    assert.equal(bag.jointCount, 2, "the count travels with the palette");
+}
+
 function makeBone(name, parentIndex, x = 0)
 {
     const localTransform = mat4.fromTranslation(mat4.create(), [ x, 0, 0 ]);
@@ -220,6 +285,39 @@ function loadGrannyAnimation()
     );
 }
 
+function loadChildMesh()
+{
+    class EveChild
+    {
+        boneIndex = -1;
+        _lod = 3;
+        static GetJointMatrices(parentData) { return parentData ? parentData.jointMatrices : null; }
+        static perObjectData = {};
+    }
+
+    class GLESPerObjectDataEveSpaceObject
+    {
+        // The real Unpack copies the parent's values into the bag, the parent's
+        // bone palette among them.
+        static Unpack(perObjectData, out)
+        {
+            Object.assign(out, perObjectData);
+            return out;
+        }
+        static Pack() {}
+    }
+
+    return loadModule(
+        "../src/eve/child/EveChildMesh.js",
+        {
+            utils: { meta: makeMeta() },
+            math: { vec3, quat, mat4 },
+            core: { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData: class {} },
+            "./EveChild": { EveChild }
+        }
+    );
+}
+
 function loadModule(relativePath, modules)
 {
     const filename = path.resolve(__dirname, relativePath);
@@ -248,9 +346,17 @@ function makeMeta()
     return {
         Model: class {},
         type: () => value => value,
+        define: () => value => value,
         notImplemented: property,
         struct: () => property,
+        list: () => property,
         string: property,
-        path: property
+        path: property,
+        boolean: property,
+        uint: property,
+        float: property,
+        matrix4: property,
+        quaternion: property,
+        vector3: property
     };
 }

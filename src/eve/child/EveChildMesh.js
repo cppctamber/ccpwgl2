@@ -45,13 +45,12 @@ export class EveChildMesh extends EveChild
      * every child object in it down, so an animation nobody drives cost the
      * entire effect.
      *
-     * `notImplemented` because it is not driven here: Carbon steps it from
-     * `updateAnimation` and binds it to the mesh's geometry
-     * (`EveChildMesh.cpp:211-222`), and none of that is ported. Reading a
-     * property and animating with it are different claims, and only the first
-     * is being made.
+     * Bound and posed from {@link Update}, mirroring Carbon
+     * (`EveChildMesh.cpp:211-222`). No animation is sampled yet, so this
+     * supplies the rest pose — which is still the right palette to send, since
+     * the alternative is inheriting the parent's and indexing it with this
+     * mesh's own bones.
      */
-    @meta.notImplemented
     @meta.struct("Tr2GrannyAnimation")
     animationUpdater = null;
 
@@ -84,7 +83,6 @@ export class EveChildMesh extends EveChild
     @meta.vector3
     translation = vec3.create();
 
-    @meta.notImplemented
     @meta.boolean
     updateAnimation = true;
 
@@ -132,6 +130,8 @@ export class EveChildMesh extends EveChild
         {
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
+
+        this.UpdateAnimation(dt);
 
         // The object or a modifier can set a bone
         this._hasBone = false;
@@ -186,6 +186,48 @@ export class EveChildMesh extends EveChild
                 mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
             }
         }
+    }
+
+    /**
+     * Binds the animation updater to the geometry this mesh has already loaded,
+     * and steps it.
+     *
+     * Binding happens here rather than at construction because the resource is
+     * fetched asynchronously — the first tick it is good is the earliest it can
+     * be bound, and rebinding the same resource is a no-op.
+     *
+     * Only the mesh-bound case is handled: an updater carrying a `resPath` loads
+     * its own geometry, which is not ported.
+     * @param {Number} dt
+     */
+    UpdateAnimation(dt)
+    {
+        const updater = this.animationUpdater;
+        if (!updater || !this.updateAnimation || updater.resPath_) return;
+
+        const res = this.mesh ? this.mesh.geometryResource : null;
+        if (!res) return;
+
+        // The flag must be set before the resource is attached — a prepared
+        // resource dispatches its notification synchronously and the rebuild
+        // reads the flag on the way past.
+        updater.SetUseMeshBinding(true);
+        updater.SetSharedGeometryRes(res);
+
+        if (updater.Update) updater.Update(dt);
+    }
+
+    /**
+     * Gets the animation updater, which is what `Tr2ActionPlayMeshAnimation`
+     * resolves its destination to.
+     *
+     * The updater has no `PlayAnimation` yet, so the action declines rather than
+     * playing — this is the seam, not the playback.
+     * @returns {Tr2GrannyAnimation|null}
+     */
+    GetAnimationController()
+    {
+        return this.animationUpdater;
     }
 
     /**
@@ -254,6 +296,26 @@ export class EveChildMesh extends EveChild
         delete out.boundingSphereRadiusSq;
         delete out.clipSphereCenter;
         delete out.clipSphereSignedRadiusSq;
+
+        // Unpack has just copied the parent's bone palette in. If this mesh has
+        // its own skeleton, that palette is the wrong one — its bones are the
+        // parent's, indexed by this mesh's bindings. Override it.
+        //
+        // One write covers both backends: the GLES packer puts it in the
+        // "JointMat" vs slot, and the Carbon binder reads that same slot when no
+        // explicit palette is supplied (Tw2Effect.js:1319-1322).
+        if (this.animationUpdater && this.animationUpdater.GetBoneMatrices)
+        {
+            const
+                meshIndex = this.mesh ? this.mesh.meshIndex : 0,
+                jointMatrices = this.animationUpdater.GetBoneMatrices(meshIndex);
+
+            if (jointMatrices && jointMatrices.length)
+            {
+                out.jointMatrices = jointMatrices;
+                out.jointCount = this.animationUpdater.GetBoneCount(meshIndex);
+            }
+        }
 
         out.source = this;
         out.parentPerObjectData = perObjectData;
