@@ -205,6 +205,13 @@ export class EveSOFData extends meta.Model
 
     };
 
+    /**
+     * Whether the missing-resolver warning has already been said once.
+     * @type {Boolean}
+     * @private
+     */
+    _warnedNoResPathInsertResolver = false;
+
     static TrigBalls = {
         "tgb01": [ 0, -57.502, 151.432, 2.5, 2.5, 2.5 ],
         "tgbc01": [ 0, 0, -22.64, 1.5, 1.5, 1.5 ],
@@ -329,7 +336,7 @@ export class EveSOFData extends meta.Model
     IsValidHullResPathInsert(hull, resPathInsert)
     {
         resPathInsert = resPathInsert ? resPathInsert.toLowerCase() : "";
-        if (!resPathInsert || resPathInsert === "none" || resPathInsert === "base") return true;
+        if (!resPathInsert || resPathInsert === "none") return true;
         hull = isString(hull) ? this.GetHull(hull) : hull;
         const cached = this._options.resPathInserts[hull.name];
         return !cached || cached.includes(resPathInsert);
@@ -366,7 +373,7 @@ export class EveSOFData extends meta.Model
 
             const inserts = [ ...new Set(values
                 .map(value => String(value).trim().toLowerCase())
-                .filter(value => value && value !== "none" && value !== "base")) ]
+                .filter(value => value && value !== "none")) ]
                 .sort((a, b) => a.localeCompare(b));
 
             this._options.resPathInserts[hull.name] = [ "none", ...inserts ];
@@ -429,10 +436,38 @@ export class EveSOFData extends meta.Model
                 : "";
         }
 
-        if (!resPathInsert || resPathInsert === "base" || resPathInsert === "none") return paths;
+        // `none` only. It is the one word Carbon gives meaning to — a DNA
+        // `respathinsert?none` clears whatever the faction asked for — and it is
+        // therefore the one value that can never also name a folder on disk.
+        //
+        // `base` used to sit here beside it, and was ours. Carbon has never
+        // heard of it, so it is an ordinary folder name, and a hull genuinely
+        // shipping a `base/` insert was unaskable for no reason anyone could
+        // have found. Nothing else changes by dropping it: an insert naming a
+        // folder that does not exist already falls back to the original path.
+        if (!resPathInsert || resPathInsert === "none") return paths;
 
         const resolver = this._options.resolveHullResPathInserts;
-        if (!resolver) return paths;
+
+        if (!resolver)
+        {
+            // Said once, loudly. Whether a faction variant exists is a question
+            // about the resource index, so it cannot be answered in the browser
+            // and this option is the only way in. Returning the paths untouched
+            // is indistinguishable from a hull that legitimately has no
+            // variants, which is how every ship on a consumer that never set it
+            // came out in base textures without anyone noticing for months.
+            if (!this._warnedNoResPathInsertResolver)
+            {
+                this._warnedNoResPathInsertResolver = true;
+                tw2.Warning({
+                    name: "Space object factory",
+                    message: "No resolveHullResPathInserts option registered - faction texture variants are disabled"
+                });
+            }
+
+            return paths;
+        }
 
         const resolved = await resolver(hull.name, resPathInsert, paths);
         if (!Array.isArray(resolved) || resolved.length !== paths.length)
@@ -1299,11 +1334,7 @@ export class EveSOFData extends meta.Model
                 hullArea.Assign(effect);
                 for (const key in effect.textures)
                 {
-                    if (effect.textures.hasOwnProperty(key)
-                        && EveSOFData.IsResPathInsertCheckRequired(effect.textures[key]))
-                    {
-                        insertPaths.push(effect.textures[key]);
-                    }
+                    if (effect.textures.hasOwnProperty(key)) insertPaths.push(effect.textures[key]);
                 }
             }
         }
@@ -1377,7 +1408,7 @@ export class EveSOFData extends meta.Model
                 // Handle res path inserts
                 for (const key in eff.textures)
                 {
-                    if (eff.textures.hasOwnProperty(key) && EveSOFData.IsResPathInsertCheckRequired(eff.textures[key]))
+                    if (eff.textures.hasOwnProperty(key))
                     {
                         eff.textures[key] = resolvedInsertMap.get(eff.textures[key].toLowerCase())
                             || eff.textures[key];
@@ -3296,38 +3327,23 @@ export class EveSOFData extends meta.Model
 
     }
 
-    /**
-     * List of texture codes that could possibly be swapped out for different factions
+    /*
+     * There was a hardcoded list of texture suffixes here — pmdg, ar, no, a, o,
+     * m, m2, p3, r, g, d, n — and only paths ending in one of them were offered
+     * for a faction variant. Carbon filters nothing: `ModifyTextureResPath` is
+     * applied to every texture and the existence check alone decides, which is
+     * the whole point of asking per texture.
+     *
+     * Measured against the live resource index across all 317 hulls that have
+     * insert folders: 942 real variants had a suffix on the list and 2 did not
+     * — `gal_tech_01_m3.dds` (navy) and `sl_station01_v1_mglow.dds` (wreck) —
+     * so the list was quietly wrong rather than badly wrong. Five of its twelve
+     * entries matched nothing at all, which is what a guessed list looks like.
+     *
+     * The filter also no longer buys anything. It predates batching, when every
+     * path was a separate question; the whole texture list now goes in one
+     * request, so pre-filtering saves array entries, not round trips.
      */
-    static resFileResPathInsertSuffixes = [
-        "pmdg",
-        "ar",
-        "no",
-        "a",  // albedo
-        "o",  // occlusion (no longer required)
-        "m",  // material
-        "m2", // material 2
-        "p3", // paint mask
-        "r",  // roughness
-        "g",  // glow mask
-        "d",  // dirt mask
-        "n",  // normal
-    ];
-
-    /**
-     * Checks if a res path insert check is required
-     * @param {String} path
-     * @returns {boolean}
-     */
-    static IsResPathInsertCheckRequired(path = "")
-    {
-        path = path.toLowerCase();
-        const index = path.lastIndexOf("_") + 1;
-        if (!index) return false;
-
-        const suffix = path.substring(index).split(".")[0];
-        return this.resFileResPathInsertSuffixes.includes(suffix);
-    }
 
     /**
      * Builds classes
