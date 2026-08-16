@@ -39,6 +39,8 @@ import {
 import { EveStation2 } from "../unsupported/eve/object";
 import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
+import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
+import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 
@@ -63,9 +65,21 @@ export class EveSOFData extends meta.Model
     @meta.uiDescription("Custom property for debugging")
     enableSof6 = true;
 
+    /**
+     * The material used when a named one is not in the data.
+     *
+     * Not a debugging aid any more, and not empty. Some materials genuinely are
+     * not published for live ships, so a hull that exists and is meant to be
+     * seen can name a material nothing can supply — and with no fallback that
+     * threw, which loses the whole ship over one of its four material slots.
+     *
+     * `grey_iron_matt` is a real published material rather than an invented
+     * one, so a substituted slot looks like a plausible unpainted surface
+     * instead of announcing itself.
+     */
     @meta.string
     @meta.uiDescription("Custom property for debugging")
-    fallbackMaterialName = "";
+    fallbackMaterialName = EveSOFData.DEFAULT_FALLBACK_MATERIAL_NAME;
 
     @meta.list("EveSOFDataFaction")
     faction = [];
@@ -211,6 +225,36 @@ export class EveSOFData extends meta.Model
      * @private
      */
     _warnedNoResPathInsertResolver = false;
+
+    /**
+     * The material a missing one falls back to.
+     *
+     * A published material, chosen rather than invented: a neutral matt grey
+     * iron, which is what an unpainted hull surface should look like. Naming it
+     * here keeps the choice in one place and lets a consumer point
+     * `fallbackMaterialName` somewhere else without the substitute values going
+     * stale with it.
+     * @type {String}
+     */
+    static DEFAULT_FALLBACK_MATERIAL_NAME = "grey_iron_matt";
+
+    /**
+     * grey_iron_matt's own published values, as `[name, vec4]` pairs.
+     *
+     * Copied from the shipped material rather than eyeballed, so the substitute
+     * is that surface and not an approximation of it. Read back from the live
+     * resource index at build 3466501.
+     * @type {Array<[String, Array<Number>]>}
+     */
+    static FALLBACK_MATERIAL_PARAMETERS = [
+        [ "DiffuseColor", [ 0.021219, 0.021219, 0.021219, 1 ] ],
+        [ "DustDiffuseColor", [ 0.0193824, 0.0185002, 0.0144438, 1 ] ],
+        [ "FresnelColor", [ 0.0561285, 0.0648033, 0.0742136, 1 ] ],
+        [ "Gloss", [ 0.455, 0, 0, 0 ] ]
+    ];
+
+    /** The substitute, built once per data set and only if it is ever needed. */
+    _fallbackMaterial = null;
 
     static TrigBalls = {
         "tgb01": [ 0, -57.502, 151.432, 2.5, 2.5, 2.5 ],
@@ -685,8 +729,53 @@ export class EveSOFData extends meta.Model
     {
         let material = findElementByPropertyValue(this.material, "name", name);
         if (material) return material;
-        if (!fallback) throw ErrSOFMaterialNotFound({ name });
-        return findElementByPropertyValue(this.material, "name", fallback, ErrSOFMaterialNotFound);
+
+        // `new`, which was missing. Calling a class as a function throws
+        // "Class constructor cannot be invoked without 'new'" — so the one path
+        // that exists to explain a missing material reported a JavaScript
+        // mistake instead, and never once said which material was absent.
+        if (!fallback) throw new ErrSOFMaterialNotFound({ name });
+
+        material = findElementByPropertyValue(this.material, "name", fallback);
+        if (material) return material;
+
+        // The fallback itself can be absent, and normally is.
+        //
+        // EveSOFDataHandler fetches materials per DNA rather than loading the
+        // whole set, so the only materials present are the ones this ship asked
+        // for by name — and a ship that names a missing material has, by
+        // definition, not asked for the substitute. Looking it up and throwing
+        // would make the fallback work only when it was not needed.
+        //
+        // Built from grey_iron_matt's own published values, so it is the same
+        // surface whether it came from the data or from here.
+        if (fallback !== EveSOFData.DEFAULT_FALLBACK_MATERIAL_NAME)
+        {
+            throw new ErrSOFMaterialNotFound({ name: fallback });
+        }
+
+        if (!this._fallbackMaterial)
+        {
+            // Assembled rather than passed to `from`: the parameters are a
+            // `@meta.list`, and nothing else in this package seeds one from
+            // plain data, so the conversion is not a behaviour worth assuming.
+            const material = new EveSOFDataMaterial();
+
+            material.name = EveSOFData.DEFAULT_FALLBACK_MATERIAL_NAME;
+            material.parameters = EveSOFData.FALLBACK_MATERIAL_PARAMETERS.map(([ paramName, value ]) =>
+            {
+                const parameter = new EveSOFDataParameter();
+
+                parameter.name = paramName;
+                vec4.copy(parameter.value, value);
+
+                return parameter;
+            });
+
+            this._fallbackMaterial = material;
+        }
+
+        return this._fallbackMaterial;
     }
 
     /**
