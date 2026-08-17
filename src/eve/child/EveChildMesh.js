@@ -152,22 +152,24 @@ export class EveChildMesh extends EveChild
             }
         }
 
-        // TODO: Figure out how this should work
+        // Two passes, matching Carbon's ordering. See EveChildContainer.Update for
+        // the full reasoning: Carbon applies transform modifiers to the WORLD
+        // transform (EveChildContainer.cpp:555-558), and every `ApplyTransform`
+        // modifier is camera or world relative, so running them against
+        // `localTransform` compared a world-space eye position with a local
+        // translation and camera-facing children did not face the camera.
+        //
+        // `Modify` modifiers mutate local or bone state and must still run first.
         let updatedWorld = false;
-        if (this.transformModifiers.length)
+        for (let i = 0; i < this.transformModifiers.length; i++)
         {
-            for (let i = 0; i < this.transformModifiers.length; i++)
+            const modifier = this.transformModifiers[i];
+
+            if (!("ApplyTransform" in modifier) && "Modify" in modifier)
             {
-                if ("ApplyTransform" in this.transformModifiers[i])
+                if (modifier.Modify(this, perObjectData, parentTransform))
                 {
-                    this.transformModifiers[i].ApplyTransform(this.localTransform);
-                }
-                else if ("Modify" in this.transformModifiers[i])
-                {
-                    if (this.transformModifiers[i].Modify(this, perObjectData, parentTransform))
-                    {
-                        updatedWorld = true;
-                    }
+                    updatedWorld = true;
                 }
             }
         }
@@ -184,6 +186,16 @@ export class EveChildMesh extends EveChild
             else
             {
                 mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+            }
+        }
+
+        for (let i = 0; i < this.transformModifiers.length; i++)
+        {
+            const modifier = this.transformModifiers[i];
+
+            if ("ApplyTransform" in modifier)
+            {
+                modifier.ApplyTransform(this._worldTransform);
             }
         }
     }

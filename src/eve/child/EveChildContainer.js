@@ -292,23 +292,36 @@ export class EveChildContainer extends EveChild
             }
         }
 
-        // TODO: Figure out how this should work
-
+        // Transform modifiers run in two passes, because Carbon applies them to
+        // the WORLD transform, not the local one:
+        //
+        //   m_worldTransform = (*it)->ApplyTransform( m_worldTransform, ... )
+        //   (EveChildContainer.cpp:555-558, after UpdateTransform has built it)
+        //
+        // Every `ApplyTransform` modifier here is camera or world relative -
+        // billboards, the booster and halo scalers, the camera-oriented yaw and
+        // the stretch target all read the world-space eye position or a world
+        // destination point. Running them against `localTransform` subtracted a
+        // world camera position from a local translation, which is only
+        // meaningful for a child sitting at the scene origin; camera-facing
+        // children therefore did not face the camera.
+        //
+        // `Modify` modifiers are the opposite: they mutate local or bone state
+        // (SRT rewrites localTransform, AttachToBone selects the bone), so they
+        // must still run BEFORE the world transform is built. EveChildModifierHalo
+        // is a `Modify` precisely because it needed world space and predates this
+        // ordering - it composes the world transform itself and reports that it
+        // did, which is what `updatedWorld` suppresses below.
         let updatedWorld = false;
-        if (this.transformModifiers.length)
+        for (let i = 0; i < this.transformModifiers.length; i++)
         {
-            for (let i = 0; i < this.transformModifiers.length; i++)
+            const modifier = this.transformModifiers[i];
+
+            if (!("ApplyTransform" in modifier) && "Modify" in modifier)
             {
-                if ("ApplyTransform" in this.transformModifiers[i])
+                if (modifier.Modify(this, perObjectData, parentTransform))
                 {
-                    this.transformModifiers[i].ApplyTransform(this.localTransform);
-                }
-                else if ("Modify" in this.transformModifiers[i])
-                {
-                    if (this.transformModifiers[i].Modify(this, perObjectData, parentTransform))
-                    {
-                        updatedWorld = true;
-                    }
+                    updatedWorld = true;
                 }
             }
         }
@@ -329,6 +342,16 @@ export class EveChildContainer extends EveChild
             {
 
                 mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+            }
+        }
+
+        for (let i = 0; i < this.transformModifiers.length; i++)
+        {
+            const modifier = this.transformModifiers[i];
+
+            if ("ApplyTransform" in modifier)
+            {
+                modifier.ApplyTransform(this._worldTransform);
             }
         }
 
