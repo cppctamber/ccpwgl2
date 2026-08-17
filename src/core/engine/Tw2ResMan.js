@@ -147,9 +147,23 @@ export class Tw2ResMan extends Tw2EventEmitter
         this._loader = this._mainThreadLoader;
 
         // Built in, as Carbon registers its own from a static constructor.
-        this.RegisterResourceConstructor("color", {
-            GetResource: query => Tw2ColorTextureRes.FromQuery(query)
-        });
+        //
+        // One generated colour per target. They are separate names rather than
+        // one adaptive resource because the target has to be pinned before the
+        // first bind: dynamic resources are shared, and Tw2TextureRes.Bind
+        // adopts the first consumer's sampler type when none is set, so an
+        // adaptive colour would hand one consumer's guess to all the others.
+        for (const [ name, dimension ] of [
+            [ "color", "2d" ],
+            [ "colorcube", "cube" ],
+            [ "colorarray", "2darray" ],
+            [ "colorvolume", "3d" ]
+        ])
+        {
+            this.RegisterResourceConstructor(name, {
+                GetResource: query => Tw2ColorTextureRes.FromQuery(query, dimension)
+            });
+        }
 
         // Ordered layer paths -> one shared 2D array texture. Keying the
         // cache on the full ordered path list is the point: two effects
