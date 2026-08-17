@@ -53,6 +53,25 @@ export class Tw2ShaderTechnique
     }
 
     /**
+     * Checks whether any of this technique's passes declares a given constant
+     * buffer register
+     * @param {Number} register
+     * @returns {Boolean}
+     */
+    UsesConstantBuffer(register)
+    {
+        for (let i = 0; i < this.passes.length; i++)
+        {
+            if (this.passes[i].UsesConstantBuffer(register))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if a technique has a texture
      * @param {String} name
      * @return {boolean}

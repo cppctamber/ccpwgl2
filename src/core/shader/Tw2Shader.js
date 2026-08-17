@@ -395,6 +395,29 @@ export class Tw2Shader
     }
 
     /**
+     * Checks whether any technique declares a given constant buffer register.
+     *
+     * The registers worth asking about, on the legacy (non-Carbon) bind path:
+     * cb1/cb2 per-frame VS/PS, cb3/cb4 per-object VS/PS, cb5 the fixed function
+     * emulation block. A shader that keeps its per-object transform in cb5
+     * (`ubershader.sm_hi` does, declaring `uniform vec4 cb5[4]`) needs the ffe
+     * block supplied; one that reads cb3 does not.
+     * @param {Number} register
+     * @returns {Boolean}
+     */
+    UsesConstantBuffer(register)
+    {
+        for (const technique in this.techniques)
+        {
+            if (this.techniques.hasOwnProperty(technique) && this.techniques[technique].UsesConstantBuffer(register))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if a texture is supported
      * @param {String} name
      * @returns {Boolean}

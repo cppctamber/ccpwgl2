@@ -157,6 +157,29 @@ export class Tw2ShaderPass
     }
 
     /**
+     * Checks whether this pass's linked program declares a given constant
+     * buffer register.
+     *
+     * Read from the LINKED program rather than the declaration, because that is
+     * what decides whether an upload lands: Tw2ShaderProgram records the linked
+     * array size for every `cbN` uniform it finds, and a register the program
+     * never references is absent from that map even if the source declared it.
+     *
+     * Answers false until the program links, so a caller that needs a settled
+     * answer has to wait for the effect to be good.
+     * @param {Number} register
+     * @returns {Boolean}
+     */
+    UsesConstantBuffer(register)
+    {
+        const program = this.shaderProgram;
+
+        if (!program) return false;
+
+        return !!(program.constantBufferSizes?.[register] || program.constantBufferHandles?.[register]);
+    }
+
+    /**
      * Gets pass parameters
      * @param {Object} [out={}]
      * @param {Object} [mask]

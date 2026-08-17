@@ -102,6 +102,7 @@ export class EveChildMesh extends EveChild
     _worldTransformLast = mat4.create();
     _perObjectData = null;
     _perObjectDataBagOfStuff = {};
+    _usesFfe = false;
 
 
     /**
@@ -279,10 +280,31 @@ export class EveChildMesh extends EveChild
             // behind `!rp.isCarbon`. It also claims nothing about other members of
             // the ubershader family; only ubershader.sm_hi was read.
             //
-            // Supplying it here as well is cheap and inert where unused: cb5 is
-            // uploaded only when the linked program declares it (Tw2Effect checks
-            // cbh[5]), so a shader taking its transform from cb3 never sees it.
-            this._EnsureFixedFunctionTransforms();
+            // So the block is supplied only to a mesh whose shader ACTUALLY
+            // declares cb5, asked of the linked program rather than assumed.
+            // Supplying it everywhere would be nearly free - Tw2Effect uploads
+            // cb5 only when the program declares it - but "nearly free" is not
+            // the same as "known correct", and this way the answer is a fact
+            // about the shader instead of a default nobody can check.
+            //
+            // ONLY the world matrix is written here. ubershader.sm_hi declares
+            // cb5[4] - four registers, one matrix - and another shader's
+            // PerObjectVS may hold something else from register 4 onward, which
+            // worldInverseTranspose would stamp over. The
+            // `useSpaceObjectData === false` branch below still writes both,
+            // because that is its long-standing behaviour and the shaders taking
+            // that path expect it.
+            if (this.UsesFixedFunctionData())
+            {
+                this._EnsureFixedFunctionTransforms(false);
+            }
+            else if (this._perObjectData.ffe)
+            {
+                // Drop it so a changed answer takes effect on the next frame:
+                // Tw2Effect uploads cb5 whenever `pod.ffe` merely EXISTS, so a
+                // populated block left behind would keep feeding it.
+                this._perObjectData.ffe = null;
+            }
         }
         else
         {
@@ -298,15 +320,90 @@ export class EveChildMesh extends EveChild
     }
 
     /**
+     * The constant buffer register the fixed function emulation block feeds on
+     * the legacy bind path (`Tw2Effect` uploads `pod.ffe` to `cbh[5]`)
+     * @type {Number}
+     */
+    static FFE_REGISTER = 5;
+
+    /**
+     * Forces the ffe block on or off regardless of what the shader declares.
+     * `null` asks the shader, which is what should normally happen; `true` or
+     * `false` override it, which exists so an unrelated rendering regression can
+     * be ruled in or out from the console without a rebuild.
+     * @type {Boolean|null}
+     */
+    static FORCE_FFE = null;
+
+    /**
+     * Whether this mesh's effects read the fixed function emulation block.
+     *
+     * Answered from the linked programs, so it is false while the effects are
+     * still loading and settles once they are good - hence the re-query rather
+     * than a permanent cache. It is cached per mesh only while the answer is
+     * true, because a true answer cannot become false for the same effects, and
+     * a false one may still be pending.
+     * @returns {Boolean}
+     */
+    UsesFixedFunctionData()
+    {
+        if (EveChildMesh.FORCE_FFE !== null) return EveChildMesh.FORCE_FFE;
+        if (this._usesFfe) return true;
+        if (!this.mesh) return false;
+
+        for (let i = 0; i < EveChildMesh.MESH_AREA_TYPES.length; i++)
+        {
+            const areas = this.mesh[EveChildMesh.MESH_AREA_TYPES[i]];
+
+            if (!areas) continue;
+
+            for (let j = 0; j < areas.length; j++)
+            {
+                const effect = areas[j] && areas[j].effect;
+
+                if (effect && effect.UsesConstantBuffer && effect.UsesConstantBuffer(EveChildMesh.FFE_REGISTER))
+                {
+                    this._usesFfe = true;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The mesh area lists to search for effects. Tw2Mesh has no accessor that
+     * enumerates every area, so the names are listed rather than discovered.
+     * @type {Array<String>}
+     */
+    static MESH_AREA_TYPES = [
+        "additiveAreas",
+        "decalAreas",
+        "depthAreas",
+        "depthNormalAreas",
+        "distortionAreas",
+        "opaqueAreas",
+        "opaquePrepassAreas",
+        "pickableAreas",
+        "transparentAreas"
+    ];
+
+    /**
      * Fills the fixed function emulation block with this child's own world
      * transform, creating it if the per-object data does not carry one yet.
      *
      * On the legacy bind path this block is the only source for cb5, which is
      * where the measured gles2 `ubershader.sm_hi` keeps its PerObjectVS matrix.
      * The Carbon path never reads it.
+     *
+     * @param {Boolean} [withInverse=true] - also write worldInverseTranspose,
+     *  which occupies cb5 registers 4-7. Pass false when the shader's cb5 block
+     *  is only known to hold the world matrix, so nothing is stamped over the
+     *  registers past it.
      * @private
      */
-    _EnsureFixedFunctionTransforms()
+    _EnsureFixedFunctionTransforms(withInverse = true)
     {
         if (!this._perObjectData.ffe)
         {
@@ -314,7 +411,11 @@ export class EveChildMesh extends EveChild
         }
 
         mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
-        mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+
+        if (withInverse)
+        {
+            mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+        }
     }
 
     /**

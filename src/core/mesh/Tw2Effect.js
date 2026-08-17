@@ -458,6 +458,24 @@ export class Tw2Effect extends meta.Model
     }
 
     /**
+     * Checks whether this effect's shader declares a given constant buffer
+     * register, so a producer can supply only the blocks a shader actually
+     * reads instead of filling every one defensively.
+     *
+     * `cb5` is the fixed function emulation block, and it is the one worth
+     * asking about: most legacy shaders take their per-object transform from
+     * cb3, but the ubershader family keeps it in cb5, and only the ffe block
+     * feeds that. Returns false while the shader is still loading, so treat
+     * false as "not known to need it" rather than "confirmed not needed".
+     * @param {Number} register
+     * @returns {Boolean}
+     */
+    UsesConstantBuffer(register)
+    {
+        return !!this.shader && this.shader.UsesConstantBuffer(register);
+    }
+
+    /**
      * Keeps the effect and it's parameters alive
      */
     KeepAlive()
