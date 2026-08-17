@@ -9,7 +9,7 @@ const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
  * EveChildContainer / EveEffectRoot2 / EveStretch) push already-composed
  * light rows (the `{position, radius, color, flags, params}` shape
  * `Tr2PointLight#GetCarbonLightData` produces - see
- * src/unsupported/core/lighting/Tr2PointLight.js) into this collector via
+ * src/core/lighting/Tr2PointLight.js) into this collector via
  * `Collect()`; once every owner has been visited for the frame, `Resolve()`
  * runs the CPU cull and writes the survivors into the owned `Tw2CarbonLightList`
  * (`SetLights` + `WriteDrawList`), ready for `Tw2CarbonResourceBinder.SetLightList`.
@@ -19,7 +19,7 @@ const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
  *   1. Reject if radius <= 0. This module receives already-composed rows
  *      (not raw brightness), so the "brightness <= 0" half of Carbon's test
  *      is represented here by the Carbon_FLAG_AFFECTS_SURFACES bit (Carbon FLAG_AFFECTS_SURFACES)
- *      (src/unsupported/core/lighting/Tw2CarbonLightMath.js) being unset -
+ *      (src/core/lighting/Tw2CarbonLightMath.js) being unset -
  *      `Tr2PointLight#GetCarbonLightData` clears that bit whenever
  *      `radius <= 0 || composedBrightness <= 0`. Rows missing the bit are
  *      rejected here too, so both halves of Carbon's original test are
@@ -293,7 +293,7 @@ class Tw2CarbonLightCollector
 
 }
 
-/** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/unsupported/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
+/** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
 Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES = 0x10000;
 
 /** Default pixel-size cutoff (Carbon: `CUTOFF_PIXEL_SIZE`, Tr2LightManager.cpp) */

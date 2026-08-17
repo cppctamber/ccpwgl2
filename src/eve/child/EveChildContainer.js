@@ -2,7 +2,7 @@ import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
-import { GetAverageAxisScale } from "unsupported/core/lighting/Tw2CarbonLightMath";
+import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
 @meta.type("EveChildContainer", true)
@@ -370,7 +370,7 @@ export class EveChildContainer extends EveChild
      * Additive hook: not called by any per-frame code yet (the render-loop /
      * EveSpaceScene call site is separate scene-wiring work). For each
      * populated light (i.e. one with the Carbon light API added in
-     * src/unsupported/core/lighting - `Update`/`GetCarbonLightData`), updates
+     * src/core/lighting - `Update`/`GetCarbonLightData`), updates
      * its world position against this container's own `_worldTransform`
      * (computed each `Update()`, see above) and collects its
      * `GetCarbonLightData` row. Plain deserialized lights that predate that

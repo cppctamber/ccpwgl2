@@ -1,7 +1,7 @@
 import { meta } from "utils";
 import { vec3, mat4 } from "math";
 import { Tw2Float } from "core";
-import { GetAverageAxisScale } from "unsupported/core/lighting/Tw2CarbonLightMath";
+import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
 @meta.type("EveStretch")

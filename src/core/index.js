@@ -2,6 +2,7 @@ export * from "./batch";
 export * from "./carbon";
 export * from "./data";
 export * from "./geometry";
+export * from "./lighting";
 export * from "./mesh";
 export * from "./model";
 export * from "./parameter";
