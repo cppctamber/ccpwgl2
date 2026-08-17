@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { vec3, quat, mat4 } from "math";
-import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData } from "core";
+import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
 
@@ -266,6 +266,23 @@ export class EveChildMesh extends EveChild
                 this.GetPerObjectDataBagOfStuff(perObjectData, this._perObjectDataBagOfStuff),
                 this._perObjectData
             );
+
+            // On the LEGACY (non-Carbon) bind path only, the space-object layout
+            // feeds cb3 while the ffe block feeds cb5. The measured gles2
+            // `ubershader.sm_hi` declares `uniform vec4 cb5[4]` - one matrix - and
+            // reads no cb3, and ffe used to exist solely on the
+            // `useSpaceObjectData === false` branch, so an ubershader child on
+            // that path rendered with no world transform of its own.
+            //
+            // Scope: this says nothing about the Carbon/dx11 path, which does not
+            // consult ffe at all - the whole block in Tw2Effect that uploads it is
+            // behind `!rp.isCarbon`. It also claims nothing about other members of
+            // the ubershader family; only ubershader.sm_hi was read.
+            //
+            // Supplying it here as well is cheap and inert where unused: cb5 is
+            // uploaded only when the linked program declares it (Tw2Effect checks
+            // cbh[5]), so a shader taking its transform from cb3 never sees it.
+            this._EnsureFixedFunctionTransforms();
         }
         else
         {
@@ -274,11 +291,30 @@ export class EveChildMesh extends EveChild
                 this._perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
             }
 
-            mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
-            mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+            this._EnsureFixedFunctionTransforms();
         }
 
         return this.mesh.GetBatches(mode, accumulator, this._perObjectData);
+    }
+
+    /**
+     * Fills the fixed function emulation block with this child's own world
+     * transform, creating it if the per-object data does not carry one yet.
+     *
+     * On the legacy bind path this block is the only source for cb5, which is
+     * where the measured gles2 `ubershader.sm_hi` keeps its PerObjectVS matrix.
+     * The Carbon path never reads it.
+     * @private
+     */
+    _EnsureFixedFunctionTransforms()
+    {
+        if (!this._perObjectData.ffe)
+        {
+            this._perObjectData.ffe = Tw2RawData.from(EveChild.perObjectData.ffe);
+        }
+
+        mat4.transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
+        mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
     }
 
     /**
