@@ -796,6 +796,7 @@ export class EveSpaceScene extends meta.Model
         this.PerChildObject("Update", dt);
 
         this.UpdateCarbonLights(dt);
+        this.UpdateShLighting();
 
         if (this.postprocess)
         {
@@ -843,6 +844,61 @@ export class EveSpaceScene extends meta.Model
 
         Tw2CarbonResourceBinder.Get(d).SetLightList(collector.GetLightList());
     }
+
+    /**
+     * Hands every secondary-lighting receiver the scene's SH manager so each one
+     * samples the bounce light at its own position.
+     *
+     * Mirrors Carbon's per-frame pull: `EveSpaceScene::Update` refreshes the
+     * manager with the sun (EveSpaceScene.cpp:1316-1319), and
+     * `EveSpaceScene::UpdateShLighting` (cpp:1685-1703) then dispatches to every
+     * receiver. Carbon passes `m_sunData.DirWorld`, which is the negated authored
+     * sun direction, and a hardcoded WHITE colour rather than the scene's sun
+     * colour - the sun colour is not part of this term.
+     *
+     * A scene with no `shLightingManager` does nothing, as Carbon does.
+     * @returns {Number} how many receivers were updated
+     */
+    UpdateShLighting()
+    {
+        const manager = this.shLightingManager;
+        if (!manager) return 0;
+
+        const direction = EveSpaceScene.global.vec3_sh;
+        this.GetPerFrameSunDirection(direction);
+
+        manager.UpdateWithDirectionalLight(direction, EveSpaceScene.SH_LIGHTING_SUN_COLOR);
+
+        this._shLightingReceivers = 0;
+        this.PerChildObject("UpdateShLighting", manager, this);
+        return this._shLightingReceivers;
+    }
+
+    /**
+     * Carbon's `g_eveSpaceSceneLowDetailThreshold` (EveSpaceScene.cpp:81). Below
+     * this apparent pixel diameter an object takes no secondary lighting.
+     *
+     * Deliberately NOT ccpwgl's own `LodLevelPixels` tiers (20/100/250), which do
+     * not agree with Carbon's thresholds and are of uncertain correctness. The
+     * measured quantity is shared; the tiers built on it are not.
+     * @type {Number}
+     */
+    lowDetailThreshold = 100;
+
+    /**
+     * Carbon's `g_eveSpaceSceneMediumDetailThreshold` (EveSpaceScene.cpp:82).
+     * Only the first quarter of the gap to `lowDetailThreshold` is used, as the
+     * fade-in range for the secondary lighting intensity.
+     * @type {Number}
+     */
+    mediumDetailThreshold = 400;
+
+    /**
+     * Carbon passes white here, not the scene's sun colour
+     * (EveSpaceScene.cpp:1318).
+     * @type {Array<Number>}
+     */
+    static SH_LIGHTING_SUN_COLOR = [ 1, 1, 1 ];
 
     /**
      * Gets batches for rendering
@@ -2655,6 +2711,7 @@ export class EveSpaceScene extends meta.Model
     static global = {
         vec3_ZERO: vec3.create(),
         vec3_0: vec3.create(),
+        vec3_sh: vec3.create(),
         vec4_0: vec4.create(),
         mat4_0: mat4.create(),
         mat4_1: mat4.create(),

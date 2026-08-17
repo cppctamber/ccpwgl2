@@ -1530,6 +1530,82 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Carbon's `g_secondaryLightingRadiusCutoffFactor`
+     * (EveSpaceObject2.cpp:52). Scales this hull's bounding radius into the
+     * cutoff radius below which a bounce source is too small to matter.
+     * @type {Number}
+     */
+    static SECONDARY_LIGHTING_RADIUS_CUTOFF_FACTOR = 0.3;
+
+    /**
+     * Packed SH secondary-lighting coefficients for this hull, seven vec4s.
+     * Zero until a scene with an `shLightingManager` updates them.
+     * @type {Float32Array}
+     */
+    _shLightingCoefficients = new Float32Array(28);
+
+    /**
+     * Samples the scene's SH manager for this hull's secondary-lighting
+     * coefficients, faded in across the low-detail threshold so a hull entering
+     * that range does not pop.
+     *
+     * Mirrors `EveSpaceObject2::UpdateShLighting` (EveSpaceObject2.cpp:1398-1409).
+     * The coefficients are cleared first, which is also what leaves the unwritten
+     * tail zero on the L1 path.
+     *
+     * Carbon measures `m_estimatedPixelDiameterWithChildren`; ccpwgl tracks only
+     * the hull's own `_pixelSizeAcross`, so a hull whose children extend well past
+     * its bounding sphere fades in slightly later here than in the client.
+     *
+     * @param {Tr2ShLightingManager} manager
+     * @param {EveSpaceScene} [scene] - supplies the detail thresholds
+     * @returns {Boolean} whether coefficients were written
+     */
+    UpdateShLighting(manager, scene)
+    {
+        this._shLightingCoefficients.fill(0);
+
+        const low = scene && scene.lowDetailThreshold !== undefined ? scene.lowDetailThreshold : 100;
+
+        if (!(this._pixelSizeAcross > low) || !manager || typeof manager.GetLighting !== "function")
+        {
+            return false;
+        }
+
+        const
+            medium = scene && scene.mediumDetailThreshold !== undefined ? scene.mediumDetailThreshold : 400,
+            fadeRadius = (medium - low) * 0.25,
+            intensity = Math.min(Math.max((this._pixelSizeAcross - low) / fadeRadius, 0), 1);
+
+        vec3.set(
+            EveObject.global.vec3_0,
+            this._worldTransform[12],
+            this._worldTransform[13],
+            this._worldTransform[14]
+        );
+
+        manager.GetLighting(
+            EveObject.global.vec3_0,
+            intensity,
+            this.boundingSphereRadius * EveShip2.SECONDARY_LIGHTING_RADIUS_CUTOFF_FACTOR,
+            this._shLightingCoefficients
+        );
+
+        if (scene) scene._shLightingReceivers = (scene._shLightingReceivers || 0) + 1;
+        return true;
+    }
+
+    /**
+     * Drops this hull's secondary-lighting contribution back to nothing
+     *
+     * Mirrors `EveSpaceObject2::ClearShLighting` (EveSpaceObject2.cpp:1411-1414).
+     */
+    ClearShLighting()
+    {
+        this._shLightingCoefficients.fill(0);
+    }
+
+    /**
      * Gets a temporary semantic-ish bag of values used to build per-object data.
      * Values may be references to object/raw arrays; treat the bag as read-only.
      * @param {Object} [out]
@@ -1594,6 +1670,7 @@ export class EveShip2 extends EveObject
         out.clipSphereCenter = clipCenter;
         out.clipSphereSignedRadiusSq = clipRadiusSq;
         out.miscData = [ clipRadius2Sq, this.impactDataOffset, this.clipSphereFactor2, this.clipSphereFactor ];
+        out.sphericalHarmonicLighting = this._shLightingCoefficients;
         out.clipRadius2Sq = clipRadius2Sq;
         out.shapeEllipsoidCenter = this.shapeEllipsoidCenter;
         out.shapeEllipsoidRadius = this.shapeEllipsoidRadius;
