@@ -125,13 +125,28 @@ export class Gr2Curve2 extends meta.Model
         {
             const issues = Gr2Curve2.ValidateDecodedCurve(curve.knots, curve.controls, curve.dimension);
 
-            // Controls count sanity check (uses instance degree)
-            const expectedControlPoints = Math.max(0, curve.knots.length - curve.degree - 1);
+            // One control point per knot. This is not the B-spline relation
+            // `knots - degree - 1`, and using that here warned on every curve
+            // ever decoded: a decoded Granny curve carries one knot per control
+            // point rather than a padded knot vector.
+            //
+            // Measured on one hull, 1,147 warnings across 50 shapes. 790 were
+            // identity and constant curves (formats 2, 4 and 5), which hold
+            // exactly one knot and one control by construction and were told to
+            // hold none. The rest were real keyframed curves at degree 2, where
+            // the count was over by exactly `degree + 1` — the padding the
+            // formula assumed and the data does not have.
+            //
+            // The canonical decoder agrees: runtime-resource builds an identity
+            // curve as `{ knots: [ 0 ], controls: identityControls(dim) }` and
+            // has no count check at all. Every sampler here reads the two as
+            // parallel arrays, so this is the invariant they actually rely on,
+            // and a mismatch is real corruption rather than a convention clash.
             const controlPoints = curve.controls.length / curve.dimension;
 
-            if (controlPoints !== expectedControlPoints)
+            if (controlPoints !== curve.knots.length)
             {
-                issues.push(`Control point count mismatch: expected ${expectedControlPoints} got ${controlPoints}`);
+                issues.push(`Control point count mismatch: ${controlPoints} controls for ${curve.knots.length} knots`);
             }
 
             if (issues.length)
