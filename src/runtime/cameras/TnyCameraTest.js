@@ -313,6 +313,12 @@ export class TnyCameraTest extends meta.Model
     /**
      * Frames an object by fitting its bounding sphere to the view.
      *
+     * **This replaces `Focus`, which is scheduled for retirement.** It is left in
+     * place for now because the interactive multipliers around the organization
+     * were tuned against its error, so removing it would move every framing in
+     * every consumer at once — a separate change with its own visual review. New
+     * callers use this one; the last `Focus` caller to leave takes `Focus` with it.
+     *
      * Prefer this to `Focus`, which is measurably wrong — see `cameraFit.js` for
      * the numbers and the cause. In one line: `Focus` fits the object's local
      * AABB width or height and never considers its length, so a hull viewed from
@@ -320,7 +326,7 @@ export class TnyCameraTest extends meta.Model
      * under-fits by 1.4x to 4.0x depending on the hull's proportions, which is why
      * no single multiplier ever corrected it.
      *
-     * `Fit` is orientation-independent, so the answer holds at any yaw and pitch
+     * `FitToScreen` is orientation-independent, so the answer holds at any yaw and pitch
      * and does not have to be recomputed when the camera turns.
      *
      * ### The aspect is an argument, not a lookup
@@ -343,7 +349,7 @@ export class TnyCameraTest extends meta.Model
      * @returns {{distance: Number, radius: Number, aspect: Number, fov: Number}|null}
      *          what was applied, or null when the object has no measurable bound
      */
-    Fit(object, { margin = 1.05, aspect, fov, aim = true } = {})
+    FitToScreen(object, { margin = 1.05, aspect, fov, aim = true } = {})
     {
         const sphere = object && object.GetBoundingSphere ? object.GetBoundingSphere() : null;
 
