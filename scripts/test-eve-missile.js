@@ -128,7 +128,7 @@ function loadMissile(source)
                 return glMatrix.mat4.identity(out);
             }
         },
-        noise: { perlin1D: value => Math.sin(value) },
+        noise: { carbonPerlin1D: value => Math.sin(value) },
         sph3: {
             transformMat4(out, sphere, transform)
             {

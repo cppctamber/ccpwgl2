@@ -270,9 +270,9 @@ export class EveMissileWarhead extends meta.Model
     Update(dt)
     {
         const position = this._flyingTime * this.pathOffsetNoiseSpeed + this._noisePhase;
-        this.pathOffset[0] = noise.perlin1D(position, 1.1, 2, 3) * this.pathOffsetNoiseScale;
-        this.pathOffset[1] = noise.perlin1D(position + 10.1, 1.1, 2, 3) * this.pathOffsetNoiseScale;
-        this.pathOffset[2] = noise.perlin1D(position + 18.3, 1.1, 2, 3) * this.pathOffsetNoiseScale;
+        this.pathOffset[0] = noise.carbonPerlin1D(position, 1.1, 2, 3) * this.pathOffsetNoiseScale;
+        this.pathOffset[1] = noise.carbonPerlin1D(position + 10.1, 1.1, 2, 3) * this.pathOffsetNoiseScale;
+        this.pathOffset[2] = noise.carbonPerlin1D(position + 18.3, 1.1, 2, 3) * this.pathOffsetNoiseScale;
 
         this.GetWorldPosition(EveMissileWarhead.global.positionNow);
         vec3.subtract(this._movement, EveMissileWarhead.global.positionNow, this._positionLastFrame);
