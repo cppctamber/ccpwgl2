@@ -13,6 +13,7 @@
     "lint": "eslint src --ignore-pattern src/wrapped/BackUpToClean.js --ignore-pattern src/wrapped/camera/CameraOrbitControls_Broken.js",
     "test:carbon-pending": "node scripts/test-carbon-pending.js",
     "test:carbon-light-list": "node scripts/test-carbon-light-list.js",
+    "test:sh-lighting": "node scripts/test-sh-lighting.js",
     "test:carbon-light-collector": "node scripts/test-carbon-light-collector.js",
     "test:carbon-resource-binder": "node scripts/test-carbon-resource-binder.js",
     "test:carbon-interior-per-object-data": "node scripts/test-carbon-interior-per-object-data.js",

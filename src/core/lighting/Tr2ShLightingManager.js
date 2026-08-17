@@ -1,5 +1,57 @@
 import { meta } from "utils";
-import { vec3, vec4 } from "math";
+import { vec3 } from "math";
+
+
+const SQRT_PI = Math.sqrt(Math.PI);
+
+/** Carbon `s_cutoffRadiusRatio` (Tr2ShLightingManager.cpp:14) */
+const CUTOFF_RADIUS_RATIO = 0.045 * 7;
+
+/** `ShSolver<L1>` pack coefficients (Tr2ShLightingManager.cpp:62-72) */
+const L1_PACK_0 = 1 / (2 * SQRT_PI);
+const L1_PACK_1 = Math.sqrt(3) / (3 * SQRT_PI);
+
+/**
+ * `ShSolver<L1>::s_normalizationCoefficients`. Carbon writes these as unevaluated
+ * products; they are kept in that form so every factor stays checkable against the
+ * source rather than collapsing into an opaque literal.
+ */
+const L1_NORMALIZATION = [
+    2 * SQRT_PI * 0.282094791773878140 * Math.sqrt(0.3141593e1),
+    2 / 3 * Math.sqrt(3 * Math.PI) * -0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2),
+    2 / 3 * Math.sqrt(3 * Math.PI) * 0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2),
+    2 / 3 * Math.sqrt(3 * Math.PI) * -0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2)
+];
+
+/** `ShSolver<L2>` pack coefficients (Tr2ShLightingManager.cpp:148-169) */
+const L2_PACK_0 = 1 / (2 * SQRT_PI);
+const L2_PACK_1 = Math.sqrt(3) / (3 * SQRT_PI);
+const L2_PACK_2 = Math.sqrt(15) / (8 * SQRT_PI);
+const L2_PACK_3 = Math.sqrt(5) / (16 * SQRT_PI);
+const L2_PACK_4 = 0.5 * L2_PACK_2;
+
+/** `ShSolver<L2>::s_normalizationCoefficients` */
+const L2_NORMALIZATION = [
+    2 * SQRT_PI * 0.282094791773878140 * Math.sqrt(0.3141593e1),
+    2 / 3 * Math.sqrt(3 * Math.PI) * -0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2),
+    2 / 3 * Math.sqrt(3 * Math.PI) * 0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2),
+    2 / 3 * Math.sqrt(3 * Math.PI) * -0.488602511902919920 * (Math.sqrt(3) * Math.sqrt(0.3141593e1) / 2),
+    2 / 5 * Math.sqrt(5 * Math.PI) * 0.546274215296039590 * (-Math.sqrt(5) * Math.sqrt(0.3141593e1) / 2),
+    2 / 5 * Math.sqrt(5 * Math.PI) * -1.092548430592079200 * (-Math.sqrt(5) * Math.sqrt(0.3141593e1) / 2),
+    2 / 5 * Math.sqrt(5 * Math.PI) * -0.315391565252520050 * (-Math.sqrt(5) * Math.sqrt(0.3141593e1) / 2),
+    2 / 5 * Math.sqrt(5 * Math.PI) * -1.092548430592079200 * (-Math.sqrt(5) * Math.sqrt(0.3141593e1) / 2),
+    2 / 5 * Math.sqrt(5 * Math.PI) * 0.546274215296039590 * (-Math.sqrt(5) * Math.sqrt(0.3141593e1) / 2)
+];
+
+/**
+ * Largest component of a three component colour
+ * @param {vec3|Number[]} v
+ * @returns {Number}
+ */
+function maxComponent(v)
+{
+    return Math.max(v[0], v[1], v[2]);
+}
 
 
 /**
@@ -15,7 +67,6 @@ import { vec3, vec4 } from "math";
  * (9 SH coefficients), each packed down to `PACKED_COEFFICIENT_COUNT` (7)
  * Vector4s for shader consumption.
  */
-@meta.notImplemented
 @meta.type("Tr2ShLightingManager")
 @meta.ccp.define("Tr2ShLightingManager")
 export class Tr2ShLightingManager extends meta.Model
@@ -141,26 +192,32 @@ export class Tr2ShLightingManager extends meta.Model
     UpdateSourceData()
     {
         const data = [];
+        const maxLight = maxComponent(this._sunColor);
 
         for (let i = 0; i < this._sources.length; i++)
         {
             const source = this._sources[i];
             if (source.radius > 0)
             {
+                const albedo = [
+                    source.albedo[0] * this.secondaryIntensity,
+                    source.albedo[1] * this.secondaryIntensity,
+                    source.albedo[2] * this.secondaryIntensity
+                ];
+
+                const emissive = [
+                    source.emissive[0] * this.secondaryIntensity,
+                    source.emissive[1] * this.secondaryIntensity,
+                    source.emissive[2] * this.secondaryIntensity
+                ];
+
                 data.push({
                     position: [ source.position[0], source.position[1], source.position[2] ],
                     radius: source.radius,
-                    albedo: [
-                        source.albedo[0] * this.secondaryIntensity,
-                        source.albedo[1] * this.secondaryIntensity,
-                        source.albedo[2] * this.secondaryIntensity
-                    ],
+                    albedo,
                     cutoffMultiplier: 1,
-                    emissive: [
-                        source.emissive[0] * this.secondaryIntensity,
-                        source.emissive[1] * this.secondaryIntensity,
-                        source.emissive[2] * this.secondaryIntensity
-                    ]
+                    emissive,
+                    maxColorComponent: Math.max(maxComponent(albedo) * maxLight, maxComponent(emissive))
                 });
             }
         }
@@ -171,16 +228,19 @@ export class Tr2ShLightingManager extends meta.Model
             if (typeof light.GetLight !== "function") continue;
             const { position, radius, color } = light.GetLight();
 
+            const emissive = [
+                color[0] * this.primaryIntensity,
+                color[1] * this.primaryIntensity,
+                color[2] * this.primaryIntensity
+            ];
+
             data.push({
                 position: [ position[0], position[1], position[2] ],
                 radius,
                 albedo: [ 0, 0, 0 ],
                 cutoffMultiplier: 0,
-                emissive: [
-                    color[0] * this.primaryIntensity,
-                    color[1] * this.primaryIntensity,
-                    color[2] * this.primaryIntensity
-                ]
+                emissive,
+                maxColorComponent: maxComponent(emissive)
             });
         }
 
@@ -190,32 +250,242 @@ export class Tr2ShLightingManager extends meta.Model
     /**
      * Evaluates SH lighting coefficients for a sample position
      *
-     * TODO: NOT implemented. Carbon's `GetLighting`/`CalculateSecondaryLighting`
-     * (Tr2ShLightingManager.cpp:306-383) evaluate per-source spherical-cap
-     * SH basis coefficients (`ShSolver<L1>`/`ShSolver<L2>`,
-     * Tr2ShLightingManager.cpp:16-219) and pack them into
-     * `PACKED_COEFFICIENT_COUNT` Vector4s. That math itself is textually
-     * available and could be transcribed, but the per-source cutoff test
-     * it depends on (Tr2ShLightingManager.cpp:332-341) branches on the
-     * *fourth (padding) SIMD lane* of a `Vector3` value loaded as a
-     * 4-wide `XMFLOAT4A` (`source->position`/`source->emissive`, both
-     * declared as `Vector3` in `SourceData`, Tr2ShLightingManager.h:61-69) -
-     * i.e. it reads whatever garbage float happens to occupy that padding
-     * lane. That is not safely portable (there is no equivalent "padding
-     * lane" concept in JS, and replicating it would mean inventing
-     * behavior, not porting it) - flagging this rather than guessing.
-     * Until this is resolved, this returns an all-zero coefficient array of
-     * the correct shape.
-     * @param {Number[]} position
-     * @param {Number} intensity
-     * @param {Number} cutoffRadius
-     * @returns {vec4[]} `PACKED_COEFFICIENT_COUNT` (7) zero-filled Vector4s
+     * Matches `Tr2ShLightingManager::GetLighting` (Tr2ShLightingManager.cpp:371-383).
+     * The result is the flat 28 float block the `ShLighting` per object slot
+     * expects, not an array of vectors.
+     *
+     * @param {Number[]} position - receiver position
+     * @param {Number} intensity - overall scale, usually a distance fade
+     * @param {Number} cutoffRadius - spheres smaller than this are skipped
+     * @param {Float32Array} [out] - 28 floats, allocated when omitted
+     * @returns {Float32Array} out
      */
-    GetLighting(position, intensity, cutoffRadius)
+    GetLighting(position, intensity, cutoffRadius, out)
     {
-        const result = new Array(Tr2ShLightingManager.PACKED_COEFFICIENT_COUNT);
-        for (let i = 0; i < result.length; i++) result[i] = vec4.create();
-        return result;
+        if (!out) out = new Float32Array(Tr2ShLightingManager.PACKED_COEFFICIENT_COUNT * 4);
+        else out.fill(0);
+
+        const order = this.quality === Tr2ShLightingManager.L2 ? 3 : 2;
+        return this.CalculateSecondaryLighting(position, intensity, cutoffRadius, out, order);
     }
+
+    /**
+     * Accumulates every visible source's contribution into `order * order` RGB
+     * coefficients, then normalizes and packs them.
+     *
+     * Matches Carbon's `CalculateSecondaryLighting<Order>` (Tr2ShLightingManager.cpp:306-360).
+     *
+     * @param {Number[]} position - receiver position
+     * @param {Number} intensity - overall scale
+     * @param {Number} cutoffRadius - sphere cull radius
+     * @param {Float32Array} out - 28 floats
+     * @param {Number} order - 2 for L1, 3 for L2
+     * @returns {Float32Array} out
+     */
+    CalculateSecondaryLighting(position, intensity, cutoffRadius, out, order)
+    {
+        const count = order * order;
+        const sh = new Float64Array(count * 3);
+        const basis = new Float64Array(count);
+        const direction = Tr2ShLightingManager.global.direction;
+
+        for (let i = 0; i < this._sourceData.length; i++)
+        {
+            const source = this._sourceData[i];
+
+            if (source.radius < cutoffRadius * source.cutoffMultiplier) continue;
+
+            vec3.subtract(direction, source.position, position);
+
+            const distance = vec3.length(direction);
+            const oneOverDistance = 1 / distance;
+
+            vec3.scale(direction, direction, oneOverDistance);
+
+            // Carbon's skip test reads the W LANE of vectors loaded as float4 from
+            // packed struct members, so the values it actually compares are the
+            // members that FOLLOW position and emissive in the struct: radius and
+            // maxColorComponent (Tr2ShLightingManager.cpp:330-338). A source is
+            // skipped when its apparent brightness falls below the cutoff ratio,
+            // when the receiver sits within one unit of it, or when the distance
+            // is not finite.
+            const apparentBrightness = source.radius * oneOverDistance * source.maxColorComponent;
+
+            if (!isFinite(distance) || apparentBrightness < CUTOFF_RADIUS_RATIO || distance < 1) continue;
+
+            if (order === 3) Tr2ShLightingManager.EvalSphericalLightL2(direction, distance, source.radius, basis);
+            else Tr2ShLightingManager.EvalSphericalLightL1(direction, distance, source.radius, basis);
+
+            // The albedo term is lit by the primary light through a wrapped dot
+            // product, so a sphere facing away still reflects a little; the
+            // emissive term is added unlit.
+            const dot = vec3.dot(this._sunDirection, direction) * 0.5 + 0.5;
+
+            for (let channel = 0; channel < 3; channel++)
+            {
+                const color = dot * source.albedo[channel] * this._sunColor[channel] + source.emissive[channel];
+
+                for (let index = 0; index < count; index++)
+                {
+                    sh[index * 3 + channel] += basis[index] * color;
+                }
+            }
+        }
+
+        const normalization = order === 3 ? L2_NORMALIZATION : L1_NORMALIZATION;
+
+        for (let index = 0; index < count; index++)
+        {
+            const scale = normalization[index] * intensity;
+
+            sh[index * 3] *= scale;
+            sh[index * 3 + 1] *= scale;
+            sh[index * 3 + 2] *= scale;
+        }
+
+        return order === 3
+            ? Tr2ShLightingManager.PackL2(sh, out)
+            : Tr2ShLightingManager.PackL1(sh, out);
+    }
+
+    /**
+     * The solid angle a sphere of `radius` subtends at `distance`, projected onto
+     * the four L1 basis functions. A receiver inside the sphere sees the whole
+     * hemisphere.
+     *
+     * Matches `ShSolver<L1>::SHEvalSphericalLight` (Tr2ShLightingManager.cpp:29-53).
+     *
+     * @param {vec3} direction - unit direction to the source
+     * @param {Number} distance - distance to the source centre
+     * @param {Number} radius - source radius
+     * @param {Float64Array} out - four basis values
+     */
+    static EvalSphericalLightL1(direction, distance, radius, out)
+    {
+        let o0 = 1;
+        let o1 = 1;
+
+        if (distance > radius)
+        {
+            o1 = (radius / distance) * (radius / distance);
+            o0 = 1 - Math.sqrt(1 - o1);
+        }
+
+        out[0] = o0;
+        out[1] = direction[1] * o1;
+        out[2] = direction[2] * o1;
+        out[3] = direction[0] * o1;
+    }
+
+    /**
+     * The same solid angle against the nine L2 basis functions, through Carbon's
+     * cap integral.
+     *
+     * Matches `ShSolver<L2>::SHEvalSphericalLight` (Tr2ShLightingManager.cpp:100-140).
+     *
+     * @param {vec3} direction - unit direction to the source
+     * @param {Number} distance - distance to the source centre
+     * @param {Number} radius - source radius
+     * @param {Float64Array} out - nine basis values
+     */
+    static EvalSphericalLightL2(direction, distance, radius, out)
+    {
+        let sinAngle = 1;
+        let cosAngle = 0;
+
+        if (distance > radius)
+        {
+            sinAngle = radius / distance;
+            cosAngle = Math.sqrt(1 - sinAngle * sinAngle);
+        }
+
+        // ComputeCapInt (Tr2ShLightingManager.cpp:174-179)
+        const cap0 = -cosAngle + 1;
+        const cap1 = sinAngle * sinAngle;
+        const cap2 = cosAngle * (cosAngle * cosAngle - 1);
+
+        // EvalBasis (Tr2ShLightingManager.cpp:181-192)
+        const x = direction[0];
+        const y = direction[1];
+        const z = direction[2];
+
+        out[0] = 1 * cap0;
+        out[1] = y * cap1;
+        out[2] = z * cap1;
+        out[3] = x * cap1;
+        out[4] = (x * y + y * x) * cap2;
+        out[5] = (z * y) * cap2;
+        out[6] = (3 * (z * z) - 1) * cap2;
+        out[7] = (z * x) * cap2;
+        out[8] = (x * x - y * y) * cap2;
+    }
+
+    /**
+     * L1 fills only the FIRST THREE packed vec4s; Carbon leaves the remaining four
+     * untouched, so a caller that wants them clear zeroes the destination first.
+     *
+     * Matches `ShSolver<L1>::PackCoefficients` (Tr2ShLightingManager.cpp:62-72).
+     *
+     * @param {Float64Array} sh - normalized coefficients, RGB interleaved
+     * @param {Float32Array} out - 28 floats
+     * @returns {Float32Array} out
+     */
+    static PackL1(sh, out)
+    {
+        for (let channel = 0; channel < 3; channel++)
+        {
+            out[channel * 4] = -L1_PACK_1 * sh[3 * 3 + channel];
+            out[channel * 4 + 1] = -L1_PACK_1 * sh[1 * 3 + channel];
+            out[channel * 4 + 2] = L1_PACK_1 * sh[2 * 3 + channel];
+            out[channel * 4 + 3] = L1_PACK_0 * sh[0 * 3 + channel];
+        }
+
+        return out;
+    }
+
+    /**
+     * All seven vec4s, the last carrying a constant 1 in its w lane.
+     *
+     * Matches `ShSolver<L2>::PackCoefficients` (Tr2ShLightingManager.cpp:148-169).
+     *
+     * @param {Float64Array} sh - normalized coefficients, RGB interleaved
+     * @param {Float32Array} out - 28 floats
+     * @returns {Float32Array} out
+     */
+    static PackL2(sh, out)
+    {
+        for (let channel = 0; channel < 3; channel++)
+        {
+            out[channel * 4] = -L2_PACK_1 * sh[3 * 3 + channel];
+            out[channel * 4 + 1] = -L2_PACK_1 * sh[1 * 3 + channel];
+            out[channel * 4 + 2] = L2_PACK_1 * sh[2 * 3 + channel];
+            out[channel * 4 + 3] = L2_PACK_0 * sh[0 * 3 + channel] - L2_PACK_3 * sh[6 * 3 + channel];
+        }
+
+        for (let channel = 0; channel < 3; channel++)
+        {
+            const base = (channel + 3) * 4;
+
+            out[base] = L2_PACK_2 * sh[4 * 3 + channel];
+            out[base + 1] = -L2_PACK_2 * sh[5 * 3 + channel];
+            out[base + 2] = 3 * L2_PACK_3 * sh[6 * 3 + channel];
+            out[base + 3] = -L2_PACK_2 * sh[7 * 3 + channel];
+        }
+
+        out[24] = L2_PACK_4 * sh[8 * 3];
+        out[25] = L2_PACK_4 * sh[8 * 3 + 1];
+        out[26] = L2_PACK_4 * sh[8 * 3 + 2];
+        out[27] = 1;
+
+        return out;
+    }
+
+    /**
+     * Scratch
+     * @type {{ direction: vec3 }}
+     */
+    static global = {
+        direction: vec3.create()
+    };
 
 }
