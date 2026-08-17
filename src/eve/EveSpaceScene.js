@@ -157,6 +157,21 @@ export class EveSpaceScene extends meta.Model
     @meta.float
     contrast = 1;
 
+    /**
+     * Scales the nebula background. Every shipped nebula cube authors 1.25.
+     *
+     * Published as the tw2 variable `NebulaIntensity`, mirroring Carbon's
+     * `m_nebulaIntensityVar` - it is NOT part of the per-frame data. Until
+     * 2026-08-12 it was uploaded into what is actually Carbon's
+     * `SceneData.ReflectionIntensity` slot, which is why changing it used to
+     * appear to do something: it was scaling every hull's environment
+     * reflections instead of the nebula.
+     *
+     * Setting this currently has no visible effect on the gles path, because no
+     * ccpwgl shader declares a `NebulaIntensity` constant for the variable to
+     * bind to. See the note beside the variable write in PerFrameUpdate.
+     * @type {Number}
+     */
     @meta.float
     nebulaIntensity = 1;
 
@@ -237,9 +252,15 @@ export class EveSpaceScene extends meta.Model
     lowQualityNebulaResPath = "";
 
     /**
-     * Scales environment reflections. Every shipped nebula authors 1.55.
-     * Uploaded as Carbon's SceneData.ReflectionIntensity, which shares a vec4
-     * with SceneData.AmbientColor.
+     * Scales environment reflections. Every shipped nebula cube authors 1.55.
+     *
+     * Uploaded as Carbon's `SceneData.ReflectionIntensity`, cb2[14].w, sharing a
+     * vec4 with `SceneData.AmbientColor`. Thirteen shaders read that register and
+     * all of them multiply an environment cube sample by it.
+     *
+     * The constructor default is 1, and the nebula tool only copies a cube's
+     * authored 1.55 onto the scene when the nebula is switched THROUGH it - so a
+     * scene that never did keeps 1 and its reflections sit ~35% low.
      * @type {Number}
      */
     @meta.float
@@ -2558,19 +2579,34 @@ export class EveSpaceScene extends meta.Model
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
 
-        // This slot is Carbon's ReflectionIntensity, not the nebula intensity.
+        // cb2[14].w, Carbon's ReflectionIntensity - NOT the nebula intensity.
         // Carbon's PerFramePSData packs `Vector3 AmbientColor` immediately
         // followed by `float ReflectionIntensity` into one vec4
-        // (EveSpaceScene.h:246-247, filled at EveSpaceScene.cpp:3092), and the
-        // shaders read it there. It was previously fed this.nebulaIntensity, so
-        // every Carbon-derived shader has been scaling reflections by the wrong
-        // authored value - 1.25 instead of 1.55 on every shipped nebula.
+        // (EveSpaceScene.h:246-247, filled at EveSpaceScene.cpp:3092).
+        //
+        // This was fed `this.nebulaIntensity` until 2026-08-12, so every hull and
+        // decal on the gles path scaled its environment reflections by 1.25 where
+        // a shipped nebula authors 1.55. The per-frame layout above records which
+        // shaders read the register and what they do with it; the short version is
+        // that they all multiply an environment cube sample, and the background -
+        // the one thing a nebula intensity would belong to - never reads it.
         ps.SetIndex("SceneData.ReflectionIntensity", 0, this.reflectionIntensity);
 
-        // The nebula intensity is a global shader VARIABLE in Carbon, not part
-        // of the per-frame data (`m_nebulaIntensityVar( "NebulaIntensity", ... )`,
-        // EveSpaceScene.cpp:202). The background effect multiplies its output by
+        // The nebula intensity is a global shader VARIABLE in Carbon, not part of
+        // the per-frame data (`m_nebulaIntensityVar( "NebulaIntensity", ... )`,
+        // EveSpaceScene.cpp:202), and Carbon's background multiplies its output by
         // Tint * NebulaIntensity.
+        //
+        // GAP, not a regression: no ccpwgl shader declares a `NebulaIntensity`
+        // constant, so on the gles path this variable currently binds to nothing.
+        // The hand-written background under src/toDeprecate predates this scene:
+        // its only brightness inputs are `StarParameters.w` for the stars and
+        // `Tint`/`cb7[4]`, both of which scale stars and nebula TOGETHER after the
+        // two are summed - so neither is a substitute, and binding this value to
+        // cb7[4] makes the nebula slider a whole-background brightness (tried and
+        // reverted, 2026-08-17). Closing it means giving that program a real
+        // per-nebula multiplier before the stars are added, with Carbon's own
+        // background translation as the reference for where the multiply lands.
         if (!tw2.HasVariable("NebulaIntensity")) tw2.SetVariable("NebulaIntensity", this.nebulaIntensity);
         else tw2.SetVariableValue("NebulaIntensity", this.nebulaIntensity);
         ps.SetIndex("ViewportSize", 0, d.viewportWidth);
@@ -2687,9 +2723,23 @@ export class EveSpaceScene extends meta.Model
             [ "SunData.DirWorld", 4 ],
             [ "SunData.DiffuseColor", 4 ],
             [ "SceneData.AmbientColor", 3 ],
-            // Carbon: Vector3 AmbientColor followed by float ReflectionIntensity,
-            // sharing one vec4. Named NebulaIntensity here until 2026-08-12, which
-            // fed the wrong authored value to every shader reading it.
+            // reg 14: Carbon packs `Vector3 AmbientColor` immediately followed by
+            // `float ReflectionIntensity` into one vec4, so this is that vec4's
+            // .w. Named NebulaIntensity here until 2026-08-12.
+            //
+            // MEASURED 2026-08-17, so it does not need re-deriving: 13 shaders
+            // under src/toDeprecate read cb2[14] - the quad family (v5, detail,
+            // environment, glass, heat, instanced), asteroidV5, and the decals -
+            // and every one of them multiplies an ENVIRONMENT CUBE SAMPLE by
+            // `.www`, e.g. quadv5:
+            //
+            //     r1 = textureCubeLod(s0, r2.xyz, r2.w);
+            //     r1.xyz = r1.xyz * cb2[14].www + r1.www;
+            //
+            // That is a reflection term by construction. The BACKGROUND shader
+            // does not read cb2[14] at all, which settles it: nebula intensity
+            // was never a legitimate input to this slot, it was only ever
+            // visible because it was squatting here.
             [ "SceneData.ReflectionIntensity", 1 ],
             [ "SceneData.FogColor", 4 ],
             [ "ViewportOffset", 2 ],
