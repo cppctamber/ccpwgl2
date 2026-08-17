@@ -60,3 +60,7 @@ test/fixtures/
 # Working notes stay local - durable content belongs in the org /docs tree
 NOTES-*.md
 src/**/README.md
+
+# Agent entry files: generated per checkout, never committed
+/CLAUDE.md
+/AGENTS.md
