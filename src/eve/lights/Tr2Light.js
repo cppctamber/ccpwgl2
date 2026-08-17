@@ -20,6 +20,13 @@ import {
     MatrixCopyFrom3x4
 } from "./lightConversion";
 
+const TR2_LIGHT_TYPE = Object.freeze({
+    UNDEFINED_LIGHT: 0,
+    POINT_LIGHT: 1,
+    SPOT_LIGHT: 2,
+    COUNT: 3
+});
+
 
 /**
  * Base scene light: holds the authored light attributes, resolves its bone
@@ -32,12 +39,7 @@ export class Tr2Light extends meta.Model
 {
     static LightDataFields = [];
 
-    static LightType = Object.freeze({
-        UNDEFINED_LIGHT: 0,
-        POINT_LIGHT: 1,
-        SPOT_LIGHT: 2,
-        COUNT: 3
-    });
+    static LightType = TR2_LIGHT_TYPE;
 
     static UNDEFINED_LIGHT = 0;
     static POINT_LIGHT = 1;
@@ -65,7 +67,7 @@ export class Tr2Light extends meta.Model
     @meta.string
     lightProfilePath = "";
 
-    @meta.enums(Tr2Light.LightType)
+    @meta.enums(TR2_LIGHT_TYPE)
     type = Tr2Light.UNDEFINED_LIGHT;
 
     // Compat view over the flattened light fields (2026-07-23 flatten
@@ -250,7 +252,12 @@ export class Tr2Light extends meta.Model
         return true;
     }
 
-    static LIGHT_TYPE = Tr2Light.LightType;
+    // Must reference the module-level enum, NOT `Tr2Light.LightType`. On a
+    // DECORATED class babel hoists static field initialisers outside the class
+    // body, so the class name is still unbound when this runs and a
+    // self-reference throws "Cannot read properties of undefined" at import
+    // time - which takes the whole library down, not just this class.
+    static LIGHT_TYPE = TR2_LIGHT_TYPE;
 
     static PerLightShadowSetting = PerLightShadowSetting;
 
