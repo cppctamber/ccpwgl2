@@ -5,6 +5,7 @@ import { Tw2LoadingObject } from "../resource/Tw2LoadingObject";
 import { Tw2GeometryRes } from "../resource/Tw2GeometryRes";
 import { Tw2ColorTextureRes } from "../resource/Tw2ColorTextureRes";
 import { Tw2TextureArrayRes } from "../resource/Tw2TextureArrayRes";
+import { Tw2TextureAtlasArrayRes } from "../resource/Tw2TextureAtlasArrayRes";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Error, ErrFeatureNotImplemented } from "../Tw2Error";
 import { assignIfExists, getPathExtension, isBoolean, isError, isFunction, normalizeResourcePath } from "utils";
@@ -155,6 +156,13 @@ export class Tw2ResMan extends Tw2EventEmitter
         // naming the same detail maps resolve to the same array.
         this.RegisterResourceConstructor("texturearray", {
             GetResource: query => Tw2TextureArrayRes.FromQuery(query)
+        });
+
+        // One strip of tiles -> one shared 2D array texture. Same cache
+        // reasoning as above, with the tile count part of the key because the
+        // same file sliced two ways is two different arrays.
+        this.RegisterResourceConstructor("textureatlasarray", {
+            GetResource: query => Tw2TextureAtlasArrayRes.FromQuery(query)
         });
     }
 
