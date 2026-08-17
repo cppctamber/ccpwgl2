@@ -1,0 +1,7 @@
+export const DistributionEntityLifeTimeEvent = Object.freeze({
+    DO_NOTHING: 0,
+    KILL_ENTITY: 1,
+    KILL_AND_SPAWN_NEW_FROM_DISTRIBUTION: 2,
+    KILL_AND_SPAWN_NEW_FROM_INITIAL_POSITION: 3,
+    KILL_AND_SPAWN_NEW_FROM_CURRENT_POSITION: 4,
+});

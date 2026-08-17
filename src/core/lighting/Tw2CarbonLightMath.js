@@ -291,7 +291,13 @@ export const PerLightShadowSetting = {
  */
 export const LightDataFlags = {
     AFFECTS_SURFACES: 1,
-    AFFECTS_PARTICLES: 2
+    AFFECTS_PARTICLES: 2,
+    // The other two bits Carbon declares in the same enum. They were absent
+    // here while nothing set them; the LightData -> PerLightData conversion
+    // (src/eve/lights/lightConversion.js) raises both, so they are named at
+    // their source rather than redeclared beside it.
+    CASTS_SHADOWS: 4,
+    IS_VOLUMETRIC: 8
 };
 
 /**
