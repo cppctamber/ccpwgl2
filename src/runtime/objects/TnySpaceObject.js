@@ -142,6 +142,70 @@ export class TnySpaceObject extends WglTransform
         return this.GetBoundingSphereRadius() * 2;
     }
 
+    /**
+     * The object's bounding sphere, in world space.
+     *
+     * Separate from `GetLongAxis` on purpose, and the difference is not
+     * cosmetic: `GetLongAxis` applies only the object's *scale*, so its answer is
+     * a world-sized radius around a *local* centre. That is all a caller asking
+     * "how big is this" needs, and it is not enough for a caller that also has
+     * to aim at it — a hull whose bounding centre sits off its own origin (which
+     * is most of them) would be framed correctly and pointed at slightly wrong.
+     *
+     * So the full world transform is applied here. `sph3.transformMat4` carries
+     * the translation into the centre and the largest axis scale into the radius,
+     * which is the conservative choice under a non-uniform scale.
+     *
+     * ### Hulls arrive pre-centred, and that is why this looks like a no-op
+     *
+     * Measured on `gc1_t1` at build 3470007: the authored
+     * `boundingSphereCenter` is `(13.009, -10.801, -12.468)` and the object's local
+     * transform carries the translation `(-13.009, 10.801, 12.468)` — exactly its
+     * negation. A loaded hull is placed so that its bounding centre sits on the
+     * origin, so this returns a centre of `(0, 0, 0)` and that answer is correct
+     * rather than a dropped offset.
+     *
+     * Worth knowing twice over: it means the transform hop below is load-bearing
+     * even though it usually produces zero, and it means the *old* `Focus` got
+     * away with mixing a sphere centre into a box fit, because the centre it was
+     * mishandling happened to be the origin for every ship.
+     *
+     * @param {sph3} [out]
+     * @returns {sph3|null} [x, y, z, radius], or null when there is nothing to measure
+     */
+    GetBoundingSphere(out = sph3.create())
+    {
+        if (!this.wrapped) return null;
+
+        const { mat4_0, vec3_0, vec3_1 } = TnySpaceObject.global;
+
+        // The value, not the key. `GetLongAxis` tests `in` and therefore accepts a
+        // declared-but-unset property, which is how a bound of zero or undefined
+        // reaches arithmetic that has no way to report it.
+        if (Number.isFinite(this.wrapped.boundingSphereRadius)
+            && this.wrapped.boundingSphereRadius > 0
+            && this.wrapped.boundingSphereCenter)
+        {
+            sph3.fromPositionRadius(out, this.wrapped.boundingSphereCenter, this.wrapped.boundingSphereRadius);
+
+            return sph3.transformMat4(out, out, this.GetTransform(mat4_0));
+        }
+
+        // No authored sphere: fall back to the geometry box, whose extents are
+        // already scaled by `GetSize`. Half the diagonal rather than half the
+        // longest edge, so the radius holds at every orientation.
+        const size = this.GetSize(vec3_1);
+        const radius = Math.sqrt(size[0] * size[0] + size[1] * size[1] + size[2] * size[2]) / 2;
+
+        if (!(radius > 0)) return null;
+
+        // Placed rather than transformed: `GetSize` has already applied scale, so
+        // running the full transform would square the scale into the radius. The
+        // box is measured about the geometry's own origin, so its world centre is
+        // the object's world translation.
+        return sph3.fromPositionRadius(out, this.GetTranslation(vec3_0), radius);
+    }
+
     GetWidth()
     {
         return this.GetSize(TnySpaceObject.global.vec3_1)[0];

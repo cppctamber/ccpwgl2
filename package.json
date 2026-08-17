@@ -36,6 +36,7 @@
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
     "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",
     "test:carbon-data": "node scripts/test-carbon-data.js",
+    "test:camera-fit": "node scripts/test-camera-fit.mjs",
     "test:carbon-shadow": "node scripts/test-carbon-shadow.mjs",
     "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs"
   },
