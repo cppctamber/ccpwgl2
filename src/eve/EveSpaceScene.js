@@ -351,6 +351,14 @@ export class EveSpaceScene extends meta.Model
         shadow: true,
         ao: true,
 
+        // Carbon's SH secondary lighting (Tr2ShLightingManager): bounce light
+        // from the sun off nearby emissive/albedo spheres, sampled per hull and
+        // delivered through the `ShLighting` per-object slot. Turning this off
+        // clears every receiver's coefficients rather than merely skipping the
+        // update, so a hull does not keep stale bounce light from the last frame
+        // it was enabled.
+        shLighting: true,
+
         // The Carbon `DepthMap` prepass (EveSpaceSceneDepthHandler). Distinct
         // from `depthCalculation`, which drives the legacy 16-bit RenderDepth
         // pass for distortion and publishes the unread `EveSpaceSceneDepthMap`.
@@ -396,6 +404,12 @@ export class EveSpaceScene extends meta.Model
     _lodEnabled = false;
     _perFrameSunDirection = vec3.create();
     _hasPerFrameSunDirection = false;
+
+    /** Receivers updated by the last UpdateShLighting pass @type {Number} */
+    _shLightingReceivers = 0;
+
+    /** Whether the previous frame ran SH lighting, so it is cleared exactly once on the way off @type {Boolean} */
+    _shLightingWasVisible = false;
 
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
     _perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
@@ -863,6 +877,21 @@ export class EveSpaceScene extends meta.Model
     {
         const manager = this.shLightingManager;
         if (!manager) return 0;
+
+        // Clear rather than skip: a receiver holds its coefficients between
+        // frames, so simply not updating would freeze the last lit result on
+        // screen instead of turning the contribution off.
+        if (!this.visible.shLighting)
+        {
+            if (this._shLightingWasVisible)
+            {
+                this.PerChildObject("ClearShLighting");
+                this._shLightingWasVisible = false;
+            }
+            return 0;
+        }
+
+        this._shLightingWasVisible = true;
 
         const direction = EveSpaceScene.global.vec3_sh;
         this.GetPerFrameSunDirection(direction);
