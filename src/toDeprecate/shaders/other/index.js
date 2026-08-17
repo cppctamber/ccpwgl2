@@ -1,6 +1,7 @@
 export * from "./background";
 export * from "./boostervolumetric";
 export * from "./blinkinglightspool";
+export * from "./flarequad";
 export * from "./spotlightconepool";
 export * from "./spotlightglowpool";
 export * from "./motionvector";
