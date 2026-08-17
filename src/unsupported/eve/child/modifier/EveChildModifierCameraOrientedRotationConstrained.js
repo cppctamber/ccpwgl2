@@ -128,9 +128,10 @@ export class EveChildModifierCameraOrientedRotationConstrained extends EveChildM
         const rot = Math.atan2(vecX, vecZ);
         this.constructor.rotationMatrixAxisAngle(result, UP, rot);
 
-        // return result * transform (cpp:31); mat4.multiply(out, A, B) mirrors Carbon A * B
+        // Carbon (row-vector): result * transform (cpp:31) - the yaw applies first,
+        // then the child transform. In gl-matrix that is out = transform . result
         // (see EveChildModifierBillboard3D.js / EveChildModifierTransformCommon.js).
-        mat4.multiply(transform, result, transform);
+        mat4.multiply(transform, transform, result);
         return transform;
     }
 

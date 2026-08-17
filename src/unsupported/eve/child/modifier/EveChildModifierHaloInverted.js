@@ -48,8 +48,9 @@ export class EveChildModifierHaloInverted extends EveChildModifier
      * as its local Z axis turns to face the camera (i.e. the opposite of a
      * standard halo, which fades in when facing the camera), by dotting the
      * camera direction against the transform's *backward* axis. Carbon
-     * composes matrices with row-vector `A * B` (B applied first);
-     * `mat4.multiply(out, A, B)` mirrors that order directly (see
+     * composes matrices with row-vector `A * B`, in which **A** is applied
+     * first; gl-matrix is column-vector, so every composition swaps its
+     * operands and Carbon's `A * B` becomes `mat4.multiply(out, B, A)` (see
      * EveChildModifierTransformCommon.js header note).
      * @param {mat4} transform
      * @returns {mat4}
@@ -71,8 +72,9 @@ export class EveChildModifierHaloInverted extends EveChildModifier
 
         mat4.fromScaling(scalingTransform, [ scale, scale, scale ]);
 
-        mat4.multiply(transform, alignMat, transform);
-        mat4.multiply(transform, scalingTransform, transform);
+        // Carbon (row-vector): align * scaling applied in that order
+        mat4.multiply(transform, transform, alignMat);
+        mat4.multiply(transform, transform, scalingTransform);
         return transform;
     }
 

@@ -99,7 +99,8 @@ export class EveChildModifierStretch extends EveChildModifier
         mat4.fromRotationTranslationScale(srt, arcRotation, mid, scale);
         mat4.fromQuat(rotationMatrix, sourceRotation);
 
-        mat4.multiply(transform, rotationMatrix, srt);
+        // Carbon (row-vector): sourceRotation * stretchTransform - source rotation first
+        mat4.multiply(transform, srt, rotationMatrix);
         return transform;
     }
 

@@ -10,10 +10,20 @@ import { device } from "global";
  * Carbon's `Matrix` is row-major with row-vector transforms (`v' = v * M`); its
  * basis rows (X=row0/_11../_13, Y=row1/_21../_23, Z=row2/_31../_33) map directly
  * onto this codebase's column-major `mat4` at indices [0,1,2] / [4,5,6] / [8,9,10]
- * respectively (translation at [12,13,14]) - the same index mapping already relied
- * on by `EveChildModifierHalo.js` and `EveChildModifierCameraOrientedRotationConstrained.js`
- * in this folder, where `mat4.multiply(out, A, B)` is likewise used to directly
- * mirror Carbon's `A * B` composition order.
+ * respectively (translation at [12,13,14]).
+ *
+ * A SINGLE matrix therefore ports across unchanged. A COMPOSITION does not.
+ * Carbon is row-vector, so in `A * B` it is **A** that is applied first;
+ * gl-matrix is column-vector (`v' = M * v`), where the right-hand operand is
+ * applied first. Every composition consequently swaps its operands:
+ *
+ *     Carbon `A * B`  ->  mat4.multiply(out, B, A)
+ *
+ * An earlier revision of this note claimed `mat4.multiply(out, A, B)` mirrored
+ * Carbon's order directly. That was wrong, and the five modifiers that copied
+ * it composed their child transforms in reverse. The same mistake was made and
+ * corrected independently in runtime-trinity on 2026-07-23; see the
+ * carbon-math-conventions skill for the rule.
  */
 
 

@@ -47,8 +47,10 @@ export class EveChildModifierBillboard3D extends EveChildModifier
      *
      * Reproduces `EveChildModifierBillboard3D::ApplyTransform`
      * (EveChildModifierBillboard3D.cpp:17-39). Carbon composes matrices with
-     * row-vector `A * B` (B applied first); `mat4.multiply(out, A, B)` mirrors
-     * that order directly (see EveChildModifierTransformCommon.js header note).
+     * row-vector `A * B`, in which **A** is applied first; gl-matrix is
+     * column-vector, so every composition swaps its operands and Carbon's
+     * `A * B` becomes `mat4.multiply(out, B, A)` (see
+     * EveChildModifierTransformCommon.js header note).
      * @param {mat4} transform
      * @returns {mat4}
      */
@@ -69,21 +71,24 @@ export class EveChildModifierBillboard3D extends EveChildModifier
                 scaleZ !== 0 ? 1 / scaleZ : 0
             ]);
 
-            mat4.multiply(sansScale, invScale, transform);
+            // Carbon (row-vector): invScale * transform - invScale first
+            mat4.multiply(sansScale, transform, invScale);
 
             translation[0] = transform[12];
             translation[1] = transform[13];
             translation[2] = transform[14];
             Billboard3D(billboard, translation);
 
-            mat4.multiply(transform, billboard, sansScale);
-            mat4.multiply(transform, scale, transform);
+            // Carbon (row-vector): scale * billboard * transformSansScale - scale first
+            mat4.multiply(transform, sansScale, billboard);
+            mat4.multiply(transform, transform, scale);
             return transform;
         }
 
         Billboard2D(transform);
         DistanceBase(alignMat, d, transform);
-        mat4.multiply(transform, alignMat, transform);
+        // Carbon (row-vector): alignMat * billboard - align first
+        mat4.multiply(transform, transform, alignMat);
         return transform;
     }
 

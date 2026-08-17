@@ -43,9 +43,10 @@ export class EveChildModifierBooster extends EveChildModifier
      * (EveChildModifierBooster.cpp:16-31): scales a fixed-radius (0.5) sphere
      * so it keeps a constant apparent size as the camera distance changes,
      * then re-centers it so its near edge stays put. Carbon composes matrices
-     * with row-vector `A * B` (B applied first); `mat4.multiply(out, A, B)`
-     * mirrors that order directly (see EveChildModifierTransformCommon.js
-     * header note).
+     * with row-vector `A * B`, in which **A** is applied first; gl-matrix is
+     * column-vector, so every composition swaps its operands and Carbon's
+     * `A * B` becomes `mat4.multiply(out, B, A)` (see
+     * EveChildModifierTransformCommon.js header note).
      * @param {mat4} transform
      * @returns {mat4}
      */
@@ -63,9 +64,10 @@ export class EveChildModifierBooster extends EveChildModifier
         mat4.fromScaling(scalingTransform, [ scale, scale, scale ]);
         mat4.fromTranslation(translationTransform, [ 0, 0, trans ]);
 
-        mat4.multiply(transform, scalingTransform, transform);
-        mat4.multiply(transform, alignMat, transform);
-        mat4.multiply(transform, translationTransform, transform);
+        // Carbon (row-vector): scaling * align * translation applied in that order
+        mat4.multiply(transform, transform, scalingTransform);
+        mat4.multiply(transform, transform, alignMat);
+        mat4.multiply(transform, transform, translationTransform);
         return transform;
     }
 
