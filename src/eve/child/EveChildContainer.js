@@ -355,6 +355,33 @@ export class EveChildContainer extends EveChild
             }
         }
 
+        // fxAttributes are OPTIONAL and most containers have none, so this
+        // costs nothing when the list is empty.
+        //
+        // Updated BEFORE the controllers, because driving a controller is what
+        // they are for: an attribute read a frame late would make every curve
+        // that samples killCount or activationStrength lag by one tick.
+        //
+        // `spaceObjectParent` is the ROOT, forwarded unchanged the way this
+        // method already forwards it to nested objects below - an attribute
+        // several containers deep still reads the ship rather than whichever
+        // container happens to hold it. `childParent` is `this`, which is the
+        // distinction Carbon draws: the camera attribute uses the child's own
+        // transform where it has one, and the root's position otherwise.
+        for (let i = 0; i < this.fxAttributes.length; i++)
+        {
+            const fx = this.fxAttributes[i];
+            if (fx && typeof fx.UpdateAsyncronous === "function")
+            {
+                fx.UpdateAsyncronous(null, {
+                    spaceObjectParent: parentSpaceObject,
+                    childParent: this,
+                    localToWorldTransform: this._worldTransform,
+                    activationStrength: parentSpaceObject && parentSpaceObject.activationStrength
+                });
+            }
+        }
+
         if (this.controllers.length)
         {
             // Effect-child controllers arrive via deserialization rather than an AddController
