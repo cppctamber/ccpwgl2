@@ -239,12 +239,42 @@ export class EveSpaceSceneDepthHandler extends meta.Model
             context.CollectObjectArrayBatches(background, RM_OPAQUE, options);
         }
 
+        const { gl } = device;
+        const
+            prevDepthTest = gl.isEnabled(gl.DEPTH_TEST),
+            prevDepthMask = gl.getParameter(gl.DEPTH_WRITEMASK),
+            prevDepthFunc = gl.getParameter(gl.DEPTH_FUNC);
+
         const ok = this._target.SetCallUnset(() =>
         {
+            // Depth state is SET, not inherited.
+            //
+            // This pass exists to answer "what is nearest the camera at this
+            // pixel", and without an explicit test that is whatever drew last.
+            // `objectsByDistance` renders far-to-near, so a missing test still
+            // happens to leave the nearest object on top - but only until
+            // something renders out of that order, and then the buffer holds
+            // the wrong surface at those pixels.
+            //
+            // Everything downstream inherits that error as a POSITION error:
+            // the shadow resolve unprojects this buffer, so a pixel carrying
+            // another object's depth reconstructs to that object's place in the
+            // world and is shaded as if it were there. The symptom is one ship
+            // wearing another ship's shadow, with nothing between it and the
+            // sun. EveSpaceSceneAO sets the same three states for the same
+            // reason.
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.depthMask(true);
+
             tw2.ClearBufferBits(true, true, true);
             context.Render("Main");
             this._rendered = true;
         });
+
+        if (prevDepthTest) gl.enable(gl.DEPTH_TEST); else gl.disable(gl.DEPTH_TEST);
+        gl.depthMask(prevDepthMask);
+        gl.depthFunc(prevDepthFunc);
 
         if (!ok || !this._rendered)
         {
