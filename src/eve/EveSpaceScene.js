@@ -2511,13 +2511,18 @@ export class EveSpaceScene extends meta.Model
         // the Carbon producer rather than inherited through Tw2CarbonData's copy
         // of regs 0-20. Inheriting them is not right there - but it is strictly
         // better than inheriting zeros, which is what selects "shadowed".
+        // Reg 18 comes from `_shadowMapSettings`, which already holds Carbon's
+        // literal (1, 1, 0, 0) - `EveSpaceScene.cpp:3135`. NOT from the four
+        // `_shadowMapOffsetX/Y`, `_shadowDepthBias`, `shadowFadeThreshold`
+        // components, which all default to 0 and would write (0, 0, 0, 0).
+        // A zero `_shadowDepthBias` self-shadows, which reads as the sun being
+        // hidden on surfaces nothing could be shadowing.
+        //
+        // Carbon assigns all three of these once and never reassigns them
+        // (`:3107`, `:3135`, `:3137`), so they are constants rather than state:
+        // ShadowMapSettings (1,1,0,0), ShadowCameraRange (1,0), ShadowLightness 0.
         const
-            shadowMapSettings = [
-                this._shadowMapOffsetX,
-                this._shadowMapOffsetY,
-                this._shadowDepthBias,
-                this.shadowFadeThreshold
-            ],
+            shadowMapSettings = this._shadowMapSettings,
             shadowCameraRange = [
                 this._shadowCameraNear,
                 this._shadowCameraFar,
