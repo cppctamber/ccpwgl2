@@ -201,6 +201,16 @@ export function ComputeAutoNearFar(objects, cameraPosition, options = {})
         minNear = options.minNear !== undefined ? options.minNear : 0.1,
         maxFar = options.maxFar !== undefined ? options.maxFar : 1e9,
         margin = options.margin !== undefined ? options.margin : 0.05,
+        // Fraction of the nearest measured surface the near plane may reach.
+        //
+        // HALF, not "nearest minus a few percent". The estimate comes from
+        // bounding SPHERES, which routinely sit inside the geometry they
+        // describe - wings, turrets, booster trails and child objects all
+        // reach past a hull's reported radius - so a tight margin slices
+        // pieces off the ship. Clipping the subject is a far worse failure
+        // than leaving some depth precision unclaimed, and half the distance
+        // still buys two orders of magnitude over a fixed near of 1.
+        nearSafety = options.nearSafety !== undefined ? options.nearSafety : 0.5,
         maxDepthRatio = options.maxDepthRatio !== undefined ? options.maxDepthRatio : 1e4;
 
     let nearest = Infinity, farthest = 0, found = false;
@@ -245,7 +255,7 @@ export function ComputeAutoNearFar(objects, cameraPosition, options = {})
     // from the far plane instead, which cannot make precision worse than the
     // configured ceiling however wrong the estimate is.
     const
-        estimated = nearest * (1 - margin),
+        estimated = nearest * nearSafety,
         floor = Math.max(minNear, far / maxDepthRatio),
         near = Math.max(floor, snapDown(Math.max(estimated, floor)));
 
