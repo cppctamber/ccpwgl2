@@ -237,6 +237,13 @@ export class Tw2CarbonShaderFactory
      * @param {String} path
      * @returns {Tw2ShaderPass}
      */
+    /**
+     * Resource path fragments whose Carbon passes may apply their declared
+     * render states. See the note in {@link _createPass}.
+     * @type {Array<String>}
+     */
+    static RENDER_STATE_PATHS = [ "/decals/" ];
+
     _createPass(group, path)
     {
         if (!group.vertex || !group.pixel)
@@ -254,7 +261,18 @@ export class Tw2CarbonShaderFactory
         // decalcounterv5 blend ONE/ONE and write alpha 0 - so an additive decal
         // inheriting the src-alpha state multiplies itself away and renders
         // nothing at all, which is exactly how those three failed.
-        pass.SetStates(group.states);
+        //
+        // ALLOWLISTED, not applied everywhere. The states are correct, but the
+        // rest of the frame is not ready for all of them: the flare quads' High
+        // bodies declare RS_ZENABLE 0 and expect to occlude themselves from a
+        // DepthMap nothing publishes, so honouring their states put them
+        // through the hull. Decals need theirs and nothing else does yet, so
+        // only decals get them. Widen this list as each family's states are
+        // shown to be honourable, and delete it once they all are.
+        if (this.constructor.RENDER_STATE_PATHS.some(part => path.includes(part)))
+        {
+            pass.SetStates(group.states);
+        }
         pass.stages[0] = this._createStage(group.vertex, STAGE_VERTEX, path);
         pass.stages[1] = this._createStage(group.pixel, STAGE_FRAGMENT, path);
         pass.shaderProgram = Tw2ShaderProgram.create(

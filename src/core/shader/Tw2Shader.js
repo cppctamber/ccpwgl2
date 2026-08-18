@@ -3,7 +3,6 @@ import { device } from "global";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2ShaderAnnotation } from "./Tw2ShaderAnnotation";
 import { Tw2ShaderTechnique } from "./Tw2ShaderTechnique";
-import { Tw2ShaderPass } from "./Tw2ShaderPass";
 
 
 @meta.type("Tw2Shader")
@@ -551,19 +550,3 @@ export class ErrShaderLink extends Tw2Error
         super(data, "Error linking shaders");
     }
 }
-
-
-/**
- * TEMPORARY, 2026-08-18. Applies the render states a Carbon (dx11) container
- * declares. DEFAULTS OFF: on, the dx11 flare quads take RS_ZENABLE 0 and draw
- * through the hull. Off is the pre-2026-08-18 behaviour - states dropped, every
- * pass inheriting the render mode's standard states.
- *
- * Lives on Tw2ShaderPass, which is where it is read; aliased here because that
- * is where callers look for it. Delete both once the dx11 containers' states
- * can all be honoured - see the note at Tw2ShaderPass.Apply.
- */
-Object.defineProperty(Tw2Shader, "ENABLE_CARBON_RENDER_STATES", {
-    get() { return Tw2ShaderPass.ENABLE_CARBON_RENDER_STATES; },
-    set(value) { Tw2ShaderPass.ENABLE_CARBON_RENDER_STATES = !!value; }
-});

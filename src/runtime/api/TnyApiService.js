@@ -398,16 +398,9 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skin", "GetTypeIDSkinIDs", ...args);
     }
 
-    /**
-     * SKINR reads go to the skinr provider when one is registered, and
-     * otherwise to the skin provider's legacy accessor - which is where they
-     * lived while `TnySkinrApiProvider` was parked outside the bundle. Keeping
-     * the fallback means an api service built without a skinr provider behaves
-     * exactly as it did before that provider was promoted.
-     */
     GetSkinr(...args)
     {
-        return this.RequestFrom(this.skinr ? "skinr" : "skin", "GetSkinr", ...args);
+        return this.RequestFrom("skin", "GetSkinr", ...args);
     }
 
     GetSkinrPattern(...args)

@@ -308,7 +308,7 @@ export class EveSOFData extends meta.Model
 
         meshContainer.mesh = Tw2Mesh.from({
             name: "SphereMesh",
-            geometryResPath: "res:/graphics/generic/unitsphere/unitsphere_4k_01a.gr2_json",
+            geometryResPath: "res:/graphics/generic/unitsphere/unitsphere_4k_01a.gr2",
             additiveAreas: [
                 {
                     name: "Additive effect",
@@ -323,9 +323,9 @@ export class EveSOFData extends meta.Model
                             TextureTransform2: [ 0, 0, 1, 1.25 ]
                         },
                         textures: {
-                            DiffuseMap1: "res:/texture/fx/caustics/caustic_13.png",
-                            DiffuseMap2: "res:/texture/fx/caustics/caustic_16b.png",
-                            MaskMap: "res:/texture/fx/gradients/capmask_tight_01c.png"
+                            DiffuseMap1: "res:/texture/fx/caustics/caustic_13.dds",
+                            DiffuseMap2: "res:/texture/fx/caustics/caustic_16b.dds",
+                            MaskMap: "res:/texture/fx/gradients/capmask_tight_01c.dds"
                         }
                     }
                 }
