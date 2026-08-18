@@ -1,4 +1,4 @@
-import { meta, toArray } from "utils";
+import { meta, toArray, isFunction } from "utils";
 import { vec3, quat, mat3, mat4, box3, curve } from "math";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
@@ -66,6 +66,14 @@ export class Tw2AnimationController extends meta.Model
      */
     OnEvent(eventName, listener, context, once)
     {
+
+        // Validate before the immediate dispatch below, not just in super:
+        // this override fires the listener itself, so a bad one crashes here
+        // first and never reaches the guard in the base implementation.
+        if (!isFunction(listener))
+        {
+            throw new Error("Invalid listener");
+        }
 
         // Ensure "loaded" event is handled if called after the controller has already loaded
         if (eventName === "loaded" && this.IsLoaded())

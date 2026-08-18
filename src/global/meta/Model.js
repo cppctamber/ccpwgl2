@@ -108,6 +108,15 @@ export class Model
      */
     OnEvent(eventName, listener, context, once)
     {
+        // `AddEvents` has always validated this; `OnEvent` did not, so a bad
+        // listener was stored silently and only failed later from `EmitEvent`.
+        // Throw at the call site that caused it instead. Must stay above the
+        // `onListener` hooks below, which would otherwise see the bad value.
+        if (!isFunction(listener))
+        {
+            throw new Error("Invalid listener");
+        }
+
         let events = PRIVATE.get(this);
 
         if (!events)
@@ -323,6 +332,17 @@ export class Model
      */
     OnModified(method, context, once)
     {
+        // Two callers with opposite meanings share this name. Here it REGISTERS
+        // a listener, but `Tr2BindingPoint.NotifyValueChanged` calls
+        // `target.OnModified(attributeName, value, this)` to ANNOUNCE a change -
+        // and classes that mean the second sense override this method. One that
+        // does not (EveChildContainer) lands here with a string.
+        //
+        // Ignore it rather than register it. Registering a non-function poisons
+        // the event map, and throwing aborts the caller's Initialize - which
+        // took out every light on the object.
+        if (!isFunction(method)) return this;
+
         this.OnEvent("modified", method, context, once);
     }
 

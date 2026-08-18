@@ -259,10 +259,16 @@ export class Tw2EventCurve extends meta.Model
             {
                 this.eventListener.handleEvent(this.value);
             }
-            else if (typeof this.eventListener.OnEvent === "function")
-            {
-                this.eventListener.OnEvent(this.value);
-            }
+            // Deliberately no `OnEvent` branch. `Model.OnEvent(eventName,
+            // listener, ...)` REGISTERS a listener, it does not dispatch, so
+            // calling it here registered `undefined` as the listener for an
+            // event named after this curve's value. The map then held
+            // `undefined => {}` and the next `EmitEvent` for that name threw
+            // from `key.call(...)`, frames away from the cause and permanently
+            // - the entry has no `once` flag, so nothing ever removes it.
+            // Carbon only ever dispatches through `HandleEvent`, which the real
+            // listeners (Tr2Controller, Tr2ControllerReference) all implement,
+            // so this branch was unreachable for every valid listener anyway.
             else if (typeof this.eventListener === "function")
             {
                 this.eventListener(this.value);

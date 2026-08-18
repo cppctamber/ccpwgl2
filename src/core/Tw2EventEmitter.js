@@ -100,6 +100,13 @@ export class Tw2EventEmitter
      */
     OnEvent(eventName, listener, context, once)
     {
+        // See the same guard in Model.OnEvent: this class is an independent
+        // copy of that emitter, so the fix has to land in both.
+        if (!isFunction(listener))
+        {
+            throw new Error("Invalid listener");
+        }
+
         let events = PRIVATE.get(this);
 
         if (!events)
