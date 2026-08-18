@@ -23,6 +23,13 @@ export class Tw2ShaderPass
     states = [];
 
     /**
+     * TEMPORARY. Applies the render states a pass declares. See {@link Apply}.
+     * Aliased as `Tw2Shader.ENABLE_CARBON_RENDER_STATES`.
+     * @type {Boolean}
+     */
+    static ENABLE_CARBON_RENDER_STATES = false;
+
+    /**
      * Gets the fragment shader
      * @return {Tw2ShaderStage}
      */
@@ -66,9 +73,29 @@ export class Tw2ShaderPass
     {
         const { gl } = device;
 
-        for (let i = 0; i < this.states.length; i++)
+        // TEMPORARY, 2026-08-18. Exposed as `Tw2Shader.ENABLE_CARBON_RENDER_STATES`.
+        //
+        // Gates the states a CARBON (dx11) container declares - `isCarbon` is
+        // set only by Tw2CarbonEffectReader, so gles2 containers and the manual
+        // definitions in toDeprecate keep applying theirs either way.
+        //
+        // Honouring these states is correct and is what Carbon does, but the
+        // dx11 containers carry states our frame cannot honour yet:
+        // `flarequad`/`flarequadsoft` High declare `RS_ZENABLE 0` and expect to
+        // occlude themselves from a `DepthMap` nothing publishes. Until this
+        // session ccpwgl dropped container states entirely, so that bargain was
+        // covered by accident.
+        //
+        // Turning this off restores exactly that older behaviour for dx11: the
+        // pass inherits the render mode's standard states. A switch for
+        // bisecting and for shipping, not a decision - delete it once the
+        // container states can all be honoured.
+        if (!this.isCarbon || Tw2ShaderPass.ENABLE_CARBON_RENDER_STATES)
         {
-            device.SetRenderState(this.states[i].state, this.states[i].value);
+            for (let i = 0; i < this.states.length; i++)
+            {
+                device.SetRenderState(this.states[i].state, this.states[i].value);
+            }
         }
 
         if (stateOverride)

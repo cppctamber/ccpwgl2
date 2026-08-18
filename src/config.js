@@ -11,8 +11,18 @@ import * as MT from "global/meta/types";
 import { DeviceTextureQuality, DeviceShaderQuality } from "constant/ccpwgl";
 import { vec4, mat4 } from "math";
 import { tw2BatchSorter } from "core/batch";
+import { device } from "global/tw2";
 
 const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
+
+// Effects pinned to a quality tier regardless of `device.shaderQuality`.
+// Matched on a path fragment, so one entry covers every directory the same
+// effect is reached through. See the `black.fx` handler below for why each
+// entry is here and when to remove it.
+const FX_TIER_PINS = [
+    { match: "/specialfx/flarequad.fx", tier: "sm_hi" },
+    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" }
+];
 
 // Default resource serving (the local tools-core service, not provided with
 // this library). Routes are /{target}/{build}/{topic} throughout. They were
@@ -84,6 +94,41 @@ export const config = {
         // Normalize casing in .black-authored paths. No prefix rewrite is
         // needed - everything uses "res:/" directly and "cdn:/" is retired.
         "*": path => path.toLowerCase(),
+
+        // Pin individual effects to a quality tier.
+        //
+        // Normally a black-authored `.fx` path keeps its extension here and
+        // `Tw2Device.ToEffectPath` later swaps `/effect/` for the profile
+        // directory and appends `.sm_<shaderQuality>`. Returning a resolved
+        // path instead skips that entirely - the extension is no longer `fx`,
+        // so `Tw2Effect.OnValueChanged` does not call `ToEffectPath` - which
+        // means anything pinned here must substitute the profile directory
+        // itself. `device.effectDir` is read at call time so the pin follows
+        // whichever profile the session is on.
+        //
+        // `flarequad` and `flarequadsoft`: their High (`.sm_depth`) bodies
+        // declare `RS_ZENABLE 0` and take over occlusion themselves by
+        // sampling `DepthMap` - which nothing publishes
+        // (`EveSpaceSceneDepthHandler.publishGlobal` is false), so they read
+        // the white `dynamic:/color/1,1,1,1` placeholder meaning "nothing in
+        // front" and draw over the hull. The Medium bodies neither disable the
+        // depth test nor sample scene depth. Remove these two lines once
+        // `DepthMap` is published; a pin left in place after the real input
+        // exists silently holds them a tier below everything around them.
+        "fx": path =>
+        {
+            for (let i = 0; i < FX_TIER_PINS.length; i++)
+            {
+                const pin = FX_TIER_PINS[i];
+                if (path.includes(pin.match))
+                {
+                    return path
+                        .replace("/effect/", device.effectDir)
+                        .replace(".fx", `.${pin.tier}`);
+                }
+            }
+            return path;
+        },
 
         // DDS is the authored source. TextureFormatDDS uploads its compressed
         // payload when supported and decodes the same bytes to RGBA otherwise.
