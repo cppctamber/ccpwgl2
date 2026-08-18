@@ -58,12 +58,96 @@ function copyRegs(out, outReg, src, srcReg, regCount)
 }
 
 /**
+ * Rewrites a transposed clip matrix from the GL depth convention to Carbon's.
+ *
+ * Carbon renders REVERSED depth. `EveSpaceScene.cpp:4002` sets the scene
+ * projection from `Tr2Renderer::GetReversedDepthProjectionTransform()`, and the
+ * same transform feeds ProjectionInverseMat, the froxel fog, the raytracing
+ * denoiser and the light manager. So a Carbon shader expects z_clip in [w, 0] -
+ * near at w, far at 0 - and every dx11-translated vertex stage closes with the
+ * emitter's `gl_Position.z = w - 2z`, which maps that onto GL NDC [-1, 1].
+ *
+ * ccpwgl's cameras build `mat4.frustum`, which is GL-convention (-w..w). This
+ * converts: `z' = (w - z) / 2`, sending near to w and far to 0.
+ *
+ * Composed with the emitter fixup this is exactly the IDENTITY for an unbiased
+ * vertex, so the depth buffer keeps conventional GL values, `clearDepth(1)` and
+ * `LEQUAL` stand, and legacy gles2 shaders sharing the buffer are untouched.
+ * What it restores is the direction of any offset the shader authors itself.
+ * The decal family adds `+1e-5` to lift off the hull, which is toward the
+ * camera only on a reversed axis; against a forward axis it sinks the decal
+ * INTO the hull by `2e-5/w` - an error that grows as the camera closes in, and
+ * the reason decals vanished on approach.
+ *
+ * The matrices arrive TRANSPOSED (row-vector/Carbon layout), so register
+ * `base + 2` holds the z row and `base + 3` the w row.
+ * @param {Float32Array} out - packed Carbon register array
+ * @param {Number} baseReg   - first register of the 4-register matrix
+ * @returns {Float32Array} out
+ */
+function GlClipToCarbonClip(out, baseReg)
+{
+    const z = (baseReg + 2) * FLOATS_PER_REG, w = (baseReg + 3) * FLOATS_PER_REG;
+    for (let i = 0; i < FLOATS_PER_REG; i++)
+    {
+        out[z + i] = (out[w + i] - out[z + i]) * 0.5;
+    }
+    return out;
+}
+
+/**
+ * Rewrites a transposed clip matrix from FORWARD D3D to Carbon's reversed one.
+ *
+ * For matrices that are already `0..w` rather than GL's `-w..w`: the shadow
+ * cascades, which `Tw2CarbonShadowData` builds with `carbonPerspectiveOffCenter`
+ * and `carbonOrthoOffCenter`. Those are Carbon-form in x, y and range but NOT
+ * reversed, and the caster shaders carry the same emitter fixup as every other
+ * dx11 body - so they need `z' = w - z` to land on the same axis.
+ *
+ * Running the GL converter over one of these instead is silent and wrong: it
+ * would halve an already-halved range and leave the atlas holding a depth that
+ * still sits inside 0..1, which is exactly the kind of error that reads as
+ * correct.
+ * @param {Float32Array} out - packed Carbon register array
+ * @param {Number} baseReg   - first register of the 4-register matrix
+ * @returns {Float32Array} out
+ */
+function D3DClipToCarbonClip(out, baseReg)
+{
+    const z = (baseReg + 2) * FLOATS_PER_REG, w = (baseReg + 3) * FLOATS_PER_REG;
+    for (let i = 0; i < FLOATS_PER_REG; i++)
+    {
+        out[z + i] = out[w + i] - out[z + i];
+    }
+    return out;
+}
+
+/**
  * Packs Carbon PerFrameVSData (b1) from the GLES-v8 per-frame VS array
  * @param {Float32Array} out - 46 * 4 floats
  * @param {Float32Array} gles - ccpwgl perFrameVSData.data (34 regs)
  * @returns {Float32Array} out
  */
-function PackPerFrameVS(out, gles)
+/**
+ * The registers holding a clip matrix, so a converter is applied to all four or
+ * none. Skipping ProjLast is the kind of omission that shows up only in motion
+ * vectors, long after the change that caused it.
+ * @type {Array<Number>}
+ */
+const CLIP_MATRIX_REGS = [ 4, 12, 28, 36 ];
+
+/**
+ * Packs Carbon PerFrameVSData with NO clip conversion applied.
+ *
+ * Split out because the caller, not this function, knows which convention the
+ * device projection is in: the camera builds GL, and the shadow caster swaps in
+ * a Carbon-form cascade. Applying the wrong converter is silent - both land
+ * inside a plausible range - so the choice is made explicitly at each call site.
+ * @param {Float32Array} out - 46 * 4 floats
+ * @param {Float32Array} gles - ccpwgl perFrameVSData.data (34 regs)
+ * @returns {Float32Array} out
+ */
+function PackPerFrameVSRaw(out, gles)
 {
     // 0-27: ViewInverseTranspose, ViewProjection, View, Projection,
     // ShadowView, ShadowViewProjection, EnvMapRotation — aligned.
@@ -77,6 +161,18 @@ function PackPerFrameVS(out, gles)
     copyRegs(out, 40, gles, 28, 6);
     // Carbon reg 45.y = upscaling amount (GLES leaves it unused/0).
     out[45 * FLOATS_PER_REG + 1] = 1;
+    return out;
+}
+
+function PackPerFrameVS(out, gles)
+{
+    PackPerFrameVSRaw(out, gles);
+    // The camera's matrices are GL-convention and become Carbon's reversed
+    // clip here. ShadowViewProjectionMat (20-23) is deliberately absent from
+    // CLIP_MATRIX_REGS: it is the LOOKUP matrix, read by main-pass shaders as
+    // ordinary constants rather than written to gl_Position, so it carries no
+    // emitter fixup and must stay exactly as Tw2CarbonShadowData built it.
+    for (const reg of CLIP_MATRIX_REGS) GlClipToCarbonClip(out, reg);
     return out;
 }
 
@@ -190,10 +286,14 @@ module.exports = {
     PER_FRAME_VS_REGS,
     PER_FRAME_PS_REGS,
     PER_OBJECT_REGS,
+    CLIP_MATRIX_REGS,
     PackPerFrameVS,
+    PackPerFrameVSRaw,
     PackPerFramePS,
     PackPerObjectVS,
     PackPerObjectPS,
+    GlClipToCarbonClip,
+    D3DClipToCarbonClip,
     PackDecalPerObjectVS,
     PackDecalPerObjectPS
 };

@@ -42,12 +42,41 @@ function expectZeroReg(out, outReg, label)
 // --- per-frame VS (b1): 34 GLES regs -> 46 Carbon regs ------------------------
 {
     const out = PackPerFrameVS(new Float32Array(PER_FRAME_VS_REGS * 4), stamp(34));
-    for (let r = 0; r < 28; r++) expectReg(out, r, r, "pfVS aligned block");
+    // ViewProjectionMat (4) and ProjectionMat (12) have their z row rewritten
+    // to the D3D convention, so only their z register moves; everything else in
+    // the aligned block is still a verbatim copy.
+    const CONVERTED_Z = [ 6, 14 ];
+    for (let r = 0; r < 28; r++)
+    {
+        if (CONVERTED_Z.includes(r)) continue;
+        expectReg(out, r, r, "pfVS aligned block");
+    }
+    for (const z of CONVERTED_Z)
+    {
+        for (let c = 0; c < 4; c++)
+        {
+            // z' = (w - z) / 2 over the transposed rows, i.e. gles reg z and z + 1.
+            assert.strictEqual(
+                out[z * 4 + c],
+                ((z + 1 + c * 0.25) - (z + c * 0.25)) / 2,
+                `pfVS reg ${z} z row converted to Carbon reversed clip`
+            );
+        }
+        expectReg(out, z + 1, z + 1, "pfVS w row untouched by the clip conversion");
+    }
+    // ShadowViewProjectionMat is already D3D-form and must survive unconverted.
+    for (let r = 20; r < 24; r++) expectReg(out, r, r, "pfVS ShadowViewProjection not converted");
     for (let r = 0; r < 4; r++)
     {
-        expectReg(out, 28 + r, 4 + r, "pfVS ViewProjectionLast<-ViewProjection");
         expectReg(out, 32 + r, 8 + r, "pfVS ViewLast<-View");
-        expectReg(out, 36 + r, 12 + r, "pfVS ProjLast<-Projection");
+    }
+    for (let r = 0; r < 4; r++)
+    {
+        for (let c = 0; c < 4; c++)
+        {
+            assert.strictEqual(out[(28 + r) * 4 + c], out[(4 + r) * 4 + c], "pfVS ViewProjectionLast<-converted ViewProjection");
+            assert.strictEqual(out[(36 + r) * 4 + c], out[(12 + r) * 4 + c], "pfVS ProjLast<-converted Projection");
+        }
     }
     for (let r = 0; r < 6; r++)
     {
@@ -124,4 +153,86 @@ console.log("PASS: Tw2CarbonData — GLES->Carbon repack maps verified for b1(46
     assert.strictEqual(out[26 * 4 + 1], 0, "carbon reg 26.y = mask0 clampV");
     assert.strictEqual(out[26 * 4 + 2], 0, "carbon reg 26.z = mask1 clampU");
     assert.strictEqual(out[26 * 4 + 3], 1, "carbon reg 26.w = mask1 clampV");
+}
+
+
+// --- clip convention: a translated shader must reproduce the GL depth exactly --
+//
+// Enter through the shader's door. A dx11-translated vertex stage reads the
+// packed ViewProjectionMat with dot products and then applies the emitter's
+// `gl_Position.z = 2z - w` fixup. Run that whole chain against the GL depth a
+// legacy gles2 shader produces from the same camera: the two must agree at
+// every distance, because both write into one depth buffer.
+//
+// The negative control is the unconverted GLES array. It clips everything
+// nearer than 2nf/(n + f) - the defect that made decals vanish on approach.
+{
+    const near = 100, far = 10000;
+    const h = Math.tan(0.5) * near, w = h * 1.6;
+    const rl = 1 / (w + w), tb = 1 / (h + h), nf = 1 / (near - far);
+
+    // gl-matrix frustum, column-major, GL convention.
+    const P = new Float32Array(16);
+    P[0] = near * 2 * rl; P[5] = near * 2 * tb;
+    P[10] = (far + near) * nf; P[11] = -1; P[14] = far * near * 2 * nf;
+
+    const T = new Float32Array(16);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) T[i * 4 + j] = P[j * 4 + i];
+
+    const gles = new Float32Array(34 * 4);
+    gles.set(T, 4 * 4);
+    gles.set(T, 12 * 4);
+    const out = PackPerFrameVS(new Float32Array(PER_FRAME_VS_REGS * 4), gles);
+
+    // The translated shader: two dot products, then the emitter fixup.
+    function translatedNdcZ(regs, base, viewZ, bias = 0)
+    {
+        const pos = [ 0, 0, -viewZ, 1 ];
+        const dot = (r) => pos[0] * regs[r * 4] + pos[1] * regs[r * 4 + 1]
+            + pos[2] * regs[r * 4 + 2] + pos[3] * regs[r * 4 + 3];
+        const z = dot(base + 2) + bias, wc = dot(base + 3);
+        // The emitter tail, verbatim: gl_Position.z = w - 2z.
+        return (wc - 2 * z) / wc;
+    }
+
+    // A legacy gles2 shader: the same dot products, no fixup.
+    function legacyNdcZ(viewZ)
+    {
+        const pos = [ 0, 0, -viewZ, 1 ];
+        const z = P[2] * pos[0] + P[6] * pos[1] + P[10] * pos[2] + P[14] * pos[3];
+        const wc = P[3] * pos[0] + P[7] * pos[1] + P[11] * pos[2] + P[15] * pos[3];
+        return z / wc;
+    }
+
+    for (const viewZ of [ near, 150, 250, 1000, far ])
+    {
+        const carbon = translatedNdcZ(out, 4, viewZ);
+        const legacy = legacyNdcZ(viewZ);
+        assert.ok(
+            Math.abs(carbon - legacy) < 1e-6,
+            `translated NDC z at ${viewZ} (${carbon}) must match the legacy GL depth (${legacy})`
+        );
+        assert.ok(carbon >= -1 - 1e-6, `translated NDC z at ${viewZ} must not clip`);
+    }
+
+    // The point of the reversal: a shader-authored offset must move the vertex
+    // TOWARD the camera. The decal family adds +1e-5 in its own clip space to
+    // lift itself off the hull, and under LEQUAL that only draws if the biased
+    // depth is the smaller one. Against a forward axis this inverts, and the
+    // error grows as w shrinks - which is why decals vanished on approach.
+    const DECAL_BIAS = 0.000009999999747378752;
+    let previousGap = Infinity;
+    for (const viewZ of [ 150, 300, 1000, 5000 ])
+    {
+        const hull = translatedNdcZ(out, 4, viewZ);
+        const decal = translatedNdcZ(out, 4, viewZ, DECAL_BIAS);
+        assert.ok(
+            decal < hull,
+            `a biased decal at ${viewZ} must land nearer than the hull (${decal} vs ${hull})`
+        );
+        // And the lift must shrink with distance, never grow.
+        const gap = hull - decal;
+        assert.ok(gap < previousGap, `the decal lift at ${viewZ} must be smaller than at the previous, nearer distance`);
+        previousGap = gap;
+    }
 }

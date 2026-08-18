@@ -11,6 +11,7 @@
     "build": "npm run build:rollup",
     "build:rollup": "rollup -c rollup.config.mjs",
     "lint": "eslint src --ignore-pattern src/wrapped/BackUpToClean.js --ignore-pattern src/wrapped/camera/CameraOrbitControls_Broken.js",
+    "test:carbon-clip-convention": "node scripts/test-carbon-clip-convention.js",
     "test:carbon-pending": "node scripts/test-carbon-pending.js",
     "test:carbon-light-list": "node scripts/test-carbon-light-list.js",
     "test:sh-lighting": "node scripts/test-sh-lighting.js",
@@ -38,7 +39,8 @@
     "test:carbon-data": "node scripts/test-carbon-data.js",
     "test:camera-fit": "node scripts/test-camera-fit.mjs",
     "test:carbon-shadow": "node scripts/test-carbon-shadow.mjs",
-    "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs"
+    "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs",
+    "test:light-persisted-fields": "node scripts/test-light-persisted-fields.mjs"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
@@ -78,6 +80,6 @@
   },
   "dependencies": {
     "@carbonenginejs/runtime-audio": "^0.3.1",
-    "@carbonenginejs/runtime-resource": "^0.18.1"
+    "@carbonenginejs/runtime-resource": "^0.20.0"
   }
 }

@@ -6,6 +6,27 @@ const
 
 
 /**
+ * Rewrites a transposed clip matrix from the GL depth convention to the D3D one.
+ *
+ * A copy of `Tw2CarbonData.GlClipToCarbonClip`, which owns the rule and its
+ * reasoning. This module is deliberately import-free (its regression test loads
+ * the source text through `new Function`), so the four lines live here rather
+ * than the dependency.
+ * @param {Float32Array} out - packed Carbon register array
+ * @param {Number} baseReg   - first register of the 4-register matrix
+ * @returns {Float32Array} out
+ */
+function GlClipToCarbonClip(out, baseReg)
+{
+    const z = (baseReg + 2) * REGISTER_SIZE, w = (baseReg + 3) * REGISTER_SIZE;
+    for (let i = 0; i < REGISTER_SIZE; i++)
+    {
+        out[z + i] = (out[w + i] - out[z + i]) * 0.5;
+    }
+    return out;
+}
+
+/**
  * Carbon/DX11 register layout used by skinned interior shaders.
  *
  * The joint palette is inline at the start of cb3. The generic Carbon worker can
@@ -220,6 +241,14 @@ export class Tw2CarbonInteriorPerObjectAdapter
     {
         out.fill(0);
         out.set(source.subarray(0, Math.min(out.length, source.length)));
+        // Interior b1: ViewInverseTranspose 0-3, SunData.DirWorld 4,
+        // Fog.color 5, ViewProjectionMat 6-9, ViewMat 10-13, ProjectionMat
+        // 14-17 (Tr2InteriorScene.perFrameData.vs). The two clip matrices carry
+        // the camera's GL depth range and a translated shader applies the
+        // emitter's `2z - w` fixup on top, so they convert here for exactly
+        // the reason the space packer converts regs 4 and 12.
+        GlClipToCarbonClip(out, 6);
+        GlClipToCarbonClip(out, 14);
         return out;
     }
 
