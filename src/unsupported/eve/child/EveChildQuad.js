@@ -255,6 +255,10 @@ export class EveChildQuad extends EveChild
 
     // Carbon's quad index order (Tr2QuadRenderer.cpp:222). ubershaderquad
     // bakes RS_CULLMODE CULL_CW, so a reversed winding culls those quads away.
+    // Carbon's quad index order (Tr2QuadRenderer.cpp:221). ubershaderquad
+    // bakes RS_CULLMODE CULL_CW, so a reversed winding culls those quads away.
+    // Verified 2026-08-18: with the old [0,1,2,2,3,0] the quads disappear
+    // entirely, which is what hid the depth fault they have always had.
     static indices = [ 0, 2, 1, 0, 3, 2 ];
 
     /**
@@ -269,6 +273,13 @@ export class EveChildQuad extends EveChild
         if (!this.display || !this.IsGood() || mode !== device.RM_ADDITIVE) return false;
         const batch = new Tw2ForwardingRenderBatch();
         batch.geometryProvider = this;
+        // Without this `Tw2ForwardingRenderBatch.HasTechnique` is always false,
+        // because it tests `this.effect`. Any collection path that passes a
+        // technique filter then discards the batch silently - see
+        // Tw2RenderBatchContext.ShouldCommitBatch and
+        // Tw2BatchAccumulator2.GetObjectBatches. The main scene pass sets no
+        // filter, so this was dormant rather than visibly broken.
+        batch.effect = this.effect;
         batch.perObjectData = this._perObjectData;
         batch.renderMode = mode;
         accumulator.Commit(batch);
