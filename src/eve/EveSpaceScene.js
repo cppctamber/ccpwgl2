@@ -2523,12 +2523,16 @@ export class EveSpaceScene extends meta.Model
         // ShadowMapSettings (1,1,0,0), ShadowCameraRange (1,0), ShadowLightness 0.
         const
             shadowMapSettings = this._shadowMapSettings,
-            shadowCameraRange = [
-                this._shadowCameraNear,
-                this._shadowCameraFar,
-                this._shadowMinimumVisibility,
-                0
-            ];
+            // Carbon's literals, not the scene fields. `EveSpaceScene.cpp:3107`
+            // assigns Vector2(1, 0) once and never reassigns it, and :3137 sets
+            // ShadowLightness 0. The old fields were debug knobs whose own
+            // comments admit it ("for shadows on use 1").
+            //
+            // The y term matters more than it looks: shaders normalise depth by
+            // `1 / (y - x)`, so Carbon's (1, 0) yields -1 where our (1, 2)
+            // yielded +1 - a SIGN FLIP in the shadow lookup, not a scale.
+            // x stays 1, so the GLES bypass at quadv5.js:452 is unaffected.
+            shadowCameraRange = [ 1, 0, 0, 0 ];
 
         this._perFramePS.Set("ShadowMapSettings", shadowMapSettings);
         this._perFramePS.Set("ShadowCameraRange", shadowCameraRange);
