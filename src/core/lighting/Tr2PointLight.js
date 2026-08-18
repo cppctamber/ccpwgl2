@@ -59,11 +59,28 @@ export class Tr2PointLight extends meta.Model
     @meta.float
     brightness = 1;
 
-    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25); canonical type
-    // confirmed by the format-black schema (`castsShadows: enum`). Shadow
-    // settings are not consumed by the Carbon tile path yet.
+    // Carbon's PerLightShadowSetting enum (Tr2Light.h:20-25), persisted as an
+    // int32: the generated schema gives `castsShadows` beType LONG with wire
+    // type `enum`, which is a NUMBER on the wire.
+    //
+    // It was `@meta.enums(...)`, and that is the wrong reader. `PT_ENUM` in the
+    // black reader reads a STRING and parses `"A=1,B=2"` - it decodes an enum
+    // DEFINITION, not an enum value - so it consumed a length prefix plus that
+    // many bytes and left the stream mid-object. Everything after desynchronised,
+    // and the failure surfaced far away as
+    // `Unknown property "EveChildContainer" for "Tr2SpotLight"` while reading
+    // res:/dx9/model/ship/ore/capital/orecs1/effects/orecs1_t1_goldrush_fx.black,
+    // which is the reader landing on the next object's type tag and looking it up
+    // as a property name.
+    //
+    // The values stay in the JSDoc rather than in a decorator, because what the
+    // number MEANS is documentation and what it IS is four bytes. runtime-trinity
+    // declares the same field `@type.int @type.enum("PerLightShadowSetting")`,
+    // which is the same split.
+    //
+    // Shadow settings are not consumed by the Carbon tile path yet.
     @meta.notImplemented
-    @meta.enums(PerLightShadowSetting)
+    @meta.int32
     castsShadows = PerLightShadowSetting.DISABLED;
 
     @meta.color
