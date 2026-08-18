@@ -165,12 +165,49 @@ export class Tw2CarbonShadowRenderer
      */
     Uninstall()
     {
+        this.ResetOutput();
+        this.producer.packingCasterFrame = false;
+        // A stale `_built` keeps PackPerFramePS writing the last shadow frame's
+        // cascades forever: Update is the only thing that clears it, and it
+        // never runs again once the renderer stops.
+        this.producer._built = false;
         if (!this._installed) return false;
         const binder = Tw2CarbonResourceBinder.Get(device);
         if (binder && binder.perFrameProducer === this.producer) binder.perFrameProducer = null;
         this._installed = false;
         return true;
     }
+
+    /**
+     * Detaches the visibility buffer from `EveSpaceSceneShadowMap`.
+     *
+     * The counterpart to the attach in `_Resolve`, and the thing whose absence
+     * made shadows a one-way door: the global kept pointing at this renderer's
+     * colour-only resolve target after shadows were switched off, and nothing
+     * re-rendered it. Object shaders that build a variance term from that map
+     * then read a buffer with no second moment, which drives the sun term
+     * negative and keeps it there for the life of the session.
+     *
+     * Reset to WHITE, not to nothing. White is "fully lit", the neutral these
+     * shaders expect when there is no shadow map; black would read as "entirely
+     * shadowed". Same contract as `EveSpaceSceneDepthHandler.ResetOutput`.
+     * @returns {Boolean} true when the variable was reset
+     */
+    ResetOutput()
+    {
+        if (!tw2.HasVariable("EveSpaceSceneShadowMap")) return false;
+        const variable = tw2.GetVariable("EveSpaceSceneShadowMap");
+        if (!variable || !variable.SetValue) return false;
+        variable.SetValue(Tw2CarbonShadowRenderer.SHADOW_MAP_NEUTRAL);
+        return true;
+    }
+
+    /**
+     * What `EveSpaceSceneShadowMap` means when nothing is shadowing. White,
+     * matching `config.js`.
+     * @type {String}
+     */
+    static SHADOW_MAP_NEUTRAL = "dynamic:/color/1,1,1,1";
 
     /**
      * Creates or resizes the cascade atlas and the resolve target
@@ -288,104 +325,153 @@ export class Tw2CarbonShadowRenderer
 
         if (!this._context) this._context = new Tw2RenderBatchContext({});
 
-        this._atlas.Set();
-
-        // Cleared to 1.0, and compared with LESSEQUAL - standard forward depth.
-        // The surrounding scene may run otherwise; this pass does not inherit it.
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.depthMask(true);
-        gl.clearDepth(1);
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-
-        // Carbon disables depth CLIP for the whole cascade loop
-        // (`EveSpaceScene.cpp:745-746`). The cascade ortho's z range is exactly
-        // the light-space box of that slice, so an occluder sitting BETWEEN the
-        // light and the box - the ordinary case for a ship shadowing something
-        // in a nearer cascade - falls outside the near plane and writes nothing.
-        //
-        // WebGL2 has no core depth clamp, so this needs the extension. Where it
-        // is missing the caster near plane is pushed out instead
-        // (`Tw2CarbonShadowProducer.casterNearExtend`), which is the same idea
-        // as Carbon's commented-out `aabb.m_max.z += 250000` at
-        // `Tr2ShadowMap.cpp:208`.
-        // Guarded on the enum, not just the extension object: `gl.enable(undefined)`
-        // is an INVALID_ENUM that silently poisons the pass.
+        // From here to the restore below runs inside try/finally. Without it a
+        // throw mid-cascade left the LIGHT camera bound, the atlas still the
+        // draw target, the viewport a 2048 tile, and depth clamp and polygon
+        // offset enabled - and EveSpaceScene catches that throw and renders the
+        // rest of the frame anyway, so the corruption is not even visibly fatal.
+        // Declared before the try so the finally can undo them. The camera
+        // transforms are captured here too: capturing them inside the try would
+        // leave the finally with nothing to restore on an early throw.
         const depthClamp = device.GetExtension("EXT_depth_clamp");
         const depthClampEnum = depthClamp && depthClamp.DEPTH_CLAMP_EXT;
-        if (depthClampEnum) gl.enable(depthClampEnum);
-
-        // Bias the stored depths away from the light - see `casterDepthBias`.
         const biased = this.casterDepthBias !== 0 || this.casterSlopeBias !== 0;
-        if (biased)
-        {
-            gl.enable(gl.POLYGON_OFFSET_FILL);
-            gl.polygonOffset(this.casterSlopeBias, this.casterDepthBias);
-        }
-
-        // Casters must be drawn FROM THE LIGHT. Until 2026-08-13 this loop
-        // fetched the cascade matrix and then never used it, so every tile was
-        // filled with the scene as seen by the CAMERA - the resolve then looked
-        // that up with correct light-space UVs, which is why shadows tracked the
-        // sun and the cascade controls while bearing no relation to the scene.
-        //
-        // The camera transforms are restored afterwards: everything downstream
-        // in the frame, the resolve included, expects them back.
         const
             prevView = mat4.copy(_prevView, device.view),
             prevProjection = mat4.copy(_prevProjection, device.projection);
 
-        for (let i = 0; i < cascadeCount; i++)
+        this._atlas.Set();
+        try
         {
-            if (!this.producer.GetCascadeProjection(this._cascade, i)) continue;
 
-            const
-                x = (i % cellsX) * this.tileSize,
-                y = Math.floor(i / cellsX) * this.tileSize;
+            // Cleared to 1.0, and compared with LESSEQUAL - standard forward depth.
+            // The surrounding scene may run otherwise; this pass does not inherit it.
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.depthMask(true);
+            gl.clearDepth(1);
+            gl.clear(gl.DEPTH_BUFFER_BIT);
 
-            // The tile is the viewport, so the projection carries no tile
-            // transform - that belongs to the lookup matrix alone.
-            device.SetView(this.producer.lightView);
-            device.SetProjection(this._cascade);
+            // Carbon disables depth CLIP for the whole cascade loop
+            // (`EveSpaceScene.cpp:745-746`). The cascade ortho's z range is exactly
+            // the light-space box of that slice, so an occluder sitting BETWEEN the
+            // light and the box - the ordinary case for a ship shadowing something
+            // in a nearer cascade - falls outside the near plane and writes nothing.
+            //
+            // WebGL2 has no core depth clamp, so this needs the extension. Where it
+            // is missing the caster near plane is pushed out instead
+            // (`Tw2CarbonShadowProducer.casterNearExtend`), which is the same idea
+            // as Carbon's commented-out `aabb.m_max.z += 250000` at
+            // `Tr2ShadowMap.cpp:208`.
+            // Guarded on the enum, not just the extension object: `gl.enable(undefined)`
+            // is an INVALID_ENUM that silently poisons the pass.
+            if (depthClampEnum) gl.enable(depthClampEnum);
+
+            // Bias the stored depths away from the light - see `casterDepthBias`.
+            if (biased)
+            {
+                gl.enable(gl.POLYGON_OFFSET_FILL);
+                gl.polygonOffset(this.casterSlopeBias, this.casterDepthBias);
+            }
+
+            // Casters must be drawn FROM THE LIGHT. Until 2026-08-13 this loop
+            // fetched the cascade matrix and then never used it, so every tile was
+            // filled with the scene as seen by the CAMERA - the resolve then looked
+            // that up with correct light-space UVs, which is why shadows tracked the
+            // sun and the cascade controls while bearing no relation to the scene.
+            //
+            // The camera transforms are restored afterwards: everything downstream
+            // in the frame, the resolve included, expects them back.
+            // Tells the producer the matrices it is about to pack are a CASCADE,
+            // not the camera, so it applies the D3D-to-Carbon clip flip rather than
+            // the GL one. In a try/finally because the binder keeps the producer
+            // installed for the whole session: left true, the caster conversion
+            // would be applied to every later dx11 draw and turning shadows off
+            // would not undo it.
+            this.producer.packingCasterFrame = true;
+
+            try
+            {
+                for (let i = 0; i < cascadeCount; i++)
+                {
+                    if (!this.producer.GetCascadeProjection(this._cascade, i)) continue;
+
+                    const
+                        x = (i % cellsX) * this.tileSize,
+                        y = Math.floor(i / cellsX) * this.tileSize;
+
+                    // The tile is the viewport, so the projection carries no tile
+                    // transform - that belongs to the lookup matrix alone.
+                    device.SetView(this.producer.lightView);
+                    device.SetProjection(this._cascade);
+                    if (scene.UpdateViewProjectionFrameData) scene.UpdateViewProjectionFrameData();
+
+                    gl.viewport(x, y, this.tileSize, this.tileSize);
+
+                    // Re-applied PER CASCADE, not once before the loop.
+                    // `Tw2GeometryRes` calls `device.ApplyShadowState()` on every
+                    // geometry draw, which re-applies the device's own
+                    // `_depthOffsetState` - (0, 0) for RM_OPAQUE - whenever that
+                    // state is dirty, and the scene depth prepass marks it dirty
+                    // immediately before this pass runs. So the bias set once
+                    // outside the loop is very likely zeroed by the first caster
+                    // draw and never reinstated, making `casterDepthBias` a no-op.
+                    // Setting it here costs one call per tile and is correct
+                    // whether or not the clobber happens.
+                    if (biased) gl.polygonOffset(this.casterSlopeBias, this.casterDepthBias);
+
+                    this._context.Clear();
+                    this._context.CollectObjectArrayBatches(objects, RM_OPAQUE, {
+                        techniqueFilter: CASTER_TECHNIQUE,
+                        techniqueOverride: CASTER_TECHNIQUE
+                    });
+
+                    // A cascade with nothing in it keeps its cleared 1.0 tile, exactly
+                    // as Carbon skips empty splits.
+                    this._context.Render(CASTER_TECHNIQUE);
+
+                    // Recorded per cascade, because an empty tile has two completely
+                    // different causes that look identical: nothing was COLLECTED (the
+                    // objects have no `Shadow` technique at this LOD, or were culled),
+                    // or batches were collected and then clipped away by the cascade
+                    // projection. Only the batch count separates them.
+                    const report = this._context.GetReport ? this._context.GetReport() : null;
+                    this._casterReport[i] = {
+                        batches: report ? report.batches : undefined,
+                        rendered: report ? report.rendered : undefined,
+                        objects: objects.length
+                    };
+                }
+
+            }
+            finally
+            {
+            // Cleared BEFORE the restore below, so the camera matrices that
+            // restore re-packs take the GL conversion they need.
+                this.producer.packingCasterFrame = false;
+            }
+
+        }
+        finally
+        {
+            // Every one of these used to sit on the success path. A throw
+            // mid-cascade therefore left the light camera bound and the GL
+            // state biased, and the caller catches the throw and renders on.
+            if (depthClampEnum) gl.disable(depthClampEnum);
+            if (biased)
+            {
+                gl.polygonOffset(0, 0);
+                gl.disable(gl.POLYGON_OFFSET_FILL);
+            }
+
+            device.SetView(prevView);
+            device.SetProjection(prevProjection);
+            // Runs with packingCasterFrame already false, so the camera
+            // matrices it re-packs take the GL conversion.
             if (scene.UpdateViewProjectionFrameData) scene.UpdateViewProjectionFrameData();
 
-            gl.viewport(x, y, this.tileSize, this.tileSize);
-
-            this._context.Clear();
-            this._context.CollectObjectArrayBatches(objects, RM_OPAQUE, {
-                techniqueFilter: CASTER_TECHNIQUE,
-                techniqueOverride: CASTER_TECHNIQUE
-            });
-
-            // A cascade with nothing in it keeps its cleared 1.0 tile, exactly
-            // as Carbon skips empty splits.
-            this._context.Render(CASTER_TECHNIQUE);
-
-            // Recorded per cascade, because an empty tile has two completely
-            // different causes that look identical: nothing was COLLECTED (the
-            // objects have no `Shadow` technique at this LOD, or were culled),
-            // or batches were collected and then clipped away by the cascade
-            // projection. Only the batch count separates them.
-            const report = this._context.GetReport ? this._context.GetReport() : null;
-            this._casterReport[i] = {
-                batches: report ? report.batches : undefined,
-                rendered: report ? report.rendered : undefined,
-                objects: objects.length
-            };
+            this._atlas.Unset();
         }
-
-        if (depthClampEnum) gl.disable(depthClampEnum);
-        if (biased)
-        {
-            gl.polygonOffset(0, 0);
-            gl.disable(gl.POLYGON_OFFSET_FILL);
-        }
-
-        device.SetView(prevView);
-        device.SetProjection(prevProjection);
-        if (scene.UpdateViewProjectionFrameData) scene.UpdateViewProjectionFrameData();
-
-        this._atlas.Unset();
 
         // This pass drove GL directly, so the device's cached render state no
         // longer describes the context.

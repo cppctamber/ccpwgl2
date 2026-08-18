@@ -1343,6 +1343,16 @@ export class EveSpaceScene extends meta.Model
         // Carbon cascaded sun shadows, before the main colour pass samples the
         // visibility buffer they produce. Self-disables on error for the same
         // reason the AO prepass below does.
+        // Turning shadows OFF has to undo what turning them on did. Until
+        // 2026-08-18 it only skipped this block, which left the binder's
+        // per-frame producer installed for the life of the device and left
+        // `EveSpaceSceneShadowMap` pointing at a visibility buffer nothing
+        // re-rendered. Both survive the toggle, so the scene never recovered.
+        if (!(this.carbonShadows && show.shadow) && this._carbonShadowRenderer)
+        {
+            this._carbonShadowRenderer.Uninstall();
+        }
+
         if (this.carbonShadows && show.shadow)
         {
             try
@@ -1352,6 +1362,7 @@ export class EveSpaceScene extends meta.Model
             catch (err)
             {
                 this.carbonShadows = false;
+                if (this._carbonShadowRenderer) this._carbonShadowRenderer.Uninstall();
 
                 // Kept for inspection: self-disabling on the first throw means
                 // the console line is the ONLY record, and "carbonShadows keeps
@@ -1502,8 +1513,14 @@ export class EveSpaceScene extends meta.Model
         if (!this._carbonShadowRenderer)
         {
             this._carbonShadowRenderer = new Tw2CarbonShadowRenderer();
-            this._carbonShadowRenderer.Install();
         }
+
+        // Install EVERY call, not just on construction. The disable path now
+        // uninstalls, so a renderer that already exists can be uninstalled -
+        // and installing only at construction would leave it that way, making
+        // shadows work once per session and silently do nothing after the
+        // first off/on. `Install` is idempotent on `_installed`.
+        this._carbonShadowRenderer.Install();
 
         const
             renderer = this._carbonShadowRenderer,

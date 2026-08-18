@@ -295,6 +295,55 @@ export class Tw2CarbonShadowProducer
      * @param {Float32Array} gles - ccpwgl perFramePSData.data
      * @returns {Float32Array} out
      */
+    /**
+     * Packs the caster pass's per-frame VS block.
+     *
+     * The caster pass swaps the device projection for a cascade matrix, which
+     * `Tw2CarbonShadowData` builds with `carbonPerspectiveOffCenter` /
+     * `carbonOrthoOffCenter` - already `0..w`, NOT the GL `-w..w` a camera
+     * produces. The default packer would run its GL converter over that and
+     * halve an already-halved range, leaving an atlas whose depths still sit
+     * inside 0..1 and therefore still look plausible.
+     *
+     * So the cascade rows take the D3D-to-Carbon flip instead. ViewProjectionMat
+     * (4-7) and ProjectionMat (12-15) are the two the caster reads;
+     * ShadowViewProjectionMat (20-23) is the LOOKUP matrix consumed by main-pass
+     * shaders as ordinary constants rather than as gl_Position, so it carries no
+     * emitter fixup and must stay exactly as built.
+     * @param {Float32Array} out - 46 * 4 floats
+     * @param {Float32Array} gles - ccpwgl perFrameVSData.data
+     * @returns {Float32Array} out
+     */
+    PackPerFrameVS(out, gles)
+    {
+        // ONLY the caster pass binds a cascade matrix. Everything else in the
+        // frame - the whole main colour pass - still has the camera's GL-form
+        // frustum bound, which needs the GL converter, not this one.
+        //
+        // This guard is load bearing, not defensive. The binder holds
+        // `perFrameProducer` from the first enabled frame until `Uninstall`,
+        // which only `Destroy` calls and nothing calls `Destroy` - so this
+        // method runs for EVERY dx11 draw for the rest of the session, long
+        // after shadows are switched back off. Flipping a GL matrix with
+        // `z' = w - z` instead of `(w - z) / 2` sends clip z to NDC [-3, 1]
+        // once the emitter fixup composes with it, which clips out most of the
+        // scene and cannot be undone by disabling shadows.
+        if (!this.packingCasterFrame) return Tw2CarbonData.PackPerFrameVS(out, gles);
+
+        Tw2CarbonData.PackPerFrameVSRaw(out, gles);
+        for (const reg of Tw2CarbonData.CLIP_MATRIX_REGS)
+        {
+            Tw2CarbonData.D3DClipToCarbonClip(out, reg);
+        }
+        return out;
+    }
+
+    /**
+     * True only while the caster pass has a cascade matrix bound.
+     * @type {Boolean}
+     */
+    packingCasterFrame = false;
+
     PackPerFramePS(out, gles)
     {
         Tw2CarbonData.PackPerFramePS(out, gles);
