@@ -285,13 +285,44 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
     ];
 
     /**
-     * Usage-specific sampler settings, keyed by texture name; these win over
-     * the clamp-to-edge default in GetSamplerOverrides
+     * Per-usage sampler overrides, applied over the blanket border clamp.
+     *
+     * Keyed by TEXTURE name; `GetSamplerOverrides` appends "Sampler".
+     *
+     * Both spellings are listed on purpose. `DecalAtMap` is the PACKED name the
+     * legacy gles2 shaders declare; the dx11 shaders are the unpacked variants
+     * and declare `DecalAlbedoMap`, `DecalTransparencyMap` and `DecalGlowMap`
+     * instead. An override naming only the packed spelling silently does
+     * nothing on the dx11 path - the blanket CLAMP_TO_BORDER survives, and a
+     * shader that reads across tiles gets one tile.
+     *
+     * That is what made killmarks render a single column: `decalcounterv5`
+     * declares exactly one texture, `DecalTransparencyMap`, its container
+     * sampler is WRAP, and its UV runs 0..4.5 to step through the digit
+     * columns. Bordered, everything past the first column reads the border.
+     *
+     * The modes below are the containers' own, read from the shipped
+     * `.sm_hi` samplers rather than guessed:
+     *   decalcounterv5        s0 WRAP    -> DecalTransparencyMap
+     *   decalglowv5           s0 BORDER  -> DecalTransparencyMap
+     *                         s1 WRAP    -> DecalGlowMap
      * @type {Object}
      */
     static OverridesByUsage = {
         [Usage.KILLMARK] : {
             DecalAtMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalAlbedoMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalTransparencyMap : {
                 addressUMode: WrapMode.REPEAT,
                 addressVMode: WrapMode.REPEAT,
                 filterMode: FilterMode.LINEAR,
@@ -302,6 +333,15 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
             DecalAtMap : {
                 addressUMode: WrapMode.CLAMP_TO_EDGE,
                 addressVMode: WrapMode.CLAMP_TO_EDGE,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            // The rotated, scrolling lookup - the container pairs it with the
+            // WRAP sampler. Its partner DecalTransparencyMap keeps the blanket
+            // border, which is what the container's s0 asks for.
+            DecalGlowMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
                 filterMode: FilterMode.LINEAR,
                 mipFilterMode: MipFilterMode.NONE
             }
