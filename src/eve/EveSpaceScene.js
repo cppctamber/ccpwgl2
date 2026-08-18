@@ -2489,17 +2489,44 @@ export class EveSpaceScene extends meta.Model
 
         }
 
-        // ShadowMapSettings and ShadowCameraRange are NOT written into the GLES
-        // per-frame PS. GLES does not use shadows, and the values that were
-        // written there were guesses - the auto-settings branch below wrote
-        // literal zeros through a `enableShadows ? 0 : 0` conditional, which is
-        // its own admission.
+        // These two ARE read on GLES, and reg 19.x is the switch that turns the
+        // shadow term OFF. "GLES does not use shadows" was true of the shadow
+        // CASTERS and false of these registers, and dropping the writes on that
+        // premise did not disable the shadow path - it enabled it, with zeros.
         //
-        // They are real registers on the Carbon side (PerFramePS 18 and 19,
-        // where 19 carries ShadowCameraRange.xy, ShadowLightness and a uint
-        // ShadowQuality), so they must be authored from Carbon's meanings by
-        // the dx11 producer rather than inherited from these slots through
-        // Tw2CarbonData's wholesale copy of regs 0-20.
+        // `quadv5.js:452` gates on `(-cb2[19].x) >= 0.0 ? computed : 1.0`.
+        // `_shadowCameraNear` is 1, so `-1 >= 0` is false and the branch returns
+        // 1.0: full sun, sampler ignored. Leaving the register zero makes
+        // `-0 >= 0` TRUE, taking the computed branch, where
+        // `1.0 / (cb2[19].y - cb2[19].x)` is then a divide by zero. Thirteen
+        // shaders do this - the whole quad family plus decalv5 and
+        // decalcylindricv5 - and every one multiplies its direct sun term by the
+        // result, so a hull keeps only its environment lighting and stops
+        // responding to sunDirection at all. Reg 19.z is ShadowLightness, the
+        // floor under that term; zero removes the floor too.
+        //
+        // The concern that replaced these writes still stands for dx11: regs 18
+        // and 19 carry Carbon meanings (19 is ShadowCameraRange.xy,
+        // ShadowLightness and a uint ShadowQuality) and should be authored by
+        // the Carbon producer rather than inherited through Tw2CarbonData's copy
+        // of regs 0-20. Inheriting them is not right there - but it is strictly
+        // better than inheriting zeros, which is what selects "shadowed".
+        const
+            shadowMapSettings = [
+                this._shadowMapOffsetX,
+                this._shadowMapOffsetY,
+                this._shadowDepthBias,
+                this.shadowFadeThreshold
+            ],
+            shadowCameraRange = [
+                this._shadowCameraNear,
+                this._shadowCameraFar,
+                this._shadowMinimumVisibility,
+                0
+            ];
+
+        this._perFramePS.Set("ShadowMapSettings", shadowMapSettings);
+        this._perFramePS.Set("ShadowCameraRange", shadowCameraRange);
     }
 
     /**

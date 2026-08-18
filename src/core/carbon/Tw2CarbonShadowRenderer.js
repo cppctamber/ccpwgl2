@@ -195,19 +195,28 @@ export class Tw2CarbonShadowRenderer
      */
     ResetOutput()
     {
-        if (!tw2.HasVariable("EveSpaceSceneShadowMap")) return false;
-        const variable = tw2.GetVariable("EveSpaceSceneShadowMap");
-        if (!variable || !variable.SetValue) return false;
-        variable.SetValue(Tw2CarbonShadowRenderer.SHADOW_MAP_NEUTRAL);
+        if (!this._placeholderRes) return false;
+
+        const variable = tw2.HasVariable("EveSpaceSceneShadowMap")
+            ? tw2.GetVariable("EveSpaceSceneShadowMap")
+            : null;
+
+        if (!variable) return false;
+
+        // Restore the res directly, exactly as EveSpaceSceneDepthHandler does.
+        //
+        // NOT SetValue. `AttachTextureRes` sets `_isAttached` and blanks
+        // `resourcePath`, and the reload path is guarded on `!_isAttached`, so
+        // handing the parameter a path back leaves the attached texture in
+        // place - the reset looks like it ran, reports success, and changes
+        // nothing. That is what made the first version of this method a no-op.
+        variable.textureRes = this._placeholderRes;
+        this._placeholderRes = null;
         return true;
     }
 
-    /**
-     * What `EveSpaceSceneShadowMap` means when nothing is shadowing. White,
-     * matching `config.js`.
-     * @type {String}
-     */
-    static SHADOW_MAP_NEUTRAL = "dynamic:/color/1,1,1,1";
+    /** Whatever `EveSpaceSceneShadowMap` pointed at before this renderer took it. */
+    _placeholderRes = null;
 
     /**
      * Creates or resizes the cascade atlas and the resolve target
@@ -540,7 +549,13 @@ export class Tw2CarbonShadowRenderer
         if (tw2.HasVariable("EveSpaceSceneShadowMap"))
         {
             const variable = tw2.GetVariable("EveSpaceSceneShadowMap");
-            if (variable && variable.AttachTextureRes) variable.AttachTextureRes(this._resolve.texture);
+            if (variable && variable.AttachTextureRes)
+            {
+                // Remembered on the FIRST attach only, so a re-attach cannot
+                // overwrite the real placeholder with our own resolve texture.
+                if (!this._placeholderRes) this._placeholderRes = variable.textureRes;
+                variable.AttachTextureRes(this._resolve.texture);
+            }
         }
 
         // The visibility buffer is offscreen - objects sample it, nothing draws
