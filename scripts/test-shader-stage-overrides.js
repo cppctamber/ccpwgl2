@@ -40,11 +40,11 @@ assert.equal(
 
 assert.equal(
     Tw2ShaderStage.inspectShaderCode(
-        "for(int i=0;i<i0.x;++i){}for(int i=0;i<i15.x;++i){}",
+        "for(int i=0;i<i0.x;++i){}for(int i=0;i<i15.x;++i){}gl_FragData[0].w=r4.w;",
         "res:/graphics/effect/managed/interior/avatar/glassshader.fx",
         1
     ),
-    "for(int i=0;i<5;++i){}for(int i=0;i<10;++i){}"
+    "for(int i=0;i<5;++i){}for(int i=0;i<10;++i){}gl_FragData[0].w=0.0;"
 );
 
 console.log("Shader override scoping and loop-fold safety verified");

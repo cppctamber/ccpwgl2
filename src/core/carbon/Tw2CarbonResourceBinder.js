@@ -79,6 +79,25 @@ class Tw2CarbonResourceBinder
 
         this._warnedStrides = {};
 
+        /**
+         * Optional dx11-native per-frame producer, consulted before the
+         * Tw2CarbonData transcode and after any per-object packer.
+         *
+         * A producer implements `PackPerFrameVS(out, gles, device, program)`
+         * and/or `PackPerFramePS(...)`, returning the array to upload (or a
+         * falsy value to use `out`). It exists because Carbon's layout has
+         * registers the legacy GLES layout has no source for at all - the
+         * cascaded shadow block being the case that forced it - so those must
+         * be authored rather than transcoded.
+         *
+         * **A producer owns the whole buffer and must zero it itself.** Unlike
+         * the per-object buffers, the per-frame scratch is not cleared between
+         * applies, so anything left unwritten is last frame's value.
+         *
+         * @type {{PackPerFrameVS?: Function, PackPerFramePS?: Function}|null}
+         */
+        this.perFrameProducer = null;
+
         // Carbon-shaped constant scratch buffers (packed per apply)
         this._perFrameVS = new Float32Array(Tw2CarbonData.PER_FRAME_VS_REGS * 4);
         this._perFramePS = new Float32Array(Tw2CarbonData.PER_FRAME_PS_REGS * 4);
@@ -156,18 +175,36 @@ class Tw2CarbonResourceBinder
             perFrameVSData = frameData && frameData.perFrameVSData || device.perFrameVSData,
             perFramePSData = frameData && frameData.perFramePSData || device.perFramePSData;
 
+        // Three sources for the per-frame buffers, most specific first:
+        //
+        //   1. the draw's own per-object packer, which some objects supply for
+        //      their whole constant set (interiors, EveStretch2);
+        //   2. this binder's per-frame producer, which authors Carbon's layout
+        //      natively for the dx11 path;
+        //   3. Tw2CarbonData, which transcodes the legacy GLES-shaped arrays.
+        //
+        // The order matters in both directions. An object packer must keep
+        // winning or interiors regress, and the producer must sit ABOVE the
+        // transcode rather than beside it — the whole point is to stop deriving
+        // Carbon registers from a layout that has no source for them.
+        const producer = this.perFrameProducer;
+
         if (cbh[1] && perFrameVSData)
         {
             const packed = perObjectPacker?.PackPerFrameVS
                 ? perObjectPacker.PackPerFrameVS(this._perFrameVS, perFrameVSData.data, device, program) || this._perFrameVS
-                : Tw2CarbonData.PackPerFrameVS(this._perFrameVS, perFrameVSData.data);
+                : producer?.PackPerFrameVS
+                    ? producer.PackPerFrameVS(this._perFrameVS, perFrameVSData.data, device, program) || this._perFrameVS
+                    : Tw2CarbonData.PackPerFrameVS(this._perFrameVS, perFrameVSData.data);
             gl.uniform4fv(cbh[1], fitConstantBuffer(packed, program.constantBufferSizes?.[1]));
         }
         if (cbh[2] && perFramePSData)
         {
             const packed = perObjectPacker?.PackPerFramePS
                 ? perObjectPacker.PackPerFramePS(this._perFramePS, perFramePSData.data, device, program) || this._perFramePS
-                : Tw2CarbonData.PackPerFramePS(this._perFramePS, perFramePSData.data);
+                : producer?.PackPerFramePS
+                    ? producer.PackPerFramePS(this._perFramePS, perFramePSData.data, device, program) || this._perFramePS
+                    : Tw2CarbonData.PackPerFramePS(this._perFramePS, perFramePSData.data);
             gl.uniform4fv(cbh[2], fitConstantBuffer(packed, program.constantBufferSizes?.[2]));
         }
 

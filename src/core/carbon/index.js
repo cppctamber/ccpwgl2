@@ -8,3 +8,7 @@ export { Tw2CarbonLightCollector } from "./Tw2CarbonLightCollector";
 export { Tw2CarbonLightCuller } from "./Tw2CarbonLightCuller";
 export { Tw2CarbonLightList } from "./Tw2CarbonLightList";
 export { Tw2CarbonResourceBinder } from "./Tw2CarbonResourceBinder";
+// Tw2CarbonShadowData is absent for the same reason as Tw2CarbonData: it is
+// maths, not a class, and `scripts/test-carbon-shadow.js` requires it directly.
+export { Tw2CarbonShadowProducer } from "./Tw2CarbonShadowProducer";
+export { Tw2CarbonShadowRenderer } from "./Tw2CarbonShadowRenderer";
