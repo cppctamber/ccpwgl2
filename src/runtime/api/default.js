@@ -3,6 +3,7 @@ import { TnyCharacterApiProvider } from "./providers/TnyCharacterApiProvider";
 import { TnyESIApiProvider } from "./providers/TnyESIApiProvider";
 import { TnySDEApiProvider } from "./providers/TnySDEApiProvider";
 import { TnySkinApiProvider } from "./providers/TnySkinApiProvider";
+import { TnySkinrApiProvider } from "./providers/TnySkinrApiProvider";
 import { TnyToolsApiProvider } from "./providers/TnyToolsApiProvider";
 
 
@@ -17,6 +18,9 @@ export function createApiService(options = {})
             toolsService: options.toolsService,
             typeProvider: esi
         }, options.skinOptions)),
+        skinr = options.skinr || options.skinrProvider || new TnySkinrApiProvider(Object.assign({
+            toolsService: options.toolsService
+        }, options.skinrOptions)),
         characterLibrary = options.characterLibrary || options.characterProvider
             || new TnyCharacterApiProvider(Object.assign({
                 toolsService: options.toolsService
@@ -24,13 +28,13 @@ export function createApiService(options = {})
         tools = options.tools || options.toolsProvider
             || new TnyToolsApiProvider(options.toolsOptions || {});
 
-    return new TnyApiService(Object.assign({}, options, { esi, sde, skin, characterLibrary, tools }));
+    return new TnyApiService(Object.assign({}, options, { esi, sde, skin, skinr, characterLibrary, tools }));
 }
 
 export function createToolsServiceConfig(bootstrap, options = {})
 {
     const
-        target = options.target || "ccp",
+        target = options.target || "eve",
         apiRoot = TnyCharacterApiProvider.BuildToolsServiceRoot(
             bootstrap,
             Object.assign({}, options, { target })

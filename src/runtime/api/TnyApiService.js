@@ -9,6 +9,7 @@ export class TnyApiService extends meta.Model
     esi = null;
     sde = null;
     skin = null;
+    skinr = null;
     characterLibrary = null;
     tools = null;
     providers = [];
@@ -20,6 +21,7 @@ export class TnyApiService extends meta.Model
         const esi = options.esi || options.esiProvider,
             sde = options.sde || options.sdeProvider,
             skin = options.skin || options.skinProvider,
+            skinr = options.skinr || options.skinrProvider,
             characterLibrary = options.characterLibrary || options.characterProvider,
             tools = options.tools || options.toolsProvider;
 
@@ -36,6 +38,11 @@ export class TnyApiService extends meta.Model
         if (skin)
         {
             this.SetSkinProvider(skin);
+        }
+
+        if (skinr)
+        {
+            this.SetSkinrProvider(skinr);
         }
 
         if (characterLibrary)
@@ -64,7 +71,7 @@ export class TnyApiService extends meta.Model
 
         this[name] = provider || null;
 
-        if ([ "esi", "sde", "skin", "characterLibrary", "tools" ].includes(name))
+        if ([ "esi", "sde", "skin", "skinr", "characterLibrary", "tools" ].includes(name))
         {
             this.LinkProviders();
         }
@@ -105,6 +112,16 @@ export class TnyApiService extends meta.Model
     GetSkinProvider()
     {
         return this.GetProvider("skin");
+    }
+
+    SetSkinrProvider(provider)
+    {
+        return this.SetProvider("skinr", provider);
+    }
+
+    GetSkinrProvider()
+    {
+        return this.GetProvider("skinr");
     }
 
     SetCharacterProvider(provider)
@@ -381,9 +398,31 @@ export class TnyApiService extends meta.Model
         return this.RequestFrom("skin", "GetTypeIDSkinIDs", ...args);
     }
 
+    /**
+     * SKINR reads go to the skinr provider when one is registered, and
+     * otherwise to the skin provider's legacy accessor - which is where they
+     * lived while `TnySkinrApiProvider` was parked outside the bundle. Keeping
+     * the fallback means an api service built without a skinr provider behaves
+     * exactly as it did before that provider was promoted.
+     */
     GetSkinr(...args)
     {
-        return this.RequestFrom("skin", "GetSkinr", ...args);
+        return this.RequestFrom(this.skinr ? "skinr" : "skin", "GetSkinr", ...args);
+    }
+
+    GetSkinrPattern(...args)
+    {
+        return this.RequestFrom("skinr", "GetSkinrPattern", ...args);
+    }
+
+    GenerateSkinrDna(...args)
+    {
+        return this.RequestFrom("skinr", "GenerateDna", ...args);
+    }
+
+    GenerateSkinrDnaFromId(...args)
+    {
+        return this.RequestFrom("skinr", "GenerateDnaFromId", ...args);
     }
 
     LookupName(...args)
