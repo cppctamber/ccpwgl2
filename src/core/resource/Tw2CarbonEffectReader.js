@@ -203,8 +203,22 @@ export class Tw2CarbonShaderFactory
                 techniqueName: glslStage.techniqueName || "Main",
                 passIndex: glslStage.passIndex || 0,
                 vertex: null,
-                pixel: null
+                pixel: null,
+                states: null
             };
+
+            // Every stage of a pass reports the same pass-level state table.
+            // Taking the first non-empty one means a pass survives a stage that
+            // was read without them.
+            //
+            // `states` matches Tw2ShaderPass.states, the CCP-binary reader and
+            // the gles2 shader definitions. Carbon reserves `renderStates` for
+            // the handle RegisterRenderStateSetup returns, which nothing on this
+            // path produces.
+            if (!grouped[key].states?.length && glslStage.states?.length)
+            {
+                grouped[key].states = glslStage.states;
+            }
 
             grouped[key][glslStage.stageName] = {
                 glslStage,
@@ -232,6 +246,15 @@ export class Tw2CarbonShaderFactory
 
         const pass = new Tw2ShaderPass();
         pass.isCarbon = true;
+        // The D3D render states the pass was authored with. Nothing in the
+        // GLSL implies them, so without this a Carbon effect draws under
+        // whatever state the previous batch left set. The decal family is the
+        // clearest case: decalv5/decalholev5/decalcylindricv5 blend
+        // SRCALPHA/INVSRCALPHA, while decalglowv5, decalglowcylindricv5 and
+        // decalcounterv5 blend ONE/ONE and write alpha 0 - so an additive decal
+        // inheriting the src-alpha state multiplies itself away and renders
+        // nothing at all, which is exactly how those three failed.
+        pass.SetStates(group.states);
         pass.stages[0] = this._createStage(group.vertex, STAGE_VERTEX, path);
         pass.stages[1] = this._createStage(group.pixel, STAGE_FRAGMENT, path);
         pass.shaderProgram = Tw2ShaderProgram.create(
