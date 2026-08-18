@@ -175,20 +175,33 @@ export class Tw2ShaderStore extends Tw2GenericStore
     {
         if (!shaderPath) return null;
 
+        // These overrides are hand-written GLES2 shaders. They stand in for
+        // one compiled profile and must never reach another: a gles2 body
+        // carries none of the conventions a translated dx11 body relies on -
+        // no emitter depth-range fixup, Carbon's b1-b4 register layouts, or
+        // the Carbon binder's uploads - so substituting one into a
+        // dx11/webgl2 scene produces a shader that links and draws wrongly
+        // rather than one that fails.
+        //
+        // Gated BEFORE normalization, deliberately. NormalizeShaderName
+        // rewrites an unresolved `/effect/` path to `/effect.gles2/` so a
+        // definition can declare `replaces` either way, and gating after it
+        // would let an unqualified path acquire gles2 and match. Tw2Effect
+        // already resolves the profile before calling here; this makes the
+        // store independent of that rather than reliant on it.
+        //
+        // Lower-cased because running before NormalizeShaderName means running
+        // before its `toLowerCase`. Resource paths are lower case by
+        // convention, so a mixed-case one would pass every other check and
+        // fail only here - and it would fail OPEN, silently declining an
+        // override that should have applied.
+        if (!shaderPath.toLowerCase().includes(this.constructor.OVERRIDE_EFFECT_DIR)) return null;
+
+        // `.sm_json` is not handled: a manual path is one an override already
+        // produced, so re-entering would resolve an override against itself.
         const ext = shaderPath.substring(shaderPath.lastIndexOf(".")).toLowerCase();
         switch(ext)
         {
-            case ".sm_json":
-                if (shaderPath.indexOf("manual:/") === 0)
-                {
-                    const name = this.constructor.NormalizeShaderName(shaderPath);
-                    if (this.Has(name))
-                    {
-                        return { path: shaderPath, shader: this.Get(name) };
-                    }
-                }
-                break;
-
             case ".fx":
             case ".sm_hi":
             case ".sm_lo":
@@ -303,6 +316,13 @@ export class Tw2ShaderStore extends Tw2GenericStore
             .replace("/effect/", "/effect.gles2/")
             .toLowerCase();
     }
+
+    /**
+     * The only compiled-effect profile directory these overrides may replace.
+     * Matches Tw2Device.EffectProfiles["effect.gles2"].
+     * @type {String}
+     */
+    static OVERRIDE_EFFECT_DIR = "/effect.gles2/";
 
     /**
      * The store's name
