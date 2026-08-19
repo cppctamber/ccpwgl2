@@ -8,6 +8,7 @@ import {
     attachLegacyBodyNormal,
     attachLegacyBodySpecular,
     TnyGlesAtlasComposer,
+    commitLegacyConfiguredAccessoryBindings,
     commitLegacyConfiguredConsumerBindings,
     commitLegacyConfiguredHairBindings,
     commitLegacyConfiguredHeadwearBindings,
@@ -31,6 +32,7 @@ import {
     planLegacySelectedTopDrapeSupport,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredAccessoryConsumers,
     resolveLegacyConfiguredAccessoryMaterial,
     resolveLegacyConfiguredMaterialOnlyAccessory,
     resolveLegacyConfiguredGarmentDiffuseContribution,
@@ -4265,6 +4267,140 @@ test("configured accessory binds one exact private target and stays out of garme
     const garmentReport = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
     assert.deepEqual(garmentReport.applied, []);
     assert.deepEqual(garmentReport.deferred, []);
+});
+
+test("configured accessory atomically materializes an authored transparent glass partition", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const frame = AtomicEffectFixture({
+        texture: { path: "#frame-proof" },
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    frame._characterGarmentMaterialFallback = true;
+    frame.name = "C_S2_Frame";
+    const glass = AtomicEffectFixture({
+        texture: { path: "#glass-empty" },
+        transform: [ 0.75, 0.5, 0.875, 0.75 ],
+        materialDiffuseColor: [ 0.25, 0.25, 0.25, 1 ],
+        glassTransparencyColor: [ 0.4, 0.5, 0.6, 0.35 ]
+    });
+    glass.name = "C_Custom_Glass";
+    glass.effectFilePath =
+        "res:/graphics/effect.gles2/managed/interior/avatar/glassshader.sm_hi";
+    glass._characterAuthoredEffectFilePath =
+        "res:/graphics/effect/managed/interior/avatar/glassshader.fx";
+    glass._characterAuthoredTexturePaths = {};
+    glass.IsGood = () => true;
+    for (const [ name, value ] of [
+        [ "GlassOptions", [ 0, 0, 1, 400 ] ],
+        [ "GlassTransparencyOptions", [ 1, 0, 0, 0 ] ],
+        [ "GlassOptions2", [ 0, 1, 0, 0 ] ]
+    ])
+    {
+        glass.parameters[name] = ConstantVectorParameterFixture(value);
+    }
+    const mesh = MeshFixture(frame, {
+        transparentAreas: [ { name: "lens", index: 1, effect: glass } ]
+    });
+    const consumers = resolveLegacyConfiguredAccessoryConsumers([ mesh ]);
+    assert.deepEqual(consumers.materialEffects, [ frame ]);
+    assert.deepEqual(consumers.glassEffects, [ glass ]);
+    assert.deepEqual(consumers.hybridEffects, []);
+    assert.deepEqual(consumers.retainedEffects, []);
+    assert.deepEqual(consumers.deferredConsumers, []);
+
+    const part = {
+        partIndex: 34,
+        groupID: "accessories/glasses",
+        partSourceRecordID: "male/accessories/glasses/private-frame-glass",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const contribution = {
+        partIndex: part.partIndex,
+        groupID: part.groupID,
+        source: {
+            partSourceRecordID: part.partSourceRecordID,
+            materialDefinitionPath: "res:/glasses/clear.color"
+        },
+        materialValues: {
+            colors: [ [ 1, 1, 1, 1 ], [ 0.2, 0.3, 0.4, 1 ], [ 0.1, 0.1, 0.1, 1 ] ]
+        },
+        selectedTextures: [
+            { path: "res:/glasses/colorize_acc_l.png", role: "colorize-layer", target: "acc" },
+            { path: "res:/glasses/colorize_acc_z.png", role: "colorize-zones", target: "acc" },
+            { path: "res:/glasses/normal_n.png", role: "normal-source", target: "acc" },
+            { path: "res:/glasses/specular_s.png", role: "specular-source", target: "acc" }
+        ]
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ part ],
+        configuredPartBindings: [ { configuredPart: part, configuredMeshes: [ mesh ] } ],
+        textureContributions: [ contribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredAccessoryMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied[0].realizationStatus, "complete");
+    assert.deepEqual(report.applied[0].consumerPartitions, {
+        privateMaterial: 1,
+        transparentGlass: 1,
+        retainedAuthored: 0,
+        deferred: 0
+    });
+    assert.equal(report.applied[0].attachedEffects, 2);
+    assert.equal(report.applied[0].surface.materialBinding.glassEffects, 1);
+    assert.equal(report.applied[0].surface.materialBinding.glass[0].effectName, "C_Custom_Glass");
+    assert.strictEqual(frame.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.strictEqual(glass.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.strictEqual(glass.parameters.NormalMap.textureRes, staged.compositionTargets[1].texture);
+    assert.strictEqual(glass.parameters.SpecularMap.textureRes, staged.compositionTargets[2].texture);
+    assert.deepEqual(frame.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(glass.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(glass.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.deepEqual(glass.glassTransparencyColor, [ 0.4, 0.5, 0.6, 0.35 ]);
+    assert.deepEqual(glass.stateOverrides, []);
+});
+
+test("configured accessory glass binding rolls every consumer back on failure", async () =>
+{
+    AtlasComposerFixture();
+    const target = { path: "#private-accessory", IsGood: () => true };
+    const frameTexture = { path: "#frame-before" };
+    const glassTexture = { path: "#glass-before" };
+    const frame = AtomicEffectFixture({
+        texture: frameTexture,
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    const glass = AtomicEffectFixture({
+        texture: glassTexture,
+        transform: [ 0.75, 0.5, 0.875, 0.75 ],
+        materialDiffuseColor: [ 0.3, 0.4, 0.5, 1 ],
+        glassTransparencyColor: [ 0.6, 0.7, 0.8, 0.2 ],
+        rejectTexture: target
+    });
+
+    await assert.rejects(() => commitLegacyConfiguredAccessoryBindings(
+        [ frame ],
+        [ glass ],
+        target,
+        {
+            NormalMap: { textureRes: { path: "#normal" }, sourcePath: "res:/normal.png" },
+            SpecularMap: { textureRes: { path: "#specular" }, sourcePath: "res:/specular.png" }
+        }
+    ), /fixture texture rejection/u);
+    assert.strictEqual(frame.parameters.DiffuseMap.textureRes, frameTexture);
+    assert.strictEqual(glass.parameters.DiffuseMap.textureRes, glassTexture);
+    assert.deepEqual(frame.transform, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(glass.transform, [ 0.75, 0.5, 0.875, 0.75 ]);
+    assert.deepEqual(frame.materialDiffuseColor, [ 1, 0, 1, 1 ]);
+    assert.deepEqual(glass.materialDiffuseColor, [ 0.3, 0.4, 0.5, 1 ]);
+    assert.deepEqual(glass.glassTransparencyColor, [ 0.6, 0.7, 0.8, 0.2 ]);
 });
 
 test("configured accessory binds one exact baked D/N/S target", async () =>

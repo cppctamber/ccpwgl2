@@ -872,7 +872,7 @@ export class TnyGlesAtlasComposer
         const report = {
             status: "deferred",
             rule: "legacy-opengl-configured-accessory-material-v2",
-            correctness: "retained-source-policy-live-proof-pending",
+            correctness: "retained-source-policy-live-proof",
             applied: [],
             deferred: []
         };
@@ -884,13 +884,13 @@ export class TnyGlesAtlasComposer
 
             const contribution = staged.textureContributions?.find(value =>
                 value.partIndex === part?.partIndex);
-            const allEffects = GetEffects(binding?.configuredMeshes ?? []);
-            const effects = allEffects.filter(effect =>
-                effect?._characterGarmentMaterialFallback === true);
-            const hybridEffects = allEffects.filter(effect =>
-                effect?._characterGarmentBodyFallback === true
-                && !effect?._characterFoundationReplacementRole);
-            if (!effects.length && !hybridEffects.length) continue;
+            const consumers = resolveLegacyConfiguredAccessoryConsumers(
+                binding?.configuredMeshes ?? []
+            );
+            const effects = consumers.materialEffects;
+            const glassEffects = consumers.glassEffects;
+            const hybridEffects = consumers.hybridEffects;
+            if (!effects.length && !hybridEffects.length && !glassEffects.length) continue;
             if (hybridEffects.length)
             {
                 report.deferred.push({
@@ -967,7 +967,8 @@ export class TnyGlesAtlasComposer
                 effects,
                 targetSize,
                 `private-accessory-${resolved.target}`,
-                resolved.materialChannels
+                resolved.materialChannels,
+                { glassEffects }
             );
             if (![ "applied", "partial" ].includes(surface.status))
             {
@@ -981,7 +982,8 @@ export class TnyGlesAtlasComposer
                 continue;
             }
 
-            const partial = surface.status === "partial";
+            const deferredConsumerCount = consumers.deferredConsumers.length;
+            const partial = surface.status === "partial" || deferredConsumerCount > 0;
             const diffuseMode = resolved.candidate.mode === "baked-direct"
                 ? "baked"
                 : "colorized";
@@ -989,14 +991,24 @@ export class TnyGlesAtlasComposer
             part.compositionStatus = `configured-accessory-${diffuseMode}-${partial ? "partial" : "attached"}`;
             if (partial)
             {
-                report.deferred.push({
+                if (surface.status === "partial")
+                {
+                    report.deferred.push({
+                        partIndex: part.partIndex,
+                        groupID: part.groupID,
+                        partSourceRecordID: part.partSourceRecordID,
+                        target: resolved.target,
+                        channel: "lighting",
+                        reason: surface.reason
+                    });
+                }
+                report.deferred.push(...consumers.deferredConsumers.map(value => ({
                     partIndex: part.partIndex,
                     groupID: part.groupID,
                     partSourceRecordID: part.partSourceRecordID,
                     target: resolved.target,
-                    channel: "lighting",
-                    reason: surface.reason
-                });
+                    ...value
+                })));
             }
             report.applied.push({
                 partIndex: part.partIndex,
@@ -1013,9 +1025,15 @@ export class TnyGlesAtlasComposer
                 targetSize,
                 realizationStatus: partial ? "partial" : "complete",
                 attachedEffects: surface.attachedEffects,
+                consumerPartitions: {
+                    privateMaterial: effects.length,
+                    transparentGlass: glassEffects.length,
+                    retainedAuthored: consumers.retainedEffects.length,
+                    deferred: deferredConsumerCount
+                },
                 bindings: DescribeConfiguredGarmentBindings(
                     binding.configuredMeshes,
-                    effects
+                    [ ...effects, ...glassEffects ]
                 ),
                 surface
             });
@@ -2434,7 +2452,8 @@ export class TnyGlesAtlasComposer
         effects,
         targetSize,
         surface,
-        materialChannels
+        materialChannels,
+        { glassEffects = [] } = {}
     )
     {
         let target = null;
@@ -2504,23 +2523,31 @@ export class TnyGlesAtlasComposer
                     surface
                 )
                 : null;
-            const binding = await commitLegacyConfiguredGarmentBindings(
-                effects,
-                target.texture,
-                lighting
-                    ? {
-                        NormalMap: {
-                            textureRes: lighting.normalTarget.texture,
-                            sourcePath: materialChannels.normalPath
-                        },
-                        SpecularMap: {
-                            textureRes: lighting.specularTarget.texture,
-                            sourcePath: materialChannels.specularPath
-                        }
+            const textureBindings = lighting
+                ? {
+                    NormalMap: {
+                        textureRes: lighting.normalTarget.texture,
+                        sourcePath: materialChannels.normalPath
+                    },
+                    SpecularMap: {
+                        textureRes: lighting.specularTarget.texture,
+                        sourcePath: materialChannels.specularPath
                     }
-                    : {},
-                { alphaTest: hybrid }
-            );
+                }
+                : {};
+            const binding = glassEffects.length
+                ? await commitLegacyConfiguredAccessoryBindings(
+                    effects,
+                    glassEffects,
+                    target.texture,
+                    textureBindings
+                )
+                : await commitLegacyConfiguredGarmentBindings(
+                    effects,
+                    target.texture,
+                    textureBindings,
+                    { alphaTest: hybrid }
+                );
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(
                 target,
@@ -4451,6 +4478,107 @@ export function resolveLegacyConfiguredAccessoryMaterial(contribution)
         },
         retainedCutMasks: selected.filter(value => value?.target === target
             && value?.role === "cut-mask").map(value => value.path)
+    };
+}
+
+/**
+ * Partitions visible configured-accessory consumers by their decoded material
+ * contract. A retained GlassShader is eligible only on an authored transparent
+ * area with empty private D/N/S samplers and the complete glass parameter set;
+ * an effect or accessory family name is not sufficient evidence.
+ */
+export function resolveLegacyConfiguredAccessoryConsumers(meshes)
+{
+    const materialEffects = [];
+    const glassEffects = [];
+    const hybridEffects = [];
+    const retainedEffects = [];
+    const deferredConsumers = [];
+    const seenEffects = new Set();
+    const fields = [
+        "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas",
+        "depthAreas", "depthNormalAreas", "distortionAreas", "pickableAreas"
+    ];
+
+    for (const mesh of meshes ?? [])
+    {
+        for (const field of fields)
+        {
+            for (const area of mesh?.[field] ?? [])
+            {
+                const effect = area?.effect;
+                if (!effect || area.display === false || seenEffects.has(effect)) continue;
+                seenEffects.add(effect);
+
+                if (effect._characterGarmentMaterialFallback === true)
+                {
+                    materialEffects.push(effect);
+                    continue;
+                }
+                if (effect._characterGarmentBodyFallback === true
+                    && !effect._characterFoundationReplacementRole)
+                {
+                    hybridEffects.push(effect);
+                    continue;
+                }
+
+                const effectPath = String(
+                    effect._characterAuthoredEffectFilePath
+                    || effect.effectFilePath
+                    || ""
+                ).replaceAll("\\", "/");
+                const authoredTexturePaths = effect._characterAuthoredTexturePaths ?? {};
+                const hasAuthoredTextureSnapshot = effect._characterAuthoredTexturePaths
+                    !== undefined;
+                const hasPrivateSamplers = [ "DiffuseMap", "NormalMap", "SpecularMap" ]
+                    .every(name => typeof effect?.parameters?.[name]?.AttachTextureRes === "function");
+                const hasAuthoredPrivateTexture = [ "DiffuseMap", "NormalMap", "SpecularMap" ]
+                    .some(name => /^res:\//iu.test(String(hasAuthoredTextureSnapshot
+                        ? authoredTexturePaths[name] ?? ""
+                        : ReadTexturePath(effect?.parameters?.[name]))));
+                const glassParameters = [
+                    "GlassOptions",
+                    "GlassTransparencyColor",
+                    "GlassTransparencyOptions",
+                    "GlassOptions2"
+                ];
+                const retainedGlass = field === "transparentAreas"
+                    && /\/glassshader\.(?:fx|sm_[a-z0-9_]+)$/iu.test(effectPath)
+                    && effect.IsGood?.() === true
+                    && hasPrivateSamplers
+                    && !hasAuthoredPrivateTexture
+                    && glassParameters.every(name => HasEffectParameter(effect, name));
+                if (retainedGlass)
+                {
+                    glassEffects.push(effect);
+                    continue;
+                }
+
+                const retainedDiffusePath = ReadTexturePath(effect?.parameters?.DiffuseMap);
+                if (effect.IsGood?.() === true && /^res:\//iu.test(retainedDiffusePath))
+                {
+                    retainedEffects.push(effect);
+                    continue;
+                }
+
+                deferredConsumers.push({
+                    areaField: field,
+                    effectName: String(effect?.name ?? ""),
+                    effectPath: effectPath || null,
+                    reason: /\/glassshader\./iu.test(effectPath)
+                        ? "configured-accessory-glass-contract-unresolved"
+                        : "configured-accessory-consumer-unresolved"
+                });
+            }
+        }
+    }
+
+    return {
+        materialEffects,
+        glassEffects,
+        hybridEffects,
+        retainedEffects,
+        deferredConsumers
     };
 }
 
@@ -8144,6 +8272,125 @@ export async function commitLegacyConfiguredGarmentBindings(
     catch (cause)
     {
         const rollbackFailures = [ ...RestoreTechniquePassStates(stateSnapshots) ];
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+/**
+ * Atomically binds one reconstructed accessory tuple to its private BRDF
+ * consumers and to independently authored transparent GlassShader consumers.
+ * Both partitions sample the private target directly; the transparent shader
+ * retains its authored parameters and render-state contract.
+ */
+export async function commitLegacyConfiguredAccessoryBindings(
+    materialEffects,
+    glassEffects,
+    texture,
+    textureBindings = {}
+)
+{
+    materialEffects = Unique(materialEffects);
+    glassEffects = Unique(glassEffects);
+    const allEffects = Unique([ ...materialEffects, ...glassEffects ]);
+    const entries = Object.entries(textureBindings);
+    if (!materialEffects.length || !glassEffects.length || !texture
+        || materialEffects.some(effect => glassEffects.includes(effect)))
+    {
+        throw new TypeError(
+            "Configured accessory bindings require distinct private-material and glass consumers"
+        );
+    }
+    for (const [ name, binding ] of entries)
+    {
+        if (![ "NormalMap", "SpecularMap" ].includes(name)
+            || !binding?.textureRes
+            || !/^res:\//iu.test(String(binding?.sourcePath ?? "")))
+        {
+            throw new TypeError(
+                "Configured accessory lighting bindings require retained NormalMap/SpecularMap sources"
+            );
+        }
+    }
+
+    const snapshots = allEffects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name))
+    }));
+
+    try
+    {
+        for (const effect of allEffects)
+        {
+            if (!SetIdentityTransformUV0(effect))
+            {
+                throw new Error("Configured accessory consumer does not accept TransformUV0");
+            }
+            effect.parameters.DiffuseMap.AttachTextureRes(texture);
+            const diffuseColor = effect.parameters?.MaterialDiffuseColor;
+            if (typeof diffuseColor?.SetValue === "function")
+            {
+                diffuseColor.SetValue([ 1, 1, 1, 1 ]);
+            }
+            else if (diffuseColor && typeof effect.SetParameters === "function")
+            {
+                effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] });
+            }
+            else if (diffuseColor)
+            {
+                throw new Error("Configured accessory cannot set MaterialDiffuseColor");
+            }
+            for (const [ name, binding ] of entries)
+            {
+                const parameter = effect?.parameters?.[name];
+                if (typeof parameter?.AttachTextureRes !== "function")
+                {
+                    throw new Error(`Configured accessory does not accept ${name}`);
+                }
+                parameter.AttachTextureRes(binding.textureRes);
+            }
+        }
+
+        for (const effect of allEffects)
+        {
+            await tw2.resMan?.Watch?.(effect);
+            if (effect?.IsGood?.() === false)
+            {
+                throw new Error("Configured accessory effect failed to prepare");
+            }
+            for (const [ name ] of entries)
+            {
+                if (effect.parameters[name]?.IsGood?.() === false)
+                {
+                    throw new Error(`Configured accessory ${name} failed to prepare`);
+                }
+            }
+        }
+
+        return {
+            status: "applied",
+            rule: "configured-accessory-private-and-glass-consumers-v1",
+            correctness: "retained-source-policy-live-proof",
+            attachedEffects: allEffects.length,
+            materialEffects: materialEffects.length,
+            glassEffects: glassEffects.length,
+            texturePaths: Object.fromEntries(entries.map(([ name, binding ]) => [
+                name,
+                binding.sourcePath
+            ])),
+            alphaPolicy: "authored-area-and-glass-shader-state",
+            glass: glassEffects.map(effect => DescribeConfiguredGlassEffect(effect, null))
+        };
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
         for (const snapshot of [ ...snapshots ].reverse())
         {
             rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));

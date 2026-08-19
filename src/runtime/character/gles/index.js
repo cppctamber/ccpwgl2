@@ -2,6 +2,7 @@ export { TnyGlesAppearanceConstruction } from "./TnyGlesAppearanceConstruction.j
 export {
     TnyGlesAtlasComposer,
     attachLegacyBodyDiffuse,
+    commitLegacyConfiguredAccessoryBindings,
     commitLegacyConfiguredConsumerBindings,
     commitLegacyConfiguredGarmentBindings,
     commitLegacyConfiguredMaterialOnlyAccessoryBindings,
@@ -20,6 +21,7 @@ export {
     planLegacyExactFemaleUpperSleeve,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredAccessoryConsumers,
     resolveLegacyConfiguredAccessoryMaterial,
     resolveLegacyConfiguredMaterialOnlyAccessory,
     resolveLegacyGarmentMaterialChannels,

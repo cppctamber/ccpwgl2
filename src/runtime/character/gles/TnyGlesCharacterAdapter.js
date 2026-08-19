@@ -1189,6 +1189,7 @@ export class TnyGlesCharacterAdapter
                 retainDeferredTextureConsumers:
                     operation.groupID === "makeup/eyebrowbase"
                     || operation.groupID === "hair"
+                    || operation.groupID.startsWith("accessories/")
             }
         );
 

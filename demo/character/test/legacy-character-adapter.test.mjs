@@ -1762,6 +1762,36 @@ test("legacy adapter retains a prepared glass effect with runtime-filled texture
     adapter.Release(staged);
 });
 
+test("legacy adapter retains a prepared accessory glass effect for atomic materialization", async () =>
+{
+    const glassPath =
+        "res:/graphics/effect.gles2/managed/interior/avatar/glassshader.sm_hi";
+    const fixture = CreateFixture({
+        configuredEffectFilePath: glassPath,
+        configuredDiffusePath: "",
+        configuredDeferredTextureConsumer: true
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const construction = CreateAppearanceConstruction();
+    construction.textureContributions[0].groupID = "accessories/glasses";
+    construction.operations.find(value => value.operation === "configured-part").groupID =
+        "accessories/glasses";
+    const staged = await adapter.Prepare(construction);
+    const effect = fixture.configuredModels[0].meshes[0].opaqueAreas[0].effect;
+
+    assert.equal(effect.effectFilePath, glassPath);
+    assert.equal(effect._characterAuthoredEffectFilePath, glassPath);
+    assert.deepEqual(effect._characterAuthoredTexturePaths, {});
+    assert.equal(effect._characterProofFallback, undefined);
+    assert.equal(staged.configuredParts[0].proofFallbackEffectCount, 0);
+
+    adapter.Release(staged);
+});
+
 test("legacy adapter retains an effective reflected cut-mask constant", async () =>
 {
     const fixture = CreateFixture({
