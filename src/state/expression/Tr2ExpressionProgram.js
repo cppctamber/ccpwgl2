@@ -783,20 +783,20 @@ const DEFAULT_FUNCTIONS = {
     // Server clock family (`Tr2ControllerExpression.cpp:238-454`). EVE authors
     // seasonal and event content against these; without them the whole
     // condition failed to compile and the transition was silently dead.
-    ServerYear: () => GetServerTimeParts().year,
-    ServerMonth: () => GetServerTimeParts().month,
-    ServerDay: () => GetServerTimeParts().day,
-    ServerDayOfWeek: () => GetServerTimeParts().dayOfWeek,
-    ServerHour: () => GetServerTimeParts().hour,
-    ServerMinute: () => GetServerTimeParts().minute,
-    ServerSecond: () => GetServerTimeParts().second,
-    IsWeekend: () => GetServerTimeParts().dayOfWeek % 6 === 0 ? 1 : 0,
-    ServerTimePhase: (ctx, period) => ServerTimePhase(ToNumber(period)),
-    ServerTimeGreaterThan: (ctx, ...args) => ServerTimeComparison(args, (a, b) => a > b, (a, b) => a < b),
-    ServerTimeLessThanOrEqual: (ctx, ...args) => ServerTimeComparison(args, (a, b) => a < b, (a, b) => a > b),
-    ServerTimeEqual: (ctx, ...args) => ServerTimeComparison(args, () => false, (a, b) => a !== b),
+    ServerYear: ctx => GetServerTimeParts(ctx).year,
+    ServerMonth: ctx => GetServerTimeParts(ctx).month,
+    ServerDay: ctx => GetServerTimeParts(ctx).day,
+    ServerDayOfWeek: ctx => GetServerTimeParts(ctx).dayOfWeek,
+    ServerHour: ctx => GetServerTimeParts(ctx).hour,
+    ServerMinute: ctx => GetServerTimeParts(ctx).minute,
+    ServerSecond: ctx => GetServerTimeParts(ctx).second,
+    IsWeekend: ctx => GetServerTimeParts(ctx).dayOfWeek % 6 === 0 ? 1 : 0,
+    ServerTimePhase: (ctx, period) => ServerTimePhase(ctx, ToNumber(period)),
+    ServerTimeGreaterThan: (ctx, ...args) => ServerTimeComparison(ctx, args, (a, b) => a > b, (a, b) => a < b),
+    ServerTimeLessThanOrEqual: (ctx, ...args) => ServerTimeComparison(ctx, args, (a, b) => a < b, (a, b) => a > b),
+    ServerTimeEqual: (ctx, ...args) => ServerTimeComparison(ctx, args, () => false, (a, b) => a !== b),
     DaysSinceServerTime: (ctx, year = -1, month = -1, day = -1) =>
-        DaysSinceServerTime(ToNumber(year), ToNumber(month), ToNumber(day))
+        DaysSinceServerTime(ctx, ToNumber(year), ToNumber(month), ToNumber(day))
 };
 
 const SHADER_QUALITY = { lo: 0, hi: 1, depth: 2 };
@@ -850,22 +850,37 @@ const FILETIME_EPOCH_OFFSET_MS = 11644473600000;
  * The server calendar, in the field conventions Carbon's expressions use:
  * full year, month 1-12, day of month 1-31, day of week 0 = Sunday.
  *
- * Read in UTC. Carbon's own family is UTC on Windows - `FileTimeToSystemTime`
- * does no timezone conversion - and accidentally LOCAL time on its other
- * platform branch, which uses `localtime` where the rest of the codebase uses
- * `gmtime`. EVE server time is UTC and the shipping client is the Windows one,
- * so the Windows behaviour is the one worth having; the other branch is a
- * Carbon defect, deliberately not reproduced.
+ * Read in UTC, always. A browser's only clock is the machine's, in the
+ * player's timezone: reading local fields would give every player a different
+ * answer to `IsWeekend()` and would start an event at a different moment in
+ * each timezone. EVE server time is UTC, so the UTC fields are the only ones
+ * that mean anything here.
  *
- * `Tr2ExpressionProgram.SERVER_TIME_OVERRIDE` stands in for Carbon's
- * `controllerServerTime` setting: assign a Date or epoch-ms to pin the clock
- * when testing seasonal content.
+ * That matches Carbon's Windows path, where `FileTimeToSystemTime` does no
+ * timezone conversion. Carbon's other platform branch uses `localtime` where
+ * the rest of that codebase uses `gmtime` - a defect, deliberately not
+ * reproduced.
  *
+ * A machine clock is still not the server's, and a browser cannot ask the
+ * server itself, so an embedder that knows the real time may supply it. In
+ * order of precedence:
+ *
+ *   context.serverTime                  - a Date or epoch-ms on the eval context
+ *   context.functions.GetServerTime()   - a context-supplied clock function
+ *   context.owner.GetServerTime()       - the object being animated
+ *   Tr2ExpressionProgram.SERVER_TIME_OVERRIDE  - a global pin, for testing
+ *   the machine clock
+ *
+ * The first three are per-evaluation, which is what Carbon's settable
+ * `controllerServerTime` is for and what lets two scenes disagree; the static
+ * is the blunt instrument for pinning a date while authoring.
+ *
+ * @param {Object} [context]
  * @returns {{year: Number, month: Number, day: Number, dayOfWeek: Number, hour: Number, minute: Number, second: Number}}
  */
-function GetServerTimeParts()
+function GetServerTimeParts(context)
 {
-    const date = GetServerDate();
+    const date = GetServerDate(context);
     return {
         year: date.getUTCFullYear(),
         month: date.getUTCMonth() + 1,
@@ -878,12 +893,44 @@ function GetServerTimeParts()
 }
 
 /**
+ * Resolves the clock the Server* builtins read. See `GetServerTimeParts` for
+ * the precedence and why an embedder-supplied time matters in a browser.
+ * @param {Object} [context]
  * @returns {Date}
  */
-function GetServerDate()
+function GetServerDate(context)
 {
+    const supplied = GetSuppliedServerTime(context);
+    if (supplied !== undefined && supplied !== null) return new Date(supplied);
+
     const override = Tr2ExpressionProgram.SERVER_TIME_OVERRIDE;
     return override === null || override === undefined ? new Date() : new Date(override);
+}
+
+/**
+ * @param {Object} [context]
+ * @returns {Date|Number|undefined}
+ */
+function GetSuppliedServerTime(context)
+{
+    if (!context) return undefined;
+
+    if (context.serverTime !== undefined && context.serverTime !== null)
+    {
+        return context.serverTime;
+    }
+
+    if (context.functions && context.functions.GetServerTime)
+    {
+        return context.functions.GetServerTime(context);
+    }
+
+    if (context.owner && context.owner.GetServerTime)
+    {
+        return context.owner.GetServerTime();
+    }
+
+    return undefined;
 }
 
 /**
@@ -898,17 +945,18 @@ function GetServerDate()
  * count is ~1.3e13 and exact. The two agree for any period expressible in whole
  * milliseconds, which covers anything an expression would author.
  *
+ * @param {Object} [context]
  * @param {Number} period - seconds; 0 returns 0, negative is used as positive
  * @returns {Number} seconds into the current period
  */
-function ServerTimePhase(period)
+function ServerTimePhase(context, period)
 {
     // Truncate to ticks first, as Carbon's TimeFromDouble does, then to ms.
     let periodMs = Math.trunc(period * 10000000) / 10000;
     if (periodMs === 0) return 0;
     if (periodMs < 0) periodMs = -periodMs;
 
-    const now = Math.trunc(GetServerDate().getTime()) + FILETIME_EPOCH_OFFSET_MS;
+    const now = Math.trunc(GetServerDate(context).getTime()) + FILETIME_EPOCH_OFFSET_MS;
     return (now % periodMs) / 1000;
 }
 
@@ -920,15 +968,16 @@ function ServerTimePhase(period)
  * the first field that decides wins, and running out of fields - all equal, or
  * all skipped - returns 1.
  *
+ * @param {Object} [context]
  * @param {Array<Number>} fields - year, month, day, hour, minute, second
  * @param {Function} over - true when the server value settles it as 1
  * @param {Function} dis - true when the server value settles it as 0
  * @returns {Number} 1 or 0
  */
-function ServerTimeComparison(fields, over, dis)
+function ServerTimeComparison(context, fields, over, dis)
 {
     const
-        parts = GetServerTimeParts(),
+        parts = GetServerTimeParts(context),
         server = [ parts.year, parts.month, parts.day, parts.hour, parts.minute, parts.second ];
 
     for (let i = 0; i < server.length; i++)
@@ -959,10 +1008,10 @@ function ServerTimeComparison(fields, over, dis)
  * @param {Number} day
  * @returns {Number}
  */
-function DaysSinceServerTime(year, month, day)
+function DaysSinceServerTime(context, year, month, day)
 {
     const
-        parts = GetServerTimeParts(),
+        parts = GetServerTimeParts(context),
         targetYear = year === -1 ? parts.year : Math.trunc(year),
         targetMonth = month === -1 ? parts.month : Math.trunc(month),
         targetDay = day === -1 ? parts.day : Math.trunc(day),

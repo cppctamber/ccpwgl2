@@ -23,6 +23,7 @@ testWritingAVariableMarksItDirty();
 testServerTimeFamily();
 testUnresolvedIdentifierIsZero();
 testCarbonRandomStaysInRange();
+testServerClockComesFromTheContextWhenSupplied();
 testExponentOperator();
 console.log("Controller state machine and expression parity verified");
 
@@ -248,6 +249,41 @@ function testCarbonRandomStaysInRange()
 
 
 /**
+ * A browser's only clock is the player's machine clock, in the player's
+ * timezone. The fields are therefore always read in UTC - otherwise
+ * `IsWeekend()` answers differently either side of a date line - and an
+ * embedder that knows the real server time can supply it per evaluation.
+ */
+function testServerClockComesFromTheContextWhenSupplied()
+{
+    const saturday = Date.UTC(2026, 7, 15, 12, 0, 0);
+
+    assert.equal(evaluate("ServerYear()", { serverTime: saturday }), 2026);
+    assert.equal(evaluate("IsWeekend()", { serverTime: saturday }), 1);
+
+    assert.equal(evaluate("ServerYear()", { functions: { GetServerTime: () => saturday } }), 2026);
+    assert.equal(evaluate("ServerYear()", { owner: { GetServerTime: () => saturday } }), 2026);
+
+    // A context clock wins over the global pin, so two scenes can disagree.
+    modules.Tr2ExpressionProgram.SERVER_TIME_OVERRIDE = Date.UTC(1999, 0, 1);
+    try
+    {
+        assert.equal(evaluate("ServerYear()", { serverTime: saturday }), 2026);
+        assert.equal(evaluate("ServerYear()"), 1999, "and the pin still applies when nothing supplies one");
+    }
+    finally
+    {
+        modules.Tr2ExpressionProgram.SERVER_TIME_OVERRIDE = null;
+    }
+
+    // UTC, not local: 23:30 UTC on a Saturday is Sunday in New Zealand, and
+    // both are weekend, so use an hour where the two dates disagree on the day
+    // of the WEEK - late Sunday UTC is Monday there.
+    const lateSunday = Date.UTC(2026, 7, 16, 23, 30, 0);
+    assert.equal(evaluate("ServerDayOfWeek()", { serverTime: lateSunday }), 0, "read in UTC regardless of host timezone");
+}
+
+/**
  * `^` was rejected by the tokenizer, so any condition using it failed to
  * compile and its transition was permanently dead. It binds tighter than `*`,
  * looser than unary, and is LEFT associative like CcpParser's.
@@ -269,11 +305,11 @@ function testExponentOperator()
  * @param {String} source
  * @returns {Number}
  */
-function evaluate(source)
+function evaluate(source, context = {})
 {
     const program = modules.Tr2ExpressionProgram.Compile(source, {});
     assert.ok(program.IsValid(), `expression should compile: ${source} (${program.error})`);
-    return program.Evaluate({ controller: null, owner: null, stateMachine: null });
+    return program.Evaluate({ controller: null, owner: null, stateMachine: null, ...context });
 }
 
 /**
