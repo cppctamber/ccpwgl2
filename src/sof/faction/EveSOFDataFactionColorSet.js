@@ -11,137 +11,164 @@ import { Tw2Error } from "core";
 export class EveSOFDataFactionColorSet extends meta.Model
 {
 
-    @meta.color
-    Black = vec4.create();
+    /*
+     * Defaults, from Carbon's constructor (`EveSOFData.cpp:42-52`):
+     *
+     *     std::fill( begin, end, Color( 0, 0, 0, 1 ) );
+     *     m_colors[TYPE_PRIMARY_BILLBOARD] = Color( 2.5f, 2.5f, 2.5f, 2.5f );
+     *     m_colors[TYPE_PRIMARY_WARP_FX]   = Color( 0xFFFF6333 );
+     *     m_colors[TYPE_PRIMARY_DOCKED_FX] = Color( 0xFF4C82E2 );
+     *     m_colors[TYPE_PRIMARY_ATTACK_FX] = Color( 0xFFFF180B );
+     *     m_colors[TYPE_PRIMARY_SIEGE_FX]  = Color( 0xFFFF5E2D );
+     *
+     * Every slot is black at ALPHA 1, and five carry an authored default. The
+     * hex values are ARGB and are used as-is, no gamma conversion: each decodes
+     * to exactly what runtime-sof resolves and what tools-core serves, which is
+     * how the byte order was confirmed rather than assumed.
+     *
+     * These were all `vec4.create()` - black at alpha ZERO - so any colour a
+     * faction does not author rendered black. Published faction data does not
+     * carry the four FX colours at all, so on a live hull the warp, attack and
+     * siege lights went dark while every other consumer of the same data showed
+     * them correctly. `PrimaryBillboard` is the other visible one: it is HDR
+     * white at 2.5, not black.
+     *
+     * `Has()` cannot help here - every colour is a declared field, so it is
+     * always true and `GetColorType`'s fallback branch is unreachable. The
+     * defaults ARE the fallback, which is how Carbon does it too.
+     */
 
     @meta.color
-    Blue = vec4.create();
+    Black = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Booster = vec4.create();
+    Blue = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Cyan = vec4.create();
+    Booster = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Darkhull = vec4.create();
+    Cyan = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Fire = vec4.create();
+    Darkhull = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Glass = vec4.create();
+    Fire = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Green = vec4.create();
+    Glass = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Hull = vec4.create();
+    Green = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Killmark = vec4.create();
+    Hull = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Orange = vec4.create();
+    Killmark = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Primary = vec4.create();
+    Orange = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryLight = vec4.create();
+    Primary = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Reactor = vec4.create();
+    PrimaryLight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Red = vec4.create();
+    Reactor = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Secondary = vec4.create();
+    Red = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    SecondaryLight = vec4.create();
+    Secondary = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Tertiary = vec4.create();
+    SecondaryLight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    TertiaryLight = vec4.create();
+    Tertiary = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    White = vec4.create();
+    TertiaryLight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    WhiteLight = vec4.create();
+    White = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    Yellow = vec4.create();
+    WhiteLight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimarySpotlight = vec4.create();
+    Yellow = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    SecondarySpotlight = vec4.create();
+    PrimarySpotlight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    TertiarySpotlight = vec4.create();
+    SecondarySpotlight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryHologram = vec4.create();
+    TertiarySpotlight = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    SecondaryHologram = vec4.create();
+    PrimaryHologram = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    TertiaryHologram = vec4.create();
+    SecondaryHologram = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    State0 = vec4.create();
+    TertiaryHologram = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    State1 = vec4.create();
+    State0 = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    State2 = vec4.create();
+    State1 = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    State3 = vec4.create();
+    State2 = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    StateVulnerable = vec4.create();
+    State3 = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    StateInvulnerable = vec4.create();
+    StateVulnerable = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryForcefield = vec4.create();
+    StateInvulnerable = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    SecondaryForcefield = vec4.create();
+    PrimaryForcefield = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryBanner = vec4.create();
+    SecondaryForcefield = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryBillboard = vec4.create();
+    PrimaryBanner = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryFx = vec4.create();
+    PrimaryBillboard = vec4.fromValues(2.5, 2.5, 2.5, 2.5);
 
     @meta.color
-    SecondaryFx = vec4.create();
+    PrimaryFx = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryWarpFx = vec4.create();
+    SecondaryFx = vec4.fromValues(0, 0, 0, 1);
 
     @meta.color
-    PrimaryAttackFX = vec4.create();
+    PrimaryWarpFx = vec4.fromValues(1, 99 / 255, 51 / 255, 1);
 
     @meta.color
-    PrimarySiegeFX = vec4.create();
+    PrimaryAttackFX = vec4.fromValues(1, 24 / 255, 11 / 255, 1);
 
     @meta.color
-    PrimaryDockedFX = vec4.create();
+    PrimarySiegeFX = vec4.fromValues(1, 94 / 255, 45 / 255, 1);
+
+    @meta.color
+    PrimaryDockedFX = vec4.fromValues(76 / 255, 130 / 255, 226 / 255, 1);
 
 
     //_types = [];
