@@ -236,7 +236,14 @@ export class EveEffectRoot extends EveObject
             [ "CustomMaskMaterialID0", 4 ],
             [ "CustomMaskMaterialID1", 4 ],
             [ "CustomMaskTarget0", 4 ],
-            [ "CustomMaskTarget1", 4 ]
+            [ "CustomMaskTarget1", 4 ],
+            // Registers 14-16, kept in step with GLESPerObjectDataEveSpaceObject.
+            // The manual GLES quad shaders read cb4[16] (CustomMaskBlending) by
+            // index, so the two entries before it must exist for it to land
+            // there. See the same note in legacy/EveSpaceObject.js.
+            [ "CustomMaskClamps", 4 ],
+            [ "Screensize", 4 ],
+            [ "CustomMaskBlending", 4 ]
         ]
     };
 

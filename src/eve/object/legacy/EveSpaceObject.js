@@ -672,7 +672,29 @@ export class EveSpaceObject extends EveObject
             [ "CustomMaskMaterialID0", 4 ],
             [ "CustomMaskMaterialID1", 4 ],
             [ "CustomMaskTarget0", 4 ],
-            [ "CustomMaskTarget1", 4 ]
+            [ "CustomMaskTarget1", 4 ],
+            // Registers 14-16, kept in step with GLESPerObjectDataEveSpaceObject
+            // because the manual GLES quad shaders are compiled against that
+            // layout: applyCustomMaskBlendMode reads cb4[16] by INDEX, so the
+            // two entries before it have to exist for the blend register to
+            // land there at all.
+            //
+            // Only CustomMaskBlending is written on this path, and that is
+            // fine: the clamp flags the GLES shaders actually read ride in
+            // CustomMaskMaterialID0/1 .yzw (materialIndex, clampU, clampV,
+            // clampW), which UpdatePerObjectData already sets.
+            //
+            // CustomMaskClamps is Carbon's own clamp-to-EDGE quantity - a
+            // different thing from the same enum - transferred by Pack rather
+            // than by UpdatePerObjectData, and never read by these shaders.
+            // Screensize likewise. Both are padding here and stay zero.
+            //
+            // Before this, the blend write was skipped in silence: it is
+            // guarded on `ps.Has("CustomMaskBlending")`, so every custom mask
+            // on these objects rendered with a zeroed blend mode.
+            [ "CustomMaskClamps", 4 ],
+            [ "Screensize", 4 ],
+            [ "CustomMaskBlending", 4 ]
         ]
     };
 

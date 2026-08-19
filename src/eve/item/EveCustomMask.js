@@ -1,7 +1,11 @@
 import { vec3, quat, vec4, mat4 } from "math";
 import { meta } from "utils";
 import { Tw2TextureParameter, Tw2Vector4Parameter, WglTransform, Tw2Effect } from "core";
+import { CustomMaskBlendMode } from "constant/ccpwgl";
 import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
+
+
+const VALID_BLEND_MODES = new Set(Object.values(CustomMaskBlendMode));
 
 
 @meta.type("EveCustomMask")
@@ -199,47 +203,30 @@ export class EveCustomMask extends WglTransform
     {
         if (typeof value === "number" && Number.isFinite(value))
         {
-            switch(value)
-            {
-                case 0:
-                case 2:
-                case 6:
-                case 7:
-                case 8:
-                    return value;
-
-                default:
-                    return fallback;
-            }
+            // Any value the enum declares, not a hand-written subset. The
+            // subset this replaced accepted 0, 2, 6, 7 and 8 only, so ADD(1),
+            // MULTIPLY(3), DIVIDE(4) and DIFFERENCE(5) silently became NONE.
+            return VALID_BLEND_MODES.has(value) ? value : fallback;
         }
 
-        if (typeof value !== "string" || !value)
-        {
-            return fallback;
-        }
+        if (typeof value !== "string" || !value) return fallback;
 
-        switch(value.toUpperCase().replace(/[\s-]+/g, "_"))
-        {
-            case "NORMAL":
-            case "NONE":
-            case "OVERLAY":
-                return 0;
+        // camelCase is split before upper-casing, so "nestedInverted",
+        // "nested-inverted", "Nested Inverted" and "NESTED_INVERTED" all
+        // resolve. The previous normalisation only collapsed spaces and
+        // hyphens, so a camelCase label fell through to the fallback and the
+        // mode silently became NONE - which is the shape of a UI sending a
+        // property name rather than a label.
+        const key = value
+            .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+            .replace(/[\s-]+/g, "_")
+            .toUpperCase();
 
-            case "SUBTRACT":
-                return 2;
+        // "normal" and "overlay" are ccpwgl spellings of no blending.
+        if (key === "NORMAL" || key === "OVERLAY") return CustomMaskBlendMode.NONE;
 
-            case "EXCLUSION":
-                return 6;
-
-            case "NESTED":
-                return 7;
-
-            case "NESTED_INVERTED":
-                return 8;
-
-            default:
-                return fallback;
-        }
+        const mode = CustomMaskBlendMode[key];
+        return mode === undefined ? fallback : mode;
     }
 
 

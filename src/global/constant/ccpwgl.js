@@ -97,3 +97,30 @@ export const PickingBlueChannel = {
     // AREA: 100, area from 100 to 255 (100 + area number)
     // ALPHA: If alpha is working then can just use the alpha channel
 };
+
+
+/**
+ * Custom mask blend modes.
+ *
+ * Carbon passes this as a compile-time permutation option; the manual GLES quad
+ * shaders have no permutations, so it is demoted to a runtime value in
+ * CustomMaskBlending (per-object PS reg 16) and branched over in
+ * `applyCustomMaskBlendMode`.
+ *
+ * `toDeprecate/shaders/quad/shared/constant.js` declares the same nine values as
+ * `PatternBlendMode`. That copy is left alone for now - nothing outside
+ * toDeprecate imported it, and pointing eve/ at the deprecated tree would be the
+ * wrong direction - but the two must not drift.
+ * @type {Object<String,Number>}
+ */
+export const CustomMaskBlendMode = {
+    NONE: 0,
+    ADD: 1,
+    SUBTRACT: 2,
+    MULTIPLY: 3,
+    DIVIDE: 4,
+    DIFFERENCE: 5,
+    EXCLUSION: 6,
+    NESTED: 7,
+    NESTED_INVERTED: 8
+};
