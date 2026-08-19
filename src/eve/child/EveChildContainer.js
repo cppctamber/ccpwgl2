@@ -215,6 +215,36 @@ export class EveChildContainer extends EveChild
     }
 
     /**
+     * Reads a variable owned by one of this container's own controllers, for the
+     * `GetExternalControllerVariable(name, default)` expression builtin.
+     *
+     * This is the sibling half of Carbon's ITr2ControllerOwner contract
+     * (`EveChildContainer.cpp:1077-1091`): a first-hit walk over the peer
+     * controllers attached to the same node, matched by variable name. The ship
+     * side (`EveSpaceObject2.cpp:3797-3809`) only recurses into children, so a
+     * ship-level state machine reaches a child's variable through here.
+     *
+     * Carbon's signature is `bool(name, float& out)`; JS returns the value, or
+     * undefined when no controller here declares that name.
+     *
+     * @param {String} name
+     * @returns {Number|undefined}
+     */
+    GetControllerValueByName(name)
+    {
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            const controller = this.controllers[i];
+            if (controller && controller.GetFloatVariableByName)
+            {
+                const value = controller.GetFloatVariableByName(name);
+                if (value !== null && value !== undefined) return value;
+            }
+        }
+        return undefined;
+    }
+
+    /**
      * Resets lod
      */
     ResetLod()

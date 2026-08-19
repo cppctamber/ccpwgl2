@@ -1,4 +1,5 @@
 import { Tw2Error } from "core";
+import { tw2 } from "global";
 
 const BLOCKED_IDENTIFIERS = new Set([
     "__proto__",
@@ -29,6 +30,14 @@ const CONSTANTS = {
  */
 export class Tr2ExpressionProgram
 {
+    /**
+     * Pins the clock the `Server*` condition builtins read, standing in for
+     * Carbon's `controllerServerTime` setting. Null follows the real clock.
+     * Accepts a Date or epoch milliseconds.
+     * @type {Date|Number|null}
+     */
+    static SERVER_TIME_OVERRIDE = null;
+
     constructor(source = "", options = {})
     {
         this.source = source || "";
@@ -239,26 +248,45 @@ class TrcExpressionParser
 
     ParseFactor()
     {
-        let node = this.ParseUnary();
+        let node = this.ParseExponent();
         while (true)
         {
             if (this.Match("operator", "*"))
             {
-                node = { type: "binary", operator: "*", left: node, right: this.ParseUnary() };
+                node = { type: "binary", operator: "*", left: node, right: this.ParseExponent() };
             }
             else if (this.Match("operator", "/"))
             {
-                node = { type: "binary", operator: "/", left: node, right: this.ParseUnary() };
+                node = { type: "binary", operator: "/", left: node, right: this.ParseExponent() };
             }
             else if (this.Match("operator", "%"))
             {
-                node = { type: "binary", operator: "%", left: node, right: this.ParseUnary() };
+                node = { type: "binary", operator: "%", left: node, right: this.ParseExponent() };
             }
             else
             {
                 return node;
             }
         }
+    }
+
+    /**
+     * Exponent. Binds tighter than * and /, looser than unary, and is LEFT
+     * associative - matching CcpParser and runtime-trinity, so 2^3^2 is 64 and
+     * not 512.
+     *
+     * ccpwgl rejected `^` in the tokenizer, so a condition using it failed to
+     * compile and its transition was permanently dead - the same silent failure
+     * mode as the missing server-time builtins.
+     */
+    ParseExponent()
+    {
+        let node = this.ParseUnary();
+        while (this.Match("operator", "^"))
+        {
+            node = { type: "binary", operator: "^", left: node, right: this.ParseUnary() };
+        }
+        return node;
     }
 
     ParseUnary()
@@ -431,7 +459,7 @@ function Tokenize(source)
             continue;
         }
 
-        if ("+-*/%<>()!,?:".includes(c))
+        if ("+-*/%^<>()!,?:".includes(c))
         {
             tokens.push({ type: "operator", value: c, position: i });
             i++;
@@ -574,6 +602,9 @@ function EvaluateBinary(operator, leftNode, rightNode, context, program)
             return ToNumber(left) * ToNumber(right);
         case "/":
             return ToNumber(right) === 0 ? 0 : ToNumber(left) / ToNumber(right);
+        case "^":
+            return Math.pow(ToNumber(left), ToNumber(right));
+
         case "%":
             return ToNumber(right) === 0 ? 0 : ToNumber(left) % ToNumber(right);
         case "<":
@@ -632,12 +663,49 @@ function ResolveIdentifier(name, context = {})
         }
     }
 
-    if (Object.prototype.hasOwnProperty.call(context, name))
+    // Carbon resolves a bare identifier against ONE table - the compiling
+    // controller's own variable view (`Tr2ControllerExpression.cpp:546`) - and
+    // treats anything else as a compile error. ccpwgl used to fall through to
+    // any property on the context, which quietly turned `controller`, `owner`,
+    // `stateMachine` and `time` into identifiers. Only the two clock-ish names
+    // survive that, because curve expressions do read them.
+    if (CONTEXT_IDENTIFIERS.has(name) && Object.prototype.hasOwnProperty.call(context, name))
     {
         return NormalizeValue(context[name]);
     }
 
+    // Carbon fails the whole condition here, which makes the mistake loud. That
+    // is too blunt for ccpwgl, where a hull can legitimately lack a variable
+    // another hull declares - so it stays 0, and says so once.
+    WarnUnresolvedIdentifier(name, context);
     return 0;
+}
+
+const CONTEXT_IDENTIFIERS = new Set([ "time", "stateTime" ]);
+
+const s_warnedIdentifiers = new Set();
+
+/**
+ * Reports an identifier that resolved to nothing, once per name per session.
+ *
+ * An absent variable and an authored zero are otherwise indistinguishable, on
+ * both the read and the write side (`Tr2Controller.SetVariableValue` returns
+ * false for an unknown name and says nothing either). That ambiguity is what
+ * makes "the state machine does nothing" so expensive to diagnose.
+ *
+ * @param {String} name
+ * @param {Object} context
+ */
+function WarnUnresolvedIdentifier(name, context)
+{
+    if (s_warnedIdentifiers.has(name)) return;
+    s_warnedIdentifiers.add(name);
+
+    const controller = context.controller;
+    tw2.Debug({
+        name: "Controller expression",
+        message: `Unresolved identifier '${name}' evaluates to 0${controller && controller.name ? ` (controller '${controller.name}')` : ""}`
+    });
 }
 
 function GetFunction(name, options = {})
@@ -703,8 +771,206 @@ const DEFAULT_FUNCTIONS = {
     ShipBoosterIntensity: ctx => CallContextFunction(ctx, "ShipBoosterIntensity"),
     KillCount: ctx => CallContextFunction(ctx, "KillCount"),
     BoundingSphereRadius: ctx => CallContextFunction(ctx, "BoundingSphereRadius"),
-    ShaderQuality: ctx => CallContextFunction(ctx, "ShaderQuality")
+    ShaderQuality: ctx => GetShaderQuality(ctx),
+
+    // Carbon's integer Random, distinct from the continuous `random` above:
+    // `min + rand() % int(max - min)`, i.e. whole numbers in [min, max-1]
+    // (`Tr2ControllerExpression.cpp:88-92`). It is deliberately registered
+    // without the pure flag there, so it is never constant-folded and never
+    // dirty-cached - ccpwgl re-evaluates every condition anyway.
+    Random: (ctx, min = 0, max = 1) => CarbonRandom(ToNumber(min), ToNumber(max)),
+
+    // Server clock family (`Tr2ControllerExpression.cpp:238-454`). EVE authors
+    // seasonal and event content against these; without them the whole
+    // condition failed to compile and the transition was silently dead.
+    ServerYear: () => GetServerTimeParts().year,
+    ServerMonth: () => GetServerTimeParts().month,
+    ServerDay: () => GetServerTimeParts().day,
+    ServerDayOfWeek: () => GetServerTimeParts().dayOfWeek,
+    ServerHour: () => GetServerTimeParts().hour,
+    ServerMinute: () => GetServerTimeParts().minute,
+    ServerSecond: () => GetServerTimeParts().second,
+    IsWeekend: () => GetServerTimeParts().dayOfWeek % 6 === 0 ? 1 : 0,
+    ServerTimePhase: (ctx, period) => ServerTimePhase(ToNumber(period)),
+    ServerTimeGreaterThan: (ctx, ...args) => ServerTimeComparison(args, (a, b) => a > b, (a, b) => a < b),
+    ServerTimeLessThanOrEqual: (ctx, ...args) => ServerTimeComparison(args, (a, b) => a < b, (a, b) => a > b),
+    ServerTimeEqual: (ctx, ...args) => ServerTimeComparison(args, () => false, (a, b) => a !== b),
+    DaysSinceServerTime: (ctx, year = -1, month = -1, day = -1) =>
+        DaysSinceServerTime(ToNumber(year), ToNumber(month), ToNumber(day))
 };
+
+const SHADER_QUALITY = { lo: 0, hi: 1, depth: 2 };
+
+/**
+ * Carbon reads the RENDERER's shader model here, not the object
+ * (`Tr2ControllerExpression.cpp:163-178`, `Tr2Renderer::GetShaderModel()`:
+ * 0 = LO, 1 = HI, 2 = DEPTH). ccpwgl's equivalent is the device's
+ * `shaderModel`, the same value that picks a shader's `.sm_<quality>` variant.
+ *
+ * An owner may still answer for itself, which keeps any per-object override
+ * working; what it must not do is fall through to 0 and claim LOW, which is
+ * what happened while nothing implemented the method at all.
+ *
+ * @param {Object} context
+ * @returns {Number}
+ */
+function GetShaderQuality(context)
+{
+    if (context.owner && context.owner.ShaderQuality)
+    {
+        return ToNumber(context.owner.ShaderQuality());
+    }
+
+    const model = tw2.device ? tw2.device.shaderModel : null;
+    return model && model in SHADER_QUALITY ? SHADER_QUALITY[model] : SHADER_QUALITY.hi;
+}
+
+/**
+ * Carbon's `Random(min, max)`: `min + rand() % int(max - min)`.
+ * Carbon's version is undefined when `max <= min` (a modulo by zero or a
+ * negative divisor); ccpwgl returns `min`, which is the value that expression
+ * would have produced for an empty range anyway.
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Number}
+ */
+function CarbonRandom(min, max)
+{
+    const range = Math.trunc(max - min);
+    if (range <= 0) return min;
+    return min + Math.floor(Math.random() * range);
+}
+
+// Milliseconds between the FILETIME epoch (1601-01-01) and the unix epoch.
+// `ServerTimePhase` takes a modulo against the raw FILETIME value, so the phase
+// depends on which epoch the clock counts from - it is not a unix-time modulo.
+const FILETIME_EPOCH_OFFSET_MS = 11644473600000;
+
+/**
+ * The server calendar, in the field conventions Carbon's expressions use:
+ * full year, month 1-12, day of month 1-31, day of week 0 = Sunday.
+ *
+ * Read in UTC. Carbon's own family is UTC on Windows - `FileTimeToSystemTime`
+ * does no timezone conversion - and accidentally LOCAL time on its other
+ * platform branch, which uses `localtime` where the rest of the codebase uses
+ * `gmtime`. EVE server time is UTC and the shipping client is the Windows one,
+ * so the Windows behaviour is the one worth having; the other branch is a
+ * Carbon defect, deliberately not reproduced.
+ *
+ * `Tr2ExpressionProgram.SERVER_TIME_OVERRIDE` stands in for Carbon's
+ * `controllerServerTime` setting: assign a Date or epoch-ms to pin the clock
+ * when testing seasonal content.
+ *
+ * @returns {{year: Number, month: Number, day: Number, dayOfWeek: Number, hour: Number, minute: Number, second: Number}}
+ */
+function GetServerTimeParts()
+{
+    const date = GetServerDate();
+    return {
+        year: date.getUTCFullYear(),
+        month: date.getUTCMonth() + 1,
+        day: date.getUTCDate(),
+        dayOfWeek: date.getUTCDay(),
+        hour: date.getUTCHours(),
+        minute: date.getUTCMinutes(),
+        second: date.getUTCSeconds()
+    };
+}
+
+/**
+ * @returns {Date}
+ */
+function GetServerDate()
+{
+    const override = Tr2ExpressionProgram.SERVER_TIME_OVERRIDE;
+    return override === null || override === undefined ? new Date() : new Date(override);
+}
+
+/**
+ * Where the current server time sits inside a repeating period.
+ *
+ * Carbon takes the modulo of the raw FILETIME tick count against the period
+ * (`Tr2ControllerExpression.cpp:357-378`), so the result is measured from 1601
+ * and the answer is in SECONDS in the range [0, period) - not a 0..1 phase.
+ *
+ * The arithmetic runs in milliseconds rather than 100ns ticks: the tick count
+ * since 1601 is ~1.3e17, past the safe integer range, while the millisecond
+ * count is ~1.3e13 and exact. The two agree for any period expressible in whole
+ * milliseconds, which covers anything an expression would author.
+ *
+ * @param {Number} period - seconds; 0 returns 0, negative is used as positive
+ * @returns {Number} seconds into the current period
+ */
+function ServerTimePhase(period)
+{
+    // Truncate to ticks first, as Carbon's TimeFromDouble does, then to ms.
+    let periodMs = Math.trunc(period * 10000000) / 10000;
+    if (periodMs === 0) return 0;
+    if (periodMs < 0) periodMs = -periodMs;
+
+    const now = Math.trunc(GetServerDate().getTime()) + FILETIME_EPOCH_OFFSET_MS;
+    return (now % periodMs) / 1000;
+}
+
+/**
+ * Compares the server calendar against an authored one, field by field.
+ *
+ * Carbon walks year, month, day, hour, minute, second in that order
+ * (`Tr2ControllerExpression.cpp:383-433`). A field of -1 is skipped entirely,
+ * the first field that decides wins, and running out of fields - all equal, or
+ * all skipped - returns 1.
+ *
+ * @param {Array<Number>} fields - year, month, day, hour, minute, second
+ * @param {Function} over - true when the server value settles it as 1
+ * @param {Function} dis - true when the server value settles it as 0
+ * @returns {Number} 1 or 0
+ */
+function ServerTimeComparison(fields, over, dis)
+{
+    const
+        parts = GetServerTimeParts(),
+        server = [ parts.year, parts.month, parts.day, parts.hour, parts.minute, parts.second ];
+
+    for (let i = 0; i < server.length; i++)
+    {
+        const authored = fields[i] === undefined ? -1 : ToNumber(fields[i]);
+        if (authored === -1) continue;
+        if (over(server[i], authored)) return 1;
+        if (dis(server[i], authored)) return 0;
+    }
+
+    return 1;
+}
+
+/**
+ * Days between an authored date and the server's date, positive when the
+ * authored date is in the past (`Tr2ControllerExpression.cpp:435-454`).
+ * A field of -1 takes the server's own value for that field.
+ *
+ * Carbon builds both dates by dropping a 1-BASED month into `tm_mon`, which is
+ * 0-based - so both sides land a month late. JS `Date` months are 0-based too,
+ * so passing the 1-based month straight in reproduces that shift on both sides
+ * rather than silently correcting one of them. The shift cancels for most date
+ * pairs and does not for some (month lengths differ), which is Carbon's
+ * behaviour and therefore what authored content was tuned against.
+ *
+ * @param {Number} year
+ * @param {Number} month
+ * @param {Number} day
+ * @returns {Number}
+ */
+function DaysSinceServerTime(year, month, day)
+{
+    const
+        parts = GetServerTimeParts(),
+        targetYear = year === -1 ? parts.year : Math.trunc(year),
+        targetMonth = month === -1 ? parts.month : Math.trunc(month),
+        targetDay = day === -1 ? parts.day : Math.trunc(day),
+        target = Date.UTC(targetYear, targetMonth, targetDay),
+        server = Date.UTC(parts.year, parts.month, parts.day);
+
+    return (server - target) / 86400000;
+}
 
 function GetRandomConstant(context)
 {

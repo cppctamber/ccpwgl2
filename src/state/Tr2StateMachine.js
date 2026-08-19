@@ -116,8 +116,21 @@ export class Tr2StateMachine extends meta.Model
         if (this._currentState && this._currentState.Start)
         {
             this._currentState.Start(this._controller);
-            this.FollowTransitions(new Set(this._controller.variables.map(variable => variable.name)));
+            this.FollowTransitions(this.GetAllVariableNames());
         }
+    }
+
+    /**
+     * Every variable name the controller declares - ccpwgl's spelling of
+     * Carbon's all-bits-set dirty mask (`0xffffffffffffffffull`). ccpwgl tracks
+     * dirtiness by name rather than by bit index, so "everything is dirty" is
+     * the full name set.
+     * @returns {Set<String>}
+     */
+    GetAllVariableNames()
+    {
+        const variables = this._controller && this._controller.variables ? this._controller.variables : [];
+        return new Set(variables.map(variable => variable.name));
     }
 
     Stop()
@@ -153,13 +166,23 @@ export class Tr2StateMachine extends meta.Model
 
         const owner = this._controller && this._controller.GetOwner ? this._controller.GetOwner() : null;
         let next = this._currentState.Update(dt, this._controller, owner, this, dirtyVariables);
-        for (let i = 0; next && next !== this._currentState && i < 20; i++)
+
+        // The state stops ITSELF inside Update before handing over its
+        // destination, exactly as Carbon does, so this loop must not stop it
+        // again - it only enters the next one (`Tr2StateMachine.cpp:143-149`).
+        //
+        // Two things follow from copying Carbon's loop condition:
+        //   - a state may transition to ITSELF; Stop() has already deactivated
+        //     it, so Start() re-runs its actions instead of no-opping;
+        //   - each hop re-evaluates with EVERY variable dirty, which is what
+        //     lets a zero-duration chain continue inside one frame. Passing an
+        //     empty set here (as this did) means the opposite.
+        for (let i = 0; next && i < 20; i++)
         {
-            if (this._currentState.Stop) this._currentState.Stop(this._controller);
             this._currentState = next;
             this._stateTime = 0;
             if (this._currentState.Start) this._currentState.Start(this._controller);
-            next = this._currentState.Update(0, this._controller, owner, this, new Set());
+            next = this._currentState.Update(0, this._controller, owner, this, this.GetAllVariableNames());
         }
     }
 

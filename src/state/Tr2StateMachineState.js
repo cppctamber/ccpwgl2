@@ -22,6 +22,12 @@ export class Tr2StateMachineState extends meta.Model
 
     _isActive = false;
 
+    // Set when the state wanted to leave but its finalizer said "not yet"
+    // (Carbon `Tr2StateMachineState.cpp:315`). The state stays ACTIVE while
+    // finalizing - its actions have been stopped, but it has not handed over -
+    // and `Update` re-asks the finalizer each frame until it permits.
+    _isFinalizing = false;
+
     OnModified()
     {
         const controller = this._stateMachine && this._stateMachine.GetController ? this._stateMachine.GetController() : null;
@@ -149,11 +155,21 @@ export class Tr2StateMachineState extends meta.Model
         }
 
         this._isActive = true;
+        this._isFinalizing = false;
     }
 
+    /**
+     * Stops the state's actions and releases it - unless a finalizer refuses,
+     * in which case the state stays active and enters finalizing, and `Update`
+     * re-asks each frame until it permits (Carbon `Tr2StateMachineState.cpp:293-321`).
+     *
+     * The actions are stopped either way: Carbon schedules their `Stop` before
+     * consulting the finalizer, so a held state is one whose actions have ended
+     * but whose hand-over has not happened yet.
+     */
     Stop(controller)
     {
-        if (!this._isActive)
+        if (!this._isActive || this._isFinalizing)
         {
             return;
         }
@@ -169,6 +185,12 @@ export class Tr2StateMachineState extends meta.Model
             }
         }
 
+        if (this.finalizer && this.finalizer.CanTransition && !this.finalizer.CanTransition(controller, owner))
+        {
+            this._isFinalizing = true;
+            return;
+        }
+
         this._isActive = false;
     }
 
@@ -176,6 +198,28 @@ export class Tr2StateMachineState extends meta.Model
     {
         if (!this._isActive)
         {
+            return null;
+        }
+
+        // Finalizing: the actions are already stopped and the state is only
+        // waiting for the finalizer's permission, so it must not tick them
+        // again (Carbon `Tr2StateMachineState.cpp:190-204`).
+        if (this._isFinalizing)
+        {
+            const next = this.GetNextState(stateMachine, controller, owner);
+
+            // No destination to hand to: leave the limbo by restarting in place.
+            if (!next)
+            {
+                this._isActive = false;
+                this.Start(controller);
+            }
+
+            if (!this.finalizer || !this.finalizer.CanTransition || this.finalizer.CanTransition(controller, owner))
+            {
+                return next;
+            }
+
             return null;
         }
 
@@ -191,13 +235,37 @@ export class Tr2StateMachineState extends meta.Model
         for (let i = 0; i < this.transitions.length; i++)
         {
             const transition = this.transitions[i];
-            if (transition && transition.CanTransition && transition.CanTransition(controller, owner, stateMachine, dirtyVariables))
+            if (!transition || !transition.CanTransition) continue;
+            if (!transition.CanTransition(controller, owner, stateMachine, dirtyVariables)) continue;
+
+            // An unresolved destination makes the transition INELIGIBLE, so the
+            // walk continues past it; Carbon tests it alongside the condition
+            // (`Tr2StateMachineState.cpp:216`). Returning null here instead
+            // would let one dangling transition mask every transition below it.
+            const destination = transition.GetDestination(stateMachine);
+            if (!destination) continue;
+
+            // A veto abandons the WHOLE walk for this frame - the first
+            // eligible transition decides, and if an action refuses it, no
+            // other transition may stand in for it
+            // (`Tr2StateMachineState.cpp:214-224`, and runtime-trinity does the
+            // same). Falling through to the next transition here used to send
+            // the machine to a state Carbon would never have entered.
+            if (!this.CanTransition(controller, owner))
             {
-                if (this.CanTransition(controller, owner))
-                {
-                    return transition.GetDestination(stateMachine);
-                }
+                return null;
             }
+
+            this.Stop(controller);
+
+            // The finalizer refused during Stop: hold, and hand over on a later
+            // frame through the finalizing branch above.
+            if (this._isFinalizing)
+            {
+                return null;
+            }
+
+            return destination;
         }
 
         return null;
@@ -215,11 +283,49 @@ export class Tr2StateMachineState extends meta.Model
         }
     }
 
-    GetNextState()
+    /**
+     * Finds the state this one would hand over to, without changing anything.
+     *
+     * Pure by contract: the finalizing branch of `Update` calls it every frame,
+     * so it must not tick actions or stop the state. It previously delegated to
+     * `Update(0)`, which did both - with `controller` and `owner` undefined.
+     *
+     * @param {Tr2StateMachine} [stateMachine]
+     * @param {Tr2Controller} [controller]
+     * @param {Object} [owner]
+     * @returns {Tr2StateMachineState|null}
+     */
+    GetNextState(stateMachine = this._stateMachine, controller, owner)
     {
-        return this.Update(0);
+        controller = controller || (stateMachine && stateMachine.GetController ? stateMachine.GetController() : null);
+        owner = owner || (controller && controller.GetOwner ? controller.GetOwner() : null);
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            const transition = this.transitions[i];
+            if (!transition || !transition.CanTransition) continue;
+            if (!transition.CanTransition(controller, owner, stateMachine)) continue;
+
+            const destination = transition.GetDestination(stateMachine);
+            if (destination) return destination;
+        }
+
+        return null;
     }
 
+    /**
+     * Asks the state's actions whether they will allow it to be left.
+     *
+     * Actions only. The finalizer is NOT consulted here: Carbon asks it in
+     * `Stop()`, where refusing puts the state into finalizing rather than
+     * silently rejecting one transition (`Tr2StateMachineState.cpp:214-224` vs
+     * `:293-321`). Asking it here as well would make a held state fall through
+     * to whatever transition it could still satisfy.
+     *
+     * @param {Tr2Controller} controller
+     * @param {Object} owner
+     * @returns {Boolean}
+     */
     CanTransition(controller, owner)
     {
         for (let i = 0; i < this.actions.length; i++)
@@ -231,7 +337,7 @@ export class Tr2StateMachineState extends meta.Model
             }
         }
 
-        return !this.finalizer || !this.finalizer.CanTransition || this.finalizer.CanTransition(controller, owner);
+        return true;
     }
 
     GetName()

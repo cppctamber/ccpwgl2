@@ -960,6 +960,66 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Backs the `KillCount()` controller-expression builtin, resolved via
+     * `context.owner.KillCount()` (`state/expression/Tr2ExpressionProgram.js:704`).
+     * Carbon reads `EveShip2::GetKillCounterValue()`; ccpwgl already carries the
+     * same number as the `killCount` field that drives kill-mark decals, so this
+     * exposes that rather than introducing a second counter.
+     * @returns {Number}
+     */
+    KillCount()
+    {
+        return this.killCount;
+    }
+
+    /**
+     * Backs the `AnimationTime("<name>")` controller-expression builtin, resolved
+     * via `context.owner.AnimationTime(name)`.
+     * Carbon routes this through
+     * `EveSpaceObject2::GetAnimationController()->FindAnimationDurationByName(name)`;
+     * ccpwgl's animation controller answers the same question directly.
+     * @param {String} [name]
+     * @returns {Number} the animation's duration, or 0 when it is not loaded
+     */
+    AnimationTime(name)
+    {
+        return this.animation ? this.animation.FindAnimationDurationByName(name) : 0;
+    }
+
+    /**
+     * Reads a controller variable owned by one of this ship's effect children,
+     * for the `GetExternalControllerVariable(name, default)` expression builtin.
+     *
+     * Carbon's ITr2ControllerOwner contract (`Controllers/ITr2ControllerOwner.h:15-19`):
+     * "external" means a controller hanging off the SAME owning node, matched by
+     * variable name - not a scene lookup and not an object reference.
+     * `EveSpaceObject2::GetControllerValueByName` (cpp:3797-3809) walks the effect
+     * children and recurses into any that own controllers themselves; the sibling
+     * walk over a node's own controllers belongs to the container
+     * (`EveChildContainer.cpp:1077-1091`), which is why this one only recurses.
+     *
+     * Carbon's signature is `bool(name, float& out)`; JS returns the value, or
+     * undefined when nothing owns that name, which is what the expression's
+     * fallback argument keys off.
+     *
+     * @param {String} name
+     * @returns {Number|undefined}
+     */
+    GetControllerValueByName(name)
+    {
+        for (let i = 0; i < this.effectChildren.length; i++)
+        {
+            const child = this.effectChildren[i];
+            if (child && child.GetControllerValueByName)
+            {
+                const value = child.GetControllerValueByName(name);
+                if (value !== undefined) return value;
+            }
+        }
+        return undefined;
+    }
+
+    /**
      * Gets the first authored locator set by name
      * @param {String} name
      * @returns {Array<EveLocatorSetItem>|null}

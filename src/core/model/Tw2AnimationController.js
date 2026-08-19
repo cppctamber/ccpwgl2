@@ -168,6 +168,27 @@ export class Tw2AnimationController extends meta.Model
     }
 
     /**
+     * Gets a loaded animation's duration by name.
+     *
+     * Backs the `AnimationTime("<name>")` controller-expression builtin, which
+     * Carbon answers from the animation controller
+     * (`Controllers/Tr2ControllerExpression.cpp:73-86`). Carbon's spelling is
+     * kept because this is that method's job, not a ccpwgl invention.
+     *
+     * An animation that is not loaded yet reports 0, matching Carbon's "no
+     * controller / no match" result - a caller cannot distinguish "not loaded"
+     * from "zero length" there either.
+     *
+     * @param {String} name
+     * @returns {Number}
+     */
+    FindAnimationDurationByName(name)
+    {
+        const animation = this.GetAnimation(name);
+        return animation ? animation.duration : 0;
+    }
+
+    /**
      * Checks if an animation exists
      * @param name
      * @returns {boolean}

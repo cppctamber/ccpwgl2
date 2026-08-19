@@ -24,6 +24,7 @@ export class Tr2ControllerFloatVariable extends meta.Model
     _destination = null;
     _dirtyMaskDestination = null;
     _dirtyMask = 0;
+    _dirtyOwner = null;
 
     Initialize()
     {
@@ -34,7 +35,37 @@ export class Tr2ControllerFloatVariable extends meta.Model
     OnModified()
     {
         this.ApplyDestination(this.value);
+        this.MarkDirty();
         return true;
+    }
+
+    /**
+     * Records which controller to notify when this variable changes.
+     *
+     * Carbon hands each variable a slot in the controller's packed 64-bit dirty
+     * mask (`Tr2Controller::Link`, and runtime-trinity mirrors it with
+     * `SetDirtyMask(this.#dirtyVariables, 1n << BigInt(i))`). ccpwgl tracks
+     * dirtiness by NAME rather than by bit index, so the variable only needs to
+     * know its controller - no packed buffer, and no 64-variable ceiling.
+     *
+     * @param {Tr2Controller|null} controller
+     */
+    SetDirtyOwner(controller)
+    {
+        this._dirtyOwner = controller || null;
+    }
+
+    /**
+     * Marks this variable dirty on its controller. Writing through `SetValue`
+     * used to leave the controller none the wiser, so only writes that went via
+     * `Tr2Controller.SetVariableValue` were ever seen as changes.
+     */
+    MarkDirty()
+    {
+        if (this._dirtyOwner && this._dirtyOwner.MarkVariableDirty)
+        {
+            this._dirtyOwner.MarkVariableDirty(this.name);
+        }
     }
 
     GetName()
@@ -51,6 +82,7 @@ export class Tr2ControllerFloatVariable extends meta.Model
     {
         this.value = value;
         this.ApplyDestination(value);
+        this.MarkDirty();
     }
 
     SetDestinationBuffer(buffer)

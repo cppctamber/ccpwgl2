@@ -88,7 +88,13 @@ export class Tr2Controller extends meta.Model
             const variable = this.variables[i];
             if (variable)
             {
-                if (variable.SetDestinationBuffer) variable.SetDestinationBuffer(variable);
+                // Carbon points each variable at a slot in the controller's
+                // packed value buffer and at one bit of its dirty mask; ccpwgl
+                // keeps the value on the variable and tracks dirtiness by name,
+                // so the variable only needs to know its controller. This used
+                // to pass the variable as its own destination buffer, which
+                // wrote its value back over itself and marked nothing dirty.
+                if (variable.SetDirtyOwner) variable.SetDirtyOwner(this);
             }
         }
 
@@ -130,6 +136,7 @@ export class Tr2Controller extends meta.Model
             if (variable)
             {
                 if (variable.SetDestinationBuffer) variable.SetDestinationBuffer(null);
+                if (variable.SetDirtyOwner) variable.SetDirtyOwner(null);
                 if (variable.SetDirtyMask) variable.SetDirtyMask(null, 0);
             }
         }
@@ -354,10 +361,24 @@ export class Tr2Controller extends meta.Model
             if (variable.SetValue) variable.SetValue(value);
             else variable.value = value;
 
-            if (!this._dirtyVariables) this._dirtyVariables = new Set();
-            this._dirtyVariables.add(name);
+            // SetValue marks it through SetDirtyOwner; this covers the plain
+            // assignment branch and any variable linked before that existed.
+            this.MarkVariableDirty(name);
         }
         return !!variable;
+    }
+
+    /**
+     * Marks a variable name dirty for the next update, so the state machines
+     * see it as changed. Carbon ORs a bit into a packed mask; ccpwgl carries the
+     * names, which is why a variable only ever needs to hand back its own.
+     * @param {String} name
+     */
+    MarkVariableDirty(name)
+    {
+        if (!name) return;
+        if (!this._dirtyVariables) this._dirtyVariables = new Set();
+        this._dirtyVariables.add(name);
     }
 
     GetBindingPathRoots()
