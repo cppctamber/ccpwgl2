@@ -17,7 +17,16 @@ test("character demo server exposes only its allowlisted files", async context =
     const server = createCharacterDemoServer({
         repositoryRoot,
         carbonengineRoot,
-        libraryPath
+        libraryPath,
+        toolsServiceConfig: {
+            bootstrap: {
+                schema: "carbon.tools-service.bootstrap",
+                host: "127.0.0.1",
+                port: 5510
+            },
+            target: "eve",
+            build: "3453885"
+        }
     });
     await new Promise((resolveListen, reject) =>
     {
@@ -51,6 +60,20 @@ test("character demo server exposes only its allowlisted files", async context =
     const head = await fetch(`${origin}/local/character-library.json`, { method: "HEAD" });
     assert.equal(head.status, 200);
     assert.equal(await head.text(), "");
+
+    const toolsService = await fetch(`${origin}/local/tools-service.json`);
+    assert.equal(toolsService.status, 200);
+    assert.equal(toolsService.headers.get("cache-control"), "no-store");
+    assert.deepEqual(await toolsService.json(), {
+        bootstrap: {
+            schema: "carbon.tools-service.bootstrap",
+            host: "127.0.0.1",
+            port: 5510
+        },
+        target: "eve",
+        build: "3453885",
+        scheme: "http"
+    });
 
     for (const pathname of [
         "/package.json",

@@ -10,7 +10,8 @@ import { TnyGlesPaletteCompatibility } from "./TnyGlesPaletteCompatibility.js";
 import { TnyGlesTriangleCoverage } from "./TnyGlesTriangleCoverage.js";
 import { TnyGlesMorphDeformation } from "./TnyGlesMorphDeformation.js";
 
-const DEFAULT_RESOURCE_BASE = "http://127.0.0.1:5510/ccp";
+const DEFAULT_RESOURCE_BASE = "http://127.0.0.1:5510/eve";
+const DEFAULT_CLEAR_COLOR = [ 0.035, 0.055, 0.08, 1 ];
 const WHITE_PROOF_TEXTURE = "res:/dx9/model/decal/shared/bw_000_000_100.dds";
 const UNRESOLVED_GARMENT_COLOR = [ 1, 0, 1, 1 ];
 const FEMALE_LOD0_BODY_PATH = "res:/graphics/character/female/paperdoll/basenude/basenude.gr2";
@@ -85,6 +86,8 @@ export class TnyGlesCharacterAdapter
 
     _cameraDistance;
 
+    _clearColor;
+
     _triangleCoverage;
 
     _tuckPantsRgbEnabled;
@@ -108,6 +111,7 @@ export class TnyGlesCharacterAdapter
     constructor({
         client = null,
         cameraDistance = 3.2,
+        clearColor = DEFAULT_CLEAR_COLOR,
         resourceBase = DEFAULT_RESOURCE_BASE,
         resourceRoot = null,
         atlasComposer = null,
@@ -121,7 +125,7 @@ export class TnyGlesCharacterAdapter
         tuckAlphaMode = "source",
         tuckBlendDetailEnabled = false,
         tuckPantsRgbEnabled = false,
-        tuckSharedBodyRgbEnabled = false,
+        tuckSharedBodyRgbEnabled = true,
         upperSleeveMaterialEnabled = true,
         paletteCompatibility = TnyGlesPaletteCompatibility,
         triangleCoverage = TnyGlesTriangleCoverage,
@@ -146,6 +150,12 @@ export class TnyGlesCharacterAdapter
         if (!Number.isFinite(cameraDistance) || cameraDistance < 0.5 || cameraDistance > 20)
         {
             throw new TypeError("Legacy character cameraDistance must be between 0.5 and 20");
+        }
+        if (!Array.isArray(clearColor)
+            || clearColor.length !== 4
+            || clearColor.some(value => !Number.isFinite(value) || value < 0 || value > 1))
+        {
+            throw new TypeError("Legacy character clearColor must be four normalized values");
         }
         if (typeof paletteCompatibility?.Apply !== "function")
         {
@@ -229,6 +239,7 @@ export class TnyGlesCharacterAdapter
 
         this._client = client;
         this._cameraDistance = cameraDistance;
+        this._clearColor = [ ...clearColor ];
         this._resourceBase = String(resourceBase).replace(/\/+$/u, "");
         this._resourceRoot = resourceRoot === null
             ? null
@@ -274,6 +285,7 @@ export class TnyGlesCharacterAdapter
         staged.construction = construction;
         staged.appearancePlan = context.appearancePlan ?? null;
         staged.geometryPaths = [];
+        staged.foundationGeometry = [];
         staged.foundationResources = new Map();
         staged.configuredFoundations = [];
         staged.configuredFoundationBindings = [];
@@ -322,10 +334,22 @@ export class TnyGlesCharacterAdapter
                 typeof this._atlasComposer.ComposeConfiguredHeadMaterials === "function"
                     ? await this._atlasComposer.ComposeConfiguredHeadMaterials(staged)
                     : { status: "deferred", reason: "configured-head-composer-unavailable" };
+            staged.configuredHairMaterialReport =
+                typeof this._atlasComposer.ComposeConfiguredHairMaterials === "function"
+                    ? await this._atlasComposer.ComposeConfiguredHairMaterials(staged)
+                    : { status: "deferred", reason: "configured-hair-composer-unavailable" };
+            staged.configuredHeadwearMaterialReport =
+                typeof this._atlasComposer.ComposeConfiguredHeadwearMaterials === "function"
+                    ? await this._atlasComposer.ComposeConfiguredHeadwearMaterials(staged)
+                    : { status: "deferred", reason: "configured-headwear-composer-unavailable" };
             staged.configuredGarmentMaterialReport =
                 typeof this._atlasComposer.ComposeConfiguredGarmentMaterials === "function"
                     ? await this._atlasComposer.ComposeConfiguredGarmentMaterials(staged)
                     : { status: "deferred", reason: "configured-garment-composer-unavailable" };
+            staged.selectedTopDrapeReport =
+                typeof this._atlasComposer.ComposeSelectedTopDrapeSupport === "function"
+                    ? await this._atlasComposer.ComposeSelectedTopDrapeSupport(staged)
+                    : { status: "deferred", reason: "selected-top-drape-composer-unavailable" };
             staged.tuckSupportReport = typeof this._atlasComposer.ComposeExactFemaleTuckSupport === "function"
                 ? await this._atlasComposer.ComposeExactFemaleTuckSupport(staged, {
                     applyCutMask: this._tuckCutMaskEnabled,
@@ -495,12 +519,49 @@ export class TnyGlesCharacterAdapter
         return staged;
     }
 
+    /**
+     * Transfers shared geometry leases before publishing a prepared revision.
+     * The prior revision remains visible and keeps its private render targets
+     * until the replacement has committed successfully.
+     */
+    async Handoff(previous, staged)
+    {
+        RequireStaged(previous);
+        RequireStaged(staged);
+        if (previous === staged) return staged;
+
+        this._ReleaseGeometryLeases(previous);
+        this._RearmGeometryLeases(previous);
+
+        try
+        {
+            await this.Commit(staged);
+        }
+        catch (error)
+        {
+            try
+            {
+                await this.Commit(previous);
+            }
+            catch (rollbackError)
+            {
+                error.rollbackError = rollbackError;
+            }
+            throw error;
+        }
+
+        previous.backend.display = false;
+        this._RefreshScene(previous.backend);
+        return staged;
+    }
+
     /** Returns detached proof diagnostics without exposing live scene objects. */
     GetDiagnostics(staged)
     {
         RequireStaged(staged);
         return {
             foundationGeometryCount: staged.geometryPaths.length,
+            foundationGeometry: staged.foundationGeometry.map(CloneDiagnosticValue),
             configuredFoundationCount: staged.configuredFoundations.length,
             configuredFoundations: staged.configuredFoundations.map(CloneDiagnosticValue),
             configuredFoundationSupportCount: staged.configuredFoundationSupports.length,
@@ -520,6 +581,13 @@ export class TnyGlesCharacterAdapter
             configuredHeadMaterials: CloneDiagnosticValue(
                 staged.configuredHeadMaterialReport
             ),
+            configuredHairMaterials: CloneDiagnosticValue(
+                staged.configuredHairMaterialReport
+            ),
+            configuredHeadwearMaterials: CloneDiagnosticValue(
+                staged.configuredHeadwearMaterialReport
+            ),
+            selectedTopDrape: CloneDiagnosticValue(staged.selectedTopDrapeReport),
             tuckSupport: CloneDiagnosticValue(staged.tuckSupportReport),
             upperSleeve: CloneDiagnosticValue(staged.upperSleeveReport),
             lowerSleeve: CloneDiagnosticValue(staged.lowerSleeveReport),
@@ -593,25 +661,7 @@ export class TnyGlesCharacterAdapter
     {
         if (!staged) return false;
 
-        for (const value of [ ...(staged.morphDeformationLeases ?? []) ].reverse())
-        {
-            this._morphDeformation.Release(
-                value.geometryResource,
-                value.lease,
-                { gl: tw2.device?.gl ?? null }
-            );
-        }
-        staged.morphDeformationLeases = [];
-
-        for (const value of [ ...(staged.foundationCoverageLeases ?? []) ].reverse())
-        {
-            this._triangleCoverage.Release(
-                value.geometryResource,
-                value.lease,
-                { gl: tw2.device?.gl ?? null }
-            );
-        }
-        staged.foundationCoverageLeases = [];
+        this._ReleaseGeometryLeases(staged);
 
         if (!staged.wrapper) return false;
 
@@ -636,6 +686,66 @@ export class TnyGlesCharacterAdapter
         return true;
     }
 
+    /**
+     * Releases transaction-owned morph and triangle-coverage geometry leases.
+     *
+     * @param {Object} staged Staged or committed character transaction.
+     */
+    _ReleaseGeometryLeases(staged)
+    {
+        for (const value of [ ...(staged.morphDeformationLeases ?? []) ].reverse())
+        {
+            this._morphDeformation.Release(
+                value.geometryResource,
+                value.lease,
+                { gl: tw2.device?.gl ?? null }
+            );
+        }
+        staged.morphDeformationLeases = [];
+
+        for (const value of [ ...(staged.foundationCoverageLeases ?? []) ].reverse())
+        {
+            this._triangleCoverage.Release(
+                value.geometryResource,
+                value.lease,
+                { gl: tw2.device?.gl ?? null }
+            );
+        }
+        staged.foundationCoverageLeases = [];
+    }
+
+    /**
+     * Returns previously applied geometry operations to their atomic pending
+     * state so a prepared replacement can retry after losing a lease race.
+     *
+     * @param {Object} staged Staged character transaction.
+     */
+    _RearmGeometryLeases(staged)
+    {
+        for (const pending of staged.pendingFoundationCoverage ?? [])
+        {
+            if (pending.coverage.strategy !== "triangle-mask"
+                || pending.result.status !== "applied") continue;
+            pending.result.status = "pending-commit";
+            pending.result.reason = "awaiting-atomic-commit";
+            pending.result.applied = [];
+        }
+
+        for (const pending of staged.pendingMorphDeformations ?? [])
+        {
+            if (pending.result.status !== "applied") continue;
+            pending.result.status = "pending-commit";
+            pending.result.reason = "awaiting-atomic-commit";
+            pending.result.report = null;
+            for (const targetResult of pending.results)
+            {
+                targetResult.status = "pending-commit";
+                targetResult.reason = "awaiting-atomic-commit";
+                targetResult.appliedResources = [];
+            }
+        }
+    }
+
     async _Initialize()
     {
         this._initialization ||= this._InitializeOnce();
@@ -652,7 +762,7 @@ export class TnyGlesCharacterAdapter
             debug: false,
             device: { webgl2: false },
             client: {
-                clearColor: [ 0.035, 0.055, 0.08, 1 ],
+                clearColor: this._clearColor,
                 colorMask: [ 0, 0, 0, 0 ]
             },
             paths: {
@@ -695,7 +805,7 @@ export class TnyGlesCharacterAdapter
             // Temporary compatibility for the local bundle until it exposes
             // the source Tny singleton. Wrapped descriptors are not part of
             // the TnyClient contract.
-            initializeOptions.scene = [ 0.035, 0.055, 0.08, 1 ];
+            initializeOptions.scene = this._clearColor;
             initializeOptions.camera = {
                 type: "testOrbit",
                 canvas: "character-canvas",
@@ -719,7 +829,7 @@ export class TnyGlesCharacterAdapter
             visible: { fog: false, environment: false },
             sunDirection: [ 0, -1, 1 ],
             ambientColor: [ 0.08, 0.08, 0.09, 1 ],
-            clearColor: [ 0.035, 0.055, 0.08, 1 ]
+            clearColor: this._clearColor
         });
     }
 
@@ -812,6 +922,12 @@ export class TnyGlesCharacterAdapter
                     });
                 }
                 staged.geometryPaths[operation.index] = operation.resourcePath;
+                staged.foundationGeometry[operation.index] = {
+                    role: operation.role,
+                    index: operation.index,
+                    resourcePath: operation.resourcePath,
+                    evidence: operation.evidence ? CloneDiagnosticValue(operation.evidence) : null
+                };
                 break;
             }
             case "rebuild-areas":
@@ -837,6 +953,12 @@ export class TnyGlesCharacterAdapter
                             status: "retained",
                             ...operation.skinEvidence,
                             textures: { ...operation.skinTextures },
+                            supportTextures: operation.supportTextures
+                                ? { ...operation.supportTextures }
+                                : null,
+                            supportEvidence: operation.supportEvidence
+                                ? { ...operation.supportEvidence }
+                                : null,
                             colorization: CloneSkinColorization(operation.skinColorization)
                         }
                     });
@@ -859,7 +981,13 @@ export class TnyGlesCharacterAdapter
                         skinTextureBindings: {
                             status: "deferred",
                             ...operation.skinEvidence,
-                            textures: { ...operation.skinTextures }
+                            textures: { ...operation.skinTextures },
+                            supportTextures: operation.supportTextures
+                                ? { ...operation.supportTextures }
+                                : null,
+                            supportEvidence: operation.supportEvidence
+                                ? { ...operation.supportEvidence }
+                                : null
                         }
                     });
                 }
@@ -878,6 +1006,11 @@ export class TnyGlesCharacterAdapter
                     partSourceRecordID: operation.partSourceRecordID ?? null,
                     configurationPath: operation.configurationPath,
                     geometryPath: operation.geometryPath,
+                    ...(operation.configuredVisualCandidateInventory ? {
+                        configuredVisualCandidateInventory: {
+                            ...operation.configuredVisualCandidateInventory
+                        }
+                    } : {}),
                     evidence: { ...operation.evidence },
                     status: "retained-not-rendered"
                 });
@@ -903,26 +1036,87 @@ export class TnyGlesCharacterAdapter
         }
         if (!configuredModel.meshes.length)
         {
-            throw new Error(`Configured character part has no meshes: ${operation.configurationPath}`);
+            // A retained dependency configuration may carry non-visual support
+            // data without any render carriers. Preserve it in diagnostics,
+            // but do not fabricate geometry or an effect for the GLES adapter.
+            const configuredPart = {
+                groupID: operation.groupID,
+                layerIndex: operation.layerIndex,
+                partIndex: operation.partIndex,
+                partSourceRecordID: operation.partSourceRecordID ?? null,
+                configurationPath: operation.configurationPath,
+                geometryPath: operation.geometryPath,
+                meshCount: 0,
+                authoredMeshIndexCount: 0,
+                modelBindingMeshIndexCount: 0,
+                effectCount: 0,
+                geometryStatus: "retained-support-only",
+                authoredEffectStatus: "not-applicable",
+                proofFallbackEffectCount: 0,
+                proofEffectStatus: "not-required",
+                renderStatus: "retained-not-rendered",
+                displayStatus: "not-applicable",
+                materialStatus: "not-applicable",
+                compositionStatus: "not-applicable",
+                foundationCoverage: null
+            };
+            staged.configuredParts.push(configuredPart);
+            this._QueueFoundationCoverage(staged, operation, configuredPart, []);
+            return;
         }
 
-        const geometry = await tw2.Fetch(operation.geometryPath);
+        const resolvedGeometry = ResolveConfiguredPartGeometryPath(configuredModel, operation);
+        const geometryPath = resolvedGeometry.path;
+        const geometry = await tw2.Fetch(geometryPath);
 
         if (!Array.isArray(geometry?.meshes) || !geometry.meshes.length)
         {
-            throw new Error(`Configured character geometry has no meshes: ${operation.geometryPath}`);
+            throw new Error(`Configured character geometry has no meshes: ${geometryPath}`);
+        }
+
+        const strictCarrierSelection = ResolveStrictSingleGeometryCarrierSelection(
+            geometry,
+            configuredModel.meshes
+        );
+        let retainedUnboundConfiguredMeshes = strictCarrierSelection
+            ? strictCarrierSelection.unbound.map(mesh => ({
+                meshName: String(mesh?.name ?? ""),
+                authoredMeshIndex: Number.isInteger(mesh?.meshIndex)
+                    ? mesh.meshIndex
+                    : null,
+                reason: "stale-multi-carrier-single-geometry"
+            }))
+            : [];
+        if (strictCarrierSelection)
+        {
+            configuredModel.meshes = [ strictCarrierSelection.mesh ];
+        }
+        else
+        {
+            const staleCarrierSelection = ResolveStaleConfiguredCarrierSelection(
+                geometry,
+                configuredModel.meshes
+            );
+            configuredModel.meshes = staleCarrierSelection.bound;
+            retainedUnboundConfiguredMeshes = staleCarrierSelection.unbound;
         }
 
         const configuredMeshes = [];
         const resolvedMeshBindings = [];
+        const configuredMeshClaims = configuredModel.meshes.map(mesh => ({
+            name: mesh?.name,
+            meshIndex: mesh?.meshIndex
+        }));
+        const authoredMeshIndices = configuredModel.meshes.map(mesh => mesh?.meshIndex);
         let authoredMeshIndexCount = 0;
         let namedMeshIndexCount = 0;
         let modelBindingMeshIndexCount = 0;
+        let singleGeometryAliasCount = 0;
 
         for (let index = 0; index < configuredModel.meshes.length; index++)
         {
             const mesh = configuredModel.meshes[index];
-            const authoredMeshIndex = mesh?.meshIndex;
+            const authoredMeshIndex = authoredMeshIndices[index];
 
             if (!mesh)
             {
@@ -935,7 +1129,9 @@ export class TnyGlesCharacterAdapter
                 geometry,
                 authoredMeshIndex,
                 configuredMesh?.meshIndex,
-                configuredMesh?.name
+                configuredMesh?.name,
+                configuredMeshClaims,
+                index
             );
 
             if (!configuredMesh || resolved === null)
@@ -950,12 +1146,20 @@ export class TnyGlesCharacterAdapter
 
             if (resolved.source === "authored") authoredMeshIndexCount++;
             else if (resolved.source === "exact-mesh-name") namedMeshIndexCount++;
+            else if (resolved.source === "single-geometry-configured-alias")
+            {
+                singleGeometryAliasCount++;
+            }
+            else if (resolved.source === "unique-authored-index-alias")
+            {
+                authoredMeshIndexCount++;
+            }
             else modelBindingMeshIndexCount++;
 
             resolvedMeshBindings.push({
                 mesh: configuredMesh,
                 geometry,
-                geometryPath: operation.geometryPath,
+                geometryPath,
                 meshIndex: resolved.meshIndex,
                 meshName: String(configuredMesh.name ?? ""),
                 geometryMeshName: String(geometry.meshes[resolved.meshIndex]?.name ?? ""),
@@ -968,13 +1172,17 @@ export class TnyGlesCharacterAdapter
         RestoreConfiguredMeshBindings(resolvedMeshBindings);
         await tw2.resMan?.Watch?.(configuredModel);
         RestoreConfiguredMeshBindings(resolvedMeshBindings);
-
         const authoredEffects = GetEffects(configuredMeshes);
         const authoredEffectsReady = authoredEffects.length > 0
             && authoredEffects.every(IsAuthoredConfiguredEffectRenderable);
         const proofEffects = ReplaceUnrenderableConfiguredEffects(
             configuredMeshes,
-            staged.shaderPath
+            staged.shaderPath,
+            {
+                retainDeferredTextureConsumers:
+                    operation.groupID === "makeup/eyebrowbase"
+                    || operation.groupID === "hair"
+            }
         );
 
         if (proofEffects.length)
@@ -982,7 +1190,22 @@ export class TnyGlesCharacterAdapter
             ApplyProofTexturesToEffects(proofEffects, "neutral");
             await tw2.resMan?.Watch?.(configuredModel);
             RestoreConfiguredMeshBindings(resolvedMeshBindings);
+            for (const effect of proofEffects)
+            {
+                const influence = effect?._characterAuthoredCutMaskInfluence;
+                if (!influence) continue;
+                if (!SetEffectVectorParameter(effect, "CutMaskInfluence", influence))
+                {
+                    throw new Error(
+                        "Configured garment fallback cannot retain CutMaskInfluence"
+                    );
+                }
+                effect._characterAppliedCutMaskInfluence = [ ...influence ];
+                effect._characterAppliedCutMaskPolicy =
+                    "authored-influence-with-neutral-white-mask";
+            }
         }
+        const cardAreaReport = applyLegacyConfiguredCardAreas(configuredMeshes);
 
         const proofMaterial = applyLegacyProofGarmentMaterial(
             proofEffects,
@@ -991,7 +1214,11 @@ export class TnyGlesCharacterAdapter
 
         const proofEffectsReady = proofEffects.length > 0
             && proofEffects.every(effect => effect?.IsGood?.() === true);
-        for (const mesh of configuredMeshes)
+        const renderMeshes = OrderConfiguredHairMeshesForRendering(
+            operation.groupID,
+            configuredMeshes
+        );
+        for (const mesh of renderMeshes)
         {
             mesh._characterConfigPath = operation.configurationPath;
             mesh._characterGroupID = operation.groupID;
@@ -1006,10 +1233,19 @@ export class TnyGlesCharacterAdapter
             partIndex: operation.partIndex,
             partSourceRecordID: operation.partSourceRecordID ?? null,
             configurationPath: operation.configurationPath,
-            geometryPath: operation.geometryPath,
+            geometryPath,
+            geometryBindingSource: resolvedGeometry.source,
             meshCount: configuredMeshes.length,
             authoredMeshIndexCount,
             ...(namedMeshIndexCount ? { namedMeshIndexCount } : {}),
+            ...(singleGeometryAliasCount ? { singleGeometryAliasCount } : {}),
+            ...(renderMeshes !== configuredMeshes ? {
+                renderOrderPolicy: "transparent-glass-after-hair-consumers"
+            } : {}),
+            ...(retainedUnboundConfiguredMeshes.length ? {
+                retainedUnboundMeshCount: retainedUnboundConfiguredMeshes.length,
+                retainedUnboundConfiguredMeshes
+            } : {}),
             modelBindingMeshIndexCount,
             effectCount: GetEffects(configuredMeshes).length,
             geometryStatus: "attached",
@@ -1018,6 +1254,7 @@ export class TnyGlesCharacterAdapter
             proofEffectStatus: proofEffects.length
                 ? proofEffectsReady ? "ready" : "deferred"
                 : "not-required",
+            ...(cardAreaReport.status === "applied" ? { cardAreaReport } : {}),
             renderStatus: "pending-final-watch",
             displayStatus: "visible",
             materialStatus: proofMaterial.appliedEffects
@@ -1126,14 +1363,33 @@ export class TnyGlesCharacterAdapter
         }
 
         RestoreConfiguredMeshBindings(resolvedMeshBindings);
-        // A configured face Black already owns the material contract for eyes,
-        // lashes, teeth and tongue.  Neutral proof textures are only valid for
-        // effects built by this adapter; applying them to the whole decoded
-        // face destroys authored diffuse/alpha bindings.  The exact skin
-        // carrier receives its composed D/N/S below. Other face effects keep
-        // every populated authored binding; only their declared empty slots
-        // receive the neutral resources required to make the effect link.
-        ApplyMissingProofTexturesToEffects(GetEffects(configuredMeshes), "neutral");
+        // A configured head Black owns external-composition seams for the
+        // small face carriers. Filling their declared-empty samplers with the
+        // adapter's opaque proof resources turns a missing composition into a
+        // plausible grey/white card. Keep those slots authored-empty and hide
+        // the carriers until the atlas composer commits their exact material.
+        // Non-head foundations still need the compatibility fill, while the
+        // switched head-skin effect receives its own bounded fill below.
+        const faceCarrierPreparation = operation.role === "head"
+            ? PrepareConfiguredFaceCarriers(resolvedMeshBindings)
+            : null;
+        if (operation.role === "head")
+        {
+            const deferredCarrierEffects = new Set(
+                resolvedMeshBindings
+                    .filter(value => IsExternallyComposedFaceCarrier(value.meshName))
+                    .flatMap(value => GetEffects([ value.mesh ]))
+            );
+            ApplyMissingProofTexturesToEffects(
+                GetEffects(configuredMeshes).filter(effect =>
+                    !deferredCarrierEffects.has(effect)),
+                "neutral"
+            );
+        }
+        else
+        {
+            ApplyMissingProofTexturesToEffects(GetEffects(configuredMeshes), "neutral");
+        }
         await tw2.resMan?.Watch?.(configuredModel);
         RestoreConfiguredMeshBindings(resolvedMeshBindings);
         const cardAreaReport = applyLegacyConfiguredCardAreas(configuredMeshes);
@@ -1206,9 +1462,16 @@ export class TnyGlesCharacterAdapter
                 ...operation.skinEvidence,
                 effectCount: skinEffects.length,
                 textures: { ...operation.skinTextures },
+                supportTextures: operation.supportTextures
+                    ? { ...operation.supportTextures }
+                    : null,
+                supportEvidence: operation.supportEvidence
+                    ? { ...operation.supportEvidence }
+                    : null,
                 colorization: CloneSkinColorization(operation.skinColorization)
             },
             cardAreas: cardAreaReport,
+            faceCarriers: faceCarrierPreparation,
             meshes: resolvedMeshBindings.map(value => ({
                 meshIndex: value.meshIndex,
                 meshName: value.meshName,
@@ -1228,7 +1491,12 @@ export class TnyGlesCharacterAdapter
 
     _QueueFoundationCoverage(staged, operation, configuredPart, configuredMeshes)
     {
-        const coverage = operation.foundationCoverage;
+        const coverage = operation.foundationCoverage
+            ?? ResolveConfiguredFootwearReplacementCoverage(
+                staged,
+                operation,
+                configuredMeshes
+            );
         if (!coverage) return null;
 
         const requestedRoles = new Set(
@@ -1237,7 +1505,8 @@ export class TnyGlesCharacterAdapter
 
         for (const role of coverage.roles)
         {
-            if (requestedRoles.has(role))
+            if (requestedRoles.has(role)
+                && coverage.strategy !== "triangle-mask")
             {
                 throw new Error(
                     `Legacy foundation coverage role ${JSON.stringify(role)}`
@@ -1441,12 +1710,42 @@ export class TnyGlesCharacterAdapter
     }
 }
 
-/** Collapses exact authored eyelash forward/reversed card pairs to one draw. */
+/** Draws authored hair glass after the consumers visible through it. */
+export function OrderConfiguredHairMeshesForRendering(groupID, meshes)
+{
+    if (groupID !== "hair" || !Array.isArray(meshes) || meshes.length < 2)
+    {
+        return meshes;
+    }
+
+    const glass = [];
+    const consumers = [];
+    for (const mesh of meshes)
+    {
+        (IsConfiguredHairGlassMesh(mesh) ? glass : consumers).push(mesh);
+    }
+    if (!glass.length || !consumers.length) return meshes;
+    return [ ...consumers, ...glass ];
+}
+
+function IsConfiguredHairGlassMesh(mesh)
+{
+    return AREA_FIELDS.some(field => (mesh?.[field] ?? []).some(area =>
+    {
+        if (!area || area.display === false) return false;
+        const effect = area.effect;
+        const authored = effect?._characterAuthoredEffect;
+        const identity = `${effect?.effectFilePath ?? ""} ${authored?.effectFilePath ?? ""}`;
+        return /glassshader/iu.test(identity);
+    }));
+}
+
+/** Collapses exact authored hair/eyelash forward/reversed card pairs to one draw. */
 export function applyLegacyConfiguredCardAreas(meshes, d3d = tw2.const)
 {
     const result = {
         status: "not-required",
-        rule: "legacy-opengl-authored-eyelash-reversed-area-v1",
+        rule: "legacy-opengl-authored-two-sided-card-area-v2",
         correctness: "retained-source-policy",
         reversedAreas: 0,
         collapsedPairs: 0,
@@ -1459,15 +1758,21 @@ export function applyLegacyConfiguredCardAreas(meshes, d3d = tw2.const)
             const areas = mesh?.[field] ?? [];
             for (const reversed of areas)
             {
-                if (!reversed?.reversed || !IsEyelashEffect(reversed.effect)) continue;
+                if (!reversed?.reversed) continue;
                 if (!Number.isFinite(d3d?.RS_CULLMODE)
                     || !Number.isFinite(d3d?.CULL_NONE)
                     || !Number.isFinite(d3d?.CULL_CCW))
                 {
                     throw new TypeError("Configured card areas require ccpwgl D3D constants");
                 }
-                const forward = areas.find(candidate =>
-                    IsMatchingConfiguredCardArea(candidate, reversed));
+                const forward = IsTwoSidedCardEffect(reversed.effect)
+                    ? areas.find(candidate =>
+                        IsMatchingConfiguredCardArea(candidate, reversed)
+                        && AreConfiguredCardEffectsEquivalent(
+                            candidate.effect,
+                            reversed.effect
+                        ))
+                    : null;
                 const effect = forward?.effect ?? reversed.effect;
                 const cullMode = forward ? d3d.CULL_NONE : d3d.CULL_CCW;
                 let passCount = 0;
@@ -1507,9 +1812,46 @@ export function applyLegacyConfiguredCardAreas(meshes, d3d = tw2.const)
     return result;
 }
 
-function IsEyelashEffect(effect)
+/** Keeps externally composed face carriers invisible until their material commits. */
+export function PrepareConfiguredFaceCarriers(bindings)
 {
-    return /eyelash/iu.test(`${effect?.name ?? ""} ${effect?.effectFilePath ?? ""}`);
+    const result = {
+        status: "not-required",
+        rule: "configured-face-carrier-atomic-material-v1",
+        correctness: "retained-source-policy",
+        carriers: []
+    };
+
+    for (const binding of bindings ?? [])
+    {
+        const meshName = String(binding?.meshName ?? binding?.mesh?.name ?? "");
+        if (!IsExternallyComposedFaceCarrier(meshName))
+        {
+            continue;
+        }
+        binding.mesh.display = false;
+        result.carriers.push({
+            meshName,
+            geometryMeshName: String(binding?.geometryMeshName ?? ""),
+            status: "awaiting-exact-material"
+        });
+    }
+
+    if (result.carriers.length) result.status = "applied";
+    return result;
+}
+
+function IsExternallyComposedFaceCarrier(meshName)
+{
+    return /^(?:EyeWet|Tearducts|Eyelashes|EyeShadow)_GeoShape$/iu.test(
+        String(meshName ?? "")
+    );
+}
+
+function IsTwoSidedCardEffect(effect)
+{
+    const identity = `${effect?.name ?? ""} ${effect?.effectFilePath ?? ""}`;
+    return /eyelash/iu.test(identity) || /skinnedavatarhair/iu.test(identity);
 }
 
 function IsMatchingConfiguredCardArea(candidate, reversed)
@@ -1517,11 +1859,61 @@ function IsMatchingConfiguredCardArea(candidate, reversed)
     return Boolean(candidate
         && !candidate.reversed
         && candidate.display !== false
-        && IsEyelashEffect(candidate.effect)
+        && IsTwoSidedCardEffect(candidate.effect)
         && String(candidate.name ?? "") === String(reversed.name ?? "")
         && Number(candidate.meshIndex ?? 0) === Number(reversed.meshIndex ?? 0)
         && Number(candidate.index ?? 0) === Number(reversed.index ?? 0)
         && Number(candidate.count ?? 1) === Number(reversed.count ?? 1));
+}
+
+function AreConfiguredCardEffectsEquivalent(left, right)
+{
+    if (left === right) return true;
+    if (!left || !right
+        || String(left.name ?? "") !== String(right.name ?? "")
+        || String(left.effectFilePath ?? "") !== String(right.effectFilePath ?? ""))
+    {
+        return false;
+    }
+    for (const field of [ "parameters", "textures", "samplerOverrides" ])
+    {
+        const leftValues = ComparableConfiguredEffectValues(left[field]);
+        const rightValues = ComparableConfiguredEffectValues(right[field]);
+        if (JSON.stringify(leftValues) !== JSON.stringify(rightValues)) return false;
+    }
+    const techniques = new Set([
+        ...Object.keys(left.techniques ?? {}),
+        ...Object.keys(right.techniques ?? {})
+    ]);
+    return [ ...techniques ].every(name =>
+        Number(left.GetPassCount?.(name) ?? 0)
+        === Number(right.GetPassCount?.(name) ?? 0));
+}
+
+function ComparableConfiguredEffectValues(values)
+{
+    return Object.keys(values ?? {}).sort().map(name => [
+        name,
+        ComparableConfiguredEffectValue(values[name])
+    ]);
+}
+
+function ComparableConfiguredEffectValue(value)
+{
+    if (value === null || value === undefined) return value;
+    if (typeof value === "string" || typeof value === "number"
+        || typeof value === "boolean") return value;
+    if (Array.isArray(value) || ArrayBuffer.isView(value)) return [ ...value ];
+    if (typeof value.resourcePath === "string") return value.resourcePath;
+    if (Array.isArray(value.value) || ArrayBuffer.isView(value.value))
+    {
+        return [ ...value.value ];
+    }
+    if ([ "string", "number", "boolean" ].includes(typeof value.value))
+    {
+        return value.value;
+    }
+    return null;
 }
 
 function PropagateFoundationRoles(visualModel)
@@ -1580,11 +1972,118 @@ function IsConfiguredPartRenderable(meshes)
     return true;
 }
 
+function ResolveConfiguredPartGeometryPath(configuredModel, operation)
+{
+    const candidates = new Map((operation.geometryCandidates ?? []).map(value => [
+        NormalizeConfiguredGeometryPath(value),
+        String(value).trim()
+    ]));
+    const authoredPaths = [ ...new Set(configuredModel.meshes
+        .map(mesh => String(mesh?.geometryResPath ?? "").trim())
+        .filter(Boolean)) ];
+    if (operation.geometryPath)
+    {
+        const explicit = String(operation.geometryPath).trim();
+        const retained = candidates.size
+            ? candidates.get(NormalizeConfiguredGeometryPath(explicit))
+            : explicit;
+        if (!retained)
+        {
+            throw new Error(
+                `Configured character geometry is outside the retained candidate inventory: ${explicit}`
+            );
+        }
+        const source = authoredPaths.length === 1
+            && NormalizeConfiguredGeometryPath(authoredPaths[0])
+                !== NormalizeConfiguredGeometryPath(explicit)
+            ? "retained-explicit-config-alias"
+            : "retained-explicit";
+        return { path: retained, source };
+    }
+
+    if (authoredPaths.length !== 1)
+    {
+        throw new Error(
+            "Configured character part requires one authored geometry path"
+            + ` (${operation.configurationPath}; found=${authoredPaths.length})`
+        );
+    }
+
+    const retained = candidates.get(NormalizeConfiguredGeometryPath(authoredPaths[0]));
+    if (!retained)
+    {
+        throw new Error(
+            `Configured character geometry is outside the retained candidate inventory: ${authoredPaths[0]}`
+        );
+    }
+
+    return { path: retained, source: "authored-retained" };
+}
+
+function NormalizeConfiguredGeometryPath(value)
+{
+    return String(value ?? "")
+        .trim()
+        .replace(/\\/gu, "/")
+        .toLowerCase();
+}
+
+function ResolveStrictSingleGeometryCarrierSelection(geometry, configuredMeshes)
+{
+    if (geometry?.meshes?.length !== 1
+        || !Array.isArray(configuredMeshes)
+        || configuredMeshes.length <= 2)
+    {
+        return null;
+    }
+    const geometryName = String(geometry.meshes[0]?.name ?? "").trim().toLowerCase();
+    if (!geometryName) return null;
+    const exact = configuredMeshes.filter(mesh =>
+        String(mesh?.name ?? "").trim().toLowerCase() === geometryName);
+    if (exact.length !== 1) return null;
+    return {
+        mesh: exact[0],
+        unbound: configuredMeshes.filter(mesh => mesh !== exact[0])
+    };
+}
+
+function ResolveStaleConfiguredCarrierSelection(geometry, configuredMeshes)
+{
+    if ((geometry?.meshes?.length ?? 0) <= 1
+        || !Array.isArray(configuredMeshes)
+        || configuredMeshes.length <= geometry.meshes.length)
+    {
+        return { bound: configuredMeshes, unbound: [] };
+    }
+    const bound = [];
+    const unbound = [];
+    for (const mesh of configuredMeshes)
+    {
+        const meshName = String(mesh?.name ?? "").trim();
+        const authoredMeshIndex = mesh?.meshIndex;
+        if (Number.isInteger(authoredMeshIndex)
+            && !HasGeometryMesh(geometry, authoredMeshIndex)
+            && FindUniqueNamedGeometryMesh(geometry, meshName) === null)
+        {
+            unbound.push({
+                meshName,
+                authoredMeshIndex,
+                reason: "stale-out-of-range-configured-carrier"
+            });
+            continue;
+        }
+        bound.push(mesh);
+    }
+    return { bound, unbound };
+}
+
 function ResolveConfiguredMeshIndex(
     geometry,
     authoredMeshIndex,
     modelBindingMeshIndex,
-    meshName
+    meshName,
+    configuredMeshes = null,
+    configuredMeshIndex = -1
 )
 {
     const namedMeshIndex = FindUniqueNamedGeometryMesh(geometry, meshName);
@@ -1593,6 +2092,16 @@ function ResolveConfiguredMeshIndex(
         if (namedMeshIndex !== null && namedMeshIndex !== authoredMeshIndex)
         {
             return { meshIndex: namedMeshIndex, source: "exact-mesh-name" };
+        }
+        if (IsUniqueUnclaimedAuthoredIndexAlias(
+            geometry,
+            authoredMeshIndex,
+            meshName,
+            configuredMeshes,
+            configuredMeshIndex
+        ))
+        {
+            return { meshIndex: authoredMeshIndex, source: "unique-authored-index-alias" };
         }
         return ValidateNamedMeshBinding(
             geometry,
@@ -1605,6 +2114,18 @@ function ResolveConfiguredMeshIndex(
     {
         return { meshIndex: namedMeshIndex, source: "exact-mesh-name" };
     }
+    if (IsSingleGeometryConfiguredAlias(
+        geometry,
+        configuredMeshes,
+        configuredMeshIndex
+    ))
+    {
+        // Some retained Black documents expose two material carriers over one
+        // geometry mesh. Admit the unmatched carrier only when a sibling in
+        // the same document exactly names that sole mesh; this is deliberately
+        // narrower than the old demo's general mesh-zero fallback.
+        return { meshIndex: 0, source: "single-geometry-configured-alias" };
+    }
     if (HasGeometryMesh(geometry, modelBindingMeshIndex))
     {
         return ValidateNamedMeshBinding(
@@ -1615,6 +2136,53 @@ function ResolveConfiguredMeshIndex(
         );
     }
     return null;
+}
+
+function IsUniqueUnclaimedAuthoredIndexAlias(
+    geometry,
+    authoredMeshIndex,
+    meshName,
+    configuredMeshes,
+    configuredMeshIndex
+)
+{
+    if (!Array.isArray(configuredMeshes)
+        || FindUniqueNamedGeometryMesh(geometry, meshName) !== null)
+    {
+        return false;
+    }
+    const geometryName = String(geometry?.meshes?.[authoredMeshIndex]?.name ?? "")
+        .trim()
+        .toLowerCase();
+    if (!geometryName) return false;
+    if (configuredMeshes.some((mesh, index) =>
+        index !== configuredMeshIndex
+        && String(mesh?.name ?? "").trim().toLowerCase() === geometryName))
+    {
+        return false;
+    }
+    const claims = configuredMeshes.filter(mesh => mesh?.meshIndex === authoredMeshIndex);
+    return claims.length === 1;
+}
+
+function IsSingleGeometryConfiguredAlias(
+    geometry,
+    configuredMeshes,
+    configuredMeshIndex
+)
+{
+    if (geometry?.meshes?.length !== 1 || !Array.isArray(configuredMeshes))
+    {
+        return false;
+    }
+    const geometryName = String(geometry.meshes[0]?.name ?? "").trim().toLowerCase();
+    if (!geometryName) return false;
+
+    const exactSiblings = configuredMeshes.filter((mesh, index) =>
+        index !== configuredMeshIndex
+        && String(mesh?.name ?? "").trim().toLowerCase() === geometryName
+    );
+    return exactSiblings.length === 1;
 }
 
 function ValidateNamedMeshBinding(geometry, meshIndex, meshName, source)
@@ -1900,6 +2468,16 @@ function ValidateConstruction(construction)
                 `configured foundation ${role} ${name}`
             );
         }
+        if (operation.supportTextures)
+        {
+            for (const name of [ "DiffuseMap", "NormalMap", "SpecularMap" ])
+            {
+                RequireResourcePath(
+                    operation.supportTextures[name],
+                    `configured foundation ${role} support ${name}`
+                );
+            }
+        }
         if (operation.skinColorization)
         {
             for (const name of [
@@ -2012,7 +2590,33 @@ function ValidateConstruction(construction)
         {
             configuredPartCount++;
             RequireResourcePath(operation.configurationPath, `configured part ${index} configurationPath`);
-            RequireResourcePath(operation.geometryPath, `configured part ${index} geometryPath`);
+            if (operation.geometryPath)
+            {
+                RequireResourcePath(operation.geometryPath, `configured part ${index} geometryPath`);
+            }
+            else
+            {
+                if (!Array.isArray(operation.geometryCandidates)
+                    || !operation.geometryCandidates.length)
+                {
+                    throw new Error(
+                        `Configured part ${index} requires a geometry path or retained candidates`
+                    );
+                }
+                const candidates = new Set();
+                for (const value of operation.geometryCandidates)
+                {
+                    const candidate = RequireResourcePath(
+                        value,
+                        `configured part ${index} geometry candidate`
+                    );
+                    candidates.add(candidate.toLowerCase());
+                }
+                if (candidates.size !== operation.geometryCandidates.length)
+                {
+                    throw new Error(`Configured part ${index} geometry candidates must be unique`);
+                }
+            }
             ValidateFoundationCoverage(operation, construction.sex);
         }
         else
@@ -2097,12 +2701,11 @@ function ValidateFoundationCoverage(operation, sex)
 
     const evidence = coverage.evidence;
 
-    const exactPolicy = evidence?.rule === "legacy-opengl-exact-foundation-coverage-v1";
     const authoredFootwearPolicy = IsAuthoredFootwearCoverageEvidence(evidence);
     const authoredModifierPolicy = IsAuthoredModifierCoverageEvidence(evidence);
 
     if (evidence?.status !== "policy"
-        || (!exactPolicy && !authoredFootwearPolicy && !authoredModifierPolicy)
+        || (!authoredFootwearPolicy && !authoredModifierPolicy)
         || evidence?.sex !== sex
         || evidence?.groupID !== operation.groupID
         || evidence?.partSourceRecordID !== operation.partSourceRecordID)
@@ -2114,27 +2717,17 @@ function ValidateFoundationCoverage(operation, sex)
     {
         const maleFeet = sex === "male"
             && operation.groupID === "feet"
-            && (authoredFootwearPolicy
-                || operation.partSourceRecordID === "male/feet/bootsam01")
+            && authoredFootwearPolicy
             && roles.length === 1
             && roles[0] === "feet"
             && coverage.authoredOcclusion === undefined;
-        const malePants = sex === "male"
-            && operation.groupID === "bottomouter"
-            && operation.partSourceRecordID === "male/bottomouter/pantsam01"
-            && roles.length === 1
-            && roles[0] === "legs"
-            && coverage.authoredOcclusion === "bottominner";
-        const maleTorso = sex === "male"
+        const maleAuthoredCoverage = sex === "male"
             && authoredModifierPolicy
-            && roles.length === 1
-            && roles[0] === "torso"
             && coverage.authoredOcclusion === undefined;
-
-        if ((!maleFeet && !malePants && !maleTorso)
+        if ((!maleFeet && !maleAuthoredCoverage)
             || coverage.bonePrefixes !== undefined || coverage.triangleRule !== undefined)
         {
-            throw new Error("Legacy hide-carrier coverage is restricted to reviewed exact male policies");
+            throw new Error("Legacy hide-carrier coverage requires reviewed exact foundation evidence");
         }
         return;
     }
@@ -2148,23 +2741,44 @@ function ValidateFoundationCoverage(operation, sex)
             && operation.partSourceRecordID !== "female/feet/bootscf01")
         || !femaleFoundationRole
         || coverage.triangleRule !== "legacy-opengl-exact-foundation-triangle-coverage-v1"
+        || coverage.triangleSelection !== undefined
         || !Array.isArray(coverage.bonePrefixes)
         || coverage.bonePrefixes.length !== expectedPrefixes.length
         || expectedPrefixes.some((value, index) => coverage.bonePrefixes[index] !== value))
     {
-        throw new Error("Legacy triangle coverage is restricted to an exact female boot foundation policy");
+        throw new Error(
+            "Legacy triangle coverage requires an exact female authored foundation policy: "
+            + JSON.stringify({
+                sex,
+                groupID: operation.groupID,
+                partSourceRecordID: operation.partSourceRecordID,
+                roles,
+                evidenceRule: evidence?.rule ?? null,
+                authoredFootwearPolicy,
+                bonePrefixes: coverage.bonePrefixes ?? null
+            })
+        );
     }
 }
 
 function IsAuthoredModifierCoverageEvidence(evidence)
 {
+    const roles = new Map([
+        [ "topinner", "torso" ],
+        [ "bottominner", "legs" ],
+        [ "feet", "feet" ],
+        [ "hands", "hands" ]
+    ]);
     return evidence?.rule === "legacy-opengl-authored-modifier-coverage-v1"
         && evidence.sex === "male"
-        && evidence.modifierLocationKey === "topinner"
-        && typeof evidence.authoredValue === "string"
-        && evidence.authoredValue.length > 0
-        && (evidence.relation === "typed-modifier-location"
-            || evidence.relation === "exact-modifier-path-fallback");
+        && Array.isArray(evidence.relationships)
+        && evidence.relationships.length > 0
+        && evidence.relationships.every(value =>
+            typeof value.authoredValue === "string"
+            && value.authoredValue.length > 0
+            && roles.get(value.modifierLocationKey) === value.foundationRole
+            && (value.relation === "typed-modifier-location"
+                || value.relation === "exact-modifier-path-fallback"));
 }
 
 function IsAuthoredFootwearCoverageEvidence(evidence)
@@ -2177,6 +2791,67 @@ function IsAuthoredFootwearCoverageEvidence(evidence)
         && evidence.authoredModifierPaths.length > 0
         && evidence.authoredModifierPaths.every(value =>
             /^(?:utilityshapes\/pantstuck(?:low|shin|medium|knee|high|xhigh)shape|dependants\/bootmasks\/bootmask(?:low|shin|medium|knee|high|xhigh))$/u.test(value));
+}
+
+function ResolveConfiguredFootwearReplacementCoverage(staged, operation, configuredMeshes)
+{
+    if (staged?.sex !== "female" || operation?.groupID !== "feet") return null;
+
+    // Some configured footwear supplies its own posed skin surface alongside
+    // the private garment surface. That decoded consumer topology replaces the
+    // generic nude-foot carrier even when the part metadata has no boot mask.
+    const bodyConsumers = GetEffects(configuredMeshes)
+        .filter(isLegacyConfiguredBodyConsumerEffect);
+    const bodyConsumerCount = bodyConsumers.length;
+    if (!bodyConsumerCount) return null;
+
+    const splitFeet = staged.foundationResources.has("feet");
+    const combinedBody = !splitFeet && staged.foundationResources.has("body");
+    if (!splitFeet && !combinedBody) return null;
+
+    // This is a geometry replacement, not a garment-alpha support surface.
+    // Mark the exact consumers before atlas composition so they retain the
+    // shared body D/N/S and remain visible when the nude carrier is removed.
+    for (const effect of bodyConsumers)
+    {
+        effect._characterFoundationReplacementRole = "feet";
+    }
+
+    const coverage = {
+        strategy: splitFeet ? "hide-carrier" : "triangle-mask",
+        roles: [ splitFeet ? "feet" : "body" ],
+        ...(combinedBody ? {
+            triangleRule: "legacy-opengl-exact-foundation-triangle-coverage-v1",
+            bonePrefixes: [ "LeftFoot", "RightFoot", "LeftToe", "RightToe" ]
+        } : {}),
+        evidence: {
+            status: "policy",
+            rule: "legacy-opengl-configured-footwear-skin-replacement-v1",
+            sex: staged.sex,
+            groupID: operation.groupID,
+            partSourceRecordID: operation.partSourceRecordID ?? null,
+            configurationPath: operation.configurationPath,
+            geometryPath: operation.geometryPath,
+            bodyConsumerCount
+        }
+    };
+
+    return IsConfiguredFootwearReplacementEvidence(coverage.evidence)
+        ? coverage
+        : null;
+}
+
+function IsConfiguredFootwearReplacementEvidence(evidence)
+{
+    return evidence?.rule === "legacy-opengl-configured-footwear-skin-replacement-v1"
+        && evidence.sex === "female"
+        && evidence.groupID === "feet"
+        && typeof evidence.configurationPath === "string"
+        && /^res:\//u.test(evidence.configurationPath)
+        && typeof evidence.geometryPath === "string"
+        && /^res:\//u.test(evidence.geometryPath)
+        && Number.isInteger(evidence.bodyConsumerCount)
+        && evidence.bodyConsumerCount > 0;
 }
 
 function CloneTextureContribution(value)
@@ -2251,7 +2926,11 @@ function GetEffects(meshes)
     return effects;
 }
 
-function ReplaceUnrenderableConfiguredEffects(meshes, shaderPath)
+function ReplaceUnrenderableConfiguredEffects(
+    meshes,
+    shaderPath,
+    { retainDeferredTextureConsumers = false } = {}
+)
 {
     const Effect = RequireClass(tw2, "Tw2Effect");
     const replacements = new Map();
@@ -2266,7 +2945,9 @@ function ReplaceUnrenderableConfiguredEffects(meshes, shaderPath)
                 if (!authored) continue;
 
                 PreserveAuthoredEffectState(authored);
-                if (IsAuthoredConfiguredEffectRenderable(authored)) continue;
+                if (IsAuthoredConfiguredEffectRenderable(authored)
+                    || (retainDeferredTextureConsumers
+                        && IsDeferredConfiguredTextureConsumer(authored))) continue;
 
                 if (!replacements.has(authored))
                 {
@@ -2282,6 +2963,17 @@ function ReplaceUnrenderableConfiguredEffects(meshes, shaderPath)
                     fallback._characterAuthoredTexturePaths = {
                         ...authored._characterAuthoredTexturePaths
                     };
+                    fallback._characterAuthoredParameterNames = [
+                        ...(authored._characterAuthoredParameterNames ?? [])
+                    ];
+                    fallback._characterAuthoredCutMaskInfluence = authored._characterAuthoredCutMaskInfluence
+                        ? [ ...authored._characterAuthoredCutMaskInfluence ]
+                        : null;
+                    fallback._characterAuthoredCutMaskInfluenceSource = authored._characterAuthoredCutMaskInfluenceSource
+                        ?? null;
+                    fallback._characterAuthoredCutMaskBinding = authored._characterAuthoredCutMaskBinding
+                        ? { ...authored._characterAuthoredCutMaskBinding }
+                        : null;
                     if (authored._characterAuthoredTransformUV0)
                     {
                         fallback._characterAuthoredTransformUV0 = [
@@ -2298,6 +2990,21 @@ function ReplaceUnrenderableConfiguredEffects(meshes, shaderPath)
     }
 
     return [ ...replacements.values() ];
+}
+
+/** Keeps one authored atlas consumer whose exact texture is composed later. */
+function IsDeferredConfiguredTextureConsumer(effect)
+{
+    const path = String(effect?.effectFilePath ?? "");
+    if (effect?.IsGood?.() !== true
+        || !/\/(?:glassshader|skinnedavatarbrdfdoublelinear|skinnedavatarhair_detailed)\.sm_[a-z0-9_]+$/iu.test(
+            path
+        ))
+    {
+        return false;
+    }
+    return [ "DiffuseMap", "NormalMap", "SpecularMap" ].every(name =>
+        typeof effect?.parameters?.[name]?.AttachTextureRes === "function");
 }
 
 function IsConfiguredFoundationSkinEffect(operation, binding, effect)
@@ -2353,6 +3060,12 @@ function ApplyConfiguredHeadSkinShader(mesh, shaderPath)
                 }
                 else authored.effectFilePath = shaderPath;
                 authored.Initialize?.();
+                // The configured head starts with a different authored effect
+                // contract. After switching resources, populate every sampler
+                // and constant declared by the shared foundation shader before
+                // restoring authored UVs or installing proof textures. This is
+                // the lifecycle used by the reviewed GLES reference path.
+                authored.AutoPopulate?.(false);
                 if (!SetEffectVectorParameter(authored, "TransformUV0", transformUV0))
                 {
                     throw new Error("Configured head skin shader cannot retain TransformUV0");
@@ -2391,6 +3104,7 @@ function PreserveAuthoredEffectState(effect)
     const texturePaths = {};
 
     effect._characterAuthoredEffectFilePath = String(effect?.effectFilePath ?? "");
+    effect._characterAuthoredParameterNames = Object.keys(effect?.parameters ?? {});
     effect._characterAuthoredBodyAtlasConsumer = isLegacyConfiguredBodyConsumerEffect(effect);
 
     for (const [ name, parameter ] of Object.entries(effect?.parameters ?? {}))
@@ -2406,6 +3120,21 @@ function PreserveAuthoredEffectState(effect)
     effect._characterAuthoredTexturePaths = texturePaths;
     const transform = ReadVectorParameter(effect?.parameters?.TransformUV0, 4);
     if (transform) effect._characterAuthoredTransformUV0 = transform;
+    const cutMaskInfluence = ReadEffectiveVectorParameter(effect, "CutMaskInfluence", 4);
+    effect._characterAuthoredCutMaskInfluence = cutMaskInfluence?.value ?? null;
+    effect._characterAuthoredCutMaskInfluenceSource = cutMaskInfluence?.source ?? null;
+    const cutMask = effect?.parameters?.CutMaskMap;
+    effect._characterAuthoredCutMaskBinding = cutMask
+        ? {
+            declared: true,
+            resourcePath: String(
+                cutMask?.resourcePath
+                || cutMask?.textureRes?.path
+                || ""
+            ).trim() || null,
+            attached: cutMask?.isAttached === true || Boolean(cutMask?.textureRes)
+        }
+        : { declared: false, resourcePath: null, attached: false };
 }
 
 function IsAuthoredConfiguredEffectRenderable(effect)
@@ -2439,6 +3168,44 @@ function ReadVectorParameter(parameter, length)
     }
 }
 
+function ReadEffectiveVectorParameter(effect, name, length)
+{
+    const parameterValue = ReadVectorParameter(effect?.parameters?.[name], length);
+    if (parameterValue)
+    {
+        return { value: parameterValue, source: "public-parameter" };
+    }
+
+    const values = [];
+    for (const [ techniqueName, shaderTechnique ] of Object.entries(
+        effect?.shader?.techniques ?? {}
+    ))
+    {
+        const runtimeTechnique = effect?.techniques?.[techniqueName];
+        for (let passIndex = 0; passIndex < (shaderTechnique?.passes?.length ?? 0); passIndex++)
+        {
+            const shaderPass = shaderTechnique.passes[passIndex];
+            const runtimePass = runtimeTechnique?.[passIndex];
+            for (let stageIndex = 0; stageIndex < (shaderPass?.stages?.length ?? 0); stageIndex++)
+            {
+                const shaderStage = shaderPass.stages[stageIndex];
+                const runtimeStage = runtimePass?.stages?.[stageIndex];
+                const constant = shaderStage?.constants?.find(value => value?.name === name);
+                if (!constant || constant.size < length || !runtimeStage?.constantBuffer) continue;
+                const value = Array.from(runtimeStage.constantBuffer)
+                    .slice(constant.offset, constant.offset + length)
+                    .map(Number);
+                if (value.length === length && value.every(Number.isFinite)) values.push(value);
+            }
+        }
+    }
+    if (!values.length) return null;
+    const first = values[0];
+    if (!values.every(value => value.every((item, index) =>
+        Math.abs(item - first[index]) <= 1e-6))) return null;
+    return { value: first, source: "shader-constant" };
+}
+
 /**
  * Marks proof fallbacks from their authored material channels. A primary
  * non-skin material owns a private garment target; a skin primary plus a
@@ -2462,21 +3229,30 @@ export function applyLegacyProofGarmentMaterial(effects, contribution)
         hybridEffects: 0
     };
 
-    if (!authoredColor) return report;
-
-    for (const effect of effects ?? [])
+    const materialContracts = (effects ?? []).map(effect =>
     {
         const authored = effect?._characterAuthoredEffect;
-        const materialLibraryID = ReadVectorParameter(
-            authored?.parameters?.MaterialLibraryID,
-            1
-        )?.[0];
-        const material2LibraryID = ReadVectorParameter(
-            authored?.parameters?.Material2LibraryID,
-            1
-        )?.[0];
+        return {
+            effect,
+            materialLibraryID: ReadVectorParameter(
+                authored?.parameters?.MaterialLibraryID,
+                1
+            )?.[0],
+            material2LibraryID: ReadVectorParameter(
+                authored?.parameters?.Material2LibraryID,
+                1
+            )?.[0]
+        };
+    });
+    for (const contract of materialContracts)
+    {
+        const { effect, materialLibraryID, material2LibraryID } = contract;
         const privateGarment = Number.isFinite(materialLibraryID)
             && materialLibraryID !== 0;
+        // DoubleLinear's non-skin secondary material remains a garment surface
+        // even when the same configured part also contains a private sibling.
+        // The owner layer's alpha decides which fragments of this carrier are
+        // visible; sibling count does not decide its RGB ownership.
         const hybridGarment = materialLibraryID === 0
             && Number.isFinite(material2LibraryID)
             && material2LibraryID !== 0;

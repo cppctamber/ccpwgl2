@@ -58,6 +58,39 @@ function copyRegs(out, outReg, src, srcReg, regCount)
 }
 
 /**
+ * Which clip convention the camera matrices are converted INTO.
+ *
+ * Must match the translator's `depthRange` - they are two halves of one pair.
+ * "reversed" (default) pairs with the emitter's `w - 2z`; "forward" pairs with
+ * `2z - w`. Mismatch them and the composition is `-z` rather than the identity,
+ * which renders the scene inside out.
+ *
+ * Exists so the convention can be A/B tested. `scripts/test-carbon-clip-convention.js`
+ * asserts the SHIPPED default against the installed emitter; this switch is for
+ * a deliberate experiment, and flipping it alone is not one.
+ * @type {String}
+ */
+let CLIP_DEPTH_RANGE = "reversed";
+
+/**
+ * @param {String} value - "reversed" or "forward"
+ */
+function SetClipDepthRange(value)
+{
+    if (value !== "reversed" && value !== "forward")
+    {
+        throw new TypeError(`Tw2CarbonData: clip depth range must be "reversed" or "forward", got ${JSON.stringify(value)}`);
+    }
+    CLIP_DEPTH_RANGE = value;
+}
+
+/** @returns {String} */
+function GetClipDepthRange()
+{
+    return CLIP_DEPTH_RANGE;
+}
+
+/**
  * Rewrites a transposed clip matrix from the GL depth convention to Carbon's.
  *
  * Carbon renders REVERSED depth. `EveSpaceScene.cpp:4002` sets the scene
@@ -91,6 +124,23 @@ function GlClipToCarbonClip(out, baseReg)
     for (let i = 0; i < FLOATS_PER_REG; i++)
     {
         out[z + i] = (out[w + i] - out[z + i]) * 0.5;
+    }
+    return out;
+}
+
+/**
+ * GL to FORWARD D3D: `z' = (z + w) / 2`. The pre-2026-08-18 mapping, kept only
+ * so the convention can be A/B tested against the emitter's "forward" tail.
+ * @param {Float32Array} out
+ * @param {Number} baseReg
+ * @returns {Float32Array} out
+ */
+function GlClipToForwardClip(out, baseReg)
+{
+    const z = (baseReg + 2) * FLOATS_PER_REG, w = (baseReg + 3) * FLOATS_PER_REG;
+    for (let i = 0; i < FLOATS_PER_REG; i++)
+    {
+        out[z + i] = (out[z + i] + out[w + i]) * 0.5;
     }
     return out;
 }
@@ -172,7 +222,8 @@ function PackPerFrameVS(out, gles)
     // CLIP_MATRIX_REGS: it is the LOOKUP matrix, read by main-pass shaders as
     // ordinary constants rather than written to gl_Position, so it carries no
     // emitter fixup and must stay exactly as Tw2CarbonShadowData built it.
-    for (const reg of CLIP_MATRIX_REGS) GlClipToCarbonClip(out, reg);
+    const convert = CLIP_DEPTH_RANGE === "forward" ? GlClipToForwardClip : GlClipToCarbonClip;
+    for (const reg of CLIP_MATRIX_REGS) convert(out, reg);
     return out;
 }
 
@@ -293,6 +344,9 @@ module.exports = {
     PackPerObjectVS,
     PackPerObjectPS,
     GlClipToCarbonClip,
+    GlClipToForwardClip,
+    SetClipDepthRange,
+    GetClipDepthRange,
     D3DClipToCarbonClip,
     PackDecalPerObjectVS,
     PackDecalPerObjectPS

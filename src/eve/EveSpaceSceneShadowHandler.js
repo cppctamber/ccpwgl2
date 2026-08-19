@@ -88,40 +88,15 @@ export class EveSpaceSceneShadowHandler
             shadowViewTranspose = mat4.transpose(g.mat4_0, this._view),
             shadowViewProjectionTranspose = mat4.transpose(g.mat4_1, this._viewProjection);
 
-        scene._perFrameVS.Set("ShadowViewMat", shadowViewTranspose);
-        scene._perFrameVS.Set("ShadowViewProjectionMat", shadowViewProjectionTranspose);
-
+        // Shadow values stay in the dedicated shadow container. GLES does not
+        // use shadows, so the writes that used to go into `scene._perFrameVS`
+        // and `scene._perFramePS` fed slots nothing reads - and on the dx11
+        // path they leaked in through Tw2CarbonData's wholesale copy of the
+        // head registers, which is a transcode, not authored Carbon data.
         this._perFrameVS.Set("ShadowView", shadowViewTranspose);
         this._perFrameVS.Set("ShadowViewProjection", shadowViewProjectionTranspose);
         this._perFrameVS.Set("ShadowNearFar", [ this.cameraNear, this.cameraFar || 1, 0, 0 ]);
 
-        const shadowsEnabled = scene.enableShadows && scene.visible.shadow;
-        const shadowMapSettings = [
-            this.mapOffsetX,
-            this.mapOffsetY,
-            this.depthBias,
-            scene.shadowFadeThreshold || 0
-        ];
-        const shadowCameraRange = [
-            shadowsEnabled ? this.cameraNear : 1,
-            shadowsEnabled ? this.cameraFar : 1,
-            this.minimumVisibility,
-            0
-        ];
-
-        if (this.autoSettings)
-        {
-            shadowMapSettings[0] = 0;
-            shadowMapSettings[1] = 0;
-            shadowMapSettings[2] = 0;
-            shadowMapSettings[3] = 0;
-            shadowCameraRange[0] = shadowsEnabled ? 0 : 1;
-            shadowCameraRange[1] = shadowsEnabled ? this.cameraFar : 1;
-            shadowCameraRange[2] = this.minimumVisibility;
-        }
-
-        scene._perFramePS.Set("ShadowMapSettings", shadowMapSettings);
-        scene._perFramePS.Set("ShadowCameraRange", shadowCameraRange);
         EveSpaceSceneShadowHandler.EnsureFallbackVariables();
         return true;
     }
@@ -1125,11 +1100,8 @@ export class EveSpaceSceneShadowHandler
             return false;
         }
 
-        const identity = EveSpaceSceneShadowHandler.global.mat4_IDENTITY;
-        scene._perFrameVS.Set("ShadowViewMat", identity);
-        scene._perFrameVS.Set("ShadowViewProjectionMat", identity);
-        scene._perFramePS.Set("ShadowMapSettings", [ 0, 0, 0, 0 ]);
-        scene._perFramePS.Set("ShadowCameraRange", [ 1, 1, 0, 0 ]);
+        // Nothing to clear in the GLES per-frame data: shadows are not written
+        // there. Dropping the shadow containers is what "disabled" means.
         device.perFrameShadowVSData = null;
         device.perFrameShadowPSData = null;
         EveSpaceSceneShadowHandler.ResetFallbackVariables();

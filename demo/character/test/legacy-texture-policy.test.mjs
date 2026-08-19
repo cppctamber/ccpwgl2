@@ -21,6 +21,7 @@ test("legacy texture policy joins exact retained type and color definitions with
     assert.equal(result[0].weight, 1);
     assert.deepEqual(result[0].source, {
         partSourceRecordID: "female/topmiddle/shirtcf01",
+        partPath: "topmiddle/shirtcf01",
         versionIndex: 0,
         typeDefinitionPath: typePath,
         materialDefinitionPath: materialPath,
@@ -97,6 +98,129 @@ test("legacy texture policy treats version folders as family overlays", () =>
         value.path === base.textureCandidates[1] && value.selected));
 });
 
+test("legacy texture policy lets exact version channels supersede differently named base channels", () =>
+{
+    const fixture = CreateFixture();
+    const base = fixture.partSource.versions[0];
+    const cutPath = `${root}/comp_body_m.png`;
+    base.textureCandidates.push(cutPath);
+    const version = {
+        resourceVersion: "v4",
+        metadata: null,
+        configurationCandidates: [],
+        geometryCandidates: [],
+        textureCandidates: [
+            `${root}/v4/colorize_body_n_4k.png`,
+            `${root}/v4/colorize_body_s_4k.png`
+        ]
+    };
+
+    fixture.partSource.versions.push(version);
+    fixture.plan.parts[0].origin.jsonPointer = "/versions/1";
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType.resourceVersion = "v4";
+    fixture.definitions.get(typePath).values[1] = "v4";
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/v4/colorize_body_n_4k.png`));
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/v4/colorize_body_s_4k.png`));
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/shirtcf01_n_4k.png`), false);
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/shirtcf01_s_4k.png`), false);
+    assert.ok(result.textureCandidates.some(value => value.path === cutPath));
+});
+
+test("legacy texture policy classifies material-qualified configured garment shorthand", () =>
+{
+    const fixture = CreateFixture();
+    fixture.plan.layers[0].owner.groupID = "bottomouter";
+    fixture.partSource.versions[0].textureCandidates = [
+        `${root}/shirtcf01_l.png`,
+        `${root}/shirtcf01_n.png`,
+        `${root}/shirtcf01_s.png`
+    ];
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result.selectedTextures.map(value => [ value.role, value.target ]), [
+        [ "colorize-layer", "body" ],
+        [ "normal-source", "body" ],
+        [ "specular-source", "body" ]
+    ]);
+});
+
+test("legacy texture policy keeps anonymous luminance unresolved without material evidence", () =>
+{
+    const fixture = CreateFixture();
+    fixture.plan.layers[0].owner.groupID = "bottomouter";
+    fixture.definitions.delete(materialPath);
+    fixture.partSource.versions[0].textureCandidates = [ `${root}/shirtcf01_l.png` ];
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.selectedTextures.length, 0);
+    assert.equal(result.textureCandidates[0].recognized, false);
+    assert.equal(result.textureCandidates[0].target, null);
+});
+
+test("legacy texture policy lets exact shorthand skirt channels override semantic base channels", () =>
+{
+    const fixture = CreateFixture();
+    const version = {
+        resourceVersion: "v5",
+        metadata: null,
+        configurationCandidates: [],
+        geometryCandidates: [],
+        textureCandidates: [
+            `${root}/v5/shirtcf01_l.png`,
+            `${root}/v5/shirtcf01_s.png`
+        ]
+    };
+    fixture.plan.layers[0].owner.groupID = "bottomouter";
+    fixture.partSource.versions.push(version);
+    fixture.plan.parts[0].origin.jsonPointer = "/versions/1";
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType.resourceVersion = "v5";
+    fixture.definitions.get(typePath).values[1] = "v5";
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/v5/shirtcf01_l.png`
+        && value.role === "colorize-layer"));
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/v5/shirtcf01_s.png`
+        && value.role === "specular-source"));
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/colorize_body_l_4k.png`), false);
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/shirtcf01_s_4k.png`), false);
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/colorize_body_z_4k.png`
+        && value.role === "colorize-zones"));
+    assert.ok(result.selectedTextures.some(value =>
+        value.path === `${root}/shirtcf01_n_4k.png`
+        && value.role === "normal-source"));
+});
+
 test("legacy texture policy resolves an exact paper-doll eye colour definition", () =>
 {
     const fixture = CreateFixture();
@@ -144,6 +268,62 @@ test("legacy texture policy resolves an exact paper-doll eye colour definition",
     assert.equal(result.source.materialDefinitionPath, colorPath);
     assert.strictEqual(result.materialValues, colorValues);
     assert.equal(result.evidence.materialRule, "exact-group-color-selection-v1");
+});
+
+test("legacy texture policy gives an exact type colour precedence over the paper-doll hair colour", () =>
+{
+    const fixture = CreateFixture();
+    const capRoot = "res:/graphics/character/female/paperdoll/hair/headwear_cap_f01";
+    const capTypePath = `${capRoot}/types/headwear_cap_f01_yoiul.type`;
+    const typeColorPath = "res:/graphics/character/female/paperdoll/hair/colors/28_bc.color";
+    const selectedColorPath = "res:/graphics/character/female/paperdoll/hair/colors/09_a.color";
+    const typeColorValues = {
+        colors: [ [ 0.08, 0.06, 0.06, 1 ], [ 0.08, 0.06, 0.06, 1 ], [ 0.38, 0.12, 0.09, 1 ] ],
+        specularColors: [ [ 0.34, 0.33, 0.27, 1 ] ]
+    };
+
+    fixture.plan.layers[0].owner.groupID = "hair";
+    fixture.plan.colorSelections = [ {
+        colorKey: "hair",
+        colorNameA: "09_a",
+        colorNameBC: "09_bc",
+        gloss: 0,
+        weight: 0
+    } ];
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType = {
+        sourcePath: capTypePath,
+        sourcePaths: [ capTypePath ],
+        partPath: "hair/headwear_cap_f01",
+        resourceVersion: "v23",
+        colorVariant: "28_bc"
+    };
+    fixture.definitions.set(capTypePath, {
+        sourcePath: capTypePath,
+        extension: ".type",
+        values: [ "hair/headwear_cap_f01", "v23", "28_bc" ]
+    });
+    fixture.definitions.set(typeColorPath, {
+        sourcePath: typeColorPath,
+        extension: ".color",
+        values: typeColorValues
+    });
+    fixture.definitions.set(selectedColorPath, {
+        sourcePath: selectedColorPath,
+        extension: ".color",
+        values: { colors: [ [ 0.9, 0.8, 0.7, 1 ] ] }
+    });
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.source.materialDefinitionPath, typeColorPath);
+    assert.strictEqual(result.materialValues, typeColorValues);
+    assert.equal(result.evidence.materialRule, "exact-type-group-color-definition-v1");
+    assert.equal(result.diagnostics.some(value =>
+        value.code === "MATERIAL_DEFINITION_UNRESOLVED"), false);
 });
 
 test("legacy texture policy resolves paper-doll makeup colour beside the exact selected part", () =>
@@ -247,6 +427,63 @@ test("legacy texture policy reports missing material evidence while retaining al
     assert.equal(result.diagnostics[0].code, "MATERIAL_DEFINITION_UNRESOLVED");
 });
 
+test("legacy texture policy retains but does not apply an unselected sibling default material", () =>
+{
+    const fixture = CreateFixture();
+    const implantRoot = "res:/graphics/character/female/paperdoll/makeup/implants/plugs_02";
+    const implantTypePath = `${implantRoot}/types/plugs_02.type`;
+    const defaultPath = `${implantRoot}/default.color`;
+    const defaultValues = {
+        colors: [ [ 0.1, 0.1, 0.1, 1 ], [ 0.2, 0.2, 0.2, 1 ], [ 0.3, 0.3, 0.3, 1 ] ]
+    };
+    fixture.plan.layers[0].owner.groupID = "makeup/implants";
+    fixture.partSource.recordID = "female/makeup/implants/plugs_02";
+    fixture.plan.parts[0].origin.recordID = fixture.partSource.recordID;
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType = {
+        sourcePath: implantTypePath,
+        sourcePaths: [ implantTypePath ],
+        partPath: "makeup/implants/plugs_02",
+        resourceVersion: null,
+        colorVariant: null
+    };
+    fixture.definitions.set(implantTypePath, {
+        sourcePath: implantTypePath,
+        extension: ".type",
+        values: [ "makeup/implants/plugs_02", "", "" ]
+    });
+    fixture.definitions.set(defaultPath, {
+        sourcePath: defaultPath,
+        extension: ".color",
+        values: defaultValues
+    });
+    fixture.library.Get = (documentName, recordID) =>
+    {
+        if (documentName === "characterDefinitions")
+        {
+            return fixture.definitions.get(recordID) ?? null;
+        }
+        if (documentName === "characterPartSources"
+            && recordID === fixture.partSource.recordID) return fixture.partSource;
+        return null;
+    };
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.equal(result.materialValues, null);
+    assert.equal(result.source.materialDefinitionPath, null);
+    assert.deepEqual(result.source.materialCandidatePaths, [ defaultPath ]);
+    assert.equal(result.diagnostics[0].code, "DEFAULT_MATERIAL_POLICY_UNRESOLVED");
+    assert.equal(result.evidence.materialRule, "unresolved");
+    assert.equal(
+        result.evidence.materialCandidateRule,
+        "unselected-exact-sibling-default-v1"
+    );
+});
+
 test("schema-v8 plan texture paths retain and classify dependency cut masks", () =>
 {
     const fixture = CreateFixture();
@@ -308,6 +545,37 @@ test("legacy texture policy classifies authored composite normal variants", () =
             target: "body",
             quality: "4k"
         }
+    ]);
+});
+
+test("legacy texture policy retains independent hair and scalp material channels", () =>
+{
+    const fixture = CreateFixture();
+    fixture.partSource.versions[0].textureCandidates = [
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/colorize_hair_l_4k.png",
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/colorize_hair_z_4k.png",
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/comp_hair_n_4k.png",
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/comp_hair_s_4k.png",
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/colorize_head_l_4k.png",
+        "res:/graphics/character/female/paperdoll/hair/hair_bun_01/colorize_head_z_4k.png"
+    ];
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result.selectedTextures.map(value => [
+        value.target,
+        value.role
+    ]), [
+        [ "hair", "colorize-layer" ],
+        [ "hair", "colorize-zones" ],
+        [ "hair", "normal-overlay" ],
+        [ "hair", "specular-overlay" ],
+        [ "head", "colorize-layer" ],
+        [ "head", "colorize-zones" ]
     ]);
 });
 
@@ -485,6 +753,7 @@ function CreateFixture()
     };
     const partSource = {
         recordID: "female/topmiddle/shirtcf01",
+        partPath: "topmiddle/shirtcf01",
         versions: [ version ]
     };
     const partType = {

@@ -74,26 +74,37 @@ test("foundation coverage policy targets the exact split female foot carrier", (
     assert.equal(coverage.strategy, "triangle-mask");
 });
 
-test("foundation coverage policy resolves only exact male PantsAM01 authored bottominner coverage", () =>
+test("foundation coverage policy does not reinterpret tattoo occlusions as nude coverage", () =>
+{
+    const policy = new TnyGlesFoundationCoveragePolicy();
+    assert.equal(policy.Resolve({
+        sex: "female",
+        groupID: "bottomouter",
+        partSourceRecordID: "female/bottomouter/trousersfixture",
+        metadata: {
+            occlusions: [
+                { authoredValue: "tattoo/leftleg" },
+                { authoredValue: "tattoo/rightleg" }
+            ]
+        }
+    }), null);
+    assert.equal(policy.Resolve({
+        sex: "female",
+        groupID: "bottomouter",
+        partSourceRecordID: "female/bottomouter/partial",
+        metadata: { occlusions: [ { authoredValue: "tattoo/leftleg" } ] }
+    }), null);
+});
+
+test("foundation coverage policy does not infer male leg coverage from a named source", () =>
 {
     const policy = new TnyGlesFoundationCoveragePolicy();
 
-    assert.deepEqual(policy.Resolve({
+    assert.equal(policy.Resolve({
         sex: "male",
         groupID: "bottomouter",
         partSourceRecordID: "male/bottomouter/pantsam01"
-    }), {
-        strategy: "hide-carrier",
-        roles: [ "legs" ],
-        authoredOcclusion: "bottominner",
-        evidence: {
-            status: "policy",
-            rule: "legacy-opengl-exact-foundation-coverage-v1",
-            sex: "male",
-            groupID: "bottomouter",
-            partSourceRecordID: "male/bottomouter/pantsam01"
-        }
-    });
+    }), null);
 });
 
 test("foundation coverage policy maps an exact authored topinner relation to the male torso", () =>
@@ -115,9 +126,12 @@ test("foundation coverage policy maps an exact authored topinner relation to the
             sex: "male",
             groupID: "outer",
             partSourceRecordID: "male/outer/fixture",
-            authoredValue: "topinner",
-            modifierLocationKey: "topinner",
-            relation: "typed-modifier-location"
+            relationships: [ {
+                authoredValue: "topinner",
+                modifierLocationKey: "topinner",
+                foundationRole: "torso",
+                relation: "typed-modifier-location"
+            } ]
         }
     });
 
@@ -140,6 +154,35 @@ test("foundation coverage policy maps an exact authored topinner relation to the
         partSourceRecordID: "male/outer/tattoos-only",
         metadata: UpperBodyMetadata(null)
     }), null);
+});
+
+test("foundation coverage policy retains every qualified full-body relation", () =>
+{
+    const policy = new TnyGlesFoundationCoveragePolicy();
+    const metadata = {
+        occlusions: [ "topinner", "bottominner", "feet", "hands", "topouter" ].map(value => ({
+            authoredValue: value,
+            modifierLocation: { modifierKey: value }
+        }))
+    };
+
+    const coverage = policy.Resolve({
+        sex: "male",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/full-body",
+        metadata
+    });
+
+    assert.deepEqual(coverage.roles, [ "torso", "legs", "feet", "hands" ]);
+    assert.deepEqual(coverage.evidence.relationships.map(value => [
+        value.modifierLocationKey,
+        value.foundationRole
+    ]), [
+        [ "topinner", "torso" ],
+        [ "bottominner", "legs" ],
+        [ "feet", "feet" ],
+        [ "hands", "hands" ]
+    ]);
 });
 
 test("foundation coverage policy does not infer coverage for unknown footwear", () =>

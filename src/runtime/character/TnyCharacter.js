@@ -108,7 +108,8 @@ export class TnyCharacter extends meta.Model
 
         const plan = this._appearanceResolver.resolvePaperdoll(
             this._manager.GetLibrary(),
-            paperdoll
+            paperdoll,
+            { requestedLod: 0 }
         );
         const construction = this._constructionResolver.Resolve(
             paperdoll,

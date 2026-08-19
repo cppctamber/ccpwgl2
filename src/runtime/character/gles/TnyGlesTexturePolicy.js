@@ -5,6 +5,13 @@ const QUALITY_SCORE = {
     "256": 1
 };
 
+const CONFIGURED_GARMENT_GROUPS = new Set([
+    "bottomouter",
+    "feet",
+    "outer",
+    "topouter"
+]);
+
 /**
  * Labels exact retained character textures for the temporary legacy demo.
  * Filename roles are explicit ccpwgl policy, not runtime-character source facts.
@@ -12,6 +19,30 @@ const QUALITY_SCORE = {
 export class TnyGlesTexturePolicy
 {
     _modifierOrder;
+
+    /** Resolves one retained sex-specific definition for a prepared part type. */
+    static resolveTypeDefinition(library, partType, sex)
+    {
+        return ResolveTypeDefinition(library, partType, sex);
+    }
+
+    /** Resolves the labelled material candidate used by this texture policy. */
+    static resolveTypeMaterialDefinition(
+        library,
+        typeDefinition,
+        colorVariant,
+        sex,
+        groupID
+    )
+    {
+        return ResolveTypeMaterialDefinition(
+            library,
+            typeDefinition,
+            colorVariant,
+            sex,
+            groupID
+        );
+    }
 
     constructor({ modifierOrder = null } = {})
     {
@@ -112,11 +143,14 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
         ));
     }
 
-    const typeMaterialDefinition = ResolveMaterialDefinition(
+    const typeMaterialResolution = ResolveTypeMaterialDefinition(
         library,
         typeDefinition.record,
-        partType?.colorVariant
+        partType?.colorVariant,
+        sex,
+        groupID
     );
+    const typeMaterialDefinition = typeMaterialResolution?.record ?? null;
     const colorSelection = ResolveColorSelection(plan, groupID);
     const colorMaterialResolution = typeMaterialDefinition
         ? null
@@ -127,18 +161,46 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
             partSource
         );
     const materialDefinition = typeMaterialDefinition ?? colorMaterialResolution?.record;
+    const unselectedDefaultMaterial = !materialDefinition
+        && !colorSelection
+        && !String(partType?.colorVariant ?? "").trim()
+        ? ResolveMaterialDefinition(library, typeDefinition.record, "default")
+        : null;
 
-    if (partType?.colorVariant && !materialDefinition)
+    if (partType?.colorVariant && !typeMaterialDefinition)
     {
         diagnostics.push(Diagnostic(
             "MATERIAL_DEFINITION_UNRESOLVED",
             `No retained sibling .color definition matches ${JSON.stringify(partType.colorVariant)}.`
         ));
     }
+    if (unselectedDefaultMaterial)
+    {
+        diagnostics.push(Diagnostic(
+            "DEFAULT_MATERIAL_POLICY_UNRESOLVED",
+            "An exact sibling default.color exists, but no authored selection proves that it applies."
+        ));
+    }
 
+    const targetHint = ResolveTextureTargetHint(groupID);
+    const allowColorizeShorthand = Boolean(materialDefinition) && Boolean(targetHint);
     const classified = ClassifyTextures(
-        ResolveTexturePaths(part, partSource, version),
-        ResolveTextureTargetHint(groupID)
+        ResolveTexturePaths(
+            part,
+            partSource,
+            version,
+            targetHint,
+            allowColorizeShorthand
+        ),
+        targetHint,
+        { allowColorizeShorthand }
+    );
+    const directDiffuseUnderlayPath = ResolveDirectDiffuseUnderlayPath(
+        part,
+        partSource,
+        version,
+        targetHint,
+        allowColorizeShorthand
     );
     const weight = layer?.weight === null || layer?.weight === undefined
         ? 1
@@ -166,9 +228,13 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
         groupID,
         source: {
             partSourceRecordID: partSource?.recordID ?? null,
+            partPath: partSource?.partPath ?? null,
             versionIndex,
             typeDefinitionPath: typeDefinition.record?.sourcePath ?? null,
             materialDefinitionPath: materialDefinition?.sourcePath ?? null,
+            ...(unselectedDefaultMaterial ? {
+                materialCandidatePaths: [ unselectedDefaultMaterial.sourcePath ]
+            } : {}),
             occludesModifiers: Array.isArray(version?.metadata?.occludesModifiers)
                 ? [ ...version.metadata.occludesModifiers ]
                 : [],
@@ -178,7 +244,8 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
                         authoredValue: value?.authoredValue ?? null,
                         modifierKey: value?.modifierLocation?.modifierKey ?? null
                     }))
-                } : {})
+                } : {}),
+            ...(directDiffuseUnderlayPath ? { directDiffuseUnderlayPath } : {})
         },
         materialValues: materialDefinition?.values ?? null,
         colorSelection: colorSelection ? { ...colorSelection } : null,
@@ -196,11 +263,14 @@ function ResolveLayer(library, paperdoll, plan, layer, layerIndex)
             status: "policy",
             rule: "legacy-opengl-texture-filename-v2",
             definitionRule: "exact-retained-definition-v1",
-            materialRule: typeMaterialDefinition
-                ? "exact-sibling-color-definition-v1"
+            materialRule: typeMaterialResolution
+                ? typeMaterialResolution.rule
                 : colorMaterialResolution
                     ? colorMaterialResolution.rule
-                    : "unresolved"
+                    : "unresolved",
+            ...(unselectedDefaultMaterial ? {
+                materialCandidateRule: "unselected-exact-sibling-default-v1"
+            } : {})
         }
     };
 }
@@ -290,7 +360,11 @@ function ResolveMaterialDefinition(library, typeDefinition, colorVariant)
 {
     const variant = String(colorVariant ?? "").trim();
     const typePath = String(typeDefinition?.sourcePath ?? "");
-    const marker = typePath.toLowerCase().lastIndexOf("/types/");
+    const lowerTypePath = typePath.toLowerCase();
+    const marker = Math.max(
+        lowerTypePath.lastIndexOf("/types/"),
+        lowerTypePath.lastIndexOf("/type/")
+    );
 
     if (!variant || marker === -1) return null;
 
@@ -298,6 +372,40 @@ function ResolveMaterialDefinition(library, typeDefinition, colorVariant)
     const record = library.Get("characterDefinitions", path);
 
     return record?.extension === ".color" ? record : null;
+}
+
+function ResolveTypeMaterialDefinition(
+    library,
+    typeDefinition,
+    colorVariant,
+    sex,
+    groupID
+)
+{
+    const sibling = ResolveMaterialDefinition(library, typeDefinition, colorVariant);
+    if (sibling)
+    {
+        return {
+            record: sibling,
+            path: sibling.sourcePath ?? null,
+            rule: "exact-sibling-color-definition-v1"
+        };
+    }
+
+    const variant = NormalizeModifierIdentity(colorVariant);
+    const colorKey = NormalizeModifierIdentity(groupID);
+    if (!sex || !variant || !colorKey) return null;
+
+    const path = `res:/graphics/character/${sex}/paperdoll/${colorKey}`
+        + `/colors/${variant}.color`;
+    const record = library.Get("characterDefinitions", path);
+    return record?.extension === ".color"
+        ? {
+            record,
+            path,
+            rule: "exact-type-group-color-definition-v1"
+        }
+        : null;
 }
 
 function ResolveColorSelection(plan, groupID)
@@ -334,7 +442,40 @@ function ResolveColorSelectionDefinition(library, selection, sex, partSource)
     return null;
 }
 
-function ResolveTexturePaths(part, partSource, version)
+function ResolveDirectDiffuseUnderlayPath(
+    part,
+    partSource,
+    version,
+    targetHint,
+    allowColorizeShorthand
+)
+{
+    const base = partSource?.versions?.find(value => value?.resourceVersion == null);
+    if (!base || base === version || !Array.isArray(base.textureCandidates)) return null;
+    const exactPaths = Array.isArray(part?.texturePaths) && part.texturePaths.length
+        ? part.texturePaths
+        : version?.textureCandidates ?? [];
+    const options = { allowColorizeShorthand };
+    const isDirectHairDiffuse = value => value?.recognized
+        && value.target === "hair"
+        && [ "diffuse-source", "diffuse-overlay" ].includes(value.role);
+    const exact = ClassifyTextures(exactPaths, targetHint, options)
+        .filter(isDirectHairDiffuse);
+    const inherited = ClassifyTextures(base.textureCandidates, targetHint, options)
+        .filter(isDirectHairDiffuse);
+    return exact.length === 1 && inherited.length === 1
+        && exact[0].path !== inherited[0].path
+        ? inherited[0].path
+        : null;
+}
+
+function ResolveTexturePaths(
+    part,
+    partSource,
+    version,
+    targetHint = null,
+    allowColorizeShorthand = false
+)
 {
     const exact = Array.isArray(part?.texturePaths) && part.texturePaths.length
         ? part.texturePaths
@@ -350,15 +491,53 @@ function ResolveTexturePaths(part, partSource, version)
     // publishes only the channels changed by a color/version variant (for
     // example a version-specific specular map), leaving the other families at
     // the part root. Retain the exact version for every family it provides and
-    // inherit only missing families from the unversioned source.
+    // inherit only missing semantic target/channels from the unversioned source.
+    // Semantic precedence matters when an exact version changes a filename stem
+    // while still publishing the same body/head normal or specular output.
     const overridden = new Set(exact.map(TextureFamily));
+    const classificationOptions = { allowColorizeShorthand };
+    const overriddenChannels = new Set(ClassifyTextures(
+        exact,
+        targetHint,
+        classificationOptions
+    )
+        .filter(value => value.recognized && value.role && value.target)
+        .map(value => `${value.target}\0${TextureSemanticChannel(value.role)}`));
+    const baseChannels = new Map(ClassifyTextures(
+        base.textureCandidates,
+        targetHint,
+        classificationOptions
+    )
+        .map(value => [ value.path, value ]));
     return [
         ...exact,
-        ...base.textureCandidates.filter(path => !overridden.has(TextureFamily(path)))
+        ...base.textureCandidates.filter(path =>
+        {
+            if (overridden.has(TextureFamily(path))) return false;
+            const value = baseChannels.get(path);
+            return !value.recognized
+                || !value.role
+                || !value.target
+                || !overriddenChannels.has(
+                    `${value.target}\0${TextureSemanticChannel(value.role)}`
+                );
+        })
     ];
 }
 
-function ClassifyTextures(paths, targetHint = null)
+function TextureSemanticChannel(role)
+{
+    if (/^normal-/u.test(role)) return "normal";
+    if (/^specular-/u.test(role)) return "specular";
+    if (/^diffuse-/u.test(role)) return "diffuse";
+    return role;
+}
+
+function ClassifyTextures(
+    paths,
+    targetHint = null,
+    { allowColorizeShorthand = false } = {}
+)
 {
     if (!Array.isArray(paths))
     {
@@ -369,12 +548,16 @@ function ClassifyTextures(paths, targetHint = null)
 
     for (const value of paths)
     {
-        const match = FileStem(value).match(/(?:^|_)(body|head)(?:_|$)/u);
+        const match = FileStem(value).match(/(?:^|_)(body|head|hair|acc)(?:_|$)/u);
         if (match) targetHints.add(match[1]);
     }
 
     const inferredTarget = targetHints.size === 1 ? [ ...targetHints ][0] : targetHint;
-    const result = paths.map(path => ClassifyTexture(path, inferredTarget));
+    const result = paths.map(path => ClassifyTexture(
+        path,
+        inferredTarget,
+        allowColorizeShorthand
+    ));
     const winners = new Map();
 
     for (let index = 0; index < result.length; index++)
@@ -398,10 +581,10 @@ function ClassifyTextures(paths, targetHint = null)
 
 function ResolveTextureTargetHint(groupID)
 {
-    // Direct garment maps such as jacketmf01_d do not encode body/head in the
-    // filename. The selected modifier location supplies the missing semantic
-    // target without guessing from the asset's arbitrary family name.
-    return SplitGroup(groupID)[0] === "outer" ? "body" : null;
+    // Configured garment maps can omit body/head from their filename. The
+    // selected modifier location supplies the missing semantic target without
+    // guessing from an asset family name.
+    return CONFIGURED_GARMENT_GROUPS.has(SplitGroup(groupID)[0]) ? "body" : null;
 }
 
 function TextureFamily(path)
@@ -411,7 +594,7 @@ function TextureFamily(path)
     return qualityMatch ? stem.slice(0, -qualityMatch[0].length) : stem;
 }
 
-function ClassifyTexture(path, inferredTarget)
+function ClassifyTexture(path, inferredTarget, allowColorizeShorthand = false)
 {
     const exactPath = RequireResourcePath(path);
     const stem = FileStem(exactPath);
@@ -420,7 +603,7 @@ function ClassifyTexture(path, inferredTarget)
     const family = qualityMatch ? stem.slice(0, -qualityMatch[0].length) : stem;
     let role = null;
     let target = null;
-    let match = family.match(/^colorize_(body|head)_([lz])$/u);
+    let match = family.match(/^colorize_(body|head|hair|acc)_([lz])$/u);
 
     if (match)
     {
@@ -429,19 +612,30 @@ function ClassifyTexture(path, inferredTarget)
     }
     else
     {
-        match = family.match(/^comp_(body|head)_(tn|mn|[dnsm])$/u);
+        match = allowColorizeShorthand && inferredTarget
+            ? family.match(/_([lz])$/u)
+            : null;
         if (match)
         {
-            target = match[1];
-            role = match[2] === "m"
-                ? "cut-mask"
-                : match[2] === "tn"
-                    ? "twist-normal"
-                    : match[2] === "mn"
-                        ? "normal-overlay"
-                        : ChannelRole(match[2], "overlay");
+            target = inferredTarget;
+            role = match[1] === "l" ? "colorize-layer" : "colorize-zones";
         }
         else
+        {
+            match = family.match(/^comp_(body|head|hair|acc)_(tn|mn|[dnsm])$/u);
+            if (match)
+            {
+                target = match[1];
+                role = match[2] === "m"
+                    ? "cut-mask"
+                    : match[2] === "tn"
+                        ? "twist-normal"
+                        : match[2] === "mn"
+                            ? "normal-overlay"
+                            : ChannelRole(match[2], "overlay");
+            }
+        }
+        if (!role)
         {
             match = family.match(/_([dns]|tn)$/u);
             if (match && inferredTarget)

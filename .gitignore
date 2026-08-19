@@ -20,10 +20,22 @@ node_modules/
 .claude/settings.local.json
 
 # Local caches and working directories
+.cache/
 .npm-cache/
+.npm-cache-docs/
+.promotion-runtime-trinity/
 .scratch/
+.skill-work/
 .tmp/
 _kb_stage/
+
+# Agent runtime state and work-cycle notes
+.claude/
+.codex/
+
+# Local prepared character-library review payloads
+demo/character/library.review.json
+demo/character/library.short-hair-review.json
 
 # dotenv environment variables file
 .env

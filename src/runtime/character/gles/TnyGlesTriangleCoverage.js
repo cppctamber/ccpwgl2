@@ -19,43 +19,64 @@ export class TnyGlesTriangleCoverage
         let state = coverageStates.get(geometryResource);
         if (state?.leases.size)
         {
-            ApplyPrepared(state.prepared, gl);
             const lease = {};
+            const previousPrepared = state.prepared;
+            const policies = new Map(state.policies);
+            policies.set(lease, CreatePolicyDescriptor(policy));
+            const prepared = BuildPrepared(
+                geometryResource.meshes,
+                state.originalIndices,
+                [ ...policies.values() ]
+            );
+            if (prepared.some(value => !value.available)
+                || !prepared.some(value => value.maskedTriangleCount > 0))
+            {
+                throw new Error("Legacy semantic triangle coverage could not be prepared");
+            }
+            try
+            {
+                ApplyPrepared(prepared, gl);
+            }
+            catch (error)
+            {
+                error.rollbackFailures ??= [];
+                error.rollbackFailures.push(...TryApplyPrepared(previousPrepared, gl));
+                throw error;
+            }
+            const report = CreateReport(policy, prepared);
             state.leases.add(lease);
-            return { lease, report: CloneReport(state.report) };
+            state.policies = policies;
+            state.prepared = prepared;
+            state.report = report;
+            geometryResource.RebuildBounds?.(true);
+            return { lease, report: CloneReport(report) };
         }
 
         await geometryResource.ForceSystemMirror?.(true);
-        const prepared = geometryResource.meshes.map(mesh => PrepareMesh(
-            mesh,
-            policy.bonePrefixes
-        ));
+        const originalIndices = geometryResource.meshes.map(mesh => mesh?.indexData?.slice?.() ?? null);
+        const prepared = BuildPrepared(
+            geometryResource.meshes,
+            originalIndices,
+            [ CreatePolicyDescriptor(policy) ]
+        );
         if (prepared.some(value => !value.available)
             || !prepared.some(value => value.maskedTriangleCount > 0))
         {
-            throw new Error("Legacy foot/toe triangle coverage could not be prepared");
+            throw new Error("Legacy semantic triangle coverage could not be prepared");
         }
 
         ApplyPrepared(prepared, gl);
         geometryResource.RebuildBounds?.(true);
 
-        const report = {
-            status: "applied",
-            rule: policy.triangleRule,
-            bonePrefixes: [ ...policy.bonePrefixes ],
-            matchedBoneCount: prepared.reduce((sum, value) => sum + value.matchedBoneCount, 0),
-            maskedVertexCount: prepared.reduce((sum, value) => sum + value.maskedVertexCount, 0),
-            maskedTriangleCount: prepared.reduce((sum, value) => sum + value.maskedTriangleCount, 0),
-            meshReports: prepared.map(value => ({
-                available: value.available,
-                matchedBoneCount: value.matchedBoneCount,
-                maskedVertexCount: value.maskedVertexCount,
-                maskedTriangleCount: value.maskedTriangleCount,
-                uploaded: true
-            }))
-        };
+        const report = CreateReport(policy, prepared);
         const lease = {};
-        state = { leases: new Set([ lease ]), prepared, report };
+        state = {
+            leases: new Set([ lease ]),
+            policies: new Map([ [ lease, CreatePolicyDescriptor(policy) ] ]),
+            originalIndices,
+            prepared,
+            report
+        };
         coverageStates.set(geometryResource, state);
         return { lease, report: CloneReport(report) };
     }
@@ -64,8 +85,35 @@ export class TnyGlesTriangleCoverage
     static Release(geometryResource, lease, { gl = null } = {})
     {
         const state = coverageStates.get(geometryResource);
-        if (!state?.leases.delete(lease)) return false;
-        if (state.leases.size) return true;
+        if (!state?.leases.has(lease)) return false;
+        state.leases.delete(lease);
+        const releasedPolicy = state.policies.get(lease);
+        state.policies.delete(lease);
+        if (state.leases.size)
+        {
+            const previousPrepared = state.prepared;
+            const prepared = BuildPrepared(
+                geometryResource.meshes,
+                state.originalIndices,
+                [ ...state.policies.values() ]
+            );
+            try
+            {
+                ApplyPrepared(prepared, gl);
+            }
+            catch (error)
+            {
+                const reapplyFailures = TryApplyPrepared(previousPrepared, gl);
+                state.leases.add(lease);
+                state.policies.set(lease, releasedPolicy);
+                error.rollbackFailures ??= [];
+                error.rollbackFailures.push(...reapplyFailures);
+                throw error;
+            }
+            state.prepared = prepared;
+            geometryResource.RebuildBounds?.(true);
+            return true;
+        }
 
         const failures = RestorePrepared(state.prepared, gl);
         if (failures.length)
@@ -118,7 +166,24 @@ function TryApplyPrepared(prepared, gl)
     }
 }
 
-function PrepareMesh(mesh, bonePrefixes)
+function BuildPrepared(meshes, originalIndices, policies)
+{
+    return meshes.map((mesh, index) => PrepareMesh(
+        mesh,
+        policies,
+        originalIndices[index]
+    ));
+}
+
+function CreatePolicyDescriptor(policy)
+{
+    return {
+        bonePrefixes: [ ...policy.bonePrefixes ],
+        triangleSelection: policy.triangleSelection ?? "any-vertex"
+    };
+}
+
+function PrepareMesh(mesh, policies, sourceIndices = null)
 {
     const indices = mesh?.indexData;
     const bindings = Array.isArray(mesh?.boneBindings) ? mesh.boneBindings : [];
@@ -135,16 +200,21 @@ function PrepareMesh(mesh, bonePrefixes)
             matchedBoneCount: 0, maskedVertexCount: 0, maskedTriangleCount: 0 };
     }
 
-    const originalIndices = indices.slice();
-    const maskedIndices = indices.slice();
-    const prefixes = bonePrefixes.map(value => value.toLowerCase());
-    const matchedBones = new Set();
-    bindings.forEach((binding, index) =>
+    const originalIndices = sourceIndices?.slice?.() ?? indices.slice();
+    const maskedIndices = originalIndices.slice();
+    const matchedBoneSets = policies.map(policy =>
     {
-        const name = String(binding ?? "").toLowerCase();
-        if (prefixes.some(prefix => name.startsWith(prefix))) matchedBones.add(index);
+        const prefixes = policy.bonePrefixes.map(value => value.toLowerCase());
+        const matched = new Set();
+        bindings.forEach((binding, index) =>
+        {
+            const name = String(binding ?? "").toLowerCase();
+            if (prefixes.some(prefix => name.startsWith(prefix))) matched.add(index);
+        });
+        return matched;
     });
 
+    const affectedByPolicy = policies.map(() => new Uint8Array(vertexCount));
     const affected = new Uint8Array(vertexCount);
     const blendIndices = [ 0, 0, 0, 0 ];
     const blendWeights = [ 0, 0, 0, 0 ];
@@ -165,10 +235,16 @@ function PrepareMesh(mesh, bonePrefixes)
         {
             const boneIndex = Math.round(Number(blendIndices[influence]));
             const weight = Math.abs(Number(blendWeights[influence]) || 0);
-            if (weight <= 1e-6 || !matchedBones.has(boneIndex)) continue;
+            if (weight <= 1e-6) continue;
+            matchedBoneSets.forEach((matchedBones, policyIndex) =>
+            {
+                if (matchedBones.has(boneIndex)) affectedByPolicy[policyIndex][vertex] = 1;
+            });
+        }
+        if (affectedByPolicy.some(value => value[vertex]))
+        {
             affected[vertex] = 1;
             maskedVertexCount++;
-            break;
         }
     }
 
@@ -180,7 +256,14 @@ function PrepareMesh(mesh, bonePrefixes)
         const c = Number(maskedIndices[index + 2]);
         if (![ a, b, c ].every(value => Number.isInteger(value)
             && value >= 0 && value < vertexCount)) continue;
-        if (!affected[a] && !affected[b] && !affected[c]) continue;
+        const selected = policies.some((policy, policyIndex) =>
+        {
+            const policyAffected = affectedByPolicy[policyIndex];
+            return policy.triangleSelection === "all-vertices"
+                ? policyAffected[a] && policyAffected[b] && policyAffected[c]
+                : policyAffected[a] || policyAffected[b] || policyAffected[c];
+        });
+        if (!selected) continue;
         maskedIndices[index + 1] = a;
         maskedIndices[index + 2] = a;
         maskedTriangleCount++;
@@ -191,7 +274,7 @@ function PrepareMesh(mesh, bonePrefixes)
         available: true,
         originalIndices,
         maskedIndices,
-        matchedBoneCount: matchedBones.size,
+        matchedBoneCount: new Set(matchedBoneSets.flatMap(value => [ ...value ])).size,
         maskedVertexCount,
         maskedTriangleCount
     };
@@ -235,20 +318,51 @@ function UploadIndices(mesh, gl)
 
 function ValidatePolicy(policy)
 {
-    const expected = [ "LeftFoot", "RightFoot", "LeftToe", "RightToe" ];
+    const footwear = [ "LeftFoot", "RightFoot", "LeftToe", "RightToe" ];
+    const fullLeg = [
+        "LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg",
+        "LeftFoot", "RightFoot", "LeftToe", "RightToe"
+    ];
+    const expected = policy?.evidence?.rule === "legacy-opengl-authored-leg-coverage-v1"
+        ? fullLeg
+        : footwear;
     if (policy?.strategy !== "triangle-mask"
         || policy?.triangleRule !== "legacy-opengl-exact-foundation-triangle-coverage-v1"
         || policy?.evidence?.status !== "policy"
         || ![
             "legacy-opengl-exact-foundation-coverage-v1",
-            "legacy-opengl-authored-footwear-coverage-v1"
+            "legacy-opengl-authored-footwear-coverage-v1",
+            "legacy-opengl-authored-leg-coverage-v1"
         ].includes(policy?.evidence?.rule)
         || !Array.isArray(policy?.bonePrefixes)
+        || policy?.triangleSelection !== (policy?.evidence?.rule
+            === "legacy-opengl-authored-leg-coverage-v1"
+            ? "all-vertices"
+            : undefined)
         || policy.bonePrefixes.length !== expected.length
         || expected.some((value, index) => policy.bonePrefixes[index] !== value))
     {
         throw new TypeError("Unsupported legacy triangle coverage policy");
     }
+}
+
+function CreateReport(policy, prepared)
+{
+    return {
+        status: "applied",
+        rule: policy.triangleRule,
+        bonePrefixes: [ ...policy.bonePrefixes ],
+        matchedBoneCount: prepared.reduce((sum, value) => sum + value.matchedBoneCount, 0),
+        maskedVertexCount: prepared.reduce((sum, value) => sum + value.maskedVertexCount, 0),
+        maskedTriangleCount: prepared.reduce((sum, value) => sum + value.maskedTriangleCount, 0),
+        meshReports: prepared.map(value => ({
+            available: value.available,
+            matchedBoneCount: value.matchedBoneCount,
+            maskedVertexCount: value.maskedVertexCount,
+            maskedTriangleCount: value.maskedTriangleCount,
+            uploaded: true
+        }))
+    };
 }
 
 function CloneReport(value)

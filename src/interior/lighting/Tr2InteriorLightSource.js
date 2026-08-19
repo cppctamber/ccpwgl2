@@ -3,19 +3,6 @@ import { vec3, vec4 } from "math";
 
 
 /**
- * Gamma (2.2) to linear conversion, matches `TriGammaToLinear(const Vector3&)`
- * (carbonengine trinity/trinity/TriUtil.h:164-167).
- * @param {Number[]} rgb
- * @returns {Number[]}
- * @private
- */
-function TriGammaToLinear(rgb)
-{
-    return [ Math.pow(rgb[0], 2.2), Math.pow(rgb[1], 2.2), Math.pow(rgb[2], 2.2) ];
-}
-
-
-/**
  * Tr2InteriorLightSource
  *
  * Source: carbonengine trinity/trinity/Interior/Tr2InteriorLightSource.h/.cpp/_Blue.cpp.
@@ -180,7 +167,11 @@ export class Tr2InteriorLightSource extends meta.Model
             rgb = [ this.color[0], this.color[1], this.color[2] ];
         }
 
-        const color = TriGammaToLinear(rgb);
+        // Carbon converts Blue-authored display colours at this boundary
+        // (`Tr2InteriorLightSource.cpp::PopulateLightData`). ccpwgl model
+        // colours and Tr2KelvinColor.AsRGB() are already linear, so applying
+        // that authoring conversion again would over-brighten every light.
+        const color = rgb;
 
         let innerAngle = this.coneAlphaInner;
         let outerAngle = this.coneAlphaOuter;

@@ -56,6 +56,7 @@ function createGl(nativeBc1)
         createTexture: () => ({}),
         deleteTexture: () => {},
         bindTexture: () => {},
+        texParameteri: () => {},
         getParameter: () => 4,
         pixelStorei: () => {},
         compressedTexImage2D: (...args) => calls.push([ "compressed", ...args ]),

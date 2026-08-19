@@ -1,5 +1,12 @@
 import { mat4 as glMat4, vec3 as glVec3 } from "gl-matrix";
 import { pool } from "math/pool";
+import { carbonPerspectiveOffCenter, carbonOrthoOffCenter } from "./carbonProjection";
+// A static IMPORT of the CommonJS module, not a `require`. This file already
+// uses ESM syntax, and @rollup/plugin-commonjs defaults to
+// `transformMixedEsModules: false` - so a `require` here survives into the
+// bundle literally and throws "require is not defined" in the browser. Files
+// that are pure CommonJS get their requires transformed, which is why the
+// same pattern works in Tw2CarbonResourceBinder and did not work here.
 
 const
     mat4 = { ...glMat4 },
@@ -155,32 +162,9 @@ mat4.fromMat3 = function (out, m)
     return out;
 };
 
-// D3D ortho, depth maps to [0..1]
-mat4.orthoD3D = function(out, l, r, b, t, n, f)
-{
-    const
-        lr = 1 / (r - l),
-        bt = 1 / (t - b),
-        nf = 1 / (f - n);
-
-    out[0] = 2 * lr;
-    out[4] = 0;
-    out[8] = 0;
-    out[12] = -(r + l) * lr;
-    out[1] = 0;
-    out[5] = 2 * bt;
-    out[9] = 0;
-    out[13] = -(t + b) * bt;
-    out[2] = 0;
-    out[6] = 0;
-    out[10] = nf;
-    out[14] = -n * nf;
-    out[3] = 0;
-    out[7] = 0;
-    out[11] = 0;
-    out[15] = 1;
-    return out;
-};
+// D3D ortho, depth maps to [0..1].
+// Was a second copy of the same formulas; delegates now so there is one.
+mat4.orthoD3D = carbonOrthoOffCenter;
 
 /**
  * Left-handed look-at (D3D-style): +Z forward
@@ -527,3 +511,33 @@ mat4.makeOrthographic = function (out, left, right, top, bottom, near, far)
 
     return out;
 };
+
+/**
+ * Builds a D3D off-center perspective projection, mapping z to 0..1
+ *
+ * Delegates to `math/carbonProjection`, which holds the single implementation
+ * so node tests can require it without the build. See that module for why this
+ * is not `mat4.frustum`.
+ *
+ * @param {mat4} out
+ * @param {Number} left @param {Number} right
+ * @param {Number} bottom @param {Number} top
+ * @param {Number} near @param {Number} far
+ * @returns {mat4} out
+ */
+mat4.carbonPerspectiveOffCenter = carbonPerspectiveOffCenter;
+
+/**
+ * Builds a D3D off-center orthographic projection, mapping z to 0..1
+ *
+ * Delegates to `math/carbonProjection`. Shadow cascade matrices fold an
+ * NDC-to-UV bias that leaves z untouched precisely because this projection
+ * already produced 0..1.
+ *
+ * @param {mat4} out
+ * @param {Number} left @param {Number} right
+ * @param {Number} bottom @param {Number} top
+ * @param {Number} near @param {Number} far
+ * @returns {mat4} out
+ */
+mat4.carbonOrthoOffCenter = carbonOrthoOffCenter;

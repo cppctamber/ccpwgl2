@@ -299,6 +299,13 @@ export class Tw2EffectRes extends Tw2Resource
      * Prepares a Carbon package (translated DX11 shaders)
      * @param {ArrayBuffer} data
      */
+    /**
+     * Clip convention handed to the translator: "reversed" (default, what EVE's
+     * shaders were compiled for) or "forward". An A/B knob - see PrepareCarbon.
+     * @type {String}
+     */
+    static DEPTH_RANGE = "reversed";
+
     PrepareCarbon(data)
     {
         try
@@ -327,9 +334,25 @@ export class Tw2EffectRes extends Tw2Resource
                 // LightProfileArray into one usampler2D, which is what keeps
                 // the detail quad shaders inside the 16-unit sampler limit.
                 // See /docs/contracts/webgl2-texture-budget.md.
+                // `depthRange` is exposed so the clip convention can be A/B
+                // tested live rather than reasoned about. "reversed" is the
+                // default and is what EVE's shaders were compiled against;
+                // "forward" restores the pre-2026-08-18 mapping.
+                //
+                // The two differ ONLY for a shader that writes gl_Position.z
+                // itself. A shader that adds an offset to a projected z (the
+                // decal family, +1e-5 to lift off the hull) has that offset's
+                // DIRECTION flipped. A shader that computes an absolute clip z
+                // from scratch (the spotlight beams) has its depth INVERTED,
+                // near for far - which presents as the quad being occluded by
+                // everything instead of drawing in front.
+                //
+                // Set `tw2.device.effectDepthRange = "forward"` and reload the
+                // effect to compare.
                 const built = CjsWebglFormat.buildEffect(bytes, {
                     source: this.path,
-                    localLights: "packed-texture"
+                    localLights: "packed-texture",
+                    emitterOptions: { depthRange: Tw2EffectRes.DEPTH_RANGE }
                 });
                 container = built.bytes;
                 permutationGraph = built.permutationGraph;

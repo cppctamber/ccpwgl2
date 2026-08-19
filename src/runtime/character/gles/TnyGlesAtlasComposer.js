@@ -15,8 +15,15 @@ const TRANSPARENT = "dynamic:/color/0,0,0,0";
 const SOLID_BLACK = "dynamic:/color/0,0,0,1";
 const SOLID_WHITE = "dynamic:/color/1,1,1,1";
 const NEUTRAL_NORMAL = "res:/graphics/shared_texture/global/normal_flat.dds";
+const LEGACY_GLASS_IRRADIANCE = "res:/graphics/shared_texture/global/white_cube.dds";
 const HEAD_BASE_SKIN_ORDER = 0;
 const HEAD_COMPOSITION_GROUP_ORDER = new Map([
+    // The selected skintype is an authored whole-skin colourization input.
+    // Keep it immediately above the resolved base skintone and below every
+    // additive appearance layer. The legacy GLES reference used the same
+    // selected skin contribution for both head and body atlases; admitting it
+    // here closes that region split without making the reference authoritative.
+    [ "skintype", 1 ],
     [ "makeup/aging", 10 ],
     [ "makeup/blemish", 20 ],
     [ "makeup/scarring", 30 ],
@@ -27,6 +34,7 @@ const HEAD_COMPOSITION_GROUP_ORDER = new Map([
     [ "makeup/eyes", 70 ],
     [ "makeup/eyeshadow", 80 ],
     [ "makeup/eyebrowbase", 90 ],
+    [ "hair", 95 ],
     [ "makeup/eyebrows", 100 ],
     [ "makeup/implants", 110 ],
     [ "makeup/blush", 120 ],
@@ -36,22 +44,48 @@ const HEAD_COMPOSITION_GROUP_ORDER = new Map([
 const PROVED_HEAD_SKIN_MAKEUP_GROUPS = new Set([
     ...[ ...HEAD_COMPOSITION_GROUP_ORDER.keys() ].filter(value => value !== "tattoo/head")
 ]);
+const BODY_SKIN_AUGMENTATION_GROUPS = [
+    "makeup/bodyaugmentations",
+    "makeup/armleft",
+    "makeup/armright"
+];
+const BODY_COMPOSITION_GROUP_ORDER = new Map([
+    ...HEAD_COMPOSITION_GROUP_ORDER,
+    // Body augmentations are painted onto skin. Authored underwear and
+    // texture-drawn tops then replace their diffuse and lighting channels only
+    // inside their own coverage. Keeping this category order explicit makes
+    // diffuse, normal, and specular independent of resolver inventory order.
+    ...BODY_SKIN_AUGMENTATION_GROUPS.map(groupID => [ groupID, 150 ]),
+    // Garment categories intentionally share a rank. Their retained relative
+    // order is preserved while every garment remains above skin augmentation.
+    [ "topinner", 200 ],
+    [ "topunderwear", 200 ],
+    [ "bottominner", 200 ],
+    [ "bottomunderwear", 200 ],
+    [ "topmiddle", 200 ],
+    [ "bottomouter", 200 ],
+    [ "feet", 200 ],
+    [ "topouter", 200 ],
+    [ "outer", 200 ]
+]);
 const PROVED_BODY_SKIN_MAKEUP_GROUPS = new Set([
     ...PROVED_HEAD_SKIN_MAKEUP_GROUPS,
-    "makeup/bodyaugmentations"
+    ...BODY_SKIN_AUGMENTATION_GROUPS,
+    "bottominner",
+    "bottomunderwear",
+    "topinner",
+    "topunderwear",
+    "topmiddle"
 ]);
 const NEUTRAL_SPECULAR = "res:/dx9/model/decal/shared/bw_000_000_015.dds";
 const FEMALE_BOOT_PART = "female/feet/bootscf01";
 const FEMALE_BOOT_MASK_PART = "female/dependants/bootmasks/bootmaskshin";
 const FEMALE_BOOT_MASK_PATH = "res:/graphics/character/female/paperdoll/dependants/bootmasks/bootmaskshin/comp_body_m.png";
-const FEMALE_TUCK_PART = "female/dependants/tuck/basic";
-const FEMALE_TUCK_MASK_PART = "female/dependants/masktuck/tuckmaskmid";
-const FEMALE_TUCK_MASK_PATH = "res:/graphics/character/female/paperdoll/dependants/masktuck/tuckmaskmid/comp_body_m.png";
-const FEMALE_TUCK_TOP_PART = "female/topmiddle/shirtcf01";
-const FEMALE_TUCK_TOP_ALPHA_PATH = "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_l_4k.png";
-const FEMALE_TUCK_PANTS_PART = "female/bottomouter/pantscf01";
 const FEMALE_UPPER_SLEEVE_PART = "female/dependants/sleevesupper/creased_01";
 const FEMALE_LOWER_SLEEVE_PART = "female/dependants/sleeveslower/longcreased_01";
+const FEMALE_TUCK_TOP_PART = "female/topmiddle/shirtcf01";
+const FEMALE_TUCK_TOP_ALPHA_PATH = "res:/graphics/character/female/paperdoll/topmiddle/shirtcf01/colorize_body_l_4k.png";
+const STANDARD_DRAPE_PART_PATH = "dependants/drape/standard";
 
 const BODY_FOUNDATIONS = {
     female: "res:/graphics/character/female/paperdoll/archetypes/ccshape/cd_female_body_d_4k.png",
@@ -85,14 +119,26 @@ export function resolveLegacyBodyFoundationPath(staged)
 }
 
 /** Resolves the exact retained body specular foundation without inventing a path. */
-export function resolveLegacyBodyFoundationSpecularPath(staged)
+export function resolveLegacyBodyFoundationSpecularPath(staged, contributions = [])
 {
     const selected = (staged?.construction?.operations ?? []).filter(operation =>
         operation?.operation === "configured-foundation"
         && operation?.role === "head"
-        && operation?.skinEvidence?.rule === "exact-skintone-prs-archetype-foundation-v1"
+        && (operation?.skinEvidence?.rule === "exact-skintone-prs-archetype-foundation-v1"
+            || operation?.skinEvidence?.bodySpecularRule
+                === "exact-foundation-diffuse-token-specular-match-v1")
         && /^res:\//iu.test(String(operation?.skinEvidence?.bodySpecularPath ?? "")));
-    return selected.length === 1 ? selected[0].skinEvidence.bodySpecularPath : null;
+    if (selected.length === 1) return selected[0].skinEvidence.bodySpecularPath;
+    if (selected.length > 1 || !Array.isArray(contributions)) return null;
+
+    const selectedSkin = contributions.filter(contribution =>
+        contribution?.groupID === "skintype"
+        && !(Array.isArray(contribution?.occludedBy) && contribution.occludedBy.length))
+        .flatMap(contribution => (contribution?.selectedTextures ?? []).filter(texture =>
+            texture?.target === "body"
+            && texture?.role === "specular-source"
+            && /^res:\//iu.test(String(texture?.path ?? ""))));
+    return selectedSkin.length === 1 ? selectedSkin[0].path : null;
 }
 
 /** Composes the temporary legacy body diffuse atlas from retained library evidence. */
@@ -108,14 +154,80 @@ export class TnyGlesAtlasComposer
 
     _headNormalMode;
 
+    _headMaterialMode;
+
+    _browSupportEnabled;
+
+    _browLightingMode;
+
+    _browDiffuseColorMode;
+
+    _tearductsEnabled;
+
+    _tearductLightingMode;
+
+    _tearductUvMode;
+
+    _tearductDiffuseMode;
+
+    _eyeWetEnabled;
+
+    _eyeWetMaterialMode;
+
+    _eyeballsEnabled;
+
+    _eyelashCarrierMode;
+
+    _eyelashUvMode;
+
+    _eyelashDepthMode;
+
+    _eyelashAlphaMode;
+
+    _eyeShadowDiffuseMode;
+
+    _eyeShadowLightingMode;
+
     _skinLightingMode;
+
+    _skinDiffuseMode;
+
+    _hairLightingMode;
+
+    _hairMaterialMode;
+
+    _glassLightingMode;
 
     _tattooTextureOffsetY;
 
+    _characterAtlasLayout;
+
     constructor({
         headNormalMode = "detail",
+        headMaterialMode = "authored",
         skinLightingMode = "authored",
-        tattooTextureOffsetY = 0
+        skinDiffuseMode = "authored",
+        hairLightingMode = "neutral-specular",
+        hairMaterialMode = "selected",
+        glassLightingMode = "transmission",
+        tattooTextureOffsetY = 0,
+        characterAtlasLayout = null,
+        browSupportEnabled = true,
+        browLightingMode = "authored",
+        browDiffuseColorMode = "authored",
+        tearductsEnabled = true,
+        tearductLightingMode = "authored",
+        tearductUvMode = "authored",
+        tearductDiffuseMode = "base",
+        eyeWetEnabled = true,
+        eyeWetMaterialMode = "composed",
+        eyeballsEnabled = true,
+        eyelashCarrierMode = "all",
+        eyelashUvMode = "carrier-specific",
+        eyelashDepthMode = "authored",
+        eyelashAlphaMode = "source",
+        eyeShadowDiffuseMode = "lash",
+        eyeShadowLightingMode = "authored"
     } = {})
     {
         if (!tw2 || typeof tw2.GetClass !== "function")
@@ -134,6 +246,12 @@ export class TnyGlesAtlasComposer
                 "GLES atlas headNormalMode must be authored, detail, base, or neutral"
             );
         }
+        if (![ "authored", "body-default" ].includes(headMaterialMode))
+        {
+            throw new TypeError(
+                "GLES atlas headMaterialMode must be authored or body-default"
+            );
+        }
         if (![ "authored", "head-diffuse", "body-diffuse", "diffuse" ].includes(
             skinLightingMode
         ))
@@ -142,15 +260,139 @@ export class TnyGlesAtlasComposer
                 "GLES atlas skinLightingMode must be authored, head-diffuse, body-diffuse, or diffuse"
             );
         }
+        if (![ "authored", "solid", "base", "basecolor", "colorized", "replace" ].includes(
+            skinDiffuseMode
+        ))
+        {
+            throw new TypeError(
+                "GLES atlas skinDiffuseMode must be authored, solid, base, basecolor, colorized, or replace"
+            );
+        }
+        if (![ "authored", "neutral", "neutral-normal", "neutral-specular" ].includes(
+            hairLightingMode
+        ))
+        {
+            throw new TypeError(
+                "GLES atlas hairLightingMode must be authored, neutral, neutral-normal, or neutral-specular"
+            );
+        }
+        if (![ "selected", "authored" ].includes(hairMaterialMode))
+        {
+            throw new TypeError(
+                "GLES atlas hairMaterialMode must be selected or authored"
+            );
+        }
+        if (![ "transmission", "authored", "legacy" ].includes(glassLightingMode))
+        {
+            throw new TypeError(
+                "GLES atlas glassLightingMode must be transmission, authored, or legacy"
+            );
+        }
         if (!Number.isFinite(tattooTextureOffsetY))
         {
             throw new TypeError("GLES atlas tattooTextureOffsetY must be finite");
         }
+        if (characterAtlasLayout !== null
+            && typeof characterAtlasLayout?.getNormalizedRect !== "function")
+        {
+            throw new TypeError(
+                "GLES atlas characterAtlasLayout must expose getNormalizedRect"
+            );
+        }
+        if (typeof browSupportEnabled !== "boolean"
+            || typeof tearductsEnabled !== "boolean"
+            || typeof eyeWetEnabled !== "boolean"
+            || typeof eyeballsEnabled !== "boolean")
+        {
+            throw new TypeError("GLES face comparison controls must be boolean");
+        }
+        if (![ "authored", "neutral" ].includes(browLightingMode))
+        {
+            throw new TypeError("GLES browLightingMode must be authored or neutral");
+        }
+        if (![ "authored", "neutral" ].includes(browDiffuseColorMode))
+        {
+            throw new TypeError("GLES browDiffuseColorMode must be authored or neutral");
+        }
+        if (![ "authored", "neutral" ].includes(tearductLightingMode))
+        {
+            throw new TypeError("GLES tearductLightingMode must be authored or neutral");
+        }
+        if (![ "authored", "identity" ].includes(tearductUvMode))
+        {
+            throw new TypeError("GLES tearductUvMode must be authored or identity");
+        }
+        if (![ "composed", "base", "dark" ].includes(tearductDiffuseMode))
+        {
+            throw new TypeError("GLES tearductDiffuseMode must be composed, base, or dark");
+        }
+        if (![ "retained", "composed" ].includes(eyeWetMaterialMode))
+        {
+            throw new TypeError(
+                "GLES eyeWetMaterialMode must be retained or composed"
+            );
+        }
+        if (![ "all", "off", "eyelashes-off", "eyeshadow-off" ].includes(eyelashCarrierMode))
+        {
+            throw new TypeError(
+                "GLES eyelashCarrierMode must be all, off, eyelashes-off, or eyeshadow-off"
+            );
+        }
+        if (![ "carrier-specific", "identity", "raw-direct" ].includes(eyelashUvMode))
+        {
+            throw new TypeError(
+                "GLES eyelashUvMode must be carrier-specific, identity, or raw-direct"
+            );
+        }
+        if (![ "authored", "test-no-write", "off" ].includes(eyelashDepthMode))
+        {
+            throw new TypeError(
+                "GLES eyelashDepthMode must be authored, test-no-write, or off"
+            );
+        }
+        if (![ "source", "weighted" ].includes(eyelashAlphaMode))
+        {
+            throw new TypeError("GLES eyelashAlphaMode must be source or weighted");
+        }
+        if (![ "lash", "transparent" ].includes(eyeShadowDiffuseMode))
+        {
+            throw new TypeError(
+                "GLES eyeShadowDiffuseMode must be lash or transparent"
+            );
+        }
+        if (![ "authored", "neutral" ].includes(eyeShadowLightingMode))
+        {
+            throw new TypeError(
+                "GLES eyeShadowLightingMode must be authored or neutral"
+            );
+        }
         this._d3d = RequireD3DConstants(tw2.const);
         this._configuredPasses = CreateConfiguredConsumerPassContract(this._d3d);
         this._headNormalMode = headNormalMode;
+        this._headMaterialMode = headMaterialMode;
         this._skinLightingMode = skinLightingMode;
+        this._skinDiffuseMode = skinDiffuseMode;
+        this._hairLightingMode = hairLightingMode;
+        this._hairMaterialMode = hairMaterialMode;
+        this._glassLightingMode = glassLightingMode;
         this._tattooTextureOffsetY = tattooTextureOffsetY;
+        this._characterAtlasLayout = characterAtlasLayout;
+        this._browSupportEnabled = browSupportEnabled;
+        this._browLightingMode = browLightingMode;
+        this._browDiffuseColorMode = browDiffuseColorMode;
+        this._tearductsEnabled = tearductsEnabled;
+        this._tearductLightingMode = tearductLightingMode;
+        this._tearductUvMode = tearductUvMode;
+        this._tearductDiffuseMode = tearductDiffuseMode;
+        this._eyeWetEnabled = eyeWetEnabled;
+        this._eyeWetMaterialMode = eyeWetMaterialMode;
+        this._eyeballsEnabled = eyeballsEnabled;
+        this._eyelashCarrierMode = eyelashCarrierMode;
+        this._eyelashUvMode = eyelashUvMode;
+        this._eyelashDepthMode = eyelashDepthMode;
+        this._eyelashAlphaMode = eyelashAlphaMode;
+        this._eyeShadowDiffuseMode = eyeShadowDiffuseMode;
+        this._eyeShadowLightingMode = eyeShadowLightingMode;
     }
 
     /** Uses one hydrated character library before falling back to PNG bytes. */
@@ -196,18 +438,61 @@ export class TnyGlesAtlasComposer
             excludePartIndices: configuredGarmentPartIndices
         });
         const deferred = [ ...planned.deferred ];
+        const notApplicable = [ ...planned.notApplicable ];
 
         const baseMetadata = await this._ReadMetadata(basePath);
         const targetSize = ResolveTargetSize(baseMetadata);
-        const passes = [ await this._CreateCopyPass(basePath, targetSize) ];
-        const skinColorization = ResolveSkinColorizationCandidate(staged, "body");
-        if (skinColorization)
+        const diagnosticDiffuse = this._skinDiffuseMode !== "authored";
+        const skinBaseColorPath = ResolveSkinBaseColorPath(staged);
+        const solidBase = [ "solid", "basecolor", "colorized" ].includes(
+            this._skinDiffuseMode
+        );
+        if (this._skinDiffuseMode === "basecolor" && !skinBaseColorPath)
         {
-            passes.push(await this._CreateColorizedPass(skinColorization, targetSize));
+            throw new Error("Selected skin base colour is unresolved");
+        }
+        const basePass = solidBase
+            ? await this._CreateSolidCopyPass(
+                this._skinDiffuseMode === "basecolor" ? skinBaseColorPath : SOLID_WHITE,
+                targetSize
+            )
+            : await this._CreateCopyPass(basePath, targetSize);
+        if (solidBase)
+        {
+            basePass.report = {
+                mode: this._skinDiffuseMode === "basecolor"
+                    ? "retained-skin-base-color"
+                    : "diagnostic-solid-diffuse",
+                shader: COPY_BLIT_SHADER,
+                path: this._skinDiffuseMode === "basecolor"
+                    ? skinBaseColorPath
+                    : SOLID_WHITE,
+                placement: [ 0, 0, 1, 1 ]
+            };
+        }
+        const passes = [ basePass ];
+        const skinColorization = ResolveSkinColorizationCandidate(staged, "body");
+        if (skinColorization
+            && [ "authored", "basecolor", "colorized", "replace" ].includes(
+                this._skinDiffuseMode
+            ))
+        {
+            // The skin L map supplies colour detail, not coverage. Treating its
+            // alpha as a mask leaves the independently authored head/body bases
+            // visible by different amounts and creates a colour seam at the neck.
+            passes.push(await this._CreateColorizedPass(
+                skinColorization,
+                targetSize,
+                {
+                    useDetailMask: false,
+                    rgbOnly: this._skinDiffuseMode === "replace",
+                    blend: this._skinDiffuseMode !== "replace"
+                }
+            ));
         }
         const composedContributions = new Set();
 
-        for (const operation of planned.operations)
+        for (const operation of diagnosticDiffuse ? [] : planned.operations)
         {
             try
             {
@@ -315,6 +600,7 @@ export class TnyGlesAtlasComposer
                 status: "composed",
                 rule: "legacy-opengl-body-diffuse-atlas-v1",
                 uvStatus: "experimental-policy",
+                diagnosticMode: this._skinDiffuseMode,
                 basePath,
                 targetSize,
                 attachedEffects: attachments.total,
@@ -330,10 +616,16 @@ export class TnyGlesAtlasComposer
                 bodyNormal: bodyNormal.report,
                 bodySpecular: bodySpecular.report,
                 contributionCount: contributions.length,
+                applicableContributionCount: contributions.length
+                    - new Set(notApplicable.map(value => value.layerIndex)).size,
+                notApplicableContributionCount: new Set(
+                    notApplicable.map(value => value.layerIndex)
+                ).size,
                 composedContributionCount: composedContributions.size,
                 deferredContributionCount: new Set(deferred.map(value => value.layerIndex)).size,
                 passes: passes.map(value => value.report),
-                deferred
+                deferred,
+                notApplicable
             };
         }
         catch (error)
@@ -445,7 +737,7 @@ export class TnyGlesAtlasComposer
     {
         const planned = resolveLegacyBodyMaterialChannels(contributions);
         const neutral = [ "body-diffuse", "diffuse" ].includes(this._skinLightingMode);
-        const basePath = resolveLegacyBodyFoundationSpecularPath(staged);
+        const basePath = resolveLegacyBodyFoundationSpecularPath(staged, contributions);
         if (!neutral && !basePath)
         {
             return {
@@ -459,7 +751,10 @@ export class TnyGlesAtlasComposer
             };
         }
 
-        const operations = neutral ? [] : planned.specular;
+        const operations = neutral ? [] : planned.specular.filter(operation =>
+            !(operation.groupID === "skintype"
+                && operation.role === "specular-source"
+                && operation.path === basePath));
         const passes = [ neutral
             ? await this._CreateSolidCopyPass(SOLID_BLACK, targetSize)
             : await this._CreateAuthoredConsumerCopyPass(basePath, targetSize) ];
@@ -555,12 +850,12 @@ export class TnyGlesAtlasComposer
         }
     }
 
-    /** Composes each configured non-skin proof surface from its own retained textures. */
+    /** Composes each configured non-skin surface from its own retained textures. */
     async ComposeConfiguredGarmentMaterials(staged)
     {
         const report = {
             status: "deferred",
-            rule: "legacy-opengl-configured-garment-colorized-v1",
+            rule: "legacy-opengl-configured-garment-material-v2",
             correctness: "structurally-tested-live-proof-pending",
             applied: [],
             deferred: []
@@ -569,17 +864,28 @@ export class TnyGlesAtlasComposer
         for (const binding of staged?.configuredPartBindings ?? [])
         {
             const part = binding?.configuredPart;
+            if (part?.groupID === "hair"
+                && [
+                    "configured-hair-attached",
+                    "configured-headwear-attached"
+                ].includes(part?.compositionStatus))
+            {
+                continue;
+            }
             const contribution = staged.textureContributions?.find(value =>
                 value.partIndex === part?.partIndex);
             const allEffects = GetEffects(binding?.configuredMeshes ?? []);
             const effects = allEffects.filter(effect =>
                 effect?._characterGarmentMaterialFallback === true);
             const hybridEffects = allEffects.filter(effect =>
-                effect?._characterGarmentBodyFallback === true);
+                effect?._characterGarmentBodyFallback === true
+                && !effect?._characterFoundationReplacementRole);
 
             if (!effects.length && !hybridEffects.length) continue;
 
-            const resolved = resolveLegacyBodyDiffuseContribution(contribution);
+            const resolved = resolveLegacyConfiguredGarmentDiffuseContribution(
+                contribution
+            );
             if (resolved.status !== "ready")
             {
                 report.deferred.push({
@@ -595,6 +901,8 @@ export class TnyGlesAtlasComposer
             const metadata = await this._ReadMetadata(resolved.candidate.detail.path);
             const targetSize = ResolveTargetSize(metadata);
             const surfaces = [];
+            const expectedSurfaceCount = Number(effects.length > 0)
+                + Number(hybridEffects.length > 0);
             for (const [ surface, surfaceEffects ] of [
                 [ "private-garment", effects ],
                 [ "body-garment-hybrid", hybridEffects ]
@@ -610,9 +918,20 @@ export class TnyGlesAtlasComposer
                     surface,
                     materialChannels
                 );
-                if (surfaceResult.status === "applied")
+                if ([ "applied", "partial" ].includes(surfaceResult.status))
                 {
                     surfaces.push(surfaceResult);
+                    if (surfaceResult.status === "partial")
+                    {
+                        report.deferred.push({
+                            partIndex: part.partIndex,
+                            groupID: part.groupID,
+                            partSourceRecordID: part.partSourceRecordID,
+                            surface,
+                            channel: "lighting",
+                            reason: surfaceResult.reason
+                        });
+                    }
                 }
                 else report.deferred.push({
                     partIndex: part.partIndex,
@@ -624,18 +943,32 @@ export class TnyGlesAtlasComposer
             }
 
             if (!surfaces.length) continue;
-            part.materialStatus = "configured-garment-colorized-policy";
-            part.compositionStatus = "configured-garment-colorized-attached";
+            const bakedDirect = resolved.candidate.mode === "baked-direct";
+            const partial = surfaces.length !== expectedSurfaceCount
+                || surfaces.some(value => value.status !== "applied");
+            const materialPrefix = bakedDirect
+                ? "configured-garment-baked"
+                : "configured-garment-colorized";
+            part.materialStatus = `${materialPrefix}-${partial ? "partial" : "policy"}`;
+            part.compositionStatus = `${materialPrefix}-${partial ? "partial" : "attached"}`;
             report.applied.push({
                 partIndex: part.partIndex,
                 groupID: part.groupID,
                 partSourceRecordID: part.partSourceRecordID,
                 materialDefinitionPath: contribution.source.materialDefinitionPath,
                 detailPath: resolved.candidate.detail.path,
-                zonePath: resolved.candidate.zones.path,
-                colors: resolved.candidate.colors.map(color => [ ...color ]),
+                diffuseMode: resolved.candidate.mode,
+                zonePath: resolved.candidate.zones?.path ?? null,
+                colors: resolved.candidate.colors?.map(color => [ ...color ]) ?? null,
                 materialChannels,
                 targetSize,
+                realizationStatus: partial ? "partial" : "complete",
+                expectedSurfaceCount,
+                completedSurfaceCount: surfaces.filter(value =>
+                    value.status === "applied").length,
+                partialSurfaceCount: surfaces.filter(value =>
+                    value.status === "partial").length,
+                deferredSurfaceCount: expectedSurfaceCount - surfaces.length,
                 attachedEffects: surfaces.reduce(
                     (total, value) => total + value.attachedEffects,
                     0
@@ -664,11 +997,18 @@ export class TnyGlesAtlasComposer
             correctness: "experimental-policy",
             channels: [],
             rejectedCandidates: [],
+            policySuppressed: [],
             deferred: []
         };
         const foundation = staged?.configuredFoundations?.find(value => value?.role === "head");
         const binding = staged?.configuredFoundationBindings?.find(value => value?.role === "head");
         const textures = foundation?.skinTextureBindings?.textures;
+        const supportTextures = foundation?.skinTextureBindings?.supportTextures;
+        const faceSupportTextures = supportTextures
+            ?? (foundation?.skinTextureBindings?.rule
+                === "exact-head-generic-texture-inventory-v1"
+                ? textures
+                : null);
 
         if (!binding || !textures)
         {
@@ -689,8 +1029,13 @@ export class TnyGlesAtlasComposer
             return report;
         }
 
+        const availability = resolveLegacyReadyHeadContributions(
+            staged.textureContributions ?? [],
+            staged.deferredContributions ?? []
+        );
+        report.deferred.push(...availability.deferred);
         const plan = resolveLegacyHeadMaterialChannels(
-            staged.textureContributions,
+            availability.contributions,
             this._textureMetadataSource
         );
         const browFallback = resolveLegacyDefaultBrowCandidate(
@@ -720,6 +1065,21 @@ export class TnyGlesAtlasComposer
         report.deferred.push(...plan.deferred);
         const targets = [];
         const bindings = {};
+        const tearductFoundationTextures = {};
+        const eyeWetSupportTextures = {};
+        const effectiveTearductDiffuseMode = this._tearductDiffuseMode === "base"
+            && !faceSupportTextures?.DiffuseMap
+            ? "composed"
+            : this._tearductDiffuseMode;
+        if (effectiveTearductDiffuseMode !== this._tearductDiffuseMode)
+        {
+            report.faceTextureFallbacks = [ {
+                role: "tearducts",
+                requested: this._tearductDiffuseMode,
+                applied: effectiveTearductDiffuseMode,
+                reason: "generic-head-support-unavailable"
+            } ];
+        }
 
         try
         {
@@ -742,27 +1102,110 @@ export class TnyGlesAtlasComposer
                     && [ "head-diffuse", "diffuse" ].includes(this._skinLightingMode);
                 const baseNormal = name === "NormalMap"
                     && this._headNormalMode === "base";
+                const diagnosticDiffuse = name === "DiffuseMap"
+                    && this._skinDiffuseMode !== "authored";
+                const skinBaseColorPath = ResolveSkinBaseColorPath(staged);
+                const solidBase = name === "DiffuseMap"
+                    && [ "solid", "basecolor", "colorized" ].includes(
+                        this._skinDiffuseMode
+                    );
+                if (name === "DiffuseMap" && this._skinDiffuseMode === "basecolor"
+                    && !skinBaseColorPath)
+                {
+                    throw new Error("Selected skin base colour is unresolved");
+                }
                 const metadata = await this._ReadMetadata(
                     neutralNormal || neutralSpecular ? textures.DiffuseMap : basePath
                 );
                 const targetSize = ResolveTargetSize(metadata);
-                const passes = [ neutralNormal
-                    ? await this._CreateSolidCopyPass(NEUTRAL_NORMAL, targetSize)
-                    : neutralSpecular
-                        ? await this._CreateSolidCopyPass(SOLID_BLACK, targetSize)
-                        : await this._CreateAuthoredConsumerCopyPass(basePath, targetSize) ];
+                let basePass;
+                if (solidBase)
+                {
+                    basePass = await this._CreateSolidCopyPass(
+                        this._skinDiffuseMode === "basecolor"
+                            ? skinBaseColorPath
+                            : SOLID_WHITE,
+                        targetSize
+                    );
+                    if (this._skinDiffuseMode === "basecolor")
+                    {
+                        basePass.report = {
+                            mode: "retained-skin-base-color",
+                            shader: COPY_BLIT_SHADER,
+                            path: skinBaseColorPath,
+                            placement: [ 0, 0, 1, 1 ]
+                        };
+                    }
+                }
+                else if (neutralNormal)
+                {
+                    basePass = await this._CreateSolidCopyPass(NEUTRAL_NORMAL, targetSize);
+                }
+                else if (neutralSpecular)
+                {
+                    basePass = await this._CreateSolidCopyPass(SOLID_BLACK, targetSize);
+                }
+                else
+                {
+                    basePass = await this._CreateAuthoredConsumerCopyPass(
+                        basePath,
+                        targetSize
+                    );
+                }
+                const passes = [ basePass ];
+                // The generic-head diffuse is the topology support source for
+                // EyeWet: unlike the selected skin atlas, its authored alpha
+                // is empty across that lower-lid carrier. Keep the sibling
+                // normal/specular maps available only for the tear-duct
+                // comparison; EyeWet still receives bounded neutral lighting.
+                const foundationSupportPasses = (effectiveTearductDiffuseMode === "base"
+                    || this._eyeWetMaterialMode === "composed")
+                    && faceSupportTextures?.[name]
+                    ? [ await this._CreateAuthoredConsumerCopyPass(
+                        faceSupportTextures[name],
+                        targetSize
+                    ) ]
+                    : null;
                 const skinColorization = name === "DiffuseMap"
                     ? ResolveSkinColorizationCandidate(staged, "head")
                     : null;
-                if (skinColorization)
+                if (skinColorization
+                    && [ "authored", "basecolor", "colorized", "replace" ].includes(
+                        this._skinDiffuseMode
+                    ))
                 {
-                    passes.push(await this._CreateColorizedPass(skinColorization, targetSize));
+                    passes.push(await this._CreateColorizedPass(
+                        skinColorization,
+                        targetSize,
+                        {
+                            useDetailMask: false,
+                            // Skin colour and additive appearance layers do not
+                            // own face-carrier coverage. Preserve the authored
+                            // foundation alpha used by EyeWet and other
+                            // transparent consumers while changing only RGB.
+                            rgbOnly: true,
+                            blend: this._skinDiffuseMode !== "replace"
+                        }
+                    ));
                 }
-                const selectedOperations = neutralNormal || neutralSpecular || baseNormal
+                const selectedOperations = diagnosticDiffuse
+                    || neutralNormal || neutralSpecular || baseNormal
                     ? []
                     : name === "NormalMap" && this._headNormalMode === "detail"
                         ? operations.filter(operation => operation.op === "normal-add")
                         : operations;
+                const policySuppressedOperations = name === "NormalMap"
+                    && this._headNormalMode === "detail"
+                    ? operations.filter(operation => operation.op !== "normal-add")
+                    : [];
+                for (const operation of policySuppressedOperations)
+                {
+                    report.policySuppressed.push({
+                        channel: name,
+                        ...operation,
+                        reason: "detail-mode-withholds-replacement-normal"
+                    });
+                }
                 for (const operation of selectedOperations)
                 {
                     let accepted = false;
@@ -796,7 +1239,13 @@ export class TnyGlesAtlasComposer
                         try
                         {
                             passes.push(operation.candidate
-                                ? await this._CreateColorizedPass(operation.candidate, targetSize)
+                                ? await this._CreateColorizedPass(
+                                    operation.candidate,
+                                    targetSize,
+                                    name === "DiffuseMap"
+                                        ? { rgbOnly: true, blend: true }
+                                        : undefined
+                                )
                                 : operation.op === "authored-head-tattoo-atlas"
                                     ? await this._CreateAuthoredHeadTattooPass(
                                         path,
@@ -813,7 +1262,8 @@ export class TnyGlesAtlasComposer
                                         : await this._CreateAuthoredOverlayPass(
                                             path,
                                             targetSize,
-                                            operation
+                                            operation,
+                                            { rgbOnly: name === "DiffuseMap" }
                                         ));
                             accepted = true;
                             break;
@@ -841,6 +1291,25 @@ export class TnyGlesAtlasComposer
                     }
                 }
 
+                if (name === "DiffuseMap")
+                {
+                    // The selected foundation effect is an opaque skin surface.
+                    // Its texture alpha is also source data for separate
+                    // transparent face carriers, so those carriers receive the
+                    // private support target while the skin target owns opaque
+                    // framebuffer alpha independently.
+                    const opaqueSkinAlpha = await this._CreateSolidAlphaPass(
+                        "opaque",
+                        targetSize
+                    );
+                    opaqueSkinAlpha.report = {
+                        mode: "configured-head-opaque-skin-alpha",
+                        shader: COPY_BLIT_SHADER,
+                        placement: [ 0, 0, 1, 1 ]
+                    };
+                    passes.push(opaqueSkinAlpha);
+                }
+
                 const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
                 const target = new RenderTarget(
                     `character-${staged.sex}-head-${name.toLowerCase()}`,
@@ -855,38 +1324,110 @@ export class TnyGlesAtlasComposer
                 RenderPasses(tw2, target, passes);
                 targets.push(target);
                 bindings[name] = target.texture;
+                if (foundationSupportPasses)
+                {
+                    const foundationTarget = new RenderTarget(
+                        `character-${staged.sex}-head-foundation-${name.toLowerCase()}`,
+                        targetSize[0],
+                        targetSize[1],
+                        false
+                    );
+                    if (!foundationTarget.IsGood?.())
+                    {
+                        throw new Error(
+                            `Unable to create ${targetSize.join("x")} head foundation target`
+                        );
+                    }
+                    RenderPasses(tw2, foundationTarget, foundationSupportPasses);
+                    targets.push(foundationTarget);
+                    eyeWetSupportTextures[name] = foundationTarget.texture;
+                    if (name === "DiffuseMap" && effectiveTearductDiffuseMode === "base")
+                    {
+                        const tearductPasses = [
+                            await this._CreateAuthoredConsumerCopyPass(
+                                faceSupportTextures[name],
+                                targetSize
+                            ),
+                            await this._CreateSolidAlphaPass("opaque", targetSize)
+                        ];
+                        const tearductTarget = new RenderTarget(
+                            `character-${staged.sex}-head-tearduct-${name.toLowerCase()}`,
+                            targetSize[0],
+                            targetSize[1],
+                            false
+                        );
+                        if (!tearductTarget.IsGood?.())
+                        {
+                            throw new Error(
+                                `Unable to create ${targetSize.join("x")} tear-duct target`
+                            );
+                        }
+                        RenderPasses(tw2, tearductTarget, tearductPasses);
+                        targets.push(tearductTarget);
+                        tearductFoundationTextures[name] = tearductTarget.texture;
+                    }
+                    else
+                    {
+                        tearductFoundationTextures[name] = foundationTarget.texture;
+                    }
+                }
+                let diagnosticMode = "authored";
+                if (neutralNormal) diagnosticMode = "neutral-normal";
+                else if (neutralSpecular) diagnosticMode = "black-specular";
+                else if (diagnosticDiffuse)
+                {
+                    diagnosticMode = `${this._skinDiffuseMode}-diffuse`;
+                }
+                else if (baseNormal) diagnosticMode = "authored-base-normal";
+                else if (name === "NormalMap" && this._headNormalMode === "detail")
+                {
+                    diagnosticMode = "authored-additive-detail-normal";
+                }
                 report.channels.push({
                     name,
                     basePath,
-                    diagnosticMode: neutralNormal
-                        ? "neutral-normal"
-                        : neutralSpecular
-                            ? "black-specular"
-                            : baseNormal
-                                ? "authored-base-normal"
-                                : name === "NormalMap" && this._headNormalMode === "detail"
-                                    ? "authored-additive-detail-normal"
-                                    : "authored",
+                    diagnosticMode,
                     targetSize,
-                    overlayCount: passes.length - 1,
-                    overlays: passes.slice(1).map(value => ({
+                    ...(name === "DiffuseMap" ? {
+                        framebufferAlpha: "opaque-skin-surface"
+                    } : {}),
+                    overlayCount: passes.filter(value =>
+                        value.report.mode !== "configured-head-opaque-skin-alpha"
+                    ).length - 1,
+                    overlays: passes.slice(1).filter(value =>
+                        value.report.mode !== "configured-head-opaque-skin-alpha"
+                    ).map(value => ({
                         path: value.report.path ?? value.report.detailPath,
                         groupID: value.report.groupID,
                         layerIndex: value.report.layerIndex,
                         role: value.report.role
                     })),
-                    passes: passes.map(value => value.report)
+                    policySuppressed: policySuppressedOperations.map(operation => ({
+                        path: operation.path,
+                        groupID: operation.groupID,
+                        layerIndex: operation.layerIndex,
+                        role: operation.role,
+                        reason: "detail-mode-withholds-replacement-normal"
+                    })),
+                    passes: passes.filter(value =>
+                        value.report.mode !== "configured-head-opaque-skin-alpha"
+                    ).map(value => value.report)
                 });
             }
 
             if (!Object.keys(bindings).length) return report;
             let eyelashTexture = null;
+            let eyelashTarget = null;
+            let eyelashDirectTransform = null;
             if (eyelashFallback.status === "ready")
             {
                 try
                 {
                     const eyelashMetadata = await this._ReadMetadata(
                         eyelashFallback.operation.candidate.detail.path
+                    );
+                    eyelashDirectTransform = resolveLegacyCroppedTextureTransform(
+                        eyelashMetadata
                     );
                     const targetSize = ResolveTargetSize(eyelashMetadata);
                     const passes = [
@@ -896,7 +1437,11 @@ export class TnyGlesAtlasComposer
                         // into an opaque or incorrectly weighted carrier.
                         await this._CreateAuthoredConsumerCopyPass(
                             eyelashFallback.operation.candidate.detail.path,
-                            targetSize
+                            targetSize,
+                            { alphaMultiplier: this._eyelashAlphaMode === "weighted"
+                                ? eyelashFallback.operation.candidate
+                                    .contribution?.weight ?? 1
+                                : 1 }
                         ),
                         await this._CreateColorizedPass(
                             eyelashFallback.operation.candidate,
@@ -917,12 +1462,16 @@ export class TnyGlesAtlasComposer
                     }
                     RenderPasses(tw2, target, passes);
                     targets.push(target);
+                    eyelashTarget = target;
                     eyelashTexture = target.texture;
                     report.eyelashFallback = {
                         ...report.eyelashFallback,
                         binding: "colorized-transparent-head-atlas",
                         targetSize,
                         alphaEvidence: ReadTargetAlphaEvidence(target),
+                        alphaMode: this._eyelashAlphaMode,
+                        retainedDependencyWeight: eyelashFallback.operation.candidate
+                            .contribution?.weight ?? 1,
                         passes: passes.map(value => value.report)
                     };
                 }
@@ -938,26 +1487,54 @@ export class TnyGlesAtlasComposer
             report.browSupport = await this._ComposeConfiguredBrowSupport(
                 staged,
                 browFallback,
-                bindings.DiffuseMap ?? null,
+                bindings,
                 report.channels.find(value => value.name === "DiffuseMap")?.targetSize,
                 targets
             );
-            const committed = await commitLegacyConfiguredHeadBindings(effects, bindings);
+            const committed = await commitLegacyConfiguredHeadBindings(effects, bindings, {
+                materialMode: this._headMaterialMode
+            });
+            staged.composedHeadTextures = { ...bindings };
             report.faceTextures = applyLegacyConfiguredFaceTextures(
                 binding,
                 staged.textureContributions,
                 {
-                    headDiffuseTexture: bindings.DiffuseMap ?? null,
+                    headTextures: bindings,
                     eyelashTexture,
                     eyelashSourcePath: eyelashFallback.status === "ready"
                         ? eyelashFallback.operation.candidate.detail.path
-                        : null
+                        : null,
+                    eyelashDirectTransform,
+                    tearductsEnabled: this._tearductsEnabled,
+                    tearductLightingMode: this._tearductLightingMode,
+                    tearductUvMode: this._tearductUvMode,
+                    tearductDiffuseMode: effectiveTearductDiffuseMode,
+                    tearductBaseDiffusePath: faceSupportTextures?.DiffuseMap ?? null,
+                    tearductFoundationTextures,
+                    tearductFoundationEvidence:
+                        foundation?.skinTextureBindings?.supportEvidence ?? null,
+                    eyeWetSupportTextures,
+                    tearductSolidDiffusePath: NEUTRAL_SPECULAR,
+                    eyeWetEnabled: this._eyeWetEnabled,
+                    eyeWetMaterialMode: this._eyeWetMaterialMode,
+                    eyeballsEnabled: this._eyeballsEnabled,
+                    eyelashCarrierMode: this._eyelashCarrierMode,
+                    eyelashUvMode: this._eyelashUvMode,
+                    eyelashDepthMode: this._eyelashDepthMode,
+                    eyeShadowDiffuseMode: this._eyeShadowDiffuseMode,
+                    eyeShadowLightingMode: this._eyeShadowLightingMode
                 }
             );
+            if (eyelashTarget)
+            {
+                report.eyelashFallback.carrierAlphaEvidence =
+                    ReadConfiguredFaceCarrierAlphaEvidence(eyelashTarget, binding);
+            }
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(...targets);
             report.status = "applied";
             report.attachedEffects = committed.attachedEffects;
+            report.effectBindings = committed.effectBindings;
             return report;
         }
         catch (error)
@@ -968,10 +1545,390 @@ export class TnyGlesAtlasComposer
         }
     }
 
+    /** Composes exact retained hair channels onto authored detailed-hair cards. */
+    async ComposeConfiguredHairMaterials(staged)
+    {
+        const report = {
+            status: "deferred",
+            rule: "configured-detailed-hair-material-v1",
+            correctness: "structurally-tested-live-proof-pending",
+            applied: [],
+            deferred: []
+        };
+
+        for (const binding of staged?.configuredPartBindings ?? [])
+        {
+            const part = binding?.configuredPart;
+            if (part?.groupID !== "hair") continue;
+            const contribution = staged.textureContributions?.find(value =>
+                value.partIndex === part.partIndex);
+            const resolved = resolveLegacyConfiguredHairDiffuseContribution(contribution);
+            const channels = resolveLegacyHairMaterialChannels(contribution);
+            const material = resolveLegacyHairShaderMaterial(contribution);
+            const regions = {
+                hair: this._characterAtlasLayout?.getNormalizedRect?.("hair") ?? null,
+                head: this._characterAtlasLayout?.getNormalizedRect?.("head") ?? null
+            };
+            const consumers = resolveLegacyConfiguredHairConsumers(binding, regions);
+            hideLegacyConfiguredHairHeadShells(consumers);
+            const effects = consumers.effects;
+            const rigidEffects = consumers.rigidEffects;
+            if (resolved.status !== "ready" || channels.status !== "ready"
+                || material.status !== "ready"
+                || effects.length + rigidEffects.length === 0)
+            {
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    consumers: consumers.consumers,
+                    rigidConsumers: consumers.rigidConsumers,
+                    headShellConsumers: consumers.headShellConsumers,
+                    excludedConsumers: consumers.excludedConsumers,
+                    reason: effects.length + rigidEffects.length === 0
+                        ? consumers.reason
+                        : resolved.status !== "ready"
+                            ? resolved.reason
+                            : channels.status !== "ready" ? channels.reason : material.reason
+                });
+                continue;
+            }
+
+            let target = null;
+            let siblingTarget = null;
+            let lighting = null;
+            try
+            {
+                const metadata = await this._ReadMetadata(resolved.candidate.detail.path);
+                const targetSize = ResolveTargetSize(metadata);
+                const glassEffects = consumers.glassEffects;
+                const ordinaryRigidEffects = rigidEffects.filter(effect =>
+                    !glassEffects.includes(effect));
+                const separatesRigidDiffuse = effects.length > 0
+                    && ordinaryRigidEffects.length > 0;
+                const passes = [
+                    await this._CreateAuthoredConsumerCopyPass(
+                        resolved.candidate.detail.path,
+                        targetSize
+                    ),
+                    await this._CreateColorizedPass(
+                        resolved.candidate,
+                        targetSize,
+                        { rgbOnly: true, blend: false, useDetailMask: false }
+                    )
+                ];
+                const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
+                target = new RenderTarget(
+                    `character-${staged.sex}-hair-${part.partIndex}-diffuse`,
+                    targetSize[0],
+                    targetSize[1],
+                    false
+                );
+                if (!target.IsGood?.())
+                {
+                    throw new Error(`Unable to create ${targetSize.join("x")} hair target`);
+                }
+                RenderPasses(tw2, target, passes);
+                let siblingPasses = [];
+                if (separatesRigidDiffuse
+                    || glassEffects.length && this._glassLightingMode !== "legacy")
+                {
+                    siblingPasses = [ await this._CreateAuthoredConsumerCopyPass(
+                        resolved.candidate.detail.path,
+                        targetSize
+                    ) ];
+                    siblingTarget = new RenderTarget(
+                        `character-${staged.sex}-hair-${part.partIndex}-authored-diffuse`,
+                        targetSize[0],
+                        targetSize[1],
+                        false
+                    );
+                    if (!siblingTarget.IsGood?.())
+                    {
+                        throw new Error(
+                            `Unable to create ${targetSize.join("x")} hair sibling target`
+                        );
+                    }
+                    RenderPasses(tw2, siblingTarget, siblingPasses);
+                }
+                const neutralHairNormal = [ "neutral", "neutral-normal" ].includes(
+                    this._hairLightingMode
+                );
+                const neutralHairSpecular = [ "neutral", "neutral-specular" ].includes(
+                    this._hairLightingMode
+                );
+                lighting = await this._ComposeGarmentLightingTargets(
+                    staged,
+                    part,
+                    channels,
+                    targetSize,
+                    "detailed-hair",
+                    {
+                        normal: neutralHairNormal,
+                        specular: neutralHairSpecular,
+                        specularPath: SOLID_BLACK,
+                        specularPreserveAlpha: true
+                    }
+                );
+                const appliedHairMaterial = this._hairMaterialMode === "authored"
+                    ? null
+                    : material.parameters;
+                const committed = await commitLegacyConfiguredHairBindings(
+                    effects,
+                    target.texture,
+                    {
+                        NormalMap: {
+                            textureRes: lighting.normalTarget.texture,
+                            sourcePath: neutralHairNormal
+                                ? NEUTRAL_NORMAL
+                                : channels.normalPath
+                        },
+                        SpecularMap: {
+                            textureRes: lighting.specularTarget.texture,
+                            sourcePath: neutralHairSpecular
+                                ? channels.specularPath
+                                : channels.specularPath
+                        }
+                    },
+                    appliedHairMaterial,
+                    ordinaryRigidEffects,
+                    {
+                        rigidTexture: separatesRigidDiffuse
+                            ? siblingTarget?.texture ?? null
+                            : target.texture,
+                        glassEffects,
+                        glassTexture: this._glassLightingMode === "legacy"
+                            ? target.texture
+                            : siblingTarget?.texture ?? null,
+                        glassLightingMode: this._glassLightingMode
+                    }
+                );
+                for (const area of consumers.deferredAreas)
+                {
+                    area.display = false;
+                }
+                staged.compositionTargets ??= [];
+                staged.compositionTargets.push(
+                    target,
+                    ...(siblingTarget ? [ siblingTarget ] : []),
+                    lighting.normalTarget,
+                    lighting.specularTarget
+                );
+                part.materialStatus = "configured-hair-policy";
+                part.compositionStatus = "configured-hair-attached";
+                report.applied.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    targetSize,
+                    detailPath: resolved.candidate.detail.path,
+                    zonePath: resolved.candidate.zones.path,
+                    normalPath: channels.normalPath,
+                    specularPath: channels.specularPath,
+                    lightingMode: this._hairLightingMode,
+                    materialParameters: appliedHairMaterial ?? "authored-preserved",
+                    effectiveMaterialParameters: committed.effectiveMaterialParameters,
+                    materialMode: this._hairMaterialMode,
+                    retainedHairDarkness: material.retainedHairDarkness,
+                    attachedEffects: committed.attachedEffects,
+                    attachedRigidEffects: committed.attachedRigidEffects,
+                    attachedGlassEffects: committed.attachedGlassEffects,
+                    glassEffectContracts: committed.glassEffectContracts,
+                    glassLightingMode: committed.glassLightingMode,
+                    rigidDiffuseMode: ordinaryRigidEffects.length
+                        ? separatesRigidDiffuse
+                            ? "authored-rgba-uncolorized"
+                            : "selected-colorized-private-hair"
+                        : null,
+                    glassDiffuseMode: glassEffects.length && siblingTarget
+                        ? "authored-rgba-uncolorized"
+                        : null,
+                    framebufferAlpha: committed.framebufferAlpha,
+                    consumers: consumers.consumers,
+                    excludedConsumers: consumers.excludedConsumers,
+                    headShellConsumers: consumers.headShellConsumers,
+                    headShellStatus: consumers.headShellAreas.length
+                        ? "head-shell-hidden-pending-material-contract"
+                        : "not-present",
+                    hiddenDeferredConsumers: consumers.deferredAreas.length,
+                    alphaEvidence: ReadTargetAlphaEvidence(target),
+                    passes: passes.map(value => value.report),
+                    rigidPasses: separatesRigidDiffuse
+                        ? siblingPasses.map(value => value.report)
+                        : [],
+                    glassPasses: glassEffects.length
+                        ? siblingPasses.map(value => value.report)
+                        : []
+                });
+            }
+            catch (error)
+            {
+                lighting?.normalTarget?.Destroy?.();
+                lighting?.specularTarget?.Destroy?.();
+                siblingTarget?.Destroy?.();
+                target?.Destroy?.();
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    reason: error.message
+                });
+            }
+        }
+        if (report.applied.length) report.status = "applied";
+        return report;
+    }
+
+    /** Composes retained unzoned private headwear surfaces. */
+    async ComposeConfiguredHeadwearMaterials(staged)
+    {
+        const report = {
+            status: "deferred",
+            rule: "configured-private-headwear-material-v1",
+            correctness: "structurally-tested-live-proof-pending",
+            applied: [],
+            deferred: []
+        };
+
+        for (const binding of staged?.configuredPartBindings ?? [])
+        {
+            const part = binding?.configuredPart;
+            if (part?.groupID !== "hair") continue;
+            const contribution = staged.textureContributions?.find(value =>
+                value.partIndex === part.partIndex);
+            const resolved = resolveLegacyConfiguredHeadwearMaterial(contribution);
+            const effects = GetEffects(binding.configuredMeshes).filter(effect =>
+            {
+                const authoredPath = String(
+                    effect?._characterAuthoredEffectFilePath
+                    || effect?.effectFilePath
+                    || ""
+                );
+                return effect?._characterGarmentMaterialFallback === true
+                    && /\/skinnedavatarbrdflinear\.sm_[a-z0-9_]+$/iu.test(authoredPath)
+                    && typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function"
+                    && typeof effect?.parameters?.NormalMap?.AttachTextureRes === "function"
+                    && typeof effect?.parameters?.SpecularMap?.AttachTextureRes === "function";
+            });
+            if (resolved.status !== "ready" || !effects.length)
+            {
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    reason: !effects.length
+                        ? "private-headwear-effect-unavailable"
+                        : resolved.reason
+                });
+                continue;
+            }
+
+            let target = null;
+            let lighting = null;
+            try
+            {
+                const metadata = await this._ReadMetadata(resolved.detailPath);
+                const targetSize = ResolveTargetSize(metadata);
+                const passes = [];
+                if (resolved.underlayPath)
+                {
+                    passes.push(await this._CreateAuthoredConsumerCopyPass(
+                        resolved.underlayPath,
+                        targetSize
+                    ));
+                }
+                passes.push(await this._CreateAuthoredConsumerCopyPass(
+                    resolved.detailPath,
+                    targetSize,
+                    { blend: Boolean(resolved.underlayPath) }
+                ));
+                const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
+                target = new RenderTarget(
+                    `character-${staged.sex}-headwear-${part.partIndex}-diffuse`,
+                    targetSize[0],
+                    targetSize[1],
+                    false
+                );
+                if (!target.IsGood?.())
+                {
+                    throw new Error(`Unable to create ${targetSize.join("x")} headwear target`);
+                }
+                RenderPasses(tw2, target, passes);
+                lighting = await this._ComposeGarmentLightingTargets(
+                    staged,
+                    part,
+                    {
+                        normalPath: resolved.normalPath,
+                        specularPath: resolved.specularPath
+                    },
+                    targetSize,
+                    "private-headwear"
+                );
+                const committed = await commitLegacyConfiguredHeadwearBindings(
+                    effects,
+                    target.texture,
+                    {
+                        NormalMap: {
+                            textureRes: lighting.normalTarget.texture,
+                            sourcePath: resolved.normalPath
+                        },
+                        SpecularMap: {
+                            textureRes: lighting.specularTarget.texture,
+                            sourcePath: resolved.specularPath
+                        }
+                    },
+                    resolved.materialParameters,
+                    resolved.materialMode
+                );
+                staged.compositionTargets ??= [];
+                staged.compositionTargets.push(
+                    target,
+                    lighting.normalTarget,
+                    lighting.specularTarget
+                );
+                part.materialStatus = "configured-headwear-policy";
+                part.compositionStatus = "configured-headwear-attached";
+                report.applied.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    targetSize,
+                    detailPath: resolved.detailPath,
+                    normalPath: resolved.normalPath,
+                    specularPath: resolved.specularPath,
+                    materialParameters: resolved.materialParameters,
+                    effectiveMaterialParameters: committed.effectiveMaterialParameters,
+                    attachedEffects: committed.attachedEffects,
+                    alphaEvidence: ReadTargetAlphaEvidence(target),
+                    passes: passes.map(value => value.report)
+                });
+            }
+            catch (error)
+            {
+                lighting?.normalTarget?.Destroy?.();
+                lighting?.specularTarget?.Destroy?.();
+                target?.Destroy?.();
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    partSourceRecordID: part.partSourceRecordID,
+                    reason: error.message
+                });
+            }
+        }
+        if (report.applied.length) report.status = "applied";
+        return report;
+    }
+
+    /**
+     * Composes the configured eyebrow support carrier from authored alpha and
+     * the completed shared-head diffuse target.
+     *
+     * @param {Object} staged Staged character transaction.
+     * @param {Object} browFallback Resolved eyebrow material contribution.
+     * @param {Object} headTextures Completed shared-head textures.
+     * @param {Array<Number>} targetSize Output width and height.
+     * @param {Array<Object>} targets Transaction-owned render targets.
+     * @returns {Promise<Object>} Composition status and binding evidence.
+     */
     async _ComposeConfiguredBrowSupport(
         staged,
         browFallback,
-        headDiffuseTexture,
+        headTextures,
         targetSize,
         targets
     )
@@ -982,6 +1939,18 @@ export class TnyGlesAtlasComposer
         {
             return { status: "deferred", reason: "configured-brow-support-unavailable" };
         }
+        if (!this._browSupportEnabled)
+        {
+            for (const mesh of binding.configuredMeshes ?? []) mesh.display = false;
+            return {
+                status: "disabled",
+                rule: "configured-brow-support-comparison-control-v1",
+                correctness: "comparison-control",
+                partSourceRecordID: staged.configuredFoundationSupports?.find(value =>
+                    value?.role === "eyebrowbase")?.partSourceRecordID ?? null
+            };
+        }
+        const headDiffuseTexture = headTextures?.DiffuseMap ?? null;
         if (browFallback?.status !== "ready" || !headDiffuseTexture
             || !Array.isArray(targetSize))
         {
@@ -1020,11 +1989,39 @@ export class TnyGlesAtlasComposer
                 effects,
                 target.texture,
                 {
+                    neutralizeDiffuseColor: this._browDiffuseColorMode === "neutral",
                     alphaTest: true,
-                    neutralizeDiffuseColor: true,
-                    preserveAlphaBlend: true
+                    preserveAlphaBlend: true,
+                    coverageAlpha: true,
+                    textureBindings: this._browLightingMode === "neutral"
+                        ? {}
+                        : {
+                            NormalMap: headTextures?.NormalMap ?? null,
+                            SpecularMap: headTextures?.SpecularMap ?? null
+                        }
                 }
             );
+            if (this._browLightingMode === "neutral")
+            {
+                for (const effect of effects)
+                {
+                    SetConfiguredFaceTexturePath(effect, "NormalMap", NEUTRAL_NORMAL);
+                    SetConfiguredFaceTexturePath(effect, "SpecularMap", NEUTRAL_SPECULAR);
+                }
+            }
+            const carriers = [];
+            for (const mesh of binding.configuredMeshes ?? [])
+            {
+                for (const effect of GetEffects([ mesh ]))
+                {
+                    if (!effects.includes(effect)) continue;
+                    carriers.push(DescribeConfiguredFaceCarrier(
+                        mesh,
+                        effect,
+                        String(mesh?.name ?? "")
+                    ));
+                }
+            }
             targets.push(target);
             const support = staged.configuredFoundationSupports?.find(value =>
                 value?.role === "eyebrowbase");
@@ -1035,12 +2032,26 @@ export class TnyGlesAtlasComposer
             }
             return {
                 status: "applied",
-                rule: "exact-head-archetype-brow-support-dependency-v1",
+                rule: this._browDiffuseColorMode === "neutral"
+                    ? "configured-brow-support-neutral-diffuse-multiplier-comparison-v1"
+                    : this._browLightingMode === "neutral"
+                        ? "configured-brow-support-neutral-lighting-comparison-v1"
+                        : "exact-head-archetype-brow-support-dependency-v1",
+                correctness: this._browLightingMode === "neutral"
+                    || this._browDiffuseColorMode === "neutral"
+                    ? "comparison-control"
+                    : "reference-parity",
+                framebufferAlpha: "source-over-coverage",
                 partSourceRecordID: support?.partSourceRecordID ?? null,
                 alphaPath,
                 targetSize: [ ...targetSize ],
                 alphaEvidence: ReadTargetAlphaEvidence(target),
                 attachedEffects,
+                carriers,
+                lightingBindings: this._browLightingMode === "neutral"
+                    ? [ "NormalMap", "SpecularMap" ]
+                    : [ "NormalMap", "SpecularMap" ].filter(name =>
+                        Boolean(headTextures?.[name])),
                 passes: passes.map(value => value.report)
             };
         }
@@ -1255,6 +2266,13 @@ export class TnyGlesAtlasComposer
         try
         {
             const hybrid = surface === "body-garment-hybrid";
+            const bakedDirect = candidate.mode === "baked-direct";
+            if (hybrid && bakedDirect)
+            {
+                throw new Error(
+                    "Baked garment diffuse is not qualified for a hybrid body surface"
+                );
+            }
             const passes = [ await this._CreateGarmentClearPass(targetSize) ];
             if (hybrid)
             {
@@ -1262,7 +2280,13 @@ export class TnyGlesAtlasComposer
                 {
                     throw new Error("Shared body diffuse is unavailable for hybrid garment surface");
                 }
-                passes.push(await this._CreateSharedConsumerRgbaPass(
+                // Preserve the owner layer's coverage while replacing only
+                // its base RGB with shared skin before the secondary material.
+                passes.push(await this._CreateAuthoredConsumerCopyPass(
+                    candidate.detail.path,
+                    targetSize
+                ));
+                passes.push(await this._CreateSharedConsumerRgbPass(
                     staged.composedBodyDiffuseTexture,
                     targetSize
                 ));
@@ -1274,9 +2298,12 @@ export class TnyGlesAtlasComposer
                     targetSize
                 ));
             }
-            passes.push(await this._CreateColorizedPass(candidate, targetSize, hybrid
-                ? { blend: true, useDetailMask: true }
-                : { rgbOnly: true, blend: false, useDetailMask: false }));
+            if (!bakedDirect)
+            {
+                passes.push(await this._CreateColorizedPass(candidate, targetSize, hybrid
+                    ? { rgbOnly: true, blend: true, useDetailMask: true }
+                    : { rgbOnly: true, blend: false, useDetailMask: false }));
+            }
 
             const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
             const targetIndex = (staged.compositionTargets ?? []).length;
@@ -1315,7 +2342,8 @@ export class TnyGlesAtlasComposer
                             sourcePath: materialChannels.specularPath
                         }
                     }
-                    : {}
+                    : {},
+                { alphaTest: hybrid }
             );
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(
@@ -1323,10 +2351,13 @@ export class TnyGlesAtlasComposer
                 ...(lighting ? [ lighting.normalTarget, lighting.specularTarget ] : [])
             );
             return {
-                status: "applied",
+                status: lighting ? "applied" : "partial",
                 surface,
+                reason: lighting ? null : materialChannels.reason,
+                lightingStatus: lighting ? "applied" : "deferred",
                 attachedEffects: binding.attachedEffects,
                 materialBinding: binding,
+                alphaEvidence: ReadTargetAlphaEvidence(target),
                 lightingPasses: lighting?.passes ?? [],
                 passes: passes.map(value => value.report)
             };
@@ -1345,7 +2376,8 @@ export class TnyGlesAtlasComposer
         part,
         materialChannels,
         targetSize,
-        surface
+        surface,
+        neutralOnly = {}
     )
     {
         const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
@@ -1361,10 +2393,18 @@ export class TnyGlesAtlasComposer
         {
             for (const [ name, path, neutralPath ] of channels)
             {
-                const passes = [
-                    await this._CreateSolidCopyPass(neutralPath, targetSize),
-                    await this._CreateAuthoredConsumerCopyPass(path, targetSize)
-                ];
+                const effectiveNeutralPath = neutralOnly[`${name}Path`] ?? neutralPath;
+                const preserveNeutralAlpha = neutralOnly[`${name}PreserveAlpha`] === true;
+                const passes = preserveNeutralAlpha
+                    ? [
+                        await this._CreateAuthoredConsumerCopyPass(path, targetSize),
+                        await this._CreateSolidRgbPass([ 0, 0, 0, 1 ], targetSize)
+                    ]
+                    : [ await this._CreateSolidCopyPass(effectiveNeutralPath, targetSize) ];
+                if (neutralOnly[name] !== true && !preserveNeutralAlpha)
+                {
+                    passes.push(await this._CreateAuthoredConsumerCopyPass(path, targetSize));
+                }
                 const target = new RenderTarget(
                     `character-${staged.sex}-garment-${part.partIndex}-${surface}-${name}-${targetIndex}`,
                     targetSize[0],
@@ -1379,8 +2419,11 @@ export class TnyGlesAtlasComposer
                 targets.push(target);
                 reports.push({
                     channel: name,
-                    sourcePath: path,
-                    neutralPath,
+                    sourcePath: preserveNeutralAlpha || neutralOnly[name] !== true
+                        ? path
+                        : effectiveNeutralPath,
+                    neutralPath: effectiveNeutralPath,
+                    preservedAlpha: preserveNeutralAlpha,
                     passes: passes.map(value => value.report)
                 });
             }
@@ -1398,7 +2441,7 @@ export class TnyGlesAtlasComposer
         };
     }
 
-    /** Applies the exact, experimentally proven female basic-tuck coverage target. */
+    /** Applies one owner-qualified female bottom/tuck/top coverage tuple. */
     async ComposeExactFemaleTuckSupport(
         staged,
         {
@@ -1424,7 +2467,7 @@ export class TnyGlesAtlasComposer
             || typeof usePantsRgb !== "boolean"
             || typeof useSharedBodyRgb !== "boolean")
         {
-            throw new TypeError("Exact female tuck options must be boolean");
+            throw new TypeError("Female tuck options must be boolean");
         }
         if (usePantsRgb && useSharedBodyRgb)
         {
@@ -1436,7 +2479,19 @@ export class TnyGlesAtlasComposer
             staged?.configuredParts,
             staged?.textureContributions
         );
-        if (planned.status !== "ready") return planned;
+        if (planned.status !== "ready")
+        {
+            if (Number.isInteger(planned.tuckPartIndex))
+            {
+                SetConfiguredPartCompositionDisplay(
+                    staged,
+                    planned.tuckPartIndex,
+                    false,
+                    "hidden-without-material-owner"
+                );
+            }
+            return planned;
+        }
         if (useSharedBodyRgb && !staged?.composedBodyDiffuseTexture)
         {
             return {
@@ -1498,7 +2553,7 @@ export class TnyGlesAtlasComposer
             );
             if (!target.IsGood?.())
             {
-                throw new Error(`Unable to create ${targetSize.join("x")} exact tuck support target`);
+                throw new Error(`Unable to create ${targetSize.join("x")} tuck support target`);
             }
 
             RenderPasses(tw2, target, passes);
@@ -1508,10 +2563,18 @@ export class TnyGlesAtlasComposer
                 target.texture,
                 {
                     depthTest,
+                    neutralizeDiffuseColor: true,
                     transformUV0: useAuthoredTransform
                         ? planned.authoredSampleBounds
                         : null
                 }
+            );
+            const coordinatedDrape = SuppressReadyCompetingTopDrape(staged, planned);
+            SetConfiguredPartCompositionDisplay(
+                staged,
+                planned.tuckPartIndex,
+                true,
+                "visible"
             );
             const part = staged.configuredParts.find(value =>
                 value.partIndex === planned.tuckPartIndex);
@@ -1525,12 +2588,14 @@ export class TnyGlesAtlasComposer
 
             return {
                 status: "applied",
-                rule: "legacy-opengl-exact-female-tuck-support-v1",
-                correctness: "fixture-verified-experimental-policy",
+                rule: "legacy-opengl-owner-qualified-female-tuck-support-v2",
+                correctness: "relationship-qualified-experimental-policy",
                 renderStateRule: "authored-decal-area-state-v1",
                 tuckPartIndex: planned.tuckPartIndex,
                 tuckPartSourceRecordID: planned.tuckPartSourceRecordID,
                 supportOwnerSelectionIndex: planned.supportOwnerSelectionIndex,
+                topOwnerSelectionIndex: planned.topOwnerSelectionIndex,
+                coordinatedDrape,
                 alphaLayerIndex: planned.alphaLayerIndex,
                 alphaPartSourceRecordID: planned.alphaPartSourceRecordID,
                 alphaPath: planned.alphaPath,
@@ -1556,7 +2621,7 @@ export class TnyGlesAtlasComposer
                 topZonePath: planned.topZonePath,
                 topMaterialDefinitionPath: planned.topMaterialDefinitionPath,
                 rgbSource: useSharedBodyRgb
-                    ? "historical-shared-body-comparison"
+                    ? "completed-body-diffuse"
                     : usePantsRgb
                         ? "same-owner-pants-colorized"
                         : "selected-top-colorized",
@@ -1573,6 +2638,96 @@ export class TnyGlesAtlasComposer
                 sampleBounds: useAuthoredTransform
                     ? planned.authoredSampleBounds
                     : [ 0, 0, 1, 1 ],
+                passes: passes.map(value => value.report)
+            };
+        }
+        catch (error)
+        {
+            const rollbackFailures = error?.rollbackFailures ?? [];
+            if (rollbackFailures.length && target)
+            {
+                staged.compositionTargets ??= [];
+                staged.compositionTargets.push(target);
+            }
+            else
+            {
+                target?.Destroy?.();
+            }
+            return {
+                ...WithoutEffects(planned),
+                status: "deferred",
+                reason: rollbackFailures.length
+                    ? `${error.message}; ${rollbackFailures.length} binding rollback(s) failed`
+                    : error.message
+            };
+        }
+    }
+
+    /** Applies a selected top's material and alpha to its standard drape support. */
+    async ComposeSelectedTopDrapeSupport(staged)
+    {
+        const planned = planLegacySelectedTopDrapeSupport(
+            staged?.sex,
+            staged?.backend?.visualModel,
+            staged?.configuredParts,
+            staged?.textureContributions
+        );
+        if (planned.status !== "ready") return planned;
+
+        const basePath = resolveLegacyBodyFoundationPath(staged);
+        const baseMetadata = await this._ReadMetadata(basePath);
+        const targetSize = ResolveTargetSize(baseMetadata);
+        const targetIndex = (staged.compositionTargets ?? []).length;
+        let target = null;
+
+        try
+        {
+            const passes = [
+                await this._CreateAuthoredConsumerCopyPass(planned.alphaPath, targetSize)
+            ];
+            if (planned.diffuseMode === "colorized")
+            {
+                passes.push(await this._CreateColorizedPass(planned.topCandidate, targetSize, {
+                    blend: false,
+                    rgbOnly: true
+                }));
+            }
+            const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
+            target = new RenderTarget(
+                `character-${staged.sex}-selected-top-drape-${targetIndex}`,
+                targetSize[0],
+                targetSize[1],
+                false
+            );
+            if (!target.IsGood?.())
+            {
+                throw new Error(`Unable to create ${targetSize.join("x")} selected-top drape target`);
+            }
+
+            RenderPasses(tw2, target, passes);
+            const attachedEffects = commitLegacyConfiguredConsumerBindings(
+                planned.effects,
+                target.texture,
+                { neutralizeDiffuseColor: true }
+            );
+            const part = staged.configuredParts.find(value =>
+                value.partIndex === planned.drapePartIndex);
+            if (part)
+            {
+                part.materialStatus = "selected-top-drape-material-policy";
+                part.compositionStatus = "selected-top-drape-material-attached";
+            }
+            staged.compositionTargets ??= [];
+            staged.compositionTargets.push(target);
+
+            return {
+                ...WithoutEffects(planned),
+                status: "applied",
+                rule: "owner-qualified-selected-top-drape-material-v1",
+                correctness: "retained-owner-and-material-policy",
+                attachedEffects,
+                targetSize,
+                sampleBounds: [ 0, 0, 1, 1 ],
                 passes: passes.map(value => value.report)
             };
         }
@@ -1855,14 +3010,33 @@ export class TnyGlesAtlasComposer
             );
             masks.push({ ...mask, placement });
         }
-        const passes = [ await this._CreateSolidCopyPass(SOLID_WHITE, targetSize) ];
+        const foundationEffects = GetFoundationBodyEffects(staged.backend?.visualModel);
+        const directCutMask = foundationEffects.length > 0
+            && foundationEffects.every(effect =>
+                typeof effect?.parameters?.CutMaskMap?.AttachTextureRes === "function");
+        if (!directCutMask && !staged.composedBodyDiffuseTexture)
+        {
+            return {
+                ...planned,
+                status: "deferred",
+                reason: "foundation-body-diffuse-unavailable"
+            };
+        }
+        const passes = directCutMask
+            ? [ await this._CreateSolidCopyPass(SOLID_WHITE, targetSize) ]
+            : [ await this._CreateSharedConsumerRgbaPass(
+                staged.composedBodyDiffuseTexture,
+                targetSize
+            ) ];
         for (const mask of masks)
         {
-            passes.push(await this._CreateFoundationCutMaskPass(
-                mask.maskPath,
-                mask.placement,
-                targetSize
-            ));
+            passes.push(directCutMask
+                ? await this._CreateFoundationCutMaskPass(
+                    mask.maskPath,
+                    mask.placement,
+                    targetSize
+                )
+                : await this._CreateConsumerCutMaskPass(mask.maskPath, targetSize));
         }
         const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
         const target = new RenderTarget(
@@ -1896,17 +3070,25 @@ export class TnyGlesAtlasComposer
                     passes: passes.map(value => value.report)
                 };
             }
-            const bindings = commitLegacyFoundationCutMaskBindings(
-                staged.backend?.visualModel,
-                target.texture
-            );
+            const bindings = directCutMask
+                ? commitLegacyFoundationCutMaskBindings(
+                    staged.backend?.visualModel,
+                    target.texture
+                )
+                : commitLegacyFoundationAlphaCutBindings(
+                    staged.backend?.visualModel,
+                    target.texture
+                );
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(target);
             return {
                 ...planned,
                 status: "applied",
-                rule: "legacy-opengl-female-foundation-cut-mask-v2",
+                rule: directCutMask
+                    ? "legacy-opengl-female-foundation-cut-mask-v2"
+                    : "legacy-opengl-female-foundation-alpha-cut-v1",
                 correctness: "experimental-live-proof-pending",
+                bindingMode: directCutMask ? "cut-mask-sampler" : "diffuse-alpha-test",
                 targetSize,
                 masks,
                 attachedEffects: bindings.length,
@@ -1985,7 +3167,8 @@ export class TnyGlesAtlasComposer
                 RenderPasses(tw2, target, passes);
                 result.attachedEffects += commitLegacyConfiguredConsumerBindings(
                     effects,
-                    target.texture
+                    target.texture,
+                    { alphaTest: true }
                 );
                 for (const consumer of group.consumers)
                 {
@@ -1998,9 +3181,11 @@ export class TnyGlesAtlasComposer
                         groupID: consumer.groupID,
                         effectFilePath: consumer.effect.effectFilePath ?? null,
                         authoredDiffusePath: group.authoredDiffusePath,
+                        alphaSource: { ...consumer.alphaSource },
                         cutMaskPaths: [ ...group.cutMaskPaths ],
                         previousSampleBounds: consumer.previousSampleBounds,
                         sampleBounds: [ 0, 0, 1, 1 ],
+                        alphaPolicy: "authored-owner-alpha-test",
                         source: "configured-body-consumer-target"
                     });
                 }
@@ -2346,8 +3531,29 @@ export class TnyGlesAtlasComposer
         };
     }
 
-    async _CreateAuthoredConsumerCopyPass(path, targetSize)
+    /**
+     * Creates one placed RGBA copy pass for an authored configured consumer.
+     *
+     * @param {String} path Authored texture path.
+     * @param {Array<Number>} targetSize Output width and height.
+     * @param {Object} [options] Copy options.
+     * @param {Number} [options.alphaMultiplier=1] Source-alpha multiplier.
+     * @param {Boolean} [options.blend=false] Whether to blend over the target.
+     * @returns {Promise<Object>} Prepared pass and diagnostic projection.
+     */
+    async _CreateAuthoredConsumerCopyPass(
+        path,
+        targetSize,
+        { alphaMultiplier = 1, blend = false } = {}
+    )
     {
+        if (!Number.isFinite(alphaMultiplier) || alphaMultiplier < 0
+            || typeof blend !== "boolean")
+        {
+            throw new TypeError(
+                "Configured authored consumer alphaMultiplier must be non-negative"
+            );
+        }
         const metadata = await this._ReadMetadata(path);
         const placement = Placement(metadata);
         const sourceTargetSize = ResolveTargetSize(metadata);
@@ -2359,13 +3565,14 @@ export class TnyGlesAtlasComposer
             parameters: {
                 SourceUVs: Bounds(placement),
                 TextureReverseUV: placement,
-                AlphaMultiplier: [ 1, 0, 0, 0 ]
+                AlphaMultiplier: [ alphaMultiplier, 0, 0, 0 ]
             },
             textures: { Texture: path }
         });
 
         await PrepareEffect(tw2, effect, COPY_BLIT_SHADER);
-        ApplyConfiguredConsumerRenderStates(
+        if (blend) ApplyRenderStates(this._d3d, effect, true);
+        else ApplyConfiguredConsumerRenderStates(
             this._d3d,
             effect,
             this._configuredPasses.authored
@@ -2377,6 +3584,8 @@ export class TnyGlesAtlasComposer
                 mode: "configured-authored-rgba",
                 shader: COPY_BLIT_SHADER,
                 path,
+                alphaMultiplier,
+                blend,
                 sourceTargetSize,
                 placement,
                 uv: DescribeUvDecision(metadata, targetSize, placement)
@@ -2384,10 +3593,52 @@ export class TnyGlesAtlasComposer
         };
     }
 
-    async _CreateAuthoredOverlayPass(path, targetSize, operation)
+    /**
+     * Creates one authored body-channel overlay, optionally masked by the
+     * owning diffuse contribution's coverage.
+     *
+     * @param {String} path Authored texture path.
+     * @param {Array<Number>} targetSize Output width and height.
+     * @param {Object} operation Planned channel operation and owner evidence.
+     * @param {Object} [options] Overlay options.
+     * @param {Boolean} [options.rgbOnly=false] Preserves destination alpha.
+     * @returns {Promise<Object>} Prepared pass and diagnostic projection.
+     */
+    async _CreateAuthoredOverlayPass(
+        path,
+        targetSize,
+        operation,
+        { rgbOnly = false } = {}
+    )
     {
+        if (typeof rgbOnly !== "boolean")
+        {
+            throw new TypeError("Configured authored overlay rgbOnly must be boolean");
+        }
         const metadata = await this._ReadMetadata(path);
         const placement = Placement(metadata);
+        let coverageMetadata = null;
+        let coveragePlacement = null;
+        let destinationPlacement = placement;
+        if (operation?.coveragePath)
+        {
+            coverageMetadata = await this._ReadMetadata(operation.coveragePath);
+            coveragePlacement = Placement(coverageMetadata);
+            RequireCompatibleTargetAspect(
+                operation.coveragePath,
+                ResolveTargetSize(coverageMetadata),
+                targetSize
+            );
+            destinationPlacement = IntersectPlacement(placement, coveragePlacement);
+            if (!destinationPlacement)
+            {
+                throw new Error(
+                    `Body material channel and owner coverage do not overlap: ${path}`
+                );
+            }
+        }
+        const ownerMasked = coveragePlacement !== null;
+        const ownerReplace = ownerMasked && operation?.op === "specular-replace";
         const fullNormalized = BoundsEqual(placement, [ 0, 0, 1, 1 ]);
         if (!fullNormalized)
         {
@@ -2396,32 +3647,62 @@ export class TnyGlesAtlasComposer
         const Effect = RequireClass(tw2, "Tw2Effect");
         const weight = Number.isFinite(operation?.weight) ? operation.weight : 1;
         const effect = Effect.from({
-            effectFilePath: COPY_BLIT_SHADER,
+            effectFilePath: ownerMasked ? SIMPLE_BLIT_SHADER : COPY_BLIT_SHADER,
             autoParameter: true,
-            parameters: {
+            parameters: ownerMasked ? {
+                SourceUVs: Bounds(destinationPlacement),
+                TextureReverseUV: placement,
+                MaskReverseUV: coveragePlacement,
+                Strength: [ weight, 0, 0, 0 ],
+                // A direct garment specular source owns the channel wherever
+                // its diffuse layer owns the surface. Its source alpha is
+                // material data, not permission for older skin overlays to
+                // remain visible through the garment.
+                MultAlpha: [ ownerReplace ? 0 : 1, 0, 0, 0 ]
+            } : {
                 SourceUVs: Bounds(placement),
                 TextureReverseUV: placement,
                 AlphaMultiplier: [ weight, 0, 0, 0 ]
             },
-            textures: { Texture: path }
+            textures: {
+                Texture: path,
+                ...(ownerMasked ? { MaskMap: operation.coveragePath } : {})
+            }
         });
 
-        await PrepareEffect(tw2, effect, COPY_BLIT_SHADER);
-        ApplyRenderStates(this._d3d, effect, true);
+        const shader = ownerMasked ? SIMPLE_BLIT_SHADER : COPY_BLIT_SHADER;
+        await PrepareEffect(tw2, effect, shader);
+        ApplyRenderStates(
+            this._d3d,
+            effect,
+            true,
+            rgbOnly ? { colorWrite: COLOR_WRITE_RGB } : {}
+        );
         return {
             effect,
-            viewport: Viewport(targetSize, placement),
+            viewport: Viewport(targetSize, destinationPlacement),
             report: {
                 mode: operation?.projectionDefinitionPath
                     ? "configured-head-authored-tattoo-atlas"
-                    : `configured-${operation?.target ?? "head"}-source-alpha-overlay`,
-                shader: COPY_BLIT_SHADER,
+                    : ownerReplace
+                        ? `configured-${operation?.target ?? "head"}-owner-masked-replace`
+                        : ownerMasked
+                            ? `configured-${operation?.target ?? "head"}-owner-masked-source-alpha-overlay`
+                            : `configured-${operation?.target ?? "head"}-source-alpha-overlay`,
+                shader,
                 path,
+                coveragePath: operation?.coveragePath ?? null,
+                coverageRole: operation?.coverageRole ?? null,
                 groupID: operation.groupID,
                 layerIndex: operation.layerIndex,
                 role: operation.role,
                 materialControls: operation.materialControls ?? null,
                 weight,
+                alphaOperation: rgbOnly
+                    ? "source-alpha-rgb-preserve-foundation-alpha"
+                    : ownerReplace
+                        ? "owner-mask-rgba-replace"
+                        : "source-alpha-rgba",
                 placement,
                 samplingContract: fullNormalized
                     ? "full-normalized-stretch"
@@ -2431,7 +3712,16 @@ export class TnyGlesAtlasComposer
                 colorSelectionApplication: operation?.projectionDefinitionPath
                     ? "retained-not-applied"
                     : null,
-                uv: DescribeUvDecision(metadata, targetSize, placement)
+                coveragePlacement,
+                destinationPlacement,
+                uv: DescribeUvDecision(metadata, targetSize, destinationPlacement),
+                coverageUv: coverageMetadata
+                    ? DescribeUvDecision(
+                        coverageMetadata,
+                        targetSize,
+                        destinationPlacement
+                    )
+                    : null
             }
         };
     }
@@ -2504,18 +3794,48 @@ export class TnyGlesAtlasComposer
         const metadata = await this._ReadMetadata(path);
         const placement = Placement(metadata);
         RequireCompatibleTargetAspect(path, ResolveTargetSize(metadata), targetSize);
-        const shader = additive ? TWIST_NORMAL_BLIT_SHADER : MASKED_NORMAL_BLIT_SHADER;
+        let coverageMetadata = null;
+        let coveragePlacement = null;
+        let destinationPlacement = placement;
+        if (!additive && operation?.coveragePath)
+        {
+            coverageMetadata = await this._ReadMetadata(operation.coveragePath);
+            coveragePlacement = Placement(coverageMetadata);
+            RequireCompatibleTargetAspect(
+                operation.coveragePath,
+                ResolveTargetSize(coverageMetadata),
+                targetSize
+            );
+            destinationPlacement = IntersectPlacement(placement, coveragePlacement);
+            if (!destinationPlacement)
+            {
+                throw new Error(
+                    `Body normal and owner coverage do not overlap: ${path}`
+                );
+            }
+        }
+        const ownerMasked = coveragePlacement !== null;
+        const shader = additive
+            ? TWIST_NORMAL_BLIT_SHADER
+            : ownerMasked ? SIMPLE_BLIT_SHADER : MASKED_NORMAL_BLIT_SHADER;
         const strength = Number.isFinite(operation?.weight) ? operation.weight : 1;
         const Effect = RequireClass(tw2, "Tw2Effect");
         const effect = Effect.from({
             effectFilePath: shader,
             autoParameter: true,
             parameters: {
-                SourceUVs: Bounds(placement),
+                SourceUVs: Bounds(destinationPlacement),
                 TextureReverseUV: placement,
+                ...(ownerMasked ? {
+                    MaskReverseUV: coveragePlacement,
+                    MultAlpha: [ 1, 0, 0, 0 ]
+                } : {}),
                 Strength: [ strength, 0, 0, 0 ]
             },
-            textures: { Texture: path }
+            textures: {
+                Texture: path,
+                ...(ownerMasked ? { MaskMap: operation.coveragePath } : {})
+            }
         });
 
         await PrepareEffect(tw2, effect, shader);
@@ -2531,20 +3851,33 @@ export class TnyGlesAtlasComposer
         else ApplyRenderStates(this._d3d, effect, true);
         return {
             effect,
-            viewport: Viewport(targetSize, placement),
+            viewport: Viewport(targetSize, destinationPlacement),
             report: {
-                mode: `configured-${operation?.target ?? "head"}-normal-${
-                    additive ? "add" : "replace"
-                }`,
+                mode: ownerMasked
+                    ? `configured-${operation?.target ?? "head"}-normal-owner-masked-replace`
+                    : `configured-${operation?.target ?? "head"}-normal-${
+                        additive ? "add" : "replace"
+                    }`,
                 shader,
                 path,
+                coveragePath: operation?.coveragePath ?? null,
+                coverageRole: operation?.coverageRole ?? null,
                 groupID: operation.groupID,
                 layerIndex: operation.layerIndex,
                 role: operation.role,
                 materialControls: operation.materialControls ?? null,
                 strength,
                 placement,
-                uv: DescribeUvDecision(metadata, targetSize, placement)
+                coveragePlacement,
+                destinationPlacement,
+                uv: DescribeUvDecision(metadata, targetSize, destinationPlacement),
+                coverageUv: coverageMetadata
+                    ? DescribeUvDecision(
+                        coverageMetadata,
+                        targetSize,
+                        destinationPlacement
+                    )
+                    : null
             }
         };
     }
@@ -2720,6 +4053,15 @@ export function resolveLegacyBodyDiffuseContribution(contribution)
     }
     if (!zones)
     {
+        if (IsVersionAuthoredBodyOverlay(contribution, detail))
+        {
+            return {
+                status: "ready",
+                operation: "alpha-overlay",
+                texture: detail,
+                evidenceRule: "exact-version-authored-rgba-overlay-v1"
+            };
+        }
         return { status: "deferred", reason: "body-colorize-zones-unresolved" };
     }
     if (!colors)
@@ -2742,6 +4084,508 @@ export function resolveLegacyBodyDiffuseContribution(contribution)
             ...(pattern ? { pattern } : {})
         }
     };
+}
+
+/**
+ * Resolves a configured garment's private diffuse input.
+ *
+ * Configured materials may either colorize an authored L/Z pair or provide one
+ * exact baked D map. The baked form deliberately remains separate from shared
+ * body-atlas planning: it is admitted only by the configured private-surface
+ * composer, which derives surface ownership from the decoded Black material.
+ */
+export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
+{
+    const colorized = resolveLegacyBodyDiffuseContribution(contribution);
+    if (colorized.status === "ready" && colorized.candidate)
+    {
+        return {
+            ...colorized,
+            candidate: {
+                ...colorized.candidate,
+                mode: "colorized"
+            }
+        };
+    }
+    if (colorized.status === "ready"
+        && colorized.operation === "alpha-overlay"
+        && colorized.texture)
+    {
+        return {
+            status: "ready",
+            candidate: {
+                mode: "baked-direct",
+                evidenceRule: colorized.evidenceRule,
+                contribution,
+                detail: colorized.texture,
+                zones: null,
+                colors: null
+            }
+        };
+    }
+
+    const baked = (contribution?.selectedTextures ?? []).filter(value =>
+        value?.target === "body"
+        && [ "diffuse-source", "diffuse-overlay" ].includes(value?.role));
+    if (baked.length !== 1)
+    {
+        return baked.length
+            ? { status: "deferred", reason: "garment-baked-diffuse-ambiguous" }
+            : colorized;
+    }
+
+    return {
+        status: "ready",
+        candidate: {
+            mode: "baked-direct",
+            contribution,
+            detail: baked[0],
+            zones: null,
+            colors: null
+        }
+    };
+}
+
+/** Resolves one exact retained L/Z/color tuple for configured hair cards. */
+export function resolveLegacyConfiguredHairDiffuseContribution(contribution)
+{
+    const selected = contribution?.selectedTextures ?? [];
+    const details = selected.filter(value =>
+        value?.target === "hair" && value?.role === "colorize-layer");
+    const zones = selected.filter(value =>
+        value?.target === "hair" && value?.role === "colorize-zones");
+    const colors = NormalizeColors(contribution?.materialValues?.colors);
+    if (details.length !== 1)
+    {
+        return {
+            status: "deferred",
+            reason: details.length
+                ? "hair-colorize-layer-ambiguous"
+                : "hair-colorize-layer-unresolved"
+        };
+    }
+    if (zones.length !== 1)
+    {
+        return {
+            status: "deferred",
+            reason: zones.length
+                ? "hair-colorize-zones-ambiguous"
+                : "hair-colorize-zones-unresolved"
+        };
+    }
+    if (!colors)
+    {
+        return { status: "deferred", reason: "hair-material-colors-unresolved" };
+    }
+    return {
+        status: "ready",
+        candidate: {
+            contribution,
+            detail: details[0],
+            zones: zones[0],
+            colors
+        }
+    };
+}
+
+/** Resolves exact retained normal/specular inputs for configured hair cards. */
+export function resolveLegacyHairMaterialChannels(contribution)
+{
+    const selected = contribution?.selectedTextures ?? [];
+    const normals = selected.filter(value =>
+        value?.target === "hair"
+        && [ "normal-source", "normal-overlay" ].includes(value?.role));
+    const specular = selected.filter(value =>
+        value?.target === "hair"
+        && [ "specular-source", "specular-overlay" ].includes(value?.role));
+    if (normals.length !== 1 || specular.length !== 1)
+    {
+        return {
+            status: "deferred",
+            reason: normals.length !== 1
+                ? normals.length
+                    ? "hair-normal-map-ambiguous"
+                    : "hair-normal-map-unresolved"
+                : specular.length
+                    ? "hair-specular-map-ambiguous"
+                    : "hair-specular-map-unresolved"
+        };
+    }
+    return {
+        status: "ready",
+        rule: "configured-retained-hair-lighting-v1",
+        correctness: "retained-source-policy",
+        normalPath: normals[0].path,
+        specularPath: specular[0].path
+    };
+}
+
+/** Resolves the selected palette parameters consumed by the detailed-hair shader. */
+export function resolveLegacyHairShaderMaterial(contribution)
+{
+    const colors = NormalizeColors(contribution?.materialValues?.colors);
+    const specularColors = NormalizeColors(contribution?.materialValues?.specularColors);
+    if (!colors || !specularColors)
+    {
+        return {
+            status: "deferred",
+            reason: !colors
+                ? "hair-diffuse-colors-unresolved"
+                : "hair-specular-colors-unresolved"
+        };
+    }
+    return {
+        status: "ready",
+        rule: "configured-retained-hair-shader-material-v1",
+        correctness: "retained-source-policy",
+        parameters: {
+            MaterialDiffuseColor: [ ...colors[0] ],
+            HairSpecularColor1: [ ...specularColors[0] ],
+            HairSpecularColor2: [ ...specularColors[1] ]
+        },
+        retainedHairDarkness: Number.isFinite(contribution?.colorSelection?.hairDarkness)
+            ? contribution.colorSelection.hairDarkness
+            : null
+    };
+}
+
+/** Resolves one retained unzoned private headwear material. */
+export function resolveLegacyConfiguredHeadwearMaterial(contribution)
+{
+    const selected = contribution?.selectedTextures ?? [];
+    const colorizeDetails = selected.filter(value =>
+        value?.target === "hair" && value?.role === "colorize-layer");
+    const directDetails = selected.filter(value =>
+        value?.target === "hair"
+        && [ "diffuse-source", "diffuse-overlay" ].includes(value?.role));
+    const zones = selected.filter(value =>
+        value?.target === "hair" && value?.role === "colorize-zones");
+    const normals = selected.filter(value =>
+        value?.target === "hair"
+        && [ "normal-source", "normal-overlay" ].includes(value?.role));
+    const specular = selected.filter(value =>
+        value?.target === "hair"
+        && [ "specular-source", "specular-overlay" ].includes(value?.role));
+    const specularColors = NormalizeColors(contribution?.materialValues?.specularColors);
+
+    const details = [ ...colorizeDetails, ...directDetails ];
+    const channels = [
+        [ details, "headwear-diffuse" ],
+        [ normals, "headwear-normal" ],
+        [ specular, "headwear-specular" ]
+    ];
+    const invalid = channels.find(([ values ]) => values.length !== 1);
+    if (invalid)
+    {
+        const [ values, name ] = invalid;
+        return {
+            status: "deferred",
+            reason: `${name}-${values.length ? "ambiguous" : "unresolved"}`
+        };
+    }
+    if (zones.length)
+    {
+        return { status: "deferred", reason: "headwear-zoned-material-not-private-single-colour" };
+    }
+    const materialMode = colorizeDetails.length === 1
+        ? "authored-rgba-unzoned"
+        : "authored-direct-diffuse";
+    if (materialMode === "authored-rgba-unzoned" && !specularColors)
+    {
+        return {
+            status: "deferred",
+            reason: "headwear-specular-colors-unresolved"
+        };
+    }
+
+    return {
+        status: "ready",
+        rule: "configured-retained-private-headwear-material-v2",
+        correctness: "retained-source-policy",
+        detailPath: details[0].path,
+        normalPath: normals[0].path,
+        specularPath: specular[0].path,
+        materialMode,
+        ...(materialMode === "authored-direct-diffuse"
+            && /^res:\//iu.test(String(contribution?.source?.directDiffuseUnderlayPath ?? ""))
+            ? { underlayPath: contribution.source.directDiffuseUnderlayPath }
+            : {}),
+        materialParameters: materialMode === "authored-rgba-unzoned" ? {
+            // An unzoned private RGBA input already owns its authored cloth
+            // shading and design colours. Tinting it as a one-colour mask
+            // destroys those details; only its specular control is selected.
+            MaterialDiffuseColor: [ 1, 1, 1, 1 ],
+            MaterialSpecularColor: [ ...specularColors[0] ]
+        } : null
+    };
+}
+
+/**
+ * Partitions detailed-hair effects by their authored shared-atlas region.
+ * Private reconstructed hair targets replace that region with identity sampling,
+ * while head-shell and other consumers retain their independent material contract.
+ */
+export function resolveLegacyConfiguredHairConsumers(binding, regions)
+{
+    const hairRegion = regions?.hair;
+    const headRegion = regions?.head;
+    if (![ hairRegion, headRegion ].every(region =>
+        Array.isArray(region)
+        && region.length === 4
+        && region.every(value => Number.isFinite(value))))
+    {
+        return {
+            status: "deferred",
+            reason: "character-hair-atlas-region-unavailable",
+            effects: [],
+            consumers: [],
+            excludedConsumers: [],
+            headShellAreas: [],
+            headShellConsumers: []
+        };
+    }
+
+    const effects = [];
+    const consumers = [];
+    const excludedConsumers = [];
+    const inactiveConsumers = [];
+    const deferredAreas = [];
+    const headShellAreas = [];
+    const headShellConsumers = [];
+    const rigidEffects = [];
+    const glassEffects = [];
+    const rigidConsumers = [];
+    const standaloneRigidCandidates = [];
+    for (const resolved of binding?.resolvedMeshBindings ?? [])
+    {
+        for (const field of [
+            "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas",
+            "depthAreas", "depthNormalAreas", "distortionAreas", "pickableAreas"
+        ])
+        {
+            for (const area of resolved?.mesh?.[field] ?? [])
+            {
+                const effect = area?.effect;
+                if (!effect) continue;
+                const effectPath = String(
+                    effect?._characterAuthoredEffectFilePath
+                    || effect?.effectFilePath
+                    || ""
+                );
+                const detailedHair = /\/skinnedavatarhair_detailed\.sm_[a-z0-9_]+$/iu
+                    .test(effectPath);
+                const authoredRegion = Array.isArray(effect?._characterAuthoredTransformUV0)
+                    ? [ ...effect._characterAuthoredTransformUV0 ]
+                    : ReadTransformUV0(effect);
+                const consumer = {
+                    meshName: String(resolved?.meshName ?? resolved?.mesh?.name ?? ""),
+                    areaField: field,
+                    areaName: String(area?.name ?? ""),
+                    display: area?.display !== false,
+                    effectName: String(effect?.name ?? ""),
+                    effectPath,
+                    authoredRegion
+                };
+                const authoredNames = effect?._characterAuthoredParameterNames ?? [];
+                const ownsHeadArt = authoredNames.includes("PortraitShaderArtDiffuseColor")
+                    || authoredNames.some(name => /spotlight/iu.test(name));
+                const ownsHairDetail = authoredNames.includes("HairNoiseParameters");
+                const hasPrivateSamplers = [ "DiffuseMap", "NormalMap", "SpecularMap" ]
+                    .every(name => typeof effect?.parameters?.[name]?.AttachTextureRes === "function");
+                const authoredTexturePaths = effect?._characterAuthoredTexturePaths ?? {};
+                const hasAuthoredPrivateTexture = [ "DiffuseMap", "NormalMap", "SpecularMap" ]
+                    .some(name => /^res:\//iu.test(String(authoredTexturePaths[name] ?? "")));
+                if (!detailedHair)
+                {
+                    const supportedRigidSibling =
+                        /\/(?:glassshader|skinnedavatarbrdflinear)\.(?:fx|sm_[a-z0-9_]+)$/iu
+                            .test(effectPath);
+                    const supportedStandaloneRigid =
+                        /\/skinnedavatarbrdfdoublelinear\.(?:fx|sm_[a-z0-9_]+)$/iu.test(effectPath);
+                    if (area?.display !== false && hasPrivateSamplers
+                        && !hasAuthoredPrivateTexture && supportedRigidSibling
+                    )
+                    {
+                        if (!rigidEffects.includes(effect)) rigidEffects.push(effect);
+                        if (/\/glassshader\./iu.test(effectPath)
+                            && !glassEffects.includes(effect))
+                        {
+                            glassEffects.push(effect);
+                        }
+                        rigidConsumers.push({
+                            ...consumer,
+                            targetRole: /\/glassshader\./iu.test(effectPath)
+                                ? "hair-glass-sibling"
+                                : "hair-rigid-sibling",
+                            authoredParameterEvidence: {
+                                headArt: ownsHeadArt,
+                                hairDetail: ownsHairDetail
+                            }
+                        });
+                    }
+                    else if (area?.display !== false && hasPrivateSamplers
+                        && !hasAuthoredPrivateTexture
+                        && supportedStandaloneRigid)
+                    {
+                        standaloneRigidCandidates.push({
+                            area,
+                            effect,
+                            consumer: {
+                                ...consumer,
+                                targetRole: "hair-rigid-standalone",
+                                authoredParameterEvidence: {
+                                    headArt: ownsHeadArt,
+                                    hairDetail: ownsHairDetail
+                                }
+                            }
+                        });
+                    }
+                    else if (area?.display !== false)
+                    {
+                        deferredAreas.push(area);
+                        excludedConsumers.push({
+                            ...consumer,
+                            targetRole: ownsHeadArt
+                                ? "head"
+                                : null,
+                            reason: ownsHeadArt
+                                ? "authored-material-target-is-head"
+                                : !hasPrivateSamplers
+                                    ? "private-hair-sibling-samplers-unavailable"
+                                    : hasAuthoredPrivateTexture
+                                        ? "private-hair-sibling-owns-authored-textures"
+                                        : !supportedRigidSibling
+                                            ? "private-hair-sibling-shader-contract-unresolved"
+                                            : "private-hair-sibling-target-unresolved"
+                        });
+                    }
+                    continue;
+                }
+                const targetRole = ownsHeadArt || BoundsEqual(authoredRegion, headRegion)
+                    ? "head"
+                    : BoundsEqual(authoredRegion, hairRegion) || ownsHairDetail
+                        ? "hair"
+                        : null;
+                consumer.targetRole = targetRole;
+                consumer.authoredParameterEvidence = {
+                    headArt: ownsHeadArt,
+                    hairDetail: ownsHairDetail
+                };
+                if (area?.display === false)
+                {
+                    inactiveConsumers.push({
+                        ...consumer,
+                        reason: "authored-reversed-consumer-collapsed"
+                    });
+                    continue;
+                }
+                if (targetRole === "hair")
+                {
+                    if (!effects.includes(effect)) effects.push(effect);
+                    consumers.push(consumer);
+                }
+                else
+                {
+                    if (targetRole === "head" && area?.display !== false)
+                    {
+                        headShellAreas.push(area);
+                        headShellConsumers.push({
+                            ...consumer,
+                            reason: "head-shell-hidden-pending-material-contract"
+                        });
+                    }
+                    excludedConsumers.push({
+                        ...consumer,
+                        reason: targetRole === "head"
+                            ? "authored-material-target-is-head"
+                            : "authored-material-target-unresolved"
+                    });
+                }
+            }
+        }
+    }
+    const standaloneRigid = effects.length === 0
+        && rigidEffects.length === 0
+        && standaloneRigidCandidates.length > 0;
+    if (standaloneRigid)
+    {
+        for (const candidate of standaloneRigidCandidates)
+        {
+            if (!rigidEffects.includes(candidate.effect)) rigidEffects.push(candidate.effect);
+            rigidConsumers.push(candidate.consumer);
+        }
+    }
+    else
+    {
+        for (const candidate of standaloneRigidCandidates)
+        {
+            deferredAreas.push(candidate.area);
+            excludedConsumers.push({
+                ...candidate.consumer,
+                reason: "standalone-private-hair-consumer-conflicts-with-other-consumers"
+            });
+        }
+    }
+
+    const ready = effects.length + rigidEffects.length > 0;
+    return {
+        status: ready ? "ready" : "deferred",
+        reason: ready
+            ? null
+            : "detailed-hair-region-consumer-unavailable",
+        effects,
+        rigidEffects,
+        glassEffects,
+        consumers,
+        rigidConsumers,
+        excludedConsumers,
+        inactiveConsumers,
+        deferredAreas,
+        headShellAreas,
+        headShellConsumers
+    };
+}
+
+/** Keeps authored head shells hidden until a separate material contract is ready. */
+export function hideLegacyConfiguredHairHeadShells(consumers)
+{
+    const areas = Array.isArray(consumers?.headShellAreas)
+        ? consumers.headShellAreas
+        : [];
+    for (const area of areas) area.display = false;
+    return areas.length;
+}
+
+/**
+ * Identifies an authored body overlay selected by the exact part version.
+ *
+ * Some modifiers bake their final RGB and alpha into the version-specific L
+ * texture instead of pairing L with a Z selector and a .color definition.
+ * Do not generalize a lone L texture: require exact type/version provenance,
+ * no competing material source, no retained Z candidate, and a path whose
+ * authored version segment agrees with the selected version.
+ */
+function IsVersionAuthoredBodyOverlay(contribution, detail)
+{
+    const source = contribution?.source ?? {};
+    const versionIndex = source.versionIndex;
+    if (!Number.isInteger(versionIndex) || versionIndex <= 0
+        || !String(source.typeDefinitionPath ?? "").toLowerCase().endsWith(".type")
+        || source.materialDefinitionPath
+        || (source.materialCandidatePaths?.length ?? 0) > 0
+        || contribution?.materialValues
+        || contribution?.colorSelection)
+    {
+        return false;
+    }
+
+    const path = String(detail?.path ?? "").replaceAll("\\", "/").toLowerCase();
+    if (!path.includes(`/v${versionIndex}/`)) return false;
+
+    return !(contribution?.textureCandidates ?? []).some(value =>
+        value?.recognized
+        && value?.target === "body"
+        && value?.role === "colorize-zones");
 }
 
 /** Resolves the exact retained direct-lighting maps for one garment surface. */
@@ -2934,6 +4778,50 @@ export function resolveLegacyHeadMaterialChannels(contributions, source = null)
     return result;
 }
 
+/** Withholds scalp channels when their visible configured hairstyle is unresolved. */
+export function resolveLegacyReadyHeadContributions(
+    contributions,
+    deferredContributions = []
+)
+{
+    if (!Array.isArray(contributions) || !Array.isArray(deferredContributions))
+    {
+        throw new TypeError("Legacy head contribution availability requires arrays");
+    }
+
+    const result = { contributions: [], deferred: [] };
+    for (const contribution of contributions)
+    {
+        if (contribution?.groupID !== "hair")
+        {
+            result.contributions.push(contribution);
+            continue;
+        }
+
+        const deferredVisual = deferredContributions.find(value =>
+            value?.layerIndex === contribution.layerIndex
+            && value?.partIndex === contribution.partIndex
+            && (value?.configuredVisualCandidateInventory?.configurationCount > 0
+                || value?.configuredVisualCandidateInventory?.geometryCount > 0));
+        if (!deferredVisual)
+        {
+            result.contributions.push(contribution);
+            continue;
+        }
+
+        result.deferred.push({
+            groupID: contribution.groupID,
+            layerIndex: contribution.layerIndex,
+            partSourceRecordID: contribution.source?.partSourceRecordID ?? null,
+            configuredVisualCandidateInventory: {
+                ...deferredVisual.configuredVisualCandidateInventory
+            },
+            reason: "configured-hair-geometry-unready"
+        });
+    }
+    return result;
+}
+
 /** Plans retained body normal/specular makeup channels without inventing absent maps. */
 export function resolveLegacyBodyMaterialChannels(contributions)
 {
@@ -2946,8 +4834,8 @@ export function resolveLegacyBodyMaterialChannels(contributions)
         .map((contribution, sourceIndex) => ({ contribution, sourceIndex }))
         .sort((a, b) =>
         {
-            const rankA = HEAD_COMPOSITION_GROUP_ORDER.get(a.contribution?.groupID);
-            const rankB = HEAD_COMPOSITION_GROUP_ORDER.get(b.contribution?.groupID);
+            const rankA = BODY_COMPOSITION_GROUP_ORDER.get(a.contribution?.groupID);
+            const rankB = BODY_COMPOSITION_GROUP_ORDER.get(b.contribution?.groupID);
             return (rankA ?? Number.MAX_SAFE_INTEGER)
                 - (rankB ?? Number.MAX_SAFE_INTEGER)
                 || a.sourceIndex - b.sourceIndex;
@@ -2956,9 +4844,37 @@ export function resolveLegacyBodyMaterialChannels(contributions)
     for (const { contribution } of ordered)
     {
         const currentProof = PROVED_BODY_SKIN_MAKEUP_GROUPS.has(contribution?.groupID);
-        for (const texture of (contribution?.selectedTextures ?? []).filter(value =>
+        const coverage = (contribution?.selectedTextures ?? []).find(value =>
+            value?.target === "body" && value?.role === "colorize-layer")
+            ?? (contribution?.selectedTextures ?? []).find(value =>
+                value?.target === "body" && value?.role === "diffuse-overlay")
+            ?? null;
+        const textures = (contribution?.selectedTextures ?? []).filter(value =>
             value?.target === "body"
-            && [ "normal-overlay", "twist-normal", "specular-overlay" ].includes(value?.role)))
+            && [
+                "normal-source",
+                "normal-overlay",
+                "twist-normal",
+                "specular-source",
+                "specular-overlay"
+            ].includes(value?.role));
+        if (Array.isArray(contribution?.occludedBy) && contribution.occludedBy.length)
+        {
+            for (const texture of textures)
+            {
+                result.deferred.push({
+                    path: texture.path,
+                    role: texture.role,
+                    target: texture.target,
+                    groupID: contribution.groupID,
+                    layerIndex: contribution.layerIndex,
+                    partSourceRecordID: contribution.source?.partSourceRecordID ?? null,
+                    reason: "authored-modifier-occluded"
+                });
+            }
+            continue;
+        }
+        for (const texture of textures)
         {
             const operation = {
                 path: texture.path,
@@ -2967,10 +4883,15 @@ export function resolveLegacyBodyMaterialChannels(contributions)
                 target: texture.target,
                 groupID: contribution.groupID,
                 materialControls: DescribeRetainedMaterialControls(contribution),
-                layerOrder: HEAD_COMPOSITION_GROUP_ORDER.get(contribution.groupID) ?? null,
+                layerOrder: BODY_COMPOSITION_GROUP_ORDER.get(contribution.groupID) ?? null,
                 layerIndex: contribution.layerIndex,
                 weight: Number.isFinite(contribution?.weight) ? contribution.weight : 1,
-                partSourceRecordID: contribution.source?.partSourceRecordID ?? null
+                partSourceRecordID: contribution.source?.partSourceRecordID ?? null,
+                coveragePath: coverage?.path ?? null,
+                coverageCandidatePaths: coverage
+                    ? ResolveFamilyCandidatePaths(contribution, coverage)
+                    : [],
+                coverageRole: coverage?.role ?? null
             };
             if (!currentProof)
             {
@@ -2983,16 +4904,23 @@ export function resolveLegacyBodyMaterialChannels(contributions)
             {
                 result.normal.push({ ...operation, op: "normal-add" });
             }
-            else if (texture.role === "normal-overlay")
+            else if ([ "normal-source", "normal-overlay" ].includes(texture.role))
             {
-                if (contribution?.groupID === "makeup/bodyaugmentations")
+                result.normal.push({ ...operation, op: "normal-replace" });
+            }
+            else if (texture.role === "specular-source")
+            {
+                if (!coverage)
                 {
                     result.deferred.push({
                         ...operation,
-                        reason: "body-normal-replacement-unproved"
+                        reason: "body-specular-source-owner-unresolved"
                     });
                 }
-                else result.normal.push({ ...operation, op: "normal-replace" });
+                else
+                {
+                    result.specular.push({ ...operation, op: "specular-replace" });
+                }
             }
             else
             {
@@ -3179,24 +5107,137 @@ function ResolveSkinColorizationCandidate(staged, region)
     };
 }
 
+/** Resolves the exact retained family base colour as a shared solid texture. */
+function ResolveSkinBaseColorPath(staged)
+{
+    const colors = (staged?.configuredFoundations ?? [])
+        .filter(value => value?.role === "head")
+        .map(value => value?.skinTextureBindings?.baseColor)
+        .filter(value => Array.isArray(value)
+            && value.length === 4
+            && value.every(Number.isFinite));
+    if (colors.length !== 1) return null;
+    return `dynamic:/color/${colors[0].map(Number).join(",")}`;
+}
+
 /** Binds full-atlas eyes and one retained colorized lash atlas to exact face carriers. */
 export function applyLegacyConfiguredFaceTextures(
     binding,
     contributions,
     {
+        headTextures = null,
         headDiffuseTexture = null,
         eyelashTexture = null,
-        eyelashSourcePath = null
+        eyelashSourcePath = null,
+        eyelashDirectTransform = null,
+        tearductsEnabled = true,
+        tearductLightingMode = "authored",
+        tearductUvMode = "authored",
+        tearductDiffuseMode = "composed",
+        tearductBaseDiffusePath = null,
+        tearductFoundationTextures = null,
+        tearductFoundationEvidence = null,
+        tearductSolidDiffusePath = null,
+        eyeWetSupportTextures = null,
+        eyeWetEnabled = true,
+        eyeWetMaterialMode = "retained",
+        eyeballsEnabled = true,
+        eyelashCarrierMode = "all",
+        eyelashUvMode = "carrier-specific",
+        eyelashDepthMode = "authored",
+        eyeShadowDiffuseMode = "lash",
+        eyeShadowLightingMode = "authored"
     } = {}
 )
 {
+    if (typeof tearductsEnabled !== "boolean"
+        || typeof eyeWetEnabled !== "boolean"
+        || typeof eyeballsEnabled !== "boolean")
+    {
+        throw new TypeError("Configured face tearductsEnabled must be boolean");
+    }
+    if (![ "authored", "neutral" ].includes(tearductLightingMode))
+    {
+        throw new TypeError("Configured face tearductLightingMode must be authored or neutral");
+    }
+    if (![ "authored", "identity" ].includes(tearductUvMode))
+    {
+        throw new TypeError("Configured face tearductUvMode must be authored or identity");
+    }
+    if (![ "composed", "base", "dark" ].includes(tearductDiffuseMode))
+    {
+        throw new TypeError(
+            "Configured face tearductDiffuseMode must be composed, base, or dark"
+        );
+    }
+    if (![ "retained", "composed" ].includes(eyeWetMaterialMode))
+    {
+        throw new TypeError(
+            "Configured face eyeWetMaterialMode must be retained or composed"
+        );
+    }
+    if (tearductDiffuseMode === "base"
+        && !tearductFoundationTextures?.DiffuseMap
+        && !tearductBaseDiffusePath)
+    {
+        throw new TypeError("Configured face base tear-duct diffuse requires a path");
+    }
+    if (tearductDiffuseMode === "dark" && !tearductSolidDiffusePath)
+    {
+        throw new TypeError("Configured face dark tear-duct diffuse requires a path");
+    }
+    if (![ "all", "off", "eyelashes-off", "eyeshadow-off" ].includes(eyelashCarrierMode))
+    {
+        throw new TypeError(
+            "Configured face eyelashCarrierMode must be all, off, eyelashes-off, or eyeshadow-off"
+        );
+    }
+    if (![ "carrier-specific", "identity", "raw-direct" ].includes(eyelashUvMode))
+    {
+        throw new TypeError(
+            "Configured face eyelashUvMode must be carrier-specific, identity, or raw-direct"
+        );
+    }
+    if (![ "authored", "test-no-write", "off" ].includes(eyelashDepthMode))
+    {
+        throw new TypeError(
+            "Configured face eyelashDepthMode must be authored, test-no-write, or off"
+        );
+    }
+    if (eyelashUvMode === "raw-direct"
+        && (!Array.isArray(eyelashDirectTransform)
+            || eyelashDirectTransform.length !== 4
+            || eyelashDirectTransform.some(value => !Number.isFinite(value))))
+    {
+        throw new TypeError(
+            "Configured face raw-direct eyelashes require a retained crop transform"
+        );
+    }
+    if (![ "lash", "transparent" ].includes(eyeShadowDiffuseMode))
+    {
+        throw new TypeError(
+            "Configured face eyeShadowDiffuseMode must be lash or transparent"
+        );
+    }
+    if (![ "authored", "neutral" ].includes(eyeShadowLightingMode))
+    {
+        throw new TypeError(
+            "Configured face eyeShadowLightingMode must be authored or neutral"
+        );
+    }
     const result = {
         status: "deferred",
         rule: "legacy-opengl-configured-face-textures-v1",
         correctness: "retained-source-policy",
         eyes: { status: "deferred", reason: "eye-texture-unresolved" },
-        eyelashes: { status: "deferred", reason: "eyelash-texture-unresolved" }
+        eyeWetness: { status: "retained" },
+        eyelashes: { status: "deferred", reason: "eyelash-texture-unresolved" },
+        tearducts: { status: "deferred", reason: "tearduct-material-unresolved" }
     };
+    headTextures = headTextures ?? (headDiffuseTexture
+        ? { DiffuseMap: headDiffuseTexture }
+        : null);
+    headDiffuseTexture = headTextures?.DiffuseMap ?? null;
     const eyePath = ResolveConfiguredFaceTexturePath(contributions, "eyes");
     const eyelashPath = ResolveConfiguredFaceTexturePath(contributions, "eyelashes")
         ?? eyelashSourcePath;
@@ -3213,17 +5254,236 @@ export function applyLegacyConfiguredFaceTextures(
         for (const effect of GetEffects([ value?.mesh ]))
         {
             const effectName = String(effect?.name ?? "");
+            if (!eyeWetEnabled
+                && /^EyeWet_GeoShape$/iu.test(meshName)
+                && /eyewet/iu.test(effectName))
+            {
+                value.mesh.display = false;
+                result.eyeWetness = {
+                    status: "disabled",
+                    correctness: "comparison-control",
+                    carrier: DescribeConfiguredFaceCarrier(value.mesh, effect, meshName)
+                };
+                continue;
+            }
+            if (eyeWetEnabled
+                && eyeWetMaterialMode === "composed"
+                && (eyeWetSupportTextures?.DiffuseMap || headDiffuseTexture)
+                && /^EyeWet_GeoShape$/iu.test(meshName)
+                && /eyewet/iu.test(effectName))
+            {
+                const eyeWetDiffuse = eyeWetSupportTextures?.DiffuseMap
+                    ?? headDiffuseTexture;
+                const attachedChannels = SetConfiguredFaceMaterial(effect, {
+                    DiffuseMap: eyeWetDiffuse
+                }, { transform: [ 0, 0, 1, 1 ] });
+                SetConfiguredFaceTexturePath(effect, "NormalMap", NEUTRAL_NORMAL);
+                SetConfiguredFaceTexturePath(effect, "SpecularMap", NEUTRAL_SPECULAR);
+                attachedChannels.push("NormalMap", "SpecularMap");
+                value.mesh.display = true;
+                result.eyeWetness = {
+                    status: "applied",
+                    correctness: eyeWetSupportTextures?.DiffuseMap
+                        ? "retained-source-policy"
+                        : "reference-parity",
+                    rule: eyeWetSupportTextures?.DiffuseMap
+                        ? "configured-generic-head-eyewet-material-v1"
+                        : "legacy-opengl-composed-eyewet-material-v1",
+                    binding: eyeWetSupportTextures?.DiffuseMap
+                        ? "generic-head-support-diffuse-neutral-lighting"
+                        : "composed-head-diffuse-neutral-lighting",
+                    supportDiffuseTarget: Boolean(
+                        eyeWetSupportTextures?.DiffuseMap
+                    ),
+                    materialMode: eyeWetMaterialMode,
+                    attachedChannels,
+                    carrier: DescribeConfiguredFaceCarrier(value.mesh, effect, meshName)
+                };
+                appliedEffects++;
+                continue;
+            }
+            if (eyeWetEnabled
+                && eyeWetMaterialMode === "retained"
+                && /^EyeWet_GeoShape$/iu.test(meshName)
+                && /eyewet/iu.test(effectName))
+            {
+                value.mesh.display = true;
+                result.eyeWetness = {
+                    status: "retained",
+                    correctness: "comparison-control",
+                    rule: "configured-eyewet-retained-material-control-v1",
+                    materialMode: eyeWetMaterialMode,
+                    carrier: DescribeConfiguredFaceCarrier(value.mesh, effect, meshName)
+                };
+                appliedEffects++;
+                continue;
+            }
             if (eyePath && headDiffuseTexture
                 && /^Eyeball_(?:Right|Left)_GeoShape$/iu.test(meshName)
                 && /^C_Eyes$/iu.test(effectName))
             {
-                SetConfiguredFaceDiffuse(effect, headDiffuseTexture, {
+                if (!eyeballsEnabled)
+                {
+                    value.mesh.display = false;
+                    const hiddenCarriers = result.eyes.hiddenCarriers ?? [];
+                    hiddenCarriers.push({
+                        meshName,
+                        correctness: "comparison-control"
+                    });
+                    result.eyes = {
+                        ...result.eyes,
+                        status: "disabled",
+                        hiddenCarriers
+                    };
+                    continue;
+                }
+                // Keep the eye shader's authored flat normal and Fresnel
+                // controls, but bind the selected eye's composed specular
+                // contribution with its diffuse atlas. Leaving the authored
+                // constant specular map in place made a reselected iris look
+                // uniformly matte even though an exact eye S input had been
+                // retained and composed.
+                const attachedChannels = SetConfiguredFaceMaterial(effect, {
+                    DiffuseMap: headDiffuseTexture,
+                    SpecularMap: headTextures?.SpecularMap ?? null
+                }, {
                     transform: [ 0, 0, 1, 1 ]
                 });
+                const carriers = result.eyes.carriers ?? [];
+                carriers.push(DescribeConfiguredFaceCarrier(
+                    value.mesh,
+                    effect,
+                    meshName
+                ));
                 result.eyes = {
                     status: "applied",
                     sourcePath: eyePath,
-                    binding: "composed-head-diffuse"
+                    binding: attachedChannels.includes("SpecularMap")
+                        ? "composed-head-diffuse-specular"
+                        : "composed-head-diffuse",
+                    attachedChannels,
+                    carriers
+                };
+                appliedEffects++;
+            }
+            else if (headDiffuseTexture
+                && /^Tearducts_GeoShape$/iu.test(meshName)
+                && /^C_SkinShiny_TearDucts$/iu.test(effectName))
+            {
+                if (!tearductsEnabled)
+                {
+                    value.mesh.display = false;
+                    result.tearducts = {
+                        status: "disabled",
+                        rule: "configured-tearduct-comparison-control-v1",
+                        correctness: "comparison-control",
+                        carrier: DescribeConfiguredFaceCarrier(
+                            value.mesh,
+                            effect,
+                            meshName
+                        )
+                    };
+                    continue;
+                }
+                const attachedChannels = tearductLightingMode === "neutral"
+                    ? SetConfiguredFaceMaterial(effect, {
+                        DiffuseMap: headDiffuseTexture
+                    }, tearductUvMode === "identity"
+                        ? { transform: [ 0, 0, 1, 1 ] }
+                        : { preserveTransform: true })
+                    : SetConfiguredFaceMaterial(effect, headTextures, {
+                        preserveTransform: tearductUvMode === "authored",
+                        transform: tearductUvMode === "identity"
+                            ? [ 0, 0, 1, 1 ]
+                            : null
+                    });
+                if (tearductLightingMode === "neutral")
+                {
+                    SetConfiguredFaceTexturePath(effect, "NormalMap", NEUTRAL_NORMAL);
+                    SetConfiguredFaceTexturePath(effect, "SpecularMap", NEUTRAL_SPECULAR);
+                    attachedChannels.push("NormalMap", "SpecularMap");
+                }
+                if (tearductDiffuseMode !== "composed")
+                {
+                    if (tearductDiffuseMode === "base"
+                        && tearductFoundationTextures?.DiffuseMap)
+                    {
+                        const supportBindings = tearductLightingMode === "authored"
+                            ? tearductFoundationTextures
+                            : { DiffuseMap: tearductFoundationTextures.DiffuseMap };
+                        SetConfiguredFaceMaterial(
+                            effect,
+                            supportBindings,
+                            { preserveTransform: true }
+                        );
+                    }
+                    else
+                    {
+                        SetConfiguredFaceTexturePath(
+                            effect,
+                            "DiffuseMap",
+                            tearductDiffuseMode === "base"
+                                ? tearductBaseDiffusePath
+                                : tearductSolidDiffusePath
+                        );
+                    }
+                }
+                // The authored tear-duct material gives CutMaskInfluence almost
+                // full control of fragment alpha while leaving CutMaskMap empty
+                // for runtime composition.  A transparent missing-sampler
+                // fallback therefore writes an almost-zero canvas alpha even
+                // though this is an opaque geometry area.  The exact generic
+                // head inventory supplies a uniform-white mask and the legacy
+                // adapter used the same white compatibility value.  Bind that
+                // contract explicitly until the prepared library exposes the
+                // sibling mask as a typed texture role.
+                if (effect?.parameters?.CutMaskMap)
+                {
+                    SetConfiguredFaceTexturePath(
+                        effect,
+                        "CutMaskMap",
+                        SOLID_WHITE
+                    );
+                    attachedChannels.push("CutMaskMap");
+                }
+                value.mesh.display = true;
+                result.tearducts = {
+                    status: "applied",
+                    correctness: tearductDiffuseMode === "base"
+                        ? "experimental-policy"
+                        : "comparison-control",
+                    rule: tearductDiffuseMode === "base"
+                        ? "exact-head-generic-support-material-v1"
+                        : "configured-tearduct-comparison-control-v1",
+                    binding: tearductDiffuseMode !== "composed"
+                        ? tearductLightingMode === "neutral"
+                            ? `${tearductDiffuseMode}-head-diffuse-neutral-lighting`
+                            : `${tearductDiffuseMode}-head-diffuse-composed-lighting`
+                        : tearductLightingMode === "neutral"
+                            ? "composed-head-diffuse-neutral-lighting"
+                            : "composed-head-material",
+                    uvMode: tearductUvMode,
+                    diffuseMode: tearductDiffuseMode,
+                    baseDiffusePath: tearductDiffuseMode === "base"
+                        ? tearductBaseDiffusePath
+                        : null,
+                    foundationDiffuseTarget: tearductDiffuseMode === "base"
+                        && Boolean(tearductFoundationTextures?.DiffuseMap),
+                    foundationChannels: tearductDiffuseMode === "base"
+                        ? Object.keys(tearductFoundationTextures ?? {})
+                        : [],
+                    foundationEvidence: tearductDiffuseMode === "base"
+                        ? tearductFoundationEvidence
+                        : null,
+                    solidDiffusePath: tearductDiffuseMode === "dark"
+                        ? tearductSolidDiffusePath
+                        : null,
+                    attachedChannels,
+                    carrier: DescribeConfiguredFaceCarrier(
+                        value.mesh,
+                        effect,
+                        meshName
+                    )
                 };
                 appliedEffects++;
             }
@@ -3232,9 +5492,43 @@ export function applyLegacyConfiguredFaceTextures(
                 && /eyelashes/iu.test(effectName))
             {
                 const isEyeShadow = /^EyeShadow_GeoShape$/iu.test(meshName);
-                SetConfiguredFaceDiffuse(effect, eyelashTexture, isEyeShadow
-                    ? { preserveTransform: true }
-                    : { transform: [ 0, 0, 1, 1 ] });
+                if (eyelashCarrierMode === "off"
+                    || (isEyeShadow && eyelashCarrierMode === "eyeshadow-off")
+                    || (!isEyeShadow && eyelashCarrierMode === "eyelashes-off"))
+                {
+                    value.mesh.display = false;
+                    const hiddenCarriers = result.eyelashes.hiddenCarriers ?? [];
+                    hiddenCarriers.push({
+                        meshName,
+                        mode: eyelashCarrierMode,
+                        correctness: "comparison-control"
+                    });
+                    result.eyelashes = {
+                        ...result.eyelashes,
+                        hiddenCarriers
+                    };
+                    continue;
+                }
+                if (isEyeShadow && eyelashUvMode === "raw-direct")
+                {
+                    SetConfiguredFaceDiffuse(effect, eyelashPath, {
+                        transform: eyelashDirectTransform
+                    });
+                }
+                else
+                {
+                    SetConfiguredFaceDiffuse(effect, eyelashTexture, isEyeShadow
+                        ? eyelashUvMode === "identity"
+                            ? { transform: [ 0, 0, 1, 1 ] }
+                            : { preserveTransform: true }
+                        : { transform: [ 0, 0, 1, 1 ] });
+                }
+                if (isEyeShadow && eyeShadowDiffuseMode === "transparent")
+                {
+                    SetConfiguredFaceDiffuse(effect, TRANSPARENT, {
+                        preserveTransform: true
+                    });
+                }
                 if (eyelashSpecularPath)
                 {
                     SetConfiguredFaceTexturePath(
@@ -3243,6 +5537,25 @@ export function applyLegacyConfiguredFaceTextures(
                         eyelashSpecularPath
                     );
                 }
+                if (isEyeShadow && eyeShadowLightingMode === "neutral")
+                {
+                    SetConfiguredFaceTexturePath(effect, "NormalMap", NEUTRAL_NORMAL);
+                    SetConfiguredFaceTexturePath(effect, "SpecularMap", SOLID_BLACK);
+                    effect?.SetParameters?.({
+                        MaterialSpecularColor: [ 0, 0, 0, 0 ],
+                        MaterialSpecularFactors: [ 0, 0, 0, 0 ]
+                    });
+                }
+                ApplyLegacyCoverageAlphaBlend(tw2.const, effect);
+                if (eyelashDepthMode !== "authored")
+                {
+                    ApplyLegacyConsumerDepthTest(
+                        tw2.const,
+                        effect,
+                        eyelashDepthMode === "test-no-write"
+                    );
+                }
+                value.mesh.display = true;
                 const carrier = DescribeConfiguredFaceCarrier(
                     value.mesh,
                     effect,
@@ -3254,8 +5567,15 @@ export function applyLegacyConfiguredFaceTextures(
                     status: "applied",
                     sourcePath: eyelashPath,
                     specularPath: eyelashSpecularPath,
-                    binding: "colorized-transparent-head-atlas",
-                    transform: "carrier-specific",
+                    binding: isEyeShadow && eyelashUvMode === "raw-direct"
+                        ? "authored-cropped-lash-detail"
+                        : "colorized-transparent-head-atlas",
+                    transform: eyelashUvMode,
+                    eyeShadowDiffuseMode,
+                    eyeShadowLightingMode,
+                    framebufferAlpha: "source-over-coverage",
+                    depthMode: eyelashDepthMode,
+                    hiddenCarriers: result.eyelashes.hiddenCarriers ?? [],
                     carriers
                 };
                 appliedEffects++;
@@ -3574,6 +5894,39 @@ function SetConfiguredFaceDiffuse(
     }
 }
 
+function SetConfiguredFaceMaterial(
+    effect,
+    textures,
+    {
+        transform = [ 0, 0, 1, 1 ],
+        preserveTransform = false
+    } = {}
+)
+{
+    const attachedChannels = [];
+    for (const name of [ "DiffuseMap", "NormalMap", "SpecularMap" ])
+    {
+        const texture = textures?.[name];
+        if (!texture) continue;
+        const parameter = effect?.parameters?.[name];
+        if (typeof parameter?.AttachTextureRes !== "function")
+        {
+            throw new Error(`Configured face carrier does not accept ${name}`);
+        }
+        parameter.AttachTextureRes(texture);
+        attachedChannels.push(name);
+    }
+    if (!attachedChannels.includes("DiffuseMap"))
+    {
+        throw new Error("Configured face carrier requires DiffuseMap");
+    }
+    if (!preserveTransform && !SetTransformUV0(effect, transform))
+    {
+        throw new Error("Configured face carrier does not accept TransformUV0");
+    }
+    return attachedChannels;
+}
+
 function SetConfiguredFaceTexturePath(effect, name, resourcePath)
 {
     const parameter = effect?.parameters?.[name];
@@ -3584,6 +5937,7 @@ function SetConfiguredFaceTexturePath(effect, name, resourcePath)
 
 function DescribeConfiguredFaceCarrier(mesh, effect, meshName = "")
 {
+    const geometryMesh = mesh?.geometryResource?.meshes?.[mesh?.meshIndex] ?? null;
     const fields = [
         "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas",
         "depthAreas", "depthNormalAreas", "distortionAreas", "pickableAreas"
@@ -3620,12 +5974,37 @@ function DescribeConfiguredFaceCarrier(mesh, effect, meshName = "")
         meshName,
         effectName: String(effect?.name ?? ""),
         effectFilePath: String(effect?.effectFilePath ?? ""),
+        authoredEffectFilePath: String(
+            effect?._characterAuthoredEffectFilePath ?? effect?.effectFilePath ?? ""
+        ),
+        authoredTexturePaths: { ...(effect?._characterAuthoredTexturePaths ?? {}) },
+        authoredTransformUV0: Array.isArray(effect?._characterAuthoredTransformUV0)
+            ? [ ...effect._characterAuthoredTransformUV0 ]
+            : null,
         materialDiffuseColor: ReadEffectVectorParameter(
             effect,
             "MaterialDiffuseColor",
             4
         ),
+        materialSpecularColor: ReadEffectVectorParameter(
+            effect,
+            "MaterialSpecularColor",
+            4
+        ),
+        materialSpecularCurve: ReadEffectVectorParameter(
+            effect,
+            "MaterialSpecularCurve",
+            4
+        ),
+        materialSpecularFactors: ReadEffectVectorParameter(
+            effect,
+            "MaterialSpecularFactors",
+            4
+        ),
         transformUV0: ReadTransformUV0(effect),
+        geometryBounds: ReadGeometryBounds(geometryMesh),
+        geometryUv0Bounds: ReadGeometryUvBounds(geometryMesh, 0),
+        textureSlots: DescribeAuthoredTextureSlots(effect),
         areas,
         techniques
     };
@@ -3692,14 +6071,23 @@ export function planLegacyBodyDiffuseOperations(
     const entries = contributions
         .filter(contribution => !excludePartIndices.has(contribution?.partIndex)
             && !authoredOccluded.includes(contribution))
-        .map(contribution => ({
+        .map((contribution, sourceIndex) => ({
             contribution,
+            sourceIndex,
             resolved: resolveLegacyBodyDiffuseContribution(contribution),
             overlays: (contribution?.selectedTextures ?? []).filter(value =>
                 value?.target === "body" && value?.role === "diffuse-overlay"),
             masks: (contribution?.selectedTextures ?? []).filter(value =>
                 value?.target === "body" && value?.role === "cut-mask")
-        }));
+        }))
+        .sort((a, b) =>
+        {
+            const rankA = BODY_COMPOSITION_GROUP_ORDER.get(a.contribution?.groupID);
+            const rankB = BODY_COMPOSITION_GROUP_ORDER.get(b.contribution?.groupID);
+            return (rankA ?? Number.MAX_SAFE_INTEGER)
+                - (rankB ?? Number.MAX_SAFE_INTEGER)
+                || a.sourceIndex - b.sourceIndex;
+        });
     const masksByOwner = new Map();
 
     for (const entry of entries)
@@ -3711,6 +6099,7 @@ export function planLegacyBodyDiffuseOperations(
     }
 
     const operations = [];
+    const notApplicable = [];
     const deferred = excluded.map(contribution => DeferredContribution(
         contribution,
         "configured-garment-material-owned-separately"
@@ -3755,11 +6144,18 @@ export function planLegacyBodyDiffuseOperations(
                 restoredOwners.add(owner);
             }
 
-            operations.push({
-                operation: "colorized",
-                contribution: entry.contribution,
-                candidate: entry.resolved.candidate
-            });
+            operations.push(entry.resolved.operation === "alpha-overlay"
+                ? {
+                    operation: "alpha-overlay",
+                    contribution: entry.contribution,
+                    texture: entry.resolved.texture,
+                    evidenceRule: entry.resolved.evidenceRule
+                }
+                : {
+                    operation: "colorized",
+                    contribution: entry.contribution,
+                    candidate: entry.resolved.candidate
+                });
         }
 
         for (const texture of entry.overlays)
@@ -3774,10 +6170,19 @@ export function planLegacyBodyDiffuseOperations(
         const hasColorizeInput = (entry.contribution?.selectedTextures ?? []).some(value =>
             value?.target === "body"
             && (value?.role === "colorize-layer" || value?.role === "colorize-zones"));
-        if (entry.resolved.status !== "ready"
-            && (hasColorizeInput || (!entry.masks.length && !entry.overlays.length)))
+        const hasBodyDiffuseInput = hasColorizeInput
+            || entry.masks.length > 0
+            || entry.overlays.length > 0;
+        if (entry.resolved.status !== "ready" && hasColorizeInput)
         {
             deferred.push(DeferredContribution(entry.contribution, entry.resolved.reason));
+        }
+        else if (!hasBodyDiffuseInput)
+        {
+            notApplicable.push(DeferredContribution(
+                entry.contribution,
+                "body-diffuse-channel-not-authored"
+            ));
         }
     }
 
@@ -3793,7 +6198,7 @@ export function planLegacyBodyDiffuseOperations(
         ));
     }
 
-    return { operations, deferred };
+    return { operations, deferred, notApplicable };
 }
 
 /** Selects only source-backed masks owned by exact ready female garments. */
@@ -3809,10 +6214,15 @@ export function planLegacyFemaleFoundationCutMask(sex, configuredParts, contribu
     }
 
     const masks = [];
+
     const boot = configuredParts.find(part => part?.partSourceRecordID === FEMALE_BOOT_PART);
     if (boot?.renderStatus === "ready")
     {
-        const owner = FindExactContribution(contributions, boot, FEMALE_BOOT_PART);
+        const owner = FindExactContribution(
+            contributions,
+            boot,
+            FEMALE_BOOT_PART
+        );
         if (owner && Number.isInteger(owner.ownerSelectionIndex) && owner.ownerSelectionIndex >= 0)
         {
             const candidate = contributions.flatMap(contribution =>
@@ -3843,42 +6253,6 @@ export function planLegacyFemaleFoundationCutMask(sex, configuredParts, contribu
         }
     }
 
-    const fullLegGarments = configuredParts.flatMap(part =>
-    {
-        if (part?.groupID !== "bottomouter" || part?.renderStatus !== "ready") return [];
-        const contribution = FindExactContribution(
-            contributions,
-            part,
-            part.partSourceRecordID
-        );
-        const authoredOcclusions = new Set(
-            (contribution?.source?.occludesModifiers ?? [])
-                .map(value => String(value).toLowerCase())
-        );
-        const candidates = (contribution?.selectedTextures ?? []).filter(texture =>
-            texture?.target === "body" && texture?.role === "colorize-layer");
-        if (!authoredOcclusions.has("tattoo/leftleg")
-            || !authoredOcclusions.has("tattoo/rightleg")
-            || candidates.length !== 1)
-        {
-            return [];
-        }
-        return [ { part, contribution, texture: candidates[0] } ];
-    });
-    if (fullLegGarments.length === 1)
-    {
-        const { part, contribution, texture } = fullLegGarments[0];
-        masks.push({
-            owner: "female-authored-full-leg-garment",
-            ownerPartIndex: part.partIndex,
-            ownerPartSourceRecordID: part.partSourceRecordID,
-            ownerSelectionIndex: contribution.ownerSelectionIndex,
-            maskLayerIndex: contribution.layerIndex,
-            maskPartSourceRecordID: contribution.source.partSourceRecordID,
-            maskPath: texture.path
-        });
-    }
-
     if (!masks.length)
     {
         if (boot && boot.renderStatus !== "ready")
@@ -3898,10 +6272,75 @@ function FindExactContribution(contributions, part, partSourceRecordID)
     return candidates.length === 1 ? candidates[0] : null;
 }
 
+/** Keeps configured support geometry invisible until its material owner is usable. */
+function SetConfiguredPartCompositionDisplay(staged, partIndex, display, status)
+{
+    const part = (staged?.configuredParts ?? []).find(value =>
+        value?.partIndex === partIndex);
+    if (part) part.displayStatus = status;
+
+    for (const mesh of staged?.backend?.visualModel?.meshes ?? [])
+    {
+        if (mesh?._characterPartIndex === partIndex) mesh.display = Boolean(display);
+    }
+}
+
 /**
- * Qualifies only the exact female basic-tuck support proven by fixture 3000001.
- * The tuck and cut mask share an owner; the selected shirt is deliberately a
- * different owner because it supplies the visible coverage alpha.
+ * A ready bottom-owned tuck replaces the selected top's standard drape
+ * continuation. The retained modifier path identifies that support role; the
+ * selected top owner and decoded body-consumer effect prevent a category-wide
+ * garment hide.
+ */
+function SuppressReadyCompetingTopDrape(staged, planned)
+{
+    const candidates = (staged?.textureContributions ?? []).filter(contribution =>
+        contribution?.ownerSelectionIndex === planned?.topOwnerSelectionIndex
+        && contribution?.groupID === "topmiddle"
+        && contribution?.source?.partPath === STANDARD_DRAPE_PART_PATH
+        && Number.isInteger(contribution?.partIndex));
+    if (!candidates.length) return { status: "not-present", partIndices: [] };
+    if (candidates.length !== 1)
+    {
+        return { status: "deferred", reason: "selected-top-drape-ambiguous", partIndices: [] };
+    }
+
+    const partIndex = candidates[0].partIndex;
+    const part = (staged?.configuredParts ?? []).find(value =>
+        value?.partIndex === partIndex);
+    const meshes = (staged?.backend?.visualModel?.meshes ?? []).filter(mesh =>
+        mesh?._characterPartIndex === partIndex);
+    const effects = Unique(GetEffects(meshes));
+    if (part?.renderStatus !== "ready"
+        || !meshes.length
+        || !effects.length
+        || effects.some(effect => effect?._characterAuthoredBodyAtlasConsumer !== true))
+    {
+        return {
+            status: "deferred",
+            reason: "selected-top-drape-contract-unresolved",
+            partIndices: [ partIndex ]
+        };
+    }
+
+    SetConfiguredPartCompositionDisplay(
+        staged,
+        partIndex,
+        false,
+        "hidden-by-ready-bottom-tuck"
+    );
+    return {
+        status: "suppressed",
+        rule: "selected-top-standard-drape-replaced-by-ready-bottom-tuck-v1",
+        partIndices: [ partIndex ],
+        partSourceRecordIDs: [ candidates[0]?.source?.partSourceRecordID ?? null ]
+    };
+}
+
+/**
+ * Qualifies one female bottom-owned decal support. The support and cut mask
+ * must share an owner; one independently selected, resolvable top-middle
+ * layer is the derived visible-material contributor. Geometry, area, owner,
+ * and texture-role evidence select the tuple without naming an outfit.
  */
 export function planLegacyExactFemaleTuckSupport(
     sex,
@@ -3919,112 +6358,121 @@ export function planLegacyExactFemaleTuckSupport(
         throw new TypeError("Exact female tuck planning requires configured parts and contributions");
     }
 
-    const tuckParts = configuredParts.filter(part =>
-        part?.partSourceRecordID === FEMALE_TUCK_PART);
-    if (tuckParts.length !== 1)
+    const supportCandidates = configuredParts.flatMap(part =>
     {
-        return { status: "deferred", reason: "exact-female-tuck-part-unresolved" };
-    }
-    const tuckPart = tuckParts[0];
-    if (tuckPart.renderStatus !== "ready")
-    {
-        return { status: "deferred", reason: "exact-female-tuck-not-render-ready" };
-    }
+        if (part?.renderStatus !== "ready") return [];
+        const supportContributions = contributions.filter(contribution =>
+            contribution?.partIndex === part.partIndex
+            && contribution?.groupID === "bottomouter"
+            && Number.isInteger(contribution?.ownerSelectionIndex)
+            && contribution.ownerSelectionIndex >= 0
+            && !(contribution?.selectedTextures ?? []).length);
+        if (supportContributions.length !== 1) return [];
 
-    const supportContributions = contributions.filter(contribution =>
-        contribution?.partIndex === tuckPart.partIndex
-        && contribution?.source?.partSourceRecordID === FEMALE_TUCK_PART);
-    if (supportContributions.length !== 1
-        || !Number.isInteger(supportContributions[0].ownerSelectionIndex)
-        || supportContributions[0].ownerSelectionIndex < 0)
+        const meshes = (visualModel?.meshes ?? []).filter(mesh =>
+            mesh?._characterPartIndex === part.partIndex);
+        if (meshes.length !== 1) return [];
+        const effects = Unique(GetEffects(meshes).filter(effect =>
+            effect?._characterProofFallback === true
+            && effect?._characterAuthoredBodyAtlasConsumer === true
+            && typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function"
+            && typeof effect?.SetParameters === "function"
+            && ReadTransformUV0(effect)));
+        if (effects.length !== 1) return [];
+        const geometryBindings = DescribeConfiguredGarmentBindings(meshes, effects);
+        if (geometryBindings.length !== 1
+            || geometryBindings[0].areaContract !== "decal-only")
+        {
+            return [];
+        }
+        return [ {
+            part,
+            support: supportContributions[0],
+            meshes,
+            effects,
+            geometryBindings
+        } ];
+    });
+    if (supportCandidates.length !== 1)
     {
-        return { status: "deferred", reason: "exact-female-tuck-owner-unresolved" };
+        return { status: "deferred", reason: "female-tuck-support-unresolved" };
     }
-    const support = supportContributions[0];
-
-    const pantsContributions = contributions.filter(contribution =>
-        contribution?.ownerSelectionIndex === support.ownerSelectionIndex
-        && contribution?.groupID === "bottomouter"
-        && contribution?.source?.partSourceRecordID === FEMALE_TUCK_PANTS_PART);
-    if (pantsContributions.length !== 1)
+    const {
+        part: tuckPart,
+        support,
+        meshes,
+        effects,
+        geometryBindings
+    } = supportCandidates[0];
+    const defer = reason => ({
+        status: "deferred",
+        reason,
+        tuckPartIndex: tuckPart.partIndex,
+        tuckPartSourceRecordID: tuckPart.partSourceRecordID
+    });
+    const bottomCandidates = contributions.flatMap(contribution =>
     {
-        return { status: "deferred", reason: "exact-female-tuck-pants-unresolved" };
-    }
-    const pantsResolved = resolveLegacyBodyDiffuseContribution(pantsContributions[0]);
-    if (pantsResolved.status !== "ready")
+        if (contribution?.ownerSelectionIndex !== support.ownerSelectionIndex
+            || contribution?.groupID !== "bottomouter"
+            || contribution?.partIndex === tuckPart.partIndex)
+        {
+            return [];
+        }
+        const resolved = resolveLegacyBodyDiffuseContribution(contribution);
+        return resolved.status === "ready" && resolved.candidate?.detail?.path
+            ? [ { contribution, resolved } ]
+            : [];
+    });
+    if (bottomCandidates.length !== 1)
     {
-        return {
-            status: "deferred",
-            reason: `exact-female-tuck-pants-${pantsResolved.reason}`
-        };
+        return defer("female-tuck-bottom-material-unresolved");
     }
+    const bottomContribution = bottomCandidates[0].contribution;
+    const bottomResolved = bottomCandidates[0].resolved;
 
     const masks = contributions.flatMap(contribution =>
     {
-        if (contribution?.ownerSelectionIndex !== support.ownerSelectionIndex
-            || contribution?.source?.partSourceRecordID !== FEMALE_TUCK_MASK_PART)
+        if (contribution?.ownerSelectionIndex !== support.ownerSelectionIndex)
         {
             return [];
         }
         return (contribution.selectedTextures ?? [])
             .filter(texture => texture?.target === "body"
                 && texture?.role === "cut-mask"
-                && texture?.path === FEMALE_TUCK_MASK_PATH)
+                && typeof texture?.path === "string"
+                && texture.path.length)
             .map(texture => ({ contribution, texture }));
     });
     if (masks.length !== 1)
     {
-        return { status: "deferred", reason: "exact-female-tuck-mask-unresolved" };
+        return defer("female-tuck-mask-unresolved");
     }
 
-    const alphaSources = contributions.flatMap(contribution =>
+    const topCandidates = contributions.flatMap(contribution =>
     {
         if (contribution?.groupID !== "topmiddle"
             || !Number.isInteger(contribution?.ownerSelectionIndex)
             || contribution.ownerSelectionIndex < 0
-            || contribution.ownerSelectionIndex === support.ownerSelectionIndex
-            || contribution?.source?.partSourceRecordID !== FEMALE_TUCK_TOP_PART)
+            || contribution.ownerSelectionIndex === support.ownerSelectionIndex)
         {
             return [];
         }
-        return (contribution.selectedTextures ?? [])
-            .filter(texture => texture?.target === "body"
-                && texture?.role === "colorize-layer"
-                && texture?.path === FEMALE_TUCK_TOP_ALPHA_PATH)
-            .map(texture => ({ contribution, texture }));
+        const resolved = resolveLegacyBodyDiffuseContribution(contribution);
+        return resolved.status === "ready" && resolved.candidate?.detail?.path
+            ? [ { contribution, resolved } ]
+            : [];
     });
-    if (alphaSources.length !== 1)
+    if (topCandidates.length !== 1)
     {
-        return { status: "deferred", reason: "exact-female-tuck-alpha-unresolved" };
+        return defer("female-tuck-top-material-unresolved");
     }
-    const topResolved = resolveLegacyBodyDiffuseContribution(alphaSources[0].contribution);
-    if (topResolved.status !== "ready")
-    {
-        return {
-            status: "deferred",
-            reason: `exact-female-tuck-top-${topResolved.reason}`
-        };
-    }
+    const topContribution = topCandidates[0].contribution;
+    const topResolved = topCandidates[0].resolved;
 
-    const meshes = (visualModel?.meshes ?? []).filter(mesh =>
-        mesh?._characterPartIndex === tuckPart.partIndex);
-    if (meshes.length !== 1)
-    {
-        return { status: "deferred", reason: "exact-female-tuck-mesh-unresolved" };
-    }
-    const effects = Unique(GetEffects(meshes).filter(effect =>
-        effect?._characterProofFallback === true
-        && typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function"
-        && typeof effect?.SetParameters === "function"
-        && ReadTransformUV0(effect)));
-    if (effects.length !== 1)
-    {
-        return { status: "deferred", reason: "exact-female-tuck-effect-unresolved" };
-    }
     if ((visualModel?.meshes ?? []).some(mesh =>
-        mesh !== meshes[0] && GetEffects([ mesh ]).includes(effects[0])))
+        !meshes.includes(mesh) && GetEffects([ mesh ]).includes(effects[0])))
     {
-        return { status: "deferred", reason: "exact-female-tuck-effect-shared" };
+        return defer("female-tuck-effect-shared");
     }
 
     return {
@@ -4032,19 +6480,20 @@ export function planLegacyExactFemaleTuckSupport(
         tuckPartIndex: tuckPart.partIndex,
         tuckPartSourceRecordID: tuckPart.partSourceRecordID,
         supportOwnerSelectionIndex: support.ownerSelectionIndex,
-        alphaLayerIndex: alphaSources[0].contribution.layerIndex,
-        alphaPartSourceRecordID: alphaSources[0].contribution.source.partSourceRecordID,
-        alphaPath: alphaSources[0].texture.path,
+        topOwnerSelectionIndex: topContribution.ownerSelectionIndex,
+        alphaLayerIndex: topContribution.layerIndex,
+        alphaPartSourceRecordID: topContribution.source.partSourceRecordID,
+        alphaPath: topResolved.candidate.detail.path,
         topDetailPath: topResolved.candidate.detail.path,
         topZonePath: topResolved.candidate.zones.path,
-        topMaterialDefinitionPath: alphaSources[0].contribution.source.materialDefinitionPath,
+        topMaterialDefinitionPath: topContribution.source.materialDefinitionPath,
         topCandidate: topResolved.candidate,
-        pantsLayerIndex: pantsContributions[0].layerIndex,
-        pantsPartSourceRecordID: pantsContributions[0].source.partSourceRecordID,
-        pantsDetailPath: pantsResolved.candidate.detail.path,
-        pantsZonePath: pantsResolved.candidate.zones.path,
-        pantsMaterialDefinitionPath: pantsContributions[0].source.materialDefinitionPath,
-        pantsCandidate: pantsResolved.candidate,
+        pantsLayerIndex: bottomContribution.layerIndex,
+        pantsPartSourceRecordID: bottomContribution.source.partSourceRecordID,
+        pantsDetailPath: bottomResolved.candidate.detail.path,
+        pantsZonePath: bottomResolved.candidate.zones.path,
+        pantsMaterialDefinitionPath: bottomContribution.source.materialDefinitionPath,
+        pantsCandidate: bottomResolved.candidate,
         maskLayerIndex: masks[0].contribution.layerIndex,
         maskPartSourceRecordID: masks[0].contribution.source.partSourceRecordID,
         maskPath: masks[0].texture.path,
@@ -4052,7 +6501,102 @@ export function planLegacyExactFemaleTuckSupport(
         authoredSampleBounds: Array.isArray(effects[0]._characterAuthoredTransformUV0)
             ? [ ...effects[0]._characterAuthoredTransformUV0 ]
             : null,
-        geometryBindings: DescribeConfiguredGarmentBindings(meshes, effects),
+        geometryBindings,
+        effects
+    };
+}
+
+/** Qualifies a standard drape and selected top that share one retained owner. */
+export function planLegacySelectedTopDrapeSupport(
+    sex,
+    visualModel,
+    configuredParts,
+    contributions
+)
+{
+    if (sex !== "female" && sex !== "male")
+    {
+        return { status: "deferred", reason: "selected-top-drape-sex-unresolved" };
+    }
+    if (!Array.isArray(configuredParts) || !Array.isArray(contributions))
+    {
+        throw new TypeError("Selected-top drape planning requires configured parts and contributions");
+    }
+
+    const drapeContributions = contributions.filter(contribution =>
+        (contribution?.groupID === "topmiddle" || contribution?.groupID === "topouter")
+        && contribution?.source?.partPath === STANDARD_DRAPE_PART_PATH
+        && Number.isInteger(contribution?.ownerSelectionIndex)
+        && contribution.ownerSelectionIndex >= 0
+        && Number.isInteger(contribution?.partIndex));
+    if (drapeContributions.length !== 1)
+    {
+        return { status: "deferred", reason: "selected-top-drape-owner-unresolved" };
+    }
+    const drape = drapeContributions[0];
+    const drapePart = configuredParts.find(part => part?.partIndex === drape.partIndex);
+    if (drapePart?.renderStatus !== "ready")
+    {
+        return { status: "deferred", reason: "selected-top-drape-not-render-ready" };
+    }
+
+    const topCandidates = contributions.flatMap(contribution =>
+    {
+        if (contribution?.ownerSelectionIndex !== drape.ownerSelectionIndex
+            || contribution?.groupID !== drape.groupID
+            || contribution?.partIndex === drape.partIndex
+            || contribution?.source?.partPath === STANDARD_DRAPE_PART_PATH)
+        {
+            return [];
+        }
+        const resolved = resolveLegacyConfiguredGarmentDiffuseContribution(contribution);
+        return resolved.status === "ready" && resolved.candidate?.detail?.path
+            ? [ { contribution, resolved } ]
+            : [];
+    });
+    if (topCandidates.length !== 1)
+    {
+        return { status: "deferred", reason: "selected-top-drape-material-unresolved" };
+    }
+    const topContribution = topCandidates[0].contribution;
+    const topResolved = topCandidates[0].resolved;
+
+    const meshes = (visualModel?.meshes ?? []).filter(mesh =>
+        mesh?._characterPartIndex === drape.partIndex);
+    if (!meshes.length)
+    {
+        return { status: "deferred", reason: "selected-top-drape-mesh-unresolved" };
+    }
+    const effects = Unique(GetEffects(meshes).filter(effect =>
+        effect?._characterProofFallback === true
+        && effect?._characterAuthoredBodyAtlasConsumer === true
+        && typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function"
+        && typeof effect?.SetParameters === "function"
+        && ReadTransformUV0(effect)));
+    if (!effects.length)
+    {
+        return { status: "deferred", reason: "selected-top-drape-effect-unresolved" };
+    }
+    if ((visualModel?.meshes ?? []).some(mesh =>
+        !meshes.includes(mesh) && GetEffects([ mesh ]).some(effect => effects.includes(effect))))
+    {
+        return { status: "deferred", reason: "selected-top-drape-effect-shared" };
+    }
+
+    return {
+        status: "ready",
+        drapePartIndex: drape.partIndex,
+        drapePartSourceRecordID: drape.source.partSourceRecordID,
+        ownerSelectionIndex: drape.ownerSelectionIndex,
+        topLayerIndex: topContribution.layerIndex,
+        topPartSourceRecordID: topContribution.source.partSourceRecordID,
+        alphaPath: topResolved.candidate.detail.path,
+        topDetailPath: topResolved.candidate.detail.path,
+        topZonePath: topResolved.candidate.zones?.path ?? null,
+        topMaterialDefinitionPath: topContribution.source.materialDefinitionPath,
+        topCandidate: topResolved.candidate,
+        diffuseMode: topResolved.candidate.mode,
+        previousSampleBounds: ReadTransformUV0(effects[0]),
         effects
     };
 }
@@ -4298,12 +6842,93 @@ export function summarizeLegacyTextureAlpha(pixels, width, height)
     };
 }
 
+/** Samples RGBA target alpha at one carrier geometry's transformed UV centroids. */
+export function summarizeLegacyCarrierAlpha(
+    pixels,
+    width,
+    height,
+    geometryMesh,
+    transform = [ 0, 0, 1, 1 ]
+)
+{
+    const expected = Number(width) * Number(height) * 4;
+    if (!(pixels instanceof Uint8Array)
+        || !Number.isSafeInteger(width) || width <= 0
+        || !Number.isSafeInteger(height) || height <= 0
+        || pixels.length < expected)
+    {
+        throw new TypeError("Carrier alpha evidence requires a complete Uint8 RGBA buffer");
+    }
+    if (!Array.isArray(transform)
+        || transform.length !== 4
+        || transform.some(value => !Number.isFinite(Number(value))))
+    {
+        throw new TypeError("Carrier alpha evidence requires four finite UV bounds");
+    }
+    const indices = geometryMesh?.indexData;
+    if (!indices?.length || indices.length % 3 !== 0
+        || typeof geometryMesh?.GetVertexElement !== "function")
+    {
+        return { status: "unavailable", reason: "carrier-geometry-uv-unavailable" };
+    }
+
+    const alpha = [];
+    const rawBounds = [ Infinity, Infinity, -Infinity, -Infinity ];
+    const transformedBounds = [ Infinity, Infinity, -Infinity, -Infinity ];
+    const uv0 = [];
+    const uv1 = [];
+    const uv2 = [];
+    for (let index = 0; index < indices.length; index += 3)
+    {
+        geometryMesh.GetVertexElement(uv0, indices[index], 5, 0);
+        geometryMesh.GetVertexElement(uv1, indices[index + 1], 5, 0);
+        geometryMesh.GetVertexElement(uv2, indices[index + 2], 5, 0);
+        if (![ uv0, uv1, uv2 ].every(uv =>
+            uv.length >= 2 && Number.isFinite(uv[0]) && Number.isFinite(uv[1])))
+        {
+            continue;
+        }
+        const u = (uv0[0] + uv1[0] + uv2[0]) / 3;
+        const v = (uv0[1] + uv1[1] + uv2[1]) / 3;
+        rawBounds[0] = Math.min(rawBounds[0], u);
+        rawBounds[1] = Math.min(rawBounds[1], v);
+        rawBounds[2] = Math.max(rawBounds[2], u);
+        rawBounds[3] = Math.max(rawBounds[3], v);
+        const transformedU = u * (transform[2] - transform[0]) + transform[0];
+        const transformedV = v * (transform[3] - transform[1]) + transform[1];
+        transformedBounds[0] = Math.min(transformedBounds[0], transformedU);
+        transformedBounds[1] = Math.min(transformedBounds[1], transformedV);
+        transformedBounds[2] = Math.max(transformedBounds[2], transformedU);
+        transformedBounds[3] = Math.max(transformedBounds[3], transformedV);
+        const x = Math.round(Clamp01(transformedU) * (width - 1));
+        const y = Math.round(Clamp01(transformedV) * (height - 1));
+        alpha.push(pixels[(y * width + x) * 4 + 3]);
+    }
+
+    if (!alpha.length)
+    {
+        return { status: "unavailable", reason: "carrier-triangle-uv-unavailable" };
+    }
+    const alphaSum = alpha.reduce((sum, value) => sum + value, 0);
+    const nonzeroSamples = alpha.filter(Boolean).length;
+    return {
+        status: "sampled-triangle-centroids",
+        sampleCount: alpha.length,
+        nonzeroSamples,
+        nonzeroRatio: nonzeroSamples / alpha.length,
+        alphaSum,
+        meanAlpha: alphaSum / alpha.length,
+        maximumAlpha: Math.max(...alpha),
+        rawUvBounds: rawBounds,
+        transformedUvBounds: transformedBounds,
+        transform: transform.map(Number)
+    };
+}
+
 /** Atomically attaches one CutMaskMap only to foundation body effects. */
 export function commitLegacyFoundationCutMaskBindings(visualModel, texture)
 {
-    const effects = Unique((visualModel?.meshes ?? [])
-        .filter(mesh => mesh?._characterFoundationRole === "body")
-        .flatMap(mesh => GetEffects([ mesh ])));
+    const effects = GetFoundationBodyEffects(visualModel);
     const snapshots = effects.map(effect =>
     {
         const parameter = effect?.parameters?.CutMaskMap;
@@ -4356,6 +6981,58 @@ export function commitLegacyFoundationCutMaskBindings(visualModel, texture)
         error.rollbackFailures = rollbackFailures;
         throw error;
     }
+}
+
+/**
+ * Applies a composed cut through diffuse alpha when the foundation shader has
+ * no cut-mask sampler. The same retained mask target drives both paths.
+ */
+export function commitLegacyFoundationAlphaCutBindings(visualModel, texture)
+{
+    const effects = GetFoundationBodyEffects(visualModel).filter(effect =>
+        typeof effect?.parameters?.DiffuseMap?.AttachTextureRes === "function");
+    if (!effects.length)
+    {
+        throw new Error("No foundation body effect accepts diffuse alpha coverage");
+    }
+    const bindings = effects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        states: CaptureTechniquePassStates(effect)
+    }));
+
+    try
+    {
+        for (const effect of effects)
+        {
+            effect.parameters.DiffuseMap.AttachTextureRes(texture);
+            ApplyLegacyConsumerAlphaTest(tw2.const, effect, true);
+        }
+        return bindings.map(binding => ({
+            role: "body",
+            effectFilePath: binding.consumer.effect.effectFilePath ?? null,
+            previousResourcePath: binding.consumer.resourcePath || null,
+            coveragePolicy: "composed-diffuse-alpha-test"
+        }));
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
+        for (const binding of [ ...bindings ].reverse())
+        {
+            rollbackFailures.push(...RestoreTechniquePassStates([ binding.states ]));
+            rollbackFailures.push(...RestoreConsumerBindings([ binding.consumer ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+function GetFoundationBodyEffects(visualModel)
+{
+    return Unique((visualModel?.meshes ?? [])
+        .filter(mesh => mesh?._characterFoundationRole === "body")
+        .flatMap(mesh => GetEffects([ mesh ])));
 }
 
 function DeferredContribution(contribution, reason)
@@ -4562,6 +7239,7 @@ export function planLegacyConfiguredBodyConsumers(
         }
 
         const contribution = matches[0];
+        if (contribution.groupID === "hair") continue;
         const ownerSelectionIndex = contribution.ownerSelectionIndex;
         const retainedCutMaskPaths = Number.isInteger(ownerSelectionIndex) && ownerSelectionIndex >= 0
             ? Unique(contributions.flatMap(value =>
@@ -4615,8 +7293,13 @@ export function planLegacyConfiguredBodyConsumers(
                 }
                 continue;
             }
+            if (effect?._characterGarmentBodyFallback === true) continue;
             if (effect?._characterAuthoredBodyAtlasConsumer !== true
                 && !isLegacyConfiguredBodyConsumerEffect(effect)) continue;
+            // A configured foundation replacement is already bounded by its
+            // own geometry. It must sample the shared body atlas directly;
+            // applying the garment owner's alpha would remove exposed skin.
+            if (effect?._characterFoundationReplacementRole) continue;
             if (cutMaskDeferral && !cutMaskDeferralReported)
             {
                 deferred.push({
@@ -4632,11 +7315,57 @@ export function planLegacyConfiguredBodyConsumers(
             const preservedAuthoredDiffusePath = String(
                 effect?._characterAuthoredTexturePaths?.DiffuseMap || ""
             ).trim();
-            if (effect?._characterProofFallback === true && !preservedAuthoredDiffusePath) continue;
-            const authoredDiffusePath = String(
+            let authoredDiffusePath = String(
                 preservedAuthoredDiffusePath
                 || ReadTexturePath(parameter)
             ).trim();
+            let alphaSource = {
+                type: "authored-effect-diffuse",
+                ownerSelectionIndex,
+                layerIndex: contribution.layerIndex ?? null,
+                partIndex,
+                partSourceRecordID: contribution.source?.partSourceRecordID ?? null
+            };
+            if (effect?._characterProofFallback === true && !preservedAuthoredDiffusePath)
+            {
+                const ownerAlphaCandidates = UniqueByPath(contributions
+                    .filter(value =>
+                        value?.ownerSelectionIndex === ownerSelectionIndex)
+                    .map(value => ({
+                        contribution: value,
+                        resolved: resolveLegacyBodyDiffuseContribution(value)
+                    }))
+                    .map(value => ({
+                        contribution: value.contribution,
+                        path: value.resolved?.candidate?.detail?.path
+                            ?? value.resolved?.texture?.path
+                            ?? null
+                    }))
+                    .filter(value => /^res:\//iu.test(String(value.path ?? ""))));
+                if (ownerAlphaCandidates.length !== 1)
+                {
+                    deferred.push({
+                        partIndex,
+                        groupID: contribution.groupID,
+                        ownerSelectionIndex,
+                        ownerAlphaPaths: ownerAlphaCandidates.map(value => value.path),
+                        reason: ownerAlphaCandidates.length
+                            ? "configured-consumer-owner-alpha-ambiguous"
+                            : "configured-consumer-owner-alpha-unresolved"
+                    });
+                    continue;
+                }
+                const ownerAlpha = ownerAlphaCandidates[0];
+                authoredDiffusePath = ownerAlpha.path;
+                alphaSource = {
+                    type: "owner-selection-diffuse-alpha",
+                    ownerSelectionIndex,
+                    layerIndex: ownerAlpha.contribution.layerIndex ?? null,
+                    partIndex: ownerAlpha.contribution.partIndex ?? null,
+                    partSourceRecordID:
+                        ownerAlpha.contribution.source?.partSourceRecordID ?? null
+                };
+            }
             const previousSampleBounds = effect?._characterAuthoredTransformUV0
                 ? [ ...effect._characterAuthoredTransformUV0 ]
                 : ReadTransformUV0(effect);
@@ -4668,6 +7397,8 @@ export function planLegacyConfiguredBodyConsumers(
 
             const signature = [
                 authoredDiffusePath.toLowerCase(),
+                alphaSource.type,
+                alphaSource.ownerSelectionIndex ?? "",
                 ...cutMaskPaths.map(path => String(path).toLowerCase())
             ].join("\0");
             const priorSignature = seenEffects.get(effect);
@@ -4703,6 +7434,7 @@ export function planLegacyConfiguredBodyConsumers(
                         partIndex,
                         groupID: contribution.groupID,
                         ownerSelectionIndex,
+                        alphaSource,
                         previousSampleBounds
                     });
                 }
@@ -4714,6 +7446,7 @@ export function planLegacyConfiguredBodyConsumers(
             {
                 groups.set(signature, {
                     authoredDiffusePath,
+                    alphaSource,
                     cutMaskPaths,
                     consumers: []
                 });
@@ -4723,6 +7456,7 @@ export function planLegacyConfiguredBodyConsumers(
                 partIndex,
                 groupID: contribution.groupID,
                 ownerSelectionIndex,
+                alphaSource,
                 previousSampleBounds
             });
         }
@@ -4760,14 +7494,17 @@ export function commitLegacyConfiguredConsumerBindings(
         alphaTest = false,
         depthTest = true,
         preserveAlphaBlend = false,
-        transformUV0 = null
+        coverageAlpha = false,
+        transformUV0 = null,
+        textureBindings = {}
     } = {}
 )
 {
     if (typeof neutralizeDiffuseColor !== "boolean"
         || typeof alphaTest !== "boolean"
         || typeof depthTest !== "boolean"
-        || typeof preserveAlphaBlend !== "boolean")
+        || typeof preserveAlphaBlend !== "boolean"
+        || typeof coverageAlpha !== "boolean")
     {
         throw new TypeError("Configured consumer options must be boolean");
     }
@@ -4779,8 +7516,18 @@ export function commitLegacyConfiguredConsumerBindings(
         throw new TypeError("Configured consumer transformUV0 must contain four numbers");
     }
     effects = Unique(effects);
-    const snapshots = effects.map(CaptureConsumerBinding);
-    const stateSnapshots = alphaTest || !depthTest
+    const lightingEntries = Object.entries(textureBindings)
+        .filter(([ , texture ]) => Boolean(texture));
+    if (lightingEntries.some(([ name ]) =>
+        ![ "NormalMap", "SpecularMap" ].includes(name)))
+    {
+        throw new TypeError("Configured consumer lighting bindings require NormalMap/SpecularMap");
+    }
+    const snapshots = effects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        textures: lightingEntries.map(([ name ]) => CaptureTextureBinding(effect, name))
+    }));
+    const stateSnapshots = alphaTest || !depthTest || coverageAlpha
         ? effects.map(CaptureTechniquePassStates)
         : [];
 
@@ -4796,6 +7543,10 @@ export function commitLegacyConfiguredConsumerBindings(
         for (const effect of effects)
         {
             effect.parameters.DiffuseMap.AttachTextureRes(texture);
+            for (const [ name, lightingTexture ] of lightingEntries)
+            {
+                effect.parameters[name].AttachTextureRes(lightingTexture);
+            }
         }
         if (neutralizeDiffuseColor)
         {
@@ -4820,6 +7571,13 @@ export function commitLegacyConfiguredConsumerBindings(
                 ApplyLegacyConsumerAlphaTest(tw2.const, effect, !preserveAlphaBlend);
             }
         }
+        if (coverageAlpha)
+        {
+            for (const effect of effects)
+            {
+                ApplyLegacyCoverageAlphaBlend(tw2.const, effect);
+            }
+        }
         if (!depthTest)
         {
             for (const effect of effects)
@@ -4832,10 +7590,13 @@ export function commitLegacyConfiguredConsumerBindings(
     catch (cause)
     {
         const error = new Error(cause.message, { cause });
-        error.rollbackFailures = [
-            ...RestoreTechniquePassStates(stateSnapshots),
-            ...RestoreConsumerBindings(snapshots)
-        ];
+        const rollbackFailures = [ ...RestoreTechniquePassStates(stateSnapshots) ];
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        error.rollbackFailures = rollbackFailures;
         throw error;
     }
 }
@@ -4849,9 +7610,14 @@ export function commitLegacyConfiguredConsumerBindings(
 export async function commitLegacyConfiguredGarmentBindings(
     effects,
     texture,
-    textureBindings = {}
+    textureBindings = {},
+    { alphaTest = false } = {}
 )
 {
+    if (typeof alphaTest !== "boolean")
+    {
+        throw new TypeError("Configured garment alphaTest option must be boolean");
+    }
     effects = Unique(effects);
     const entries = Object.entries(textureBindings);
     for (const [ name, binding ] of entries)
@@ -4868,6 +7634,7 @@ export async function commitLegacyConfiguredGarmentBindings(
         consumer: CaptureConsumerBinding(effect),
         textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name))
     }));
+    const stateSnapshots = alphaTest ? effects.map(CaptureTechniquePassStates) : [];
 
     try
     {
@@ -4878,9 +7645,21 @@ export async function commitLegacyConfiguredGarmentBindings(
                 throw new Error("Configured garment does not accept TransformUV0");
             }
             effect.parameters.DiffuseMap.AttachTextureRes(texture);
-            if (effect.SetParameters?.({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] }) === false)
+            const diffuseColor = effect.parameters?.MaterialDiffuseColor;
+            if (typeof diffuseColor?.SetValue === "function")
             {
-                throw new Error("Configured garment does not accept MaterialDiffuseColor");
+                diffuseColor.SetValue([ 1, 1, 1, 1 ]);
+            }
+            else if (diffuseColor && typeof effect.SetParameters === "function")
+            {
+                // Tw2Effect reports whether a value changed, not whether the
+                // parameter exists. An already-white material is a successful
+                // binding and must not roll back an otherwise complete surface.
+                effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] });
+            }
+            else if (diffuseColor)
+            {
+                throw new Error("Configured garment cannot set MaterialDiffuseColor");
             }
             for (const [ name, binding ] of entries)
             {
@@ -4891,6 +7670,7 @@ export async function commitLegacyConfiguredGarmentBindings(
                 }
                 parameter.AttachTextureRes(binding.textureRes);
             }
+            if (alphaTest) ApplyLegacyConsumerAlphaTest(tw2.const, effect, true);
         }
 
         for (const effect of effects)
@@ -4918,12 +7698,13 @@ export async function commitLegacyConfiguredGarmentBindings(
                 name,
                 binding.sourcePath
             ])),
+            alphaPolicy: alphaTest ? "authored-owner-alpha-test" : "authored-area-state",
             authoredPromotion: "deferred-incomplete-shader-contract"
         };
     }
     catch (cause)
     {
-        const rollbackFailures = [];
+        const rollbackFailures = [ ...RestoreTechniquePassStates(stateSnapshots) ];
         for (const snapshot of [ ...snapshots ].reverse())
         {
             rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
@@ -4935,9 +7716,577 @@ export async function commitLegacyConfiguredGarmentBindings(
     }
 }
 
-/** Atomically installs independently composed head lighting atlases. */
-export async function commitLegacyConfiguredHeadBindings(effects, textureBindings)
+/** Atomically installs reconstructed detailed-hair textures and selected palette controls. */
+export async function commitLegacyConfiguredHairBindings(
+    effects,
+    texture,
+    textureBindings = {},
+    materialParameters = null,
+    rigidEffects = [],
+    {
+        rigidTexture = null,
+        glassEffects = [],
+        glassTexture = null,
+        glassLightingMode = "transmission"
+    } = {}
+)
 {
+    effects = Unique(effects);
+    rigidEffects = Unique(rigidEffects).filter(effect => !effects.includes(effect));
+    rigidTexture ??= texture;
+    glassEffects = Unique(glassEffects).filter(effect =>
+        !effects.includes(effect) && !rigidEffects.includes(effect));
+    const entries = Object.entries(textureBindings);
+    const materialEntries = Object.entries(materialParameters ?? {});
+    const requiredMaterialNames = [
+        "MaterialDiffuseColor",
+        "HairSpecularColor1",
+        "HairSpecularColor2"
+    ];
+    if (effects.length + rigidEffects.length + glassEffects.length === 0 || !texture
+        || rigidEffects.length > 0 && !rigidTexture
+        || glassEffects.length > 0 && !glassTexture
+        || ![ "transmission", "authored", "legacy" ].includes(glassLightingMode)
+        || materialParameters !== null && (
+            materialEntries.length !== requiredMaterialNames.length
+            || requiredMaterialNames.some(name => !Object.hasOwn(materialParameters, name))
+        ))
+    {
+        throw new TypeError(
+            "Configured hair bindings require effects, a diffuse target, and selected hair colors"
+        );
+    }
+    for (const [ name, value ] of materialEntries)
+    {
+        if (!requiredMaterialNames.includes(name)
+            || !Array.isArray(value)
+            || value.length !== 4
+            || value.some(component => !Number.isFinite(component)))
+        {
+            throw new TypeError("Configured hair material parameters must be finite colors");
+        }
+    }
+    for (const [ name, binding ] of entries)
+    {
+        if (![ "NormalMap", "SpecularMap" ].includes(name)
+            || !binding?.textureRes
+            || !/^res:\//iu.test(String(binding?.sourcePath ?? "")))
+        {
+            throw new TypeError(
+                "Configured hair lighting bindings require retained NormalMap/SpecularMap sources"
+            );
+        }
+    }
+
+    const snapshots = effects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name)),
+        states: CaptureTechniquePassStates(effect),
+        material: Object.fromEntries(requiredMaterialNames
+            .map(name => [ name, ReadEffectVectorParameter(effect, name, 4) ]))
+    }));
+    const rigidSnapshots = rigidEffects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        textures: [ "NormalMap", "SpecularMap" ]
+            .map(name => CaptureTextureBinding(effect, name)),
+        states: CaptureTechniquePassStates(effect),
+        materialDiffuseColor: ReadEffectVectorParameter(effect, "MaterialDiffuseColor", 4)
+    }));
+    const glassSnapshots = glassEffects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect, false),
+        textures: [ "NormalMap", "SpecularMap", "IrradianceMap" ]
+            .filter(name => effect?.parameters?.[name])
+            .map(name => CaptureTextureBinding(effect, name)),
+        states: CaptureTechniquePassStates(effect),
+        materialDiffuseColor: ReadEffectVectorParameter(effect, "MaterialDiffuseColor", 4),
+        glassTransparencyColor: ReadEffectVectorParameter(
+            effect,
+            "GlassTransparencyColor",
+            4
+        )
+    }));
+
+    try
+    {
+        for (const effect of effects)
+        {
+            if (!SetIdentityTransformUV0(effect))
+            {
+                throw new Error("Configured hair does not accept TransformUV0");
+            }
+            if (typeof effect?.parameters?.DiffuseMap?.AttachTextureRes !== "function")
+            {
+                throw new Error("Configured hair does not accept DiffuseMap");
+            }
+            effect.parameters.DiffuseMap.AttachTextureRes(texture);
+            for (const name of materialParameters === null ? [] : requiredMaterialNames)
+            {
+                if (!HasEffectParameter(effect, name))
+                {
+                    throw new Error(`Configured hair does not accept ${name}`);
+                }
+            }
+            if (materialParameters !== null) effect.SetParameters(materialParameters);
+            for (const [ name, value ] of materialEntries)
+            {
+                if (!BoundsEqual(ReadEffectVectorParameter(effect, name, 4), value))
+                {
+                    throw new Error(`Configured hair could not apply ${name}`);
+                }
+            }
+            for (const [ name, binding ] of entries)
+            {
+                const parameter = effect?.parameters?.[name];
+                if (typeof parameter?.AttachTextureRes !== "function")
+                {
+                    throw new Error(`Configured hair does not accept ${name}`);
+                }
+                parameter.AttachTextureRes(binding.textureRes);
+            }
+            // Detailed hair retains its authored two-pass RGB, depth, and cut
+            // states. Only the framebuffer coverage equation is independent:
+            // soft fringe pixels must accumulate alpha instead of replacing it.
+            ApplyLegacyCoverageAlphaBlend(tw2.const, effect);
+        }
+
+        for (const [ effect, diffuseTexture, requiresTransform ] of [
+            ...rigidEffects.map(effect => [ effect, rigidTexture, true ]),
+            ...glassEffects.map(effect => [ effect, glassTexture, false ])
+        ])
+        {
+            const transform = ReadTransformUV0(effect);
+            if ((requiresTransform || transform) && !SetIdentityTransformUV0(effect)
+                || typeof effect?.parameters?.DiffuseMap?.AttachTextureRes !== "function")
+            {
+                throw new Error("Configured hair sibling does not accept private diffuse");
+            }
+            effect.parameters.DiffuseMap.AttachTextureRes(diffuseTexture);
+            if (HasEffectParameter(effect, "MaterialDiffuseColor"))
+            {
+                effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] });
+            }
+            if (glassEffects.includes(effect)
+                && glassLightingMode === "transmission"
+                && HasEffectParameter(effect, "GlassTransparencyColor"))
+            {
+                const retained = ReadEffectVectorParameter(
+                    effect,
+                    "GlassTransparencyColor",
+                    4
+                );
+                effect.SetParameters({
+                    GlassTransparencyColor: [ ...retained.slice(0, 3), 0 ]
+                });
+            }
+            if (glassEffects.includes(effect) && glassLightingMode === "legacy")
+            {
+                const irradiance = effect?.parameters?.IrradianceMap;
+                if (typeof irradiance?.SetValue === "function")
+                {
+                    irradiance.SetValue(LEGACY_GLASS_IRRADIANCE);
+                }
+                else if (typeof effect?.SetTextures === "function")
+                {
+                    effect.SetTextures({ IrradianceMap: LEGACY_GLASS_IRRADIANCE });
+                }
+            }
+            for (const [ name, binding ] of entries)
+            {
+                const parameter = effect?.parameters?.[name];
+                if (typeof parameter?.AttachTextureRes !== "function")
+                {
+                    throw new Error(`Configured hair sibling does not accept ${name}`);
+                }
+                parameter.AttachTextureRes(binding.textureRes);
+            }
+        }
+
+        for (const effect of [ ...effects, ...rigidEffects, ...glassEffects ])
+        {
+            await tw2.resMan?.Watch?.(effect);
+            if (effect?.IsGood?.() === false)
+            {
+                throw new Error("Configured hair effect failed to prepare");
+            }
+        }
+        if (glassLightingMode === "transmission")
+        {
+            const d3d = RequireD3DConstants(tw2.const);
+            for (const effect of glassEffects)
+            {
+                if ((effect?.GetPassCount?.("Main") ?? 0) <= 1) continue;
+                effect.SetTechniquePassStateOverride(
+                    "Main",
+                    1,
+                    d3d.RS_COLORWRITEENABLE,
+                    0
+                );
+                effect.SetTechniquePassStateOverride(
+                    "Main",
+                    1,
+                    d3d.RS_ZWRITEENABLE,
+                    0
+                );
+            }
+        }
+        const effectiveEffects = effects.map(effect => ({
+            effectName: String(effect?.name ?? ""),
+            effectPath: String(
+                effect?._characterAuthoredEffectFilePath
+                || effect?.effectFilePath
+                || ""
+            ),
+            parameters: Object.fromEntries(requiredMaterialNames.map(name => [
+                name,
+                ReadEffectVectorParameter(effect, name, 4)
+            ]))
+        }));
+        const sharedEffectiveParameters = effectiveEffects.length > 0
+            && effectiveEffects.every(item =>
+                requiredMaterialNames.every(name => BoundsEqual(
+                    item.parameters[name],
+                    effectiveEffects[0].parameters[name]
+                )))
+            ? effectiveEffects[0].parameters
+            : null;
+        return {
+            status: "applied",
+            rule: "legacy-opengl-detailed-hair-material-v1",
+            correctness: "retained-source-policy",
+            attachedEffects: effects.length,
+            attachedRigidEffects: rigidEffects.length,
+            attachedGlassEffects: glassEffects.length,
+            texturePaths: Object.fromEntries(entries.map(([ name, binding ]) => [
+                name,
+                binding.sourcePath
+            ])),
+            materialParameters: Object.fromEntries(materialEntries.map(([ name, value ]) => [
+                name,
+                [ ...value ]
+            ])),
+            effectiveMaterialParameters: sharedEffectiveParameters,
+            effectiveEffects,
+            glassLightingMode,
+            glassEffectContracts: glassEffects.map((effect, index) =>
+                DescribeConfiguredGlassEffect(
+                    effect,
+                    glassSnapshots[index]?.states ?? null
+                )),
+            framebufferAlpha: "source-over-coverage"
+        };
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
+        for (const snapshot of [ ...glassSnapshots ].reverse())
+        {
+            rollbackFailures.push(...RestoreTechniquePassStates([ snapshot.states ]));
+            if (snapshot.materialDiffuseColor)
+            {
+                try
+                {
+                    snapshot.consumer.effect.SetParameters({
+                        MaterialDiffuseColor: snapshot.materialDiffuseColor
+                    });
+                }
+                catch (error)
+                {
+                    rollbackFailures.push(error);
+                }
+            }
+            if (snapshot.glassTransparencyColor)
+            {
+                try
+                {
+                    snapshot.consumer.effect.SetParameters({
+                        GlassTransparencyColor: snapshot.glassTransparencyColor
+                    });
+                }
+                catch (error)
+                {
+                    rollbackFailures.push(error);
+                }
+            }
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        for (const snapshot of [ ...rigidSnapshots ].reverse())
+        {
+            rollbackFailures.push(...RestoreTechniquePassStates([ snapshot.states ]));
+            if (snapshot.materialDiffuseColor)
+            {
+                try
+                {
+                    snapshot.consumer.effect.SetParameters({
+                        MaterialDiffuseColor: snapshot.materialDiffuseColor
+                    });
+                }
+                catch (error)
+                {
+                    rollbackFailures.push(error);
+                }
+            }
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            rollbackFailures.push(...RestoreTechniquePassStates([ snapshot.states ]));
+            try
+            {
+                snapshot.consumer.effect.SetParameters(snapshot.material);
+            }
+            catch (error)
+            {
+                rollbackFailures.push(error);
+            }
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+function DescribeConfiguredGlassEffect(effect, stateSnapshot)
+{
+    const parameterNames = [
+        "GlassOptions",
+        "GlassTransparencyColor",
+        "GlassTransparencyOptions",
+        "GlassOptions2",
+        "MaterialDiffuseColor",
+        "MaterialSpecularColor",
+        "MaterialCubeReflection",
+        "MaterialCubeReflectionControl",
+        "MaterialCubeReflectionColor"
+    ];
+    const shaderTechniques = Object.fromEntries(Object.entries(
+        effect?.shader?.techniques ?? {}
+    ).map(([ name, technique ]) => [ name, (technique?.passes ?? []).map(pass => ({
+        states: (pass?.states ?? []).map(value => ({
+            state: value.state,
+            value: value.value
+        }))
+    })) ]));
+    return {
+        effectName: String(effect?.name ?? ""),
+        effectPath: String(
+            effect?._characterAuthoredEffectFilePath
+            || effect?.effectFilePath
+            || ""
+        ),
+        parameters: Object.fromEntries(parameterNames
+            .map(name => [ name, ReadEffectVectorParameter(effect, name, 4) ])
+            .filter(([ , value ]) => value !== null)),
+        shaderTechniques,
+        passOverrides: stateSnapshot?.passes?.map(pass => ({
+            technique: pass.technique,
+            pass: pass.pass,
+            states: pass.state
+        })) ?? []
+    };
+}
+
+/** Atomically installs reconstructed private headwear channels and selected material colours. */
+export async function commitLegacyConfiguredHeadwearBindings(
+    effects,
+    texture,
+    textureBindings = {},
+    materialParameters = null,
+    materialMode = null
+)
+{
+    effects = Unique(effects);
+    const entries = Object.entries(textureBindings);
+    const requiredMaterialNames = [ "MaterialDiffuseColor", "MaterialSpecularColor" ];
+    const appliesSelectedMaterial = materialParameters !== null;
+    materialMode ??= appliesSelectedMaterial
+        ? "authored-rgba-unzoned"
+        : "authored-direct-diffuse";
+    if (!effects.length || !texture
+        || ![ "authored-rgba-unzoned", "authored-direct-diffuse" ].includes(materialMode)
+        || (appliesSelectedMaterial
+            && requiredMaterialNames.some(name => !Object.hasOwn(materialParameters, name))))
+    {
+        throw new TypeError(
+            "Configured headwear bindings require effects, a diffuse target, and selected material colours"
+        );
+    }
+    for (const name of appliesSelectedMaterial ? requiredMaterialNames : [])
+    {
+        const value = materialParameters[name];
+        if (!Array.isArray(value) || value.length !== 4
+            || value.some(component => !Number.isFinite(component)))
+        {
+            throw new TypeError("Configured headwear material parameters must be finite colours");
+        }
+    }
+    for (const [ name, binding ] of entries)
+    {
+        if (![ "NormalMap", "SpecularMap" ].includes(name)
+            || !binding?.textureRes
+            || !/^res:\//iu.test(String(binding?.sourcePath ?? "")))
+        {
+            throw new TypeError(
+                "Configured headwear lighting bindings require retained NormalMap/SpecularMap sources"
+            );
+        }
+    }
+
+    const snapshots = effects.map(effect => ({
+        consumer: CaptureConsumerBinding(effect),
+        textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name)),
+        material: Object.fromEntries(requiredMaterialNames
+            .map(name => [ name, ReadEffectVectorParameter(effect, name, 4) ]))
+    }));
+
+    try
+    {
+        for (const effect of effects)
+        {
+            if (!SetIdentityTransformUV0(effect))
+            {
+                throw new Error("Configured headwear does not accept TransformUV0");
+            }
+            if (typeof effect?.parameters?.DiffuseMap?.AttachTextureRes !== "function")
+            {
+                throw new Error("Configured headwear does not accept DiffuseMap");
+            }
+            effect.parameters.DiffuseMap.AttachTextureRes(texture);
+            const effectiveMaterialParameters = appliesSelectedMaterial
+                ? materialParameters
+                : {
+                    // A finished diffuse target already owns its RGB. Remove
+                    // the diagnostic fallback tint while retaining the
+                    // independently selected/current specular control.
+                    MaterialDiffuseColor: [ 1, 1, 1, 1 ],
+                    MaterialSpecularColor: ReadEffectVectorParameter(
+                        effect,
+                        "MaterialSpecularColor",
+                        4
+                    )
+                };
+            if (!appliesSelectedMaterial
+                && !Array.isArray(effectiveMaterialParameters.MaterialSpecularColor))
+            {
+                throw new Error("Configured direct headwear lacks a specular material control");
+            }
+            for (const name of requiredMaterialNames)
+            {
+                if (!HasEffectParameter(effect, name))
+                {
+                    throw new Error(`Configured headwear does not accept ${name}`);
+                }
+            }
+            effect.SetParameters(effectiveMaterialParameters);
+            for (const name of requiredMaterialNames)
+            {
+                if (!BoundsEqual(
+                    ReadEffectVectorParameter(effect, name, 4),
+                    effectiveMaterialParameters[name]
+                ))
+                {
+                    throw new Error(`Configured headwear could not apply ${name}`);
+                }
+            }
+            for (const [ name, binding ] of entries)
+            {
+                const parameter = effect?.parameters?.[name];
+                if (typeof parameter?.AttachTextureRes !== "function")
+                {
+                    throw new Error(`Configured headwear does not accept ${name}`);
+                }
+                parameter.AttachTextureRes(binding.textureRes);
+            }
+        }
+
+        for (const effect of effects)
+        {
+            await tw2.resMan?.Watch?.(effect);
+            if (effect?.IsGood?.() === false)
+            {
+                throw new Error("Configured headwear effect failed to prepare");
+            }
+        }
+        return {
+            status: "applied",
+            rule: "legacy-opengl-private-headwear-material-v1",
+            correctness: "retained-source-policy",
+            attachedEffects: effects.length,
+            texturePaths: Object.fromEntries(entries.map(([ name, binding ]) => [
+                name,
+                binding.sourcePath
+            ])),
+            materialMode,
+            materialParameters: appliesSelectedMaterial
+                ? Object.fromEntries(requiredMaterialNames.map(name => [
+                    name,
+                    [ ...materialParameters[name] ]
+                ]))
+                : effects.map(effect => Object.fromEntries(requiredMaterialNames.map(name => [
+                    name,
+                    ReadEffectVectorParameter(effect, name, 4)
+                ]))),
+            effectiveMaterialParameters: effects.map(effect => ({
+                effectName: String(effect?.name ?? ""),
+                effectPath: String(effect?.effectFilePath ?? ""),
+                textureParameters: Object.keys(effect?.parameters ?? {})
+                    .filter(name => /(?:map|texture)$/iu.test(name))
+                    .sort()
+                    .map(name => ({
+                        name,
+                        path: ReadTexturePath(effect?.parameters?.[name]) || null,
+                        attached: effect?.parameters?.[name]?.isAttached === true
+                            || Boolean(effect?.parameters?.[name]?.textureRes)
+                    })),
+                parameters: Object.fromEntries(requiredMaterialNames.map(name => [
+                    name,
+                    ReadEffectVectorParameter(effect, name, 4)
+                ])),
+                shaderConstants: Object.fromEntries(requiredMaterialNames.map(name => [
+                    name,
+                    ReadEffectShaderVectorParameter(effect, name, 4)
+                ])),
+                shaderMaterialConstants: ReadEffectShaderMaterialConstants(effect),
+                shaderTextureBindings: ReadEffectShaderTextureBindings(effect)
+            }))
+        };
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            try
+            {
+                snapshot.consumer.effect.SetParameters(snapshot.material);
+            }
+            catch (error)
+            {
+                rollbackFailures.push(error);
+            }
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
+            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+/** Atomically installs independently composed head lighting atlases. */
+export async function commitLegacyConfiguredHeadBindings(
+    effects,
+    textureBindings,
+    { materialMode = "authored" } = {}
+)
+{
+    if (![ "authored", "body-default" ].includes(materialMode))
+    {
+        throw new TypeError("Configured head materialMode must be authored or body-default");
+    }
     effects = Unique(effects);
     const entries = Object.entries(textureBindings ?? {});
     if (!effects.length || !entries.length
@@ -4948,6 +8297,7 @@ export async function commitLegacyConfiguredHeadBindings(effects, textureBinding
     }
 
     const snapshots = effects.map(effect => ({
+        contract: CaptureEffectContract(effect),
         consumer: CaptureConsumerBinding(effect),
         textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name))
     }));
@@ -4955,6 +8305,10 @@ export async function commitLegacyConfiguredHeadBindings(effects, textureBinding
     {
         for (const effect of effects)
         {
+            if (materialMode === "body-default")
+            {
+                ApplyBodyDefaultHeadMaterial(effect);
+            }
             if (!SetIdentityTransformUV0(effect))
             {
                 throw new Error("Configured head skin does not accept TransformUV0");
@@ -4977,8 +8331,10 @@ export async function commitLegacyConfiguredHeadBindings(effects, textureBinding
         return {
             status: "applied",
             rule: "legacy-opengl-configured-head-lighting-v1",
+            materialMode,
             attachedEffects: effects.length,
-            sampleBounds: [ 0, 0, 1, 1 ]
+            sampleBounds: [ 0, 0, 1, 1 ],
+            effectBindings: effects.map(SummarizeFoundationEffect)
         };
     }
     catch (cause)
@@ -4987,12 +8343,67 @@ export async function commitLegacyConfiguredHeadBindings(effects, textureBinding
         const rollbackFailures = [];
         for (const snapshot of [ ...snapshots ].reverse())
         {
+            rollbackFailures.push(...RestoreEffectContract(snapshot.contract));
             rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
             rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
         }
         error.rollbackFailures = rollbackFailures;
         throw error;
     }
+}
+
+/**
+ * Applies a demo-only comparison against the observed generic-body material
+ * controls. This is a diagnostic seam, not a character recipe or Carbon rule.
+ */
+function ApplyBodyDefaultHeadMaterial(effect)
+{
+    if (typeof effect?.CleanEffect !== "function")
+    {
+        throw new Error("Configured head skin cannot clean its generic material contract");
+    }
+    effect.CleanEffect();
+
+    const values = {
+        MaterialDiffuseColor: [ 1, 1, 1, 1 ],
+        MaterialSpecularCurve: [ 0, 50, 0, 0 ]
+    };
+    const applicable = Object.fromEntries(Object.entries(values).filter(([ name ]) =>
+        HasEffectParameter(effect, name)));
+    if (Object.keys(applicable).length
+        && (typeof effect?.SetParameters !== "function"
+            || effect.SetParameters(applicable) === false))
+    {
+        throw new Error("Configured head skin does not accept body-default material controls");
+    }
+}
+
+function CaptureEffectContract(effect)
+{
+    return {
+        effect,
+        autoParameter: effect?.autoParameter,
+        options: { ...(effect?.options ?? {}) },
+        parameters: { ...(effect?.parameters ?? {}) },
+        shader: effect?.shader ?? null
+    };
+}
+
+function RestoreEffectContract(snapshot)
+{
+    const failures = [];
+    try
+    {
+        snapshot.effect.autoParameter = snapshot.autoParameter;
+        snapshot.effect.options = { ...snapshot.options };
+        snapshot.effect.parameters = { ...snapshot.parameters };
+        snapshot.effect.shader = snapshot.shader;
+    }
+    catch (error)
+    {
+        failures.push(error);
+    }
+    return failures;
 }
 
 /**
@@ -5036,6 +8447,23 @@ export function attachLegacyBodyDiffuse(visualModel, texture, { neutralLighting 
             if (typeof parameter?.AttachTextureRes !== "function") continue;
             const previousSampleBounds = ReadTransformUV0(effect);
             parameter.AttachTextureRes(texture);
+            if (configuredProof)
+            {
+                const diffuseColor = effect.parameters?.MaterialDiffuseColor;
+                if (typeof diffuseColor?.SetValue === "function")
+                {
+                    diffuseColor.SetValue([ 1, 1, 1, 1 ]);
+                }
+                else if (diffuseColor
+                    && effect.SetParameters?.({
+                        MaterialDiffuseColor: [ 1, 1, 1, 1 ]
+                    }) === false)
+                {
+                    throw new Error(
+                        "Configured body-atlas consumer does not accept MaterialDiffuseColor"
+                    );
+                }
+            }
             if (neutralLighting)
             {
                 effect.SetTextures?.({
@@ -5057,7 +8485,8 @@ export function attachLegacyBodyDiffuse(visualModel, texture, { neutralLighting 
                     effectFilePath: effect.effectFilePath ?? null,
                     previousSampleBounds,
                     sampleBounds: previousSampleBounds,
-                    source: "shared-body-diffuse-target"
+                    source: "shared-body-diffuse-target",
+                    diffuseColorPolicy: "neutral-body-atlas-sample"
                 });
             }
             else
@@ -5070,7 +8499,8 @@ export function attachLegacyBodyDiffuse(visualModel, texture, { neutralLighting 
                     role: mesh._characterFoundationRole ?? null,
                     effectFilePath: effect.effectFilePath ?? null,
                     sampleBounds: previousSampleBounds,
-                    source: "shared-body-diffuse-target"
+                    source: "shared-body-diffuse-target",
+                    effectBinding: SummarizeFoundationEffect(effect)
                 });
             }
             seen.add(effect);
@@ -5089,9 +8519,11 @@ export function attachLegacyBodyNormal(visualModel, texture)
     let attachedEffects = 0;
     for (const mesh of visualModel?.meshes ?? [])
     {
-        if (!BODY_ROLES.has(mesh?._characterFoundationRole)) continue;
+        const foundation = BODY_ROLES.has(mesh?._characterFoundationRole);
         for (const effect of GetEffects([ mesh ]))
         {
+            const replacement = Boolean(effect?._characterFoundationReplacementRole);
+            if (!foundation && !replacement) continue;
             if (seen.has(effect)) continue;
             const parameter = effect?.parameters?.NormalMap;
             if (typeof parameter?.AttachTextureRes !== "function") continue;
@@ -5110,9 +8542,11 @@ export function attachLegacyBodySpecular(visualModel, texture)
     let attachedEffects = 0;
     for (const mesh of visualModel?.meshes ?? [])
     {
-        if (!BODY_ROLES.has(mesh?._characterFoundationRole)) continue;
+        const foundation = BODY_ROLES.has(mesh?._characterFoundationRole);
         for (const effect of GetEffects([ mesh ]))
         {
+            const replacement = Boolean(effect?._characterFoundationReplacementRole);
+            if (!foundation && !replacement) continue;
             if (seen.has(effect)) continue;
             const parameter = effect?.parameters?.SpecularMap;
             if (typeof parameter?.AttachTextureRes !== "function") continue;
@@ -5167,6 +8601,107 @@ function ReadEffectVectorParameter(effect, name, length)
     }
 }
 
+function ReadEffectShaderVectorParameter(effect, name, length)
+{
+    const values = [];
+    for (const [ techniqueName, shaderTechnique ] of Object.entries(
+        effect?.shader?.techniques ?? {}
+    ))
+    {
+        const runtimeTechnique = effect?.techniques?.[techniqueName];
+        for (let passIndex = 0; passIndex < (shaderTechnique?.passes?.length ?? 0); passIndex++)
+        {
+            const shaderPass = shaderTechnique.passes[passIndex];
+            const runtimePass = runtimeTechnique?.[passIndex];
+            for (let stageIndex = 0; stageIndex < (shaderPass?.stages?.length ?? 0); stageIndex++)
+            {
+                const shaderStage = shaderPass.stages[stageIndex];
+                const runtimeStage = runtimePass?.stages?.[stageIndex];
+                const constant = shaderStage?.constants?.find(value => value?.name === name);
+                if (!constant || constant.size < length || !runtimeStage?.constantBuffer) continue;
+                const value = Array.from(runtimeStage.constantBuffer)
+                    .slice(constant.offset, constant.offset + length)
+                    .map(Number);
+                if (value.length === length && value.every(Number.isFinite)) values.push(value);
+            }
+        }
+    }
+    if (!values.length) return null;
+    const first = values[0];
+    return values.every(value => BoundsEqual(value, first)) ? first : null;
+}
+
+function ReadEffectShaderMaterialConstants(effect)
+{
+    const result = {};
+    for (const [ techniqueName, shaderTechnique ] of Object.entries(
+        effect?.shader?.techniques ?? {}
+    ))
+    {
+        const runtimeTechnique = effect?.techniques?.[techniqueName];
+        for (let passIndex = 0; passIndex < (shaderTechnique?.passes?.length ?? 0); passIndex++)
+        {
+            const shaderPass = shaderTechnique.passes[passIndex];
+            const runtimePass = runtimeTechnique?.[passIndex];
+            for (let stageIndex = 0; stageIndex < (shaderPass?.stages?.length ?? 0); stageIndex++)
+            {
+                const shaderStage = shaderPass.stages[stageIndex];
+                const runtimeStage = runtimePass?.stages?.[stageIndex];
+                if (!runtimeStage?.constantBuffer) continue;
+                for (const constant of shaderStage?.constants ?? [])
+                {
+                    const name = String(constant?.name ?? "");
+                    if (!/(?:material|fresnel|cut|color|specular)/iu.test(name)
+                        || !Number.isInteger(constant?.offset)
+                        || !Number.isInteger(constant?.size)
+                        || constant.size < 1) continue;
+                    const value = Array.from(runtimeStage.constantBuffer)
+                        .slice(constant.offset, constant.offset + Math.min(constant.size, 4))
+                        .map(Number);
+                    if (!value.length || !value.every(Number.isFinite)) continue;
+                    const key = `${techniqueName}/${passIndex}/${stageIndex}/${name}`;
+                    result[key] = value;
+                }
+            }
+        }
+    }
+    return result;
+}
+
+function ReadEffectShaderTextureBindings(effect)
+{
+    const result = [];
+    for (const [ techniqueName, technique ] of Object.entries(effect?.techniques ?? {}))
+    {
+        for (let passIndex = 0; passIndex < (technique?.length ?? 0); passIndex++)
+        {
+            for (let stageIndex = 0; stageIndex < (technique[passIndex]?.stages?.length ?? 0);
+                stageIndex++)
+            {
+                for (const texture of technique[passIndex].stages[stageIndex]?.textures ?? [])
+                {
+                    const parameterName = String(texture?.parameter?.name ?? "");
+                    const publicParameter = effect?.parameters?.[parameterName] ?? null;
+                    const textureRes = texture?.parameter?.textureRes ?? null;
+                    result.push({
+                        technique: techniqueName,
+                        pass: passIndex,
+                        stage: stageIndex,
+                        slot: texture?.slot ?? null,
+                        parameterName,
+                        usesPublicParameter: texture?.parameter === publicParameter,
+                        attached: texture?.parameter?.isAttached === true,
+                        resourceType: String(textureRes?.constructor?.name ?? ""),
+                        resourceName: String(textureRes?.name ?? ""),
+                        resourcePath: String(textureRes?.path ?? "")
+                    });
+                }
+            }
+        }
+    }
+    return result;
+}
+
 function ReadTexturePath(parameter)
 {
     const path = String(
@@ -5201,25 +8736,76 @@ function SetTransformUV0(effect, transform)
     return effect.SetParameters({ TransformUV0: transform }) !== false;
 }
 
-function CaptureConsumerBinding(effect)
+function CaptureConsumerBinding(effect, requireTransform = true)
 {
     const parameter = effect?.parameters?.DiffuseMap;
     const transform = ReadTransformUV0(effect);
-    if (!transform || typeof parameter?.AttachTextureRes !== "function")
+    if ((requireTransform && !transform)
+        || typeof parameter?.AttachTextureRes !== "function")
     {
         throw new Error("Configured consumer binding cannot be captured");
     }
     return {
         effect,
         transform,
+        materialControls: CaptureFoundationMaterialControls(effect),
+        textureRes: parameter.textureRes ?? null,
+        resourcePath: String(parameter.resourcePath ?? ""),
+        isAttached: parameter.isAttached === true
+    };
+}
+
+function CaptureFoundationMaterialControls(effect)
+{
+    const lengths = {
+        MaterialDiffuseColor: 4,
+        MaterialSpecularColor: 4,
+        MaterialSpecularCurve: 4,
+        MaterialLibraryID: 1,
+        Material2LibraryID: 1
+    };
+    return Object.fromEntries(Object.entries(lengths)
+        .filter(([ name ]) => HasEffectParameter(effect, name))
+        .map(([ name, length ]) => [
+            name,
+            ReadEffectVectorParameter(effect, name, length)
+        ])
+        .filter(([ , value ]) => value !== null));
+}
+
+/** Retains the exact material controls used by one foundation skin effect. */
+function SummarizeFoundationEffect(effect)
+{
+    return {
+        effectFilePath: String(effect?.effectFilePath ?? ""),
+        effectResourcePath: String(effect?.effectRes?.path ?? ""),
+        authoredEffectFilePath: String(effect?._characterAuthoredEffectFilePath ?? ""),
+        options: { ...(effect?.options ?? {}) },
+        parameterNames: Object.keys(effect?.parameters ?? {}).sort(),
+        transformUV0: ReadEffectVectorParameter(effect, "TransformUV0", 4),
         materialDiffuseColor: ReadEffectVectorParameter(
             effect,
             "MaterialDiffuseColor",
             4
         ),
-        textureRes: parameter.textureRes ?? null,
-        resourcePath: String(parameter.resourcePath ?? ""),
-        isAttached: parameter.isAttached === true
+        materialSpecularColor: ReadEffectVectorParameter(
+            effect,
+            "MaterialSpecularColor",
+            4
+        ),
+        materialSpecularCurve: ReadEffectVectorParameter(
+            effect,
+            "MaterialSpecularCurve",
+            4
+        ),
+        wrinkleParams: ReadEffectVectorParameter(effect, "WrinkleParams", 4),
+        colorCorrectionSource: ReadEffectVectorParameter(
+            effect,
+            "ColorCorrectionSource",
+            4
+        ),
+        materialLibraryID: ReadEffectVectorParameter(effect, "MaterialLibraryID", 1),
+        material2LibraryID: ReadEffectVectorParameter(effect, "Material2LibraryID", 1)
     };
 }
 
@@ -5314,6 +8900,47 @@ function ApplyLegacyConsumerAlphaTest(d3d, effect, disableBlend = true)
     }
 }
 
+/** Preserves RGB source-alpha blending while accumulating framebuffer coverage. */
+function ApplyLegacyCoverageAlphaBlend(d3d, effect)
+{
+    const required = [
+        "RS_SEPARATEALPHABLENDENABLE",
+        "RS_SRCBLENDALPHA",
+        "RS_DESTBLENDALPHA",
+        "BLEND_ONE",
+        "BLEND_INVSRCALPHA"
+    ];
+    if (!d3d || required.some(name => !Number.isFinite(d3d[name])))
+    {
+        throw new Error("Configured coverage alpha requires ccpwgl D3D constants");
+    }
+    for (const technique of Object.keys(effect.techniques ?? {}))
+    {
+        const passCount = effect.GetPassCount(technique);
+        for (let pass = 0; pass < passCount; pass++)
+        {
+            effect.SetTechniquePassStateOverride(
+                technique,
+                pass,
+                d3d.RS_SEPARATEALPHABLENDENABLE,
+                1
+            );
+            effect.SetTechniquePassStateOverride(
+                technique,
+                pass,
+                d3d.RS_SRCBLENDALPHA,
+                d3d.BLEND_ONE
+            );
+            effect.SetTechniquePassStateOverride(
+                technique,
+                pass,
+                d3d.RS_DESTBLENDALPHA,
+                d3d.BLEND_INVSRCALPHA
+            );
+        }
+    }
+}
+
 function ApplyLegacyConsumerDepthTest(d3d, effect, enabled)
 {
     if (!Number.isFinite(d3d?.RS_ZENABLE) || !Number.isFinite(d3d?.RS_ZWRITEENABLE))
@@ -5382,12 +9009,13 @@ function RestoreConsumerBindings(snapshots)
         try
         {
             const parameter = snapshot.effect.parameters.DiffuseMap;
-            snapshot.effect.SetParameters({ TransformUV0: snapshot.transform });
-            if (snapshot.materialDiffuseColor)
+            if (snapshot.transform)
             {
-                snapshot.effect.SetParameters({
-                    MaterialDiffuseColor: snapshot.materialDiffuseColor
-                });
+                snapshot.effect.SetParameters({ TransformUV0: snapshot.transform });
+            }
+            if (Object.keys(snapshot.materialControls ?? {}).length)
+            {
+                snapshot.effect.SetParameters(snapshot.materialControls);
             }
             if (snapshot.isAttached)
             {
@@ -5494,10 +9122,57 @@ function DescribeConfiguredGarmentBindings(meshes, effects)
             authoredTextureSlots: DescribeAuthoredTextureSlots(
                 effect?._characterAuthoredEffect ?? effect
             ),
+            authoredCutMaskInfluence: effect?._characterAuthoredCutMaskInfluence
+                ? [ ...effect._characterAuthoredCutMaskInfluence ]
+                : ReadEffectVectorParameter(
+                    effect?._characterAuthoredEffect ?? effect,
+                    "CutMaskInfluence",
+                    4
+                ),
+            authoredCutMaskInfluenceSource: effect?._characterAuthoredCutMaskInfluenceSource
+                ?? null,
+            authoredCutMaskBinding: effect?._characterAuthoredCutMaskBinding
+                ? { ...effect._characterAuthoredCutMaskBinding }
+                : DescribeAuthoredCutMaskBinding(effect?._characterAuthoredEffect ?? effect),
+            appliedCutMaskInfluence: effect?._characterAppliedCutMaskInfluence
+                ? [ ...effect._characterAppliedCutMaskInfluence ]
+                : ReadEffectVectorParameter(effect, "CutMaskInfluence", 4),
+            appliedCutMaskPolicy: effect?._characterAppliedCutMaskPolicy ?? null,
+            appliedCutMaskBinding: DescribeAuthoredCutMaskBinding(effect),
+            authoredSampleBounds: effect?._characterAuthoredTransformUV0
+                ? [ ...effect._characterAuthoredTransformUV0 ]
+                : ReadTransformUV0(effect?._characterAuthoredEffect ?? effect),
             sampleBounds: ReadTransformUV0(effect),
+            areaFields: Unique(consumers.map(value => value.areaField)),
+            areaContract: ClassifyConfiguredGarmentAreaContract(consumers),
             consumers
         };
     });
+}
+
+function DescribeAuthoredCutMaskBinding(effect)
+{
+    const parameter = effect?.parameters?.CutMaskMap;
+    if (!parameter) return { declared: false, resourcePath: null, attached: false };
+    return {
+        declared: true,
+        resourcePath: ReadTexturePath(parameter) || null,
+        attached: parameter?.isAttached === true || Boolean(parameter?.textureRes)
+    };
+}
+
+function ClassifyConfiguredGarmentAreaContract(consumers)
+{
+    const fields = Unique((consumers ?? []).map(value => value?.areaField).filter(Boolean));
+    if (fields.length !== 1) return fields.length ? "mixed-area-fields" : "unresolved";
+    switch (fields[0])
+    {
+        case "opaqueAreas": return "opaque-only";
+        case "transparentAreas": return "transparent-only";
+        case "additiveAreas": return "additive-only";
+        case "decalAreas": return "decal-only";
+        default: return "specialized-only";
+    }
 }
 
 function DescribeAuthoredTextureSlots(effect)
@@ -5580,6 +9255,21 @@ function FindMatchingMorphTargets(targets, meshName)
 function Unique(values)
 {
     return [ ...new Set(values) ];
+}
+
+
+function UniqueByPath(values)
+{
+    const result = [];
+    const paths = new Set();
+    for (const value of values)
+    {
+        const path = String(value?.path ?? "").toLowerCase();
+        if (!path || paths.has(path)) continue;
+        paths.add(path);
+        result.push(value);
+    }
+    return result;
 }
 
 function Clamp01(value)
@@ -5781,16 +9471,68 @@ function ReadTargetAlphaEvidence(target)
     const pixels = new Uint8Array(target.width * target.height * 4);
     target.ReadPixels(pixels, 0, 0, target.width, target.height);
     let hash = 2166136261;
+    const rgbSum = [ 0, 0, 0 ];
+    const coveredRgbSum = [ 0, 0, 0 ];
+    let coveredPixels = 0;
     for (const value of pixels)
     {
         hash ^= value;
         hash = Math.imul(hash, 16777619);
     }
+    for (let index = 0; index < pixels.length; index += 4)
+    {
+        for (let channel = 0; channel < 3; channel++)
+        {
+            rgbSum[channel] += pixels[index + channel];
+            if (pixels[index + 3]) coveredRgbSum[channel] += pixels[index + channel];
+        }
+        if (pixels[index + 3]) coveredPixels++;
+    }
+    const pixelCount = target.width * target.height;
     return {
         status: "readback",
         rgbaFnv1a: (hash >>> 0).toString(16).padStart(8, "0"),
+        meanRgb: rgbSum.map(value => value / pixelCount),
+        coveredMeanRgb: coveredPixels
+            ? coveredRgbSum.map(value => value / coveredPixels)
+            : [ 0, 0, 0 ],
         ...summarizeLegacyTextureAlpha(pixels, target.width, target.height)
     };
+}
+
+function ReadConfiguredFaceCarrierAlphaEvidence(target, binding)
+{
+    if (typeof target?.ReadPixels !== "function")
+    {
+        return [ {
+            status: "unavailable",
+            reason: "render-target-readback-unavailable"
+        } ];
+    }
+    const pixels = new Uint8Array(target.width * target.height * 4);
+    target.ReadPixels(pixels, 0, 0, target.width, target.height);
+    const result = [];
+    for (const value of binding?.resolvedMeshBindings ?? [])
+    {
+        const meshName = String(value?.meshName ?? "");
+        if (!/^(?:Eyelashes|EyeShadow)_GeoShape$/iu.test(meshName)) continue;
+        const effect = GetEffects([ value.mesh ]).find(candidate =>
+            /eyelashes/iu.test(String(candidate?.name ?? "")));
+        const transform = ReadTransformUV0(effect) ?? [ 0, 0, 1, 1 ];
+        result.push({
+            meshName,
+            geometryMeshName: String(value?.geometryMeshName ?? ""),
+            display: value?.mesh?.display !== false,
+            ...summarizeLegacyCarrierAlpha(
+                pixels,
+                target.width,
+                target.height,
+                value?.geometry?.meshes?.[value.meshIndex],
+                transform
+            )
+        });
+    }
+    return result;
 }
 
 /** Decodes one authored BC3/DXT5 DDS into an RGBA mask without changing its layout. */
@@ -6089,6 +9831,15 @@ function Bounds(placement)
         placement[0] + placement[2],
         placement[1] + placement[3]
     ];
+}
+
+function IntersectPlacement(left, right)
+{
+    const x = Math.max(left[0], right[0]);
+    const y = Math.max(left[1], right[1]);
+    const maxX = Math.min(left[0] + left[2], right[0] + right[2]);
+    const maxY = Math.min(left[1] + left[3], right[1] + right[3]);
+    return maxX > x && maxY > y ? [ x, y, maxX - x, maxY - y ] : null;
 }
 
 function Viewport(size, placement)

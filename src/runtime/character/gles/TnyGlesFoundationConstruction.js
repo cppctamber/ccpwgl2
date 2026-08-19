@@ -1,5 +1,9 @@
 const DEFAULT_SHADER = "res:/graphics/effect.gles2/managed/interior/avatar/skinnedavatar.sm_hi";
 const NEUTRAL_NORMAL = "res:/graphics/shared_texture/global/normal_flat.dds";
+const BODY_DIFFUSE_FOUNDATIONS = {
+    female: "res:/graphics/character/female/paperdoll/archetypes/ccshape/cd_female_body_d_4k.png",
+    male: "res:/graphics/character/male/paperdoll/archetypes/ccshape/cd_male_body_d_4k.png"
+};
 const FEMALE_BODY_FOUNDATION = {
     role: "body",
     index: 1,
@@ -133,19 +137,21 @@ export class TnyGlesFoundationConstruction
             resourcePath: definition.skeletonPath
         } ];
 
-        const geometry = sex === "female" && this._femaleFoundationLayout === "split-lod0"
+        const baseGeometry = sex === "female" && this._femaleFoundationLayout === "split-lod0"
             ? FEMALE_SPLIT_LOD0_GEOMETRY
             : definition.geometry;
+        const geometry = ResolveFoundationGeometry(baseGeometry, sex, library);
 
         for (let index = 0; index < geometry.length; index++)
         {
-            const [ role, resourcePath, compatibility ] = geometry[index];
+            const [ role, resourcePath, compatibility, evidence ] = geometry[index];
 
             operations.push({
                 operation: "geometry",
                 role,
                 index,
                 resourcePath,
+                ...(evidence ? { evidence: { ...evidence } } : {}),
                 ...(compatibility ? { compatibility: CloneCompatibility(compatibility) } : {})
             });
         }
@@ -159,11 +165,20 @@ export class TnyGlesFoundationConstruction
         });
 
         const selectedSkin = ResolveSelectedFoundationSkin(paperdoll, sex, library);
+        const genericBodySpecular = selectedSkin
+            ? null
+            : ResolveGenericFoundationSpecular(sex, library);
         for (const configured of definition.configuredFoundations)
         {
             const resolved = configured.role === "head" && selectedSkin
                 ? {
                     ...configured,
+                    // Keep the generic-head texture inventory beside the
+                    // configured support geometry separate from the selected
+                    // archetype skin surface. The renderer may compare this
+                    // source when qualifying topology-specific face carriers.
+                    supportTextures: { ...configured.skinTextures },
+                    supportEvidence: { ...configured.skinEvidence },
                     skinTextures: { ...selectedSkin.headTextures },
                     ...(selectedSkin.skinColorization ? { skinColorization: {
                         ...selectedSkin.skinColorization,
@@ -171,7 +186,15 @@ export class TnyGlesFoundationConstruction
                     } } : {}),
                     skinEvidence: { ...selectedSkin.evidence }
                 }
-                : configured;
+                : configured.role === "head" && genericBodySpecular
+                    ? {
+                        ...configured,
+                        skinEvidence: {
+                            ...configured.skinEvidence,
+                            ...genericBodySpecular
+                        }
+                    }
+                    : configured;
             operations.push({
                 operation: "configured-foundation",
                 ...resolved
@@ -233,6 +256,77 @@ export class TnyGlesFoundationConstruction
             operations
         };
     }
+}
+
+/**
+ * Adds exact support carriers authored as dependencies of the nude torso.
+ * The join is intentionally strict: a dependency must already be hydrated and
+ * expose one self-contained version with one configuration/geometry pair.
+ */
+export function ResolveFoundationGeometry(baseGeometry, sex, library)
+{
+    const result = baseGeometry.map(value => [
+        value[0],
+        value[1],
+        value[2] ? CloneCompatibility(value[2]) : undefined,
+        value[3] ? { ...value[3] } : undefined
+    ]);
+    if (!library || typeof library.Get !== "function") return result;
+
+    const torso = library.Get("characterPartSources", `${sex}/topinner/torso_nude`);
+    const metadata = ResolveEffectiveMetadata(torso);
+    const supports = [];
+
+    for (const relation of metadata?.dependencies ?? [])
+    {
+        const authored = StripDependencyWeight(relation?.authoredValue).toLowerCase();
+        const match = /^dependants\/(sleevesupper|sleeveslower)\/[^/]+$/u.exec(authored);
+        const target = relation?.partSource;
+        if (!match || !target) continue;
+        if (String(target.recordID ?? "").toLowerCase() !== `${sex}/${authored}`) continue;
+
+        const versions = (target.versions ?? []).filter(Boolean);
+        if (versions.length !== 1) continue;
+        const version = versions[0];
+        if (version.configurationCandidates?.length !== 1
+            || version.geometryCandidates?.length !== 1)
+        {
+            continue;
+        }
+
+        supports.push([
+            match[1] === "sleevesupper" ? "sleevesUpper" : "sleevesLower",
+            version.geometryCandidates[0],
+            undefined,
+            {
+                status: "derived",
+                rule: "exact-foundation-torso-support-dependency-v1",
+                torsoPartSourceRecordID: torso.recordID,
+                metadataRecordID: metadata.recordID,
+                authoredDependency: relation.authoredValue,
+                supportPartSourceRecordID: target.recordID,
+                configurationPath: version.configurationCandidates[0]
+            }
+        ]);
+    }
+
+    const uniqueRoles = new Set(supports.map(value => value[0]));
+    if (uniqueRoles.size !== supports.length) return result;
+
+    const existingRoles = new Set(result.map(value => value[0]));
+    const additions = supports
+        .filter(value => !existingRoles.has(value[0]))
+        .sort((left, right) => FoundationSupportOrder(left[0]) - FoundationSupportOrder(right[0]));
+    if (!additions.length) return result;
+
+    const torsoIndex = result.findIndex(value => value[0] === "torso");
+    result.splice(torsoIndex < 0 ? result.length : torsoIndex + 1, 0, ...additions);
+    return result;
+}
+
+function FoundationSupportOrder(role)
+{
+    return role === "sleevesUpper" ? 0 : 1;
 }
 
 /** Resolves one exact authored brow carrier through the selected head metadata. */
@@ -306,6 +400,28 @@ function StripDependencyWeight(value)
         /###[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/u,
         ""
     );
+}
+
+function ResolveGenericFoundationSpecular(sex, library)
+{
+    if (!library || typeof library.GetDocument !== "function") return null;
+    const diffusePath = String(BODY_DIFFUSE_FOUNDATIONS[sex] ?? "").toLowerCase();
+    const diffuseParts = diffusePath.split("/");
+    const diffuseName = diffuseParts.at(-1);
+    const archetypeFamily = diffuseParts.at(-2)?.replace(/shape$/u, "");
+    if (!diffuseName?.endsWith("_d_4k.png")) return null;
+    if (!archetypeFamily) return null;
+    const specularName = `${diffuseName.slice(0, -"_d_4k.png".length)}_s_4k.png`;
+    const expectedSuffix = `/${sex}/paperdoll/skintype/${archetypeFamily}/${specularName}`;
+    const matches = (library.GetDocument("characterTextureMetadata") ?? [])
+        .filter(value => String(value?.sourcePath ?? "").toLowerCase()
+            .endsWith(expectedSuffix));
+    if (matches.length !== 1) return null;
+    return {
+        bodySpecularPath: matches[0].sourcePath,
+        bodySpecularMetadataRecordID: matches[0].recordID,
+        bodySpecularRule: "exact-foundation-diffuse-token-specular-match-v1"
+    };
 }
 
 /** Resolves one selected skintone through retained base, PRS, and archetype records. */

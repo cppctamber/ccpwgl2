@@ -3,7 +3,9 @@ import test from "node:test";
 
 import {
     InstallSyntheticHeadLayerFixture,
-    SYNTHETIC_HEAD_RECORD_ID
+    InstallSyntheticMaleTopUnderwearFixture,
+    SYNTHETIC_HEAD_RECORD_ID,
+    SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
 } from "../src/demo/CharacterDemoSyntheticFixture.mjs";
 
 test("synthetic head fixture combines exact retained donors without changing them", () =>
@@ -101,6 +103,65 @@ test("synthetic head fixture combines exact retained donors without changing the
     assert.deepEqual(result.colorSelections, [ baseColor, eyeshadowColor, tattooColor ]);
     assert.equal(base.modifiers.length, 3);
     assert.strictEqual(InstallSyntheticHeadLayerFixture(manager), result);
+});
+
+test("synthetic male upper-underwear fixture exposes one retained unobserved source", () =>
+{
+    const retained = Modifier("bottomunderwear", "1046");
+    const covered = [
+        Modifier("outer", "314"),
+        Modifier("bottomouter", "254"),
+        Modifier("feet", "216"),
+        Modifier("topmiddle", "48")
+    ];
+    const base = {
+        recordID: "3019517",
+        modifiers: [ retained, ...covered ],
+        colorSelections: [],
+        GetValues: () => ({ recordID: "3019517", creationDate: "authored" })
+    };
+    const location = { recordID: "121", modifierKey: "topunderwear" };
+    const resource = { recordID: "16182", resGender: 1 };
+    let created = null;
+    const manager = {
+        Get(documentName, recordID)
+        {
+            if (documentName === "paperdolls"
+                && recordID === SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID)
+            {
+                return created;
+            }
+            if (documentName === "paperdolls" && recordID === "3019517") return base;
+            if (documentName === "characterModifierLocations" && recordID === "121")
+            {
+                return location;
+            }
+            if (documentName === "characterResources" && recordID === "16182")
+            {
+                return resource;
+            }
+            return null;
+        },
+        Create(documentName, values, options)
+        {
+            assert.equal(documentName, "paperdolls");
+            assert.equal(options.reason, "demo-synthetic-male-top-underwear-proof");
+            created = values;
+            return values;
+        }
+    };
+
+    const result = InstallSyntheticMaleTopUnderwearFixture(manager);
+
+    assert.equal(result.recordID, SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID);
+    assert.strictEqual(result.modifiers[0], retained);
+    assert.deepEqual(result.modifiers[1], {
+        modifierLocationID: location,
+        paperdollResourceID: resource,
+        paperdollResourceVariation: 0
+    });
+    assert.equal(result.modifiers.some(value => covered.includes(value)), false);
+    assert.strictEqual(InstallSyntheticMaleTopUnderwearFixture(manager), result);
 });
 
 function Donor(recordID, modifier, colorSelection = null)

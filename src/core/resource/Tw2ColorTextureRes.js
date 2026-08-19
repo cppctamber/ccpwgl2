@@ -138,6 +138,21 @@ export class Tw2ColorTextureRes extends Tw2TextureRes
     }
 
     /**
+     * Keeps legacy WebGL1 clients on the ordinary 2D neutral fallback. Their
+     * translated shaders cannot sample array or volume targets, and attempting
+     * to allocate one would fail before any scene or character can initialize.
+     * @param {WebGLRenderingContext|WebGL2RenderingContext} gl
+     * @param {String} dimension
+     * @returns {String}
+     */
+    static GetSupportedDimension(gl, dimension)
+    {
+        return Tw2ColorTextureRes.IsLayered(dimension) && typeof gl.texImage3D !== "function"
+            ? "2d"
+            : dimension;
+    }
+
+    /**
      * Rasterizes one 1x1(xN) solid texture of the given target.
      *
      * The GL lives here rather than on the device because this is the resource
@@ -154,6 +169,7 @@ export class Tw2ColorTextureRes extends Tw2TextureRes
      */
     static CreateTexture(gl, bytes, dimension, depth = 1)
     {
+        dimension = Tw2ColorTextureRes.GetSupportedDimension(gl, dimension);
         const
             target = Tw2ColorTextureRes.GetTarget(gl, dimension),
             texture = gl.createTexture();
@@ -199,17 +215,18 @@ export class Tw2ColorTextureRes extends Tw2TextureRes
     DoCustomLoad()
     {
         const { gl } = device;
+        const dimension = Tw2ColorTextureRes.GetSupportedDimension(gl, this.dimension);
 
         // The path carries floats; GL takes bytes.
         const bytes = this.color.map(v => Math.max(0, Math.min(255, Math.round(v * 255))));
 
-        this.Attach(Tw2ColorTextureRes.CreateTexture(gl, bytes, this.dimension, this.depth), this.path);
+        this.Attach(Tw2ColorTextureRes.CreateTexture(gl, bytes, dimension, this.depth), this.path);
 
         // Attach clears the metadata, so the target is pinned after it rather
         // than before. See the class note: an unpinned generated texture takes
         // the shape of its first consumer and hands that guess to every other.
-        this._target = Tw2ColorTextureRes.GetTarget(gl, this.dimension);
-        this._isCube = this.dimension === "cube";
+        this._target = Tw2ColorTextureRes.GetTarget(gl, dimension);
+        this._isCube = dimension === "cube";
         this._width = 1;
         this._height = 1;
 

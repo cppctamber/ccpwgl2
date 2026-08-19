@@ -1,17 +1,9 @@
-const EXACT_COVERAGE = new Map([
-    [
-        "male\0bottomouter\0male/bottomouter/pantsam01",
-        {
-            strategy: "hide-carrier",
-            roles: [ "legs" ],
-            authoredOcclusion: "bottominner"
-        }
-    ]
-]);
-
 const FOOTWEAR_HEIGHTS = new Set([ "low", "shin", "medium", "knee", "high", "xhigh" ]);
 const FOUNDATION_ROLE_BY_MODIFIER_LOCATION = new Map([
-    [ "topinner", "torso" ]
+    [ "topinner", "torso" ],
+    [ "bottominner", "legs" ],
+    [ "feet", "feet" ],
+    [ "hands", "hands" ]
 ]);
 
 /**
@@ -39,20 +31,18 @@ export class TnyGlesFoundationCoveragePolicy
             ? ResolveAuthoredModifierCoverage(metadata)
             : null;
 
-        if (authoredCoverage)
+        if (authoredCoverage?.length)
         {
             return {
                 strategy: "hide-carrier",
-                roles: [ authoredCoverage.foundationRole ],
+                roles: [ ...new Set(authoredCoverage.map(value => value.foundationRole)) ],
                 evidence: {
                     status: "policy",
                     rule: "legacy-opengl-authored-modifier-coverage-v1",
                     sex: normalizedSex,
                     groupID: normalizedGroupID,
                     partSourceRecordID: normalizedSourceID,
-                    authoredValue: authoredCoverage.authoredValue,
-                    modifierLocationKey: authoredCoverage.modifierLocationKey,
-                    relation: authoredCoverage.relation
+                    relationships: authoredCoverage.map(value => ({ ...value }))
                 }
             };
         }
@@ -83,37 +73,15 @@ export class TnyGlesFoundationCoveragePolicy
             };
         }
 
-        const policy = EXACT_COVERAGE.get(
-            `${normalizedSex}\0${normalizedGroupID}\0${normalizedSourceID}`
-        );
-
-        if (!policy) return null;
-
-        return {
-            strategy: policy.strategy,
-            roles: [ ...policy.roles ],
-            ...(policy.triangleRule ? {
-                triangleRule: policy.triangleRule,
-                bonePrefixes: [ ...policy.bonePrefixes ]
-            } : {}),
-            ...(policy.authoredOcclusion ? {
-                authoredOcclusion: policy.authoredOcclusion
-            } : {}),
-            evidence: {
-                status: "policy",
-                rule: "legacy-opengl-exact-foundation-coverage-v1",
-                sex: normalizedSex,
-                groupID: normalizedGroupID,
-                partSourceRecordID: normalizedSourceID
-            }
-        };
+        return null;
     }
 }
 
 function ResolveAuthoredModifierCoverage(metadata)
 {
-    if (!metadata || !Array.isArray(metadata.occlusions)) return null;
+    if (!metadata || !Array.isArray(metadata.occlusions)) return [];
 
+    const result = [];
     for (const reference of metadata.occlusions)
     {
         const authoredValue = String(reference?.authoredValue ?? "").trim().toLowerCase();
@@ -126,17 +94,17 @@ function ResolveAuthoredModifierCoverage(metadata)
 
         if (!foundationRole) continue;
 
-        return {
+        result.push({
             authoredValue,
             modifierLocationKey: resolvedKey,
             foundationRole,
             relation: modifierLocationKey
                 ? "typed-modifier-location"
                 : "exact-modifier-path-fallback"
-        };
+        });
     }
 
-    return null;
+    return result;
 }
 
 function ResolveAuthoredFootwearHeight(metadata)

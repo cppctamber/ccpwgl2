@@ -1,4 +1,5 @@
 const SYNTHETIC_HEAD_RECORD_ID = "demo:synthetic-head-layers";
+const SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID = "demo:synthetic-male-top-underwear";
 
 /** Adds one explicitly non-game paper doll assembled only from retained records. */
 export function InstallSyntheticHeadLayerFixture(manager)
@@ -63,6 +64,38 @@ export function InstallSyntheticHeadLayerFixture(manager)
     }, { reason: "demo-synthetic-head-layer-proof" });
 }
 
+/** Exposes one retained but unobserved male upper-underwear source for review. */
+export function InstallSyntheticMaleTopUnderwearFixture(manager)
+{
+    const existing = manager.Get("paperdolls", SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID);
+    if (existing) return existing;
+
+    const base = RequireRecord(manager, "paperdolls", "3019517");
+    const modifiers = [
+        ...base.modifiers.filter(value => ![
+            "outer", "bottomouter", "feet", "topmiddle", "topinner", "topunderwear"
+        ].includes(value?.modifierLocationID?.modifierKey)),
+        {
+            modifierLocationID: RequireRecord(
+                manager,
+                "characterModifierLocations",
+                "121"
+            ),
+            paperdollResourceID: RequireRecord(manager, "characterResources", "16182"),
+            paperdollResourceVariation: 0
+        }
+    ];
+
+    return manager.Create("paperdolls", {
+        ...base.GetValues(),
+        recordID: SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID,
+        modifiers,
+        creationDate: "",
+        lastRendered: "",
+        lastUpdate: ""
+    }, { reason: "demo-synthetic-male-top-underwear-proof" });
+}
+
 function RequireModifier(paperdoll, modifierKey)
 {
     const matches = paperdoll.modifiers.filter(value =>
@@ -101,4 +134,7 @@ function RequireRecord(manager, documentName, recordID)
     return record;
 }
 
-export { SYNTHETIC_HEAD_RECORD_ID };
+export {
+    SYNTHETIC_HEAD_RECORD_ID,
+    SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
+};

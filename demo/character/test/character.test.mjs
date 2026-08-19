@@ -38,10 +38,11 @@ function CreateFixture()
         ListDocuments: () => Object.keys(documents)
     };
     const resolver = {
-        resolvePaperdoll(inputLibrary, inputPaperdoll)
+        resolvePaperdoll(inputLibrary, inputPaperdoll, options)
         {
             assert.equal(inputLibrary, library);
             assert.equal(inputPaperdoll, paperdoll);
+            assert.deepEqual(options, { requestedLod: 0 });
             return plan;
         }
     };

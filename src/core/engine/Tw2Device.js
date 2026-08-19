@@ -3,6 +3,8 @@ import { assignIfExists, get, isString } from "utils";
 import { Tw2Error } from "../Tw2Error";
 import { Tw2EventEmitter } from "../Tw2EventEmitter";
 import { Tw2Effect } from "../mesh/Tw2Effect";
+import * as Tw2CarbonData from "../carbon/Tw2CarbonData";
+import { Tw2EffectRes } from "../resource/Tw2EffectRes";
 import { Tw2VertexDeclaration } from "../vertex/Tw2VertexDeclaration";
 
 import {
@@ -131,6 +133,38 @@ export class Tw2Device extends Tw2EventEmitter
     effectDir = Tw2Device.EffectProfiles[this.effectProfile];
     mipLevelSkipCount = 0;
     shaderModel = "hi";
+
+    /**
+     * Which end of the clip range translated dx11 shaders treat as NEAR.
+     *
+     * ONE knob for both halves on purpose. The engine seam converts the camera
+     * matrices INTO a convention and the translator's fixup converts back OUT
+     * of it; setting one alone composes to `-z` and renders the scene inside
+     * out, which reads as an unrelated bug rather than as a misconfiguration.
+     * Exposing a single property makes that mismatch unreachable.
+     *
+     * Must be set BEFORE any effect loads. `Tw2EffectRes.PrepareCarbon`
+     * translates once and caches the result on the resource, so a later change
+     * cannot reach an effect that already prepared and silently looks like it
+     * did nothing.
+     *
+     * The gles2 profile ignores this entirely - non-Carbon effects upload the
+     * raw GLES arrays and never reach the seam.
+     *
+     * See `/docs/contracts/depth-convention.md`.
+     * @param {String} value - "reversed" (default) or "forward"
+     */
+    set clipDepthRange(value)
+    {
+        Tw2CarbonData.SetClipDepthRange(value);
+        Tw2EffectRes.DEPTH_RANGE = value;
+    }
+
+    /** @returns {String} */
+    get clipDepthRange()
+    {
+        return Tw2CarbonData.GetClipDepthRange();
+    }
     enableAnisotropicFiltering = true;
     enableAntialiasing = true;
     enableWebgl2 = true;

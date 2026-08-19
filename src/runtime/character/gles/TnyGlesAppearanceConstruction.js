@@ -115,8 +115,26 @@ export class TnyGlesAppearanceConstruction
             };
             const configurationPath = OptionalResourcePath(part.configurationPath);
             const geometryPath = OptionalResourcePath(part.geometryPath);
+            const sourceVersion = ResolvePartSourceVersion(
+                library,
+                common.partSourceRecordID,
+                part.origin?.jsonPointer
+            );
+            const geometryCandidates = sourceVersion?.geometryCandidates
+                ?.map(value => OptionalResourcePath(value))
+                .filter(Boolean) ?? [];
+            const configurationCandidateCount = sourceVersion?.configurationCandidates
+                ?.map(value => OptionalResourcePath(value))
+                .filter(Boolean).length ?? 0;
+            const configuredVisualCandidateInventory = configurationCandidateCount
+                || geometryCandidates.length
+                ? {
+                    configurationCount: configurationCandidateCount,
+                    geometryCount: geometryCandidates.length
+                }
+                : null;
 
-            if (configurationPath && geometryPath)
+            if (configurationPath && (geometryPath || geometryCandidates.length))
             {
                 const metadata = ResolvePartMetadata(
                     library,
@@ -137,6 +155,9 @@ export class TnyGlesAppearanceConstruction
                     ...common,
                     configurationPath,
                     geometryPath,
+                    ...(geometryCandidates.length ? {
+                        geometryCandidates: [ ...geometryCandidates ]
+                    } : {}),
                     ...(foundationCoverage ? { foundationCoverage } : {})
                 });
             }
@@ -147,7 +168,10 @@ export class TnyGlesAppearanceConstruction
                     operation: "deferred-contribution",
                     ...common,
                     configurationPath,
-                    geometryPath
+                    geometryPath,
+                    ...(configuredVisualCandidateInventory
+                        ? { configuredVisualCandidateInventory }
+                        : {})
                 });
             }
         }
@@ -213,11 +237,19 @@ function ResolveMorphTargets(appearancePlan)
 
 function ResolvePartMetadata(library, recordID, jsonPointer)
 {
+    const version = ResolvePartSourceVersion(library, recordID, jsonPointer);
+    if (version?.metadata) return version.metadata;
+    if (!recordID || typeof library?.Get !== "function") return null;
+    const source = library.Get("characterPartSources", recordID);
+    return source?.metadata ?? null;
+}
+
+function ResolvePartSourceVersion(library, recordID, jsonPointer)
+{
     if (!recordID || typeof library?.Get !== "function") return null;
     const source = library.Get("characterPartSources", recordID);
     const match = String(jsonPointer ?? "").match(/^\/versions\/(\d+)$/u);
-    const version = match ? source?.versions?.[Number(match[1])] : null;
-    return version?.metadata ?? source?.metadata ?? null;
+    return match ? source?.versions?.[Number(match[1])] ?? null : null;
 }
 
 function RequireResourcePath(value, label)

@@ -96,7 +96,10 @@ function FakeParam()
 {
     return {
         value: 0,
-        linearRampToValueAtTime() {},
+        linearRampToValueAtTime(value)
+        {
+            this.value = value;
+        },
     };
 }
 

@@ -76,12 +76,16 @@ export const {
     TnyGlesAtlasComposer,
     commitLegacyConfiguredConsumerBindings,
     commitLegacyConfiguredGarmentBindings,
+    commitLegacyConfiguredHairBindings,
+    commitLegacyConfiguredHeadwearBindings,
     commitLegacyConfiguredHeadBindings,
+    commitLegacyFoundationAlphaCutBindings,
     commitLegacyFoundationCutMaskBindings,
     composeLegacyConfiguredConsumerPixel,
     composeLegacyFoundationCutMaskPixel,
     decodeLegacyBc3AlphaMask,
     getLegacyConfiguredConsumerPassContract,
+    hideLegacyConfiguredHairHeadShells,
     isLegacyConfiguredBodyConsumerEffect,
     parsePngAtlasMetadata,
     ReadLibraryAtlasMetadata,
@@ -90,8 +94,14 @@ export const {
     planLegacyExactFemaleLowerSleeve,
     planLegacyExactFemaleUpperSleeve,
     planLegacyExactFemaleTuckSupport,
+    planLegacySelectedTopDrapeSupport,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredGarmentDiffuseContribution,
+    resolveLegacyConfiguredHairDiffuseContribution,
+    resolveLegacyConfiguredHairConsumers,
+    resolveLegacyConfiguredHeadwearMaterial,
+    resolveLegacyHairShaderMaterial,
     resolveLegacyBodyMaterialChannels,
     resolveLegacyDefaultBrowCandidate,
     resolveLegacyDefaultEyelashCandidate,
@@ -99,12 +109,17 @@ export const {
     resolveLegacyBodyFoundationSpecularPath,
     resolveLegacyCroppedTextureTransform,
     resolveLegacyGarmentMaterialChannels,
+    resolveLegacyHairMaterialChannels,
     resolveLegacyHeadMaterialChannels,
-    summarizeLegacyTextureAlpha
+    resolveLegacyReadyHeadContributions,
+    summarizeLegacyTextureAlpha,
+    summarizeLegacyCarrierAlpha
 } = atlas;
 export const {
     applyLegacyConfiguredCardAreas,
     applyLegacyProofGarmentMaterial,
+    OrderConfiguredHairMeshesForRendering,
+    PrepareConfiguredFaceCarriers,
     TnyGlesCharacterAdapter
 } = adapter;
 export const { TnyGlesFoundationConstruction } = foundation;

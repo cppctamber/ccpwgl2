@@ -234,6 +234,102 @@ test("appearance construction rejects unowned parts and retains incomplete contr
     }, {}), /optional contribution path must be a res:\/ path/u);
 });
 
+test("appearance construction retains ambiguous geometry candidates for renderer qualification", () =>
+{
+    const resolver = CreateResolver({
+        Resolve: () => ({
+            sex: "male",
+            evidence: { rule: "legacy-opengl-foundation-v1" },
+            operations: [ { operation: "bind-animation" } ]
+        })
+    });
+    const jacket = CreatePart("jacket", "male/outer/jacket-fixture");
+    jacket.geometryPath = null;
+    const candidates = [
+        "res:/jacket_lod1.gr2",
+        "res:/jacket_lod2.gr2",
+        "res:/jacket.gr2"
+    ];
+    const library = {
+        Get(document, recordID)
+        {
+            if (document !== "characterPartSources"
+                || recordID !== "male/outer/jacket-fixture") return null;
+            return {
+                versions: [ {
+                    metadata: null,
+                    geometryCandidates: candidates
+                } ]
+            };
+        }
+    };
+
+    const construction = resolver.Resolve({}, {
+        parts: [ jacket ],
+        layers: [ { owner: { groupID: "outer" }, contributor: jacket } ]
+    }, library);
+    const operation = construction.operations.at(-2);
+
+    assert.equal(operation.operation, "configured-part");
+    assert.equal(operation.geometryPath, null);
+    assert.deepEqual(operation.geometryCandidates, candidates);
+    assert.equal(construction.configuredPartCount, 1);
+    assert.equal(construction.deferredContributionCount, 0);
+});
+
+test("appearance construction distinguishes unresolved visual hair from atlas-only hair", () =>
+{
+    const resolver = CreateResolver({
+        Resolve: () => ({
+            sex: "female",
+            evidence: { rule: "legacy-opengl-foundation-v1" },
+            operations: [ { operation: "bind-animation" } ]
+        })
+    });
+    const meshHair = CreatePart("mesh-hair", "female/hair/mesh-style");
+    meshHair.configurationPath = null;
+    meshHair.geometryPath = null;
+    const scalpOnly = CreatePart("scalp-only", "female/hair/scalp-only");
+    scalpOnly.configurationPath = null;
+    scalpOnly.geometryPath = null;
+    const library = {
+        Get(document, recordID)
+        {
+            if (document !== "characterPartSources") return null;
+            if (recordID === "female/hair/mesh-style")
+            {
+                return { versions: [ {
+                    configurationCandidates: [ "res:/mesh.black", "res:/mesh_lod0.black" ],
+                    geometryCandidates: [ "res:/mesh.gr2", "res:/mesh_lod0.gr2" ]
+                } ] };
+            }
+            if (recordID === "female/hair/scalp-only")
+            {
+                return { versions: [ {
+                    configurationCandidates: [],
+                    geometryCandidates: []
+                } ] };
+            }
+            return null;
+        }
+    };
+    const construction = resolver.Resolve({}, {
+        parts: [ meshHair, scalpOnly ],
+        layers: [
+            { owner: { groupID: "hair" }, contributor: meshHair },
+            { owner: { groupID: "hair" }, contributor: scalpOnly }
+        ]
+    }, library);
+    const deferred = construction.operations.filter(value =>
+        value.operation === "deferred-contribution");
+
+    assert.deepEqual(deferred[0].configuredVisualCandidateInventory, {
+        configurationCount: 2,
+        geometryCount: 2
+    });
+    assert.equal("configuredVisualCandidateInventory" in deferred[1], false);
+});
+
 test("appearance construction labels authored sex-specific boot coverage strategies", () =>
 {
     const maleFoundation = {
@@ -343,9 +439,12 @@ test("appearance construction carries exact typed topinner coverage to the male 
             sex: "male",
             groupID: "outer",
             partSourceRecordID: "male/outer/robe-fixture",
-            authoredValue: "topinner",
-            modifierLocationKey: "topinner",
-            relation: "typed-modifier-location"
+            relationships: [ {
+                authoredValue: "topinner",
+                modifierLocationKey: "topinner",
+                foundationRole: "torso",
+                relation: "typed-modifier-location"
+            } ]
         }
     });
 });

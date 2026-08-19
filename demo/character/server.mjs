@@ -1,8 +1,10 @@
+import { Buffer } from "node:buffer";
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import process from "node:process";
 
 const HOST = "127.0.0.1";
 const DEFAULT_PORT = 8083;
@@ -23,6 +25,7 @@ export function createCharacterDemoServer(options = {})
     const runtimeCharacterRoot = resolve(carbonengineRoot, "runtime-character/npm/dist");
     const runtimeUtilsRoot = resolve(carbonengineRoot, "runtime-utils/src");
     const libraryPath = options.libraryPath ? resolve(options.libraryPath) : null;
+    const toolsServiceConfig = NormalizeToolsServiceConfig(options.toolsServiceConfig);
     const exactRoutes = new Map([
         [ "/demo/character/", resolve(characterRoot, "index.html") ],
         [ "/demo/character/index.html", resolve(characterRoot, "index.html") ],
@@ -69,6 +72,17 @@ export function createCharacterDemoServer(options = {})
             }
 
             const url = new URL(request.url ?? "/", `http://${HOST}`);
+
+            if (url.pathname === "/local/tools-service.json")
+            {
+                if (!toolsServiceConfig)
+                {
+                    SendText(response, 404, "Tools service not configured", request.method);
+                    return;
+                }
+                SendJson(response, 200, toolsServiceConfig, request.method);
+                return;
+            }
 
             if (url.pathname === "/" || url.pathname === "/demo/character")
             {
@@ -176,6 +190,46 @@ function SendText(response, statusCode, message, method)
     response.end(method === "HEAD" ? undefined : body);
 }
 
+function SendJson(response, statusCode, value, method)
+{
+    const body = `${JSON.stringify(value)}\n`;
+    response.writeHead(statusCode, {
+        "cache-control": "no-store",
+        "content-length": Buffer.byteLength(body),
+        "content-type": "application/json; charset=utf-8",
+        "x-content-type-options": "nosniff"
+    });
+    response.end(method === "HEAD" ? undefined : body);
+}
+
+function NormalizeToolsServiceConfig(value)
+{
+    if (!value) return null;
+
+    const source = typeof value === "string" ? JSON.parse(value) : value;
+    const bootstrapValue = source.bootstrap ?? source;
+    const bootstrap = typeof bootstrapValue === "string"
+        ? JSON.parse(bootstrapValue)
+        : bootstrapValue;
+    const port = Number(bootstrap?.port);
+    const target = String(source.target ?? "eve").trim();
+    const build = String(source.build ?? "latest").trim();
+    const scheme = String(source.scheme ?? "http").trim().toLowerCase();
+
+    if (!bootstrap?.host || !Number.isSafeInteger(port) || port < 1 || port > 65535
+        || !target || !build || ![ "http", "https" ].includes(scheme))
+    {
+        throw new TypeError("Invalid character tools service configuration");
+    }
+
+    return {
+        bootstrap: { ...bootstrap, host: String(bootstrap.host), port },
+        target,
+        build,
+        scheme
+    };
+}
+
 function GetContentType(filePath)
 {
     switch (extname(filePath).toLowerCase())
@@ -199,7 +253,15 @@ function ParseArguments(argv)
     const result = {
         port: DEFAULT_PORT,
         libraryPath: null,
-        carbonengineRoot: null
+        carbonengineRoot: null,
+        toolsServiceConfig: process.env.CHARACTER_TOOLS_BOOTSTRAP
+            ? {
+                bootstrap: process.env.CHARACTER_TOOLS_BOOTSTRAP,
+                target: process.env.CHARACTER_TOOLS_TARGET || "eve",
+                build: process.env.CHARACTER_TOOLS_BUILD || "latest",
+                scheme: process.env.CHARACTER_TOOLS_SCHEME || "http"
+            }
+            : null
     };
 
     for (let index = 0; index < argv.length; index++)

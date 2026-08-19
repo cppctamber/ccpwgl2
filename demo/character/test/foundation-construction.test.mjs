@@ -123,6 +123,149 @@ test("foundation construction emits every male body component with contiguous in
     assert.deepEqual(geometry.map(value => value.index), [ 0, 1, 2, 3, 4 ]);
 });
 
+test("foundation construction derives male arm carriers from exact torso dependencies", () =>
+{
+    const upper = CreateFoundationSupportSource(
+        "male/dependants/sleevesupper/standard",
+        "sleevesupper"
+    );
+    const lower = CreateFoundationSupportSource(
+        "male/dependants/sleeveslower/standard",
+        "sleeveslower"
+    );
+    const torso = {
+        recordID: "male/topinner/torso_nude",
+        metadata: {
+            recordID: "res:/graphics/character/male/paperdoll/topinner/torso_nude/metadata.yaml",
+            dependencies: [ {
+                authoredValue: "dependants/sleeveslower/standard",
+                partSource: lower
+            }, {
+                authoredValue: "dependants/sleevesupper/standard###1",
+                partSource: upper
+            } ]
+        },
+        versions: [ {} ]
+    };
+    const library = {
+        Get(name, recordID)
+        {
+            return name === "characterPartSources"
+                && recordID === torso.recordID ? torso : null;
+        },
+        GetDocument()
+        {
+            return [];
+        }
+    };
+    const construction = new TnyGlesFoundationConstruction().Resolve(
+        CreatePaperdoll(1),
+        { sourceBuild: "3453885" },
+        library
+    );
+    const geometry = construction.operations.filter(value => value.operation === "geometry");
+
+    assert.deepEqual(geometry.map(value => value.role), [
+        "head",
+        "torso",
+        "sleevesUpper",
+        "sleevesLower",
+        "legs",
+        "hands",
+        "feet"
+    ]);
+    assert.deepEqual(geometry.map(value => value.index), [ 0, 1, 2, 3, 4, 5, 6 ]);
+    assert.match(geometry[2].resourcePath, /\/sleevesupper\/standard\/standard\.gr2$/u);
+    assert.match(geometry[3].resourcePath, /\/sleeveslower\/standard\/standard\.gr2$/u);
+    assert.equal(
+        geometry[2].evidence.rule,
+        "exact-foundation-torso-support-dependency-v1"
+    );
+    assert.equal(geometry[2].evidence.supportPartSourceRecordID, upper.recordID);
+    assert.equal(geometry[3].evidence.supportPartSourceRecordID, lower.recordID);
+});
+
+test("foundation construction does not guess ambiguous torso support dependencies", () =>
+{
+    const upper = CreateFoundationSupportSource(
+        "male/dependants/sleevesupper/standard",
+        "sleevesupper"
+    );
+    upper.versions[0].geometryCandidates.push(
+        "res:/graphics/character/male/paperdoll/dependants/sleevesupper/standard/standard_lod1.gr2"
+    );
+    const torso = {
+        recordID: "male/topinner/torso_nude",
+        metadata: {
+            dependencies: [ {
+                authoredValue: "dependants/sleevesupper/standard",
+                partSource: upper
+            } ]
+        },
+        versions: [ {} ]
+    };
+    const construction = new TnyGlesFoundationConstruction().Resolve(
+        CreatePaperdoll(1),
+        {},
+        {
+            Get(name, recordID)
+            {
+                return name === "characterPartSources" && recordID === torso.recordID
+                    ? torso
+                    : null;
+            },
+            GetDocument()
+            {
+                return [];
+            }
+        }
+    );
+
+    assert.equal(
+        construction.operations.some(value => value.role === "sleevesUpper"),
+        false
+    );
+});
+
+test("foundation construction pairs the generic body diffuse with one exact skintype specular", () =>
+{
+    const skintypeSpecular = {
+        recordID:
+            "res:/graphics/character/male/paperdoll/skintype/cc/cd_male_body_s_4k",
+        sourcePath:
+            "res:/graphics/character/male/paperdoll/skintype/cc/cd_male_body_s_4k.png"
+    };
+    const construction = new TnyGlesFoundationConstruction().Resolve(
+        CreatePaperdoll(1),
+        { sourceBuild: "3453885" },
+        {
+            Get()
+            {
+                return null;
+            },
+            GetDocument(name)
+            {
+                return name === "characterTextureMetadata" ? [ skintypeSpecular ] : [];
+            }
+        }
+    );
+    const head = construction.operations.find(value =>
+        value.operation === "configured-foundation" && value.role === "head");
+
+    assert.equal(
+        head.skinEvidence.bodySpecularPath,
+        "res:/graphics/character/male/paperdoll/skintype/cc/cd_male_body_s_4k.png"
+    );
+    assert.equal(
+        head.skinEvidence.bodySpecularMetadataRecordID,
+        skintypeSpecular.recordID
+    );
+    assert.equal(
+        head.skinEvidence.bodySpecularRule,
+        "exact-foundation-diffuse-token-specular-match-v1"
+    );
+});
+
 test("foundation construction resolves the selected skintone through retained source records", () =>
 {
     const resolver = new TnyGlesFoundationConstruction();
@@ -229,6 +372,16 @@ test("foundation construction resolves the selected skintone through retained so
         NormalMap: "res:/graphics/character/female/paperdoll/archetypes/cdshape/cd_female_head_n_4k.png",
         SpecularMap: "res:/graphics/character/female/paperdoll/archetypes/cdshape/cd_female_head_s_4k.png"
     });
+    assert.deepEqual(head.supportTextures, {
+        DiffuseMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_d_4k.png",
+        NormalMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_n_4k.png",
+        SpecularMap: "res:/graphics/character/female/paperdoll/head/head_generic/genericfemhead_s_4k.png"
+    });
+    assert.deepEqual(head.supportEvidence, {
+        status: "retained",
+        rule: "exact-head-generic-texture-inventory-v1",
+        correctness: "exact-folder-inventory"
+    });
     assert.deepEqual(head.skinEvidence, {
         status: "derived",
         rule: "exact-skintone-prs-archetype-foundation-v1",
@@ -314,5 +467,17 @@ function CreatePaperdoll(resGender)
         modifiers: resGender === null
             ? []
             : [ { paperdollResourceID: { resGender } } ]
+    };
+}
+
+function CreateFoundationSupportSource(recordID, group)
+{
+    const root = `res:/graphics/character/male/paperdoll/dependants/${group}/standard/standard`;
+    return {
+        recordID,
+        versions: [ {
+            configurationCandidates: [ `${root}.black` ],
+            geometryCandidates: [ `${root}.gr2` ]
+        } ]
     };
 }

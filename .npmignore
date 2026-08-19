@@ -1,0 +1,47 @@
+# Repository and agent working state
+.agents/
+.cache/
+.claude/
+.codex/
+.npm-cache/
+.npm-cache-docs/
+.promotion-runtime-trinity/
+.scratch/
+.skill-work/
+.tmp/
+_kb_stage/
+NOTES-*.md
+/AGENTS.md
+/CLAUDE.md
+
+# Local data and private experiments
+.env
+_dev/
+_internal/
+_review/
+_res/
+artifacts/
+demo/character/library.review.json
+demo/character/library.short-hair-review.json
+public/carbon/
+res/
+src/**/README.md
+src/experiments/
+src/wrapped/
+test/fixtures/
+twitch_emotes/
+_shaders/
+_twitch_emotes/
+
+# Local tooling and generated noise
+.idea/
+.vscode/settings.json
+dist/rollup/
+logs/
+*.log
+*.pid
+*.pid.lock
+*.seed
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

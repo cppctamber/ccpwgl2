@@ -14,10 +14,65 @@ export class CharacterDemoView
         this.paperdollID = RequireElement(root, "paperdoll-id");
         this.paperdollSamples = RequireElement(root, "paperdoll-samples");
         this.resolvePaperdoll = RequireElement(root, "resolve-paperdoll");
+        this.partEditor = RequireElement(root, "part-editor");
+        this.partEditorSummary = RequireElement(root, "part-editor-summary");
+        this.partEditorList = RequireElement(root, "part-editor-list");
+        this.resetParts = RequireElement(root, "reset-parts");
+        this.showExperimentalParts = RequireElement(root, "show-experimental-parts");
+        this.partsCatalog = null;
         this.canvas = RequireElement(root, "character-canvas");
         this.canvas.addEventListener("wheel", event => event.preventDefault(), {
             passive: false
         });
+    }
+
+    BindPartSelection(listener, resetListener)
+    {
+        this.partEditorList.addEventListener("change", event =>
+        {
+            const select = event.target?.closest?.("select[data-location-id]");
+            if (!select) return;
+            return this._RunPartTransaction(() =>
+                listener(select.dataset.locationId, select.value));
+        });
+        this.partEditorList.addEventListener("click", event =>
+        {
+            const button = event.target?.closest?.(
+                "button[data-location-id][data-choice-id]"
+            );
+            if (!button || button.getAttribute("aria-pressed") === "true") return;
+            return this._RunPartTransaction(() =>
+                listener(button.dataset.locationId, button.dataset.choiceId));
+        });
+        this.resetParts.addEventListener("click", () =>
+        {
+            return this._RunPartTransaction(resetListener);
+        });
+        this.showExperimentalParts.addEventListener("change", () =>
+        {
+            if (this.partEditor.dataset.busy === "true") return;
+            if (this.partsCatalog) this._RenderParts();
+        });
+    }
+
+    _RunPartTransaction(action)
+    {
+        if (this.partEditor.dataset.busy === "true") return Promise.resolve(false);
+
+        this.partEditor.dataset.busy = "true";
+        this.partEditor.inert = true;
+        this.partEditor.setAttribute("aria-busy", "true");
+
+        return Promise.resolve()
+            .then(action)
+            .then(() => true)
+            .catch(() => false)
+            .finally(() =>
+            {
+                delete this.partEditor.dataset.busy;
+                this.partEditor.inert = false;
+                this.partEditor.setAttribute("aria-busy", "false");
+            });
     }
 
     SetStatus(message, state = "working")
@@ -81,6 +136,126 @@ export class CharacterDemoView
         this.paperdollSamples.value = selectedRecordID ?? "";
     }
 
+    SetParts(catalog)
+    {
+        this.partsCatalog = catalog;
+        this._RenderParts();
+        this.partEditor.hidden = false;
+    }
+
+    _RenderParts()
+    {
+        const catalog = this.partsCatalog;
+        this.partEditorList.replaceChildren();
+        const showExperimental = this.showExperimentalParts.checked;
+        const visibleSlots = catalog.slots.filter(slot =>
+            showExperimental || slot.adapterSupported || slot.selectedResourceID
+        );
+        this.partEditorSummary.textContent = catalog.gender === null
+            ? `${visibleSlots.length}/${catalog.slots.length} slot(s); gender unresolved`
+            : `${visibleSlots.length}/${catalog.slots.length} slot(s) for gender ${catalog.gender}`;
+
+        for (const slot of visibleSlots)
+        {
+            const row = document.createElement("div");
+            row.className = "part-editor__row";
+
+            const label = document.createElement("label");
+            const labelTitle = document.createElement("strong");
+            const labelDetail = document.createElement("span");
+            const select = document.createElement("select");
+            const choice = document.createElement("div");
+            const empty = document.createElement("option");
+
+            select.id = `part-${slot.locationID}`;
+            select.dataset.locationId = slot.locationID;
+            label.htmlFor = select.id;
+            labelTitle.textContent = slot.modifierKey;
+            labelDetail.textContent = [
+                slot.variationKey,
+                slot.adapterSupported ? "adapter path" : "experimental",
+                `${slot.resources.length} observed choice(s)`
+            ].filter(Boolean).join(" · ");
+            empty.value = "";
+            empty.textContent = "None / remove this slot";
+
+            label.append(labelTitle, labelDetail);
+            select.append(empty);
+            choice.className = "part-editor__choice";
+
+            for (const resource of slot.resources)
+            {
+                if (!showExperimental
+                    && !slot.adapterSupported
+                    && resource.choiceID !== slot.selectedChoiceID)
+                {
+                    continue;
+                }
+                const option = document.createElement("option");
+                option.value = resource.choiceID;
+                option.textContent = resource.resPath
+                    ? `${resource.resPath} · ${resource.recordID} · variation ${resource.variation}`
+                    : `${resource.recordID} · variation ${resource.variation}`;
+                select.append(option);
+            }
+
+            select.value = slot.selectedChoiceID;
+            choice.append(select);
+
+            const selectedResource = slot.resources.find(resource =>
+                resource.choiceID === slot.selectedChoiceID
+            );
+            const selectedPartSourceRecordID = selectedResource?.partSourceRecordID ?? "";
+            const paletteResources = selectedPartSourceRecordID
+                ? slot.resources.filter(resource =>
+                    resource.partSourceRecordID === selectedPartSourceRecordID
+                    && resource.colorPreview
+                    && (showExperimental
+                        || slot.adapterSupported
+                        || resource.choiceID === slot.selectedChoiceID)
+                )
+                : [];
+            if (paletteResources.length)
+            {
+                const disclosure = document.createElement("details");
+                const summary = document.createElement("summary");
+                const summaryLabel = document.createElement("span");
+                const palette = document.createElement("div");
+                disclosure.className = "part-editor__palette-disclosure";
+                summary.className = "part-editor__palette-summary";
+                summaryLabel.textContent = `${paletteResources.length} authored colour ${
+                    paletteResources.length === 1 ? "choice" : "choices"
+                }`;
+                palette.className = "part-editor__palette";
+                palette.setAttribute("role", "group");
+                palette.setAttribute(
+                    "aria-label",
+                    `${slot.modifierKey} authored material choices`
+                );
+
+                if (selectedResource?.colorPreview)
+                {
+                    summary.append(CreatePalettePreview(selectedResource.colorPreview));
+                }
+                summary.append(summaryLabel);
+
+                for (const resource of paletteResources)
+                {
+                    palette.append(CreatePaletteButton(
+                        slot,
+                        resource,
+                        resource.choiceID === slot.selectedChoiceID
+                    ));
+                }
+                disclosure.append(summary, palette);
+                choice.append(disclosure);
+            }
+
+            row.append(label, choice);
+            this.partEditorList.append(row);
+        }
+    }
+
     Render(snapshot)
     {
         this.librarySummary.textContent = JSON.stringify(snapshot.library, null, 2);
@@ -131,6 +306,70 @@ export class CharacterDemoView
             this.diagnostics.append(item);
         }
     }
+}
+
+function CreatePaletteButton(slot, resource, selected)
+{
+    const preview = resource.colorPreview;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "part-editor__palette-choice";
+    button.dataset.locationId = slot.locationID;
+    button.dataset.choiceId = resource.choiceID;
+    button.setAttribute("aria-pressed", String(selected));
+    const description = [
+        resource.resPath || resource.recordID,
+        `resource ${resource.recordID}`,
+        `variation ${resource.variation}`,
+        preview.pattern ? `pattern ${preview.pattern}` : null,
+        `material ${preview.colorVariant}`
+    ].filter(Boolean).join(" · ");
+    button.setAttribute("aria-label", description);
+    button.title = description;
+
+    button.append(...CreatePaletteSwatches(preview));
+    if (preview.pattern)
+    {
+        button.dataset.patterned = "true";
+    }
+    return button;
+}
+
+function CreatePalettePreview(preview)
+{
+    const element = document.createElement("span");
+    element.className = "part-editor__palette-preview";
+    element.setAttribute("aria-hidden", "true");
+    element.append(...CreatePaletteSwatches(preview));
+    if (preview.pattern)
+    {
+        element.dataset.patterned = "true";
+    }
+    return element;
+}
+
+function CreatePaletteSwatches(preview)
+{
+    return (preview.patternColors ?? preview.colors).map(color =>
+    {
+        const swatch = document.createElement("span");
+        swatch.className = "part-editor__palette-swatch";
+        swatch.style.backgroundColor = LinearColorToCss(color);
+        return swatch;
+    });
+}
+
+function LinearColorToCss(value)
+{
+    const channels = value.slice(0, 3).map(component =>
+    {
+        const linear = Math.max(0, Math.min(1, Number(component)));
+        const srgb = linear <= 0.0031308
+            ? linear * 12.92
+            : 1.055 * linear ** (1 / 2.4) - 0.055;
+        return Math.round(srgb * 255);
+    });
+    return `rgb(${channels.join(" ")})`;
 }
 
 function RequireElement(root, id)

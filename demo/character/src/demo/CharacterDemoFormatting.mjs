@@ -8,5 +8,8 @@ export function formatCommittedStage(details = {})
         return `${configured} exact configured part(s) attached; ${details?.deferredContributionCount ?? 0} contribution(s) retained/deferred`;
     }
 
-    return `${configured} exact configured part(s) attached; body diffuse applied ${composition.composedContributionCount ?? 0}/${composition.contributionCount} contribution(s); ${composition.deferredContributionCount ?? 0} retained/deferred`;
+    const applicable = composition.applicableContributionCount
+        ?? composition.contributionCount;
+    const notApplicable = composition.notApplicableContributionCount ?? 0;
+    return `${configured} exact configured part(s) attached; body diffuse applied ${composition.composedContributionCount ?? 0}/${applicable} applicable contribution(s); ${composition.deferredContributionCount ?? 0} retained/deferred; ${notApplicable} retained for other channels`;
 }

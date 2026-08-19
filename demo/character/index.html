@@ -17,7 +17,7 @@
             }
         }
     </script>
-    <script defer src="../../dist/ccpwgl2_int.js"></script>
+    <script defer src="../../dist/ccpwgl2_int.js?v=20260818-selected-top-drape-2"></script>
     <script type="module" src="./src/main.mjs"></script>
 </head>
 <body>
@@ -36,18 +36,36 @@
                 <strong id="stage-title">Renderer starting</strong>
                 <span>Loading the character library and legacy OpenGL proof adapter.</span>
             </div>
-        </section>
+            <section class="controls stage__controls" aria-label="Character selection">
+                <label for="paperdoll-id">Paper-doll record ID</label>
+                <div class="controls__row">
+                    <input id="paperdoll-id" inputmode="numeric" autocomplete="off">
+                    <button id="resolve-paperdoll" type="button">Resolve</button>
+                </div>
+                <label for="paperdoll-samples">Sample records</label>
+                <select id="paperdoll-samples">
+                    <option value="">Library pending</option>
+                </select>
+            </section>
 
-        <section class="controls" aria-label="Character selection">
-            <label for="paperdoll-id">Paper-doll record ID</label>
-            <div class="controls__row">
-                <input id="paperdoll-id" inputmode="numeric" autocomplete="off">
-                <button id="resolve-paperdoll" type="button">Resolve</button>
-            </div>
-            <label for="paperdoll-samples">Sample records</label>
-            <select id="paperdoll-samples">
-                <option value="">Library pending</option>
-            </select>
+            <aside id="part-editor" class="part-editor stage__parts" aria-label="Character parts" hidden>
+                <header class="part-editor__header">
+                    <div>
+                        <h2>Character parts</h2>
+                        <p id="part-editor-summary">Library pending</p>
+                    </div>
+                    <button id="reset-parts" type="button">Reset</button>
+                </header>
+                <label class="part-editor__filter" for="show-experimental-parts">
+                    <input id="show-experimental-parts" type="checkbox">
+                    Show all observed parts (experimental)
+                </label>
+                <p class="part-editor__note">
+                    The default view shows adapter-supported appearance groups. Experimental parts
+                    may fail and remain diagnosed rather than being treated as working.
+                </p>
+                <div id="part-editor-list" class="part-editor__list"></div>
+            </aside>
         </section>
 
         <section class="diagnostic-grid">
