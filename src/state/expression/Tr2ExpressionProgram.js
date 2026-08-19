@@ -111,6 +111,31 @@ export class Tr2ExpressionProgram
         return Array.from(this.functionNames);
     }
 
+    /**
+     * Whether this expression calls anything whose result can change without a
+     * controller variable changing - a clock, a random, an animation query.
+     *
+     * Carbon marks functions `PURE_FUNC` at registration and treats an
+     * expression referencing a non-pure one as untrackable, dropping its
+     * variable mask to zero (`Tr2ControllerExpression.cpp:509-515,556`).
+     * `Random` is the clearest case: deliberately registered without the flag,
+     * so it is never folded and never cached.
+     *
+     * ccpwgl re-evaluates every condition every frame regardless, so nothing
+     * here gates evaluation. It answers "can this condition be described by the
+     * variables it names", which is what a mask means.
+     *
+     * @returns {Boolean}
+     */
+    HasNonPureFunctions()
+    {
+        for (const name of this.functionNames)
+        {
+            if (!PURE_FUNCTION_NAMES.has(name)) return true;
+        }
+        return false;
+    }
+
     static Compile(source, options)
     {
         return new Tr2ExpressionProgram(source, options);
@@ -798,6 +823,27 @@ const DEFAULT_FUNCTIONS = {
     DaysSinceServerTime: (ctx, year = -1, month = -1, day = -1) =>
         DaysSinceServerTime(ctx, ToNumber(year), ToNumber(month), ToNumber(day))
 };
+
+/**
+ * Functions whose result depends only on their arguments.
+ *
+ * Carbon registers exactly these as `PURE_FUNC` in CcpParser
+ * (`parser/src/stdfunctions.cpp:48-96`); everything Trinity adds on top
+ * (`Tr2ControllerExpression.cpp:456-483`) is registered without the flag,
+ * including `Random`, the clocks and every ship query. The extra arithmetic
+ * helpers ccpwgl carries beyond CcpParser's set are pure by inspection.
+ *
+ * Used to answer whether an expression can be described by the variables it
+ * names. Nothing here gates evaluation - see `HasNonPureFunctions`.
+ */
+const PURE_FUNCTION_NAMES = new Set([
+    "abs", "min", "max", "sum", "avg", "sign", "rint",
+    "sin", "cos", "tan", "asin", "acos", "atan",
+    "sinh", "cosh", "tanh", "asinh", "acosh", "atanh",
+    "log", "log2", "log10", "ln", "exp", "sqrt",
+    // Beyond CcpParser's table, but deterministic in their arguments.
+    "pow", "floor", "ceil", "round", "clamp", "radians", "mod", "lerp"
+]);
 
 const SHADER_QUALITY = { lo: 0, hi: 1, depth: 2 };
 

@@ -25,6 +25,8 @@ export class EvePlanet extends EveObject
     @meta.list("Tr2Controller")
     controllers = [];
 
+    _controllersLinked = false;
+
     @meta.struct("EveTransform")
     highDetail = new EveTransform();
 
@@ -239,15 +241,43 @@ export class EvePlanet extends EveObject
      * Per frame update
      * @param {number} dt - delta time
      */
+    /**
+     * Links this planet's controllers with the planet as their owner, so their
+     * state machines run and their expression terms resolve against it.
+     * Idempotent, and skips any controller already linked elsewhere.
+     */
+    InitializeControllers()
+    {
+        for (let i = 0; i < this.controllers.length; i++)
+        {
+            const controller = this.controllers[i];
+            if (!controller) continue;
+            const linked = controller.IsLinked ? controller.IsLinked() : false;
+            if (!linked && controller.Initialize) controller.Initialize(this);
+        }
+        this._controllersLinked = true;
+    }
+
     Update(dt)
     {
         if (!this.display) return;
 
         this.highDetail.Update(dt);
 
-        for (let i = 0; i < this.controllers.length; i++)
+        if (this.controllers.length)
         {
-            this.controllers[i].Update(dt);
+            // Planet controllers are merged in from the loaded planet
+            // (`this.controllers.push(...planet.controllers)`) rather than added
+            // through an AddController call, so nothing had linked or started
+            // them: `Tr2Controller.Update` returns immediately while inactive,
+            // and every one of these ticked to no effect. Link on first tick,
+            // the same way an effect child's container does.
+            if (!this._controllersLinked) this.InitializeControllers();
+
+            for (let i = 0; i < this.controllers.length; i++)
+            {
+                this.controllers[i].Update(dt);
+            }
         }
 
         for (let i = 0; i < this.curveSets.length; i++)

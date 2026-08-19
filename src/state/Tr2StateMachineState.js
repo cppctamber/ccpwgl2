@@ -28,6 +28,11 @@ export class Tr2StateMachineState extends meta.Model
     // and `Update` re-asks the finalizer each frame until it permits.
     _isFinalizing = false;
 
+    // Which controller variables the transitions read, or null for "cannot be
+    // narrowed". Published for consumers; nothing gates on it (see
+    // UpdateVariableMask).
+    _transitionVariableMask = null;
+
     OnModified()
     {
         const controller = this._stateMachine && this._stateMachine.GetController ? this._stateMachine.GetController() : null;
@@ -101,6 +106,10 @@ export class Tr2StateMachineState extends meta.Model
         {
             this.finalizer.Link(controller);
         }
+
+        // Carbon builds the mask when the transitions link; ccpwgl publishes it
+        // rather than gating on it, but it still has to exist by then.
+        this.UpdateVariableMask();
     }
 
     Unlink()
@@ -133,8 +142,55 @@ export class Tr2StateMachineState extends meta.Model
         this._stateMachine = null;
     }
 
+    /**
+     * Recomputes which controller variables this state's transitions read.
+     *
+     * Carbon ORs each transition's mask together and uses the result to skip
+     * evaluating a state whose variables did not change
+     * (`Tr2StateMachineState.cpp:210`). ccpwgl does NOT gate on it - conditions
+     * are evaluated live every frame by design (D038, and the state-loss note in
+     * `Tr2StateMachineTransition.CanTransition`) - so this is published data, not
+     * an optimisation.
+     *
+     * It answers "which variables does this state respond to", which is what a
+     * consumer needs to decide whether a hull should show a control at all. One
+     * unnarrowable transition makes the whole state unnarrowable, exactly as
+     * Carbon's zero mask does.
+     */
     UpdateVariableMask()
     {
+        let mask = new Set();
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            const transition = this.transitions[i];
+            if (!transition || !transition.GetVariableMask)
+            {
+                mask = null;
+                break;
+            }
+
+            const transitionMask = transition.GetVariableMask();
+            if (!transitionMask)
+            {
+                mask = null;
+                break;
+            }
+
+            for (const name of transitionMask) mask.add(name);
+        }
+
+        this._transitionVariableMask = mask;
+    }
+
+    /**
+     * The controller variables this state's transitions read, or null when any
+     * of them cannot be described that way. See `UpdateVariableMask`.
+     * @returns {Set<String>|null}
+     */
+    GetVariableMask()
+    {
+        return this._transitionVariableMask;
     }
 
     Start(controller)

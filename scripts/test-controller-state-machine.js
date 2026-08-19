@@ -25,6 +25,8 @@ testUnresolvedIdentifierIsZero();
 testCarbonRandomStaysInRange();
 testServerClockComesFromTheContextWhenSupplied();
 testExponentOperator();
+testVariableMaskNamesTheVariablesAStateReads();
+testExternalVariableReachesEveryControllerAndChild();
 console.log("Controller state machine and expression parity verified");
 
 
@@ -297,6 +299,113 @@ function testExponentOperator()
 }
 
 
+/**
+ * The mask says which variables a state responds to. Carbon uses it to skip
+ * evaluation; ccpwgl publishes it and evaluates anyway (D038), so what matters
+ * here is that it is HONEST - a condition calling a clock or a random cannot be
+ * described by a variable list, and must report so rather than under-reporting.
+ */
+function testVariableMaskNamesTheVariablesAStateReads()
+{
+    const { Tr2StateMachineTransition } = modules;
+
+    const pure = new Tr2StateMachineTransition();
+    pure.name = "siege";
+    pure.condition = "InSiegeMode == 1 && ShipStance > 0";
+    const mask = pure.GetVariableMask();
+    assert.ok(mask instanceof Set, "a pure condition reports its variables");
+    assert.deepEqual([ ...mask ].sort(), [ "InSiegeMode", "ShipStance" ]);
+
+    const impure = new Tr2StateMachineTransition();
+    impure.name = "wait";
+    impure.condition = "IsAnimationPlaying('gate') == 0";
+    assert.equal(impure.GetVariableMask(), null, "an animation query cannot be described by variables");
+
+    const clock = new Tr2StateMachineTransition();
+    clock.name = "seasonal";
+    clock.condition = "IsWeekend()";
+    assert.equal(clock.GetVariableMask(), null, "nor can a clock");
+
+    const none = new Tr2StateMachineTransition();
+    none.name = "always";
+    assert.equal(none.GetVariableMask(), null, "an empty condition is unnarrowable, not empty");
+
+    // One unnarrowable transition makes the whole state unnarrowable.
+    const machine = buildMachine([ "start", "siege", "wait" ]);
+    machine.states[0].transitions.push(pure);
+    machine.states[0].UpdateVariableMask();
+    assert.deepEqual([ ...machine.states[0].GetVariableMask() ].sort(), [ "InSiegeMode", "ShipStance" ]);
+
+    machine.states[0].transitions.push(impure);
+    machine.states[0].UpdateVariableMask();
+    assert.equal(machine.states[0].GetVariableMask(), null, "one unnarrowable transition taints the state");
+}
+
+/**
+ * Carbon's `SetControllerVariable` records the value, sets it on EVERY
+ * controller the object owns, then recurses into the children
+ * (`EveEffectRoot2.cpp:880-899`, `EveChildContainer.cpp:917-936`) - and replays
+ * the record onto children attached later (`EveChildContainer.cpp:975-987`).
+ * ccpwgl had none of that: the action fell through to a raw loop over one
+ * object's controllers.
+ */
+function testExternalVariableReachesEveryControllerAndChild()
+{
+    const { Tr2Controller, Tr2ControllerFloatVariable } = modules;
+
+    const makeController = name =>
+    {
+        const controller = new Tr2Controller();
+        const variable = new Tr2ControllerFloatVariable();
+        variable.name = name;
+        controller.variables.push(variable);
+        controller.Link({});
+        return controller;
+    };
+
+    const { SetControllerVariableOn, ReplayControllerVariablesOn } = modules;
+
+    // The two owners differ only in which child list they recurse into, which is
+    // why both call the same helper - these stand in for a ship and a container.
+    const child = {
+        controllers: [ makeController("DoorsOpen") ],
+        controllerVariables: new Map(),
+        SetControllerVariable(name, value) { SetControllerVariableOn(this, name, value, []); },
+        GetControllerVariables() { return this.controllerVariables; }
+    };
+
+    const ship = {
+        controllers: [ makeController("DoorsOpen"), makeController("DoorsOpen") ],
+        controllerVariables: new Map(),
+        SetControllerVariable(name, value) { SetControllerVariableOn(this, name, value, [ child ]); },
+        GetControllerVariables() { return this.controllerVariables; }
+    };
+
+    ship.SetControllerVariable("DoorsOpen", 1);
+
+    assert.equal(ship.controllers[0].GetVariableValue("DoorsOpen"), 1, "every controller on the ship");
+    assert.equal(ship.controllers[1].GetVariableValue("DoorsOpen"), 1, "not just the first");
+    assert.equal(child.controllers[0].GetVariableValue("DoorsOpen"), 1, "and down into the children");
+    assert.equal(ship.GetControllerVariables().get("DoorsOpen"), 1, "the value is remembered for late children");
+
+    // A child whose controllers link after the value was set still gets it.
+    const lateChild = {
+        controllers: [ makeController("DoorsOpen") ],
+        controllerVariables: new Map()
+    };
+    ReplayControllerVariablesOn(lateChild, ship);
+    assert.equal(lateChild.controllers[0].GetVariableValue("DoorsOpen"), 1, "a late child inherits and applies the record");
+
+    // A value set directly on the child wins over the inherited one.
+    const disagreeingChild = {
+        controllers: [ makeController("DoorsOpen") ],
+        controllerVariables: new Map([ [ "DoorsOpen", 0 ] ])
+    };
+    ReplayControllerVariablesOn(disagreeingChild, ship);
+    assert.equal(disagreeingChild.controllers[0].GetVariableValue("DoorsOpen"), 0, "the child's own value is not overwritten");
+}
+
+
 // -- harness ---------------------------------------------------------------
 
 
@@ -372,6 +481,11 @@ function loadStateModules()
         { core, global: { tw2 } }
     );
 
+    const Tr2StateMachineTransition = loadModule("../src/state/Tr2StateMachineTransition.js", {
+        utils,
+        "./expression/Tr2ExpressionProgram": Tr2ExpressionProgram
+    });
+    const controllerVariables = loadModule("../src/state/controllerVariables.js", {});
     const Tr2StateMachineState = loadModule("../src/state/Tr2StateMachineState.js", { utils });
     const Tr2StateMachine = loadModule("../src/state/Tr2StateMachine.js", { utils });
     const Tr2ControllerFloatVariable = loadModule("../src/state/variable/Tr2ControllerFloatVariable.js", { utils });
@@ -382,7 +496,10 @@ function loadStateModules()
         Tr2StateMachineState: Tr2StateMachineState.Tr2StateMachineState,
         Tr2StateMachine: Tr2StateMachine.Tr2StateMachine,
         Tr2ControllerFloatVariable: Tr2ControllerFloatVariable.Tr2ControllerFloatVariable,
-        Tr2Controller: Tr2Controller.Tr2Controller
+        Tr2Controller: Tr2Controller.Tr2Controller,
+        Tr2StateMachineTransition: Tr2StateMachineTransition.Tr2StateMachineTransition,
+        SetControllerVariableOn: controllerVariables.SetControllerVariableOn,
+        ReplayControllerVariablesOn: controllerVariables.ReplayControllerVariablesOn
     };
 }
 

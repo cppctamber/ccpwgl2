@@ -1,4 +1,5 @@
 import { isArray, meta } from "utils";
+import { SetControllerVariableOn } from "../../state/controllerVariables";
 import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
@@ -152,6 +153,11 @@ export class EveShip2 extends EveObject
      * @type {Array<Tr2Controller>}
      */
     controllers = [];
+
+    // Sticky record of every controller variable set on this ship, mirroring
+    // Carbon's `m_controllerVariables` (`EveEffectRoot2.cpp:882-890`). Replayed
+    // onto effect children whose controllers link later.
+    controllerVariables = new Map();
 
     /**
      * Embedder-set ship speed telemetry (world-velocity magnitude), backing the `ShipSpeed()`
@@ -984,6 +990,43 @@ export class EveShip2 extends EveObject
     AnimationTime(name)
     {
         return this.animation ? this.animation.FindAnimationDurationByName(name) : 0;
+    }
+
+    /**
+     * Sets a controller variable across this ship: every controller it owns, and
+     * every effect child, recursively.
+     *
+     * Carbon's `EveEffectRoot2::SetControllerVariable` (cpp:880-899) does three
+     * things and all three matter:
+     *   - REMEMBERS the value in a name/value record;
+     *   - sets it on every controller the object owns, not one chosen controller;
+     *   - recurses into every effect child.
+     * The record is what makes a late child work: Carbon replays it onto children
+     * as they are attached (`EveSpaceObject2.cpp:325,375`), so a variable set
+     * before a child's controller exists still reaches it. Without that, a hull
+     * whose doors live on a child controller stops responding when the child
+     * happens to load after the value was set.
+     *
+     * Before this, `Tr2ActionSetExternalControllerVariable` fell through to a raw
+     * loop over `destination.controllers` - no record, no recursion, so it was
+     * doing LESS than Carbon rather than more.
+     *
+     * @param {String} name
+     * @param {Number} value
+     */
+    SetControllerVariable(name, value)
+    {
+        SetControllerVariableOn(this, name, value, this.effectChildren);
+    }
+
+    /**
+     * Every controller variable set on this ship so far, for replaying onto a
+     * child whose controllers link after the value was set.
+     * @returns {Map<String, Number>}
+     */
+    GetControllerVariables()
+    {
+        return this.controllerVariables;
     }
 
     /**

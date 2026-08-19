@@ -1,5 +1,6 @@
 import { EveChild } from "./EveChild";
 import { meta } from "utils";
+import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
 import { mat4, quat, vec3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
@@ -26,6 +27,10 @@ export class EveChildContainer extends EveChild
 
     @meta.list("Tr2Controller")
     controllers = [];
+
+    // Sticky record of the controller variables set on this container, mirroring
+    // Carbon's `m_controllerVariables` (`EveChildContainer.cpp:919-927`).
+    controllerVariables = new Map();
 
     @meta.list("Tw2CurveSet")
     curveSets = [];
@@ -127,6 +132,48 @@ export class EveChildContainer extends EveChild
             }
         }
         this._controllersLinked = true;
+        this.ReplayControllerVariables();
+    }
+
+    /**
+     * Applies every controller variable already set on this container, and on the
+     * space object above it, to the controllers that just linked.
+     *
+     * Carbon replays its recorded variables when a child is attached
+     * (`EveChildContainer.cpp:975-987`, `EveSpaceObject2.cpp:325,375`). ccpwgl
+     * has no single attach hook - effect children arrive by deserialization and
+     * link their controllers lazily on first tick - so the replay happens at that
+     * link instead. Same guarantee either way: a variable set before a child's
+     * controllers existed still reaches them.
+     */
+    ReplayControllerVariables()
+    {
+        ReplayControllerVariablesOn(this, this._parentSpaceObject);
+    }
+
+    /**
+     * Sets a controller variable on this container's own controllers and on every
+     * object below it, recording it for controllers that link later.
+     *
+     * Carbon `EveChildContainer::SetControllerVariable` (cpp:917-936): record,
+     * then own controllers, then recurse into the child objects. Identical in
+     * shape to the ship's, because both are `ITr2ControllerOwner`.
+     *
+     * @param {String} name
+     * @param {Number} value
+     */
+    SetControllerVariable(name, value)
+    {
+        SetControllerVariableOn(this, name, value, this.objects);
+    }
+
+    /**
+     * Every controller variable set on this container so far.
+     * @returns {Map<String, Number>}
+     */
+    GetControllerVariables()
+    {
+        return this.controllerVariables;
     }
 
     /**

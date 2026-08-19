@@ -88,9 +88,38 @@ export class Tr2StateMachineTransition extends meta.Model
         return stateMachine.GetStateByName ? stateMachine.GetStateByName(this.name) : null;
     }
 
+    /**
+     * The controller variables this transition's condition actually reads, or
+     * null when it cannot be described that way.
+     *
+     * Carbon packs this into a 64-bit mask of variable indices and drops it to
+     * zero - "assume everything" - when the condition calls a non-pure function
+     * (`Tr2ControllerExpression.cpp:509-515,556`). ccpwgl has no packed variable
+     * buffer to index, and tracks dirtiness by NAME, so the same idea is a Set
+     * of names and null is the "assume everything" case:
+     *
+     *   - null  -> no condition, a condition that failed to compile, or one that
+     *              calls a clock, a random or an animation query, so a variable
+     *              list cannot describe when it changes;
+     *   - Set   -> exactly the variables it reads. Empty means it reads none,
+     *              i.e. it is constant.
+     *
+     * NOTHING GATES ON THIS. ccpwgl evaluates every condition every frame on
+     * purpose - see the note in `CanTransition`, and D038. This is published so
+     * a consumer can ask which variables a hull responds to without walking the
+     * expression itself.
+     *
+     * @returns {Set<String>|null}
+     */
     GetVariableMask()
     {
-        return this.condition ? 0 : -1;
+        if (!this.condition) return null;
+
+        const program = this.Compile();
+        if (!program.IsValid()) return null;
+        if (program.HasNonPureFunctions && program.HasNonPureFunctions()) return null;
+
+        return new Set(this._variableNames);
     }
 
     GetSource()
