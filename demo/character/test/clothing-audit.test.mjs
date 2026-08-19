@@ -3,8 +3,115 @@ import test from "node:test";
 
 import {
     classifyClothingChoiceRealization,
+    classifyClothingOutfitRealizations,
+    createSourceObservedOutfitCases,
     summarizeClothingRendererDetails
 } from "../src/demo/CharacterDemoClothingAudit.mjs";
+
+test("clothing audit builds one case per complete source-observed outfit", () =>
+{
+    const bottom = { recordID: "25", modifierKey: "bottomouter" };
+    const top = { recordID: "26", modifierKey: "topmiddle" };
+    const outer = { recordID: "10", modifierKey: "outer" };
+    const makeup = { recordID: "100", modifierKey: "makeup/aging" };
+    const pants = ApparelResource(
+        "200",
+        "female/bottomouter/pants",
+        "bottomOuter/Pants/Types/Black.type"
+    );
+    const shirt = ApparelResource(
+        "201",
+        "female/topmiddle/shirt",
+        "topMiddle/Shirt/Types/White.type"
+    );
+    const skirt = ApparelResource(
+        "203",
+        "female/bottomouter/skirt",
+        "bottomOuter/Skirt/Types/Gray.type"
+    );
+    const aging = ApparelResource(
+        "202",
+        "female/makeup/aging",
+        "makeup/Aging/Types/Aging.type"
+    );
+    const malePants = ApparelResource(
+        "204",
+        "male/bottomouter/pants",
+        "bottomOuter/Pants/Types/Male.type",
+        1
+    );
+    const paperdolls = [
+        Paperdoll("female-a", [
+            Modifier(bottom, pants, 1),
+            Modifier(bottom, skirt, 0),
+            Modifier(top, shirt, 0),
+            Modifier(bottom, "dangling-resource", 0),
+            Modifier(outer, "dangling-outer", 0)
+        ]),
+        Paperdoll("female-b", [ Modifier(bottom, pants, 0) ]),
+        Paperdoll("makeup-only", [ Modifier(makeup, aging, 0) ]),
+        Paperdoll("male-a", [ Modifier(bottom, malePants, 0) ])
+    ];
+
+    const cases = createSourceObservedOutfitCases(paperdolls, undefined, 0);
+
+    assert.deepEqual(cases.map(value => value.donorRecordID), [
+        "female-a",
+        "female-b"
+    ]);
+    assert.deepEqual(cases[0].choices.map(value => value.choiceID), [
+        "200@1",
+        "203@0",
+        "201@0",
+        "dangling-resource@0",
+        "dangling-outer@0"
+    ]);
+    assert.equal(cases[0].choices[3].resourceResolved, false);
+    assert.equal(cases[0].choices[4].resourceResolved, false);
+    assert.deepEqual(cases[1].choices.map(value => value.choiceID), [ "200@0" ]);
+});
+
+test("clothing audit classifies every selected member of one donor outfit", () =>
+{
+    const choices = [
+        {
+            modifierKey: "bottomouter",
+            partSourceRecordID: "female/bottomouter/pants"
+        },
+        {
+            modifierKey: "topmiddle",
+            partSourceRecordID: "female/topmiddle/shirt"
+        }
+    ];
+    const classified = classifyClothingOutfitRealizations(choices, {
+        configuredParts: [ {
+            groupID: "bottomouter",
+            partSourceRecordID: "female/bottomouter/pants",
+            renderStatus: "ready",
+            materialStatus: "configured-garment-policy",
+            compositionStatus: "configured-garment-colorized-attached"
+        } ],
+        bodyComposition: {
+            bodyDiffuse: { passes: [ { groupID: "topmiddle" } ] }
+        }
+    });
+
+    assert.equal(classified[0].realization.status, "configured-attached");
+    assert.equal(classified[1].realization.status, "atlas-only-applied");
+    assert.deepEqual(classifyClothingChoiceRealization({
+        modifierKey: "outer",
+        resourceResolved: false
+    }, {
+        configuredParts: [ {
+            groupID: "outer",
+            renderStatus: "ready",
+            compositionStatus: "configured-garment-colorized-attached"
+        } ]
+    }), {
+        status: "unresolved",
+        reason: "retained-resource-identity-unavailable"
+    });
+});
 
 test("clothing audit distinguishes configured, atlas-only, and unresolved choices", () =>
 {
@@ -321,3 +428,29 @@ test("clothing audit summary accepts a renderer without adapter details", () =>
         foundationCoverage: []
     });
 });
+
+function ApparelResource(recordID, partSourceRecordID, resPath, resGender = 0)
+{
+    return {
+        recordID,
+        resGender,
+        resPath,
+        partType: {
+            partSource: { recordID: partSourceRecordID }
+        }
+    };
+}
+
+function Modifier(modifierLocationID, paperdollResourceID, variation)
+{
+    return {
+        modifierLocationID,
+        paperdollResourceID,
+        paperdollResourceVariation: variation
+    };
+}
+
+function Paperdoll(recordID, modifiers)
+{
+    return { recordID, modifiers };
+}

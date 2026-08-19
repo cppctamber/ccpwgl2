@@ -26,7 +26,8 @@ export function installCharacterDemoClothingAudit({
     application,
     context = {},
     locations = APPAREL_LOCATIONS,
-    sourceObserved = false
+    sourceObserved = false,
+    sourceObservedOutfits = false
 } = {})
 {
     const character = application?.GetCharacter?.();
@@ -40,7 +41,7 @@ export function installCharacterDemoClothingAudit({
     const catalog = createCharacterPartCatalog(index, paperdoll);
     const selectedLocations = new Set([ ...locations ].map(value =>
         String(value).trim().toLowerCase()).filter(Boolean));
-    const choices = catalog.slots
+    let choices = catalog.slots
         .filter(slot => selectedLocations.has(slot.modifierKey.toLowerCase()))
         .flatMap(slot => slot.resources.map(resource => ({
             choiceID: resource.choiceID,
@@ -52,6 +53,14 @@ export function installCharacterDemoClothingAudit({
             recordID: resource.recordID,
             variation: resource.variation
         })));
+    if (sourceObservedOutfits)
+    {
+        choices = createSourceObservedOutfitCases(
+            character.GetPaperdolls(),
+            selectedLocations,
+            catalog.gender
+        );
+    }
     const output = document.createElement("output");
     output.id = "character-clothing-audit";
     output.hidden = true;
@@ -63,7 +72,8 @@ export function installCharacterDemoClothingAudit({
     const auditContext = {
         ...context,
         baselinePaperdollID: String(paperdoll.recordID),
-        sourceObserved: sourceObserved === true,
+        sourceObserved: sourceObserved === true || sourceObservedOutfits === true,
+        sourceObservedOutfits: sourceObservedOutfits === true,
         sex: String(catalog.gender),
         pageURL: pageURL.href,
         backgroundMode: pageURL.searchParams.get("background") ?? "default",
@@ -74,7 +84,7 @@ export function installCharacterDemoClothingAudit({
         choices,
         output,
         auditContext,
-        sourceObserved === true
+        sourceObserved === true || sourceObservedOutfits === true
     );
     return { choices, output, promise };
 }
@@ -143,15 +153,24 @@ function ReadResult(choice, selection)
     }
     const alphaText = document.querySelector("#character-alpha-audit")?.textContent ?? "";
     const realization = summarizeClothingRendererDetails(renderer.details);
+    const outfitRealizations = Array.isArray(choice.choices)
+        ? classifyClothingOutfitRealizations(
+            choice.choices,
+            realization,
+            selection?.diagnostics
+        )
+        : null;
     return {
         ...choice,
         alpha: alphaText ? JSON.parse(alphaText) : null,
         outcome: renderer.status,
-        choiceRealization: classifyClothingChoiceRealization(
-            choice,
-            realization,
-            selection?.diagnostics
-        ),
+        ...(outfitRealizations ? { outfitRealizations } : {
+            choiceRealization: classifyClothingChoiceRealization(
+                choice,
+                realization,
+                selection?.diagnostics
+            )
+        }),
         renderer: {
             status: renderer.status,
             revision: renderer.revision ?? null,
@@ -161,6 +180,91 @@ function ReadResult(choice, selection)
         stage: document.querySelector("#stage-message span")?.textContent ?? "",
         status: document.querySelector("#demo-status")?.textContent ?? ""
     };
+}
+
+/**
+ * Builds one audit case per exact retained paper-doll tuple for the requested
+ * sex. Each case keeps only the selected apparel locations under review, but
+ * rendering still uses the complete donor paper doll so cross-garment
+ * ownership remains intact.
+ */
+export function createSourceObservedOutfitCases(
+    paperdolls,
+    locations = APPAREL_LOCATIONS,
+    sex = null
+)
+{
+    const index = createCharacterPartIndex(paperdolls);
+    const selectedLocations = new Set([ ...locations ].map(value =>
+        String(value).trim().toLowerCase()).filter(Boolean));
+    const result = [];
+
+    for (const paperdoll of paperdolls ?? [])
+    {
+        const catalog = createCharacterPartCatalog(index, paperdoll);
+        if (sex !== null && catalog.gender !== sex) continue;
+        const slotsByLocation = new Map(catalog.slots.map(value => [
+            value.locationID,
+            value
+        ]));
+        const choices = [];
+        for (const [ modifierIndex, modifier ] of (paperdoll?.modifiers ?? []).entries())
+        {
+            const locationID = ReadRecordID(modifier?.modifierLocationID);
+            const slot = slotsByLocation.get(locationID);
+            const modifierKey = String(
+                slot?.modifierKey
+                ?? modifier?.modifierLocationID?.modifierKey
+                ?? locationID
+            ).trim();
+            if (!modifierKey
+                || !selectedLocations.has(modifierKey.toLowerCase())) continue;
+            const recordID = ReadRecordID(modifier?.paperdollResourceID);
+            if (!recordID) continue;
+            const variationValue = Number(modifier?.paperdollResourceVariation ?? 0);
+            const variation = Number.isInteger(variationValue) ? variationValue : 0;
+            const choiceID = `${recordID}@${variation}`;
+            const resource = slot?.resources.find(value =>
+                value.choiceID === choiceID) ?? null;
+            choices.push({
+                choiceID,
+                donorRecordID: catalog.paperdollRecordID,
+                label: resource?.resPath || recordID,
+                locationID,
+                modifierKey,
+                modifierIndex,
+                partSourceRecordID: resource?.partSourceRecordID ?? "",
+                recordID,
+                resourceResolved: resource !== null,
+                variation
+            });
+        }
+        if (!choices.length) continue;
+        result.push({
+            auditKind: "source-observed-outfit",
+            donorRecordID: catalog.paperdollRecordID,
+            label: `paper doll ${catalog.paperdollRecordID}`,
+            choices
+        });
+    }
+    return result;
+}
+
+/** Classifies every selected apparel member of one rendered donor outfit. */
+export function classifyClothingOutfitRealizations(
+    choices,
+    realization,
+    diagnostics = null
+)
+{
+    return (choices ?? []).map(choice => ({
+        ...choice,
+        realization: classifyClothingChoiceRealization(
+            choice,
+            realization,
+            diagnostics
+        )
+    }));
 }
 
 /** Retains compact per-part material evidence without serializing live objects. */
@@ -260,6 +364,13 @@ export function summarizeClothingRendererDetails(details)
 
 export function classifyClothingChoiceRealization(choice, realization, diagnostics = null)
 {
+    if (choice?.resourceResolved === false)
+    {
+        return {
+            status: "unresolved",
+            reason: "retained-resource-identity-unavailable"
+        };
+    }
     const groupID = String(choice?.modifierKey ?? "").trim().toLowerCase();
     const selectedPartSourceRecordID = String(
         choice?.partSourceRecordID ?? ""
@@ -311,6 +422,11 @@ export function classifyClothingChoiceRealization(choice, realization, diagnosti
     }
 
     return { status: "unresolved" };
+}
+
+function ReadRecordID(value)
+{
+    return String(typeof value === "string" ? value : value?.recordID ?? "").trim();
 }
 
 function SummarizeConfiguredHeadMaterials(value)

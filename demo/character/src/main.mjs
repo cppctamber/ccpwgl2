@@ -334,7 +334,9 @@ try
                 libraryURL,
                 resourceRoot: toolsService.paths.res.replace(/\/+$/u, "")
             },
-            sourceObserved: parameters.get("clothingAuditObserved") === "1"
+            sourceObserved: parameters.get("clothingAuditObserved") === "1",
+            sourceObservedOutfits:
+                parameters.get("clothingAuditOutfits") === "1"
         });
     }
 

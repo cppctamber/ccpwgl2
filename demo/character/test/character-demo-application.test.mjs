@@ -61,4 +61,5 @@ test("source-observed clothing audits release before selecting donor outfits", (
     assert.match(applicationSource, /reason:\s*"clothing-donor-audit-replace"/u);
     assert.match(applicationSource, /reason:\s*"clothing-donor-audit-complete"/u);
     assert.match(mainSource, /clothingAuditObserved/u);
+    assert.match(mainSource, /clothingAuditOutfits/u);
 });
