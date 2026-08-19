@@ -1,12 +1,12 @@
 import { isArray, meta } from "utils";
-import { vec3, mat4, sph3, box3 } from "math";
+import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
 import { Tw2AnimationController } from "core/model";
 import { EveTurretSet, EveBanner, EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveCurveLineSet } from "eve/item";
 import { EveMeshOverlayEffect } from "eve/effect";
 import { EveHazeSet, EveSpriteLineSet } from "unsupported/eve/item";
-import { LodLevelPixels } from "constant/ccpwgl";
+import { LodLevelPixels, CustomMaskBlendMode } from "constant/ccpwgl";
 import { tw2 } from "global";
 
 
@@ -42,6 +42,20 @@ export class EveShip2 extends EveObject
 
     @meta.list("EveCustomMask")
     customMasks = [];
+
+    /**
+     * Custom mask blend mode, for the whole object, as the Carbon permutation
+     * value - see {@link BLEND_MODES}.
+     *
+     * It belongs here rather than on each EveCustomMask because there is only
+     * ever one of it: the GLES path has a single CustomMaskBlending register
+     * shared by both masks, and the Carbon path a single BLEND_MODE
+     * permutation on the effects. Holding a copy per mask meant two sources for
+     * one value, and whichever mask was packed last silently won.
+     * @type {String}
+     */
+    @meta.string
+    blendMode = "BLEND_MODE_OVERLAY";
 
     @meta.list("EveSpaceObjectDecal")
     decals = [];
@@ -182,6 +196,7 @@ export class EveShip2 extends EveObject
     _parentTransform = mat4.create();
     _perObjectData = new GLESPerObjectDataEveSpaceObject();
     _perObjectDataBagOfStuff = {};
+    _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
 
     /**
@@ -1611,6 +1626,98 @@ export class EveShip2 extends EveObject
      * @param {Object} [out]
      * @returns {Object}
      */
+    /**
+     * The object's custom mask blend mode, as the Carbon permutation value.
+     * @returns {String}
+     */
+    GetBlendMode()
+    {
+        return this.blendMode;
+    }
+
+    /**
+     * Sets the object's custom mask blend mode and applies it.
+     *
+     * Takes the ACTUAL permutation value - "BLEND_MODE_NESTED" - and nothing
+     * else. Anything unrecognised throws.
+     *
+     * No normalising, no near-miss tolerance, no fallback. The bug this
+     * replaces was exactly that: an unrecognised value quietly became OVERLAY,
+     * so a wrong blend mode and a correct one looked identical and nothing
+     * reported it. Callers holding another vocabulary - SKINR payloads, black
+     * data, a UI label - translate before calling.
+     * @param {String} value - e.g. "BLEND_MODE_SUBTRACT"
+     * @throws {TypeError} on anything not in {@link BLEND_MODES}
+     * @returns {EveShip2}
+     */
+    SetBlendMode(value)
+    {
+        if (!EveShip2.BLEND_MODES.includes(value))
+        {
+            throw new TypeError(
+                `Invalid blend mode: ${JSON.stringify(value)}. `
+                + `Expected one of: ${EveShip2.BLEND_MODES.join(", ")}`
+            );
+        }
+
+        this.blendMode = value;
+
+        // The masks still carry it for the GLES per-object register, which
+        // EveCustomMask packs from a string property. They are followers now,
+        // not sources - written here so the two paths cannot disagree.
+        const name = value.replace("BLEND_MODE_", "").toLowerCase();
+        for (let i = 0; i < this.customMasks.length; i++)
+        {
+            if (this.customMasks[i]) this.customMasks[i].blendMode = name;
+        }
+
+        this.UpdateBlendMode();
+        return this;
+    }
+
+    /**
+     * Applies the current blend mode to every effect declaring the BLEND_MODE
+     * permutation.
+     *
+     * The Carbon path compiles blend mode in rather than reading a register, so
+     * without this a dx11 scene never tracked it at all - only a UI setting the
+     * option by hand did anything. SetEffectsOption is the graph-wide walk,
+     * which already skips effects without the option and remembers it for ones
+     * that have not loaded yet.
+     * @returns {Array} the effects whose option changed
+     */
+    UpdateBlendMode()
+    {
+        return this.SetEffectsOption("BLEND_MODE", this.blendMode);
+    }
+
+    /**
+     * The values Carbon's BLEND_MODE axis declares, read from the shipped quad
+     * packages. Note there are five: CustomMaskBlendMode carries nine, and the
+     * other four have no permutation, so they cannot be expressed on dx11.
+     * @type {Array<String>}
+     */
+    static BLEND_MODES = [
+        "BLEND_MODE_OVERLAY",
+        "BLEND_MODE_SUBTRACT",
+        "BLEND_MODE_EXCLUSION",
+        "BLEND_MODE_NESTED",
+        "BLEND_MODE_NESTED_INVERTED"
+    ];
+
+    /**
+     * The numeric value the GLES CustomMaskBlending register carries for a
+     * permutation value. OVERLAY is Carbon's name for no blending, which the
+     * shaders read as 0.
+     * @param {String} value
+     * @returns {Number}
+     */
+    static GetBlendModeValue(value)
+    {
+        const key = String(value).replace("BLEND_MODE_", "");
+        return key === "OVERLAY" ? CustomMaskBlendMode.NONE : CustomMaskBlendMode[key] ?? CustomMaskBlendMode.NONE;
+    }
+
     GetPerObjectDataBagOfStuff(out = {})
     {
         this.RebuildMeshData();
@@ -1825,6 +1932,27 @@ export class EveShip2 extends EveObject
         {
             this.customMasks[i].GetPerObjectDataBagOfStuff(id, customMaskBagOfStuff, i, this.visible.customMasks);
         }
+
+        // Packed here, after the masks, because the blend mode belongs to the
+        // object and not to either mask. CustomMaskBlending is a SINGLE
+        // register shared by both, so letting each mask write it made the last
+        // one packed the winner - two masks with different modes meant one of
+        // them silently decided for the pair.
+        //
+        // .x is the blend mode, .y the swapped flag; .zw are unused.
+        //
+        // Swapped stays on the masks and is aggregated here. It is per mask,
+        // and it is NOT in Carbon yet - it is intended to become a permutation
+        // there, like blend mode did, once that can be added upstream. So this
+        // lane is a ccpwgl-only stand-in: do not treat it as the Carbon shape,
+        // and note one lane cannot express a per-mask flag for two masks.
+        const blending = this._customMaskBlending;
+        blending[0] = EveShip2.GetBlendModeValue(this.blendMode);
+        blending[1] = this.customMasks.some(mask => mask && mask.customMasksSwapped) ? 1 : 0;
+        blending[2] = 0;
+        blending[3] = 0;
+        customMaskBagOfStuff.customMaskBlending = blending;
+
         GLESPerObjectDataEveSpaceObject.Pack(customMaskBagOfStuff, this._perObjectData);
 
         // Custom scaler for sprites
