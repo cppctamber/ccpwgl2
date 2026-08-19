@@ -12,6 +12,8 @@ const CONFIGURED_GARMENT_GROUPS = new Set([
     "topouter"
 ]);
 
+const CONFIGURED_ACCESSORY_GROUP = "accessories";
+
 /**
  * Labels exact retained character textures for the temporary legacy demo.
  * Filename roles are explicit ccpwgl policy, not runtime-character source facts.
@@ -581,10 +583,14 @@ function ClassifyTextures(
 
 function ResolveTextureTargetHint(groupID)
 {
-    // Configured garment maps can omit body/head from their filename. The
-    // selected modifier location supplies the missing semantic target without
-    // guessing from an asset family name.
-    return CONFIGURED_GARMENT_GROUPS.has(SplitGroup(groupID)[0]) ? "body" : null;
+    // Configured garment and accessory maps can omit their semantic target
+    // from a filename. The selected modifier location supplies that missing
+    // target without guessing from an asset family name. Explicit body/head/
+    // hair/acc tokens still take precedence in ClassifyTextures.
+    const location = SplitGroup(groupID)[0];
+    if (CONFIGURED_GARMENT_GROUPS.has(location)) return "body";
+    if (location === CONFIGURED_ACCESSORY_GROUP) return "acc";
+    return null;
 }
 
 function TextureFamily(path)

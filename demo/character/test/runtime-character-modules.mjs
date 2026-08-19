@@ -97,6 +97,7 @@ export const {
     planLegacySelectedTopDrapeSupport,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredAccessoryMaterial,
     resolveLegacyConfiguredGarmentDiffuseContribution,
     resolveLegacyConfiguredHairDiffuseContribution,
     resolveLegacyConfiguredHairConsumers,

@@ -1387,6 +1387,10 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
             status: "deferred",
             reason: "configured-headwear-composer-unavailable"
         },
+        configuredAccessoryMaterials: {
+            status: "deferred",
+            reason: "configured-accessory-composer-unavailable"
+        },
         selectedTopDrape: {
             status: "deferred",
             reason: "selected-top-drape-composer-unavailable"

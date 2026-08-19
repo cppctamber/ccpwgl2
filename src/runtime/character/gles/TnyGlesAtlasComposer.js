@@ -850,6 +850,122 @@ export class TnyGlesAtlasComposer
         }
     }
 
+    /**
+     * Composes configured accessories from one exact retained target tuple.
+     *
+     * The selected texture roles decide whether a private consumer owns the
+     * head or accessory texture space. Mixed targets and skin-hybrid consumers
+     * remain deferred rather than being inferred from an accessory family.
+     */
+    async ComposeConfiguredAccessoryMaterials(staged)
+    {
+        const report = {
+            status: "deferred",
+            rule: "legacy-opengl-configured-accessory-material-v1",
+            correctness: "retained-source-policy-live-proof-pending",
+            applied: [],
+            deferred: []
+        };
+
+        for (const binding of staged?.configuredPartBindings ?? [])
+        {
+            const part = binding?.configuredPart;
+            if (!String(part?.groupID ?? "").startsWith("accessories/")) continue;
+
+            const contribution = staged.textureContributions?.find(value =>
+                value.partIndex === part?.partIndex);
+            const allEffects = GetEffects(binding?.configuredMeshes ?? []);
+            const effects = allEffects.filter(effect =>
+                effect?._characterGarmentMaterialFallback === true);
+            const hybridEffects = allEffects.filter(effect =>
+                effect?._characterGarmentBodyFallback === true
+                && !effect?._characterFoundationReplacementRole);
+            if (!effects.length && !hybridEffects.length) continue;
+            if (hybridEffects.length)
+            {
+                report.deferred.push({
+                    partIndex: part?.partIndex ?? null,
+                    groupID: part?.groupID ?? null,
+                    partSourceRecordID: part?.partSourceRecordID ?? null,
+                    reason: "accessory-skin-hybrid-consumer-unqualified"
+                });
+                continue;
+            }
+
+            const resolved = resolveLegacyConfiguredAccessoryMaterial(contribution);
+            if (resolved.status !== "ready")
+            {
+                report.deferred.push({
+                    partIndex: part?.partIndex ?? null,
+                    groupID: part?.groupID ?? null,
+                    partSourceRecordID: part?.partSourceRecordID ?? null,
+                    reason: resolved.reason
+                });
+                continue;
+            }
+
+            const metadata = await this._ReadMetadata(resolved.candidate.detail.path);
+            const targetSize = ResolveTargetSize(metadata);
+            const surface = await this._ComposeConfiguredGarmentSurface(
+                staged,
+                part,
+                resolved.candidate,
+                effects,
+                targetSize,
+                `private-accessory-${resolved.target}`,
+                resolved.materialChannels
+            );
+            if (![ "applied", "partial" ].includes(surface.status))
+            {
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    groupID: part.groupID,
+                    partSourceRecordID: part.partSourceRecordID,
+                    target: resolved.target,
+                    reason: surface.reason
+                });
+                continue;
+            }
+
+            const partial = surface.status === "partial";
+            part.materialStatus = `configured-accessory-colorized-${partial ? "partial" : "policy"}`;
+            part.compositionStatus = `configured-accessory-colorized-${partial ? "partial" : "attached"}`;
+            if (partial)
+            {
+                report.deferred.push({
+                    partIndex: part.partIndex,
+                    groupID: part.groupID,
+                    partSourceRecordID: part.partSourceRecordID,
+                    target: resolved.target,
+                    channel: "lighting",
+                    reason: surface.reason
+                });
+            }
+            report.applied.push({
+                partIndex: part.partIndex,
+                groupID: part.groupID,
+                partSourceRecordID: part.partSourceRecordID,
+                target: resolved.target,
+                materialDefinitionPath: contribution.source.materialDefinitionPath,
+                detailPath: resolved.candidate.detail.path,
+                zonePath: resolved.candidate.zones.path,
+                colors: resolved.candidate.colors.map(color => [ ...color ]),
+                materialChannels: resolved.materialChannels,
+                targetSize,
+                realizationStatus: partial ? "partial" : "complete",
+                attachedEffects: surface.attachedEffects,
+                bindings: DescribeConfiguredGarmentBindings(
+                    binding.configuredMeshes,
+                    effects
+                ),
+                surface
+            });
+        }
+
+        if (report.applied.length) report.status = "applied";
+        return report;
+    }
+
     /** Composes each configured non-skin surface from its own retained textures. */
     async ComposeConfiguredGarmentMaterials(staged)
     {
@@ -864,6 +980,7 @@ export class TnyGlesAtlasComposer
         for (const binding of staged?.configuredPartBindings ?? [])
         {
             const part = binding?.configuredPart;
+            if (String(part?.groupID ?? "").startsWith("accessories/")) continue;
             if (part?.groupID === "hair"
                 && [
                     "configured-hair-attached",
@@ -2397,13 +2514,17 @@ export class TnyGlesAtlasComposer
                 const preserveNeutralAlpha = neutralOnly[`${name}PreserveAlpha`] === true;
                 const passes = preserveNeutralAlpha
                     ? [
-                        await this._CreateAuthoredConsumerCopyPass(path, targetSize),
+                        await this._CreateAuthoredConsumerCopyPass(path, targetSize, {
+                            allowFullNormalizedStretch: true
+                        }),
                         await this._CreateSolidRgbPass([ 0, 0, 0, 1 ], targetSize)
                     ]
                     : [ await this._CreateSolidCopyPass(effectiveNeutralPath, targetSize) ];
                 if (neutralOnly[name] !== true && !preserveNeutralAlpha)
                 {
-                    passes.push(await this._CreateAuthoredConsumerCopyPass(path, targetSize));
+                    passes.push(await this._CreateAuthoredConsumerCopyPass(path, targetSize, {
+                        allowFullNormalizedStretch: true
+                    }));
                 }
                 const target = new RenderTarget(
                     `character-${staged.sex}-garment-${part.partIndex}-${surface}-${name}-${targetIndex}`,
@@ -3539,25 +3660,37 @@ export class TnyGlesAtlasComposer
      * @param {Object} [options] Copy options.
      * @param {Number} [options.alphaMultiplier=1] Source-alpha multiplier.
      * @param {Boolean} [options.blend=false] Whether to blend over the target.
+     * @param {Boolean} [options.allowFullNormalizedStretch=false] Allows a
+     * full-placement control map to scale independently of pixel aspect.
      * @returns {Promise<Object>} Prepared pass and diagnostic projection.
      */
     async _CreateAuthoredConsumerCopyPass(
         path,
         targetSize,
-        { alphaMultiplier = 1, blend = false } = {}
+        {
+            alphaMultiplier = 1,
+            blend = false,
+            allowFullNormalizedStretch = false
+        } = {}
     )
     {
         if (!Number.isFinite(alphaMultiplier) || alphaMultiplier < 0
-            || typeof blend !== "boolean")
+            || typeof blend !== "boolean"
+            || typeof allowFullNormalizedStretch !== "boolean")
         {
             throw new TypeError(
-                "Configured authored consumer alphaMultiplier must be non-negative"
+                "Configured authored consumer copy options are invalid"
             );
         }
         const metadata = await this._ReadMetadata(path);
         const placement = Placement(metadata);
         const sourceTargetSize = ResolveTargetSize(metadata);
-        RequireCompatibleTargetAspect(path, sourceTargetSize, targetSize);
+        const fullNormalizedStretch = allowFullNormalizedStretch
+            && BoundsEqual(placement, [ 0, 0, 1, 1 ]);
+        if (!fullNormalizedStretch)
+        {
+            RequireCompatibleTargetAspect(path, sourceTargetSize, targetSize);
+        }
         const Effect = RequireClass(tw2, "Tw2Effect");
         const effect = Effect.from({
             effectFilePath: COPY_BLIT_SHADER,
@@ -3588,6 +3721,9 @@ export class TnyGlesAtlasComposer
                 blend,
                 sourceTargetSize,
                 placement,
+                samplingContract: fullNormalizedStretch
+                    ? "full-normalized-stretch"
+                    : "authored-atlas-placement",
                 uv: DescribeUvDecision(metadata, targetSize, placement)
             }
         };
@@ -4142,6 +4278,89 @@ export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
             detail: baked[0],
             zones: null,
             colors: null
+        }
+    };
+}
+
+/**
+ * Resolves one configured accessory from a complete single-target L/Z/N/S
+ * tuple. The retained texture roles, rather than an asset name, decide whether
+ * the private target represents head or accessory texture space.
+ */
+export function resolveLegacyConfiguredAccessoryMaterial(contribution)
+{
+    if (!String(contribution?.groupID ?? "").startsWith("accessories/"))
+    {
+        return { status: "deferred", reason: "configured-accessory-group-unavailable" };
+    }
+
+    const selected = contribution?.selectedTextures ?? [];
+    const diffuseTargets = Unique(selected
+        .filter(value => [ "colorize-layer", "colorize-zones" ].includes(value?.role)
+            && [ "head", "acc" ].includes(value?.target))
+        .map(value => value.target));
+    if (diffuseTargets.length !== 1)
+    {
+        return {
+            status: "deferred",
+            reason: diffuseTargets.length
+                ? "configured-accessory-target-ambiguous"
+                : "configured-accessory-target-unresolved"
+        };
+    }
+
+    const target = diffuseTargets[0];
+    const details = selected.filter(value =>
+        value?.target === target && value?.role === "colorize-layer");
+    const zones = selected.filter(value =>
+        value?.target === target && value?.role === "colorize-zones");
+    const normals = selected.filter(value => value?.target === target
+        && [ "normal-source", "normal-overlay" ].includes(value?.role));
+    const specular = selected.filter(value => value?.target === target
+        && [ "specular-source", "specular-overlay" ].includes(value?.role));
+    for (const [ values, channel ] of [
+        [ details, "diffuse-layer" ],
+        [ zones, "diffuse-zones" ],
+        [ normals, "normal-map" ],
+        [ specular, "specular-map" ]
+    ])
+    {
+        if (values.length !== 1)
+        {
+            return {
+                status: "deferred",
+                reason: `configured-accessory-${channel}-${values.length ? "ambiguous" : "unresolved"}`
+            };
+        }
+    }
+
+    const colors = NormalizeColors(contribution?.materialValues?.colors);
+    if (!colors)
+    {
+        return { status: "deferred", reason: "configured-accessory-colors-unresolved" };
+    }
+    const pattern = ResolvePattern(contribution.materialValues);
+    if (pattern?.status === "deferred") return pattern;
+
+    return {
+        status: "ready",
+        rule: "configured-retained-accessory-material-v1",
+        correctness: "retained-source-policy",
+        target,
+        candidate: {
+            mode: "colorized",
+            contribution,
+            detail: details[0],
+            zones: zones[0],
+            colors,
+            ...(pattern ? { pattern } : {})
+        },
+        materialChannels: {
+            status: "ready",
+            rule: "configured-retained-accessory-lighting-v1",
+            correctness: "retained-source-policy",
+            normalPath: normals[0].path,
+            specularPath: specular[0].path
         }
     };
 }

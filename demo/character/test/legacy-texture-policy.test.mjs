@@ -221,6 +221,49 @@ test("legacy texture policy lets exact shorthand skirt channels override semanti
         && value.role === "normal-source"));
 });
 
+test("legacy texture policy classifies sparse accessory lighting by modifier location", () =>
+{
+    const fixture = CreateFixture();
+    const base = fixture.partSource.versions[0];
+    base.textureCandidates = [
+        `${root}/colorize_acc_l.png`,
+        `${root}/colorize_acc_z.png`,
+        `${root}/glasses_n.png`,
+        `${root}/glasses_s.png`
+    ];
+    const version = {
+        resourceVersion: "v2",
+        metadata: null,
+        configurationCandidates: [],
+        geometryCandidates: [],
+        textureCandidates: [ `${root}/v2/glasses_s.png` ]
+    };
+    fixture.plan.layers[0].owner.groupID = "accessories/glasses";
+    fixture.partSource.versions.push(version);
+    fixture.plan.parts[0].origin.jsonPointer = "/versions/1";
+    fixture.paperdoll.modifiers[0].paperdollResourceID.partType.resourceVersion = "v2";
+    fixture.definitions.get(typePath).values[1] = "v2";
+
+    const [ result ] = new TnyGlesTexturePolicy().Resolve(
+        fixture.library,
+        fixture.paperdoll,
+        fixture.plan
+    );
+
+    assert.deepEqual(result.selectedTextures.map(value => [
+        value.role,
+        value.target,
+        value.path
+    ]), [
+        [ "specular-source", "acc", `${root}/v2/glasses_s.png` ],
+        [ "colorize-layer", "acc", `${root}/colorize_acc_l.png` ],
+        [ "colorize-zones", "acc", `${root}/colorize_acc_z.png` ],
+        [ "normal-source", "acc", `${root}/glasses_n.png` ]
+    ]);
+    assert.equal(result.textureCandidates.some(value =>
+        value.path === `${root}/glasses_s.png`), false);
+});
+
 test("legacy texture policy resolves an exact paper-doll eye colour definition", () =>
 {
     const fixture = CreateFixture();

@@ -342,6 +342,10 @@ export class TnyGlesCharacterAdapter
                 typeof this._atlasComposer.ComposeConfiguredHeadwearMaterials === "function"
                     ? await this._atlasComposer.ComposeConfiguredHeadwearMaterials(staged)
                     : { status: "deferred", reason: "configured-headwear-composer-unavailable" };
+            staged.configuredAccessoryMaterialReport =
+                typeof this._atlasComposer.ComposeConfiguredAccessoryMaterials === "function"
+                    ? await this._atlasComposer.ComposeConfiguredAccessoryMaterials(staged)
+                    : { status: "deferred", reason: "configured-accessory-composer-unavailable" };
             staged.configuredGarmentMaterialReport =
                 typeof this._atlasComposer.ComposeConfiguredGarmentMaterials === "function"
                     ? await this._atlasComposer.ComposeConfiguredGarmentMaterials(staged)
@@ -586,6 +590,9 @@ export class TnyGlesCharacterAdapter
             ),
             configuredHeadwearMaterials: CloneDiagnosticValue(
                 staged.configuredHeadwearMaterialReport
+            ),
+            configuredAccessoryMaterials: CloneDiagnosticValue(
+                staged.configuredAccessoryMaterialReport
             ),
             selectedTopDrape: CloneDiagnosticValue(staged.selectedTopDrapeReport),
             tuckSupport: CloneDiagnosticValue(staged.tuckSupportReport),

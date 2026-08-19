@@ -30,6 +30,7 @@ import {
     planLegacySelectedTopDrapeSupport,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredAccessoryMaterial,
     resolveLegacyConfiguredGarmentDiffuseContribution,
     resolveLegacyConfiguredHairDiffuseContribution,
     resolveLegacyConfiguredHairConsumers,
@@ -49,6 +50,77 @@ import {
 } from "./runtime-character-modules.mjs";
 
 SetTestTw2({});
+
+test("configured accessories resolve exact head and accessory target tuples", () =>
+{
+    const createContribution = target => ({
+        groupID: "accessories/glasses",
+        materialValues: {
+            colors: [
+                [ 0.2, 0.4, 0.7, 1 ],
+                [ 0.1, 0.2, 0.3, 1 ],
+                [ 0.7, 0.8, 0.9, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: `res:/${target}_l.png`, role: "colorize-layer", target },
+            { path: `res:/${target}_z.png`, role: "colorize-zones", target },
+            { path: `res:/${target}_n.png`, role: "normal-source", target },
+            { path: `res:/${target}_s.png`, role: "specular-source", target }
+        ]
+    });
+
+    for (const target of [ "head", "acc" ])
+    {
+        const contribution = createContribution(target);
+        assert.deepEqual(resolveLegacyConfiguredAccessoryMaterial(contribution), {
+            status: "ready",
+            rule: "configured-retained-accessory-material-v1",
+            correctness: "retained-source-policy",
+            target,
+            candidate: {
+                mode: "colorized",
+                contribution,
+                detail: contribution.selectedTextures[0],
+                zones: contribution.selectedTextures[1],
+                colors: contribution.materialValues.colors
+            },
+            materialChannels: {
+                status: "ready",
+                rule: "configured-retained-accessory-lighting-v1",
+                correctness: "retained-source-policy",
+                normalPath: `res:/${target}_n.png`,
+                specularPath: `res:/${target}_s.png`
+            }
+        });
+    }
+});
+
+test("configured accessories defer mixed targets and non-accessory owners", () =>
+{
+    const contribution = {
+        groupID: "accessories/glasses",
+        materialValues: {
+            colors: [ [ 1, 1, 1, 1 ], [ 1, 1, 1, 1 ], [ 1, 1, 1, 1 ] ]
+        },
+        selectedTextures: [
+            { path: "res:/head_l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/acc_z.png", role: "colorize-zones", target: "acc" }
+        ]
+    };
+
+    assert.deepEqual(resolveLegacyConfiguredAccessoryMaterial(contribution), {
+        status: "deferred",
+        reason: "configured-accessory-target-ambiguous"
+    });
+    assert.deepEqual(resolveLegacyConfiguredAccessoryMaterial({
+        ...contribution,
+        groupID: "outer"
+    }), {
+        status: "deferred",
+        reason: "configured-accessory-group-unavailable"
+    });
+});
 
 test("configured hair resolves one exact retained L/Z/N/S material", () =>
 {
@@ -2424,6 +2496,45 @@ test("full-normalized control overlays may stretch independently of pixel aspect
     assert.equal(pass.report.samplingContract, "full-normalized-stretch");
 });
 
+test("private lighting copies allow only explicitly qualified full-normalized stretch", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    fixture.composer.SetTextureMetadataSource({
+        Get(documentName, recordID)
+        {
+            assert.equal(documentName, "characterTextureMetadata");
+            return {
+                recordID,
+                sourcePath: `${recordID}.png`,
+                width: 16,
+                height: 16,
+                hasOffsetMetadata: true,
+                hasPlacementMetadata: true,
+                offsetX: 0,
+                offsetY: 0,
+                extentX: 1,
+                extentY: 1
+            };
+        }
+    });
+
+    await assert.rejects(
+        fixture.composer._CreateAuthoredConsumerCopyPass(
+            "res:/eyeimp/comp_head_n.png",
+            [ 2048, 1024 ]
+        ),
+        /aspect mismatch/u
+    );
+    const pass = await fixture.composer._CreateAuthoredConsumerCopyPass(
+        "res:/eyeimp/comp_head_n.png",
+        [ 2048, 1024 ],
+        { allowFullNormalizedStretch: true }
+    );
+
+    assert.deepEqual(pass.viewport, [ 0, 0, 2048, 1024 ]);
+    assert.equal(pass.report.samplingContract, "full-normalized-stretch");
+});
+
 test("eyebrow colour follows the selected family preset before the sibling fallback", () =>
 {
     const contribution = {
@@ -3904,6 +4015,77 @@ test("configured garment fallback uses its own colorized target without touching
     assert.equal(report.applied[0].completedSurfaceCount, 2);
     assert.equal(report.applied[0].partialSurfaceCount, 0);
     assert.equal(report.applied[0].deferredSurfaceCount, 0);
+});
+
+test("configured accessory binds one exact private target and stays out of garment composition", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const effect = AtomicEffectFixture({
+        texture: { path: "#accessory-proof" },
+        transform: [ 0.5, 0, 1, 0.5 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    effect._characterGarmentMaterialFallback = true;
+    const part = {
+        partIndex: 31,
+        groupID: "accessories/glasses",
+        partSourceRecordID: "female/accessories/glasses/eyeimp01",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const contribution = {
+        partIndex: 31,
+        groupID: "accessories/glasses",
+        source: {
+            partSourceRecordID: part.partSourceRecordID,
+            materialDefinitionPath: "res:/eyeimp01/ep.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.1, 0.3, 0.6, 1 ],
+                [ 0.2, 0.5, 0.8, 1 ],
+                [ 0.4, 0.7, 0.9, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: "res:/eyeimp01/colorize_head_l.png", role: "colorize-layer", target: "head" },
+            { path: "res:/eyeimp01/colorize_head_z.png", role: "colorize-zones", target: "head" },
+            { path: "res:/eyeimp01/comp_head_n.png", role: "normal-overlay", target: "head" },
+            { path: "res:/eyeimp01/comp_head_s.png", role: "specular-overlay", target: "head" }
+        ]
+    };
+    const staged = {
+        sex: "female",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [ MeshFixture(effect) ]
+        } ],
+        textureContributions: [ contribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredAccessoryMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied.length, 1);
+    assert.equal(report.applied[0].target, "head");
+    assert.equal(report.applied[0].realizationStatus, "complete");
+    assert.deepEqual(report.applied[0].surface.passes.map(value => value.mode), [
+        "configured-garment-clear",
+        "configured-authored-rgba",
+        "colorized-rgb"
+    ]);
+    assert.strictEqual(effect.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.strictEqual(effect.parameters.NormalMap.textureRes, staged.compositionTargets[1].texture);
+    assert.strictEqual(effect.parameters.SpecularMap.textureRes, staged.compositionTargets[2].texture);
+    assert.deepEqual(effect.transform, [ 0, 0, 1, 1 ]);
+    assert.equal(part.materialStatus, "configured-accessory-colorized-policy");
+    assert.equal(part.compositionStatus, "configured-accessory-colorized-attached");
+
+    const garmentReport = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+    assert.deepEqual(garmentReport.applied, []);
+    assert.deepEqual(garmentReport.deferred, []);
 });
 
 test("configured private garment accepts one exact baked D/N/S material", async () =>

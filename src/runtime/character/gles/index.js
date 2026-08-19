@@ -19,6 +19,7 @@ export {
     planLegacyExactFemaleUpperSleeve,
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
+    resolveLegacyConfiguredAccessoryMaterial,
     resolveLegacyGarmentMaterialChannels,
     resolveLegacyHeadMaterialChannels
 } from "./TnyGlesAtlasComposer.js";
