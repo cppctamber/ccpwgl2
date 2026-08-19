@@ -1186,12 +1186,17 @@ export class EveSOFData extends meta.Model
         this.SetupObservers(...args);
         await this.SetupControllers(...args);
 
-        // Temporarily add triglavian balls
-        if (sof.hull.name.indexOf("tg") === 0 && !obj.effectChildren.find(x => x.name === "TempTrigSphereContainer"))
-        {
-            const cfg = this.TrigBalls[sof.hull.name.split("_")[0]];
-            if (cfg) obj.effectChildren.push(EveSOFData.createTriglavianBall([ cfg[0], cfg[1], cfg[2] ], [ cfg[3], cfg[4], cfg[5] ]));
-        }
+        // Triglavian balls used to be added here for any hull whose name starts
+        // "tg", because the authored data did not carry them. It does now, so
+        // generating one produces a second ball on top of the real one.
+        //
+        // The generator and its per-hull table are left in place
+        // (`EveSOFData.TrigBalls`, `createTriglavianBall`) - they are the record
+        // of the positions and scales that were measured by hand, and cheap to
+        // call again if a hull ever turns up without one.
+        //
+        //   const cfg = this.TrigBalls[sof.hull.name.split("_")[0]];
+        //   if (cfg) obj.effectChildren.push(EveSOFData.createTriglavianBall(...));
 
         return obj;
     }
