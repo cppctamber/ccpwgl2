@@ -1271,6 +1271,7 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
     construction.configuredPartCount = 1;
     construction.deferredContributionCount = 0;
     construction.textureContributions = [ IdentityContribution("feet") ];
+    construction.textureContributions[0].ownerSelectionIndex = 9;
     construction.operations.splice(-1, 0, {
         operation: "configured-part",
         layerIndex: 0,
@@ -1302,6 +1303,7 @@ test("legacy adapter attaches exact configured pairs without replacing authored 
         groupID: "feet",
         layerIndex: 0,
         partIndex: 0,
+        ownerSelectionIndex: 9,
         partSourceRecordID: "female/feet/bootscf01",
         configurationPath: "res:/custom/boots.black",
         geometryPath: "res:/custom/boots.gr2",

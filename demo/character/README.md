@@ -1213,6 +1213,30 @@ modifier keys without changing the default complete apparel sweep. Each result
 retains a compact renderer projection for configured parts, garment material
 realization, area contracts, retained channel state, and foundation coverage;
 live engine objects are not serialized.
+`?clothingAuditObserved=1` changes the comparison boundary: each choice is
+reviewed on the exact retained donor paper doll that supplied it to the catalog,
+rather than being inserted into the selected baseline. This preserves
+source-observed outfit interactions and labels a typed, active suppression as
+`selection-suppressed` instead of misreporting the absent render contribution as
+unresolved. The five male `topouter` choices prove the distinction: three exact
+donor outfits suppress the shirt through an active `outer` relationship, while
+the other two attach their configured D/N/S materials. All five donor renders
+commit with zero diagnostic-magenta and zero enclosed-alpha components.
+Donor-context runs also separate frame alarms from the slot under review. All
+27 female bottoms, 27 female footwear choices, 31 female middle tops, 21 male
+middle tops, and 30 male bottoms committed. Small enclosed-alpha counts repeated
+exactly between different slots on the same donor, so those counts belong to the
+complete donor frame and are not attributed to the changing choice. One male
+bottom frame initially contained diagnostic magenta, but the pants material was
+complete: the same donor's robe hood was the unresolved surface. Its decoded
+support effect and the selected robe share the same shader, empty private D/N/S
+slots, UV bounds, zero-cut opaque area contract, and material constants. The
+adapter now lets a texture-less configured support reuse one unique selection
+owner's retained private tuple only when every support effect matches a decoded
+private contract on that owner. Auxiliary support-owned lookups remain authored;
+different, missing, and ambiguous owner contracts stay deferred. The exact donor
+now reports the hood as a complete owner-material attachment without diagnostic
+magenta.
 That audit release is deliberately non-atomic. Ordinary interactive changes
 instead prepare a hidden revision with independent composition targets while
 the committed revision remains visible. At handoff, the adapter transfers the

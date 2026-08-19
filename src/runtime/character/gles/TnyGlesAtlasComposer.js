@@ -1043,7 +1043,12 @@ export class TnyGlesAtlasComposer
         return report;
     }
 
-    /** Composes each configured non-skin surface from its own retained textures. */
+    /**
+     * Composes each configured non-skin surface from retained private textures.
+     * A texture-less configured support may reuse its exact selection owner's
+     * tuple only when every support effect matches one private-material contract
+     * on that unique owner; ambiguous or divergent supports remain deferred.
+     */
     async ComposeConfiguredGarmentMaterials(staged)
     {
         const report = {
@@ -1077,20 +1082,29 @@ export class TnyGlesAtlasComposer
 
             if (!effects.length && !hybridEffects.length) continue;
 
-            const resolved = resolveLegacyConfiguredGarmentDiffuseContribution(
-                contribution
+            const materialSource = ResolveConfiguredGarmentMaterialSource(
+                staged,
+                binding,
+                contribution,
+                effects,
+                hybridEffects
             );
+            const resolved = materialSource.resolved;
             if (resolved.status !== "ready")
             {
                 report.deferred.push({
                     partIndex: part?.partIndex ?? null,
                     groupID: part?.groupID ?? null,
                     partSourceRecordID: part?.partSourceRecordID ?? null,
-                    reason: resolved.reason
+                    reason: resolved.reason,
+                    ...(materialSource.ownerResolution ? {
+                        materialOwnerResolution: { ...materialSource.ownerResolution }
+                    } : {})
                 });
                 continue;
             }
-            const materialChannels = resolveLegacyGarmentMaterialChannels(contribution);
+            const materialContribution = materialSource.contribution;
+            const materialChannels = materialSource.materialChannels;
 
             const metadata = await this._ReadMetadata(resolved.candidate.detail.path);
             const targetSize = ResolveTargetSize(metadata);
@@ -1150,7 +1164,7 @@ export class TnyGlesAtlasComposer
                 partIndex: part.partIndex,
                 groupID: part.groupID,
                 partSourceRecordID: part.partSourceRecordID,
-                materialDefinitionPath: contribution.source.materialDefinitionPath,
+                materialDefinitionPath: materialContribution.source.materialDefinitionPath,
                 detailPath: resolved.candidate.detail.path,
                 diffuseMode: resolved.candidate.mode,
                 zonePath: resolved.candidate.zones?.path ?? null,
@@ -1168,6 +1182,9 @@ export class TnyGlesAtlasComposer
                     (total, value) => total + value.attachedEffects,
                     0
                 ),
+                ...(materialSource.owner ? {
+                    materialOwner: { ...materialSource.owner }
+                } : {}),
                 bindings: DescribeConfiguredGarmentBindings(
                     binding.configuredMeshes,
                     [ ...effects, ...hybridEffects ]
@@ -4384,6 +4401,304 @@ export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
             colors: null
         }
     };
+}
+
+/**
+ * Selects the retained material tuple for one configured garment carrier.
+ *
+ * A configured dependency may contain geometry and an authored private effect
+ * while intentionally retaining no texture inventory of its own. Such a
+ * support can share its selection owner's tuple only when the owner is unique
+ * and both sides expose the same zero-cut opaque private-material contract.
+ */
+function ResolveConfiguredGarmentMaterialSource(
+    staged,
+    binding,
+    contribution,
+    effects,
+    hybridEffects
+)
+{
+    const resolved = resolveLegacyConfiguredGarmentDiffuseContribution(contribution);
+    if (resolved.status === "ready")
+    {
+        return {
+            resolved,
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: null
+        };
+    }
+
+    const ownerSelectionIndex = contribution?.ownerSelectionIndex;
+    const retainedMaterialInputs = (contribution?.selectedTextures ?? [])
+        .filter(value => typeof value?.path === "string" && value.path);
+    if (!Number.isInteger(ownerSelectionIndex)
+        || ownerSelectionIndex < 0
+        || !effects.length
+        || hybridEffects.length)
+    {
+        return {
+            resolved,
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: {
+                status: "deferred",
+                rule: "retained-owner-private-material-contract-v1",
+                reason: "owner-selection-or-private-surface-unavailable"
+            }
+        };
+    }
+    if (retainedMaterialInputs.length
+        || contribution?.source?.materialDefinitionPath
+        || contribution?.materialValues)
+    {
+        return {
+            resolved,
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: {
+                status: "deferred",
+                rule: "retained-owner-private-material-contract-v1",
+                reason: "support-retains-own-material-inputs"
+            }
+        };
+    }
+
+    const supportContracts = ResolveConfiguredPrivateMaterialContracts(
+        binding?.configuredMeshes,
+        effects
+    );
+    if (!supportContracts)
+    {
+        return {
+            resolved,
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: {
+                status: "deferred",
+                rule: "retained-owner-private-material-contract-v1",
+                reason: "support-private-material-contract-unavailable"
+            }
+        };
+    }
+
+    const owners = [];
+    let retainedOwnerCount = 0;
+    let readyOwnerCount = 0;
+    let boundOwnerCount = 0;
+    let comparableOwnerCount = 0;
+    const differingContractFields = new Set();
+    for (const ownerContribution of staged?.textureContributions ?? [])
+    {
+        if (ownerContribution === contribution
+            || ownerContribution?.partIndex === contribution?.partIndex
+            || ownerContribution?.ownerSelectionIndex !== ownerSelectionIndex
+            || ownerContribution?.groupID !== contribution?.groupID)
+        {
+            continue;
+        }
+        retainedOwnerCount++;
+        const ownerResolved = resolveLegacyConfiguredGarmentDiffuseContribution(
+            ownerContribution
+        );
+        const ownerChannels = resolveLegacyGarmentMaterialChannels(ownerContribution);
+        if (ownerResolved.status !== "ready" || ownerChannels.status !== "ready") continue;
+        readyOwnerCount++;
+
+        const ownerBinding = (staged?.configuredPartBindings ?? []).find(value =>
+            value?.configuredPart?.partIndex === ownerContribution.partIndex);
+        if (!ownerBinding) continue;
+        boundOwnerCount++;
+        const ownerAllEffects = GetEffects(ownerBinding.configuredMeshes ?? []);
+        const ownerEffects = ownerAllEffects.filter(effect =>
+            effect?._characterGarmentMaterialFallback === true);
+        const ownerHybridEffects = ownerAllEffects.filter(effect =>
+            effect?._characterGarmentBodyFallback === true
+            && !effect?._characterFoundationReplacementRole);
+        if (!ownerEffects.length || ownerHybridEffects.length) continue;
+
+        const ownerContracts = ResolveConfiguredPrivateMaterialContracts(
+            ownerBinding.configuredMeshes,
+            ownerEffects
+        );
+        if (ownerContracts) comparableOwnerCount++;
+        if (ownerContracts)
+        {
+            for (const supportContract of supportContracts)
+            {
+                for (const ownerContract of ownerContracts)
+                {
+                    for (const field of ComparePrivateMaterialContractFields(
+                        supportContract,
+                        ownerContract
+                    ))
+                    {
+                        differingContractFields.add(field);
+                    }
+                }
+            }
+        }
+        if (!ownerContracts || !supportContracts.every(value =>
+            ownerContracts.includes(value))) continue;
+        owners.push({
+            binding: ownerBinding,
+            contribution: ownerContribution,
+            resolved: ownerResolved,
+            materialChannels: ownerChannels
+        });
+    }
+
+    if (owners.length !== 1)
+    {
+        return {
+            resolved,
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: {
+                status: "deferred",
+                rule: "retained-owner-private-material-contract-v1",
+                reason: owners.length
+                    ? "owner-private-material-contract-ambiguous"
+                    : "owner-private-material-contract-unresolved",
+                retainedOwnerCount,
+                readyOwnerCount,
+                boundOwnerCount,
+                comparableOwnerCount,
+                matchingOwnerCount: owners.length,
+                differingContractFields: [ ...differingContractFields ].sort()
+            }
+        };
+    }
+
+    const owner = owners[0];
+    return {
+        resolved: owner.resolved,
+        contribution: owner.contribution,
+        materialChannels: owner.materialChannels,
+        ownerResolution: null,
+        owner: {
+            status: "policy",
+            rule: "retained-owner-private-material-contract-v1",
+            ownerSelectionIndex,
+            partIndex: owner.contribution.partIndex,
+            partSourceRecordID:
+                owner.binding.configuredPart?.partSourceRecordID
+                ?? owner.contribution.source?.partSourceRecordID
+                ?? null
+        }
+    };
+}
+
+/** Returns the canonical contracts exposed by the supplied private effects. */
+function ResolveConfiguredPrivateMaterialContracts(meshes, effects)
+{
+    effects = Unique(effects ?? []);
+    const bindings = DescribeConfiguredGarmentBindings(meshes ?? [], effects);
+    if (!effects.length
+        || bindings.length !== effects.length
+        || bindings.some(value => value.areaContract !== "opaque-only"
+            || !IsZeroCutMaskInfluence(value.authoredCutMaskInfluence)))
+    {
+        return null;
+    }
+
+    const contracts = effects.map((effect, index) =>
+    {
+        const authored = effect?._characterAuthoredEffect ?? effect;
+        const textureSlots = DescribeAuthoredTextureSlots(authored)
+            .filter(value => [ "DiffuseMap", "NormalMap", "SpecularMap" ].includes(value.name))
+            .map(value => ({ name: value.name, resourcePath: value.resourcePath }));
+        const requiredSlots = new Set(textureSlots.map(value => value.name));
+        if (![ "DiffuseMap", "NormalMap", "SpecularMap" ].every(value =>
+            requiredSlots.has(value))
+            || textureSlots.some(value => value.resourcePath !== null))
+        {
+            return null;
+        }
+        return JSON.stringify({
+            effectFilePath: String(
+                effect?._characterAuthoredEffectFilePath
+                ?? authored?.effectFilePath
+                ?? ""
+            ).replaceAll("\\", "/").toLowerCase(),
+            areaContract: bindings[index].areaContract,
+            transformUV0: bindings[index].authoredSampleBounds,
+            cutMaskInfluence: bindings[index].authoredCutMaskInfluence,
+            textureSlots,
+            parameters: DescribeAuthoredNumericParameters(authored)
+        });
+    });
+    if (contracts.some(value => value === null)) return null;
+    return Unique(contracts);
+}
+
+/** Captures public authored numeric constants without assuming a shader layout. */
+function DescribeAuthoredNumericParameters(effect)
+{
+    const result = {};
+    for (const [ name, parameter ] of Object.entries(effect?.parameters ?? {}).sort(
+        ([ left ], [ right ]) => left.localeCompare(right)
+    ))
+    {
+        if (!/^(?:material|fresnel|filmic|reflection|glass|hair)/iu.test(name)
+            || /map$/iu.test(name)
+            || typeof parameter?.AttachTextureRes === "function") continue;
+        try
+        {
+            const value = typeof parameter?.GetValue === "function"
+                ? parameter.GetValue([])
+                : parameter?.value;
+            if (!value || typeof value.length !== "number") continue;
+            const numbers = Array.from(value).map(Number);
+            if (numbers.length && numbers.every(Number.isFinite)) result[name] = numbers;
+        }
+        catch
+        {
+            // An unreadable parameter cannot strengthen or weaken an exact match.
+        }
+    }
+    return result;
+}
+
+function ComparePrivateMaterialContractFields(left, right)
+{
+    try
+    {
+        const leftValue = JSON.parse(left);
+        const rightValue = JSON.parse(right);
+        const result = [];
+        for (const key of Unique([ ...Object.keys(leftValue), ...Object.keys(rightValue) ]))
+        {
+            if (JSON.stringify(leftValue[key]) === JSON.stringify(rightValue[key])) continue;
+            if (key !== "parameters")
+            {
+                result.push(key);
+                continue;
+            }
+            for (const parameter of Unique([
+                ...Object.keys(leftValue.parameters ?? {}),
+                ...Object.keys(rightValue.parameters ?? {})
+            ]))
+            {
+                if (JSON.stringify(leftValue.parameters?.[parameter])
+                    !== JSON.stringify(rightValue.parameters?.[parameter]))
+                {
+                    result.push(`parameters.${parameter}`);
+                }
+            }
+        }
+        return result;
+    }
+    catch
+    {
+        return [ "unreadable-contract" ];
+    }
 }
 
 /**

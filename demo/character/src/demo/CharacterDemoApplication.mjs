@@ -296,6 +296,38 @@ export class CharacterDemoApplication
         return this.SelectPaperdoll(paperdoll.recordID);
     }
 
+    /** Selects one retained donor outfit after releasing the prior audit render. */
+    async SelectPaperdollForAudit(recordID)
+    {
+        if (typeof this.#renderer?.ReleaseCommitted !== "function")
+        {
+            throw new Error("Character demo renderer cannot release an audit appearance");
+        }
+        const paperdoll = this.#character?.GetPaperdolls?.()
+            .find(value => value?.recordID === String(recordID));
+        if (!paperdoll)
+        {
+            throw new Error(`Unknown character audit paper doll ${JSON.stringify(recordID)}`);
+        }
+
+        await this.#renderer.ReleaseCommitted({
+            reason: "clothing-donor-audit-replace",
+            source: this
+        });
+        return this.SelectPaperdoll(paperdoll.recordID);
+    }
+
+    /** Restores one retained paper doll after an isolated donor-outfit audit. */
+    async ResetPaperdollAfterAudit(recordID)
+    {
+        if (typeof this.#renderer?.ReleaseCommitted !== "function") return null;
+        await this.#renderer.ReleaseCommitted({
+            reason: "clothing-donor-audit-complete",
+            source: this
+        });
+        return this.SelectPaperdoll(recordID);
+    }
+
     /** Restores the selected paper doll after an isolated audit sweep. */
     async ResetPartsAfterAudit()
     {

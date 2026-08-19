@@ -25,7 +25,8 @@ const APPAREL_LOCATIONS = new Set([
 export function installCharacterDemoClothingAudit({
     application,
     context = {},
-    locations = APPAREL_LOCATIONS
+    locations = APPAREL_LOCATIONS,
+    sourceObserved = false
 } = {})
 {
     const character = application?.GetCharacter?.();
@@ -43,6 +44,7 @@ export function installCharacterDemoClothingAudit({
         .filter(slot => selectedLocations.has(slot.modifierKey.toLowerCase()))
         .flatMap(slot => slot.resources.map(resource => ({
             choiceID: resource.choiceID,
+            donorRecordID: resource.donorRecordID,
             label: resource.resPath || resource.recordID,
             locationID: slot.locationID,
             modifierKey: slot.modifierKey,
@@ -61,16 +63,23 @@ export function installCharacterDemoClothingAudit({
     const auditContext = {
         ...context,
         baselinePaperdollID: String(paperdoll.recordID),
+        sourceObserved: sourceObserved === true,
         sex: String(catalog.gender),
         pageURL: pageURL.href,
         backgroundMode: pageURL.searchParams.get("background") ?? "default",
         startedAt: new Date().toISOString()
     };
-    const promise = RunChoices(application, choices, output, auditContext);
+    const promise = RunChoices(
+        application,
+        choices,
+        output,
+        auditContext,
+        sourceObserved === true
+    );
     return { choices, output, promise };
 }
 
-async function RunChoices(application, choices, output, context)
+async function RunChoices(application, choices, output, context, sourceObserved)
 {
     const results = [];
     for (const choice of choices)
@@ -78,10 +87,12 @@ async function RunChoices(application, choices, output, context)
         let result;
         try
         {
-            const selection = await application.SelectPartForAudit(
-                choice.locationID,
-                choice.choiceID
-            );
+            const selection = sourceObserved
+                ? await application.SelectPaperdollForAudit(choice.donorRecordID)
+                : await application.SelectPartForAudit(
+                    choice.locationID,
+                    choice.choiceID
+                );
             result = ReadResult(choice, selection);
         }
         catch (error)
@@ -103,7 +114,14 @@ async function RunChoices(application, choices, output, context)
             results
         });
     }
-    await application.ResetPartsAfterAudit();
+    if (sourceObserved)
+    {
+        await application.ResetPaperdollAfterAudit(context.baselinePaperdollID);
+    }
+    else
+    {
+        await application.ResetPartsAfterAudit();
+    }
     const report = {
         status: "complete",
         ...context,
@@ -129,7 +147,11 @@ function ReadResult(choice, selection)
         ...choice,
         alpha: alphaText ? JSON.parse(alphaText) : null,
         outcome: renderer.status,
-        choiceRealization: classifyClothingChoiceRealization(choice, realization),
+        choiceRealization: classifyClothingChoiceRealization(
+            choice,
+            realization,
+            selection?.diagnostics
+        ),
         renderer: {
             status: renderer.status,
             revision: renderer.revision ?? null,
@@ -236,7 +258,7 @@ export function summarizeClothingRendererDetails(details)
     };
 }
 
-export function classifyClothingChoiceRealization(choice, realization)
+export function classifyClothingChoiceRealization(choice, realization, diagnostics = null)
 {
     const groupID = String(choice?.modifierKey ?? "").trim().toLowerCase();
     const selectedPartSourceRecordID = String(
@@ -257,6 +279,17 @@ export function classifyClothingChoiceRealization(choice, realization)
             materialStatus: configured.materialStatus ?? null,
             compositionStatus: configured.compositionStatus ?? null,
             partSourceRecordID: configured.partSourceRecordID ?? null
+        };
+    }
+
+    const suppression = diagnostics?.plan?.diagnostics?.find(value =>
+        value?.code === "SELECTION_SUPPRESSED"
+        && String(value?.message ?? "").includes(JSON.stringify(groupID)));
+    if (suppression)
+    {
+        return {
+            status: "selection-suppressed",
+            reason: suppression.message
         };
     }
 

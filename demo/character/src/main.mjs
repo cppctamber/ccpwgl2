@@ -333,7 +333,8 @@ try
             context: {
                 libraryURL,
                 resourceRoot: toolsService.paths.res.replace(/\/+$/u, "")
-            }
+            },
+            sourceObserved: parameters.get("clothingAuditObserved") === "1"
         });
     }
 

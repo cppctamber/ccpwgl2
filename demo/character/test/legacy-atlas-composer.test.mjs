@@ -4589,6 +4589,275 @@ test("configured private garment accepts one exact baked D/N/S material", async 
     assert.equal(report.applied[0].realizationStatus, "complete");
 });
 
+test("configured private support inherits one exact owner's material tuple", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const ownerEffect = PrivateGarmentFallbackFixture();
+    const supportEffect = PrivateGarmentFallbackFixture();
+    supportEffect._characterAuthoredEffect.parameters.ColorNdotLLookupMap =
+        TextureParameterFixture("res:/global/authored-ndotl.png");
+    const ownerContribution = {
+        partIndex: 30,
+        ownerSelectionIndex: 12,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/outer/private-owner",
+            materialDefinitionPath: "res:/owner/default.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.1, 0.2, 0.3, 1 ],
+                [ 0.4, 0.5, 0.6, 1 ],
+                [ 0.7, 0.8, 0.9, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: "res:/owner/colorize_body_l.png", role: "colorize-layer", target: "body" },
+            { path: "res:/owner/colorize_body_z.png", role: "colorize-zones", target: "body" },
+            { path: "res:/owner/comp_body_n.png", role: "normal-source", target: "body" },
+            { path: "res:/owner/comp_body_s.png", role: "specular-source", target: "body" }
+        ]
+    };
+    const supportContribution = {
+        partIndex: 31,
+        ownerSelectionIndex: 12,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/dependants/private-support",
+            materialDefinitionPath: null
+        },
+        materialValues: null,
+        selectedTextures: []
+    };
+    const ownerPart = {
+        partIndex: 30,
+        ownerSelectionIndex: 12,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/private-owner",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const supportPart = {
+        partIndex: 31,
+        ownerSelectionIndex: 12,
+        groupID: "outer",
+        partSourceRecordID: "male/dependants/private-support",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ ownerPart, supportPart ],
+        configuredPartBindings: [
+            {
+                configuredPart: ownerPart,
+                configuredMeshes: [ MeshFixture(ownerEffect) ]
+            },
+            {
+                configuredPart: supportPart,
+                configuredMeshes: [ MeshFixture(supportEffect) ]
+            }
+        ],
+        textureContributions: [ ownerContribution, supportContribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied.length, 2);
+    const support = report.applied.find(value => value.partIndex === 31);
+    assert.deepEqual(support.materialOwner, {
+        status: "policy",
+        rule: "retained-owner-private-material-contract-v1",
+        ownerSelectionIndex: 12,
+        partIndex: 30,
+        partSourceRecordID: "male/outer/private-owner"
+    });
+    assert.equal(support.detailPath, "res:/owner/colorize_body_l.png");
+    assert.equal(support.materialDefinitionPath, "res:/owner/default.color");
+    assert.equal(support.realizationStatus, "complete");
+    assert.equal(supportPart.compositionStatus, "configured-garment-colorized-attached");
+    assert.strictEqual(
+        supportEffect.parameters.DiffuseMap.textureRes,
+        staged.compositionTargets[3].texture
+    );
+    assert.strictEqual(
+        supportEffect.parameters.NormalMap.textureRes,
+        staged.compositionTargets[4].texture
+    );
+    assert.strictEqual(
+        supportEffect.parameters.SpecularMap.textureRes,
+        staged.compositionTargets[5].texture
+    );
+});
+
+test("configured private support rejects a divergent owner's material contract", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const ownerEffect = PrivateGarmentFallbackFixture({ materialLibraryID: 14 });
+    const supportEffect = PrivateGarmentFallbackFixture({ materialLibraryID: 10 });
+    const ownerContribution = {
+        partIndex: 40,
+        ownerSelectionIndex: 18,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/outer/private-owner",
+            materialDefinitionPath: "res:/owner/default.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.1, 0.2, 0.3, 1 ],
+                [ 0.4, 0.5, 0.6, 1 ],
+                [ 0.7, 0.8, 0.9, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: "res:/owner/colorize_body_l.png", role: "colorize-layer", target: "body" },
+            { path: "res:/owner/colorize_body_z.png", role: "colorize-zones", target: "body" },
+            { path: "res:/owner/comp_body_n.png", role: "normal-source", target: "body" },
+            { path: "res:/owner/comp_body_s.png", role: "specular-source", target: "body" }
+        ]
+    };
+    const supportContribution = {
+        partIndex: 41,
+        ownerSelectionIndex: 18,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/dependants/private-support",
+            materialDefinitionPath: null
+        },
+        materialValues: null,
+        selectedTextures: []
+    };
+    const ownerPart = {
+        partIndex: 40,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/private-owner",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const supportPart = {
+        partIndex: 41,
+        groupID: "outer",
+        partSourceRecordID: "male/dependants/private-support",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ ownerPart, supportPart ],
+        configuredPartBindings: [
+            { configuredPart: ownerPart, configuredMeshes: [ MeshFixture(ownerEffect) ] },
+            { configuredPart: supportPart, configuredMeshes: [ MeshFixture(supportEffect) ] }
+        ],
+        textureContributions: [ ownerContribution, supportContribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.applied.length, 1);
+    assert.equal(report.applied[0].partIndex, 40);
+    const deferred = report.deferred.find(value => value.partIndex === 41);
+    assert.equal(deferred.partIndex, 41);
+    assert.equal(deferred.groupID, "outer");
+    assert.equal(deferred.partSourceRecordID, "male/dependants/private-support");
+    assert.equal(deferred.reason, "body-target-unavailable");
+    assert.deepEqual(deferred.materialOwnerResolution, {
+        status: "deferred",
+        rule: "retained-owner-private-material-contract-v1",
+        reason: "owner-private-material-contract-unresolved",
+        retainedOwnerCount: 1,
+        readyOwnerCount: 1,
+        boundOwnerCount: 1,
+        comparableOwnerCount: 1,
+        matchingOwnerCount: 0,
+        differingContractFields: [ "parameters.MaterialLibraryID" ]
+    });
+    assert.equal(supportPart.compositionStatus, "deferred");
+    assert.deepEqual(supportEffect.materialDiffuseColor, [ 1, 0, 1, 1 ]);
+});
+
+test("configured private support does not inherit over retained material inputs", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const ownerEffect = PrivateGarmentFallbackFixture({ materialLibraryID: 14 });
+    const supportEffect = PrivateGarmentFallbackFixture({ materialLibraryID: 14 });
+    const ownerContribution = {
+        partIndex: 50,
+        ownerSelectionIndex: 20,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/outer/private-owner",
+            materialDefinitionPath: "res:/owner/default.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.1, 0.2, 0.3, 1 ],
+                [ 0.4, 0.5, 0.6, 1 ],
+                [ 0.7, 0.8, 0.9, 1 ]
+            ]
+        },
+        selectedTextures: [
+            { path: "res:/owner/colorize_body_l.png", role: "colorize-layer", target: "body" },
+            { path: "res:/owner/colorize_body_z.png", role: "colorize-zones", target: "body" },
+            { path: "res:/owner/comp_body_n.png", role: "normal-source", target: "body" },
+            { path: "res:/owner/comp_body_s.png", role: "specular-source", target: "body" }
+        ]
+    };
+    const supportContribution = {
+        partIndex: 51,
+        ownerSelectionIndex: 20,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/dependants/private-support",
+            materialDefinitionPath: null
+        },
+        materialValues: null,
+        selectedTextures: [
+            { path: "res:/support/incomplete_l.png", role: "colorize-layer", target: "body" }
+        ]
+    };
+    const ownerPart = {
+        partIndex: 50,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/private-owner",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const supportPart = {
+        partIndex: 51,
+        groupID: "outer",
+        partSourceRecordID: "male/dependants/private-support",
+        materialStatus: "deferred",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ ownerPart, supportPart ],
+        configuredPartBindings: [
+            { configuredPart: ownerPart, configuredMeshes: [ MeshFixture(ownerEffect) ] },
+            { configuredPart: supportPart, configuredMeshes: [ MeshFixture(supportEffect) ] }
+        ],
+        textureContributions: [ ownerContribution, supportContribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.applied.length, 1);
+    assert.equal(report.applied[0].partIndex, 50);
+    const deferred = report.deferred.find(value => value.partIndex === 51);
+    assert.equal(deferred.reason, "body-colorize-zones-unresolved");
+    assert.equal(
+        deferred.materialOwnerResolution.reason,
+        "support-retains-own-material-inputs"
+    );
+    assert.equal(supportPart.compositionStatus, "deferred");
+    assert.deepEqual(supportEffect.materialDiffuseColor, [ 1, 0, 1, 1 ]);
+});
+
 test("configured private garment accepts one exact version-authored RGBA layer", async () =>
 {
     const fixture = AtlasComposerFixture();
@@ -7753,6 +8022,36 @@ function AtomicEffectFixture({
         };
     }
     return effect;
+}
+
+function PrivateGarmentFallbackFixture({ materialLibraryID = 14 } = {})
+{
+    const fallback = AtomicEffectFixture({
+        texture: { path: "#neutral-proof" },
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    const authored = AtomicEffectFixture({
+        texture: null,
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 1, 1, 1 ],
+        materialSpecularCurve: [ 400, 100, 0.5, 0 ],
+        materialLibraryID: [ materialLibraryID, 0, 0, 0 ]
+    });
+    authored.effectFilePath =
+        "res:/graphics/effect/managed/interior/avatar/skinnedavatarbrdflinear.sm_hi";
+    for (const name of [ "DiffuseMap", "NormalMap", "SpecularMap" ])
+    {
+        authored.parameters[name].textureRes = null;
+        authored.parameters[name].resourcePath = "";
+        authored.parameters[name].isAttached = false;
+    }
+    fallback._characterAuthoredEffect = authored;
+    fallback._characterAuthoredEffectFilePath = authored.effectFilePath;
+    fallback._characterAuthoredTransformUV0 = [ 0, 0, 0.5, 1 ];
+    fallback._characterAuthoredCutMaskInfluence = [ 0, 0, 0, 0 ];
+    fallback._characterGarmentMaterialFallback = true;
+    return fallback;
 }
 
 function TextureParameterFixture(resourcePath)

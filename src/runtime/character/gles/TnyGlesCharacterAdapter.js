@@ -1050,6 +1050,10 @@ export class TnyGlesCharacterAdapter
                 groupID: operation.groupID,
                 layerIndex: operation.layerIndex,
                 partIndex: operation.partIndex,
+                ownerSelectionIndex: ResolveConfiguredPartOwnerSelectionIndex(
+                    staged,
+                    operation
+                ),
                 partSourceRecordID: operation.partSourceRecordID ?? null,
                 configurationPath: operation.configurationPath,
                 geometryPath: operation.geometryPath,
@@ -1240,6 +1244,7 @@ export class TnyGlesCharacterAdapter
             groupID: operation.groupID,
             layerIndex: operation.layerIndex,
             partIndex: operation.partIndex,
+            ownerSelectionIndex: ResolveConfiguredPartOwnerSelectionIndex(staged, operation),
             partSourceRecordID: operation.partSourceRecordID ?? null,
             configurationPath: operation.configurationPath,
             geometryPath,
@@ -2933,6 +2938,22 @@ function CloneTextureContribution(value)
         diagnostics: value.diagnostics.map(diagnostic => ({ ...diagnostic })),
         evidence: { ...value.evidence }
     };
+}
+
+/** Retains the exact selection owner already carried by the texture plan. */
+function ResolveConfiguredPartOwnerSelectionIndex(staged, operation)
+{
+    if (Number.isInteger(operation?.ownerSelectionIndex)
+        && operation.ownerSelectionIndex >= 0)
+    {
+        return operation.ownerSelectionIndex;
+    }
+    const contribution = staged?.textureContributions?.find(value =>
+        value?.partIndex === operation?.partIndex);
+    return Number.isInteger(contribution?.ownerSelectionIndex)
+        && contribution.ownerSelectionIndex >= 0
+        ? contribution.ownerSelectionIndex
+        : null;
 }
 
 function CloneMorphTarget(value)

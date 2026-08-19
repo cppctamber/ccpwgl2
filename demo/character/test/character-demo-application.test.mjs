@@ -54,3 +54,11 @@ test("character demo replaces parts in place without page navigation", () =>
         /routePartSelection:[\s\S]*?globalThis\.location\.assign\(url\)/u
     );
 });
+
+test("source-observed clothing audits release before selecting donor outfits", () =>
+{
+    assert.match(applicationSource, /async SelectPaperdollForAudit\(recordID\)/u);
+    assert.match(applicationSource, /reason:\s*"clothing-donor-audit-replace"/u);
+    assert.match(applicationSource, /reason:\s*"clothing-donor-audit-complete"/u);
+    assert.match(mainSource, /clothingAuditObserved/u);
+});

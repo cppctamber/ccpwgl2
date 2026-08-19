@@ -94,6 +94,27 @@ test("clothing audit does not credit a configured support to its atlas-only owne
     });
 });
 
+test("clothing audit reports an exact selection suppression instead of unresolved", () =>
+{
+    assert.deepEqual(classifyClothingChoiceRealization({
+        modifierKey: "topouter",
+        partSourceRecordID: "male/topouter/shirt"
+    }, {
+        configuredParts: [],
+        bodyComposition: { bodyDiffuse: { passes: [] } }
+    }, {
+        plan: {
+            diagnostics: [ {
+                code: "SELECTION_SUPPRESSED",
+                message: "Selection \"topouter\" is suppressed by \"outer\" through an exact typed relationship."
+            } ]
+        }
+    }), {
+        status: "selection-suppressed",
+        reason: "Selection \"topouter\" is suppressed by \"outer\" through an exact typed relationship."
+    });
+});
+
 test("clothing audit retains compact configured material realization evidence", () =>
 {
     const summary = summarizeClothingRendererDetails({
