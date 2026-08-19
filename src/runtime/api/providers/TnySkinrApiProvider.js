@@ -331,9 +331,54 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
         return {
             name: generated.name ?? skin.name ?? null,
             dna: generated.dna,
-            pattern: this.constructor.FromPatternJson(generated.pattern)
+            pattern: this.constructor.FromPatternJson(generated.pattern),
+            blendMode: this.constructor.ToBlendMode(layout.pattern_blend_mode)
         };
     }
+
+    /**
+     * Translates a SKINR blend mode into the Carbon permutation value
+     * EveShip2.SetBlendMode takes.
+     *
+     * The translation belongs here rather than in the engine: SKINR has its own
+     * vocabulary and its own spellings, and EveShip2 deliberately accepts the
+     * permutation value and nothing else so a bad one throws instead of quietly
+     * becoming OVERLAY.
+     *
+     * Returns null when SKINR names a mode Carbon has no permutation for -
+     * ADD, MULTIPLY, DIVIDE and DIFFERENCE are in SKINR's set but not in
+     * Carbon's five - so the caller can decide, and see that it happened,
+     * rather than being silently given OVERLAY.
+     *
+     * @param {String} [value] - e.g. layout.pattern_blend_mode
+     * @returns {String|null} e.g. "BLEND_MODE_NESTED"
+     */
+    static ToBlendMode(value)
+    {
+        const key = String(value || "normal")
+            .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+            .replace(/[\s-]+/g, "_")
+            .toUpperCase();
+
+        const name = key === "NORMAL" || key === "NONE" ? "OVERLAY" : key;
+        const permutation = `BLEND_MODE_${name}`;
+
+        return TnySkinrApiProvider.BLEND_MODES.includes(permutation) ? permutation : null;
+    }
+
+    /**
+     * The blend modes Carbon declares a permutation for. Mirrors
+     * EveShip2.BLEND_MODES; duplicated rather than imported so this provider
+     * does not depend on an eve class.
+     * @type {Array<String>}
+     */
+    static BLEND_MODES = [
+        "BLEND_MODE_OVERLAY",
+        "BLEND_MODE_SUBTRACT",
+        "BLEND_MODE_EXCLUSION",
+        "BLEND_MODE_NESTED",
+        "BLEND_MODE_NESTED_INVERTED"
+    ];
 
 
     /**
