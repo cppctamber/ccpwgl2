@@ -33,6 +33,13 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     apiRoot = null;
 
     /**
+     * Route to the service SKINR design store. Derived from the service origin
+     * when absent - see {@link DesignRootFrom}.
+     * @type {String|null}
+     */
+    designUrl = null;
+
+    /**
      * tools-core endpoint that generates a SOF pattern from a SKINR payload.
      * @type {String|null}
      */
@@ -52,6 +59,7 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
         if (options.hasOwnProperty("skinrUrl")) this.skinrUrl = options.skinrUrl;
         if (options.toolsService) this.SetToolsService(options.toolsService, options);
         if (options.apiRoot) this.apiRoot = String(options.apiRoot).replace(/\/+$/, "");
+        if (options.designUrl) this.designUrl = options.designUrl;
         if (options.apiService) this.apiService = options.apiService;
         if (options.patternUrl) this.patternUrl = options.patternUrl;
     }
@@ -224,36 +232,75 @@ export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
     async GenerateDnaFromId(skinrID)
     {
         if (!skinrID) throw new TypeError("SKINR DNA generation requires a skinr id");
-        if (!this.patternUrl)
+
+        // Two steps, on two different roots.
+        //
+        // This used to GET `${patternUrl}/${id}`, which the service answers by
+        // asking ESI for /cosmetics/skinr/{id}. That endpoint serves BAKED
+        // designs only, so every design held in tools-core's own SKINR database
+        // came back 404 - "SKINR pattern generation failed (404): ESI ... failed
+        // (404)" - which reads like a generation failure rather than a lookup
+        // against the wrong store.
+        //
+        // The designs live locally, at /v1/skinr/designs/{id}, off the SERVICE
+        // ORIGIN rather than the target-and-build root that patternUrl uses.
+        // So fetch the design, then hand it to the same POST the payload path
+        // already uses.
+        const design = await this.GetDesign(skinrID);
+        return this.GenerateDna(design);
+    }
+
+    /**
+     * Fetches a SKINR design by id from the service's own SKINR database.
+     * @param {String} skinrID
+     * @returns {Promise<Object>} the raw design payload
+     */
+    async GetDesign(skinrID)
+    {
+        const root = this.designUrl || this.constructor.DesignRootFrom(this.apiRoot || this.patternUrl);
+
+        if (!root)
         {
             throw new Error(
-                "SKINR pattern generation needs a tools-core pattern url; "
-                + "construct TnySkinrApiProvider with { patternUrl }"
+                "SKINR design lookup needs a route; construct TnySkinrApiProvider "
+                + "with { designUrl }, { apiRoot } or { toolsService }"
             );
         }
 
-        const response = await fetch(`${this.patternUrl}/${encodeURIComponent(skinrID)}`);
+        const response = await fetch(`${root}/${encodeURIComponent(skinrID)}?form=raw`);
 
         if (!response.ok)
         {
-            // The service's message is the useful one here - "not signed in",
-            // "no SOF DNA for that hull" - so it is surfaced rather than
-            // replaced with a bare status.
             const detail = await response.json().catch(() => null);
 
             throw new Error(
-                `SKINR pattern generation failed (${response.status})`
+                `SKINR design ${skinrID} not found (${response.status})`
                 + (detail && detail.error ? `: ${detail.error}` : "")
+                + ". Unbaked or private designs cannot be fetched - paste the payload instead."
             );
         }
 
-        const generated = await response.json();
+        return response.json();
+    }
 
-        return {
-            name: generated.name ?? null,
-            dna: generated.dna,
-            pattern: this.constructor.FromPatternJson(generated.pattern)
-        };
+    /**
+     * The design route lives on the service origin, not under /{target}/{build},
+     * so it is derived by discarding the path of whatever root we were given.
+     * @param {String} url
+     * @returns {String|null}
+     */
+    static DesignRootFrom(url)
+    {
+        if (!url) return null;
+
+        try
+        {
+            return `${new URL(url).origin}/v1/skinr/designs`;
+        }
+        catch (err)
+        {
+            return null;
+        }
     }
 
     /**
