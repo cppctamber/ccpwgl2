@@ -688,15 +688,25 @@ function ResolveIdentifier(name, context = {})
         }
     }
 
-    // Carbon resolves a bare identifier against ONE table - the compiling
-    // controller's own variable view (`Tr2ControllerExpression.cpp:546`) - and
-    // treats anything else as a compile error. ccpwgl used to fall through to
-    // any property on the context, which quietly turned `controller`, `owner`,
-    // `stateMachine` and `time` into identifiers. Only the two clock-ish names
-    // survive that, because curve expressions do read them.
-    if (CONTEXT_IDENTIFIERS.has(name) && Object.prototype.hasOwnProperty.call(context, name))
+    // A bare identifier may name a NUMBER the caller put on the context, and
+    // nothing else. Curve expressions reach their own inputs this way -
+    // `Tr2CurveScalarExpression.GetValue` evaluates against
+    // `{ curve, time, input1..input4 }` and its authored expressions are
+    // literally "input1*input2" - and actions read `stateTime` the same way.
+    //
+    // Requiring a number is what makes this safe. Carbon resolves identifiers
+    // against one table, the controller's own variables
+    // (`Tr2ControllerExpression.cpp:546`), and the hazard in reaching past that
+    // was never the numbers: it was `controller`, `owner`, `stateMachine` and
+    // `curve` - objects sitting on the same context - quietly becoming terms.
+    // Those stay unresolved.
+    //
+    // An allowlist of names was tried on 2026-08-19 and was wrong: it missed
+    // `input1..input4`, so every curve expression evaluated to zero and VFX
+    // stopped engine-wide.
+    if (Object.prototype.hasOwnProperty.call(context, name) && typeof context[name] === "number")
     {
-        return NormalizeValue(context[name]);
+        return context[name];
     }
 
     // Carbon fails the whole condition here, which makes the mistake loud. That
@@ -706,7 +716,6 @@ function ResolveIdentifier(name, context = {})
     return 0;
 }
 
-const CONTEXT_IDENTIFIERS = new Set([ "time", "stateTime" ]);
 
 const s_warnedIdentifiers = new Set();
 

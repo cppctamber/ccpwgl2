@@ -17,11 +17,12 @@ const modules = loadStateModules();
 testVetoAbandonsTheWholeWalk();
 testUnresolvedDestinationDoesNotBlockLaterTransitions();
 testFinalizerHoldsTheStateUntilItPermits();
-testSelfTransitionRestartsTheState();
+testSelfTransitionDoesNotRestartTheStateEveryFrame();
 testChainedTransitionsSeeEveryVariableAsDirty();
 testWritingAVariableMarksItDirty();
 testServerTimeFamily();
 testUnresolvedIdentifierIsZero();
+testCurveExpressionReadsItsInputs();
 testCarbonRandomStaysInRange();
 testServerClockComesFromTheContextWhenSupplied();
 testExponentOperator();
@@ -101,12 +102,18 @@ function testFinalizerHoldsTheStateUntilItPermits()
 }
 
 /**
- * Carbon loops on `next` alone and calls `Start()` unconditionally after each
- * hop (`Tr2StateMachine.cpp:143-149`); the state stopped itself inside `Update`,
- * so `Start()` runs for real. ccpwgl broke the loop when the destination was the
- * current state, dropping authored self-transitions entirely.
+ * A self-transition must NOT restart the state, and this is a deliberate
+ * divergence from Carbon rather than a missing feature.
+ *
+ * Carbon loops on `next` alone (`Tr2StateMachine.cpp:143-149`) so a state can
+ * re-enter itself. That is safe there because transitions are only re-evaluated
+ * when a variable they read changes. ccpwgl evaluates live every frame (D038),
+ * so allowing it restarts the state on EVERY frame while the condition stays
+ * true - `Tr2ActionPlayCurveSet.Start` replays its curve set from zero each
+ * time. Allowing it on 2026-08-19 stopped VFX on both backends until this
+ * guard came back.
  */
-function testSelfTransitionRestartsTheState()
+function testSelfTransitionDoesNotRestartTheStateEveryFrame()
 {
     const
         machine = buildMachine([ "loop" ]),
@@ -115,15 +122,16 @@ function testSelfTransitionRestartsTheState()
     let starts = 0;
     loop.actions.push({ Start: () => starts++ });
 
-    let armed = false;
-    loop.transitions.push(makeTransition("loop", () => armed));
+    // The shape that broke it: a condition that is simply true, forever.
+    loop.transitions.push(makeTransition("loop", () => true));
 
     machine.Start();
     assert.equal(starts, 1, "entering the machine starts the state once");
 
-    armed = true;
-    machine.Update(0.016, new Set());
-    assert.ok(starts > 1, "a self-transition must re-run the state's actions");
+    for (let frame = 0; frame < 10; frame++) machine.Update(0.016, new Set());
+
+    assert.equal(starts, 1, "ten frames later it must still have started exactly once");
+    assert.equal(machine.GetCurrentState().name, "loop", "and it is still the current state");
 }
 
 /**
@@ -229,8 +237,27 @@ function testServerTimeFamily()
 function testUnresolvedIdentifierIsZero()
 {
     assert.equal(evaluate("IsWarping"), 0, "an undeclared variable reads as 0");
-    assert.equal(evaluate("owner"), 0, "context objects are not identifiers");
-    assert.equal(evaluate("stateMachine"), 0, "context objects are not identifiers");
+    assert.equal(evaluate("owner", { owner: { name: "ship" } }), 0, "context objects are not identifiers");
+    assert.equal(evaluate("stateMachine", { stateMachine: {} }), 0, "context objects are not identifiers");
+}
+
+/**
+ * A curve expression reaches its own inputs as bare identifiers:
+ * `Tr2CurveScalarExpression.GetValue` evaluates "input1*input2" against
+ * `{ curve, time, input1..input4 }`. Restricting context identifiers to a
+ * name allowlist on 2026-08-19 missed those, so every curve expression
+ * evaluated to 0 - activation strength included - and VFX stopped engine-wide.
+ */
+function testCurveExpressionReadsItsInputs()
+{
+    const context = { curve: {}, time: 72.237, input1: 1, input2: 1.5, input3: 0, input4: 0 };
+
+    assert.equal(evaluate("input1*input2", context), 1.5, "a curve reads its own inputs");
+    assert.equal(evaluate("input1+input2>0?1:0", context), 1, "including inside a conditional");
+    assert.equal(evaluate("time", context), 72.237, "and the clock the curve supplies");
+
+    // The object on the same context stays unresolved - that was the real hazard.
+    assert.equal(evaluate("curve", context), 0, "an object on the context is not a term");
 }
 
 /**

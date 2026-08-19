@@ -23,6 +23,9 @@ export class Tr2StateMachine extends meta.Model
 
     _stateTime = 0;
 
+    // Cache for GetAllVariableNames; cleared whenever the controller changes.
+    _allVariableNames = null;
+
     OnSimClockRebase(oldTime, newTime)
     {
         const diff = newTime - oldTime;
@@ -76,6 +79,7 @@ export class Tr2StateMachine extends meta.Model
     {
         this.Unlink();
         this._controller = controller || null;
+        this._allVariableNames = null;
 
         for (let i = 0; i < this.states.length; i++)
         {
@@ -130,7 +134,17 @@ export class Tr2StateMachine extends meta.Model
     GetAllVariableNames()
     {
         const variables = this._controller && this._controller.variables ? this._controller.variables : [];
-        return new Set(variables.map(variable => variable.name));
+
+        // Cached: this was rebuilt on every hop of every machine, every frame -
+        // an array from `map` plus a Set - for a value nothing reads. The
+        // variable list only changes when the controller relinks, and `Link`
+        // clears this.
+        if (!this._allVariableNames || this._allVariableNames.size !== variables.length)
+        {
+            this._allVariableNames = new Set(variables.map(variable => variable.name));
+        }
+
+        return this._allVariableNames;
     }
 
     Stop()
@@ -170,18 +184,36 @@ export class Tr2StateMachine extends meta.Model
         // The state stops ITSELF inside Update before handing over its
         // destination, exactly as Carbon does, so this loop must not stop it
         // again - it only enters the next one (`Tr2StateMachine.cpp:143-149`).
+        // Each hop re-evaluates with EVERY variable dirty, which is what lets a
+        // zero-duration chain continue inside one frame; an empty set here means
+        // the opposite.
         //
-        // Two things follow from copying Carbon's loop condition:
-        //   - a state may transition to ITSELF; Stop() has already deactivated
-        //     it, so Start() re-runs its actions instead of no-opping;
-        //   - each hop re-evaluates with EVERY variable dirty, which is what
-        //     lets a zero-duration chain continue inside one frame. Passing an
-        //     empty set here (as this did) means the opposite.
-        for (let i = 0; next && i < 20; i++)
+        // SELF-TRANSITIONS ARE REFUSED, and this is a deliberate divergence.
+        // Carbon loops on `next` alone, so a state may re-enter itself and
+        // restart its actions. That is safe THERE because a transition is only
+        // re-evaluated when a variable it reads changes
+        // (`Tr2StateMachineState.cpp:210`). ccpwgl evaluates every condition
+        // live every frame on purpose (D038, and the state-loss note in
+        // `Tr2StateMachineTransition.CanTransition`), so the same loop turns a
+        // self-transition whose condition merely STAYS true into a restart on
+        // every frame - `Tr2ActionPlayCurveSet.Start` replays its curve set from
+        // zero each time, and nothing visibly animates again. Allowing it on
+        // 2026-08-19 stopped VFX across both backends.
+        //
+        // Restoring self-transitions needs the dirty-variable gate Carbon has,
+        // not a change here.
+        for (let i = 0; next && next !== this._currentState && i < 20; i++)
         {
             this._currentState = next;
             this._stateTime = 0;
             if (this._currentState.Start) this._currentState.Start(this._controller);
+
+            // Carbon re-evaluates each hop with every variable dirty
+            // (`Tr2StateMachine.cpp:148`) so a zero-duration chain continues in
+            // the same frame. ccpwgl's transitions never read the dirty set -
+            // they evaluate live, by design - so the cached set is passed rather
+            // than a fresh one built per hop. If gating is ever implemented, THIS
+            // is the call that has to say "everything changed".
             next = this._currentState.Update(0, this._controller, owner, this, this.GetAllVariableNames());
         }
     }

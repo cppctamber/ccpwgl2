@@ -35,19 +35,41 @@ export class Tr2SyncToAnimation extends meta.Model
     mask = "";
 
     /**
+     * Kill switch for the whole finalizer, for bisecting a live scene: set it
+     * false and every state that would be held is released instead, which is
+     * how this class behaved before 2026-08-19.
+     * @type {Boolean}
+     */
+    static ENABLED = true;
+
+    /**
      * Checks whether the state may leave yet.
      * @param {Tr2Controller} controller
      * @returns {Boolean} true when the animation has finished, or cannot be found
      */
     CanTransition(controller)
     {
+        if (!Tr2SyncToAnimation.ENABLED) return true;
+
         const owner = controller && controller.GetOwner ? controller.GetOwner() : controller && controller.owner;
         if (!owner) return true;
+
+        // An EMPTY mask fails open. Carbon's empty mask means the base layer
+        // (`Tr2GrannyAnimation.cpp:303-317` returns `&m_baseLayer` for null) and
+        // it asks that one layer for its remaining time. ccpwgl's
+        // `IsMaskAnimationPlaying("")` answers a different question - whether ANY
+        // animation with no track mask is playing - and a hull's looping idle
+        // animation answers yes forever. Gating on that held every state with
+        // this finalizer, with its actions already stopped, which stopped VFX
+        // engine-wide on 2026-08-19.
+        //
+        // Only a NAMED mask gates, where the question and the answer line up.
+        if (!this.mask) return true;
 
         // ccpwgl's own answer, and the one every space object actually has.
         if (owner.IsAnimationPlaying)
         {
-            return !owner.IsAnimationPlaying(this.mask || "");
+            return !owner.IsAnimationPlaying(this.mask);
         }
 
         const animationController = owner.GetAnimationController
