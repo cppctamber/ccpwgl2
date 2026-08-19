@@ -16,6 +16,7 @@ export class TnyGlesFoundationCoveragePolicy
     Resolve({
         sex,
         foundationLayout = null,
+        foundationSupports = [],
         groupID,
         partSourceRecordID,
         metadata = null
@@ -27,9 +28,11 @@ export class TnyGlesFoundationCoveragePolicy
         const footwear = normalizedGroupID === "feet"
             ? ResolveAuthoredFootwearHeight(metadata)
             : null;
-        const authoredCoverage = normalizedSex === "male"
-            ? ResolveAuthoredModifierCoverage(metadata)
-            : null;
+        const authoredCoverage = ResolveAuthoredModifierCoverage(
+            metadata,
+            normalizedSex,
+            foundationSupports
+        );
 
         if (authoredCoverage?.length)
         {
@@ -77,10 +80,17 @@ export class TnyGlesFoundationCoveragePolicy
     }
 }
 
-function ResolveAuthoredModifierCoverage(metadata)
+/**
+ * Maps exact authored occlusions to independently captured nude carriers.
+ * Category-to-carrier coverage remains the reviewed male-only policy. Sleeve
+ * support coverage is sex-neutral because the exact torso dependency and the
+ * selected garment's matching parent-path occlusion are both retained.
+ */
+function ResolveAuthoredModifierCoverage(metadata, sex, foundationSupports)
 {
     if (!metadata || !Array.isArray(metadata.occlusions)) return [];
 
+    const supportRoles = ResolveFoundationSupportRoles(sex, foundationSupports);
     const result = [];
     for (const reference of metadata.occlusions)
     {
@@ -90,18 +100,65 @@ function ResolveAuthoredModifierCoverage(metadata)
         ).trim().toLowerCase();
         const modifierPath = String(reference?.modifierPath ?? "").trim().toLowerCase();
         const resolvedKey = modifierLocationKey || modifierPath;
-        const foundationRole = FOUNDATION_ROLE_BY_MODIFIER_LOCATION.get(resolvedKey);
+        const foundationRole = sex === "male"
+            ? FOUNDATION_ROLE_BY_MODIFIER_LOCATION.get(resolvedKey)
+            : null;
 
-        if (!foundationRole) continue;
+        if (foundationRole)
+        {
+            result.push({
+                authoredValue,
+                modifierLocationKey: resolvedKey,
+                foundationRole,
+                relation: modifierLocationKey
+                    ? "typed-modifier-location"
+                    : "exact-modifier-path-fallback"
+            });
+            continue;
+        }
+
+        const support = supportRoles.get(modifierPath);
+        if (!support) continue;
 
         result.push({
             authoredValue,
-            modifierLocationKey: resolvedKey,
-            foundationRole,
-            relation: modifierLocationKey
-                ? "typed-modifier-location"
-                : "exact-modifier-path-fallback"
+            modifierPath,
+            supportPartSourceRecordID: support.partSourceRecordID,
+            foundationRole: support.role,
+            relation: "exact-foundation-support-parent-path"
         });
+    }
+
+    return result;
+}
+
+/** Builds the exact parent-path-to-carrier map retained by foundation setup. */
+function ResolveFoundationSupportRoles(sex, foundationSupports)
+{
+    const normalizedSex = String(sex ?? "").trim().toLowerCase();
+    const result = new Map();
+
+    for (const value of foundationSupports ?? [])
+    {
+        const role = String(value?.role ?? "").trim();
+        const partSourceRecordID = String(
+            value?.partSourceRecordID ?? ""
+        ).trim().toLowerCase();
+        const prefix = `${normalizedSex}/dependants/`;
+        if (!role || !partSourceRecordID.startsWith(prefix)) continue;
+
+        const relative = partSourceRecordID.slice(`${normalizedSex}/`.length);
+        const separator = relative.lastIndexOf("/");
+        if (separator <= 0) continue;
+        const parentPath = relative.slice(0, separator);
+        const expectedRole = parentPath === "dependants/sleevesupper"
+            ? "sleevesUpper"
+            : parentPath === "dependants/sleeveslower"
+                ? "sleevesLower"
+                : null;
+        if (role !== expectedRole || result.has(parentPath)) continue;
+
+        result.set(parentPath, { role, partSourceRecordID });
     }
 
     return result;

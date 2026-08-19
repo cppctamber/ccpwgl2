@@ -901,6 +901,61 @@ test("legacy adapter applies exact morph requests only during atomic commit and 
     assert.deepEqual(calls.map(value => value[0]), [ "match", "acquire", "release" ]);
 });
 
+test("legacy adapter defers an ambiguous loaded morph target without failing the appearance", async () =>
+{
+    const fixture = CreateFixture();
+    const calls = [];
+    const morphDeformation = {
+        ClassifyTarget(resource, targets)
+        {
+            calls.push([ "classify", resource.path, targets[0].targetName ]);
+            return { status: "ambiguous", ambiguousMeshIndices: [ 0 ] };
+        },
+        HasAnyTarget()
+        {
+            throw new Error("classification fallback must not run");
+        },
+        async Acquire()
+        {
+            throw new Error("ambiguous morph must not be acquired");
+        },
+        Release() { return true; }
+    };
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        morphDeformation
+    });
+    const construction = CreateConstruction("male");
+    construction.morphTargets = [ {
+        modifierPath: "utilityshapes/pushjackethighshape",
+        targetName: "PushJacketHighShape",
+        weight: 0.15,
+        ownerGroupID: "topouter",
+        evidence: {
+            status: "policy",
+            rule: "legacy-gles-unique-normalized-morph-target-match-v1"
+        }
+    } ];
+
+    const staged = await adapter.Prepare(construction);
+    await adapter.Commit(staged);
+
+    assert.ok(calls.length > 0);
+    assert.equal(staged.pendingMorphDeformations.length, 0);
+    assert.equal(staged.morphDeformation.length, 1);
+    assert.equal(staged.morphDeformation[0].status, "deferred-target-ambiguous");
+    assert.equal(
+        staged.morphDeformation[0].reason,
+        "loaded-morph-target-identity-ambiguous"
+    );
+    assert.deepEqual(staged.morphDeformation[0].resourcePaths, []);
+    assert.ok(staged.morphDeformation[0].ambiguousResourcePaths.length > 0);
+
+    adapter.Release(staged);
+});
+
 test("legacy adapter transfers conflicting morph leases during an appearance handoff", async () =>
 {
     const fixture = CreateFixture();
@@ -1865,6 +1920,8 @@ test("legacy adapter hides every exact male feet carrier after reviewed boots at
     assert.deepEqual(staged.foundationCoverage, [ {
         status: "applied",
         reason: null,
+        ownerPartIndex: 0,
+        groupID: "feet",
         partSourceRecordID: "male/feet/bootsam01",
         roles: [ "feet" ],
         strategy: "hide-carrier",
@@ -1996,6 +2053,84 @@ test("legacy adapter hides qualified male body carriers and retains head and han
     adapter.Release(staged);
 });
 
+test("legacy adapter hides exact authored sleeve supports only after the garment is ready", async () =>
+{
+    const fixture = CreateFixture();
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const staged = await adapter.Prepare(CreateMaleSleeveCoverageConstruction());
+    const upper = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "sleevesUpper");
+    const lower = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "sleevesLower");
+    const torso = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "torso");
+
+    assert.equal(upper.display, false);
+    assert.equal(lower.display, false);
+    assert.equal(torso.display, true);
+    assert.deepEqual(staged.foundationCoverage[0].applied.map(value => value.role), [
+        "sleevesUpper",
+        "sleevesLower"
+    ]);
+
+    adapter.Release(staged);
+});
+
+test("legacy adapter coalesces the exact duplicate upper-sleeve claims from donor 3020201", async () =>
+{
+    const fixture = CreateFixture();
+
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+    const staged = await adapter.Prepare(
+        CreateMaleDuplicateSleeveCoverageConstruction()
+    );
+    const upper = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "sleevesUpper");
+    const torso = staged.backend.visualModel.meshes.find(mesh =>
+        mesh._characterFoundationRole === "torso");
+
+    assert.equal(upper.display, false);
+    assert.equal(torso.display, false);
+    assert.equal(staged.foundationCoverage.length, 2);
+    assert.deepEqual(staged.foundationCoverage.map(value => ({
+        groupID: value.groupID,
+        partSourceRecordID: value.partSourceRecordID,
+        status: value.status
+    })), [ {
+        groupID: "topouter",
+        partSourceRecordID: "male/topouter/shirtam01",
+        status: "applied"
+    }, {
+        groupID: "outer",
+        partSourceRecordID: "male/outer/jacketcm01",
+        status: "applied"
+    } ]);
+    assert.deepEqual(staged.foundationCoverage[0].applied.map(value => value.role), [
+        "torso",
+        "sleevesUpper"
+    ]);
+    assert.equal(staged.foundationCoverage[0].applied[1].previousDisplay, true);
+    assert.equal(staged.foundationCoverage[0].applied[1].sharedApplication, undefined);
+    assert.deepEqual(staged.foundationCoverage[1].applied, [ {
+        role: "sleevesUpper",
+        meshIndex: staged.foundationCoverage[0].applied[1].meshIndex,
+        display: false,
+        sharedApplication: true,
+        sharedFromPartSourceRecordID: "male/topouter/shirtam01"
+    } ]);
+
+    adapter.Release(staged);
+});
+
 test("legacy adapter commits and releases exact female boot triangle coverage", async () =>
 {
     const fixture = CreateFixture();
@@ -2093,6 +2228,8 @@ test("legacy adapter replaces split female feet with a configured skin consumer"
     assert.deepEqual(staged.foundationCoverage, [ {
         status: "applied",
         reason: null,
+        ownerPartIndex: 0,
+        groupID: "feet",
         partSourceRecordID: "female/feet/posed-footwear",
         roles: [ "feet" ],
         strategy: "hide-carrier",
@@ -2137,6 +2274,8 @@ test("legacy adapter defers exact coverage when the configured boot is not rende
     assert.deepEqual(staged.foundationCoverage, [ {
         status: "deferred-not-render-ready",
         reason: "configured-part-not-render-ready",
+        ownerPartIndex: 0,
+        groupID: "feet",
         partSourceRecordID: "male/feet/bootsam01",
         roles: [ "feet" ],
         strategy: "hide-carrier",
@@ -2828,6 +2967,114 @@ function CreateMaleTorsoCoverageConstruction()
             }
         }
     });
+
+    return construction;
+}
+
+function CreateMaleSleeveCoverageConstruction()
+{
+    const construction = CreateConstruction("male", [
+        [ "torso", "res:/custom/male-torso.gr2" ],
+        [ "sleevesUpper", "res:/custom/male-upper-sleeves.gr2" ],
+        [ "sleevesLower", "res:/custom/male-lower-sleeves.gr2" ]
+    ]);
+
+    construction.evidence = {
+        status: "policy",
+        rule: "legacy-opengl-appearance-v1"
+    };
+    construction.resolvedPartCount = 1;
+    construction.configuredPartCount = 1;
+    construction.deferredContributionCount = 0;
+    construction.textureContributions = [ IdentityContribution("outer") ];
+    construction.operations.splice(-1, 0, {
+        operation: "configured-part",
+        layerIndex: 0,
+        partIndex: 0,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/jacket-corp",
+        configurationPath: "res:/custom/jacket.black",
+        geometryPath: "res:/custom/jacket.gr2",
+        foundationCoverage: {
+            strategy: "hide-carrier",
+            roles: [ "sleevesUpper", "sleevesLower" ],
+            evidence: {
+                status: "policy",
+                rule: "legacy-opengl-authored-modifier-coverage-v1",
+                sex: "male",
+                groupID: "outer",
+                partSourceRecordID: "male/outer/jacket-corp",
+                relationships: [ {
+                    authoredValue: "dependants/sleevesupper",
+                    modifierPath: "dependants/sleevesupper",
+                    supportPartSourceRecordID:
+                        "male/dependants/sleevesupper/standard",
+                    foundationRole: "sleevesUpper",
+                    relation: "exact-foundation-support-parent-path"
+                }, {
+                    authoredValue: "dependants/sleeveslower",
+                    modifierPath: "dependants/sleeveslower",
+                    supportPartSourceRecordID:
+                        "male/dependants/sleeveslower/standard",
+                    foundationRole: "sleevesLower",
+                    relation: "exact-foundation-support-parent-path"
+                } ]
+            }
+        }
+    });
+
+    return construction;
+}
+
+function CreateMaleDuplicateSleeveCoverageConstruction()
+{
+    const construction = CreateMaleSleeveCoverageConstruction();
+    const first = construction.operations.find(value =>
+        value.operation === "configured-part");
+    const upperRelationship = first.foundationCoverage.evidence.relationships[0];
+    const torsoRelationship = {
+        authoredValue: "topinner",
+        modifierLocationKey: "topinner",
+        foundationRole: "torso",
+        relation: "typed-modifier-location"
+    };
+
+    first.groupID = "topouter";
+    first.partSourceRecordID = "male/topouter/shirtam01";
+    first.foundationCoverage.roles = [ "torso", "sleevesUpper" ];
+    first.foundationCoverage.evidence.groupID = "topouter";
+    first.foundationCoverage.evidence.partSourceRecordID =
+        "male/topouter/shirtam01";
+    first.foundationCoverage.evidence.relationships = [
+        torsoRelationship,
+        upperRelationship
+    ];
+
+    construction.operations.splice(-1, 0, {
+        ...first,
+        layerIndex: 1,
+        partIndex: 1,
+        groupID: "outer",
+        partSourceRecordID: "male/outer/jacketcm01",
+        configurationPath: "res:/custom/jacket-cm.black",
+        geometryPath: "res:/custom/jacket-cm.gr2",
+        foundationCoverage: {
+            ...first.foundationCoverage,
+            roles: [ "sleevesUpper" ],
+            evidence: {
+                ...first.foundationCoverage.evidence,
+                groupID: "outer",
+                partSourceRecordID: "male/outer/jacketcm01",
+                relationships: [ { ...upperRelationship } ]
+            }
+        }
+    });
+    construction.resolvedPartCount = 2;
+    construction.configuredPartCount = 2;
+    construction.textureContributions = [
+        IdentityContribution("topouter", 0, 0),
+        IdentityContribution("outer", 1, 1)
+    ];
 
     return construction;
 }

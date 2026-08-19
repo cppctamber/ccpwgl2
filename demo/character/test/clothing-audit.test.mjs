@@ -166,6 +166,24 @@ test("clothing audit distinguishes configured, atlas-only, and unresolved choice
         configuredParts: [],
         headMaterials: { channels: [] }
     }), { status: "unresolved" });
+    assert.deepEqual(classifyClothingChoiceRealization({
+        modifierKey: "topinner",
+        partSourceRecordID: "female/topunderwear/bikinitop"
+    }, {
+        configuredParts: [],
+        bodyComposition: {
+            bodyDiffuse: { passes: [] },
+            deferred: [ {
+                groupID: "topinner",
+                layerIndex: 21,
+                reason: "authored-modifier-occluded"
+            } ]
+        }
+    }), {
+        status: "atlas-only-occluded",
+        reason: "authored-modifier-occluded",
+        layerIndex: 21
+    });
     assert.deepEqual(classifyClothingChoiceRealization(
         {
             modifierKey: "topmiddle",
@@ -385,9 +403,31 @@ test("clothing audit retains compact configured material realization evidence", 
         },
         foundationCoverage: [ {
             ownerPartIndex: 4,
-            role: "torso",
+            groupID: "outer",
+            partSourceRecordID: "male/outer/jacket",
+            roles: [ "sleevesUpper" ],
             strategy: "hide-carrier",
-            status: "ready",
+            status: "applied",
+            reason: null,
+            evidence: {
+                rule: "legacy-opengl-authored-modifier-coverage-v1",
+                sex: "male",
+                groupID: "outer",
+                partSourceRecordID: "male/outer/jacket",
+                relationships: [ {
+                    modifierPath: "dependants/sleevesupper",
+                    supportPartSourceRecordID:
+                        "male/dependants/sleevesupper/standard",
+                    foundationRole: "sleevesUpper",
+                    relation: "exact-foundation-support-parent-path"
+                } ]
+            },
+            applied: [ {
+                role: "sleevesUpper",
+                meshIndex: 3,
+                display: false,
+                sharedApplication: false
+            } ],
             liveLease: { mustNotLeak: true }
         } ]
     });
@@ -422,9 +462,34 @@ test("clothing audit retains compact configured material realization evidence", 
         "topunderwear");
     assert.deepEqual(summary.foundationCoverage, [ {
         ownerPartIndex: 4,
-        role: "torso",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/jacket",
+        roles: [ "sleevesUpper" ],
         strategy: "hide-carrier",
-        status: "ready"
+        status: "applied",
+        reason: null,
+        evidence: {
+            rule: "legacy-opengl-authored-modifier-coverage-v1",
+            sex: "male",
+            groupID: "outer",
+            partSourceRecordID: "male/outer/jacket",
+            relationships: [ {
+                modifierPath: "dependants/sleevesupper",
+                modifierLocationKey: null,
+                supportPartSourceRecordID:
+                    "male/dependants/sleevesupper/standard",
+                foundationRole: "sleevesUpper",
+                relation: "exact-foundation-support-parent-path"
+            } ]
+        },
+        applied: [ {
+            role: "sleevesUpper",
+            meshIndex: 3,
+            display: false,
+            maskedTriangleCount: null,
+            sharedApplication: false,
+            sharedFromPartSourceRecordID: null
+        } ]
     } ]);
     assert.equal(JSON.stringify(summary).includes("mustNotLeak"), false);
 });

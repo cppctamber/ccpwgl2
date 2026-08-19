@@ -185,6 +185,104 @@ test("foundation coverage policy retains every qualified full-body relation", ()
     ]);
 });
 
+test("foundation coverage policy hides only exact torso-authored sleeve supports", () =>
+{
+    const policy = new TnyGlesFoundationCoveragePolicy();
+    const foundationSupports = [ {
+        role: "sleevesUpper",
+        partSourceRecordID: "male/dependants/sleevesupper/standard"
+    }, {
+        role: "sleevesLower",
+        partSourceRecordID: "male/dependants/sleeveslower/standard"
+    } ];
+    const metadata = {
+        occlusions: [ {
+            authoredValue: "dependants/sleevesupper",
+            modifierPath: "dependants/sleevesupper"
+        }, {
+            authoredValue: "dependants/sleeveslower",
+            modifierPath: "dependants/sleeveslower"
+        } ]
+    };
+
+    assert.deepEqual(policy.Resolve({
+        sex: "male",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/jacket",
+        foundationSupports,
+        metadata
+    }), {
+        strategy: "hide-carrier",
+        roles: [ "sleevesUpper", "sleevesLower" ],
+        evidence: {
+            status: "policy",
+            rule: "legacy-opengl-authored-modifier-coverage-v1",
+            sex: "male",
+            groupID: "outer",
+            partSourceRecordID: "male/outer/jacket",
+            relationships: [ {
+                authoredValue: "dependants/sleevesupper",
+                modifierPath: "dependants/sleevesupper",
+                supportPartSourceRecordID: "male/dependants/sleevesupper/standard",
+                foundationRole: "sleevesUpper",
+                relation: "exact-foundation-support-parent-path"
+            }, {
+                authoredValue: "dependants/sleeveslower",
+                modifierPath: "dependants/sleeveslower",
+                supportPartSourceRecordID: "male/dependants/sleeveslower/standard",
+                foundationRole: "sleevesLower",
+                relation: "exact-foundation-support-parent-path"
+            } ]
+        }
+    });
+
+    assert.equal(policy.Resolve({
+        sex: "male",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/no-captured-support",
+        metadata
+    }), null);
+    assert.equal(policy.Resolve({
+        sex: "male",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/near-match",
+        foundationSupports,
+        metadata: { occlusions: [ {
+            authoredValue: "dependants/sleevesupper/detail",
+            modifierPath: "dependants/sleevesupper/detail"
+        } ] }
+    }), null);
+});
+
+test("foundation coverage policy preserves lower sleeves for the exact male LabCoat contract", () =>
+{
+    const policy = new TnyGlesFoundationCoveragePolicy();
+    const coverage = policy.Resolve({
+        sex: "male",
+        groupID: "outer",
+        partSourceRecordID: "male/outer/labcoatm01",
+        foundationSupports: [ {
+            role: "sleevesUpper",
+            partSourceRecordID: "male/dependants/sleevesupper/standard"
+        }, {
+            role: "sleevesLower",
+            partSourceRecordID: "male/dependants/sleeveslower/standard"
+        } ],
+        metadata: { occlusions: [ {
+            authoredValue: "topinner",
+            modifierPath: "topinner",
+            modifierLocation: { modifierKey: "topinner" }
+        }, {
+            authoredValue: "dependants/sleevesupper",
+            modifierPath: "dependants/sleevesupper"
+        } ] }
+    });
+
+    assert.deepEqual(coverage.roles, [ "torso", "sleevesUpper" ]);
+    assert.equal(coverage.evidence.relationships[1].supportPartSourceRecordID,
+        "male/dependants/sleevesupper/standard");
+});
+
 test("foundation coverage policy does not infer coverage for unknown footwear", () =>
 {
     const policy = new TnyGlesFoundationCoveragePolicy();

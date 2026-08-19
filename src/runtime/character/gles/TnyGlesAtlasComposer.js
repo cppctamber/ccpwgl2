@@ -2580,7 +2580,10 @@ export class TnyGlesAtlasComposer
                     effects,
                     target.texture,
                     textureBindings,
-                    { alphaTest: hybrid }
+                    {
+                        alphaTest: hybrid,
+                        materialDiffuseColor: candidate.materialDiffuseColor
+                    }
                 );
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(
@@ -4351,7 +4354,10 @@ export function resolveLegacyBodyDiffuseContribution(contribution)
  * body-atlas planning: it is admitted only by the configured private-surface
  * composer, which derives surface ownership from the decoded Black material.
  */
-export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
+export function resolveLegacyConfiguredGarmentDiffuseContribution(
+    contribution,
+    { materialDiffuseColor = null } = {}
+)
 {
     const colorized = resolveLegacyBodyDiffuseContribution(contribution);
     if (colorized.status === "ready" && colorized.candidate)
@@ -4381,25 +4387,132 @@ export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
         };
     }
 
-    const baked = (contribution?.selectedTextures ?? []).filter(value =>
+    const selected = contribution?.selectedTextures ?? [];
+    const baked = selected.filter(value =>
         value?.target === "body"
         && [ "diffuse-source", "diffuse-overlay" ].includes(value?.role));
-    if (baked.length !== 1)
+    if (baked.length === 1)
     {
-        return baked.length
-            ? { status: "deferred", reason: "garment-baked-diffuse-ambiguous" }
-            : colorized;
+        return {
+            status: "ready",
+            candidate: {
+                mode: "baked-direct",
+                contribution,
+                detail: baked[0],
+                zones: null,
+                colors: null
+            }
+        };
+    }
+    if (baked.length > 1)
+    {
+        return { status: "deferred", reason: "garment-baked-diffuse-ambiguous" };
+    }
+
+    const partPath = String(contribution?.source?.partPath ?? "")
+        .trim()
+        .replaceAll("\\", "/")
+        .toLowerCase();
+    const dependencyHeadDiffuse = selected.filter(value =>
+        value?.target === "head"
+        && [ "diffuse-source", "diffuse-overlay" ].includes(value?.role));
+    if (!partPath.startsWith("dependants/") || dependencyHeadDiffuse.length === 0)
+    {
+        return colorized;
+    }
+    if (dependencyHeadDiffuse.length !== 1)
+    {
+        return {
+            status: "deferred",
+            reason: "garment-dependency-head-diffuse-ambiguous"
+        };
+    }
+    const colors = NormalizeColors(contribution?.materialValues?.colors);
+    const inheritedColor = materialDiffuseColor === null
+        ? null
+        : NormalizeColors([
+            materialDiffuseColor,
+            materialDiffuseColor,
+            materialDiffuseColor
+        ])?.[0] ?? null;
+    const selectedColor = colors?.[0] ?? inheritedColor;
+    if (!selectedColor)
+    {
+        return {
+            status: "deferred",
+            reason: "garment-dependency-head-material-colors-unresolved"
+        };
     }
 
     return {
         status: "ready",
         candidate: {
             mode: "baked-direct",
+            evidenceRule: "configured-retained-dependency-head-diffuse-v1",
             contribution,
-            detail: baked[0],
+            detail: dependencyHeadDiffuse[0],
             zones: null,
-            colors: null
+            colors: null,
+            target: "head",
+            materialDiffuseColor: [ ...selectedColor ]
         }
+    };
+}
+
+/**
+ * Resolves one selected owner's exact diffuse material control for a configured
+ * dependency that retains its own head-target diffuse. The dependency keeps
+ * ownership of its texture; only the uniquely related selected material
+ * control crosses the owner boundary.
+ */
+function ResolveConfiguredDependencyHeadMaterialOwner(staged, contribution)
+{
+    const ownerSelectionIndex = contribution?.ownerSelectionIndex;
+    const groupID = String(contribution?.groupID ?? "");
+    if (!Number.isInteger(ownerSelectionIndex) || ownerSelectionIndex < 0)
+    {
+        return {
+            status: "deferred",
+            rule: "retained-dependency-head-material-owner-v1",
+            reason: "dependency-material-owner-selection-unavailable"
+        };
+    }
+
+    const candidates = (staged?.textureContributions ?? [])
+        .filter(value => value !== contribution
+            && value?.partIndex !== contribution?.partIndex
+            && value?.ownerSelectionIndex === ownerSelectionIndex
+            && String(value?.groupID ?? "") === groupID
+            && typeof value?.source?.materialDefinitionPath === "string"
+            && value.source.materialDefinitionPath)
+        .map(value => ({
+            contribution: value,
+            colors: NormalizeColors(value?.materialValues?.colors)
+        }))
+        .filter(value => value.colors);
+    if (candidates.length !== 1)
+    {
+        return {
+            status: "deferred",
+            rule: "retained-dependency-head-material-owner-v1",
+            reason: candidates.length
+                ? "dependency-material-owner-ambiguous"
+                : "dependency-material-owner-unresolved",
+            candidateCount: candidates.length
+        };
+    }
+
+    const owner = candidates[0];
+    return {
+        status: "ready",
+        rule: "retained-dependency-head-material-owner-v1",
+        materialDiffuseColor: [ ...owner.colors[0] ],
+        ownerSelectionIndex,
+        partIndex: owner.contribution.partIndex,
+        partSourceRecordID:
+            owner.contribution.source?.partSourceRecordID ?? null,
+        materialDefinitionPath:
+            owner.contribution.source?.materialDefinitionPath ?? null
     };
 }
 
@@ -4419,15 +4532,50 @@ function ResolveConfiguredGarmentMaterialSource(
     hybridEffects
 )
 {
-    const resolved = resolveLegacyConfiguredGarmentDiffuseContribution(contribution);
+    let resolved = resolveLegacyConfiguredGarmentDiffuseContribution(contribution);
+    let dependencyMaterialOwner = null;
+    if (resolved.status !== "ready"
+        && resolved.reason === "garment-dependency-head-material-colors-unresolved")
+    {
+        dependencyMaterialOwner = ResolveConfiguredDependencyHeadMaterialOwner(
+            staged,
+            contribution
+        );
+        if (dependencyMaterialOwner.status === "ready")
+        {
+            resolved = resolveLegacyConfiguredGarmentDiffuseContribution(
+                contribution,
+                {
+                    materialDiffuseColor:
+                        dependencyMaterialOwner.materialDiffuseColor
+                }
+            );
+        }
+    }
     if (resolved.status === "ready")
     {
         return {
             resolved,
             contribution,
             materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
-            owner: null,
+            owner: dependencyMaterialOwner?.status === "ready"
+                ? { ...dependencyMaterialOwner }
+                : null,
             ownerResolution: null
+        };
+    }
+
+    if (dependencyMaterialOwner)
+    {
+        return {
+            resolved: {
+                status: "deferred",
+                reason: dependencyMaterialOwner.reason
+            },
+            contribution,
+            materialChannels: resolveLegacyGarmentMaterialChannels(contribution),
+            owner: null,
+            ownerResolution: { ...dependencyMaterialOwner }
         };
     }
 
@@ -8503,20 +8651,31 @@ export function commitLegacyConfiguredConsumerBindings(
 
 /**
  * Atomically attaches one composed garment diffuse plus exact retained
- * normal/specular paths to the currently visible GLES proof material. This is
- * intentionally not authored-effect promotion: promotion remains gated on the
- * authored shader's complete lookup/environment contract.
+ * normal/specular paths to the currently visible GLES proof material. The
+ * optional diffuse control is retained only when the selected source contract
+ * proves that the reconstructed map remains tintable. This is intentionally
+ * not authored-effect promotion: promotion remains gated on the authored
+ * shader's complete lookup/environment contract.
  */
 export async function commitLegacyConfiguredGarmentBindings(
     effects,
     texture,
     textureBindings = {},
-    { alphaTest = false } = {}
+    { alphaTest = false, materialDiffuseColor = null } = {}
 )
 {
     if (typeof alphaTest !== "boolean")
     {
         throw new TypeError("Configured garment alphaTest option must be boolean");
+    }
+    materialDiffuseColor ??= [ 1, 1, 1, 1 ];
+    materialDiffuseColor = Array.from(materialDiffuseColor).slice(0, 4).map(Number);
+    if (materialDiffuseColor.length !== 4
+        || !materialDiffuseColor.every(Number.isFinite))
+    {
+        throw new TypeError(
+            "Configured garment materialDiffuseColor must contain four finite values"
+        );
     }
     effects = Unique(effects);
     const entries = Object.entries(textureBindings);
@@ -8548,14 +8707,14 @@ export async function commitLegacyConfiguredGarmentBindings(
             const diffuseColor = effect.parameters?.MaterialDiffuseColor;
             if (typeof diffuseColor?.SetValue === "function")
             {
-                diffuseColor.SetValue([ 1, 1, 1, 1 ]);
+                diffuseColor.SetValue(materialDiffuseColor);
             }
             else if (diffuseColor && typeof effect.SetParameters === "function")
             {
                 // Tw2Effect reports whether a value changed, not whether the
                 // parameter exists. An already-white material is a successful
                 // binding and must not roll back an otherwise complete surface.
-                effect.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] });
+                effect.SetParameters({ MaterialDiffuseColor: materialDiffuseColor });
             }
             else if (diffuseColor)
             {
@@ -8594,6 +8753,7 @@ export async function commitLegacyConfiguredGarmentBindings(
             rule: "legacy-opengl-visible-garment-lighting-v1",
             correctness: "retained-source-policy",
             attachedEffects: effects.length,
+            materialDiffuseColor: [ ...materialDiffuseColor ],
             texturePaths: Object.fromEntries(entries.map(([ name, binding ]) => [
                 name,
                 binding.sourcePath

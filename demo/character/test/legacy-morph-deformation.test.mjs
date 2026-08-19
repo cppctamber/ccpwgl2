@@ -8,6 +8,70 @@ import {
 
 SetTestTw2();
 
+test("morph deformation classifies duplicate target identities without mutating geometry", async () =>
+{
+    const fixture = CreateFixture();
+    const request = [ { targetName: "PushShape", weight: 0.5 } ];
+
+    assert.deepEqual(TnyGlesMorphDeformation.ClassifyTarget(
+        fixture.geometry,
+        request
+    ), {
+        status: "exact",
+        targetName: "PushShape",
+        matchedMeshIndices: [ 0 ],
+        coalescedMeshIndices: [],
+        ambiguousMeshIndices: []
+    });
+
+    fixture.mesh.morphTargets.push({
+        ...fixture.mesh.morphTargets[0],
+        vertex: {
+            position: fixture.mesh.morphTargets[0].vertex.position.slice(),
+            normal: fixture.mesh.morphTargets[0].vertex.normal.slice()
+        },
+        vertexIndices: fixture.mesh.morphTargets[0].vertexIndices.slice()
+    });
+
+    assert.deepEqual(TnyGlesMorphDeformation.ClassifyTarget(
+        fixture.geometry,
+        request
+    ), {
+        status: "exact",
+        targetName: "PushShape",
+        matchedMeshIndices: [ 0 ],
+        coalescedMeshIndices: [ 0 ],
+        ambiguousMeshIndices: []
+    });
+    assert.equal(TnyGlesMorphDeformation.HasAnyTarget(fixture.geometry, request), true);
+    const acquired = await TnyGlesMorphDeformation.Acquire(
+        fixture.geometry,
+        request,
+        { gl: fixture.gl }
+    );
+    assert.equal(acquired.report.matchedTargetCount, 1);
+    assert.deepEqual([ ...fixture.mesh.bufferData ], [ 0.5, 0, 0, 1, 1, 1 ]);
+    TnyGlesMorphDeformation.Release(fixture.geometry, acquired.lease, { gl: fixture.gl });
+
+    fixture.mesh.morphTargets[2].vertex.normal[0] = 2;
+
+    assert.deepEqual(TnyGlesMorphDeformation.ClassifyTarget(
+        fixture.geometry,
+        request
+    ), {
+        status: "ambiguous",
+        targetName: "PushShape",
+        matchedMeshIndices: [],
+        coalescedMeshIndices: [],
+        ambiguousMeshIndices: [ 0 ]
+    });
+    assert.equal(TnyGlesMorphDeformation.HasAnyTarget(fixture.geometry, request), false);
+    await assert.rejects(
+        TnyGlesMorphDeformation.Acquire(fixture.geometry, request, { gl: fixture.gl }),
+        /ambiguous on mesh 0/u
+    );
+});
+
 test("morph deformation composes dense, sparse, and absolute targets from the original", async () =>
 {
     const fixture = CreateFixture();
@@ -98,7 +162,10 @@ function CreateFixture({ failUploadAt = -1 } = {})
             sourceName: "PushShape",
             name: "Push",
             dataIsDeltas: true,
-            vertex: { POSITION: new Float32Array([ 1, 0, 0 ]) },
+            vertex: {
+                position: new Float32Array([ 1, 0, 0 ]),
+                normal: new Float32Array([ 0, 1, 0 ])
+            },
             vertexIndices: new Uint32Array([ 0 ])
         }, {
             sourceName: "AbsoluteShape",

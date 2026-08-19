@@ -13,12 +13,65 @@ const TARGET_CHANNELS = new Set([
 /** Reversibly realizes exact character morph requests on cached GLES geometry. */
 export class TnyGlesMorphDeformation
 {
+    /**
+     * Classifies one requested target without mutating the geometry resource.
+     * Duplicate identities are exact only when every field consumed by the
+     * deformation applicator is value-equivalent.
+     */
+    static ClassifyTarget(geometryResource, requests)
+    {
+        const normalized = NormalizeRequests(requests);
+        if (normalized.length !== 1)
+        {
+            throw new TypeError("Legacy morph target classification requires one request");
+        }
+
+        const request = normalized[0];
+        const matchedMeshIndices = [];
+        const coalescedMeshIndices = [];
+        const ambiguousMeshIndices = [];
+        for (const [ meshIndex, mesh ] of (geometryResource?.meshes ?? []).entries())
+        {
+            const matches = (mesh?.morphTargets ?? []).filter(target =>
+                TargetIdentity(target) === request.identity);
+            if (matches.length === 1)
+            {
+                matchedMeshIndices.push(meshIndex);
+            }
+            else if (matches.length > 1)
+            {
+                if (AreEquivalentTargets(matches))
+                {
+                    matchedMeshIndices.push(meshIndex);
+                    coalescedMeshIndices.push(meshIndex);
+                }
+                else
+                {
+                    ambiguousMeshIndices.push(meshIndex);
+                }
+            }
+        }
+
+        return {
+            status: ambiguousMeshIndices.length
+                ? "ambiguous"
+                : matchedMeshIndices.length
+                    ? "exact"
+                    : "unavailable",
+            targetName: request.targetName,
+            matchedMeshIndices,
+            coalescedMeshIndices,
+            ambiguousMeshIndices
+        };
+    }
+
     /** Returns whether a geometry resource exposes at least one exact requested target. */
     static HasAnyTarget(geometryResource, requests)
     {
-        const identities = new Set(NormalizeRequests(requests).map(value => value.identity));
-        return geometryResource?.meshes?.some(mesh => mesh?.morphTargets?.some(target =>
-            identities.has(TargetIdentity(target)))) === true;
+        const classifications = NormalizeRequests(requests).map(request =>
+            this.ClassifyTarget(geometryResource, [ request ]));
+        return classifications.every(value => value.status !== "ambiguous")
+            && classifications.some(value => value.status === "exact");
     }
 
     /** Acquires one shared-geometry deformation lease. */
@@ -157,7 +210,7 @@ function PrepareMesh(mesh, meshIndex, requests)
     for (const request of requests)
     {
         const matches = targets.filter(target => TargetIdentity(target) === request.identity);
-        if (matches.length > 1)
+        if (matches.length > 1 && !AreEquivalentTargets(matches))
         {
             throw new Error(
                 `Legacy morph target ${JSON.stringify(request.targetName)} is ambiguous on mesh ${meshIndex}`
@@ -264,6 +317,58 @@ function EmptyPrepared(mesh, meshIndex)
 function TargetIdentity(target)
 {
     return String(target?.sourceName || target?.name || "").trim().toLowerCase();
+}
+
+function AreEquivalentTargets(targets)
+{
+    const first = targets[0];
+    return targets.slice(1).every(target => AreEquivalentTargetPayloads(first, target));
+}
+
+function AreEquivalentTargetPayloads(left, right)
+{
+    if ((left?.dataIsDeltas === true) !== (right?.dataIsDeltas === true)) return false;
+    if (!AreEquivalentNumberArrays(left?.vertexIndices ?? null, right?.vertexIndices ?? null))
+    {
+        return false;
+    }
+
+    const leftChannels = NormalizeTargetChannels(left?.vertex);
+    const rightChannels = NormalizeTargetChannels(right?.vertex);
+    if (!leftChannels || !rightChannels || leftChannels.size !== rightChannels.size) return false;
+    for (const [ channel, values ] of leftChannels)
+    {
+        if (!rightChannels.has(channel)
+            || !AreEquivalentNumberArrays(values, rightChannels.get(channel)))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+function NormalizeTargetChannels(vertex)
+{
+    const channels = new Map();
+    for (const [ key, values ] of Object.entries(vertex ?? {}))
+    {
+        const channel = String(key).toUpperCase();
+        if (!TARGET_CHANNELS.has(channel) || !values?.length) continue;
+        if (channels.has(channel)) return null;
+        channels.set(channel, values);
+    }
+    return channels;
+}
+
+function AreEquivalentNumberArrays(left, right)
+{
+    if (left === right) return true;
+    if (left == null || right == null || left.length !== right.length) return false;
+    for (let index = 0; index < left.length; index++)
+    {
+        if (Number(left[index]) !== Number(right[index])) return false;
+    }
+    return true;
 }
 
 function VerifyPreparedIdentity(prepared)

@@ -77,6 +77,7 @@ export class TnyGlesAppearanceConstruction
             appearancePlan,
             library
         );
+        const foundationSupports = ResolveFoundationSupports(foundation.operations);
         const operations = foundation.operations.slice(0, -1);
         const textureContributions = this._texturePolicy.Resolve(
             library,
@@ -144,6 +145,7 @@ export class TnyGlesAppearanceConstruction
                 const foundationCoverage = this._foundationCoveragePolicy.Resolve({
                     sex: foundation.sex,
                     foundationLayout: foundation.evidence?.layout ?? null,
+                    foundationSupports,
                     groupID,
                     partSourceRecordID: common.partSourceRecordID,
                     metadata
@@ -194,6 +196,27 @@ export class TnyGlesAppearanceConstruction
             operations
         };
     }
+}
+
+/** Retains only exact torso-authored support identities for coverage joins. */
+function ResolveFoundationSupports(operations)
+{
+    return (operations ?? []).flatMap(value =>
+    {
+        const evidence = value?.evidence;
+        const role = String(value?.role ?? "").trim();
+        const partSourceRecordID = String(
+            evidence?.supportPartSourceRecordID ?? ""
+        ).trim();
+        if (value?.operation !== "geometry"
+            || evidence?.rule !== "exact-foundation-torso-support-dependency-v1"
+            || !role
+            || !partSourceRecordID)
+        {
+            return [];
+        }
+        return [ { role, partSourceRecordID } ];
+    });
 }
 
 function ResolveMorphTargets(appearancePlan)

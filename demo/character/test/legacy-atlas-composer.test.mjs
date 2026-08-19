@@ -4589,6 +4589,129 @@ test("configured private garment accepts one exact baked D/N/S material", async 
     assert.equal(report.applied[0].realizationStatus, "complete");
 });
 
+test("configured dependency reconstructs one exact tinted head diffuse", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const hood = AtomicEffectFixture({
+        texture: { path: "#diagnostic-proof" },
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    hood._characterGarmentMaterialFallback = true;
+    hood._characterAuthoredCutMaskInfluence = [ 0, 0, 0, 0 ];
+    const contribution = {
+        partIndex: 22,
+        ownerSelectionIndex: 6,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/dependants/hood/example",
+            partPath: "dependants/hood/example",
+            materialDefinitionPath: null
+        },
+        materialValues: null,
+        selectedTextures: [ {
+            path: "res:/dependants/hood/example/comp_head_d.png",
+            role: "diffuse-source",
+            target: "head"
+        } ]
+    };
+    const ownerContribution = {
+        partIndex: 6,
+        ownerSelectionIndex: 6,
+        groupID: "outer",
+        source: {
+            partSourceRecordID: "male/outer/example",
+            partPath: "outer/example",
+            materialDefinitionPath: "res:/outer/example/brown.color"
+        },
+        materialValues: {
+            colors: [
+                [ 0.2, 0.168627, 0.133333, 1 ],
+                [ 0.08, 0.06, 0.05, 1 ],
+                [ 0.12, 0.1, 0.09, 1 ]
+            ]
+        },
+        selectedTextures: [ {
+            path: "res:/outer/example/colorize_body_l.png",
+            role: "colorize-layer",
+            target: "body"
+        } ]
+    };
+    assert.deepEqual(resolveLegacyConfiguredGarmentDiffuseContribution(
+        contribution,
+        { materialDiffuseColor: ownerContribution.materialValues.colors[0] }
+    ), {
+        status: "ready",
+        candidate: {
+            mode: "baked-direct",
+            evidenceRule: "configured-retained-dependency-head-diffuse-v1",
+            contribution,
+            detail: contribution.selectedTextures[0],
+            zones: null,
+            colors: null,
+            target: "head",
+            materialDiffuseColor: [ 0.2, 0.168627, 0.133333, 1 ]
+        }
+    });
+
+    const part = {
+        partIndex: 22,
+        groupID: "outer",
+        partSourceRecordID: "male/dependants/hood/example",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [ MeshFixture(hood) ]
+        } ],
+        textureContributions: [ ownerContribution, contribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied[0].diffuseMode, "baked-direct");
+    assert.equal(report.applied[0].realizationStatus, "partial");
+    assert.strictEqual(hood.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.deepEqual(hood.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(hood.materialDiffuseColor, [ 0.2, 0.168627, 0.133333, 1 ]);
+    assert.equal(part.materialStatus, "configured-garment-baked-partial");
+    assert.equal(part.compositionStatus, "configured-garment-baked-partial");
+    assert.equal(
+        report.applied[0].materialOwner.materialDefinitionPath,
+        "res:/outer/example/brown.color"
+    );
+    assert.equal(report.applied[0].surfaces[0].reason, "garment-normal-map-unresolved");
+});
+
+test("configured head diffuse is not claimed without dependency and material evidence", () =>
+{
+    const contribution = {
+        groupID: "hair",
+        source: { partPath: "hair/example" },
+        materialValues: null,
+        selectedTextures: [ {
+            path: "res:/hair/example/comp_head_d.png",
+            role: "diffuse-source",
+            target: "head"
+        } ]
+    };
+    assert.equal(
+        resolveLegacyConfiguredGarmentDiffuseContribution(contribution).reason,
+        "body-target-unavailable"
+    );
+    contribution.source.partPath = "dependants/hood/example";
+    assert.equal(
+        resolveLegacyConfiguredGarmentDiffuseContribution(contribution).reason,
+        "garment-dependency-head-material-colors-unresolved"
+    );
+});
+
 test("configured private support inherits one exact owner's material tuple", async () =>
 {
     const fixture = AtlasComposerFixture();

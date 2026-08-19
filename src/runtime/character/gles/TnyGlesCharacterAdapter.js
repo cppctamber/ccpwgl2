@@ -1513,14 +1513,12 @@ export class TnyGlesCharacterAdapter
             );
         if (!coverage) return null;
 
-        const requestedRoles = new Set(
-            staged.pendingFoundationCoverage.flatMap(value => value.coverage.roles)
-        );
-
         for (const role of coverage.roles)
         {
-            if (requestedRoles.has(role)
-                && coverage.strategy !== "triangle-mask")
+            const priorClaims = staged.pendingFoundationCoverage.filter(value =>
+                value.coverage.roles.includes(role));
+            if (priorClaims.some(value =>
+                !CanShareFoundationCoverageRole(value.coverage, coverage, role)))
             {
                 throw new Error(
                     `Legacy foundation coverage role ${JSON.stringify(role)}`
@@ -1532,6 +1530,8 @@ export class TnyGlesCharacterAdapter
         const result = {
             status: "pending-final-watch",
             reason: null,
+            ownerPartIndex: operation.partIndex ?? null,
+            groupID: operation.groupID ?? null,
             partSourceRecordID: operation.partSourceRecordID ?? null,
             roles: [ ...coverage.roles ],
             strategy: coverage.strategy,
@@ -1571,6 +1571,7 @@ export class TnyGlesCharacterAdapter
     _ApplyPendingFoundationCoverage(staged)
     {
         const meshes = staged.backend.visualModel.meshes;
+        const appliedHideCarrierRoles = new Map();
 
         for (const pending of staged.pendingFoundationCoverage)
         {
@@ -1592,6 +1593,20 @@ export class TnyGlesCharacterAdapter
 
             for (const role of coverage.roles)
             {
+                const sharedApplication = appliedHideCarrierRoles.get(role);
+                if (sharedApplication)
+                {
+                    result.applied.push(...sharedApplication.applied.map(value => ({
+                        role,
+                        meshIndex: value.meshIndex,
+                        display: false,
+                        sharedApplication: true,
+                        sharedFromPartSourceRecordID:
+                            sharedApplication.partSourceRecordID
+                    })));
+                    continue;
+                }
+
                 const foundation = staged.foundationResources.get(role);
 
                 if (!foundation)
@@ -1613,14 +1628,21 @@ export class TnyGlesCharacterAdapter
                     );
                 }
 
+                const applied = [];
                 for (const mesh of matches)
                 {
                     const meshIndex = meshes.indexOf(mesh);
                     const previousDisplay = mesh.display !== false;
 
                     mesh.display = false;
-                    result.applied.push({ role, meshIndex, previousDisplay, display: false });
+                    const value = { role, meshIndex, previousDisplay, display: false };
+                    result.applied.push(value);
+                    applied.push(value);
                 }
+                appliedHideCarrierRoles.set(role, {
+                    partSourceRecordID: result.partSourceRecordID,
+                    applied
+                });
             }
 
             result.status = "applied";
@@ -1663,25 +1685,52 @@ export class TnyGlesCharacterAdapter
                 continue;
             }
             const matches = [];
+            const ambiguousResourcePaths = [];
             for (const [ geometryResource, resourcePath ] of resources)
             {
                 if (this._morphDeformationSkippedPaths.has(resourcePath.toLowerCase())) continue;
-                if (!this._morphDeformation.HasAnyTarget(geometryResource, [ target ])) continue;
+                const classification = typeof this._morphDeformation.ClassifyTarget === "function"
+                    ? this._morphDeformation.ClassifyTarget(geometryResource, [ target ])
+                    : {
+                        status: this._morphDeformation.HasAnyTarget(
+                            geometryResource,
+                            [ target ]
+                        ) ? "exact" : "unavailable"
+                    };
+                if (classification.status === "ambiguous")
+                {
+                    ambiguousResourcePaths.push(resourcePath);
+                    continue;
+                }
+                if (classification.status !== "exact") continue;
                 matches.push({ geometryResource, resourcePath });
             }
 
+            const ambiguous = ambiguousResourcePaths.length > 0;
             const result = {
                 modifierPath: target.modifierPath,
                 targetName: target.targetName,
                 weight: target.weight,
                 ownerGroupID: target.ownerGroupID,
                 evidence: { ...target.evidence },
-                status: matches.length ? "pending-commit" : "deferred-target-unavailable",
-                reason: matches.length ? "awaiting-atomic-commit" : "no-exact-loaded-morph-target",
-                resourcePaths: matches.map(value => value.resourcePath)
+                status: ambiguous
+                    ? "deferred-target-ambiguous"
+                    : matches.length
+                        ? "pending-commit"
+                        : "deferred-target-unavailable",
+                reason: ambiguous
+                    ? "loaded-morph-target-identity-ambiguous"
+                    : matches.length
+                        ? "awaiting-atomic-commit"
+                        : "no-exact-loaded-morph-target",
+                resourcePaths: ambiguous ? [] : matches.map(value => value.resourcePath),
+                ...(ambiguous ? {
+                    ambiguousResourcePaths: [ ...ambiguousResourcePaths ]
+                } : {})
             };
             staged.morphDeformation.push(result);
 
+            if (ambiguous) continue;
             for (const match of matches)
             {
                 if (!grouped.has(match.geometryResource))
@@ -2783,10 +2832,9 @@ function ValidateFoundationCoverage(operation, sex)
             && roles.length === 1
             && roles[0] === "feet"
             && coverage.authoredOcclusion === undefined;
-        const maleAuthoredCoverage = sex === "male"
-            && authoredModifierPolicy
+        const authoredCoverage = authoredModifierPolicy
             && coverage.authoredOcclusion === undefined;
-        if ((!maleFeet && !maleAuthoredCoverage)
+        if ((!maleFeet && !authoredCoverage)
             || coverage.bonePrefixes !== undefined || coverage.triangleRule !== undefined)
         {
             throw new Error("Legacy hide-carrier coverage requires reviewed exact foundation evidence");
@@ -2823,6 +2871,29 @@ function ValidateFoundationCoverage(operation, sex)
     }
 }
 
+/**
+ * Returns true when two render-ready owners make the same exact idempotent
+ * request to hide one captured foundation support carrier.
+ */
+function CanShareFoundationCoverageRole(left, right, role)
+{
+    if (left?.strategy !== "hide-carrier" || right?.strategy !== "hide-carrier")
+    {
+        return false;
+    }
+
+    const findRelationship = coverage => coverage?.evidence?.relationships?.find(value =>
+        value?.relation === "exact-foundation-support-parent-path"
+        && value?.foundationRole === role);
+    const leftRelationship = findRelationship(left);
+    const rightRelationship = findRelationship(right);
+
+    return Boolean(leftRelationship && rightRelationship)
+        && leftRelationship.modifierPath === rightRelationship.modifierPath
+        && leftRelationship.supportPartSourceRecordID
+            === rightRelationship.supportPartSourceRecordID;
+}
+
 function IsAuthoredModifierCoverageEvidence(evidence)
 {
     const roles = new Map([
@@ -2832,15 +2903,42 @@ function IsAuthoredModifierCoverageEvidence(evidence)
         [ "hands", "hands" ]
     ]);
     return evidence?.rule === "legacy-opengl-authored-modifier-coverage-v1"
-        && evidence.sex === "male"
+        && (evidence.sex === "male" || evidence.sex === "female")
         && Array.isArray(evidence.relationships)
         && evidence.relationships.length > 0
         && evidence.relationships.every(value =>
-            typeof value.authoredValue === "string"
-            && value.authoredValue.length > 0
-            && roles.get(value.modifierLocationKey) === value.foundationRole
-            && (value.relation === "typed-modifier-location"
-                || value.relation === "exact-modifier-path-fallback"));
+        {
+            if (typeof value.authoredValue !== "string"
+                || !value.authoredValue.length)
+            {
+                return false;
+            }
+            if (value.relation === "typed-modifier-location"
+                || value.relation === "exact-modifier-path-fallback")
+            {
+                return evidence.sex === "male"
+                    && roles.get(value.modifierLocationKey) === value.foundationRole;
+            }
+            if (value.relation !== "exact-foundation-support-parent-path")
+            {
+                return false;
+            }
+
+            const expectedRole = value.modifierPath === "dependants/sleevesupper"
+                ? "sleevesUpper"
+                : value.modifierPath === "dependants/sleeveslower"
+                    ? "sleevesLower"
+                    : null;
+            const supportPrefix = `${evidence.sex}/${value.modifierPath}/`;
+            const supportID = String(value.supportPartSourceRecordID ?? "");
+            const supportChild = supportID.startsWith(supportPrefix)
+                ? supportID.slice(supportPrefix.length)
+                : "";
+            return value.foundationRole === expectedRole
+                && value.authoredValue === value.modifierPath
+                && supportChild.length > 0
+                && !supportChild.includes("/");
+        });
 }
 
 function IsAuthoredFootwearCoverageEvidence(evidence)

@@ -449,6 +449,70 @@ test("appearance construction carries exact typed topinner coverage to the male 
     });
 });
 
+test("appearance construction joins garment occlusions to exact foundation supports", () =>
+{
+    const foundation = {
+        backend: "legacy-opengl",
+        evidence: { status: "policy", rule: "legacy-opengl-foundation-v1" },
+        sex: "male",
+        operations: [ {
+            operation: "geometry",
+            role: "sleevesUpper",
+            index: 0,
+            resourcePath: "res:/male/upper.gr2",
+            evidence: {
+                rule: "exact-foundation-torso-support-dependency-v1",
+                supportPartSourceRecordID: "male/dependants/sleevesupper/standard"
+            }
+        }, {
+            operation: "geometry",
+            role: "sleevesLower",
+            index: 1,
+            resourcePath: "res:/male/lower.gr2",
+            evidence: {
+                rule: "exact-foundation-torso-support-dependency-v1",
+                supportPartSourceRecordID: "male/dependants/sleeveslower/standard"
+            }
+        }, { operation: "bind-animation" } ]
+    };
+    const jacket = CreatePart("jacket", "male/outer/jacket-corp");
+    const operation = CreateResolver({ Resolve: () => foundation }).Resolve({}, {
+        parts: [ jacket ],
+        layers: [ { owner: { groupID: "outer" }, contributor: jacket } ]
+    }, CoverageLibrary({
+        "male/outer/jacket-corp": {
+            occlusions: [ {
+                authoredValue: "dependants/sleevesupper",
+                modifierPath: "dependants/sleevesupper"
+            }, {
+                authoredValue: "dependants/sleeveslower",
+                modifierPath: "dependants/sleeveslower"
+            } ]
+        }
+    })).operations.at(-2);
+
+    assert.deepEqual(operation.foundationCoverage.roles, [
+        "sleevesUpper",
+        "sleevesLower"
+    ]);
+    assert.deepEqual(operation.foundationCoverage.evidence.relationships.map(value => [
+        value.modifierPath,
+        value.supportPartSourceRecordID,
+        value.foundationRole
+    ]), [
+        [
+            "dependants/sleevesupper",
+            "male/dependants/sleevesupper/standard",
+            "sleevesUpper"
+        ],
+        [
+            "dependants/sleeveslower",
+            "male/dependants/sleeveslower/standard",
+            "sleevesLower"
+        ]
+    ]);
+});
+
 function CreatePart(name, recordID)
 {
     return {

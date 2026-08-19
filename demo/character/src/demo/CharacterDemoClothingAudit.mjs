@@ -361,9 +361,38 @@ export function summarizeClothingRendererDetails(details)
         } : null,
         foundationCoverage: (details.foundationCoverage ?? []).map(value => ({
             ownerPartIndex: value.ownerPartIndex ?? null,
-            role: value.role ?? null,
+            groupID: value.groupID ?? value.evidence?.groupID ?? null,
+            partSourceRecordID: value.partSourceRecordID ?? null,
+            roles: [ ...(value.roles ?? []) ],
             strategy: value.strategy ?? null,
-            status: value.status ?? null
+            status: value.status ?? null,
+            reason: value.reason ?? null,
+            evidence: value.evidence ? {
+                rule: value.evidence.rule ?? null,
+                sex: value.evidence.sex ?? null,
+                groupID: value.evidence.groupID ?? null,
+                partSourceRecordID: value.evidence.partSourceRecordID ?? null,
+                relationships: (value.evidence.relationships ?? []).map(
+                    relationship => ({
+                        modifierPath: relationship.modifierPath ?? null,
+                        modifierLocationKey:
+                            relationship.modifierLocationKey ?? null,
+                        supportPartSourceRecordID:
+                            relationship.supportPartSourceRecordID ?? null,
+                        foundationRole: relationship.foundationRole ?? null,
+                        relation: relationship.relation ?? null
+                    })
+                )
+            } : null,
+            applied: (value.applied ?? []).map(applied => ({
+                role: applied.role ?? null,
+                meshIndex: applied.meshIndex ?? null,
+                display: applied.display ?? null,
+                maskedTriangleCount: applied.maskedTriangleCount ?? null,
+                sharedApplication: applied.sharedApplication === true,
+                sharedFromPartSourceRecordID:
+                    applied.sharedFromPartSourceRecordID ?? null
+            }))
         }))
     };
 }
@@ -424,6 +453,18 @@ export function classifyClothingChoiceRealization(choice, realization, diagnosti
             status: "atlas-only-applied",
             channelCount: new Set(atlasPasses.map(value => value.channel)).size,
             passCount: atlasPasses.length
+        };
+    }
+
+    const atlasOcclusion = realization?.bodyComposition?.deferred?.find(value =>
+        String(value?.groupID ?? "").trim().toLowerCase() === groupID
+        && value?.reason === "authored-modifier-occluded");
+    if (atlasOcclusion)
+    {
+        return {
+            status: "atlas-only-occluded",
+            reason: atlasOcclusion.reason,
+            layerIndex: atlasOcclusion.layerIndex ?? null
         };
     }
 
