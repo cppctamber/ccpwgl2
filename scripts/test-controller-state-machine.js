@@ -28,6 +28,7 @@ testServerClockComesFromTheContextWhenSupplied();
 testExponentOperator();
 testVariableMaskNamesTheVariablesAStateReads();
 testExternalVariableReachesEveryControllerAndChild();
+testCurveSetsPlayThroughTheOwnerAndIntoChildren();
 console.log("Controller state machine and expression parity verified");
 
 
@@ -433,6 +434,74 @@ function testExternalVariableReachesEveryControllerAndChild()
 }
 
 
+/**
+ * `Tr2ActionPlayCurveSet` asks the OWNER to play a named set, and the owner has
+ * to look below itself: a ship-level controller names curve sets that live on
+ * effect children. Nothing implemented the owner side, so the action fell back
+ * to scanning the ship's own list, found nothing, and started nothing - the
+ * hull's mesh animation played on warp while every VFX set in the same state
+ * stayed silent.
+ */
+function testCurveSetsPlayThroughTheOwnerAndIntoChildren()
+{
+    const { PlayCurveSetOn, StopCurveSetOn } = modules;
+
+    const makeSet = name => ({
+        name,
+        plays: 0,
+        stops: 0,
+        resets: 0,
+        ranges: [],
+        Play() { this.plays++; },
+        Stop() { this.stops++; },
+        ResetTimeRange() { this.resets++; },
+        PlayTimeRange(range) { this.ranges.push(range); }
+    });
+
+    const
+        onShip = makeSet("warp"),
+        onChild = makeSet("warp"),
+        onGrandchild = makeSet("warp"),
+        unrelated = makeSet("siege");
+
+    const grandchild = {
+        curveSets: [ onGrandchild ],
+        PlayCurveSet(name, range) { return PlayCurveSetOn(this, name, range, []); },
+        StopCurveSet(name) { return StopCurveSetOn(this, name, []); }
+    };
+
+    const child = {
+        curveSets: [ onChild, unrelated ],
+        objects: [ grandchild ],
+        PlayCurveSet(name, range) { return PlayCurveSetOn(this, name, range, [ this.objects ]); },
+        StopCurveSet(name) { return StopCurveSetOn(this, name, [ this.objects ]); }
+    };
+
+    const ship = { curveSets: [ onShip ], children: [], effectChildren: [ child ] };
+
+    const played = PlayCurveSetOn(ship, "warp", "", [ ship.children, ship.effectChildren ]);
+
+    assert.equal(played, true, "the owner reports it found something to play");
+    assert.equal(onShip.plays, 1, "the owner's own set plays");
+    assert.equal(onChild.plays, 1, "and the effect child's");
+    assert.equal(onGrandchild.plays, 1, "recursing all the way down");
+    assert.equal(unrelated.plays, 0, "a set of another name is left alone");
+
+    // An empty range resets first: a set left mid-range would otherwise resume
+    // inside it rather than starting over (Carbon EveSpaceObject2.cpp:3391).
+    assert.equal(onChild.resets, 1, "an empty range name resets the time range");
+
+    PlayCurveSetOn(ship, "warp", "loop", [ ship.children, ship.effectChildren ]);
+    assert.deepEqual(onChild.ranges, [ "loop" ], "a named range plays that range");
+    assert.equal(onChild.plays, 1, "and does not also play the whole set");
+
+    StopCurveSetOn(ship, "warp", [ ship.children, ship.effectChildren ]);
+    assert.equal(onChild.stops, 1, "stopping reaches the children too");
+    assert.equal(onGrandchild.stops, 1);
+    assert.equal(unrelated.stops, 0);
+}
+
+
 // -- harness ---------------------------------------------------------------
 
 
@@ -513,6 +582,7 @@ function loadStateModules()
         "./expression/Tr2ExpressionProgram": Tr2ExpressionProgram
     });
     const controllerVariables = loadModule("../src/state/controllerVariables.js", {});
+    const curveSetOwner = loadModule("../src/curve/curveSetOwner.js", {});
     const Tr2StateMachineState = loadModule("../src/state/Tr2StateMachineState.js", { utils });
     const Tr2StateMachine = loadModule("../src/state/Tr2StateMachine.js", { utils });
     const Tr2ControllerFloatVariable = loadModule("../src/state/variable/Tr2ControllerFloatVariable.js", { utils });
@@ -526,7 +596,9 @@ function loadStateModules()
         Tr2Controller: Tr2Controller.Tr2Controller,
         Tr2StateMachineTransition: Tr2StateMachineTransition.Tr2StateMachineTransition,
         SetControllerVariableOn: controllerVariables.SetControllerVariableOn,
-        ReplayControllerVariablesOn: controllerVariables.ReplayControllerVariablesOn
+        ReplayControllerVariablesOn: controllerVariables.ReplayControllerVariablesOn,
+        PlayCurveSetOn: curveSetOwner.PlayCurveSetOn,
+        StopCurveSetOn: curveSetOwner.StopCurveSetOn
     };
 }
 

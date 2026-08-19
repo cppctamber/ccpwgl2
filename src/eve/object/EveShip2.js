@@ -1,5 +1,6 @@
 import { isArray, meta } from "utils";
 import { SetControllerVariableOn } from "../../state/controllerVariables";
+import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
 import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
@@ -990,6 +991,35 @@ export class EveShip2 extends EveObject
     AnimationTime(name)
     {
         return this.animation ? this.animation.FindAnimationDurationByName(name) : 0;
+    }
+
+    /**
+     * Plays a named curve set on this ship and everything below it.
+     *
+     * Carbon `EveSpaceObject2::PlayCurveSet` (cpp:3385-3415): every match in the
+     * object's own list, then recurse into children AND effect children.
+     * `Tr2ActionPlayCurveSet` calls this on the controller's owner, so without
+     * it a ship-level action could only ever find curve sets on the ship - and
+     * the ones that drive VFX are on the effect children.
+     *
+     * @param {String} name
+     * @param {String} [rangeName]
+     * @returns {Boolean}
+     */
+    PlayCurveSet(name, rangeName)
+    {
+        return PlayCurveSetOn(this, name, rangeName, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Stops a named curve set on this ship and everything below it.
+     * Carbon `EveSpaceObject2::StopCurveSet`.
+     * @param {String} name
+     * @returns {Boolean}
+     */
+    StopCurveSet(name)
+    {
+        return StopCurveSetOn(this, name, [ this.children, this.effectChildren ]);
     }
 
     /**

@@ -1,6 +1,7 @@
 import { EveChild } from "./EveChild";
 import { meta } from "utils";
 import { SetControllerVariableOn, ReplayControllerVariablesOn } from "../../state/controllerVariables";
+import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
 import { mat4, quat, vec3 } from "math";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
@@ -259,6 +260,36 @@ export class EveChildContainer extends EveChild
     ShipMaxSpeed()
     {
         return this._parentSpaceObject && this._parentSpaceObject.ShipMaxSpeed ? this._parentSpaceObject.ShipMaxSpeed() : 1;
+    }
+
+    /**
+     * Plays a named curve set on this container and the objects below it.
+     *
+     * Carbon `EveChildContainer::PlayCurveSet` (cpp:676-706), including its
+     * guard: a container that is not updating does not play. Recursion is into
+     * `objects`, which is this container's half of the same contract the ship
+     * implements over its children.
+     *
+     * @param {String} name
+     * @param {String} [rangeName]
+     * @returns {Boolean}
+     */
+    PlayCurveSet(name, rangeName)
+    {
+        if (this.display === false) return false;
+        return PlayCurveSetOn(this, name, rangeName, [ this.objects ]);
+    }
+
+    /**
+     * Stops a named curve set on this container and the objects below it.
+     * Carbon `EveChildContainer::StopCurveSet` - no display guard, because a
+     * hidden container's sets should still stop.
+     * @param {String} name
+     * @returns {Boolean}
+     */
+    StopCurveSet(name)
+    {
+        return StopCurveSetOn(this, name, [ this.objects ]);
     }
 
     /**
