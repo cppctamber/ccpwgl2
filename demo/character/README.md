@@ -1379,6 +1379,17 @@ artistically correct result. Direct green-background review found:
   intact, but this is not promoted into a blanket opaque policy. The wider
   selectable inventory also contains one robe configuration with a distinct
   transparent effect; mixed area partitions remain independently reviewable.
+- the retained female robe configuration names three historical carriers over
+  one decoded geometry mesh. The adapter binds only the unique carrier whose
+  exporter-style trailing numeric suffix resolves to that sole mesh; the two
+  stale torso carriers remain retained and unbound. This alias is accepted only
+  when the suffix-normalized match is unique, so it does not become a general
+  mesh-zero fallback. Its realized private surface is authored exclusively in
+  `opaqueAreas` with zero cut-mask influence. The reconstructed private target
+  therefore writes opaque framebuffer coverage after preserving the source RGB;
+  nonzero-cut, transparent, decal, mixed, and body-hybrid surfaces keep their
+  independent alpha contracts. A residual one-pixel center hairline remains in
+  the exact robe geometry review and is not hidden with a wider material rule.
 
 ### Inner-clothing qualification, 2026-08-16
 

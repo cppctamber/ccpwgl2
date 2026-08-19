@@ -1,5 +1,6 @@
 const SYNTHETIC_HEAD_RECORD_ID = "demo:synthetic-head-layers";
 const SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID = "demo:synthetic-male-top-underwear";
+const SYNTHETIC_FEMALE_ROBE_RECORD_ID = "demo:synthetic-female-robe";
 
 /** Adds one explicitly non-game paper doll assembled only from retained records. */
 export function InstallSyntheticHeadLayerFixture(manager)
@@ -96,6 +97,37 @@ export function InstallSyntheticMaleTopUnderwearFixture(manager)
     }, { reason: "demo-synthetic-male-top-underwear-proof" });
 }
 
+/** Exposes one retained but unobserved female robe asset. */
+export function InstallSyntheticFemaleRobeFixture(manager)
+{
+    const existing = manager.Get("paperdolls", SYNTHETIC_FEMALE_ROBE_RECORD_ID);
+    if (existing) return existing;
+
+    const base = RequireRecord(manager, "paperdolls", "3000001");
+    const modifiers = [
+        ...base.modifiers.filter(value =>
+            value?.modifierLocationID?.modifierKey !== "outer"),
+        {
+            modifierLocationID: RequireRecord(
+                manager,
+                "characterModifierLocations",
+                "10"
+            ),
+            paperdollResourceID: RequireRecord(manager, "characterResources", "16515"),
+            paperdollResourceVariation: 0
+        }
+    ];
+
+    return manager.Create("paperdolls", {
+        ...base.GetValues(),
+        recordID: SYNTHETIC_FEMALE_ROBE_RECORD_ID,
+        modifiers,
+        creationDate: "",
+        lastRendered: "",
+        lastUpdate: ""
+    }, { reason: "demo-synthetic-female-robe-proof" });
+}
+
 function RequireModifier(paperdoll, modifierKey)
 {
     const matches = paperdoll.modifiers.filter(value =>
@@ -135,6 +167,7 @@ function RequireRecord(manager, documentName, recordID)
 }
 
 export {
+    SYNTHETIC_FEMALE_ROBE_RECORD_ID,
     SYNTHETIC_HEAD_RECORD_ID,
     SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
 };

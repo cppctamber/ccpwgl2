@@ -4516,6 +4516,7 @@ test("configured private garment accepts one exact baked D/N/S material", async 
         materialDiffuseColor: [ 1, 0, 1, 1 ]
     });
     garment._characterGarmentMaterialFallback = true;
+    garment._characterAuthoredCutMaskInfluence = [ 0, 0, 0, 0 ];
     const contribution = {
         partIndex: 21,
         groupID: "outer",
@@ -4571,8 +4572,13 @@ test("configured private garment accepts one exact baked D/N/S material", async 
     assert.equal(report.applied[0].colors, null);
     assert.deepEqual(report.applied[0].surfaces[0].passes.map(value => value.mode), [
         "configured-garment-clear",
-        "configured-authored-rgba"
+        "configured-authored-rgba",
+        "configured-garment-opaque-area-alpha"
     ]);
+    assert.equal(
+        report.applied[0].surfaces[0].coveragePolicy,
+        "authored-opaque-area-zero-cut-coverage-v1"
+    );
     assert.equal(staged.compositionTargets.length, 3);
     assert.strictEqual(garment.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
     assert.strictEqual(garment.parameters.NormalMap.textureRes, staged.compositionTargets[1].texture);

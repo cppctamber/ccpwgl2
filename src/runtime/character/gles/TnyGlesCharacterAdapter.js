@@ -1153,7 +1153,8 @@ export class TnyGlesCharacterAdapter
 
             if (resolved.source === "authored") authoredMeshIndexCount++;
             else if (resolved.source === "exact-mesh-name") namedMeshIndexCount++;
-            else if (resolved.source === "single-geometry-configured-alias")
+            else if (resolved.source === "single-geometry-configured-alias"
+                || resolved.source === "single-geometry-trailing-index-alias")
             {
                 singleGeometryAliasCount++;
             }
@@ -2048,10 +2049,14 @@ function ResolveStrictSingleGeometryCarrierSelection(geometry, configuredMeshes)
     if (!geometryName) return null;
     const exact = configuredMeshes.filter(mesh =>
         String(mesh?.name ?? "").trim().toLowerCase() === geometryName);
-    if (exact.length !== 1) return null;
+    const candidates = exact.length
+        ? exact
+        : configuredMeshes.filter(mesh =>
+            IsConfiguredTrailingIndexAlias(mesh?.name, geometryName));
+    if (candidates.length !== 1) return null;
     return {
-        mesh: exact[0],
-        unbound: configuredMeshes.filter(mesh => mesh !== exact[0])
+        mesh: candidates[0],
+        unbound: configuredMeshes.filter(mesh => mesh !== candidates[0])
     };
 }
 
@@ -2122,6 +2127,19 @@ function ResolveConfiguredMeshIndex(
     {
         return { meshIndex: namedMeshIndex, source: "exact-mesh-name" };
     }
+    if (IsUniqueSingleGeometryTrailingIndexAlias(
+        geometry,
+        meshName,
+        configuredMeshes,
+        configuredMeshIndex
+    ))
+    {
+        // Some retained Black carriers append an exporter-generated numeric
+        // suffix that the sole GR2 mesh omits. Accept it only when stripping
+        // that suffix produces the exact geometry name and exactly one carrier
+        // in the same document satisfies the rule.
+        return { meshIndex: 0, source: "single-geometry-trailing-index-alias" };
+    }
     if (IsSingleGeometryConfiguredAlias(
         geometry,
         configuredMeshes,
@@ -2144,6 +2162,37 @@ function ResolveConfiguredMeshIndex(
         );
     }
     return null;
+}
+
+function IsUniqueSingleGeometryTrailingIndexAlias(
+    geometry,
+    meshName,
+    configuredMeshes,
+    configuredMeshIndex
+)
+{
+    if (geometry?.meshes?.length !== 1 || !Array.isArray(configuredMeshes))
+    {
+        return false;
+    }
+    const geometryName = String(geometry.meshes[0]?.name ?? "").trim().toLowerCase();
+    if (!IsConfiguredTrailingIndexAlias(meshName, geometryName)) return false;
+
+    const matches = configuredMeshes.filter((mesh, index) =>
+        index === configuredMeshIndex
+        || IsConfiguredTrailingIndexAlias(mesh?.name, geometryName));
+    return matches.length === 1;
+}
+
+function IsConfiguredTrailingIndexAlias(configuredName, geometryName)
+{
+    const requestedName = String(configuredName ?? "").trim().toLowerCase();
+    const normalizedGeometryName = String(geometryName ?? "").trim().toLowerCase();
+    if (!requestedName || !normalizedGeometryName || !/\d+$/u.test(requestedName))
+    {
+        return false;
+    }
+    return requestedName.replace(/\d+$/u, "") === normalizedGeometryName;
 }
 
 function IsUniqueUnclaimedAuthoredIndexAlias(

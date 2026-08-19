@@ -11,8 +11,10 @@ import { installCharacterDemoAlphaAudit } from "./demo/CharacterDemoAlphaAudit.m
 import { installCharacterDemoClothingAudit } from "./demo/CharacterDemoClothingAudit.mjs";
 import { ConfigureCharacterDemoWithoutSof } from "./demo/CharacterDemoSofPolicy.mjs";
 import {
+    InstallSyntheticFemaleRobeFixture,
     InstallSyntheticHeadLayerFixture,
     InstallSyntheticMaleTopUnderwearFixture,
+    SYNTHETIC_FEMALE_ROBE_RECORD_ID,
     SYNTHETIC_HEAD_RECORD_ID,
     SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
 } from "./demo/CharacterDemoSyntheticFixture.mjs";
@@ -78,6 +80,7 @@ if (backgroundProof === "violent-green-html")
 }
 if (cameraRegion) globalThis.document.documentElement.dataset.cameraRegion = parameters.get("region");
 const syntheticHeadFixture = parameters.get("fixture") === "head-layers";
+const syntheticFemaleRobeFixture = parameters.get("fixture") === "female-robe";
 const syntheticMaleTopUnderwearFixture =
     parameters.get("fixture") === "male-top-underwear";
 const morphComparison = parameters.get("morphs");
@@ -298,14 +301,18 @@ try
         libraryURL,
         paperdollID: syntheticHeadFixture
             ? SYNTHETIC_HEAD_RECORD_ID
-            : syntheticMaleTopUnderwearFixture
-                ? SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
-                : parameters.get("paperdoll"),
+            : syntheticFemaleRobeFixture
+                ? SYNTHETIC_FEMALE_ROBE_RECORD_ID
+                : syntheticMaleTopUnderwearFixture
+                    ? SYNTHETIC_MALE_TOP_UNDERWEAR_RECORD_ID
+                    : parameters.get("paperdoll"),
         prepareLibrary: syntheticHeadFixture
             ? InstallSyntheticHeadLayerFixture
-            : syntheticMaleTopUnderwearFixture
-                ? InstallSyntheticMaleTopUnderwearFixture
-                : null,
+            : syntheticFemaleRobeFixture
+                ? InstallSyntheticFemaleRobeFixture
+                : syntheticMaleTopUnderwearFixture
+                    ? InstallSyntheticMaleTopUnderwearFixture
+                    : null,
         initialPartSelections
     });
 

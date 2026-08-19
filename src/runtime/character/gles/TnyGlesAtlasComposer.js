@@ -1110,7 +1110,8 @@ export class TnyGlesAtlasComposer
                     surfaceEffects,
                     targetSize,
                     surface,
-                    materialChannels
+                    materialChannels,
+                    { meshes: binding.configuredMeshes }
                 );
                 if ([ "applied", "partial" ].includes(surfaceResult.status))
                 {
@@ -2453,7 +2454,7 @@ export class TnyGlesAtlasComposer
         targetSize,
         surface,
         materialChannels,
-        { glassEffects = [] } = {}
+        { glassEffects = [], meshes = [] } = {}
     )
     {
         let target = null;
@@ -2498,6 +2499,22 @@ export class TnyGlesAtlasComposer
                 passes.push(await this._CreateColorizedPass(candidate, targetSize, hybrid
                     ? { rgbOnly: true, blend: true, useDetailMask: true }
                     : { rgbOnly: true, blend: false, useDetailMask: false }));
+            }
+            const opaqueCoverage = ResolveConfiguredGarmentOpaqueCoverage(
+                meshes,
+                effects,
+                surface
+            );
+            if (opaqueCoverage)
+            {
+                const alphaPass = await this._CreateSolidAlphaPass("opaque", targetSize);
+                alphaPass.report = {
+                    mode: "configured-garment-opaque-area-alpha",
+                    shader: COPY_BLIT_SHADER,
+                    placement: [ 0, 0, 1, 1 ],
+                    rule: opaqueCoverage.rule
+                };
+                passes.push(alphaPass);
             }
 
             const RenderTarget = RequireClass(tw2, "Tw2RenderTarget");
@@ -2560,6 +2577,7 @@ export class TnyGlesAtlasComposer
                 lightingStatus: lighting ? "applied" : "deferred",
                 attachedEffects: binding.attachedEffects,
                 materialBinding: binding,
+                coveragePolicy: opaqueCoverage?.rule ?? "authored-source-alpha",
                 alphaEvidence: ReadTargetAlphaEvidence(target),
                 lightingPasses: lighting?.passes ?? [],
                 passes: passes.map(value => value.report)
@@ -10213,6 +10231,27 @@ function ClassifyConfiguredGarmentAreaContract(consumers)
         case "decalAreas": return "decal-only";
         default: return "specialized-only";
     }
+}
+
+function ResolveConfiguredGarmentOpaqueCoverage(meshes, effects, surface)
+{
+    if (surface !== "private-garment") return null;
+    effects = Unique(effects);
+    const bindings = DescribeConfiguredGarmentBindings(meshes, effects);
+    if (!effects.length || bindings.length !== effects.length) return null;
+    if (bindings.some(binding => binding.areaContract !== "opaque-only"
+        || !IsZeroCutMaskInfluence(binding.authoredCutMaskInfluence)))
+    {
+        return null;
+    }
+    return { rule: "authored-opaque-area-zero-cut-coverage-v1" };
+}
+
+function IsZeroCutMaskInfluence(value)
+{
+    return Array.isArray(value)
+        && value.length === 4
+        && value.every(component => Number(component) === 0);
 }
 
 function DescribeAuthoredTextureSlots(effect)

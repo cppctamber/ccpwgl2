@@ -2439,6 +2439,55 @@ test("legacy adapter attaches only the exact carrier from a stale multi-carrier 
     adapter.Release(staged);
 });
 
+test("legacy adapter attaches one uniquely suffixed carrier to a sole geometry mesh", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndices: [ 2, 1, 0 ],
+        configuredMeshNames: [ "RobeShape1", "Torso5Shape", "TorsoShape" ],
+        geometryBindingIndex: 0,
+        geometryMeshNames: [ "robeShape" ]
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+
+    const staged = await adapter.Prepare(CreateAppearanceConstruction());
+    const configuredPart = staged.configuredParts[0];
+
+    assert.equal(configuredPart.meshCount, 1);
+    assert.equal(configuredPart.singleGeometryAliasCount, 1);
+    assert.equal(configuredPart.retainedUnboundMeshCount, 2);
+    assert.deepEqual(
+        configuredPart.retainedUnboundConfiguredMeshes.map(value => value.meshName),
+        [ "Torso5Shape", "TorsoShape" ]
+    );
+    assert.equal(staged.configuredPartBindings[0].configuredMeshes[0].name, "RobeShape1");
+    assert.equal(staged.configuredPartBindings[0].configuredMeshes[0].meshIndex, 0);
+    adapter.Release(staged);
+});
+
+test("legacy adapter rejects ambiguous suffixed carriers for a sole geometry mesh", async () =>
+{
+    const fixture = CreateFixture({
+        configuredMeshIndices: [ 2, 1, 0 ],
+        configuredMeshNames: [ "RobeShape1", "RobeShape2", "TorsoShape" ],
+        geometryBindingIndex: 0,
+        geometryMeshNames: [ "robeShape" ]
+    });
+    SetTestTw2(fixture.tw2);
+    const adapter = new TnyGlesCharacterAdapter({
+        client: fixture.tiny,
+        atlasComposer: DEFERRED_ATLAS_COMPOSER
+    });
+
+    await assert.rejects(
+        adapter.Prepare(CreateAppearanceConstruction()),
+        /differently named geometry mesh/u
+    );
+});
+
 test("legacy adapter retains a stale carrier while accepting a unique unclaimed authored index", async () =>
 {
     const fixture = CreateFixture({
