@@ -4,6 +4,7 @@ export {
     attachLegacyBodyDiffuse,
     commitLegacyConfiguredConsumerBindings,
     commitLegacyConfiguredGarmentBindings,
+    commitLegacyConfiguredMaterialOnlyAccessoryBindings,
     commitLegacyConfiguredHeadBindings,
     commitLegacyFoundationCutMaskBindings,
     composeLegacyConfiguredConsumerPixel,
@@ -20,6 +21,7 @@ export {
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
     resolveLegacyConfiguredAccessoryMaterial,
+    resolveLegacyConfiguredMaterialOnlyAccessory,
     resolveLegacyGarmentMaterialChannels,
     resolveLegacyHeadMaterialChannels
 } from "./TnyGlesAtlasComposer.js";

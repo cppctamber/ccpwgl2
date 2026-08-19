@@ -11,6 +11,7 @@ import {
     commitLegacyConfiguredConsumerBindings,
     commitLegacyConfiguredHairBindings,
     commitLegacyConfiguredHeadwearBindings,
+    commitLegacyConfiguredMaterialOnlyAccessoryBindings,
     commitLegacyConfiguredHeadBindings,
     commitLegacyFoundationAlphaCutBindings,
     commitLegacyFoundationCutMaskBindings,
@@ -31,6 +32,7 @@ import {
     planLegacyFemaleFoundationCutMask,
     resolveLegacyBodyDiffuseContribution,
     resolveLegacyConfiguredAccessoryMaterial,
+    resolveLegacyConfiguredMaterialOnlyAccessory,
     resolveLegacyConfiguredGarmentDiffuseContribution,
     resolveLegacyConfiguredHairDiffuseContribution,
     resolveLegacyConfiguredHairConsumers,
@@ -120,6 +122,145 @@ test("configured accessories defer mixed targets and non-accessory owners", () =
         status: "deferred",
         reason: "configured-accessory-group-unavailable"
     });
+});
+
+test("material-only accessories resolve a retained linear-BRDF contract", () =>
+{
+    const fixture = MaterialOnlyAccessoryEffectFixture();
+    const resolved = resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ fixture.effect ],
+        fixture.contribution
+    );
+
+    assert.equal(resolved.status, "ready");
+    assert.equal(resolved.contracts.length, 1);
+    assert.strictEqual(resolved.contracts[0].effect, fixture.effect);
+    assert.deepEqual(resolved.contracts[0].transformUV0, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(resolved.contracts[0].parameters.MaterialLibraryID, [ 10, 0, 0, 0 ]);
+    assert.deepEqual(resolved.contracts[0].parameters.MaterialSpecularCurve, [ 400, 100, 0.5, 0 ]);
+    assert.equal(
+        resolved.contracts[0].colorNdotLPath,
+        "res:/Texture/Global/NdotLLibrary.png"
+    );
+
+    assert.equal(resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ fixture.effect ],
+        { ...fixture.contribution, selectedTextures: [ { path: "res:/ring_d.png" } ] }
+    ).reason, "material-only-accessory-texture-or-colour-inventory-present");
+    assert.equal(resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ fixture.effect ],
+        { ...fixture.contribution, groupID: "outer" }
+    ).reason, "material-only-accessory-group-unavailable");
+
+    const doubleLinear = MaterialOnlyAccessoryEffectFixture();
+    doubleLinear.effect._characterAuthoredEffectFilePath =
+        "res:/graphics/effect/managed/interior/avatar/skinnedavatarbrdfdoublelinear.fx";
+    assert.equal(resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ doubleLinear.effect ],
+        doubleLinear.contribution
+    ).reason, "material-only-accessory-linear-brdf-consumer-unavailable");
+
+    const textured = MaterialOnlyAccessoryEffectFixture();
+    textured.authored.parameters.DiffuseMap.SetValue("res:/ring_d.png");
+    assert.equal(resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ textured.effect ],
+        textured.contribution
+    ).reason, "material-only-accessory-authored-texture-contract-present");
+});
+
+test("material-only accessory binding is atomic and preserves proof samplers", async () =>
+{
+    const fixture = MaterialOnlyAccessoryEffectFixture();
+    const resolved = resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ fixture.effect ],
+        fixture.contribution
+    );
+    const originalDiffuse = fixture.effect.parameters.DiffuseMap.textureRes;
+    const originalNormal = fixture.effect.parameters.NormalMap.textureRes;
+    const originalSpecular = fixture.effect.parameters.SpecularMap.textureRes;
+
+    const committed = await commitLegacyConfiguredMaterialOnlyAccessoryBindings(
+        [ fixture.effect ],
+        resolved.contracts
+    );
+
+    assert.equal(committed.status, "applied");
+    assert.equal(committed.attachedEffects, 1);
+    assert.deepEqual(fixture.effect.transform, [ 0, 0, 0.5, 1 ]);
+    assert.deepEqual(fixture.effect.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.deepEqual(fixture.effect.materialVectors.MaterialLibraryID, [ 10, 0, 0, 0 ]);
+    assert.deepEqual(
+        fixture.effect.materialVectors.MaterialCubeReflectionControl,
+        [ 1, 0, 4.5, 0 ]
+    );
+    assert.equal(
+        fixture.effect.parameters.ColorNdotLLookupMap.resourcePath,
+        "res:/Texture/Global/NdotLLibrary.png"
+    );
+    assert.strictEqual(fixture.effect.parameters.DiffuseMap.textureRes, originalDiffuse);
+    assert.strictEqual(fixture.effect.parameters.NormalMap.textureRes, originalNormal);
+    assert.strictEqual(fixture.effect.parameters.SpecularMap.textureRes, originalSpecular);
+
+    const rejected = MaterialOnlyAccessoryEffectFixture();
+    const rejectedResolved = resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ rejected.effect ],
+        rejected.contribution
+    );
+    rejected.effect.IsGood = () => false;
+    await assert.rejects(() => commitLegacyConfiguredMaterialOnlyAccessoryBindings(
+        [ rejected.effect ],
+        rejectedResolved.contracts
+    ), /failed to prepare/u);
+    assert.deepEqual(rejected.effect.transform, [ 0, 0, 1, 1 ]);
+    assert.deepEqual(rejected.effect.materialDiffuseColor, [ 1, 0, 1, 1 ]);
+    assert.deepEqual(rejected.effect.materialVectors.MaterialLibraryID, [ 0, 0, 0, 0 ]);
+    assert.equal(
+        rejected.effect.parameters.ColorNdotLLookupMap.resourcePath,
+        "res:/proof/ndotl.png"
+    );
+});
+
+test("material-only accessory can promote its retained compatible BRDF effect", async () =>
+{
+    const fixture = MaterialOnlyAccessoryEffectFixture();
+    for (const name of Object.keys(fixture.effect.materialVectors))
+    {
+        delete fixture.effect.parameters[name];
+    }
+    const mesh = MeshFixture(fixture.effect);
+    const resolved = resolveLegacyConfiguredMaterialOnlyAccessory(
+        [ fixture.effect ],
+        fixture.contribution
+    );
+
+    const committed = await commitLegacyConfiguredMaterialOnlyAccessoryBindings(
+        [ fixture.effect ],
+        resolved.contracts,
+        [ mesh ]
+    );
+
+    assert.equal(
+        committed.bindingMode,
+        "retained-linear-brdf-neutral-sampler-completion"
+    );
+    assert.strictEqual(mesh.opaqueAreas[0].effect, fixture.authored);
+    assert.deepEqual(fixture.authored.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.deepEqual(
+        fixture.authored.parameters.MaterialLibraryID.GetValue([]),
+        [ 10, 0, 0, 0 ]
+    );
+    assert.strictEqual(
+        fixture.authored.parameters.DiffuseMap.textureRes,
+        fixture.effect.parameters.DiffuseMap.textureRes
+    );
+    assert.strictEqual(
+        fixture.authored.parameters.NormalMap.textureRes,
+        fixture.effect.parameters.NormalMap.textureRes
+    );
+    assert.equal(
+        fixture.authored.parameters.ColorNdotLLookupMap.resourcePath,
+        "res:/Texture/Global/NdotLLibrary.png"
+    );
 });
 
 test("configured hair resolves one exact retained L/Z/N/S material", () =>
@@ -4088,6 +4229,49 @@ test("configured accessory binds one exact private target and stays out of garme
     assert.deepEqual(garmentReport.deferred, []);
 });
 
+test("configured accessory realizes one material-only private BRDF without an atlas", async () =>
+{
+    const atlas = AtlasComposerFixture();
+    const fixture = MaterialOnlyAccessoryEffectFixture();
+    const part = {
+        partIndex: 32,
+        groupID: "accessories/nose",
+        partSourceRecordID: "female/accessories/nose/ring01_righta",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const contribution = {
+        ...fixture.contribution,
+        partIndex: part.partIndex,
+        source: {
+            ...fixture.contribution.source,
+            partSourceRecordID: part.partSourceRecordID
+        }
+    };
+    const staged = {
+        sex: "female",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [ MeshFixture(fixture.effect) ]
+        } ],
+        textureContributions: [ contribution ],
+        compositionTargets: []
+    };
+
+    const report = await atlas.composer.ComposeConfiguredAccessoryMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied.length, 1);
+    assert.equal(report.applied[0].target, "material-library");
+    assert.equal(report.applied[0].materialOnly.status, "applied");
+    assert.equal(staged.compositionTargets.length, 0);
+    assert.equal(part.materialStatus, "configured-accessory-material-only-policy");
+    assert.equal(part.compositionStatus, "configured-accessory-material-only-attached");
+    assert.deepEqual(fixture.effect.materialDiffuseColor, [ 1, 1, 1, 1 ]);
+    assert.deepEqual(fixture.effect.materialVectors.MaterialLibraryID, [ 10, 0, 0, 0 ]);
+});
+
 test("configured private garment accepts one exact baked D/N/S material", async () =>
 {
     const fixture = AtlasComposerFixture();
@@ -6987,6 +7171,143 @@ function BodyConsumerShader(family = "skinnedavatarbrdfdoublelinear")
 function UseAllRetainedCutMasks({ retainedCutMaskPaths })
 {
     return retainedCutMaskPaths;
+}
+
+function MaterialOnlyAccessoryEffectFixture()
+{
+    const effect = AtomicEffectFixture({
+        texture: { path: "#material-only-proof" },
+        transform: [ 0, 0, 1, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    effect.name = "C_S2_Ring01";
+    effect.effectFilePath =
+        "res:/graphics/effect.gles2/managed/interior/avatar/skinnedavatarbrdflinear.sm_hi";
+    effect._characterGarmentMaterialFallback = true;
+    effect._characterAuthoredEffectFilePath =
+        "res:/graphics/effect/managed/interior/avatar/skinnedavatarbrdflinear.fx";
+    effect.materialVectors = {
+        MaterialLibraryID: [ 0, 0, 0, 0 ],
+        MaterialSpecularCurve: [ 0, 0, 0, 0 ],
+        MaterialSpecularFactors: [ 0, 0, 0, 0 ],
+        FresnelFactors: [ 0, 0, 0, 0 ],
+        FilmicMappingParams1: [ 0, 0, 0, 0 ],
+        FilmicMappingParams2: [ 0, 0, 0, 0 ],
+        MaterialCubeReflection: [ 0, 0, 0, 0 ],
+        MaterialCubeReflectionControl: [ 0, 0, 0, 0 ]
+    };
+    for (const name of Object.keys(effect.materialVectors))
+    {
+        effect.parameters[name] = {
+            GetValue(out)
+            {
+                out.push(...effect.materialVectors[name]);
+                return out;
+            }
+        };
+    }
+    effect.parameters.ColorNdotLLookupMap = TextureParameterFixture(
+        "res:/proof/ndotl.png"
+    );
+    const setParameters = effect.SetParameters.bind(effect);
+    effect.SetParameters = values =>
+    {
+        setParameters(values);
+        for (const name of Object.keys(effect.materialVectors))
+        {
+            if (values[name]) effect.materialVectors[name] = [ ...values[name] ];
+        }
+        return true;
+    };
+
+    const authoredVectors = {
+        MaterialLibraryID: [ 10, 0, 0, 0 ],
+        Material2LibraryID: [ 0, 0, 0, 0 ],
+        MaterialSpecularCurve: [ 400, 100, 0.5, 0 ],
+        MaterialSpecularFactors: [ 2, 4, 1, 0 ],
+        FresnelFactors: [ 1, 1, 0.6, 0 ],
+        FilmicMappingParams1: [ 0.22, 0.3, 0.1, 0.2 ],
+        FilmicMappingParams2: [ 0.01, 0.3, 1, 1 ],
+        MaterialCubeReflection: [ 0, 0, 1, 0 ],
+        MaterialCubeReflectionControl: [ 1, 0, 4.5, 0 ]
+    };
+    const authored = {
+        name: "C_S2_Ring01",
+        effectFilePath: effect._characterAuthoredEffectFilePath,
+        materialDiffuseColor: [ 0, 0, 0, 0 ],
+        parameters: {
+            DiffuseMap: EmptyTextureParameterFixture(),
+            NormalMap: EmptyTextureParameterFixture(),
+            SpecularMap: EmptyTextureParameterFixture(),
+            TransformUV0: ConstantVectorParameterFixture([ 0, 0, 0.5, 1 ]),
+            MaterialDiffuseColor: null,
+            ColorNdotLLookupMap: TextureParameterFixture(
+                "res:/Texture/Global/NdotLLibrary.png"
+            ),
+            ...Object.fromEntries(Object.entries(authoredVectors).map(([ name, value ]) => [
+                name,
+                ConstantVectorParameterFixture(value)
+            ]))
+        },
+        SetParameters(values)
+        {
+            if (values.MaterialDiffuseColor)
+            {
+                this.materialDiffuseColor = [ ...values.MaterialDiffuseColor ];
+            }
+            return true;
+        }
+    };
+    authored.parameters.MaterialDiffuseColor = {
+        GetValue(out)
+        {
+            out.push(...authored.materialDiffuseColor);
+            return out;
+        }
+    };
+    effect._characterAuthoredEffect = authored;
+    effect._characterAuthoredTransformUV0 = [ 0, 0, 0.5, 1 ];
+
+    return {
+        effect,
+        authored,
+        contribution: {
+            groupID: "accessories/nose",
+            source: { materialDefinitionPath: null },
+            materialValues: null,
+            selectedTextures: []
+        }
+    };
+}
+
+function ConstantVectorParameterFixture(value)
+{
+    return {
+        GetValue(out)
+        {
+            out.push(...value);
+            return out;
+        }
+    };
+}
+
+function EmptyTextureParameterFixture()
+{
+    return {
+        textureRes: null,
+        resourcePath: "",
+        isAttached: false,
+        AttachTextureRes(value)
+        {
+            this.textureRes = value;
+            this.isAttached = Boolean(value);
+        },
+        SetValue(value)
+        {
+            this.resourcePath = value;
+            return true;
+        }
+    };
 }
 
 function AtomicEffectFixture({

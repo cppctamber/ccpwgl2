@@ -78,6 +78,16 @@ const PROVED_BODY_SKIN_MAKEUP_GROUPS = new Set([
     "topmiddle"
 ]);
 const NEUTRAL_SPECULAR = "res:/dx9/model/decal/shared/bw_000_000_015.dds";
+const MATERIAL_ONLY_ACCESSORY_VECTOR_LENGTHS = Object.freeze({
+    MaterialLibraryID: 4,
+    MaterialSpecularCurve: 4,
+    MaterialSpecularFactors: 4,
+    FresnelFactors: 4,
+    FilmicMappingParams1: 4,
+    FilmicMappingParams2: 4,
+    MaterialCubeReflection: 4,
+    MaterialCubeReflectionControl: 4
+});
 const FEMALE_BOOT_PART = "female/feet/bootscf01";
 const FEMALE_BOOT_MASK_PART = "female/dependants/bootmasks/bootmaskshin";
 const FEMALE_BOOT_MASK_PATH = "res:/graphics/character/female/paperdoll/dependants/bootmasks/bootmaskshin/comp_body_m.png";
@@ -895,11 +905,55 @@ export class TnyGlesAtlasComposer
             const resolved = resolveLegacyConfiguredAccessoryMaterial(contribution);
             if (resolved.status !== "ready")
             {
+                const materialOnly = resolveLegacyConfiguredMaterialOnlyAccessory(
+                    effects,
+                    contribution
+                );
+                if (materialOnly.status === "ready")
+                {
+                    try
+                    {
+                        const committed = await commitLegacyConfiguredMaterialOnlyAccessoryBindings(
+                            effects,
+                            materialOnly.contracts,
+                            binding.configuredMeshes
+                        );
+                        const activeEffects = committed.activeEffects ?? effects;
+                        part.materialStatus = "configured-accessory-material-only-policy";
+                        part.compositionStatus = "configured-accessory-material-only-attached";
+                        report.applied.push({
+                            partIndex: part.partIndex,
+                            groupID: part.groupID,
+                            partSourceRecordID: part.partSourceRecordID,
+                            target: "material-library",
+                            materialDefinitionPath: contribution?.source?.materialDefinitionPath
+                                ?? null,
+                            realizationStatus: "complete",
+                            attachedEffects: committed.attachedEffects,
+                            bindings: DescribeConfiguredGarmentBindings(
+                                binding.configuredMeshes,
+                                activeEffects
+                            ),
+                            materialOnly: committed
+                        });
+                    }
+                    catch (error)
+                    {
+                        report.deferred.push({
+                            partIndex: part?.partIndex ?? null,
+                            groupID: part?.groupID ?? null,
+                            partSourceRecordID: part?.partSourceRecordID ?? null,
+                            reason: error.message
+                        });
+                    }
+                    continue;
+                }
                 report.deferred.push({
                     partIndex: part?.partIndex ?? null,
                     groupID: part?.groupID ?? null,
                     partSourceRecordID: part?.partSourceRecordID ?? null,
-                    reason: resolved.reason
+                    reason: resolved.reason,
+                    materialOnlyReason: materialOnly.reason
                 });
                 continue;
             }
@@ -4362,6 +4416,137 @@ export function resolveLegacyConfiguredAccessoryMaterial(contribution)
             normalPath: normals[0].path,
             specularPath: specular[0].path
         }
+    };
+}
+
+/**
+ * Resolves an accessory whose decoded Black owns a private linear-BRDF
+ * material but no texture or colour inventory. The original effect supplies
+ * only parameters shared by the proof shader; unset colour declarations are
+ * deliberately excluded so diagnostic magenta can be neutralized safely.
+ */
+export function resolveLegacyConfiguredMaterialOnlyAccessory(effects, contribution)
+{
+    if (!String(contribution?.groupID ?? "").startsWith("accessories/"))
+    {
+        return { status: "deferred", reason: "material-only-accessory-group-unavailable" };
+    }
+    if ((contribution?.selectedTextures?.length ?? 0) !== 0
+        || contribution?.materialValues
+        || contribution?.source?.materialDefinitionPath)
+    {
+        return {
+            status: "deferred",
+            reason: "material-only-accessory-texture-or-colour-inventory-present"
+        };
+    }
+
+    effects = Unique(effects);
+    if (!effects.length)
+    {
+        return { status: "deferred", reason: "material-only-accessory-consumer-unavailable" };
+    }
+
+    const contracts = [];
+    for (const effect of effects)
+    {
+        const authored = effect?._characterAuthoredEffect;
+        const effectPath = String(
+            effect?._characterAuthoredEffectFilePath
+            || authored?.effectFilePath
+            || ""
+        );
+        if (effect?._characterGarmentMaterialFallback !== true
+            || !authored
+            || !/skinnedavatarbrdflinear/iu.test(effectPath)
+            || /doublelinear/iu.test(effectPath))
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-linear-brdf-consumer-unavailable"
+            };
+        }
+        if (![ "DiffuseMap", "NormalMap", "SpecularMap" ].every(name =>
+            HasEffectParameter(authored, name)
+            && !ReadTexturePath(authored?.parameters?.[name])))
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-authored-texture-contract-present"
+            };
+        }
+
+        const material2LibraryID = ReadEffectVectorParameter(
+            authored,
+            "Material2LibraryID",
+            4
+        );
+        if (material2LibraryID?.some(value => value !== 0))
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-secondary-material-unqualified"
+            };
+        }
+
+        const transformUV0 = ReadTransformUV0(authored)
+            ?? effect?._characterAuthoredTransformUV0;
+        if (!Array.isArray(transformUV0) || transformUV0.length !== 4)
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-transform-unresolved"
+            };
+        }
+        const parameters = {};
+        for (const [ name, length ] of Object.entries(
+            MATERIAL_ONLY_ACCESSORY_VECTOR_LENGTHS
+        ))
+        {
+            const value = ReadEffectVectorParameter(authored, name, length);
+            if (!value)
+            {
+                return {
+                    status: "deferred",
+                    reason: `material-only-accessory-${name}-unresolved`
+                };
+            }
+            parameters[name] = value;
+        }
+        if (parameters.MaterialLibraryID[0] === 0)
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-library-unresolved"
+            };
+        }
+        const colorNdotLPath = ReadTexturePath(
+            authored?.parameters?.ColorNdotLLookupMap
+        );
+        if (!/^res:\//iu.test(colorNdotLPath)
+            || !HasEffectParameter(authored, "ColorNdotLLookupMap"))
+        {
+            return {
+                status: "deferred",
+                reason: "material-only-accessory-ndotl-lookup-unresolved"
+            };
+        }
+
+        contracts.push({
+            effect,
+            authoredEffect: authored,
+            authoredEffectPath: effectPath,
+            transformUV0: [ ...transformUV0 ],
+            parameters,
+            colorNdotLPath
+        });
+    }
+
+    return {
+        status: "ready",
+        rule: "configured-retained-material-only-accessory-v1",
+        correctness: "retained-source-policy",
+        contracts
     };
 }
 
@@ -7928,6 +8113,360 @@ export async function commitLegacyConfiguredGarmentBindings(
         {
             rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
             rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+/**
+ * Atomically realizes one decoded, textureless accessory material on the
+ * compatible linear-BRDF proof shader. Neutral proof D/N/S samplers remain in
+ * place; the decoded material library, lighting controls, UV bounds, and exact
+ * N·L lookup are restored without promoting the unrenderable authored effect.
+ */
+export async function commitLegacyConfiguredMaterialOnlyAccessoryBindings(
+    effects,
+    contracts,
+    meshes = []
+)
+{
+    effects = Unique(effects);
+    contracts = Array.isArray(contracts) ? contracts : [];
+    if (!effects.length
+        || effects.length !== contracts.length
+        || contracts.some(contract => !effects.includes(contract?.effect)))
+    {
+        throw new TypeError(
+            "Material-only accessory bindings require one exact contract per effect"
+        );
+    }
+
+    const parameterNames = [
+        "MaterialDiffuseColor",
+        ...Object.keys(MATERIAL_ONLY_ACCESSORY_VECTOR_LENGTHS)
+    ];
+    const proofTransferSupported = contracts.every(contract =>
+        parameterNames.every(name => HasEffectParameter(contract.effect, name))
+        && HasEffectParameter(contract.effect, "ColorNdotLLookupMap"));
+    if (!proofTransferSupported)
+    {
+        return CommitLegacyMaterialOnlyAccessoryAuthoredEffects(
+            effects,
+            contracts,
+            meshes
+        );
+    }
+    const snapshots = contracts.map(contract =>
+    {
+        const values = Object.fromEntries(parameterNames.map(name =>
+        {
+            const length = name === "MaterialDiffuseColor"
+                ? 4
+                : MATERIAL_ONLY_ACCESSORY_VECTOR_LENGTHS[name];
+            const value = ReadEffectVectorParameter(contract.effect, name, length);
+            if (!value)
+            {
+                throw new Error(`Material-only accessory cannot capture ${name}`);
+            }
+            return [ name, value ];
+        }));
+        const transformUV0 = ReadTransformUV0(contract.effect);
+        if (!transformUV0)
+        {
+            throw new Error("Material-only accessory cannot capture TransformUV0");
+        }
+        return {
+            effect: contract.effect,
+            transformUV0,
+            parameters: values,
+            colorNdotL: CaptureTextureBinding(contract.effect, "ColorNdotLLookupMap")
+        };
+    });
+
+    try
+    {
+        for (const contract of contracts)
+        {
+            const { effect } = contract;
+            if (!SetTransformUV0(effect, contract.transformUV0))
+            {
+                throw new Error("Material-only accessory cannot retain TransformUV0");
+            }
+            const parameters = {
+                MaterialDiffuseColor: [ 1, 1, 1, 1 ],
+                ...contract.parameters
+            };
+            if (typeof effect?.SetParameters !== "function")
+            {
+                throw new Error("Material-only accessory cannot apply material controls");
+            }
+            effect.SetParameters(parameters);
+            for (const [ name, value ] of Object.entries(parameters))
+            {
+                if (!BoundsEqual(
+                    ReadEffectVectorParameter(effect, name, value.length),
+                    value
+                ))
+                {
+                    throw new Error(`Material-only accessory could not apply ${name}`);
+                }
+            }
+
+            const lookup = effect?.parameters?.ColorNdotLLookupMap;
+            if (typeof lookup?.SetValue !== "function")
+            {
+                throw new Error("Material-only accessory cannot apply ColorNdotLLookupMap");
+            }
+            lookup.SetValue(contract.colorNdotLPath);
+            if (ReadTexturePath(lookup).toLowerCase()
+                    !== contract.colorNdotLPath.toLowerCase())
+            {
+                throw new Error("Material-only accessory cannot apply ColorNdotLLookupMap");
+            }
+        }
+
+        for (const effect of effects)
+        {
+            await tw2.resMan?.Watch?.(effect);
+            if (effect?.IsGood?.() === false
+                || effect?.parameters?.ColorNdotLLookupMap?.IsGood?.() === false)
+            {
+                throw new Error("Material-only accessory effect failed to prepare");
+            }
+        }
+
+        const report = {
+            status: "applied",
+            rule: "legacy-opengl-material-only-accessory-v1",
+            correctness: "retained-source-policy",
+            attachedEffects: effects.length,
+            bindingMode: "compatible-proof-control-transfer",
+            authoredPromotion: "deferred-incomplete-authored-shader-contract",
+            samplerPolicy: "neutral-proof-dns-with-retained-ndotl",
+            effectiveEffects: contracts.map(contract => ({
+                effectName: String(contract.effect?.name ?? ""),
+                authoredEffectPath: contract.authoredEffectPath,
+                transformUV0: ReadTransformUV0(contract.effect),
+                parameters: Object.fromEntries(parameterNames.map(name => [
+                    name,
+                    ReadEffectVectorParameter(contract.effect, name, 4)
+                ])),
+                colorNdotLPath: ReadTexturePath(
+                    contract.effect?.parameters?.ColorNdotLLookupMap
+                )
+            }))
+        };
+        Object.defineProperty(report, "activeEffects", {
+            value: effects,
+            enumerable: false
+        });
+        return report;
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            try
+            {
+                snapshot.effect.SetParameters({
+                    TransformUV0: snapshot.transformUV0,
+                    ...snapshot.parameters
+                });
+            }
+            catch (error)
+            {
+                rollbackFailures.push(error);
+            }
+            rollbackFailures.push(...RestoreTextureBindings([ snapshot.colorNdotL ]));
+        }
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = rollbackFailures;
+        throw error;
+    }
+}
+
+async function CommitLegacyMaterialOnlyAccessoryAuthoredEffects(
+    effects,
+    contracts,
+    meshes
+)
+{
+    if (!Array.isArray(meshes) || !meshes.length)
+    {
+        throw new Error(
+            "Material-only accessory authored promotion requires configured consumers"
+        );
+    }
+    const fields = [
+        "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas",
+        "depthAreas", "depthNormalAreas", "distortionAreas", "pickableAreas"
+    ];
+    const consumers = contracts.map(contract =>
+    {
+        const areas = [];
+        for (const mesh of meshes)
+        {
+            for (const field of fields)
+            {
+                for (const area of mesh?.[field] ?? [])
+                {
+                    if (area?.effect === contract.effect) areas.push(area);
+                }
+            }
+        }
+        if (!areas.length || areas.some(area => area?.reversed === true))
+        {
+            throw new Error(
+                "Material-only accessory authored promotion requires non-reversed exact consumers"
+            );
+        }
+        return { ...contract, areas };
+    });
+    const samplerNames = [
+        "DiffuseMap",
+        "NormalMap",
+        "SpecularMap",
+        "ReflectionMap",
+        "ShadowCubeMap0",
+        "CutMaskMap",
+        "FresnelLookupMap"
+    ];
+    const snapshots = consumers.map(contract =>
+    {
+        const authored = contract.authoredEffect;
+        const materialDiffuseColor = ReadEffectVectorParameter(
+            authored,
+            "MaterialDiffuseColor",
+            4
+        );
+        if (!materialDiffuseColor || typeof authored?.SetParameters !== "function")
+        {
+            throw new Error(
+                "Material-only accessory authored effect lacks a diffuse material control"
+            );
+        }
+        return {
+            authored,
+            materialDiffuseColor,
+            textures: samplerNames
+                .filter(name => typeof authored?.parameters?.[name]?.AttachTextureRes
+                    === "function")
+                .map(name => CaptureTextureBinding(authored, name)),
+            areas: contract.areas.map(area => ({ area, effect: area.effect }))
+        };
+    });
+
+    try
+    {
+        for (const contract of consumers)
+        {
+            const { effect, authoredEffect: authored } = contract;
+            for (const name of samplerNames)
+            {
+                const target = authored?.parameters?.[name];
+                if (!target) continue;
+                if (typeof target.AttachTextureRes !== "function"
+                    && typeof target.SetValue !== "function") continue;
+                const targetPath = ReadTexturePath(target);
+                if (/^res:\//iu.test(targetPath) || target?.textureRes) continue;
+                const proof = effect?.parameters?.[name];
+                if (proof?.textureRes && typeof target.AttachTextureRes === "function")
+                {
+                    target.AttachTextureRes(proof.textureRes);
+                }
+                else
+                {
+                    const proofPath = ReadTexturePath(proof);
+                    if (!/^res:\//iu.test(proofPath)
+                        || typeof target.SetValue !== "function")
+                    {
+                        throw new Error(
+                            `Material-only accessory lacks a neutral ${name} sampler`
+                        );
+                    }
+                    target.SetValue(proofPath);
+                }
+            }
+            authored.SetParameters({ MaterialDiffuseColor: [ 1, 1, 1, 1 ] });
+            if (!BoundsEqual(
+                ReadEffectVectorParameter(authored, "MaterialDiffuseColor", 4),
+                [ 1, 1, 1, 1 ]
+            ))
+            {
+                throw new Error(
+                    "Material-only accessory authored effect rejected MaterialDiffuseColor"
+                );
+            }
+            await tw2.resMan?.Watch?.(authored);
+            if (authored?.IsGood?.() === false
+                || authored?.parameters?.ColorNdotLLookupMap?.IsGood?.() === false)
+            {
+                throw new Error("Material-only accessory authored effect failed to prepare");
+            }
+        }
+
+        for (const contract of consumers)
+        {
+            for (const area of contract.areas) area.effect = contract.authoredEffect;
+        }
+
+        const activeEffects = consumers.map(contract => contract.authoredEffect);
+        const report = {
+            status: "applied",
+            rule: "legacy-opengl-material-only-accessory-v1",
+            correctness: "retained-source-policy",
+            attachedEffects: activeEffects.length,
+            bindingMode: "retained-linear-brdf-neutral-sampler-completion",
+            authoredPromotion: "bounded-compatible-linear-brdf",
+            samplerPolicy: "neutral-missing-samplers-with-retained-ndotl",
+            effectiveEffects: consumers.map(contract => ({
+                effectName: String(contract.authoredEffect?.name ?? ""),
+                authoredEffectPath: contract.authoredEffectPath,
+                transformUV0: ReadTransformUV0(contract.authoredEffect),
+                parameters: {
+                    MaterialDiffuseColor: ReadEffectVectorParameter(
+                        contract.authoredEffect,
+                        "MaterialDiffuseColor",
+                        4
+                    ),
+                    ...Object.fromEntries(Object.entries(
+                        MATERIAL_ONLY_ACCESSORY_VECTOR_LENGTHS
+                    ).map(([ name, length ]) => [
+                        name,
+                        ReadEffectVectorParameter(contract.authoredEffect, name, length)
+                    ]))
+                },
+                colorNdotLPath: ReadTexturePath(
+                    contract.authoredEffect?.parameters?.ColorNdotLLookupMap
+                )
+            }))
+        };
+        Object.defineProperty(report, "activeEffects", {
+            value: activeEffects,
+            enumerable: false
+        });
+        return report;
+    }
+    catch (cause)
+    {
+        const rollbackFailures = [];
+        for (const snapshot of [ ...snapshots ].reverse())
+        {
+            try
+            {
+                snapshot.authored.SetParameters({
+                    MaterialDiffuseColor: snapshot.materialDiffuseColor
+                });
+                for (const { area, effect } of snapshot.areas) area.effect = effect;
+            }
+            catch (error)
+            {
+                rollbackFailures.push(error);
+            }
+            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
         }
         const error = new Error(cause.message, { cause });
         error.rollbackFailures = rollbackFailures;
