@@ -299,19 +299,47 @@ test("part catalog exposes the qualified inner clothing locations", () =>
 
 test("part catalog exposes qualified body augmentation overlays", () =>
 {
-    const location = Record("30", { modifierKey: "makeup/bodyaugmentations" });
-    const resource = Record("300", {
+    const locations = [ "makeup/bodyaugmentations", "makeup/armright" ].map(
+        (modifierKey, index) => Record(String(30 + index), { modifierKey })
+    );
+    const resources = locations.map((location, index) => Record(String(300 + index), {
         resGender: 0,
-        resPath: "res:/female/makeup/bodyaugmentations/example"
-    });
-    const selected = Paperdoll("female-augmentation", [ Modifier(location, resource) ]);
+        resPath: `res:/female/${location.modifierKey}/example`
+    }));
+    const selected = Paperdoll("female-augmentation", locations.map((location, index) =>
+        Modifier(location, resources[index])));
     const catalog = createCharacterPartCatalog(
         createCharacterPartIndex([ selected ]),
         selected
     );
 
-    assert.equal(catalog.slots[0].modifierKey, "makeup/bodyaugmentations");
-    assert.equal(catalog.slots[0].adapterSupported, true);
+    assert.deepEqual(catalog.slots.map(value => [ value.modifierKey, value.adapterSupported ]), [
+        [ "makeup/armright", true ],
+        [ "makeup/bodyaugmentations", true ]
+    ]);
+});
+
+test("part catalog exposes qualified configured accessories", () =>
+{
+    const locations = [ "accessories/glasses", "accessories/masks", "accessories/nose" ].map(
+        (modifierKey, index) => Record(String(40 + index), { modifierKey })
+    );
+    const resources = locations.map((location, index) => Record(String(400 + index), {
+        resGender: 0,
+        resPath: `res:/female/${location.modifierKey}/example`
+    }));
+    const selected = Paperdoll("female-accessories", locations.map((location, index) =>
+        Modifier(location, resources[index])));
+    const catalog = createCharacterPartCatalog(
+        createCharacterPartIndex([ selected ]),
+        selected
+    );
+
+    assert.deepEqual(catalog.slots.map(value => [ value.modifierKey, value.adapterSupported ]), [
+        [ "accessories/glasses", true ],
+        [ "accessories/masks", true ],
+        [ "accessories/nose", true ]
+    ]);
 });
 
 test("URL-owned part choices apply exact variations before first render", () =>

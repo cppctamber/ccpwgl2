@@ -77,7 +77,7 @@ test("configured accessories resolve exact head and accessory target tuples", ()
         const contribution = createContribution(target);
         assert.deepEqual(resolveLegacyConfiguredAccessoryMaterial(contribution), {
             status: "ready",
-            rule: "configured-retained-accessory-material-v1",
+            rule: "configured-retained-accessory-material-v2",
             correctness: "retained-source-policy",
             target,
             candidate: {
@@ -93,9 +93,46 @@ test("configured accessories resolve exact head and accessory target tuples", ()
                 correctness: "retained-source-policy",
                 normalPath: `res:/${target}_n.png`,
                 specularPath: `res:/${target}_s.png`
-            }
+            },
+            retainedCutMasks: []
         });
     }
+});
+
+test("configured accessories resolve exact baked D/N/S and retain cut masks separately", () =>
+{
+    const contribution = {
+        groupID: "accessories/masks",
+        materialValues: null,
+        selectedTextures: [
+            { path: "res:/mask_d.png", role: "diffuse-source", target: "head" },
+            { path: "res:/mask_n.png", role: "normal-source", target: "head" },
+            { path: "res:/mask_s.png", role: "specular-source", target: "head" },
+            { path: "res:/mask_m.png", role: "cut-mask", target: "head" }
+        ]
+    };
+
+    assert.deepEqual(resolveLegacyConfiguredAccessoryMaterial(contribution), {
+        status: "ready",
+        rule: "configured-retained-accessory-material-v2",
+        correctness: "retained-source-policy",
+        target: "head",
+        candidate: {
+            mode: "baked-direct",
+            contribution,
+            detail: contribution.selectedTextures[0],
+            zones: null,
+            colors: null
+        },
+        materialChannels: {
+            status: "ready",
+            rule: "configured-retained-accessory-lighting-v1",
+            correctness: "retained-source-policy",
+            normalPath: "res:/mask_n.png",
+            specularPath: "res:/mask_s.png"
+        },
+        retainedCutMasks: [ "res:/mask_m.png" ]
+    });
 });
 
 test("configured accessories defer mixed targets and non-accessory owners", () =>
@@ -4211,6 +4248,7 @@ test("configured accessory binds one exact private target and stays out of garme
     assert.equal(report.status, "applied");
     assert.equal(report.applied.length, 1);
     assert.equal(report.applied[0].target, "head");
+    assert.equal(report.applied[0].diffuseMode, "colorized");
     assert.equal(report.applied[0].realizationStatus, "complete");
     assert.deepEqual(report.applied[0].surface.passes.map(value => value.mode), [
         "configured-garment-clear",
@@ -4227,6 +4265,67 @@ test("configured accessory binds one exact private target and stays out of garme
     const garmentReport = await fixture.composer.ComposeConfiguredGarmentMaterials(staged);
     assert.deepEqual(garmentReport.applied, []);
     assert.deepEqual(garmentReport.deferred, []);
+});
+
+test("configured accessory binds one exact baked D/N/S target", async () =>
+{
+    const fixture = AtlasComposerFixture();
+    const effect = AtomicEffectFixture({
+        texture: { path: "#accessory-proof" },
+        transform: [ 0, 0, 0.5, 1 ],
+        materialDiffuseColor: [ 1, 0, 1, 1 ]
+    });
+    effect._characterGarmentMaterialFallback = true;
+    const part = {
+        partIndex: 33,
+        groupID: "accessories/masks",
+        partSourceRecordID: "male/accessories/masks/example",
+        materialStatus: "retained-linear-color-fallback",
+        compositionStatus: "deferred"
+    };
+    const contribution = {
+        partIndex: part.partIndex,
+        groupID: part.groupID,
+        source: {
+            partSourceRecordID: part.partSourceRecordID,
+            materialDefinitionPath: null
+        },
+        materialValues: null,
+        selectedTextures: [
+            { path: "res:/mask/comp_head_d.png", role: "diffuse-source", target: "head" },
+            { path: "res:/mask/comp_head_n.png", role: "normal-source", target: "head" },
+            { path: "res:/mask/comp_head_s.png", role: "specular-source", target: "head" },
+            { path: "res:/mask/comp_head_m.png", role: "cut-mask", target: "head" }
+        ]
+    };
+    const staged = {
+        sex: "male",
+        configuredParts: [ part ],
+        configuredPartBindings: [ {
+            configuredPart: part,
+            configuredMeshes: [ MeshFixture(effect) ]
+        } ],
+        textureContributions: [ contribution ],
+        compositionTargets: []
+    };
+
+    const report = await fixture.composer.ComposeConfiguredAccessoryMaterials(staged);
+
+    assert.equal(report.status, "applied");
+    assert.equal(report.applied[0].diffuseMode, "baked-direct");
+    assert.equal(report.applied[0].zonePath, null);
+    assert.equal(report.applied[0].colors, null);
+    assert.deepEqual(report.applied[0].retainedCutMasks, [ "res:/mask/comp_head_m.png" ]);
+    assert.deepEqual(report.applied[0].surface.passes.map(value => value.mode), [
+        "configured-garment-clear",
+        "configured-authored-rgba"
+    ]);
+    assert.strictEqual(effect.parameters.DiffuseMap.textureRes, staged.compositionTargets[0].texture);
+    assert.strictEqual(effect.parameters.NormalMap.textureRes, staged.compositionTargets[1].texture);
+    assert.strictEqual(effect.parameters.SpecularMap.textureRes, staged.compositionTargets[2].texture);
+    assert.deepEqual(effect.transform, [ 0, 0, 1, 1 ]);
+    assert.equal(part.materialStatus, "configured-accessory-baked-policy");
+    assert.equal(part.compositionStatus, "configured-accessory-baked-attached");
 });
 
 test("configured accessory realizes one material-only private BRDF without an atlas", async () =>

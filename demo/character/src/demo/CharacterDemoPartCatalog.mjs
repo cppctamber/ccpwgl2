@@ -1,11 +1,15 @@
 import { TnyGlesTexturePolicy } from "../../../../src/runtime/character/gles/TnyGlesTexturePolicy.js";
 
 const ADAPTER_SUPPORTED_LOCATIONS = new Set([
+    "accessories/glasses",
+    "accessories/masks",
+    "accessories/nose",
     "bottominner",
     "bottomouter",
     "bottomunderwear",
     "feet",
     "makeup/aging",
+    "makeup/armright",
     "makeup/augmentations",
     "makeup/blemish",
     "makeup/blush",

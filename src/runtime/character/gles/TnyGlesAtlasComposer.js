@@ -871,7 +871,7 @@ export class TnyGlesAtlasComposer
     {
         const report = {
             status: "deferred",
-            rule: "legacy-opengl-configured-accessory-material-v1",
+            rule: "legacy-opengl-configured-accessory-material-v2",
             correctness: "retained-source-policy-live-proof-pending",
             applied: [],
             deferred: []
@@ -982,8 +982,11 @@ export class TnyGlesAtlasComposer
             }
 
             const partial = surface.status === "partial";
-            part.materialStatus = `configured-accessory-colorized-${partial ? "partial" : "policy"}`;
-            part.compositionStatus = `configured-accessory-colorized-${partial ? "partial" : "attached"}`;
+            const diffuseMode = resolved.candidate.mode === "baked-direct"
+                ? "baked"
+                : "colorized";
+            part.materialStatus = `configured-accessory-${diffuseMode}-${partial ? "partial" : "policy"}`;
+            part.compositionStatus = `configured-accessory-${diffuseMode}-${partial ? "partial" : "attached"}`;
             if (partial)
             {
                 report.deferred.push({
@@ -1002,9 +1005,11 @@ export class TnyGlesAtlasComposer
                 target: resolved.target,
                 materialDefinitionPath: contribution.source.materialDefinitionPath,
                 detailPath: resolved.candidate.detail.path,
-                zonePath: resolved.candidate.zones.path,
-                colors: resolved.candidate.colors.map(color => [ ...color ]),
+                diffuseMode: resolved.candidate.mode,
+                zonePath: resolved.candidate.zones?.path ?? null,
+                colors: resolved.candidate.colors?.map(color => [ ...color ]) ?? null,
                 materialChannels: resolved.materialChannels,
+                retainedCutMasks: resolved.retainedCutMasks,
                 targetSize,
                 realizationStatus: partial ? "partial" : "complete",
                 attachedEffects: surface.attachedEffects,
@@ -4337,9 +4342,11 @@ export function resolveLegacyConfiguredGarmentDiffuseContribution(contribution)
 }
 
 /**
- * Resolves one configured accessory from a complete single-target L/Z/N/S
- * tuple. The retained texture roles, rather than an asset name, decide whether
- * the private target represents head or accessory texture space.
+ * Resolves one configured accessory from either a complete single-target
+ * L/Z/N/S tuple or one exact baked D/N/S tuple. The retained texture roles,
+ * rather than an asset name, decide whether the private target represents
+ * head or accessory texture space. Cut masks remain named retained inputs;
+ * they do not become private-material samplers without an authored consumer.
  */
 export function resolveLegacyConfiguredAccessoryMaterial(contribution)
 {
@@ -4350,7 +4357,9 @@ export function resolveLegacyConfiguredAccessoryMaterial(contribution)
 
     const selected = contribution?.selectedTextures ?? [];
     const diffuseTargets = Unique(selected
-        .filter(value => [ "colorize-layer", "colorize-zones" ].includes(value?.role)
+        .filter(value => [
+            "colorize-layer", "colorize-zones", "diffuse-source", "diffuse-overlay"
+        ].includes(value?.role)
             && [ "head", "acc" ].includes(value?.target))
         .map(value => value.target));
     if (diffuseTargets.length !== 1)
@@ -4368,13 +4377,13 @@ export function resolveLegacyConfiguredAccessoryMaterial(contribution)
         value?.target === target && value?.role === "colorize-layer");
     const zones = selected.filter(value =>
         value?.target === target && value?.role === "colorize-zones");
+    const baked = selected.filter(value => value?.target === target
+        && [ "diffuse-source", "diffuse-overlay" ].includes(value?.role));
     const normals = selected.filter(value => value?.target === target
         && [ "normal-source", "normal-overlay" ].includes(value?.role));
     const specular = selected.filter(value => value?.target === target
         && [ "specular-source", "specular-overlay" ].includes(value?.role));
     for (const [ values, channel ] of [
-        [ details, "diffuse-layer" ],
-        [ zones, "diffuse-zones" ],
         [ normals, "normal-map" ],
         [ specular, "specular-map" ]
     ])
@@ -4388,34 +4397,60 @@ export function resolveLegacyConfiguredAccessoryMaterial(contribution)
         }
     }
 
-    const colors = NormalizeColors(contribution?.materialValues?.colors);
-    if (!colors)
+    let candidate;
+    if (baked.length === 1 && !details.length && !zones.length)
     {
-        return { status: "deferred", reason: "configured-accessory-colors-unresolved" };
+        candidate = {
+            mode: "baked-direct",
+            contribution,
+            detail: baked[0],
+            zones: null,
+            colors: null
+        };
     }
-    const pattern = ResolvePattern(contribution.materialValues);
-    if (pattern?.status === "deferred") return pattern;
-
-    return {
-        status: "ready",
-        rule: "configured-retained-accessory-material-v1",
-        correctness: "retained-source-policy",
-        target,
-        candidate: {
+    else if (!baked.length && details.length === 1 && zones.length === 1)
+    {
+        const colors = NormalizeColors(contribution?.materialValues?.colors);
+        if (!colors)
+        {
+            return { status: "deferred", reason: "configured-accessory-colors-unresolved" };
+        }
+        const pattern = ResolvePattern(contribution.materialValues);
+        if (pattern?.status === "deferred") return pattern;
+        candidate = {
             mode: "colorized",
             contribution,
             detail: details[0],
             zones: zones[0],
             colors,
             ...(pattern ? { pattern } : {})
-        },
+        };
+    }
+    else
+    {
+        return {
+            status: "deferred",
+            reason: baked.length || details.length || zones.length
+                ? "configured-accessory-diffuse-contract-ambiguous"
+                : "configured-accessory-diffuse-contract-unresolved"
+        };
+    }
+
+    return {
+        status: "ready",
+        rule: "configured-retained-accessory-material-v2",
+        correctness: "retained-source-policy",
+        target,
+        candidate,
         materialChannels: {
             status: "ready",
             rule: "configured-retained-accessory-lighting-v1",
             correctness: "retained-source-policy",
             normalPath: normals[0].path,
             specularPath: specular[0].path
-        }
+        },
+        retainedCutMasks: selected.filter(value => value?.target === target
+            && value?.role === "cut-mask").map(value => value.path)
     };
 }
 
