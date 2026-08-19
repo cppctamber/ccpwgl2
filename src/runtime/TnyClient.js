@@ -1,5 +1,6 @@
 import { mat4 } from "math";
 import { Tw2BatchAccumulator } from "core/batch";
+import { Tw2ConstructorStore } from "core/store";
 import { device, tw2 } from "global";
 import { meta } from "utils";
 import { TnyShip } from "./objects/TnyShip";
@@ -22,6 +23,7 @@ export class TnyClient extends meta.Model
     post = null;
     renderer = null;
     accumulator = new Tw2BatchAccumulator();
+    constructors = new Tw2ConstructorStore();
     constructor(options = {})
     {
         super();
@@ -88,6 +90,70 @@ export class TnyClient extends meta.Model
         }
     }
 
+    /** Direct access to the engine facade owned by this runtime client. */
+    get tw2()
+    {
+        return tw2;
+    }
+
+    get dt()
+    {
+        return device.dt;
+    }
+
+    get frame()
+    {
+        return device.frameCounter;
+    }
+
+    get canvas3d()
+    {
+        return device.canvas;
+    }
+
+    get canvas2d()
+    {
+        return device.canvas2d;
+    }
+
+    /**
+     * Initializes the engine for this client without fetching runtime
+     * objects. Scene, camera, post, renderer, and objects must already be
+     * constructed; resource acquisition remains with their owning APIs.
+     */
+    async Initialize(options = {})
+    {
+        const {
+            client,
+            render,
+            scene,
+            camera,
+            cameras,
+            objects,
+            post,
+            renderer,
+            ...engineOptions
+        } = options;
+
+        if (client)
+        {
+            this.options = { ...this.options, ...client };
+        }
+        if (scene) this.SetScene(scene);
+        if (renderer) this.SetRenderer(renderer);
+        if (post) this.SetPost(post);
+        if (cameras) this.AddCamera(cameras);
+        if (camera) this.SetCamera(camera);
+        if (objects) this.AddObject(objects);
+
+        await tw2.Initialize({
+            ...engineOptions,
+            render: render || (dt => this.Render(dt))
+        });
+
+        return this;
+    }
+
     get api()
     {
         return this.GetApiService();
@@ -120,6 +186,56 @@ export class TnyClient extends meta.Model
     GetService(name)
     {
         return this.services.get(name) || null;
+    }
+
+    /** Registers client-owned runtime constructor groups. */
+    Register(options = {})
+    {
+        if (options.constructors)
+        {
+            this.constructors.Register(options.constructors);
+        }
+        return this;
+    }
+
+    HasClass(name)
+    {
+        return this.constructors.Has(name);
+    }
+
+    /** Resolves a constructor from this client, independently of tw2. */
+    GetClass(name)
+    {
+        return this.constructors.Get(name);
+    }
+
+    SetClass(name, Constructor)
+    {
+        return this.constructors.Set(name, Constructor);
+    }
+
+    /**
+     * Constructs one of this client's classes and hands it the client.
+     *
+     * Tools like the gizmos need to know which client they belong to. Being
+     * given it here is what lets them stay ignorant of the exported `tny`:
+     * a class that imports the client closes a cycle, since this client's
+     * module is the one that imports every class in order to register it.
+     * @param {String} name - a registered class name
+     * @param {...*} args - constructor arguments
+     * @returns {*} the constructed instance
+     */
+    Create(name, ...args)
+    {
+        const Constructor = this.GetClass(name);
+        if (!Constructor)
+        {
+            throw new TypeError(`Unregistered class: ${name}`);
+        }
+
+        const instance = new Constructor(...args);
+        if (instance && "client" in instance) instance.client = this;
+        return instance;
     }
 
     SetApiService(service)
