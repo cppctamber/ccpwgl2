@@ -8,7 +8,7 @@ import {
     summarizeClothingRendererDetails
 } from "../src/demo/CharacterDemoClothingAudit.mjs";
 
-test("clothing audit builds one case per complete source-observed outfit", () =>
+test("clothing audit builds a deterministic source-observed choice cover", () =>
 {
     const bottom = { recordID: "25", modifierKey: "bottomouter" };
     const top = { recordID: "26", modifierKey: "topmiddle" };
@@ -49,6 +49,7 @@ test("clothing audit builds one case per complete source-observed outfit", () =>
             Modifier(outer, "dangling-outer", 0)
         ]),
         Paperdoll("female-b", [ Modifier(bottom, pants, 0) ]),
+        Paperdoll("female-covered", [ Modifier(bottom, pants, 0) ]),
         Paperdoll("makeup-only", [ Modifier(makeup, aging, 0) ]),
         Paperdoll("male-a", [ Modifier(bottom, malePants, 0) ])
     ];
@@ -69,6 +70,19 @@ test("clothing audit builds one case per complete source-observed outfit", () =>
     assert.equal(cases[0].choices[3].resourceResolved, false);
     assert.equal(cases[0].choices[4].resourceResolved, false);
     assert.deepEqual(cases[1].choices.map(value => value.choiceID), [ "200@0" ]);
+    assert.equal(cases[0].auditKind, "source-observed-outfit-choice-cover");
+    assert.equal(cases[0].coveredChoiceCount, 5);
+
+    assert.deepEqual(createSourceObservedOutfitCases(
+        paperdolls,
+        undefined,
+        0,
+        { exhaustive: true }
+    ).map(value => value.donorRecordID), [
+        "female-a",
+        "female-b",
+        "female-covered"
+    ]);
 });
 
 test("clothing audit classifies every selected member of one donor outfit", () =>

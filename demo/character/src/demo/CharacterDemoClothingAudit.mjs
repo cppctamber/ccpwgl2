@@ -53,12 +53,19 @@ export function installCharacterDemoClothingAudit({
             recordID: resource.recordID,
             variation: resource.variation
         })));
-    if (sourceObservedOutfits)
+    let sourceObservedOutfitMode = null;
+    if (sourceObservedOutfits === "all") sourceObservedOutfitMode = "all";
+    else if (sourceObservedOutfits === true || sourceObservedOutfits === "1")
+    {
+        sourceObservedOutfitMode = "choice-cover";
+    }
+    if (sourceObservedOutfitMode)
     {
         choices = createSourceObservedOutfitCases(
             character.GetPaperdolls(),
             selectedLocations,
-            catalog.gender
+            catalog.gender,
+            { exhaustive: sourceObservedOutfitMode === "all" }
         );
     }
     const output = document.createElement("output");
@@ -72,8 +79,8 @@ export function installCharacterDemoClothingAudit({
     const auditContext = {
         ...context,
         baselinePaperdollID: String(paperdoll.recordID),
-        sourceObserved: sourceObserved === true || sourceObservedOutfits === true,
-        sourceObservedOutfits: sourceObservedOutfits === true,
+        sourceObserved: sourceObserved === true || sourceObservedOutfitMode !== null,
+        sourceObservedOutfits: sourceObservedOutfitMode,
         sex: String(catalog.gender),
         pageURL: pageURL.href,
         backgroundMode: pageURL.searchParams.get("background") ?? "default",
@@ -84,7 +91,7 @@ export function installCharacterDemoClothingAudit({
         choices,
         output,
         auditContext,
-        sourceObserved === true || sourceObservedOutfits === true
+        sourceObserved === true || sourceObservedOutfitMode !== null
     );
     return { choices, output, promise };
 }
@@ -183,15 +190,17 @@ function ReadResult(choice, selection)
 }
 
 /**
- * Builds one audit case per exact retained paper-doll tuple for the requested
- * sex. Each case keeps only the selected apparel locations under review, but
- * rendering still uses the complete donor paper doll so cross-garment
- * ownership remains intact.
+ * Builds a deterministic donor-outfit cover for every exact apparel choice of
+ * the requested sex. Each case keeps only the selected apparel locations under
+ * review, but rendering still uses the complete donor paper doll so
+ * cross-garment ownership remains intact. Pass `exhaustive` only when every
+ * retained donor paper doll is intentionally required.
  */
 export function createSourceObservedOutfitCases(
     paperdolls,
     locations = APPAREL_LOCATIONS,
-    sex = null
+    sex = null,
+    { exhaustive = false } = {}
 )
 {
     const index = createCharacterPartIndex(paperdolls);
@@ -201,19 +210,17 @@ export function createSourceObservedOutfitCases(
 
     for (const paperdoll of paperdolls ?? [])
     {
-        const catalog = createCharacterPartCatalog(index, paperdoll);
-        if (sex !== null && catalog.gender !== sex) continue;
-        const slotsByLocation = new Map(catalog.slots.map(value => [
-            value.locationID,
-            value
-        ]));
+        const paperdollSex = ResolveObservedPaperdollSex(paperdoll);
+        if (sex !== null && paperdollSex !== sex) continue;
+        const locations = index.byGender.get(paperdollSex) ?? new Map();
+        const donorRecordID = ReadRecordID(paperdoll);
         const choices = [];
         for (const [ modifierIndex, modifier ] of (paperdoll?.modifiers ?? []).entries())
         {
             const locationID = ReadRecordID(modifier?.modifierLocationID);
-            const slot = slotsByLocation.get(locationID);
+            const slot = locations.get(locationID);
             const modifierKey = String(
-                slot?.modifierKey
+                slot?.location?.modifierKey
                 ?? modifier?.modifierLocationID?.modifierKey
                 ?? locationID
             ).trim();
@@ -224,16 +231,15 @@ export function createSourceObservedOutfitCases(
             const variationValue = Number(modifier?.paperdollResourceVariation ?? 0);
             const variation = Number.isInteger(variationValue) ? variationValue : 0;
             const choiceID = `${recordID}@${variation}`;
-            const resource = slot?.resources.find(value =>
-                value.choiceID === choiceID) ?? null;
+            const resource = slot?.resources.get(choiceID)?.resource ?? null;
             choices.push({
                 choiceID,
-                donorRecordID: catalog.paperdollRecordID,
+                donorRecordID,
                 label: resource?.resPath || recordID,
                 locationID,
                 modifierKey,
                 modifierIndex,
-                partSourceRecordID: resource?.partSourceRecordID ?? "",
+                partSourceRecordID: ReadRecordID(resource?.partType?.partSource),
                 recordID,
                 resourceResolved: resource !== null,
                 variation
@@ -242,12 +248,12 @@ export function createSourceObservedOutfitCases(
         if (!choices.length) continue;
         result.push({
             auditKind: "source-observed-outfit",
-            donorRecordID: catalog.paperdollRecordID,
-            label: `paper doll ${catalog.paperdollRecordID}`,
+            donorRecordID,
+            label: `paper doll ${donorRecordID}`,
             choices
         });
     }
-    return result;
+    return exhaustive ? result : SelectSourceObservedOutfitChoiceCover(result);
 }
 
 /** Classifies every selected apparel member of one rendered donor outfit. */
@@ -427,6 +433,67 @@ export function classifyClothingChoiceRealization(choice, realization, diagnosti
 function ReadRecordID(value)
 {
     return String(typeof value === "string" ? value : value?.recordID ?? "").trim();
+}
+
+function ResolveObservedPaperdollSex(paperdoll)
+{
+    const counts = new Map();
+    for (const modifier of paperdoll?.modifiers ?? [])
+    {
+        const value = Number(modifier?.paperdollResourceID?.resGender);
+        if (!Number.isInteger(value) || value < 0) continue;
+        counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+
+    let selected = null;
+    let selectedCount = -1;
+    for (const [ value, count ] of counts)
+    {
+        if (count <= selectedCount) continue;
+        selected = value;
+        selectedCount = count;
+    }
+    return selected;
+}
+
+function SelectSourceObservedOutfitChoiceCover(candidates)
+{
+    const pending = (candidates ?? []).map(value => ({
+        keys: new Set((value.choices ?? []).map(CreateOutfitChoiceIdentity)),
+        value
+    }));
+    const uncovered = new Set(pending.flatMap(value => [ ...value.keys ]));
+    const result = [];
+
+    while (uncovered.size)
+    {
+        let selected = null;
+        let selectedCount = 0;
+        for (const candidate of pending)
+        {
+            const count = [ ...candidate.keys ].filter(value =>
+                uncovered.has(value)).length;
+            if (count > selectedCount)
+            {
+                selected = candidate;
+                selectedCount = count;
+            }
+        }
+        if (!selected) break;
+        result.push({
+            ...selected.value,
+            auditKind: "source-observed-outfit-choice-cover",
+            coveredChoiceCount: selectedCount
+        });
+        for (const value of selected.keys) uncovered.delete(value);
+        pending.splice(pending.indexOf(selected), 1);
+    }
+    return result;
+}
+
+function CreateOutfitChoiceIdentity(value)
+{
+    return `${value?.locationID ?? ""}\u0000${value?.choiceID ?? ""}`;
 }
 
 function SummarizeConfiguredHeadMaterials(value)

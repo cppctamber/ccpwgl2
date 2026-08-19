@@ -1222,10 +1222,14 @@ unresolved. The five male `topouter` choices prove the distinction: three exact
 donor outfits suppress the shirt through an active `outer` relationship, while
 the other two attach their configured D/N/S materials. All five donor renders
 commit with zero diagnostic-magenta and zero enclosed-alpha components.
-`?clothingAuditOutfits=1` deduplicates that boundary into one case per retained
-paper doll. Each result classifies every selected apparel member while rendering
-the complete source-observed tuple, so interactions are tested without either
-repeating the same donor once per choice or creating a synthetic combination.
+`?clothingAuditOutfits=1` builds a deterministic source-observed outfit cover.
+Every exact location/resource/variation choice under review appears in at least
+one case, while a donor paper doll is rendered at most once. Each result
+classifies every selected apparel member while rendering the complete donor
+tuple, so real interactions are tested without repeating one donor per choice or
+creating a synthetic combination. This is a choice-cover, not a claim that every
+observed interaction was exercised. `?clothingAuditOutfits=all` explicitly runs
+every retained donor paper doll when that substantially larger sweep is wanted.
 `?clothingAuditLocation=` can still restrict which selected members are reported;
 it does not strip the donor's other garments from the rendered outfit.
 Donor-context runs also separate frame alarms from the slot under review. All
