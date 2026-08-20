@@ -21,10 +21,11 @@ import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
  * `renderType` is Carbon's `lineSetType` enum: OBJECT_RENDER 0, LINE_RENDER 1,
  * BOTH 2. Only the line half is implemented. The object half instances `mesh` at
  * every generated point through a per-instance transform buffer
- * (`EveChildLineSet::UpdateBuffer`, `IEveLineSetPath::UpdateBuffer`), which needs
- * the same instanced-mesh plumbing `EveChildInstanceContainer` is waiting on -
- * one piece of work, not two. A `renderType` that asks for objects draws
- * whatever lines it also asks for and nothing else, rather than failing.
+ * (`EveChildLineSet::UpdateBuffer`, `IEveLineSetPath::UpdateBuffer`) - real GPU
+ * instancing, the same mechanism `EveChildInstanceMeshRenderer` needs, and NOT
+ * what `EveChildInstanceContainer` does despite the name (that one copies whole
+ * child objects). A `renderType` that asks for objects draws whatever lines it
+ * also asks for and nothing else, rather than failing.
  */
 @meta.type("EveChildLineSet")
 @meta.define({

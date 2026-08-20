@@ -34,6 +34,7 @@
     "test:child-ref": "node scripts/test-child-ref.js",
     "test:sof-child-build-filter": "node scripts/test-sof-child-build-filter.js",
     "test:line-set-paths": "node scripts/test-line-set-paths.js",
+    "test:child-instance-container": "node scripts/test-child-instance-container.js",
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",

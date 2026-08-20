@@ -8,7 +8,6 @@ export * from "./EveChildEffectPropagator";
 export * from "./EveChildExplosion";
 export * from "./EveChildFogVolume";
 export * from "./EveChildInheritProperties";
-export * from "./EveChildInstanceContainer";
 export * from "./EveChildInstanceMeshRenderer";
 export * from "./EveChildInstancedMeshes";
 export * from "./EveChildLightingOverride";
