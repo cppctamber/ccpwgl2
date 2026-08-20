@@ -7,6 +7,7 @@ import { CjsCharacterAtlasLayout } from "/vendor/runtime-character/character/com
 import { tnyCharacterConstructors } from "/src/runtime/character/register.js";
 import { tiny, tny } from "./demo/ccpwgl-global.mjs";
 import { CharacterDemoApplication } from "./demo/CharacterDemoApplication.mjs";
+import { InstallCharacterDemoGrannyStateResource } from "./demo/CharacterDemoGrannyStateResource.mjs";
 import { InitializeCharacterDemoScene } from "./demo/CharacterDemoScene.mjs";
 import { installCharacterDemoAlphaAudit } from "./demo/CharacterDemoAlphaAudit.mjs";
 import { installCharacterDemoClothingAudit } from "./demo/CharacterDemoClothingAudit.mjs";
@@ -136,6 +137,8 @@ try
     ConfigureCharacterDemoWithoutSof(tw2);
     const runtimeClient = tny || tiny;
     const resourceRoot = toolsService.paths.res.replace(/\/+$/u, "");
+    const gState = InstallCharacterDemoGrannyStateResource(tw2);
+    globalThis.characterDemo.gState = gState;
     await InitializeCharacterDemoScene({
         client: runtimeClient,
         tw2,

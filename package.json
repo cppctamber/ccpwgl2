@@ -36,6 +36,8 @@
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
     "test:granny-mesh-animation": "node scripts/test-granny-mesh-animation.js",
     "test:interior-skeleton-resource": "node scripts/test-interior-skeleton-resource.js",
+    "test:granny-state-resource": "node scripts/test-granny-state-resource.js",
+    "test:character-mesh": "node scripts/test-character-mesh.js",
     "test:interior-viseme-binding": "node scripts/test-interior-viseme-binding.js",
     "test:shader-stage-overrides": "node scripts/test-shader-stage-overrides.js",
     "test:wrapped-slot-targets": "node scripts/test-wrapped-slot-targets.js",

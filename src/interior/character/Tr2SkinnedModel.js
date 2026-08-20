@@ -1,7 +1,8 @@
 import { meta, perArrayChild } from "utils";
 import { tw2 } from "global";
 import { box3, sph3 } from "math";
-import { Tw2Effect, Tw2Mesh, Tw2MeshArea } from "core";
+import { Tw2Effect, Tw2MeshArea } from "core";
+import { Tw2CharacterMesh } from "./Tw2CharacterMesh";
 
 
 @meta.type("Tr2SkinnedModel")
@@ -33,6 +34,11 @@ export class Tr2SkinnedModel extends meta.Model
      */
     Initialize()
     {
+        for (let i = 0; i < this.meshes.length; i++)
+        {
+            this.meshes[i] = Tw2CharacterMesh.FromTw2Mesh(this.meshes[i]);
+        }
+
         if (!this.meshes.length && this.geometryResPath)
         {
             const mesh = this.EnsureMesh();
@@ -57,13 +63,17 @@ export class Tr2SkinnedModel extends meta.Model
     /**
      * Ensures a mesh exists
      * @param {Number} [index=0]
-     * @returns {Tw2Mesh}
+     * @returns {Tw2CharacterMesh}
      */
     EnsureMesh(index = 0)
     {
         if (!this.meshes[index])
         {
-            this.meshes[index] = new Tw2Mesh();
+            this.meshes[index] = new Tw2CharacterMesh();
+        }
+        else
+        {
+            this.meshes[index] = Tw2CharacterMesh.FromTw2Mesh(this.meshes[index]);
         }
         return this.meshes[index];
     }
@@ -92,7 +102,7 @@ export class Tr2SkinnedModel extends meta.Model
      * Sets a mesh geometry resource or path
      * @param {String|*} geometry
      * @param {Number} [index=0]
-     * @returns {Tw2Mesh}
+     * @returns {Tw2CharacterMesh}
      */
     SetGeometryResource(geometry, index = 0)
     {
@@ -105,8 +115,7 @@ export class Tr2SkinnedModel extends meta.Model
         }
         else
         {
-            mesh.geometryResource = geometry || null;
-            mesh.geometryResPath = geometry && geometry.path ? geometry.path : mesh.geometryResPath;
+            mesh.SetCharacterGeometryResource(geometry || null);
         }
 
         const meshIndex = this.constructor.FindFirstMeshBindingIndex(mesh.geometryResource);
@@ -425,18 +434,22 @@ export class Tr2SkinnedModel extends meta.Model
 
     /**
      * Creates a render carrier for a resource submesh
-     * @param {Tw2Mesh} source
+     * @param {Tw2CharacterMesh} source
      * @param {Number} meshIndex
-     * @returns {Tw2Mesh}
+     * @returns {Tw2CharacterMesh}
      */
     static CreateRenderPartMesh(source, meshIndex)
     {
-        const mesh = new Tw2Mesh();
+        const mesh = new Tw2CharacterMesh();
         mesh.name = `${source.name || source.geometryResource?.path || "part"}:${meshIndex}`;
         mesh.display = source.display;
-        mesh.geometryResource = source.geometryResource;
-        mesh.geometryResPath = source.geometryResPath;
         mesh.meshIndex = meshIndex;
+        mesh.geometryResPath = source.geometryResPath;
+        mesh.SetCharacterGeometryResource(
+            source.GetCharacterSourceGeometryResource?.() ?? source.geometryResource,
+            source.geometryResource
+        );
+        mesh.RefreshMorphTargets();
         mesh.visible = { ...source.visible };
         mesh._interiorAutoPart = true;
         return mesh;
