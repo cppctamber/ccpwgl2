@@ -25,7 +25,7 @@ export class CharacterDemoApplication
 
     #partSnapshots = new Map();
 
-    #renderer;
+    #appearanceManager;
 
     #routePaperdollSelection;
 
@@ -39,7 +39,7 @@ export class CharacterDemoApplication
         libraryClient,
         appearanceResolver,
         constructionResolver,
-        renderer,
+        appearanceManager,
         routePaperdollSelection = null,
         routePartReset = null,
         routePartSelection = null,
@@ -66,7 +66,7 @@ export class CharacterDemoApplication
         this.#libraryClient = libraryClient;
         this.#appearanceResolver = appearanceResolver;
         this.#constructionResolver = constructionResolver;
-        this.#renderer = renderer;
+        this.#appearanceManager = appearanceManager;
         this.#routePaperdollSelection = routePaperdollSelection;
         this.#routePartReset = routePartReset;
         this.#routePartSelection = routePartSelection;
@@ -113,7 +113,7 @@ export class CharacterDemoApplication
             libraryManager: manager,
             appearanceResolver: this.#appearanceResolver,
             constructionResolver: this.#constructionResolver,
-            renderer: this.#renderer
+            appearanceManager: this.#appearanceManager
         });
         const paperdolls = character.GetPaperdolls();
 
@@ -257,9 +257,9 @@ export class CharacterDemoApplication
     /** Applies one exact choice after fully releasing the prior audit render. */
     async SelectPartForAudit(locationID, choiceID)
     {
-        if (typeof this.#renderer?.ReleaseCommitted !== "function")
+        if (typeof this.#appearanceManager?.ReleaseCommitted !== "function")
         {
-            throw new Error("Character demo renderer cannot release an audit appearance");
+            throw new Error("Character demo appearance manager cannot release an audit appearance");
         }
         const paperdoll = this.#character?.GetPaperdoll?.();
         const captured = this.#partSnapshots.get(paperdoll?.recordID);
@@ -268,7 +268,7 @@ export class CharacterDemoApplication
             throw new Error("Character demo has no baseline parts for an audit");
         }
 
-        await this.#renderer.ReleaseCommitted({
+        await this.#appearanceManager.ReleaseCommitted({
             reason: "clothing-audit-replace",
             source: this
         });
@@ -299,9 +299,9 @@ export class CharacterDemoApplication
     /** Selects one retained donor outfit after releasing the prior audit render. */
     async SelectPaperdollForAudit(recordID)
     {
-        if (typeof this.#renderer?.ReleaseCommitted !== "function")
+        if (typeof this.#appearanceManager?.ReleaseCommitted !== "function")
         {
-            throw new Error("Character demo renderer cannot release an audit appearance");
+            throw new Error("Character demo appearance manager cannot release an audit appearance");
         }
         const paperdoll = this.#character?.GetPaperdolls?.()
             .find(value => value?.recordID === String(recordID));
@@ -310,7 +310,7 @@ export class CharacterDemoApplication
             throw new Error(`Unknown character audit paper doll ${JSON.stringify(recordID)}`);
         }
 
-        await this.#renderer.ReleaseCommitted({
+        await this.#appearanceManager.ReleaseCommitted({
             reason: "clothing-donor-audit-replace",
             source: this
         });
@@ -320,8 +320,8 @@ export class CharacterDemoApplication
     /** Restores one retained paper doll after an isolated donor-outfit audit. */
     async ResetPaperdollAfterAudit(recordID)
     {
-        if (typeof this.#renderer?.ReleaseCommitted !== "function") return null;
-        await this.#renderer.ReleaseCommitted({
+        if (typeof this.#appearanceManager?.ReleaseCommitted !== "function") return null;
+        await this.#appearanceManager.ReleaseCommitted({
             reason: "clothing-donor-audit-complete",
             source: this
         });
@@ -334,7 +334,7 @@ export class CharacterDemoApplication
         const paperdoll = this.#character?.GetPaperdoll?.();
         const captured = this.#partSnapshots.get(paperdoll?.recordID);
         if (!paperdoll || !captured) return null;
-        await this.#renderer.ReleaseCommitted({
+        await this.#appearanceManager.ReleaseCommitted({
             reason: "clothing-audit-complete",
             source: this
         });

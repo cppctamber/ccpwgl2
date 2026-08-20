@@ -164,11 +164,11 @@ test("character publishes paper doll, plan, and construction atomically", () =>
     assert.equal(character.GetRevision(), 1);
 });
 
-test("character sends the exact construction and plan to its renderer", async () =>
+test("character sends exact construction and plan to its appearance manager", async () =>
 {
     const fixture = CreateFixture();
     const calls = [];
-    const renderer = {
+    const appearanceManager = {
         ApplyConstruction(construction, context)
         {
             calls.push({ construction, context });
@@ -179,7 +179,7 @@ test("character sends the exact construction and plan to its renderer", async ()
         libraryManager: fixture.manager,
         appearanceResolver: fixture.resolver,
         constructionResolver: fixture.constructionResolver,
-        renderer
+        appearanceManager
     });
 
     character.SelectPaperdoll("3000001");

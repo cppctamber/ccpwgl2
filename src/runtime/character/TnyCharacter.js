@@ -16,7 +16,7 @@ export class TnyCharacter extends meta.Model
 
     _plan = null;
 
-    _renderer;
+    _appearanceManager;
 
     _revision = 0;
 
@@ -24,7 +24,7 @@ export class TnyCharacter extends meta.Model
         libraryManager,
         appearanceResolver,
         constructionResolver,
-        renderer = null
+        appearanceManager = null
     } = {})
     {
         super();
@@ -43,15 +43,18 @@ export class TnyCharacter extends meta.Model
         {
             throw new TypeError("TnyCharacter requires a construction resolver");
         }
-        if (renderer !== null && typeof renderer?.ApplyConstruction !== "function")
+        if (appearanceManager !== null
+            && typeof appearanceManager?.ApplyConstruction !== "function")
         {
-            throw new TypeError("TnyCharacter renderer must expose ApplyConstruction(sequence)");
+            throw new TypeError(
+                "TnyCharacter appearance manager must expose ApplyConstruction(sequence)"
+            );
         }
 
         this._manager = libraryManager;
         this._appearanceResolver = appearanceResolver;
         this._constructionResolver = constructionResolver;
-        this._renderer = renderer;
+        this._appearanceManager = appearanceManager;
     }
 
     GetLibraryManager()
@@ -79,9 +82,10 @@ export class TnyCharacter extends meta.Model
         return this._construction;
     }
 
-    GetRenderer()
+    /** Returns the per-character manager that stages and commits appearances. */
+    GetAppearanceManager()
     {
-        return this._renderer;
+        return this._appearanceManager;
     }
 
     GetRevision()
@@ -129,19 +133,22 @@ export class TnyCharacter extends meta.Model
         return plan;
     }
 
-    /** Applies the current plan through the injected renderer boundary. */
+    /** Applies the current plan through the injected appearance manager. */
     ApplyAppearance(options = {})
     {
         if (!this._plan || !this._construction)
         {
             return Promise.reject(new Error("Character has no resolved appearance and construction state"));
         }
-        if (!this._renderer)
+        if (!this._appearanceManager)
         {
-            return Promise.resolve({ status: "deferred", reason: "renderer-not-configured" });
+            return Promise.resolve({
+                status: "deferred",
+                reason: "appearance-manager-not-configured"
+            });
         }
 
-        return this._renderer.ApplyConstruction(this._construction, {
+        return this._appearanceManager.ApplyConstruction(this._construction, {
             appearancePlan: this._plan,
             source: options.source ?? this
         });

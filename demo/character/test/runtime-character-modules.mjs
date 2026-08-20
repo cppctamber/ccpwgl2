@@ -30,7 +30,7 @@ const [
     character,
     scene,
     registration,
-    renderer,
+    appearanceManager,
     libraryClient,
     appearance,
     atlas,
@@ -45,7 +45,7 @@ const [
     import(new URL("TnyCharacter.js", root)),
     import(new URL("TnyCharacterScene.js", root)),
     import(new URL("register.js", root)),
-    import(new URL("TnyCharacterRenderer.js", root)),
+    import(new URL("TnyCharacterAppearanceManager.js", root)),
     import(new URL("TnyCharacterLibraryClient.js", root)),
     import(new URL("gles/TnyGlesAppearanceConstruction.js", root)),
     import(new URL("gles/TnyGlesAtlasComposer.js", root)),
@@ -65,7 +65,7 @@ export const {
     RegisterTnyCharacterConstructors,
     tnyCharacterConstructors
 } = registration;
-export const { TnyCharacterRenderer } = renderer;
+export const { TnyCharacterAppearanceManager } = appearanceManager;
 export const { TnyCharacterLibraryClient } = libraryClient;
 export const { TnyGlesAppearanceConstruction } = appearance;
 export const {

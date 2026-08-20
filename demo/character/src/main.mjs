@@ -23,7 +23,7 @@ import { CharacterDemoView } from "./demo/CharacterDemoView.mjs";
 const tw2 = globalThis.tw2;
 
 const TnyCharacterLibraryClient = RequireClass("TnyCharacterLibraryClient");
-const TnyCharacterRenderer = RequireClass("TnyCharacterRenderer");
+const TnyCharacterAppearanceManager = RequireClass("TnyCharacterAppearanceManager");
 const TnyGlesAppearanceConstruction = RequireClass("TnyGlesAppearanceConstruction");
 const TnyGlesAtlasComposer = RequireClass("TnyGlesAtlasComposer");
 const TnyGlesCharacterAdapter = RequireClass("TnyGlesCharacterAdapter");
@@ -248,7 +248,7 @@ try
             modifierOrder: CjsCharacterModifierOrder
         })
     });
-    const renderer = new TnyCharacterRenderer({
+    const appearanceManager = new TnyCharacterAppearanceManager({
         adapter,
         backend: "legacy-opengl",
         maximumBones: 58,
@@ -259,7 +259,7 @@ try
         libraryClient,
         appearanceResolver: CjsCharacterAppearanceResolver,
         constructionResolver,
-        renderer,
+        appearanceManager,
         routePaperdollSelection: recordID =>
         {
             const url = new URL(globalThis.location.href);
@@ -356,13 +356,13 @@ try
     const isolatedPart = parameters.get("isolatePart");
     if (isolatedPart)
     {
-        renderer.SetConfiguredPartDisplay(isolatedPart, false);
+        appearanceManager.SetConfiguredPartDisplay(isolatedPart, false);
         view.Render(application.GetCharacter().GetDiagnostics());
     }
     const hiddenFoundation = parameters.get("hideFoundation");
     if (hiddenFoundation)
     {
-        renderer.SetFoundationDisplay(hiddenFoundation, false);
+        appearanceManager.SetFoundationDisplay(hiddenFoundation, false);
         view.Render(application.GetCharacter().GetDiagnostics());
     }
 

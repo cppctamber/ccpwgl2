@@ -37,7 +37,7 @@ test("view displays the same construction sequence reported by diagnostics", () 
                 diagnostics: []
             },
             construction,
-            renderer: { backend: "legacy-opengl" }
+            appearanceManager: { backend: "legacy-opengl" }
         });
     }
     finally
@@ -223,7 +223,7 @@ function CreateRoot()
         "library-summary",
         "plan-summary",
         "construction-summary",
-        "renderer-summary",
+        "appearance-manager-summary",
         "plan-diagnostics",
         "paperdoll-id",
         "paperdoll-samples",

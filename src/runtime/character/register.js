@@ -1,6 +1,6 @@
 import { TnyCharacter } from "./TnyCharacter.js";
 import { TnyCharacterLibraryClient } from "./TnyCharacterLibraryClient.js";
-import { TnyCharacterRenderer } from "./TnyCharacterRenderer.js";
+import { TnyCharacterAppearanceManager } from "./TnyCharacterAppearanceManager.js";
 import { TnyCharacterScene } from "./TnyCharacterScene.js";
 import {
     TnyGlesAppearanceConstruction,
@@ -18,7 +18,7 @@ import {
 export const tnyCharacterConstructors = {
     TnyCharacter,
     TnyCharacterLibraryClient,
-    TnyCharacterRenderer,
+    TnyCharacterAppearanceManager,
     TnyCharacterScene,
     TnyGlesAppearanceConstruction,
     TnyGlesAtlasComposer,

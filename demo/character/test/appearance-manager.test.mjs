@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { TnyCharacterRenderer } from "./runtime-character-modules.mjs";
+import { TnyCharacterAppearanceManager } from "./runtime-character-modules.mjs";
 
-test("renderer reports the temporary legacy OpenGL bone limitation", () =>
+test("appearance manager reports the temporary legacy OpenGL bone limitation", () =>
 {
-    const renderer = new TnyCharacterRenderer();
+    const appearanceManager = new TnyCharacterAppearanceManager();
 
-    assert.deepEqual(renderer.GetCapabilities(), {
+    assert.deepEqual(appearanceManager.GetCapabilities(), {
         backend: "legacy-opengl",
         maximumBones: 58,
         requiredBones: 69,
@@ -16,7 +16,7 @@ test("renderer reports the temporary legacy OpenGL bone limitation", () =>
     });
 });
 
-test("renderer releases a stale staged revision and commits only the newest construction", async () =>
+test("appearance manager releases stale work and commits only the newest construction", async () =>
 {
     const prepared = [];
     const committed = [];
@@ -43,11 +43,11 @@ test("renderer releases a stale staged revision and commits only the newest cons
             released.push({ staged, reason: context.reason });
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
-    const first = renderer.ApplyConstruction(CreateConstruction(1));
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
+    const first = appearanceManager.ApplyConstruction(CreateConstruction(1));
 
     await Promise.resolve();
-    const second = renderer.ApplyConstruction(CreateConstruction(2));
+    const second = appearanceManager.ApplyConstruction(CreateConstruction(2));
     continueFirst();
 
     assert.deepEqual(await first, { status: "stale", revision: 1 });
@@ -59,7 +59,7 @@ test("renderer releases a stale staged revision and commits only the newest cons
     ]);
 });
 
-test("renderer retains the last complete revision when a replacement commit fails", async () =>
+test("appearance manager retains the last complete revision when replacement fails", async () =>
 {
     const released = [];
     const adapter = {
@@ -76,17 +76,17 @@ test("renderer retains the last complete revision when a replacement commit fail
             released.push([ staged.construction.id, context.reason ]);
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
 
-    assert.equal((await renderer.ApplyConstruction(CreateConstruction(1))).status, "committed");
+    assert.equal((await appearanceManager.ApplyConstruction(CreateConstruction(1))).status, "committed");
     await assert.rejects(
-        renderer.ApplyConstruction(CreateConstruction(2, { fail: true })),
+        appearanceManager.ApplyConstruction(CreateConstruction(2, { fail: true })),
         /commit failed/
     );
     assert.deepEqual(released, [ [ 2, "commit-failed" ] ]);
 });
 
-test("renderer keeps the previous revision published until its replacement commits", async () =>
+test("appearance manager keeps the previous revision until replacement commits", async () =>
 {
     const events = [];
     let finishPrepare;
@@ -110,10 +110,10 @@ test("renderer keeps the previous revision published until its replacement commi
             events.push([ "release", staged.construction.id, context.reason ]);
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
 
-    await renderer.ApplyConstruction(CreateConstruction(1));
-    const replacement = renderer.ApplyConstruction(CreateConstruction(2));
+    await appearanceManager.ApplyConstruction(CreateConstruction(1));
+    const replacement = appearanceManager.ApplyConstruction(CreateConstruction(2));
     await Promise.resolve();
 
     assert.deepEqual(events, [
@@ -130,7 +130,7 @@ test("renderer keeps the previous revision published until its replacement commi
     ]);
 });
 
-test("renderer delegates an atomic handoff when the adapter owns shared resources", async () =>
+test("appearance manager delegates an atomic handoff for shared resources", async () =>
 {
     const events = [];
     const adapter = {
@@ -145,10 +145,10 @@ test("renderer delegates an atomic handoff when the adapter owns shared resource
             events.push([ "release", staged.construction.id, context.reason ]);
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
 
-    await renderer.ApplyConstruction(CreateConstruction(1));
-    await renderer.ApplyConstruction(CreateConstruction(2));
+    await appearanceManager.ApplyConstruction(CreateConstruction(1));
+    await appearanceManager.ApplyConstruction(CreateConstruction(2));
 
     assert.deepEqual(events, [
         [ "commit", 1 ],
@@ -157,7 +157,7 @@ test("renderer delegates an atomic handoff when the adapter owns shared resource
     ]);
 });
 
-test("renderer reuses an identical committed construction and reports changed domains", async () =>
+test("appearance manager reuses identical construction and reports changed domains", async () =>
 {
     const prepared = [];
     const committed = [];
@@ -172,7 +172,7 @@ test("renderer reuses an identical committed construction and reports changed do
         Release() {},
         GetDiagnostics(staged) { return { id: staged.construction.id }; }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
     const first = CreateConstruction(1, {
         textureContributions: [ {
             groupID: "topinner",
@@ -180,8 +180,8 @@ test("renderer reuses an identical committed construction and reports changed do
         } ]
     });
 
-    await renderer.ApplyConstruction(first);
-    const repeated = await renderer.ApplyConstruction(CloneConstruction(first));
+    await appearanceManager.ApplyConstruction(first);
+    const repeated = await appearanceManager.ApplyConstruction(CloneConstruction(first));
 
     assert.equal(prepared.length, 1);
     assert.equal(committed.length, 1);
@@ -200,7 +200,7 @@ test("renderer reuses an identical committed construction and reports changed do
 
     const changed = CloneConstruction(first);
     changed.textureContributions[0].textures[0].path = "res:/body-b.png";
-    await renderer.ApplyConstruction(changed);
+    await appearanceManager.ApplyConstruction(changed);
 
     assert.equal(prepared.length, 2);
     assert.deepEqual(prepared[1].change, {
@@ -210,7 +210,7 @@ test("renderer reuses an identical committed construction and reports changed do
     });
 });
 
-test("renderer can explicitly release an audit appearance before a non-atomic replacement", async () =>
+test("appearance manager can release an audit appearance before replacement", async () =>
 {
     const released = [];
     const adapter = {
@@ -224,22 +224,22 @@ test("renderer can explicitly release an audit appearance before a non-atomic re
             released.push([ staged.construction.id, context.reason ]);
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
 
-    assert.equal((await renderer.ApplyConstruction(CreateConstruction(1))).status, "committed");
-    assert.deepEqual(await renderer.ReleaseCommitted({ reason: "audit-replace" }), {
+    assert.equal((await appearanceManager.ApplyConstruction(CreateConstruction(1))).status, "committed");
+    assert.deepEqual(await appearanceManager.ReleaseCommitted({ reason: "audit-replace" }), {
         status: "released",
         revision: 2
     });
     assert.deepEqual(released, [ [ 1, "audit-replace" ] ]);
-    assert.equal(renderer.GetState().lastResult.status, "released");
-    assert.deepEqual(await renderer.ApplyConstruction(CreateConstruction(2)), {
+    assert.equal(appearanceManager.GetState().lastResult.status, "released");
+    assert.deepEqual(await appearanceManager.ApplyConstruction(CreateConstruction(2)), {
         status: "committed",
         revision: 3
     });
 });
 
-test("renderer delegates configured-part isolation only to the committed appearance", async () =>
+test("appearance manager isolates configured parts only on its committed appearance", async () =>
 {
     const calls = [];
     const adapter = {
@@ -261,20 +261,20 @@ test("renderer delegates configured-part isolation only to the committed appeara
             return { role, display };
         }
     };
-    const renderer = new TnyCharacterRenderer({ adapter });
+    const appearanceManager = new TnyCharacterAppearanceManager({ adapter });
 
     assert.throws(
-        () => renderer.SetConfiguredPartDisplay("female/dependants/tuck/basic", false),
+        () => appearanceManager.SetConfiguredPartDisplay("female/dependants/tuck/basic", false),
         /no committed appearance/u
     );
-    await renderer.ApplyConstruction({ operations: [] });
+    await appearanceManager.ApplyConstruction({ operations: [] });
     assert.deepEqual(
-        renderer.SetConfiguredPartDisplay("female/dependants/tuck/basic", false),
+        appearanceManager.SetConfiguredPartDisplay("female/dependants/tuck/basic", false),
         { identity: "female/dependants/tuck/basic", display: false }
     );
     assert.equal(calls.length, 1);
-    assert.deepEqual(renderer.GetState().lastResult.details, { isolated: 0 });
-    assert.deepEqual(renderer.SetFoundationDisplay("body", false), {
+    assert.deepEqual(appearanceManager.GetState().lastResult.details, { isolated: 0 });
+    assert.deepEqual(appearanceManager.SetFoundationDisplay("body", false), {
         role: "body",
         display: false
     });

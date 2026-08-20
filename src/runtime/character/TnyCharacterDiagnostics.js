@@ -72,8 +72,8 @@ export function createCharacterDiagnostics(character)
                 evidence: value.evidence ? { ...value.evidence } : undefined
             }))
         } : null,
-        renderer: character.GetRenderer()?.GetState?.()
-            ?? character.GetRenderer()?.GetCapabilities()
+        appearanceManager: character.GetAppearanceManager()?.GetState?.()
+            ?? character.GetAppearanceManager()?.GetCapabilities()
             ?? null
     };
 }

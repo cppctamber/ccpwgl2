@@ -9,7 +9,7 @@ export class CharacterDemoView
         this.librarySummary = RequireElement(root, "library-summary");
         this.planSummary = RequireElement(root, "plan-summary");
         this.constructionSummary = RequireElement(root, "construction-summary");
-        this.rendererSummary = RequireElement(root, "renderer-summary");
+        this.appearanceManagerSummary = RequireElement(root, "appearance-manager-summary");
         this.diagnostics = RequireElement(root, "plan-diagnostics");
         this.paperdollID = RequireElement(root, "paperdoll-id");
         this.paperdollSamples = RequireElement(root, "paperdoll-samples");
@@ -275,7 +275,11 @@ export class CharacterDemoView
             null,
             2
         );
-        this.rendererSummary.textContent = JSON.stringify(snapshot.renderer, null, 2);
+        this.appearanceManagerSummary.textContent = JSON.stringify(
+            snapshot.appearanceManager,
+            null,
+            2
+        );
         this.#RenderDiagnostics(snapshot.plan?.diagnostics ?? []);
     }
 

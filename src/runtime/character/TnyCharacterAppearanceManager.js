@@ -1,8 +1,10 @@
 /**
  * Serializes appearance realization and publishes only complete staged
- * revisions. A renderer-specific adapter owns resource and GPU work.
+ * revisions for one character. An appearance adapter owns resource and GPU
+ * work; the character scene remains responsible for rendering every committed
+ * character object.
  */
-export class TnyCharacterRenderer
+export class TnyCharacterAppearanceManager
 {
     _adapter;
 
@@ -16,6 +18,7 @@ export class TnyCharacterRenderer
 
     _lastResult = null;
 
+    /** Creates one atomic appearance lifecycle manager for one character. */
     constructor({
         adapter = null,
         backend = "legacy-opengl",
@@ -25,7 +28,7 @@ export class TnyCharacterRenderer
     {
         if (adapter !== null && typeof adapter?.Prepare !== "function")
         {
-            throw new TypeError("Character renderer adapter must expose Prepare(plan, context)");
+            throw new TypeError("Character appearance adapter must expose Prepare(plan, context)");
         }
 
         this._adapter = adapter;
@@ -60,11 +63,11 @@ export class TnyCharacterRenderer
     {
         if (!this._committed)
         {
-            throw new Error("Character renderer has no committed appearance");
+            throw new Error("Character appearance manager has no committed appearance");
         }
         if (typeof this._adapter?.SetConfiguredPartDisplay !== "function")
         {
-            throw new Error("Character renderer adapter cannot isolate configured parts");
+            throw new Error("Character appearance adapter cannot isolate configured parts");
         }
         const result = this._adapter.SetConfiguredPartDisplay(
             this._committed,
@@ -84,11 +87,11 @@ export class TnyCharacterRenderer
     {
         if (!this._committed)
         {
-            throw new Error("Character renderer has no committed appearance");
+            throw new Error("Character appearance manager has no committed appearance");
         }
         if (typeof this._adapter?.SetFoundationDisplay !== "function")
         {
-            throw new Error("Character renderer adapter cannot isolate foundations");
+            throw new Error("Character appearance adapter cannot isolate foundations");
         }
         const result = this._adapter.SetFoundationDisplay(this._committed, role, display);
         if (this._lastResult?.status === "committed"
@@ -106,7 +109,7 @@ export class TnyCharacterRenderer
             || typeof construction !== "object"
             || !Array.isArray(construction.operations))
         {
-            return Promise.reject(new TypeError("Character renderer requires a construction sequence"));
+            return Promise.reject(new TypeError("Character appearance manager requires a construction sequence"));
         }
 
         const requestRevision = ++this._requestedRevision;
@@ -126,7 +129,8 @@ export class TnyCharacterRenderer
     /**
      * Fully releases the committed appearance before a non-atomic replacement.
      * This is useful for disposal and controlled audit harnesses; interactive
-     * renderers should normally retain the previous revision until commit.
+     * appearance managers should normally retain the previous revision until
+     * commit.
      */
     ReleaseCommitted({ reason = "released", source = this } = {})
     {
@@ -207,7 +211,7 @@ export class TnyCharacterRenderer
         {
             if (typeof this._adapter.Commit !== "function")
             {
-                throw new TypeError("Character renderer adapter must expose Commit(staged, context)");
+                throw new TypeError("Character appearance adapter must expose Commit(staged, context)");
             }
 
             if (previous && typeof this._adapter.Handoff === "function")
@@ -426,7 +430,7 @@ function RequirePositiveInteger(value, label)
 
     if (!Number.isSafeInteger(result) || result <= 0)
     {
-        throw new TypeError(`Character renderer ${label} must be a positive integer`);
+        throw new TypeError(`Character appearance manager ${label} must be a positive integer`);
     }
 
     return result;
