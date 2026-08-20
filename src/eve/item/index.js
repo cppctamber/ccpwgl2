@@ -10,3 +10,6 @@ export * from "./EveSpaceObjectDecal";
 export * from "./EveSpotlightSet";
 export * from "./EveSpriteSet";
 export * from "./EveTurretSet";
+export * from "./IEveLineSetPath";
+export * from "./EveBezierCurve";
+export * from "./EveCircle";

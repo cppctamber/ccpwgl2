@@ -21,6 +21,5 @@ export * from "./EveProceduralMethodCycling";
 export * from "./EveChildQuad";
 export * from "./EveChildSocket";
 export * from "./EveChildSpherePin";
-export * from "./EveChildLineSet";
 export * from "./EveChildSmartLightSet";
 export * from "./EveLineChildContainer";

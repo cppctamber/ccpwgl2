@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { quat, vec3 } from "math";
-import { IEveLineSetPath } from "unsupported/eve/item/IEveLineSetPath";
+import { IEveLineSetPath } from "eve/item/IEveLineSetPath";
 
 
 @meta.notImplemented
