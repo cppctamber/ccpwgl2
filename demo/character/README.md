@@ -445,10 +445,17 @@ operation for `topinner`; it does not establish policies for other modifier
 locations. Exact normalized `modifierPath` is retained as a labelled fallback
 when a library has not hydrated the modifier-location reference.
 
-The adapter uses four neutral-white legacy V8 interior lights arranged
-at the character's front, left, right, and back, plus ccpwgl per-object packing. This is
-demo-owned lighting policy, not a character-lighting contract supplied by
-runtime-trinity. Its body-diffuse
+The demo initializes one `TnyClient` and one `TnyCharacterScene`, then installs
+four neutral-white legacy V8 interior lights arranged at the scene's front,
+left, right, and back. The scene owns those lights and applies its per-object
+selection to every attached character and placeable. Appearance managers and
+their GLES adapters neither initialize the client nor replace the scene,
+camera, or light rig. Each manager owns one character revision and attaches it
+through `TnyCharacterScene.AddCharacter`; any number of managers may therefore
+coexist in the scene, subject only to backend resource limits rather than a
+scene-level character cap. Releasing one manager removes only its wrapper.
+This is demo-owned lighting policy, not a character-lighting contract supplied
+by runtime-trinity. The adapter's body-diffuse
 atlas is a proof adapter over exact source values, not a new runtime-character
 source fact. Other foundation coverage, non-diffuse channels, head composition, and final
 bindings stay gated until later appearance-plan stages exist. The adapter can
@@ -461,12 +468,14 @@ example, `?isolatePart=female%2Fdependants%2Ftuck%2Fbasic` hides the tuck suppor
 without changing the appearance plan, retained source data, or composition
 report. Diagnostics mark that part `hidden-for-isolation`.
 
-The demo record selector navigates to a fresh `paperdoll` URL. This is required
-by the temporary GLES CPU-morph proof: cached geometry cannot simultaneously
-carry two different deformation leases while the prior character remains
-published. The runtime continues to reject that unsafe shared-resource
-mutation; the demo does not weaken the guard or imply support for multiple
-differently morphed characters on this legacy path.
+The demo record selector still navigates to a fresh `paperdoll` URL because the
+temporary GLES CPU-morph proof mutates cached geometry. Cached geometry cannot
+simultaneously carry two different deformation leases, so that adapter rejects
+conflicting deformations instead of corrupting either character. This is a
+legacy-backend resource-instancing limit, not a scene ownership or collection
+limit: unmodified characters and characters sharing a compatible deformation
+may coexist, while arbitrary independently morphed crowds require per-instance
+geometry deformation in the replacement WebGL path.
 
 The default `headNormal=detail` face path retains the exact generic head normal
 plus the authored additive aging and scarring twist-normal passes. It omits

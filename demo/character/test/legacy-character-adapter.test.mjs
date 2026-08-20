@@ -328,98 +328,60 @@ test("legacy proof material classifies a private baked garment without tint colo
     assert.equal(effect._characterGarmentMaterialFallback, true);
 });
 
-test("GLES adapter constructs its scene and camera through the Tny client store", async () =>
+test("GLES adapter requires a shared character scene without initializing the client", async () =>
 {
-    class CharacterScene
-    {
-        lights = [];
-
-        wrapped = {
-            SetValues: values =>
-            {
-                this.sceneValues = values;
-            }
-        };
-
-        AddLight(light)
-        {
-            this.lights.push(light);
-        }
-
-        ClearLights()
-        {
-            this.lights.splice(0);
-        }
-
-        Initialize()
-        {
-            this.initialized = true;
-        }
-    }
-
-    class Camera
-    {
-        constructor(values)
-        {
-            this.values = values;
-        }
-    }
-
-    class Light
-    {
-        SetValues(values)
-        {
-            this.values = values;
-        }
-
-        Initialize() {}
-    }
-
-    const classes = {
-        TnyCameraTest: Camera,
-        TnyCharacterScene: CharacterScene,
-        TnySpaceObject: class {}
-    };
+    let initializeCalls = 0;
     const client = {
-        scene: null,
-        camera: null,
-        GetClass: name => classes[name],
-        HasClass: name => !!classes[name],
-        async Initialize(options)
-        {
-            this.initializeOptions = options;
-            this.scene = options.scene;
-            this.camera = options.camera;
-        }
+        scene: {
+            AddCharacter() {},
+            RemoveCharacter() {}
+        },
+        async Initialize() { initializeCalls++; }
     };
 
     SetTestTw2({
         Fetch() {},
-        Gr2Reader: { DEFAULT_OPTIONS: {} },
-        Tr2InteriorLightSource: Light
+        Gr2Reader: { DEFAULT_OPTIONS: {} }
     });
-    const adapter = new TnyGlesCharacterAdapter({
-        client,
-        cameraDistance: 0.8,
-        clearColor: [ 0.05, 1, 0, 1 ]
-    });
+    const adapter = new TnyGlesCharacterAdapter({ client });
     await adapter._Initialize();
 
-    assert.ok(client.scene instanceof CharacterScene);
-    assert.ok(client.camera instanceof Camera);
-    assert.equal(client.scene.initialized, true);
-    assert.equal(client.initializeOptions.scene, client.scene);
-    assert.equal(client.initializeOptions.camera, client.camera);
-    assert.equal(client.camera.values.distance, 0.8);
-    assert.deepEqual(client.initializeOptions.client.clearColor, [ 0.05, 1, 0, 1 ]);
-    assert.deepEqual(client.scene.sceneValues.clearColor, [ 0.05, 1, 0, 1 ]);
-    assert.equal(client.initializeOptions.scene.wrapped, client.scene.wrapped);
-    assert.deepEqual(client.scene.lights.map(light => light.values.name), [
-        "character_front",
-        "character_left",
-        "character_right",
-        "character_back"
-    ]);
+    assert.equal(initializeCalls, 0);
+    client.scene = null;
+    await assert.rejects(
+        new TnyGlesCharacterAdapter({ client })._Initialize(),
+        /initialized TnyCharacterScene/
+    );
+});
+
+test("two GLES adapters attach and release independent characters in one scene", async () =>
+{
+    const fixture = CreateFixture();
+    SetTestTw2(fixture.tw2);
+    const firstAdapter = new TnyGlesCharacterAdapter({ client: fixture.tiny });
+    const secondAdapter = new TnyGlesCharacterAdapter({ client: fixture.tiny });
+
+    await Promise.all([ firstAdapter._Initialize(), secondAdapter._Initialize() ]);
+    const first = firstAdapter._CreateObject("female");
+    const second = secondAdapter._CreateObject("male");
+
+    assert.equal(fixture.initializeCalls.length, 0);
+    assert.deepEqual(fixture.scene.characters, [ first.wrapper, second.wrapper ]);
+    assert.equal(fixture.scene.characters.length, 2);
+
+    firstAdapter._client.scene = {
+        AddCharacter() {},
+        RemoveCharacter()
+        {
+            throw new Error("release used a replacement scene");
+        }
+    };
+    assert.equal(firstAdapter.Release(first), true);
+    assert.deepEqual(fixture.scene.characters, [ second.wrapper ]);
+    assert.equal(second.backend.display, false);
+
+    assert.equal(secondAdapter.Release(second), true);
+    assert.deepEqual(fixture.scene.characters, []);
 });
 
 test("legacy adapter stages and commits the exact female LOD0 foundation", async () =>
@@ -436,11 +398,7 @@ test("legacy adapter stages and commits the exact female LOD0 foundation", async
     const appearancePlan = { id: 1 };
     const staged = await adapter.Prepare(construction, { appearancePlan });
 
-    assert.equal(fixture.initializeCalls.length, 1);
-    assert.equal(
-        fixture.initializeCalls[0].paths.res,
-        "http://127.0.0.1:5510/eve/3453885/resources"
-    );
+    assert.equal(fixture.initializeCalls.length, 0);
     assert.equal(staged.sex, "female");
     assert.deepEqual(fixture.fetches, [
         "res:/custom/female-skeleton.gr2",
@@ -453,48 +411,15 @@ test("legacy adapter stages and commits the exact female LOD0 foundation", async
     assert.equal(staged.backend.display, false);
     assert.equal(staged.backend.bound, true);
     assert.equal(fixture.watched, staged.backend);
-    assert.equal(fixture.scene.objects.length, 1);
-    assert.deepEqual(staged.backend.interiorLights.map(light => light.values), [
-        {
-            name: "character_front",
-            primaryLighting: true,
-            position: [ 0, 135, 190 ],
-            color: [ 4.4, 4.4, 4.4, 1 ],
-            radius: 300,
-            falloff: 1
-        },
-        {
-            name: "character_left",
-            primaryLighting: true,
-            position: [ -190, 115, 0 ],
-            color: [ 2.15, 2.15, 2.15, 1 ],
-            radius: 280,
-            falloff: 1
-        },
-        {
-            name: "character_right",
-            primaryLighting: true,
-            position: [ 190, 115, 0 ],
-            color: [ 2.15, 2.15, 2.15, 1 ],
-            radius: 280,
-            falloff: 1
-        },
-        {
-            name: "character_back",
-            primaryLighting: true,
-            position: [ 0, 150, -200 ],
-            color: [ 4.8, 4.8, 4.8, 1 ],
-            radius: 320,
-            falloff: 1
-        }
-    ]);
+    assert.equal(fixture.scene.characters.length, 1);
+    assert.deepEqual(staged.backend.interiorLights, []);
     assert.doesNotMatch(JSON.stringify(fixture.fetches), /cewg|mask/u);
 
     adapter.Commit(staged);
     assert.equal(staged.backend.display, true);
 
     assert.equal(adapter.Release(staged), true);
-    assert.equal(fixture.scene.objects.length, 0);
+    assert.equal(fixture.scene.characters.length, 0);
 });
 
 test("legacy adapter replaces a generic head carrier with exact configured face meshes", async () =>
@@ -1174,7 +1099,7 @@ test("legacy adapter initializes once and routes a male paper doll to male sourc
     const first = await adapter.Prepare(construction);
     const second = await adapter.Prepare(construction);
 
-    assert.equal(fixture.initializeCalls.length, 1);
+    assert.equal(fixture.initializeCalls.length, 0);
     assert.equal(first.sex, "male");
     assert.equal(second.sex, "male");
     assert.equal(first.geometryPaths.length, 5);
@@ -2318,7 +2243,7 @@ test("legacy adapter leaves male foundation visible when configured footwear fai
         mesh._characterFoundationRole === "feet");
 
     assert.equal(feet.display, true);
-    assert.equal(fixture.scene.objects.length, 0);
+    assert.equal(fixture.scene.characters.length, 0);
 });
 
 test("legacy adapter retains a deferred texture-only contribution without fetching fabricated geometry", async () =>
@@ -2679,7 +2604,7 @@ test("legacy adapter rejects a sole-mesh alias without an exact configured sibli
         adapter.Prepare(CreateAppearanceConstruction()),
         /resolved to differently named geometry mesh/u
     );
-    assert.equal(fixture.scene.objects.length, 0);
+    assert.equal(fixture.scene.characters.length, 0);
 });
 
 test("legacy adapter rejects configured parts without an authored or model-resolved geometry binding", async () =>
@@ -2716,7 +2641,7 @@ test("legacy adapter rejects configured parts without an authored or model-resol
         adapter.Prepare(construction),
         /no exact geometry binding/u
     );
-    assert.equal(fixture.scene.objects.length, 0);
+    assert.equal(fixture.scene.characters.length, 0);
 });
 
 test("legacy adapter retains a configured dependency with no visual meshes as support-only", async () =>
@@ -3129,19 +3054,19 @@ function CreateFixture({
     const fetches = [];
     const createdMeshes = [];
     const scene = {
-        objects: [],
+        characters: [],
         wrapped: {
             ApplyPerFrameData() {},
             SetValues() {}
         },
-        AddObject(value)
+        AddCharacter(value)
         {
-            this.objects.push(value);
+            this.characters.push(value);
         },
-        RemoveObject(value)
+        RemoveCharacter(value)
         {
-            const index = this.objects.indexOf(value);
-            if (index !== -1) this.objects.splice(index, 1);
+            const index = this.characters.indexOf(value);
+            if (index !== -1) this.characters.splice(index, 1);
         }
     };
     const classes = {

@@ -7,6 +7,7 @@ import { CjsCharacterAtlasLayout } from "/vendor/runtime-character/character/com
 import { tnyCharacterConstructors } from "/src/runtime/character/register.js";
 import { tiny, tny } from "./demo/ccpwgl-global.mjs";
 import { CharacterDemoApplication } from "./demo/CharacterDemoApplication.mjs";
+import { InitializeCharacterDemoScene } from "./demo/CharacterDemoScene.mjs";
 import { installCharacterDemoAlphaAudit } from "./demo/CharacterDemoAlphaAudit.mjs";
 import { installCharacterDemoClothingAudit } from "./demo/CharacterDemoClothingAudit.mjs";
 import { ConfigureCharacterDemoWithoutSof } from "./demo/CharacterDemoSofPolicy.mjs";
@@ -134,13 +135,18 @@ try
     });
     ConfigureCharacterDemoWithoutSof(tw2);
     const runtimeClient = tny || tiny;
-    const adapter = new TnyGlesCharacterAdapter({
+    const resourceRoot = toolsService.paths.res.replace(/\/+$/u, "");
+    await InitializeCharacterDemoScene({
         client: runtimeClient,
-        resourceRoot: toolsService.paths.res.replace(/\/+$/u, ""),
+        tw2,
+        resourceRoot,
         cameraDistance: parameters.has("cameraDistance")
             ? Number(parameters.get("cameraDistance"))
             : cameraRegion?.distance ?? 3.2,
-        clearColor: diagnosticClearColor,
+        clearColor: diagnosticClearColor
+    });
+    const adapter = new TnyGlesCharacterAdapter({
+        client: runtimeClient,
         atlasComposer: new TnyGlesAtlasComposer({
             characterAtlasLayout: CjsCharacterAtlasLayout,
             headNormalMode: [ "authored", "detail", "base", "neutral" ].includes(
@@ -332,7 +338,7 @@ try
                 .filter(Boolean),
             context: {
                 libraryURL,
-                resourceRoot: toolsService.paths.res.replace(/\/+$/u, "")
+                resourceRoot
             },
             sourceObserved: parameters.get("clothingAuditObserved") === "1",
             sourceObservedOutfits: parameters.get("clothingAuditOutfits")

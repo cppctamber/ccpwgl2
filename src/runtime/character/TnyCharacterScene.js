@@ -46,31 +46,37 @@ export class TnyCharacterScene extends meta.Model
         return this;
     }
 
+    /** Adds one character wrapper, or an array of wrappers, to the scene. */
     AddCharacter(character)
     {
         return this._Add("characters", character, "character");
     }
 
+    /** Removes one character wrapper without affecting any scene sibling. */
     RemoveCharacter(character)
     {
         return this._Remove("characters", character, "character");
     }
 
+    /** Adds ordinary non-character interior geometry. */
     AddGeometry(object)
     {
         return this._Add("geometry", object, "geometry");
     }
 
+    /** Removes ordinary non-character interior geometry. */
     RemoveGeometry(object)
     {
         return this._Remove("geometry", object, "geometry");
     }
 
+    /** Adds one scene-owned interior light, or an array of lights. */
     AddLight(light)
     {
         return this._Add("lights", light, "light");
     }
 
+    /** Removes one scene-owned interior light. */
     RemoveLight(light)
     {
         return this._Remove("lights", light, "light");
@@ -88,45 +94,53 @@ export class TnyCharacterScene extends meta.Model
         return this.RemoveGeometry(object);
     }
 
+    /** Appends every attached character wrapper to an output array. */
     GetCharacters(out = [])
     {
         out.push(...this.characters);
         return out;
     }
 
+    /** Appends every ordinary geometry wrapper to an output array. */
     GetGeometry(out = [])
     {
         out.push(...this.geometry);
         return out;
     }
 
+    /** Appends every scene-owned light to an output array. */
     GetLights(out = [])
     {
         out.push(...this.lights);
         return out;
     }
 
+    /** Appends all characters and ordinary geometry to an output array. */
     GetObjects(out = [])
     {
         out.push(...this.characters, ...this.geometry);
         return out;
     }
 
+    /** Detaches every character while preserving geometry and lights. */
     ClearCharacters()
     {
         return this._Clear("characters", "character");
     }
 
+    /** Detaches every ordinary geometry object while preserving characters. */
     ClearGeometry()
     {
         return this._Clear("geometry", "geometry");
     }
 
+    /** Removes every scene-owned light. */
     ClearLights()
     {
         return this._Clear("lights", "light");
     }
 
+    /** Detaches every character and geometry object while preserving lights. */
     ClearObjects()
     {
         const changed = this.characters.length || this.geometry.length;
@@ -166,12 +180,14 @@ export class TnyCharacterScene extends meta.Model
         return this;
     }
 
+    /** Initializes the wrapped interior scene. */
     Initialize()
     {
         this.wrapped.Initialize();
         return this;
     }
 
+    /** Updates the wrapped scene and every attached character. */
     Update(dt)
     {
         this.wrapped.Update(dt);
@@ -201,6 +217,7 @@ export class TnyCharacterScene extends meta.Model
         return true;
     }
 
+    /** Appends resources owned by the wrapped scene and all its contents. */
     GetResources(out = [])
     {
         return this.wrapped.GetResources(out);

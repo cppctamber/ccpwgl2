@@ -10,22 +10,11 @@ import { TnyGlesPaletteCompatibility } from "./TnyGlesPaletteCompatibility.js";
 import { TnyGlesTriangleCoverage } from "./TnyGlesTriangleCoverage.js";
 import { TnyGlesMorphDeformation } from "./TnyGlesMorphDeformation.js";
 
-const DEFAULT_RESOURCE_BASE = "http://127.0.0.1:5510/eve";
-const DEFAULT_CLEAR_COLOR = [ 0.035, 0.055, 0.08, 1 ];
 const WHITE_PROOF_TEXTURE = "res:/dx9/model/decal/shared/bw_000_000_100.dds";
 const UNRESOLVED_GARMENT_COLOR = [ 1, 0, 1, 1 ];
 const FEMALE_LOD0_BODY_PATH = "res:/graphics/character/female/paperdoll/basenude/basenude.gr2";
 const FEMALE_LOD0_HANDS_PATH =
     "res:/graphics/character/female/paperdoll/hands/hands_nude/hands_nude.gr2";
-
-// These demo-owned V8 interior-light inputs feed ccpwgl's legacy avatar
-// per-object packing; they are not a runtime-character lighting contract.
-const LEGACY_OPENGL_LIGHTS = [
-    { name: "front", color: [ 4.4, 4.4, 4.4, 1 ], position: [ 0, 135, 190 ], radius: 300, falloff: 1 },
-    { name: "left", color: [ 2.15, 2.15, 2.15, 1 ], position: [ -190, 115, 0 ], radius: 280, falloff: 1 },
-    { name: "right", color: [ 2.15, 2.15, 2.15, 1 ], position: [ 190, 115, 0 ], radius: 280, falloff: 1 },
-    { name: "back", color: [ 4.8, 4.8, 4.8, 1 ], position: [ 0, 150, -200 ], radius: 320, falloff: 1 }
-];
 
 const AREA_FIELDS = [
     "opaqueAreas",
@@ -47,7 +36,9 @@ const VISIBLE_AREA_FIELDS = [
 ];
 
 /**
- * Bounded adapter for proving the existing ccpwgl OpenGL character path.
+ * Bounded adapter for realizing one character on the existing ccpwgl OpenGL
+ * path. The supplied client must already own an initialized character scene;
+ * scene, camera, device, and lighting lifecycle remain outside this adapter.
  * It realizes the sex-specific nude LOD0 foundation and exact resolved
  * configuration/geometry pairs plus the bounded body-diffuse proof while
  * leaving the remaining material channels and final bindings gated.
@@ -64,8 +55,6 @@ export class TnyGlesCharacterAdapter
 
     _lowerSleeveMaterialEnabled;
 
-    _lights = [];
-
     _morphDeformation;
 
     _morphDeformationEnabled;
@@ -76,17 +65,9 @@ export class TnyGlesCharacterAdapter
 
     _paletteCompatibility;
 
-    _resourceRoot;
-
-    _resourceBase;
-
     _sourceBuild = null;
 
     _client;
-
-    _cameraDistance;
-
-    _clearColor;
 
     _triangleCoverage;
 
@@ -110,10 +91,6 @@ export class TnyGlesCharacterAdapter
 
     constructor({
         client = null,
-        cameraDistance = 3.2,
-        clearColor = DEFAULT_CLEAR_COLOR,
-        resourceBase = DEFAULT_RESOURCE_BASE,
-        resourceRoot = null,
         atlasComposer = null,
         foundationCutMaskEnabled = true,
         lowerSleeveMaterialEnabled = true,
@@ -135,7 +112,7 @@ export class TnyGlesCharacterAdapter
         morphDeformationSkippedTargets = []
     } = {})
     {
-        if (!client || typeof client.Initialize !== "function")
+        if (!client || typeof client !== "object")
         {
             throw new TypeError("GLES character adapter requires a Tny-compatible client");
         }
@@ -146,16 +123,6 @@ export class TnyGlesCharacterAdapter
         if (atlasComposer !== null && typeof atlasComposer?.Compose !== "function")
         {
             throw new TypeError("Legacy character atlasComposer must expose Compose(staged)");
-        }
-        if (!Number.isFinite(cameraDistance) || cameraDistance < 0.5 || cameraDistance > 20)
-        {
-            throw new TypeError("Legacy character cameraDistance must be between 0.5 and 20");
-        }
-        if (!Array.isArray(clearColor)
-            || clearColor.length !== 4
-            || clearColor.some(value => !Number.isFinite(value) || value < 0 || value > 1))
-        {
-            throw new TypeError("Legacy character clearColor must be four normalized values");
         }
         if (typeof paletteCompatibility?.Apply !== "function")
         {
@@ -238,12 +205,6 @@ export class TnyGlesCharacterAdapter
         }
 
         this._client = client;
-        this._cameraDistance = cameraDistance;
-        this._clearColor = [ ...clearColor ];
-        this._resourceBase = String(resourceBase).replace(/\/+$/u, "");
-        this._resourceRoot = resourceRoot === null
-            ? null
-            : String(resourceRoot).replace(/\/+$/u, "");
         this._atlasComposer = atlasComposer;
         this._foundationCutMaskEnabled = foundationCutMaskEnabled;
         this._lowerSleeveMaterialEnabled = lowerSleeveMaterialEnabled;
@@ -406,7 +367,6 @@ export class TnyGlesCharacterAdapter
         }
 
         this._sourceBuild = build;
-        this._resourceRoot ??= `${this._resourceBase}/${encodeURIComponent(build)}/resources`;
         this._atlasComposer ??= new TnyGlesAtlasComposer();
     }
 
@@ -677,17 +637,7 @@ export class TnyGlesCharacterAdapter
         staged.composedBodyDiffuseTexture = null;
 
         staged.backend.display = false;
-        const scene = this._client.scene;
-
-        if (typeof scene?.RemoveObject === "function")
-        {
-            scene.RemoveObject(staged.wrapper);
-        }
-        else if (Array.isArray(scene?.objects))
-        {
-            const index = scene.objects.indexOf(staged.wrapper);
-            if (index !== -1) scene.objects.splice(index, 1);
-        }
+        staged.scene.RemoveCharacter(staged.wrapper);
 
         staged.wrapper = null;
         return true;
@@ -761,83 +711,15 @@ export class TnyGlesCharacterAdapter
 
     async _InitializeOnce()
     {
-        const hasRuntimeStore = typeof this._client.GetClass === "function";
         ConfigureCharacterGeometryReaders(tw2);
-
-        const initializeOptions = {
-            canvas: "character-canvas",
-            debug: false,
-            device: { webgl2: false },
-            client: {
-                clearColor: this._clearColor,
-                colorMask: [ 0, 0, 0, 0 ]
-            },
-            paths: {
-                res: this._resourceRoot,
-                cdn: this._resourceRoot,
-                local: this._resourceRoot,
-                _cache: this._resourceRoot,
-                cache: this._resourceRoot
-            },
-            pathAliases: {
-                cdn: "res",
-                local: "res"
-            }
-        };
-
-        if (hasRuntimeStore)
+        const scene = this._client.scene;
+        if (typeof scene?.AddCharacter !== "function"
+            || typeof scene?.RemoveCharacter !== "function")
         {
-            const Scene = RequireRuntimeClass(this._client, tw2, "TnyCharacterScene");
-            const Camera = RequireRuntimeClass(this._client, tw2, "TnyCameraTest");
-            const scene = new Scene();
-            const camera = new Camera({
-                type: "testOrbit",
-                canvas: "character-canvas",
-                controller: true,
-                poi: [ 0, 1.05, 0 ],
-                distance: this._cameraDistance,
-                minDistance: 0.5,
-                maxDistance: 20,
-                fov: 40,
-                nearPlane: 0.05,
-                farPlane: 200
-            });
-
-            scene.Initialize?.();
-            initializeOptions.scene = scene;
-            initializeOptions.camera = camera;
+            throw new Error(
+                "GLES character adapter requires an initialized TnyCharacterScene"
+            );
         }
-        else
-        {
-            // Temporary compatibility for the local bundle until it exposes
-            // the source Tny singleton. Wrapped descriptors are not part of
-            // the TnyClient contract.
-            initializeOptions.scene = this._clearColor;
-            initializeOptions.camera = {
-                type: "testOrbit",
-                canvas: "character-canvas",
-                controller: true,
-                poi: [ 0, 1.05, 0 ],
-                distance: this._cameraDistance,
-                minDistance: 0.5,
-                maxDistance: 20,
-                fov: 40,
-                nearPlane: 0.05,
-                farPlane: 200
-            };
-        }
-
-        await this._client.Initialize(initializeOptions);
-
-        this._lights = CreateLegacyOpenGLLights(tw2);
-        InstallLegacyOpenGLLights(this._client.scene, this._lights);
-
-        this._client.scene?.wrapped?.SetValues?.({
-            visible: { fog: false, environment: false },
-            sunDirection: [ 0, -1, 1 ],
-            ambientColor: [ 0.08, 0.08, 0.09, 1 ],
-            clearColor: this._clearColor
-        });
     }
 
     _CreateObject(sex)
@@ -850,11 +732,6 @@ export class TnyGlesCharacterAdapter
 
         backend.name = `${sex} character foundation proof`;
         backend.display = false;
-        // The interior scene owns the shared light set. Keep the same lights on
-        // a newly staged object until the scene performs its active-light
-        // selection; otherwise an unsupported host without an interior scene
-        // still receives the character preview rig.
-        backend.interiorLights = this._lights;
         backend.visualModel = new Tr2SkinnedModel();
         backend.visualModel.name = `${sex} character visual model`;
 
@@ -869,21 +746,11 @@ export class TnyGlesCharacterAdapter
 
         backend.Initialize?.();
         const wrapper = new TnySpaceObject(backend);
+        const scene = this._client.scene;
 
-        if (typeof this._client.scene?.AddObject === "function")
-        {
-            this._client.scene.AddObject(wrapper);
-        }
-        else if (Array.isArray(this._client.scene?.objects))
-        {
-            this._client.scene.objects.push(wrapper);
-        }
-        else
-        {
-            throw new Error("The ccpwgl scene cannot accept a character object");
-        }
+        scene.AddCharacter(wrapper);
 
-        return { backend, wrapper, sex };
+        return { backend, wrapper, scene, sex };
     }
 
     async _ExecuteOperation(staged, operation)
@@ -2378,61 +2245,6 @@ function ConfigureCharacterGeometryReaders(tw2)
     {
         tw2.GR2JsonReader.DEFAULT_OPTIONS.firstMeshOnly = false;
     }
-}
-
-function CreateLegacyOpenGLLights(tw2)
-{
-    const LightSource = RequireClass(tw2, "Tr2InteriorLightSource");
-    const lights = [];
-
-    for (let index = 0; index < LEGACY_OPENGL_LIGHTS.length; index++)
-    {
-        const light = new LightSource();
-        const values = LEGACY_OPENGL_LIGHTS[index];
-
-        if (typeof light?.SetValues === "function")
-        {
-            light.SetValues({
-                name: `character_${values.name}`,
-                primaryLighting: true,
-                position: [ ...values.position ],
-                color: [ ...values.color ],
-                radius: values.radius,
-                falloff: values.falloff
-            });
-        }
-        else if (light)
-        {
-            light.name = `character_${values.name}`;
-            light.primaryLighting = true;
-            CopyValues(light.position, values.position);
-            CopyValues(light.color, values.color);
-            light.radius = values.radius;
-            light.falloff = values.falloff;
-        }
-
-        light?.Initialize?.();
-        lights.push(light);
-    }
-
-    return lights;
-}
-
-function InstallLegacyOpenGLLights(scene, lights)
-{
-    if (typeof scene?.ClearLights === "function" && typeof scene?.AddLight === "function")
-    {
-        scene.ClearLights();
-        for (const light of lights) scene.AddLight(light);
-        return true;
-    }
-
-    const wrapped = scene?.wrapped ?? scene;
-    if (!Array.isArray(wrapped?.lights)) return false;
-
-    wrapped.lights.splice(0, wrapped.lights.length, ...lights);
-    wrapped.ApplyInteriorLights?.();
-    return true;
 }
 
 function CopyValues(target, source)
