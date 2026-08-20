@@ -20,6 +20,7 @@ const { transformSync } = require("@babel/core");
 const { vec3, vec4, mat4, quat } = require("gl-matrix");
 
 
+const debugCalls = [];
 const m = loadContainer();
 
 testBuildsOneInstancePerLocator();
@@ -33,6 +34,7 @@ testNoSourceMeansNoInstancesAndNoCrash();
 testInstancesAreBuiltOnceNotEveryFrame();
 testControllerVariablesReachInstancesBuiltLater();
 testColourSetReachesInstancesBuiltLater();
+testAFailedSourceCopyIsSurvivedAndReportedOnce();
 console.log("EveChildInstanceContainer verified");
 
 
@@ -201,6 +203,31 @@ function testColourSetReachesInstancesBuiltLater()
 }
 
 
+/**
+ * STOPGAP guard, 2026-08-21. `Model.clone` round-trips through plain values and a
+ * source whose curve-set bindings reference sibling objects does not survive it -
+ * `Tw2ValueBinding.destinationObject` is an untyped not-owned struct, so
+ * rebuilding it throws "Unknown struct constructor for destinationObject". That
+ * took the whole object build down, once per attempted instance.
+ *
+ * A missing effect beats a dead page, but the warning must still fire - and fire
+ * ONCE, not once per instance, or the real defect drowns.
+ */
+function testAFailedSourceCopyIsSurvivedAndReportedOnce()
+{
+    debugCalls.length = 0;
+
+    const container = makeContainer({
+        source: { Clone() { throw new ReferenceError("Unknown struct constructor for destinationObject"); } },
+        transforms: [ transform([ 1, 0, 0 ]), transform([ 2, 0, 0 ]) ]
+    });
+
+    assert.doesNotThrow(() => container.CreateInstances(null), "the object build survives");
+    assert.equal(container.instances.length, 0, "no instances, rather than a crash");
+    assert.equal(debugCalls.length, 1, "reported once, not once per instance");
+}
+
+
 // -- harness ----------------------------------------------------------------
 
 
@@ -287,6 +314,7 @@ function loadContainer()
     return load("../src/eve/child/EveChildInstanceContainer.js", {
         utils,
         math,
+        global: { tw2: { Debug: (...args) => debugCalls.push(args) } },
         "./EveChild": { EveChild: class { _lod = 3; } },
         "./EveChildContainer": container
     });

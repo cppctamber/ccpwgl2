@@ -1,5 +1,6 @@
 // Source: E:\carbonengine\trinity\trinity\Eve\SpaceObject\Children\EveChildInstanceContainer.cpp
 import { meta } from "utils";
+import { tw2 } from "global";
 import { EveChild } from "./EveChild";
 import { EveChildContainer } from "./EveChildContainer";
 import { mat4, quat, vec3 } from "math";
@@ -134,6 +135,9 @@ export class EveChildInstanceContainer extends EveChild
 
     _pendingColorSet = null;
 
+    /** Reported a failed source copy already - see `CloneSource`. */
+    _cloneFailed = false;
+
     /**
      * Builds one instance per locator and per authored transform.
      *
@@ -192,7 +196,7 @@ export class EveChildInstanceContainer extends EveChild
     {
         if (!this.source || typeof this.source.Clone !== "function") return null;
 
-        const copy = this.source.Clone();
+        const copy = this.CloneSource();
         if (!copy) return null;
 
         const instance = new EveChildContainer();
@@ -222,6 +226,49 @@ export class EveChildInstanceContainer extends EveChild
 
         this.instances.push(instance);
         return instance;
+    }
+
+    /**
+     * Copies the source, surviving a copy that cannot be made.
+     *
+     * STOPGAP, 2026-08-21. `Model.clone` is `from(GetValues())`
+     * (`src/global/meta/Model.js:875-878`) - a round trip through plain values -
+     * and a source carrying curve sets whose bindings reference sibling objects
+     * does not survive it: `Tw2ValueBinding.destinationObject` is
+     * `@meta.notOwned @meta.struct()` with NO declared constructors, so
+     * rebuilding it throws `Unknown struct constructor for destinationObject`.
+     *
+     * Carbon has no equivalent problem: it copies with `BeClasses->CopyTo`
+     * (`cpp:246`), a real deep copy that preserves references.
+     *
+     * Left unguarded this takes the whole object build down, and it fires once
+     * per attempted instance - the report that prompted this had 1984 of them.
+     * A missing effect is a better failure than a dead page, but this is NOT the
+     * fix: the copy still needs to work. The warning is deliberately loud and
+     * fires ONCE per container so the real defect stays visible instead of being
+     * buried under a flood.
+     *
+     * @returns {?EveChild} the copy, or null if it could not be made
+     */
+    CloneSource()
+    {
+        try
+        {
+            return this.source.Clone();
+        }
+        catch (err)
+        {
+            if (!this._cloneFailed)
+            {
+                this._cloneFailed = true;
+                tw2.Debug({
+                    name: "EveChildInstanceContainer",
+                    message: `Could not copy the source of "${this.name}" - instances will be missing: ${err.message}`,
+                    data: { err }
+                });
+            }
+            return null;
+        }
     }
 
     /**
