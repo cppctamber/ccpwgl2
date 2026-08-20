@@ -1,4 +1,4 @@
-import { meta } from "utils";
+import { isString, meta } from "utils";
 import { device } from "global";
 import { vec3, mat4 } from "math";
 import { Tw2VertexDeclaration } from "core";
@@ -109,6 +109,7 @@ export class Tw2ParticleSystem extends meta.Model
     _stdElements = [ null, null, null, null ];
     _vb = null;
     _vertexStride = [ null, null ];
+    _constraintsBound = false;
     _worldTransform = mat4.create();
 
 
@@ -244,6 +245,9 @@ export class Tw2ParticleSystem extends meta.Model
 
         this._isValid = true;
         this._bufferDirty = true;
+
+        // Constraints resolve their elements here, once the declaration exists.
+        this.BindConstraints();
     }
 
     /**
@@ -257,17 +261,70 @@ export class Tw2ParticleSystem extends meta.Model
     }
 
     /**
-     * Gets an element by it's type
-     * @param {number} type
-     * @returns {Tw2ParticleElement}
+     * Gets an element by its standard type, or a custom element by name.
+     *
+     * Carbon looks elements up through one name table keyed by
+     * `Tr2ParticleElementDeclarationName`, which carries either a semantic type
+     * or a custom string. ccpwgl kept only the semantic half: `_stdElements` is
+     * a four-slot array and CUSTOM elements were never indexed at all, so
+     * anything addressing an element by name - a constraint's
+     * `particleRadiusComponent`, a blend constraint's `customName` - could not
+     * resolve one.
+     *
+     * A string argument searches the custom elements; a number keeps the
+     * original fast path untouched.
+     *
+     * @param {Number|String} type - a `Tw2ParticleElement.Type`, or a custom element's name
+     * @returns {Tw2ParticleElement|null}
      */
     GetElement(type)
     {
+        if (isString(type))
+        {
+            for (let i = 0; i < this._elements.length; ++i)
+            {
+                const element = this._elements[i];
+                if (element.elementType === Tw2ParticleElement.Type.CUSTOM && element.customName === type)
+                {
+                    element.offset = element.startOffset;
+                    return element;
+                }
+            }
+            return null;
+        }
+
         if (this._stdElements[type])
         {
             this._stdElements[type].offset = this._stdElements[type].startOffset;
         }
         return this._stdElements[type];
+    }
+
+    /**
+     * Binds every constraint to this system, so each can resolve the elements it
+     * reads before it is asked to apply itself.
+     *
+     * Carbon binds constraints when the system's element declaration is built.
+     * ccpwgl had no bind step at all - `Update` called `ApplyConstraint` on
+     * whatever was in the list and nothing had ever resolved an element - so a
+     * constraint could only ever no-op. Called from `UpdateElementDeclaration`,
+     * and again lazily from `Update` for constraints attached later.
+     *
+     * @returns {Boolean} true when every constraint bound
+     */
+    BindConstraints()
+    {
+        let allBound = true;
+
+        for (let i = 0; i < this.constraints.length; ++i)
+        {
+            const constraint = this.constraints[i];
+            if (!constraint || !constraint.Bind) continue;
+            if (!constraint.Bind(this)) allBound = false;
+        }
+
+        this._constraintsBound = true;
+        return allBound;
     }
 
     /**
@@ -392,6 +449,10 @@ export class Tw2ParticleSystem extends meta.Model
 
         if (this.updateSimulation && this.constraints.length)
         {
+            // A constraint attached after the declaration was built has never
+            // been bound, and an unbound constraint silently does nothing.
+            if (!this._constraintsBound) this.BindConstraints();
+
             for (let i = 0; i < this.constraints.length; ++i)
             {
                 this.constraints[i].ApplyConstraint(this._buffers, this._instanceStride, this._aliveCount, dt);

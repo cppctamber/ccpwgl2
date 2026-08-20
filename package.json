@@ -30,6 +30,7 @@
     "test:animation-controller-fixes": "node scripts/test-animation-controller-fixes.js",
     "test:controller-state-machine": "node scripts/test-controller-state-machine.js",
     "test:sof-faction-colors": "node scripts/test-sof-faction-colors.js",
+    "test:particles": "node scripts/test-particles.js",
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",

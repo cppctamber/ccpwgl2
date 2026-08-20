@@ -49,6 +49,22 @@ export class Tw2ParticleElement
     dirty = false;
 
     /**
+     * Which of the particle system's two buffers this element lives in.
+     *
+     * `Tw2ParticleSystem` keeps `[ gpuBuffer, cpuBuffer ]` and derives the index
+     * as `usedByGPU ? 0 : 1` everywhere it touches them. Constraints receive
+     * those buffers by argument and need the same mapping, so it is named once
+     * here rather than repeated at every call site - Carbon carries it on the
+     * element as `m_bufferType`.
+     *
+     * @returns {Number} 0 for the GPU buffer, 1 for the CPU-only buffer
+     */
+    get bufferIndex()
+    {
+        return this.usedByGPU ? 0 : 1;
+    }
+
+    /**
      * Gets the element type as a string
      * @returns {String}
      */

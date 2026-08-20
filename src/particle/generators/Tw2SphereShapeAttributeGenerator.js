@@ -15,9 +15,19 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
     @meta.string
     customName = "";
 
+    /**
+     * Biases where particles land between the min and max radius.
+     *
+     * Carbon samples the radius as `min + (max - min) * pow(rand, exponent)`
+     * (`Tr2SphereShapeAttributeGenerator.cpp:21-24,107`) and defaults the
+     * exponent to 1, which is a flat distribution. ccpwgl ignored the field and
+     * defaulted it to 0 - so authored values biasing toward the centre or the
+     * shell did nothing, and the default had to stay 0 to keep the flat lerp.
+     * Applying the exponent means the default must become 1, or `pow(rand, 0)`
+     * would return 1 and pin every particle to the maximum radius.
+     */
     @meta.float
-    @meta.notImplemented
-    distributionExponent = 0;
+    distributionExponent = 1;
 
     @meta.float
     maxPhi = 360;
@@ -129,7 +139,8 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
 
         if (this._position)
         {
-            vec3.scale(rv, rv, this.minRadius + Math.random() * (this.maxRadius - this.minRadius));
+            // Carbon's frand(min, max, exponent) (Tr2SphereShapeAttributeGenerator.cpp:21-24).
+            vec3.scale(rv, rv, this.minRadius + (this.maxRadius - this.minRadius) * Math.pow(Math.random(), this.distributionExponent));
             vec3.add(rv, rv, this.position);
 
             if (position)

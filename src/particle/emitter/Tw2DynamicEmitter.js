@@ -16,9 +16,18 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
     @meta.list("Tw2ParticleAttributeGenerator")
     generators = [];
 
-    @meta.notImplemented
-    @meta.uint
-    maxParticles = 0;
+    /**
+     * A lifetime budget for this emitter: it stops emitting once it has spawned
+     * this many particles. **Negative means unlimited**, and that is the default.
+     *
+     * Carbon clamps the whole batch before inserting any of it
+     * (`Tr2DynamicEmitter.cpp:172-179`), counting against a running total that
+     * `Rebind` resets. ccpwgl declared the field, never read it, and defaulted
+     * it to 0 - so switching it on without also changing the default to -1 would
+     * have made every dynamic emitter in the engine stop emitting entirely.
+     */
+    @meta.float
+    maxParticles = -1;
 
     @meta.struct("Tw2ParticleSystem")
     particleSystem = null;
@@ -28,6 +37,12 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 
 
     _accumulatedRate = 0;
+
+    // Lifetime spawn total, checked against maxParticles. Carbon resets it on
+    // rebind (Tr2DynamicEmitter.cpp:231), so a re-bound emitter starts its
+    // budget again rather than staying exhausted.
+    _emittedParticles = 0;
+
     _isValid = false;
 
 
@@ -54,6 +69,8 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
     Rebind()
     {
         this._isValid = false;
+        this._emittedParticles = 0;
+        this._accumulatedRate = 0;
         if (!this.particleSystem) return;
 
         for (let i = 0; i < this.generators.length; ++i)
@@ -75,8 +92,17 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
         if (!this._isValid) return;
 
         this._accumulatedRate += this.rate * rateModifier;
-        const count = Math.floor(this._accumulatedRate);
+        let count = Math.floor(this._accumulatedRate);
         this._accumulatedRate -= count;
+
+        // Carbon counts the whole batch against the budget before inserting any
+        // of it (Tr2DynamicEmitter.cpp:175-179), rather than refusing per
+        // particle. Negative is unlimited.
+        if (this.maxParticles >= 0 && this._emittedParticles + count > this.maxParticles)
+        {
+            count = Math.max(this.maxParticles - this._emittedParticles, 0);
+        }
+        this._emittedParticles += count;
 
         for (let i = 0; i < count; ++i)
         {

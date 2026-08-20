@@ -1,3 +1,4 @@
+export * from "./constraint";
 export * from "./element";
 export * from "./emitter";
 export * from "./force";
