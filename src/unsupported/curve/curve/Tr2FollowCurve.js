@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.notImplemented
 @meta.type("Tr2FollowCurve")
 @meta.ccp.define("Tr2FollowCurve")
 export class Tr2FollowCurve extends meta.Model
@@ -17,9 +16,37 @@ export class Tr2FollowCurve extends meta.Model
     @meta.vector3
     currentValue = vec3.create();
 
+    /**
+     * Sorts the keys by time.
+     *
+     * Carbon sorts on LIST MODIFICATION (`OnListModified`, cpp:21-37) with a
+     * stable sort, not on every read. This sorts on demand and remembers, which
+     * reaches the same state without sorting once per sample per frame.
+     */
     Sort()
     {
-        this.keys.sort((a, b) => a.time - b.time);
+        this.keys.sort((a, b) => a.GetTime() - b.GetTime());
+        this._keysDirty = false;
+    }
+
+    /**
+     * Sorts only if something marked the keys stale. Separate from `Sort` so
+     * that calling `Sort()` still unconditionally sorts - narrowing a public
+     * method to a no-op is the kind of change that breaks a caller silently.
+     */
+    SortIfNeeded()
+    {
+        if (this._keysDirty) this.Sort();
+    }
+
+    /**
+     * Marks the keys unsorted. Anything that adds, removes or retimes a key
+     * should call this - it is the hook Carbon gets from its list notify.
+     */
+    OnListModified()
+    {
+        this._keysDirty = true;
+        return true;
     }
 
     UpdateValue(time)
@@ -32,105 +59,182 @@ export class Tr2FollowCurve extends meta.Model
         return this.GetValueAt(time);
     }
 
+    /**
+     * Samples the curve.
+     *
+     * Carbon `Tr2FollowCurve::GetValue` (cpp:39-67) selects with a single walk:
+     * `currentKey` is the last key at or before `time`, `nextKey` the first key
+     * after it. Both present is a segment; only `currentKey` is past the end and
+     * holds; NEITHER - which happens BEFORE THE FIRST KEY - returns a zero
+     * vector, not the first key's value.
+     *
+     * That last case is the one worth stating: this used to clamp to `keys[0]`
+     * before the first key, which is the intuitive reading and not what Carbon
+     * does. Following Carbon's loop shape rather than a range scan also removes
+     * the boundary question at exactly a key's time, since a key that is not
+     * strictly after `time` becomes the current key rather than the far end of a
+     * segment.
+     *
+     * @param {Number} time
+     * @param {vec3} [out]
+     * @returns {vec3} out
+     */
     GetValueAt(time, out = vec3.create())
     {
-        if (!this.keys.length)
+        vec3.set(out, 0, 0, 0);
+
+        if (!this.keys.length) return out;
+
+        this.SortIfNeeded();
+
+        let current = null, next = null;
+
+        for (let i = 0; i < this.keys.length; i++)
         {
-            vec3.set(out, 0, 0, 0);
-            return out;
-        }
+            const key = this.keys[i];
+            if (!key) continue;
 
-        this.Sort();
-
-        if (time <= this.keys[0].time)
-        {
-            return this.GetKeyValue(this.keys[0], out);
-        }
-
-        const last = this.keys[this.keys.length - 1];
-        if (time >= last.time)
-        {
-            return this.GetKeyValue(last, out);
-        }
-
-        for (let i = 0; i < this.keys.length - 1; i++)
-        {
-            const
-                k0 = this.keys[i],
-                k1 = this.keys[i + 1];
-
-            if (time >= k0.time && time <= k1.time)
+            if (time < key.GetTime())
             {
-                return this.GetSegmentValue(time, k0, k1, out);
+                next = key;
+                break;
             }
+
+            current = key;
         }
 
-        return this.GetKeyValue(last, out);
+        if (current && next) return this.GetSegmentValue(time, current, next, out);
+        if (current) return this.GetKeyValue(current, out);
+
+        // before the first key - Carbon returns a default-constructed Vector3
+        return out;
     }
 
+    /**
+     * Interpolates within one segment.
+     *
+     * Carbon `GetSegmentValue` (cpp:69-...): CONSTANT holds `k0` except exactly
+     * at `k1`'s time, which matters only for keys sharing a time; LINEAR is a
+     * plain lerp; HERMITE scales each tangent by the segment length.
+     *
+     * Carbon's Hermite coefficients are written as `c1 = 1 - c2`,
+     * `c3 = s + c4 - s^2`, which expand to the standard basis - c1 is h00, c2 is
+     * h01, c3 is h10 and c4 is h11 - so the two forms are the same polynomial.
+     *
+     * @param {Number} time
+     * @param {*} k0
+     * @param {*} k1
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
     GetSegmentValue(time, k0, k1, out)
     {
-        const interpolation = k0.GetInterpolationType ? k0.GetInterpolationType() : k0.interpolation;
-        if (interpolation === 0)
+        const
+            t0 = k0.GetTime(),
+            t1 = k1.GetTime(),
+            interpolation = k0.GetInterpolationType();
+
+        if (interpolation === Tr2FollowCurve.Interpolation.CONSTANT)
         {
-            return this.GetKeyValue(k0, out);
+            return this.GetKeyValue(time === t1 ? k1 : k0, out);
         }
 
-        const
-            t = k1.time === k0.time ? 0 : (time - k0.time) / (k1.time - k0.time),
-            v0 = this.GetKeyValue(k0, Tr2FollowCurve.global.vec3_0),
-            v1 = this.GetKeyValue(k1, Tr2FollowCurve.global.vec3_1);
+        if (t1 === t0) return this.GetKeyValue(k1, out);
 
-        if (interpolation === 2)
+        const
+            g = Tr2FollowCurve.global,
+            length = t1 - t0,
+            s = (time - t0) / length,
+            v0 = this.GetKeyValue(k0, g.vec3_0),
+            v1 = this.GetKeyValue(k1, g.vec3_1);
+
+        if (interpolation === Tr2FollowCurve.Interpolation.HERMITE)
         {
             const
-                t2 = t * t,
-                t3 = t2 * t,
-                h00 = 2 * t3 - 3 * t2 + 1,
-                h10 = t3 - 2 * t2 + t,
-                h01 = -2 * t3 + 3 * t2,
-                h11 = t3 - t2,
-                dt = k1.time - k0.time,
-                m0 = k0.GetRightTangent ? k0.GetRightTangent() : k0.rightTangent,
-                m1 = k1.GetLeftTangent ? k1.GetLeftTangent() : k1.leftTangent;
+                s2 = s * s,
+                s3 = s2 * s,
+                c2 = -2 * s3 + 3 * s2,
+                c1 = 1 - c2,
+                c4 = s3 - s2,
+                c3 = s + c4 - s2,
+                m0 = k0.GetRightTangent(),
+                m1 = k1.GetLeftTangent();
 
-            out[0] = h00 * v0[0] + h10 * dt * m0[0] + h01 * v1[0] + h11 * dt * m1[0];
-            out[1] = h00 * v0[1] + h10 * dt * m0[1] + h01 * v1[1] + h11 * dt * m1[1];
-            out[2] = h00 * v0[2] + h10 * dt * m0[2] + h01 * v1[2] + h11 * dt * m1[2];
+            for (let i = 0; i < 3; i++)
+            {
+                out[i] = v0[i] * c1 + v1[i] * c2 + m0[i] * length * c3 + m1[i] * length * c4;
+            }
+
             return out;
         }
 
-        vec3.lerp(out, v0, v1, t);
-        return out;
+        return vec3.lerp(out, v0, v1, s);
     }
 
+    /**
+     * @param {*} key
+     * @param {vec3} out
+     * @returns {vec3} out
+     */
     GetKeyValue(key, out)
     {
-        if (key.GetValue)
-        {
-            return key.GetValue(out);
-        }
-
-        vec3.copy(out, key.offset || key.value || Tr2FollowCurve.global.vec3_0);
-        return out;
+        return key.GetValue(out);
     }
 
+    // The three below are unimplemented IN CARBON as well - all of them are a
+    // bare `return in;` / `return out;` with the argument untouched
+    // (`Tr2FollowCurve.cpp:135-158`). So there is no reference behaviour to port,
+    // and returning the caller's vector unchanged is the faithful result, which
+    // is also what the sibling `Tr2CurveCombiner` already does. They previously
+    // zeroed the output, and `InterpolatedPosition` sampled the curve - both
+    // inventions, and the second one is the kind that reads as working.
+
+    /**
+     * First derivative - not implemented, here or in Carbon.
+     * @param {Number} time
+     * @param {vec3} [out]
+     * @returns {vec3} out, unchanged
+     */
     GetValueDotAt(time, out = vec3.create())
     {
-        vec3.set(out, 0, 0, 0);
         return out;
     }
 
+    /**
+     * Second derivative - not implemented, here or in Carbon.
+     * @param {Number} time
+     * @param {vec3} [out]
+     * @returns {vec3} out, unchanged
+     */
     GetValueDoubleDotAt(time, out = vec3.create())
     {
-        vec3.set(out, 0, 0, 0);
         return out;
     }
 
+    /**
+     * Not implemented, here or in Carbon. Argument order follows Carbon's
+     * `InterpolatedPosition( Vector3d* out, Be::Time time )` - out first, unlike
+     * `Tr2CurveCombiner`'s.
+     * @param {vec3} out
+     * @param {Number} time
+     * @returns {vec3} out, unchanged
+     */
     InterpolatedPosition(out, time)
     {
-        return this.GetValueAt(time, out);
+        return out;
     }
+
+    _keysDirty = true;
+
+    /**
+     * Carbon `Tr2FollowCurveKeyInterpolation`.
+     * @type {Object<String:Number>}
+     */
+    static Interpolation = {
+        CONSTANT: 0,
+        LINEAR: 1,
+        HERMITE: 2
+    };
 
     static global = {
         vec3_0: vec3.create(),
