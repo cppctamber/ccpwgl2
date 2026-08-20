@@ -3109,6 +3109,64 @@ export class EveSOFData extends meta.Model
      * @param {Object} sof
      * @param {Object} [options={}]
      */
+    /**
+     * Whether a hull child or child set item is built for the given build filter.
+     *
+     * Carbon gates every one of these on `(buildFilter & buildFlags) == 0`
+     * (`EveSOF.cpp:1765`, `:1936`, `:2019`). ccpwgl only ever builds standalone
+     * objects, so `buildFlags` defaults to STANDALONE; the other two values exist
+     * for layout placements, which nothing walks yet.
+     *
+     * @param {{ buildFilter: Number }} child
+     * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
+     * @returns {Boolean}
+     */
+    static PassesBuildFilter(child, buildFlags = EveSOFData.BuildFilter.STANDALONE)
+    {
+        return (child.buildFilter & buildFlags) !== 0;
+    }
+
+    /**
+     * Selects the hull children that should be built for a faction.
+     *
+     * Carbon `EveSOF::SetupChildrenAndAnimations` (`EveSOF.cpp:1765-1776`) applies
+     * two independent tests, and the second is NOT the one ccpwgl used to apply:
+     *
+     *     if ((child.buildFilter & buildFlags) == 0) continue;      // build gate
+     *     fcd = dna->GetFactionChildData(child.groupIndex);
+     *     if (fcd && !fcd->isVisible) continue;                     // faction gate
+     *
+     * A missing faction entry does not hide the child. `GetFactionChildData` returns
+     * null for `groupIndex -1` and says so in as many words (`EveSOFDNA.cpp:713`,
+     * "-1 is null"), and a null result falls through to the load. Only an entry that
+     * exists AND is invisible hides anything.
+     *
+     * ccpwgl inverted it, REQUIRING a visible faction child to match, and had no build
+     * gate at all. Every hull child authored with `groupIndex: -1` - which is how a
+     * child unconditional for the hull is written - was therefore dropped. Stations are
+     * where that shows: `chjita`'s only hull child is `groupIndex -1` and holds the
+     * entire advert scene, so no station had any effect children whatsoever.
+     *
+     * @param {Array} hullChildren
+     * @param {Array} factionChildren
+     * @param {Number} [buildFlags=EveSOFData.BuildFilter.STANDALONE]
+     * @returns {Array} the children to build, in hull order
+     */
+    static FilterHullChildren(hullChildren = [], factionChildren = [], buildFlags = EveSOFData.BuildFilter.STANDALONE)
+    {
+        return hullChildren.filter(child =>
+        {
+            if (!EveSOFData.PassesBuildFilter(child, buildFlags)) return false;
+
+            // -1 short circuits before the lookup, exactly as Carbon does, so a faction
+            // entry that also carries -1 can never hide an unconditional child
+            if (child.groupIndex === -1) return true;
+
+            const factionChild = factionChildren.find(x => x.groupIndex === child.groupIndex);
+            return !factionChild || factionChild.isVisible;
+        });
+    }
+
     static async SetupChildren(data, obj, sof, options)
     {
 
@@ -3131,18 +3189,19 @@ export class EveSOFData extends meta.Model
         if (data.enableSof6 && sof.hull.sof6)
         {
             effects = sof.hull.childSets
-                .filter(x=>sof.faction.HasVisibilityGroup(x.visibilityGroup))
-                .flatMap(x=>x.items);
+                .filter(x => sof.faction.HasVisibilityGroup(x.visibilityGroup))
+                .flatMap(x => x.items)
+                .filter(x => EveSOFData.PassesBuildFilter(x));
         }
         else
         {
-            effects = sof.hull.children.filter(x => sof.faction.children.find(c => c.isVisible && c.groupIndex === x.groupIndex));
+            effects = EveSOFData.FilterHullChildren(sof.hull.children, sof.faction.children);
         }
 
         // Remove all children except temp trig spheres
         for (let i = 0; i < obj.effectChildren.length; i++)
         {
-            if (obj.effectChildren.name !== "TempTrigSphereContainer")
+            if (obj.effectChildren[i].name !== "TempTrigSphereContainer")
             {
                 obj.effectChildren.splice(i, 1);
                 i--;
@@ -3301,12 +3360,9 @@ export class EveSOFData extends meta.Model
             return;
         }
 
-        // EveSOFDataHullBuildFilter::STANDALONE
-        const STANDALONE = 1 << 0;
-
         for (let i = 0; i < controllers.length; i++)
         {
-            if ((controllers[i].buildFilter & STANDALONE) === 0) continue;
+            if (!EveSOFData.PassesBuildFilter(controllers[i])) continue;
 
             try
             {
@@ -3505,6 +3561,20 @@ export class EveSOFData extends meta.Model
         2: "EveStation2",
         3: "EveSwarm",
         4: "Extension"
+    };
+
+    /**
+     * Which build a hull child, child set item or controller belongs to.
+     * `EveSOFDataHullBuildFilter` (`EveSOFData.h:1149-1156`). Only STANDALONE is
+     * reachable today; the placement filters are selected by a layout walk
+     * (`EveSOF.cpp:3475`) that ccpwgl does not have yet.
+     * @type {Object<String:Number>}
+     */
+    static BuildFilter = {
+        STANDALONE: 1 << 0,
+        NON_INSTANCED_PLACEMENT: 1 << 1,
+        INSTANCED_PLACEMENT: 1 << 2,
+        DEFAULT: 0xffffffff
     };
 }
 

@@ -32,6 +32,7 @@
     "test:sof-faction-colors": "node scripts/test-sof-faction-colors.js",
     "test:particles": "node scripts/test-particles.js",
     "test:child-ref": "node scripts/test-child-ref.js",
+    "test:sof-child-build-filter": "node scripts/test-sof-child-build-filter.js",
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",
