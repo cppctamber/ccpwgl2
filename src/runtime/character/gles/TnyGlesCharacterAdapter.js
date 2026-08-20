@@ -514,8 +514,13 @@ export class TnyGlesCharacterAdapter
             throw error;
         }
 
+        if (typeof staged.scene?.ReplaceCharacter === "function")
+        {
+            staged.scene.ReplaceCharacter(previous.wrapper, staged.wrapper);
+        }
         previous.backend.display = false;
         this._RefreshScene(previous.backend);
+        this._RefreshScene(staged.backend);
         return staged;
     }
 

@@ -928,6 +928,7 @@ test("legacy adapter transfers conflicting morph leases during an appearance han
         [ "release", 0.25, 1 ],
         [ "acquire", 0.75, 2 ]
     ]);
+    assert.deepEqual(fixture.scene.characters, [ second.wrapper ]);
     assert.equal(first.backend.display, false);
     assert.equal(second.backend.display, true);
     adapter.Release(first);
@@ -3067,6 +3068,13 @@ function CreateFixture({
         {
             const index = this.characters.indexOf(value);
             if (index !== -1) this.characters.splice(index, 1);
+        },
+        ReplaceCharacter(previous, replacement)
+        {
+            const previousIndex = this.characters.indexOf(previous);
+            const replacementIndex = this.characters.indexOf(replacement);
+            if (replacementIndex !== -1) this.characters.splice(replacementIndex, 1);
+            this.characters[previousIndex] = replacement;
         }
     };
     const classes = {

@@ -8,6 +8,10 @@ import { tnyCharacterConstructors } from "/src/runtime/character/register.js";
 import { tiny, tny } from "./demo/ccpwgl-global.mjs";
 import { CharacterDemoApplication } from "./demo/CharacterDemoApplication.mjs";
 import { InstallCharacterDemoGrannyStateResource } from "./demo/CharacterDemoGrannyStateResource.mjs";
+import {
+    CreateCharacterDemoCompanion,
+    LayoutCharacterDemoCharacters
+} from "./demo/CharacterDemoMultiCharacter.mjs";
 import { InitializeCharacterDemoScene } from "./demo/CharacterDemoScene.mjs";
 import { installCharacterDemoAlphaAudit } from "./demo/CharacterDemoAlphaAudit.mjs";
 import { installCharacterDemoClothingAudit } from "./demo/CharacterDemoClothingAudit.mjs";
@@ -139,7 +143,7 @@ try
     const resourceRoot = toolsService.paths.res.replace(/\/+$/u, "");
     const gState = InstallCharacterDemoGrannyStateResource(tw2);
     globalThis.characterDemo.gState = gState;
-    await InitializeCharacterDemoScene({
+    const sceneState = await InitializeCharacterDemoScene({
         client: runtimeClient,
         tw2,
         resourceRoot,
@@ -263,6 +267,7 @@ try
         maximumBones: 58,
         requiredBones: 69
     });
+    let layoutCharacters = () => [];
     let application = null;
     application = new CharacterDemoApplication({
         libraryClient,
@@ -280,6 +285,7 @@ try
         {
             const result = await application.SelectPart(locationID, choiceID);
             if (!result.partChangeApplied) return result;
+            layoutCharacters();
             const url = new URL(globalThis.location.href);
             const name = `part.${locationID}`;
             // An explicit empty value is distinct from no override: fixtures
@@ -292,6 +298,7 @@ try
         routePartReset: async () =>
         {
             const result = await application.ResetParts();
+            layoutCharacters();
             const url = new URL(globalThis.location.href);
             for (const name of [ ...url.searchParams.keys() ])
             {
@@ -324,6 +331,65 @@ try
                     : null,
         initialPartSelections
     });
+
+    if (parameters.get("characters") === "2")
+    {
+        const companionAdapter = new TnyGlesCharacterAdapter({
+            client: runtimeClient,
+            atlasComposer: new TnyGlesAtlasComposer({
+                characterAtlasLayout: CjsCharacterAtlasLayout
+            })
+        });
+        const companionConstructionResolver = new TnyGlesAppearanceConstruction({
+            foundationResolver: new TnyGlesFoundationConstruction({
+                femaleFoundationLayout: "split-lod0"
+            }),
+            texturePolicy: new TnyGlesTexturePolicy({
+                modifierOrder: CjsCharacterModifierOrder
+            })
+        });
+        const companionAppearanceManager = new TnyCharacterAppearanceManager({
+            adapter: companionAdapter,
+            backend: "legacy-opengl",
+            maximumBones: 58,
+            requiredBones: 69
+        });
+        const companion = await CreateCharacterDemoCompanion({
+            Character: RequireClass("TnyCharacter"),
+            libraryManager: application.GetCharacter().GetLibraryManager(),
+            appearanceResolver: CjsCharacterAppearanceResolver,
+            constructionResolver: companionConstructionResolver,
+            appearanceManager: companionAppearanceManager,
+            primaryPaperdoll: application.GetCharacter().GetPaperdoll(),
+            paperdollID: parameters.get("paperdoll2")
+        });
+
+        layoutCharacters = () => LayoutCharacterDemoCharacters(
+            sceneState.scene,
+            Number.isFinite(Number(parameters.get("characterSpacing")))
+                ? Number(parameters.get("characterSpacing"))
+                : 1.1
+        );
+        const layout = layoutCharacters();
+        globalThis.characterDemo.characters = [
+            application.GetCharacter(),
+            companion.character
+        ];
+        globalThis.characterDemo.multiCharacter = {
+            status: "committed",
+            paperdollRecordIDs: globalThis.characterDemo.characters
+                .map(character => character.GetPaperdoll().recordID),
+            sceneCharacterCount: sceneState.scene.GetCharacters([]).length,
+            layout: layout.map(value => ({
+                index: value.index,
+                translation: value.translation
+            }))
+        };
+        view.SetStatus(
+            `Ready: ${layout.length} independently composed characters in one scene`,
+            "ready"
+        );
+    }
 
     if (parameters.get("auditAlpha") === "1"
         || parameters.get("clothingAudit") === "1")

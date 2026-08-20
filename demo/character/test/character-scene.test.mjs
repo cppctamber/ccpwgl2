@@ -29,7 +29,17 @@ test("character scene wraps one interior scene and mirrors semantic collections"
     assert.deepEqual(wrapped.lights, [ light.wrapped ]);
     assert.deepEqual(scene.GetObjects(), [ characterA, characterB, geometry ]);
 
-    scene.RemoveCharacter(characterA);
+    const characterC = { wrapped: { name: "character-c" } };
+    scene.AddCharacter(characterC);
+    scene.ReplaceCharacter(characterA, characterC);
+    assert.deepEqual(scene.GetCharacters(), [ characterC, characterB ]);
+    assert.deepEqual(wrapped.dynamics, [
+        characterC.wrapped,
+        characterB.wrapped,
+        geometry.wrapped
+    ]);
+
+    scene.RemoveCharacter(characterC);
     scene.RemoveGeometry(geometry);
     scene.RemoveLight(light);
     assert.deepEqual(wrapped.dynamics, [ characterB.wrapped ]);

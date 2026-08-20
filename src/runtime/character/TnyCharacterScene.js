@@ -58,6 +58,43 @@ export class TnyCharacterScene extends meta.Model
         return this._Remove("characters", character, "character");
     }
 
+    /**
+     * Replaces one character in place so an atomic appearance handoff keeps
+     * its scene identity, draw order, and scene-owned lighting slot.
+     *
+     * The replacement may already be attached while it is being prepared. In
+     * that case its temporary entry is removed before the original slot is
+     * replaced, leaving every unrelated character at the same index.
+     */
+    ReplaceCharacter(previous, replacement)
+    {
+        if (!previous || !replacement)
+        {
+            throw new TypeError("Invalid character-scene replacement");
+        }
+        if (previous === replacement) return this;
+
+        const previousIndex = this.characters.indexOf(previous);
+        if (previousIndex === -1)
+        {
+            throw new Error("Character-scene replacement source is not attached");
+        }
+
+        const replacementIndex = this.characters.indexOf(replacement);
+        if (replacementIndex !== -1)
+        {
+            this.characters.splice(replacementIndex, 1);
+        }
+
+        const targetIndex = replacementIndex !== -1 && replacementIndex < previousIndex
+            ? previousIndex - 1
+            : previousIndex;
+        this.characters[targetIndex] = replacement;
+        this.Rebuild();
+        this.EmitEvent("character_replaced", this, previous, replacement);
+        return this;
+    }
+
     /** Adds ordinary non-character interior geometry. */
     AddGeometry(object)
     {
