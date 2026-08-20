@@ -36,7 +36,7 @@ import {
     EveChildContainer, EveBanner
 } from "eve";
 
-import { EveStation2 } from "../unsupported/eve/object";
+import { EveStation2 } from "../eve/object/EveStation2";
 import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
