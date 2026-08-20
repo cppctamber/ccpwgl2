@@ -19,7 +19,6 @@ export * from "./EveChildPostProcessVolume";
 export * from "./EveChildProceduralContainer";
 export * from "./EveProceduralMethodCycling";
 export * from "./EveChildQuad";
-export * from "./EveChildRef";
 export * from "./EveChildSocket";
 export * from "./EveChildSpherePin";
 export * from "./EveChildLineSet";

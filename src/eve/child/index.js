@@ -3,5 +3,6 @@ export * from "./EveChildBillboard";
 export * from "./EveChildContainer";
 export * from "./EveChildMesh";
 export * from "./EveChildParticleSystem";
+export * from "./EveChildRef";
 
 
