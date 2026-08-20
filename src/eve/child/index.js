@@ -1,6 +1,7 @@
 export * from "./EveChild";
 export * from "./EveChildBillboard";
 export * from "./EveChildContainer";
+export * from "./EveChildEffectPropagator";
 export * from "./EveChildInstanceContainer";
 export * from "./EveChildLineSet";
 export * from "./EveChildMesh";

@@ -37,6 +37,7 @@
     "test:child-instance-container": "node scripts/test-child-instance-container.js",
     "test:child-modifier-srt": "node scripts/test-child-modifier-srt.js",
     "test:child-plug-socket": "node scripts/test-child-plug-socket.js",
+    "test:child-effect-propagator": "node scripts/test-child-effect-propagator.js",
     "test:audio-manager": "node scripts/test-runtime-audio-manager.js",
     "test:eve-missile": "node scripts/test-eve-missile.js",
     "test:gr2-root-scale": "node scripts/test-gr2-root-scale.js",

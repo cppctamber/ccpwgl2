@@ -225,6 +225,37 @@ export class EveChildInstanceContainer extends EveChild
     }
 
     /**
+     * Empties the instance list.
+     *
+     * Carbon `ClearInstanceList` (`cpp:339-344`) also unregisters the instances
+     * from the component registry, which ccpwgl's child path does not have.
+     *
+     * Note this does NOT clear `_reset`: a container placing from a locator set
+     * will rebuild on its next update, which is what Carbon does too. A caller
+     * that owns the instance list itself - `EveChildEffectPropagator` - must keep
+     * `_reset` false so its spawns are not discarded.
+     */
+    ClearInstanceList()
+    {
+        this.instances = [];
+    }
+
+    /**
+     * Removes the OLDEST instance. Carbon `PopFront` (`cpp:346-360`).
+     *
+     * This is how a propagator retires instances as they expire, paced against
+     * the spawn rate, so the two counters stay in step.
+     *
+     * @returns {Boolean} true if one was removed
+     */
+    PopFront()
+    {
+        if (!this.instances.length) return false;
+        this.instances.shift();
+        return true;
+    }
+
+    /**
      * The objects this container drives.
      *
      * Carbon `RunOnInstances` (cpp:318-331) falls back to the SOURCE when no
