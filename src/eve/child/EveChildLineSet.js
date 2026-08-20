@@ -118,8 +118,14 @@ export class EveChildLineSet extends EveChild
      */
     Initialize()
     {
-        if (!this.lineSet) this.lineSet = new EveCurveLineSet();
+        if (!this.lineSet)
+        {
+            this.lineSet = new EveCurveLineSet();
+            this.lineSet.name = this.name;
+        }
+
         this.lineSet.additive = this.additiveBatches;
+        this.lineSet.display = true;
 
         this.GenerateManagedPoints();
         this.InitializeLineSet();
@@ -209,6 +215,15 @@ export class EveChildLineSet extends EveChild
             const path = this.lines[i];
             if (path && path.AddLinesToSet) path.AddLinesToSet(this.lineSet, color, animColor, this.scrollSpeed);
         }
+
+        // A line set built here rather than read from the file has never been
+        // initialised, and an uninitialised set draws NOTHING - `Initialize` is
+        // `UpdateValues(); Rebuild();` (`EveCurveLineSet.js:426-430`), and the
+        // first half is what resolves the line effect. ccpwgl's own working
+        // consumer does exactly this after adding its lines
+        // (`TnyTransformGizmo.FinishLineSet`, `:2157-2161`), which is the
+        // precedent to follow; `EveObjectSet.Update` alone only reaches Rebuild.
+        this.lineSet.Initialize();
 
         return true;
     }
