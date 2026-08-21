@@ -19,6 +19,11 @@ export class Tr2StateMachineTransition extends meta.Model
     _variableNames = [];
     _functionNames = [];
 
+    // Cached GetVariableMask result, and the condition it was built from.
+    // Undefined rather than null so the first call cannot match `_programSource`.
+    _variableMask = null;
+    _variableMaskSource = undefined;
+
     Link(state)
     {
         this.Unlink();
@@ -60,14 +65,47 @@ export class Tr2StateMachineTransition extends meta.Model
             return false;
         }
 
-        // Always evaluate the condition against the live value; never gate on `dirtyVariables`.
-        // Gating on dirtiness lost "last instruction wins" across a transition: while a transition
-        // state plays (it advances only on IsAnimationPlaying==0), the target variable can be set
-        // several times, but the controller clears the dirty flag each frame — so by the time the
-        // destination state is entered the change was no longer "dirty" and its variable conditions
-        // were skipped, stranding the machine. Evaluating live lets the destination state route to
-        // the latest requested value the instant it becomes current, without interrupting the
-        // in-flight transition. (`dirtyVariables` is still passed in as an unused fast-path hint.)
+        // A condition that names controller variables is only re-asked when one
+        // of them CHANGED (Carbon `Tr2StateMachineTransition.cpp:73-77`). Without
+        // this, a condition that merely STAYS true fires on every frame, and a
+        // state machine driving curve sets restarts them from zero sixty times a
+        // second - which is what made the hologram VFX strobe.
+        //
+        // A null mask means "cannot be narrowed" - no condition, one that failed
+        // to compile, or one calling a clock, a random or an animation query -
+        // and is always evaluated, exactly as Carbon's zero mask is. An EMPTY set
+        // (a constant condition) is likewise always evaluated, because Carbon
+        // cannot tell those two apart either. A missing `dirtyVariables` means
+        // "everything changed": entry into a state and `GetNextState` both ask
+        // that way, so a state always evaluates its conditions live on the frame
+        // it is entered.
+        //
+        // That entry rule is what makes this safe, and it is where a previous
+        // cycle went wrong: gating was removed wholesale on the theory that a
+        // variable written several times during an in-flight transition would no
+        // longer be dirty by the time the destination state was entered. It
+        // cannot strand the machine. The in-flight state advances on
+        // `IsAnimationPlaying`, a non-pure function, so its mask is null and it
+        // is never gated; and the hop into the destination passes every variable
+        // name, so the destination routes to the latest value on arrival.
+        if (dirtyVariables)
+        {
+            const mask = this.GetVariableMask();
+            if (mask && mask.size)
+            {
+                let touched = false;
+                for (const name of mask)
+                {
+                    if (dirtyVariables.has(name))
+                    {
+                        touched = true;
+                        break;
+                    }
+                }
+                if (!touched) return false;
+            }
+        }
+
         const context = controller && controller.GetExpressionContext ? controller.GetExpressionContext(owner, stateMachine) : { controller, owner, stateMachine };
         return program.EvaluateBoolean(context);
     }
@@ -104,10 +142,9 @@ export class Tr2StateMachineTransition extends meta.Model
      *   - Set   -> exactly the variables it reads. Empty means it reads none,
      *              i.e. it is constant.
      *
-     * NOTHING GATES ON THIS. ccpwgl evaluates every condition every frame on
-     * purpose - see the note in `CanTransition`, and D038. This is published so
-     * a consumer can ask which variables a hull responds to without walking the
-     * expression itself.
+     * `CanTransition` gates on this, so it is asked once per transition per
+     * frame and must not allocate - the Set is cached against the condition the
+     * program was compiled from, and `Compile` rebuilds both when it changes.
      *
      * @returns {Set<String>|null}
      */
@@ -116,10 +153,14 @@ export class Tr2StateMachineTransition extends meta.Model
         if (!this.condition) return null;
 
         const program = this.Compile();
-        if (!program.IsValid()) return null;
-        if (program.HasNonPureFunctions && program.HasNonPureFunctions()) return null;
+        if (this._variableMaskSource === this._programSource) return this._variableMask;
 
-        return new Set(this._variableNames);
+        this._variableMaskSource = this._programSource;
+        this._variableMask = !program.IsValid() || (program.HasNonPureFunctions && program.HasNonPureFunctions())
+            ? null
+            : new Set(this._variableNames);
+
+        return this._variableMask;
     }
 
     GetSource()

@@ -33,6 +33,9 @@ testVariableMaskNamesTheVariablesAStateReads();
 testExternalVariableReachesEveryControllerAndChild();
 testCurveSetsPlayThroughTheOwnerAndIntoChildren();
 testNoiseIsPerlinNotAHash();
+testCleanVariablesDoNotRetriggerATransition();
+testAStaleConditionStopsRestartingTheActions();
+testAVetoMakesTheStateAskEveryFrameAgain();
 console.log("Controller state machine and expression parity verified");
 
 /**
@@ -709,4 +712,116 @@ function makeMeta()
         vector3: property,
         isPrivate: property
     };
+}
+
+
+/**
+ * Carbon only re-asks a transition when a controller variable it READS has
+ * changed (`Tr2StateMachineTransition.cpp:73-77`,
+ * `Tr2StateMachineState.cpp:210-213`). ccpwgl evaluated every condition on every
+ * frame, so a condition that merely STAYS true fired forever - and a state
+ * machine whose actions play curve sets restarted them from zero sixty times a
+ * second. That is what made the hologram VFX on the Triglavian skins strobe:
+ * `curveSets/4` never advanced, it was re-played at four different range starts
+ * in rotation, one per frame.
+ */
+function testCleanVariablesDoNotRetriggerATransition()
+{
+    const { Tr2StateMachineTransition } = modules;
+    const context = { controller: { GetVariableValue: name => (name === "KillCount" ? 1 : 0) } };
+    const controller = {
+        GetExpressionContext: () => context,
+        GetVariableValue: name => (name === "KillCount" ? 1 : 0)
+    };
+
+    const transition = new Tr2StateMachineTransition();
+    transition.name = "emit";
+    transition.condition = "KillCount > 0";
+
+    assert.equal(transition.CanTransition(controller, null, null, new Set([ "KillCount" ])), true,
+        "the frame the variable changes, the condition is asked and passes");
+    assert.equal(transition.CanTransition(controller, null, null, new Set([ "Something Else" ])), false,
+        "a later frame with the variable clean must NOT re-fire, even though it is still true");
+    assert.equal(transition.CanTransition(controller, null, null, new Set()), false,
+        "nor with nothing dirty at all");
+    assert.equal(transition.CanTransition(controller, null, null, undefined), true,
+        "no dirty set means everything changed - how a state is entered, and how GetNextState asks");
+
+    // A condition that cannot be described by variables is never gated, which is
+    // what keeps an in-flight transition state advancing.
+    const impure = new Tr2StateMachineTransition();
+    impure.name = "done";
+    impure.condition = "IsAnimationPlaying('gate') == 0";
+    assert.equal(impure.CanTransition(controller, null, null, new Set()), true,
+        "an animation query is asked every frame, dirty or not");
+}
+
+
+/**
+ * The end-to-end shape: two states pointing at each other on a condition that
+ * stays true. Before the gate this hopped on every single frame and each hop
+ * restarted the state's actions - the strobe. Carbon settles after the frame the
+ * variable actually changed.
+ */
+function testAStaleConditionStopsRestartingTheActions()
+{
+    const { Tr2StateMachineTransition } = modules;
+    const machine = buildMachine([ "idle", "emit" ]);
+
+    machine._controller.variables.push({ name: "KillCount", value: 1 });
+
+    for (const [ from, to ] of [ [ 0, "emit" ], [ 1, "idle" ] ])
+    {
+        const transition = new Tr2StateMachineTransition();
+        transition.name = to;
+        transition.condition = "KillCount > 0";
+        machine.states[from].transitions.push(transition);
+        machine.states[from].UpdateVariableMask();
+    }
+
+    let plays = 0;
+    for (const state of machine.states) state.actions.push({ Start: () => plays++ });
+
+    machine.Start();
+    machine.Update(0.016, new Set([ "KillCount" ]));
+    const settled = plays;
+
+    for (let frame = 0; frame < 60; frame++) machine.Update(0.016, new Set());
+
+    assert.equal(plays, settled,
+        `a stale condition must not replay the curve sets; ${plays - settled} extra starts over 60 frames`);
+}
+
+
+/**
+ * Carbon stops trusting dirtiness once an action has vetoed
+ * (`Tr2StateMachineState.cpp:206-209`). Without that latch a `syncToRange` curve
+ * set that refused once would hold its state forever: the variable that would
+ * have released it went dirty on the frame of the veto and may never change again.
+ */
+function testAVetoMakesTheStateAskEveryFrameAgain()
+{
+    const { Tr2StateMachineTransition } = modules;
+    const machine = buildMachine([ "playing", "done" ]);
+
+    machine._controller.variables.push({ name: "KillCount", value: 1 });
+
+    const transition = new Tr2StateMachineTransition();
+    transition.name = "done";
+    transition.condition = "KillCount > 0";
+    machine.states[0].transitions.push(transition);
+    machine.states[0].UpdateVariableMask();
+
+    let allow = false;
+    machine.states[0].actions.push({ Start: () => undefined, CanTransition: () => allow });
+
+    machine.Start();
+    machine.Update(0.016, new Set([ "KillCount" ]));
+    assert.equal(machine.GetCurrentState().name, "playing", "the action vetoed, so the state is held");
+
+    // The variable never changes again. Only the veto latch can release this.
+    allow = true;
+    machine.Update(0.016, new Set());
+    assert.equal(machine.GetCurrentState().name, "done",
+        "once the action stops refusing, the held state must be able to leave");
 }

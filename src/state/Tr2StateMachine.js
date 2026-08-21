@@ -200,8 +200,12 @@ export class Tr2StateMachine extends meta.Model
         // zero each time, and nothing visibly animates again. Allowing it on
         // 2026-08-19 stopped VFX across both backends.
         //
-        // Restoring self-transitions needs the dirty-variable gate Carbon has,
-        // not a change here.
+        // The dirty-variable gate that made this necessary now exists
+        // (`Tr2StateMachineTransition.CanTransition`), so a self-transition would
+        // no longer restart on a condition that merely stays true. Restoring
+        // Carbon's behaviour here is a SEPARATE change and needs its own run in
+        // the client - Carbon leans on a loop detector to survive it
+        // (`Tr2StateMachine.cpp:120-140`) and ccpwgl only has the hop cap below.
         for (let i = 0; next && next !== this._currentState && i < 20; i++)
         {
             this._currentState = next;

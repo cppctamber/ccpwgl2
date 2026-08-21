@@ -28,9 +28,14 @@ export class Tr2StateMachineState extends meta.Model
     // and `Update` re-asks the finalizer each frame until it permits.
     _isFinalizing = false;
 
+    // Set once an action has refused to let this state be left. From then on the
+    // state re-asks its transitions with everything dirty, because the change
+    // that would have released it has already been consumed (Carbon
+    // `Tr2StateMachineState.cpp:206-209`). Cleared by Start.
+    _hasBeenVetoed = false;
+
     // Which controller variables the transitions read, or null for "cannot be
-    // narrowed". Published for consumers; nothing gates on it (see
-    // UpdateVariableMask).
+    // narrowed" - see UpdateVariableMask. Update gates on this.
     _transitionVariableMask = null;
 
     OnModified()
@@ -147,15 +152,13 @@ export class Tr2StateMachineState extends meta.Model
      *
      * Carbon ORs each transition's mask together and uses the result to skip
      * evaluating a state whose variables did not change
-     * (`Tr2StateMachineState.cpp:210`). ccpwgl does NOT gate on it - conditions
-     * are evaluated live every frame by design (D038, and the state-loss note in
-     * `Tr2StateMachineTransition.CanTransition`) - so this is published data, not
-     * an optimisation.
-     *
-     * It answers "which variables does this state respond to", which is what a
-     * consumer needs to decide whether a hull should show a control at all. One
+     * (`Tr2StateMachineState.cpp:210`), and `Update` now does the same. One
      * unnarrowable transition makes the whole state unnarrowable, exactly as
      * Carbon's zero mask does.
+     *
+     * It doubles as the answer to "which variables does this state respond to",
+     * which is what a consumer needs to decide whether a hull should show a
+     * control at all.
      */
     UpdateVariableMask()
     {
@@ -212,6 +215,7 @@ export class Tr2StateMachineState extends meta.Model
 
         this._isActive = true;
         this._isFinalizing = false;
+        this._hasBeenVetoed = false;
     }
 
     /**
@@ -288,6 +292,35 @@ export class Tr2StateMachineState extends meta.Model
             }
         }
 
+        // Once an action has vetoed a transition, dirtiness can no longer be
+        // trusted: the variable that would have released this state went dirty
+        // on the frame the veto happened and may never change again, so from
+        // then on the state re-asks with everything dirty until it leaves
+        // (Carbon `Tr2StateMachineState.cpp:206-209`). Without this a
+        // `syncToRange` curve set that vetoed once would hold its state forever.
+        if (this._hasBeenVetoed)
+        {
+            dirtyVariables = undefined;
+        }
+        // Skip the whole state when none of the variables its transitions read
+        // changed (Carbon `Tr2StateMachineState.cpp:210-213`). The actions above
+        // are ticked either way - Carbon drives those from the controller's
+        // updateable list, outside this gate. A null mask means at least one
+        // transition cannot be narrowed, so the state is never skipped.
+        else if (dirtyVariables && this._transitionVariableMask && this._transitionVariableMask.size)
+        {
+            let touched = false;
+            for (const name of this._transitionVariableMask)
+            {
+                if (dirtyVariables.has(name))
+                {
+                    touched = true;
+                    break;
+                }
+            }
+            if (!touched) return null;
+        }
+
         for (let i = 0; i < this.transitions.length; i++)
         {
             const transition = this.transitions[i];
@@ -309,6 +342,7 @@ export class Tr2StateMachineState extends meta.Model
             // the machine to a state Carbon would never have entered.
             if (!this.CanTransition(controller, owner))
             {
+                this._hasBeenVetoed = true;
                 return null;
             }
 
