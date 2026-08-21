@@ -139,24 +139,6 @@ export class EveBanner extends meta.Model
         return vec3.normalize(out, out);
     }
 
-    /**
-     * The banner's bounding box IN ITS OWN SPACE, before any bone moves it.
-     * Prefer `GetBoundingBox`, which accounts for the bone.
-     * @param {box3} out
-     * @returns {null|box3}
-     */
-    GetLocalBoundingBox(out)
-    {
-        const res = this._geometryResource;
-        if (!res && !res.IsGood())
-        {
-            box3.empty(out);
-            return null;
-        }
-        box3.fromBounds(out, res.minBounds, res.maxBounds);
-        return box3.transformMat4(out, out, this.transform);
-    }
-
 
     /**
      * The banner's bounding box where it actually IS - bone included.
@@ -168,15 +150,21 @@ export class EveBanner extends meta.Model
      * the banner and the turret did not, so a banner riding a moving bone
      * contributed bounds that stayed behind.
      *
-     * `GetLocalBoundingBox` remains for the rare caller that genuinely wants the
-     * unmoved box.
-     *
+
      * @param {box3} out
      * @returns {box3|null}
      */
     GetBoundingBox(out)
     {
-        if (!this.GetLocalBoundingBox(out)) return null;
+        const res = this._geometryResource;
+        if (!res && !res.IsGood())
+        {
+            box3.empty(out);
+            return null;
+        }
+
+        box3.fromBounds(out, res.minBounds, res.maxBounds);
+        box3.transformMat4(out, out, this.transform);
         return this._bone ? box3.transformMat4(out, out, this._bone.offsetTransform) : out;
     }
 
@@ -188,7 +176,15 @@ export class EveBanner extends meta.Model
      */
     GetBoundingSphere(out)
     {
-        if (!this.GetLocalBoundingSphere(out)) return null;
+        const res = this._geometryResource;
+        if (!res && !res.IsGood())
+        {
+            sph3.empty(out);
+            return null;
+        }
+
+        sph3.fromPositionRadius(out, res.boundsSpherePosition, res.boundsSphereRadius);
+        sph3.transformMat4(out, out, this.transform);
         return this._bone ? sph3.transformMat4(out, out, this._bone.offsetTransform) : out;
     }
 
@@ -207,24 +203,6 @@ export class EveBanner extends meta.Model
         }
         box3.fromBounds(out, res.minBounds, res.maxBounds);
         return box3.transformMat4(out, out, this._worldTransform);
-    }
-
-    /**
-     * The banner's bounding sphere IN ITS OWN SPACE, before any bone moves it.
-     * Prefer `GetBoundingSphere`, which accounts for the bone.
-     * @param {sph3} out
-     * @returns {null|sph3}
-     */
-    GetLocalBoundingSphere(out)
-    {
-        const res = this._geometryResource;
-        if (!res && !res.IsGood())
-        {
-            sph3.empty(out);
-            return null;
-        }
-        sph3.fromPositionRadius(out, res.boundsSpherePosition, res.boundsSphereRadius);
-        return sph3.transformMat4(out, out, this.transform);
     }
 
 
@@ -283,27 +261,16 @@ export class EveBanner extends meta.Model
             : mat4.copy(m, this.transform);
     }
 
-    /**
-     * The banner's transform IN ITS OWN SPACE, before any bone moves it. Only for
-     * a caller that genuinely wants the unmoved value; `GetTransform` is the one
-     * to use otherwise.
-     * @param {mat4} m
-     * @returns {mat4}
-     */
-    GetLocalTransform(m)
-    {
-        return mat4.copy(m, this.transform);
-    }
 
     /**
      * Sets the banner's LOCAL transform, by decomposing into rotation, position
      * and scaling.
      *
-     * Its counterpart is `GetLocalTransform`, NOT `GetTransform`. `GetTransform`
-     * returns where the banner actually is, bone included, so
-     * `GetTransform(m); SetTransform(m);` is not a round trip on a skinned banner:
-     * it would bake the bone into the authored fields and then have it applied
-     * again next frame. Use `GetLocalTransform` to read what this writes.
+     * NOT the counterpart of `GetTransform`. `GetTransform` returns where the
+     * banner actually is, bone included, so `GetTransform(m); SetTransform(m);` is
+     * not a round trip on a skinned banner - it would bake the bone into the
+     * authored fields and have it applied again next frame. Read back the
+     * `rotation`, `position` and `scaling` fields this writes.
      *
      * @param {mat4} m
      * @param {Object} [opt]

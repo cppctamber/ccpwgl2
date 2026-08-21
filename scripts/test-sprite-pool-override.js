@@ -26,11 +26,15 @@ console.log("dx11 sprite pool override verified");
 /** The store keys overrides on the profile qualified path, so each needs its own. */
 function testBothProfilesAreOverridden()
 {
-    for (const profile of [ "effect.gles2", "effect.dx11" ])
-    {
-        const key = `graphics/${profile}/managed/space/spaceobject/fx/blinkinglightspool`;
-        assert.ok(source.includes(`replaces: "${key}"`), `${profile} must be overridden`);
-    }
+    const gles2 = "graphics/effect.gles2/managed/space/spaceobject/fx/blinkinglightspool";
+    assert.ok(source.includes(`replaces: "${gles2}"`), "gles2 must still be overridden");
+
+    // The dx11 entry is DISABLED: the prefix makes the key unmatchable, so the
+    // override never runs and dx11 takes the real translated container. Kept
+    // rather than deleted so it can be switched back on by removing the prefix.
+    const dx11 = "graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool";
+    assert.ok(!source.includes(`replaces: "${dx11}"`), "the dx11 override must NOT be live");
+    assert.ok(source.includes(`replaces: "_disabled_${dx11}"`), "and must be disabled by prefix, not deleted");
 
     // Distinct names: the store registers by name and would otherwise collide.
     assert.ok(source.includes("name: \"blinkinglightspool\""), "gles2 entry keeps its name");
@@ -68,7 +72,9 @@ function testOverrideIsDocumented()
     assert.ok(at !== -1, "the dx11 override must exist");
     const doc = source.slice(Math.max(0, at - 2500), at);
 
-    assert.ok(/REMOVE THIS/.test(doc), "must say when to remove it");
+    assert.ok(doc.includes("DISABLED"), "must say it is disabled");
+    assert.ok(doc.includes("re-enable"), "must say how to turn it back on");
+    assert.ok(doc.includes("To remove for good"), "and how to remove it for good");
     assert.ok(/AGENT-FINDINGS-dx11-sprite-sets-2026-08-22.md/.test(doc), "must point at the write up");
 }
 
@@ -86,10 +92,10 @@ function testKeyCoversEveryShaderVersion()
 {
     const normalize = loadNormalizer();
     const base = "res:/graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool";
-    const marker = "replaces: \"graphics/effect.dx11";
+    const marker = "replaces: \"_disabled_graphics/effect.dx11";
     const at = source.indexOf(marker);
     assert.ok(at !== -1, "the dx11 replaces key must exist");
-    const key = source.slice(at + "replaces: \"".length, source.indexOf("\"", at + marker.length));
+    const key = source.slice(at + "replaces: \"_disabled_".length, source.indexOf("\"", at + marker.length));
 
     for (const ext of [ ".fx", ".sm_hi", ".sm_lo", ".sm_depth" ])
     {

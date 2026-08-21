@@ -18,10 +18,10 @@ Names carry the meaning:
 | --- | --- | --- |
 | `GetX` | object space (relative to the ship) | **included** |
 | `GetWorldX` | world space | **included** |
-| `GetLocalX` | object space | **excluded** - the authored value |
 
 `GetTransform` deliberately does NOT say "local", so it does not promise the
-authored value. Only a name containing `Local` returns that.
+authored value - there is no accessor that returns it. If you need what was
+authored, read the `position`, `rotation` and `scaling` fields directly.
 
 Nothing is cached. The bone is composed when you call the function, and if you do
 not call it, nothing is computed.
@@ -41,15 +41,6 @@ not call it, nothing is computed.
 | `EveLocatorSetItem` | `GetTransform`, `GetWorldTransform` |
 | `EveCurveLineSet` | `GetTransform`, `GetWorldTransform` - the SET holds the bone; its items defer to it |
 | `EveObjectSet` / `EveObjectSetItem` | the base `GetWorldTransform`, `GetWorldBoundingBox`, `GetWorldBoundingSphere` compose the parent onto whatever the item returned, so they inherit its bone-awareness |
-
-### Authored value, bone EXCLUDED
-
-Only on `EveBanner`: `GetLocalTransform`, `GetLocalBoundingBox`,
-`GetLocalBoundingSphere`.
-
-Use these only when you specifically want the unmoved value - for example to read
-back what `SetTransform` wrote. No other class exposes one; read its authored
-`position`/`rotation`/`scaling` fields instead.
 
 ### Three exceptions
 
@@ -85,8 +76,7 @@ AUTHORED fields, while `GetTransform` returns the bone-composed value. So
 `GetTransform(m); SetTransform(m);` bakes the bone into the authored transform and
 the bone is then applied again next frame. Affects `EveBanner.SetTransform` and
 `EveCurveLineSet.SetTransform`, and by extension any editor writing
-`position`/`rotation`/`scaling` directly. Read back with `GetLocalTransform` where
-one exists.
+`position`/`rotation`/`scaling` directly. Read back the authored fields instead.
 
 **`EveTurretSetItem` is bone-aware by a different route.** `UpdateTransforms` bakes
 `_bone.worldTransform` - note `worldTransform`, not `offsetTransform` - into its
@@ -101,3 +91,15 @@ hand `boneIndex` to the SHADER and let the GPU skin them - plane sets in
 `TEXCOORD 7`, spotlight cones and glows at offset 20. Those writers must pass the
 UNSKINNED transform. Applying the bone on the CPU as well double-applies it. This
 does not affect anything using the accessors above.
+
+## Who these are for
+
+The consumers are mostly intersection and UI code - picking, framing, gizmos,
+camera placement. They do not want to be concerned with calculations; they want
+the correct answer at this moment.
+
+That is why there is no `GetLocal*` family. When something INTERNAL needs the
+authored transform it reads or builds it directly from `position`, `rotation` and
+`scaling`, which it is already holding. Exposing a parallel set of local accessors
+would put the burden of choosing a space back on every caller, which is the thing
+this design removes.

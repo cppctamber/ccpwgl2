@@ -181,11 +181,23 @@ export const blinkinglightspool = {
  * the two profiles to disagree about what the shader computes. If they ever must
  * differ, split them then - do not let them drift silently.
  *
- * REMOVE THIS once the dx11 sprite effect is understood.
+ * DISABLED. The `_disabled_` prefix on `replaces` means the key can never match a
+ * path the shader store looks up, so this override never runs and dx11 sprite
+ * sets take the real translated container again.
+ *
+ * It was disabled once the sampler-unit fault was found and fixed: a sampler at a
+ * register past the s0-s15 setup loop kept the default unit 0 and collided with
+ * the samplerCube there, and WebGL DROPS the draw on that error - which is
+ * indistinguishable from rendering nothing, and is what sprite sets were doing.
+ * If that was the cause, this override is unnecessary; leaving it enabled would
+ * mask whether it was.
+ *
+ * To re-enable, delete the `_disabled_` prefix. To remove for good, delete the
+ * export - nothing else references it.
  */
 export const blinkinglightspoolDx11 = {
     ...blinkinglightspool,
     name: "blinkinglightspool_dx11",
-    replaces: "graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool",
+    replaces: "_disabled_graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool",
     description: "Blinking lights pool (dx11 override - see note)"
 };
