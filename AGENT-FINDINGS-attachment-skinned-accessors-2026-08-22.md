@@ -81,3 +81,72 @@ skill before copying it into a class whose local transform is built differently.
 Several classes are also missing their `GetWorld*` counterparts (plane, spotlight,
 turret have none at all). If the family is meant to be uniform, that gap should be
 closed in the same pass rather than leaving two thirds of a pattern.
+
+---
+
+# The real problem is worse than missing methods
+
+Six of the eight classes ALREADY apply the bone inside their "local" accessor:
+
+```js
+GetTransform(out)                       // EvePlaneSetItem
+{
+    mat4.copy(out, this._localTransform);
+    if (this._bone) mat4.multiply(out, this._bone.offsetTransform, out);
+    return out;
+}
+```
+
+| Class | bone folded into the local accessor |
+| --- | ---: |
+| EvePlaneSet, EveSpriteSet, EveSpotlightSet, EveLocator2 | 2 each |
+| EveCurveLineSet, EveLocatorSets | 1 each |
+| **EveBanner, EveTurretSet** | **0** |
+
+So `GetTransform` names a DIFFERENT SPACE depending on which class you call it on:
+skinned on six of them, local on `EveBanner` and `EveTurretSet`. A caller cannot
+know which it is getting without reading the class. That is the trouble, and it is
+not fixed by adding methods.
+
+**Naive implementation would make it worse.** Adding
+
+```js
+GetSkinnedTransform(out) { this.GetTransform(out); return mat4.multiply(out, bone.offsetTransform, out); }
+```
+
+to any of the six APPLIES THE BONE TWICE, and the result would look plausible on
+an unskinned hull and be silently wrong on a skinned one - the hardest kind of
+error to notice.
+
+## Doing it properly
+
+1. Make `GetX` purely local on all eight, i.e. remove the folded bone from the six.
+2. Add `GetSkinnedX` composing the bone, with `EveBanner`'s no-bone fallback.
+3. **Audit every existing caller.** Those six accessors currently RETURN SKINNED
+   RESULTS. Any caller relying on that silently becomes local at step 1, which is
+   a behaviour change wherever bones actually move - and it will not show on
+   unskinned hulls, so it needs finding by reading, not by looking.
+
+Step 3 is the whole risk. Steps 1 and 2 are mechanical.
+
+## Why it drifted: Carbon passes a bag, ccpwgl caches per item
+
+Carbon does not resolve a bone per attachment. It passes the bone LIST down the
+call:
+
+```cpp
+virtual bool UpdateVisibility( const EveUpdateContext&, const Matrix& parentTransform,
+                               const Float4x3* bones, size_t boneCount ) override;
+AxisAlignedBoundingBox GetAabb( const Float4x3* bones, size_t boneCount ) const;
+```
+
+obtained once from `Tr2GrannyAnimationUtils::GetBoneList(...)` and threaded
+through. The caller therefore decides the space, and there is no per-item cached
+bone to disagree about.
+
+ccpwgl instead caches `this._bone = parent.GetBone(this.boneIndex)` on each item.
+That is a reasonable adaptation, but with no owning convention each class chose
+independently whether its accessor folds the bone in - which is exactly how six
+went one way and two the other. If the accessor family is formalised, this is the
+decision that has to be recorded with it: the per-item cached bone is a deliberate
+ccpwgl extension over Carbon's bag, and the accessor spaces are what make it safe.
