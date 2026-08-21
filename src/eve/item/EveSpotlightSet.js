@@ -308,17 +308,22 @@ export class EveSpotlightSet extends EveObjectSet
         for (let i = 0; i < itemCount; i++)
         {
             const item = this._visibleItems[i];
-            if (this.useQuads)
-            {
-                if (!quadScratch[i]) quadScratch[i] = mat4.create();
-                item.GetTransform(quadScratch[i]);
-                mat4.multiply(quadScratch[i], this._parentTransform, quadScratch[i]);
-                transforms[i] = quadScratch[i];
-            }
-            else
-            {
-                transforms[i] = item.transform;
-            }
+
+            // BOTH paths take the bone. They used to disagree: the quad path asked
+            // `GetTransform` (bone aware) and composed the parent, while this one
+            // handed over the raw authored `item.transform` - no bone and no
+            // parent - so a spotlight on a moving bone was drawn where it was
+            // authored, and the two paths of the same function rendered in
+            // different spaces.
+            //
+            // Only the PARENT compose stays conditional. A spotlight is a position
+            // and a direction, and the bone belongs to both regardless of how the
+            // cone is built; which space the packed transform is in is a property
+            // of the shader, so that is left exactly as it was.
+            if (!quadScratch[i]) quadScratch[i] = mat4.create();
+            item.GetTransform(quadScratch[i]);
+            if (this.useQuads) mat4.multiply(quadScratch[i], this._parentTransform, quadScratch[i]);
+            transforms[i] = quadScratch[i];
         }
 
         for (let i = 0; i < itemCount; ++i)
