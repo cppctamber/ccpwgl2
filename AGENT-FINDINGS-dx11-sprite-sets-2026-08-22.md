@@ -313,3 +313,26 @@ legacy per-frame buffer; dropped per-pass render states; gles2 override shadowin
 All six checked, none held. The lesson each time was the same: confirm the code
 path is the one that executes, and sanity check the theory against Carbon or
 against another profile doing the same thing successfully, BEFORE proposing it.
+
+---
+
+# CORRECTION - "the unskinned hull is not writing depth" is WRONG
+
+Operator: if the unskinned hull were not writing depth, everything drawn after it
+with a depth test would show through it - decals, every other additive effect -
+not sprites alone. Only sprites do. So the hull writes depth correctly and the
+inference above does not follow. Struck.
+
+What the observation actually supports is narrower and stranger: the SPRITES
+depth compares wrongly against unskinned geometry specifically, while comparing
+correctly against skinned geometry. The sprite draw is identical in both cases -
+same shader, same states, same buffers - so the difference is in what it is being
+tested AGAINST, or in something that varies with the object being skinned.
+
+Do NOT conclude anything further from this without measuring. The discriminator
+that has been asked for twice and not yet run is whether any OTHER additive
+attachment - a spotlight glow, a plane set - is correctly occluded by the SAME
+unskinned geometry. If they are, the fault is sprite-specific. If they are not,
+it is shared and the sprites are merely the most visible case.
+
+Tally: seven theories on this bug, none held.
