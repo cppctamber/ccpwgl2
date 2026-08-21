@@ -77,23 +77,24 @@ export class EvePlaneSetItem extends EveObjectSetItem
     @meta.int32
     groupIndex = -1;
 
-    // Not implemented
+    // Published as TEXCOORD 8 - Carbon's `blinkData`, in its order
+    // [rate, phase, dutyCycle, blinkMode] (`EvePlaneSetItem.h:47`). The shader
+    // owns the fade curve; Carbon only computes `Fade()` CPU-side for the
+    // separate plane LIGHT path, not for the vertex.
 
-    @meta.notImplemented
     @meta.float
     blinkRate = 0;
 
-    @meta.notImplemented
     @meta.float
     blinkPhase = 0;
 
-    @meta.notImplemented
     @meta.uint
     blinkMode = 0;
 
-    @meta.notImplemented
     @meta.float
     dutyCycle = 0;
+
+    // Not implemented
 
     @meta.notImplemented
     @meta.float
@@ -308,7 +309,10 @@ export class EvePlaneSet extends EveObjectSet
         }
 
         const
-            vertexSize = 35,
+            vertexSize = EvePlaneSet.vertexSize,
+            // Where TEXCOORD 7 starts. Written as `vertexSize - 3` before, which
+            // only held while TEXCOORD 7 was the last, 3-wide element.
+            indexOffset = 32,
             array = new Float32Array(itemCount * 4 * vertexSize);
 
         for (let i = 0; i < itemCount; ++i)
@@ -317,10 +321,10 @@ export class EvePlaneSet extends EveObjectSet
                 item = this._visibleItems[i],
                 offset = i * 4 * vertexSize;
 
-            array[offset + vertexSize - 3] = 0;
-            array[offset + vertexSize + vertexSize - 3] = 1;
-            array[offset + 2 * vertexSize + vertexSize - 3] = 2;
-            array[offset + 3 * vertexSize + vertexSize - 3] = 3;
+            array[offset + indexOffset] = 0;
+            array[offset + vertexSize + indexOffset] = 1;
+            array[offset + 2 * vertexSize + indexOffset] = 2;
+            array[offset + 3 * vertexSize + indexOffset] = 3;
 
             for (let j = 0; j < 4; ++j)
             {
@@ -363,8 +367,17 @@ export class EvePlaneSet extends EveObjectSet
                 array[vtxOffset + 30] = item.layer2Scroll[2];
                 array[vtxOffset + 31] = item.layer2Scroll[3];
 
+                // TEXCOORD 7 - [index, boneIndex, maskMapAtlasIndex, pickBufferID].
+                // The corner index at +32 is written per-quad above.
                 array[vtxOffset + 33] = item.boneIndex;
                 array[vtxOffset + 34] = item.maskAtlasID;
+                array[vtxOffset + 35] = this.pickBufferID;
+
+                // TEXCOORD 8 - blinkData, in Carbon order.
+                array[vtxOffset + 36] = item.blinkRate;
+                array[vtxOffset + 37] = item.blinkPhase;
+                array[vtxOffset + 38] = item.dutyCycle;
+                array[vtxOffset + 39] = item.blinkMode;
             }
         }
 
@@ -452,7 +465,7 @@ export class EvePlaneSet extends EveObjectSet
         for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass)
         {
             this.effect.ApplyPass(technique, pass);
-            if (!this._decl.SetDeclaration(device, this.effect.GetPassInput(technique, pass), 140)) return false;
+            if (!this._decl.SetDeclaration(device, this.effect.GetPassInput(technique, pass), EvePlaneSet.vertexSize * 4)) return false;
             device.ApplyShadowState();
             gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0);
         }
@@ -510,6 +523,13 @@ export class EvePlaneSet extends EveObjectSet
      * Vertex declarations
      * @type {*[]}
      */
+    /**
+     * Floats per vertex, and the single source of truth for the draw stride.
+     * 8 x vec4, then TEXCOORD 7 (4) and TEXCOORD 8 (4).
+     * @type {Number}
+     */
+    static vertexSize = 40;
+
     static vertexDeclarations = [
         { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
         { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
@@ -519,7 +539,21 @@ export class EvePlaneSet extends EveObjectSet
         { usage: "TEXCOORD", usageIndex: 4, elements: 4 },
         { usage: "TEXCOORD", usageIndex: 5, elements: 4 },
         { usage: "TEXCOORD", usageIndex: 6, elements: 4 },
-        { usage: "TEXCOORD", usageIndex: 7, elements: 3 }
+        // Carbon packs these four as a UBYTE_4 (`EvePlaneSet.cpp:167`):
+        // index, boneIndex, maskMapAtlasIndex, pickBufferID. The fourth was
+        // missing, so a dx11 shader reading it got GL default w of 1.0.
+        { usage: "TEXCOORD", usageIndex: 7, elements: 4 },
+        // blinkData - [rate, phase, dutyCycle, blinkMode]
+        // (`EvePlaneSetItem.h:47`, declared at `EvePlaneSet.cpp:166`).
+        //
+        // This stream was ABSENT entirely. A missing input is not an error in
+        // `Tw2VertexDeclaration.SetPartialDeclaration` - it disables the attribute
+        // and feeds it `vertexAttrib4f(0,0,0,0)`, silently - so on `effect.dx11`,
+        // whose Carbon shaders declare it, every plane got zeroed blink data. The
+        // legacy gles2 shaders never declared it, which is why gles2 was fine and
+        // this read as a backend bug. Plane sets that play video are these same
+        // objects, so they went dark for the same reason.
+        { usage: "TEXCOORD", usageIndex: 8, elements: 4 }
     ];
 
 }
