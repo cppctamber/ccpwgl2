@@ -92,3 +92,29 @@ valid after a frame in which `GetBatches` ran, and `isSkinned` is
 
 None in `src/` or `test/`. The only hits are this findings family and the stale
 `dist/` bundle, which a rebuild clears.
+
+## No caching. Compute on call. (operator, 2026-08-22)
+
+"Only calculate when needed" means AT CALL TIME - the accessor composes the bone
+when someone asks, and if nobody asks, nothing is computed. It does NOT mean cache
+the result behind a dirty flag.
+
+Every accessor already works this way. Do not add a cache: it would need an
+invalidation signal tied to where in the frame bones settle, and an accessor called
+before the animation update would poison it for every call after.
+
+## Scope: consumer functions, NOT render paths (operator, 2026-08-22)
+
+This work updates the CONSUMER functions - the accessors. It does not change render
+behaviour.
+
+Two changes broke that rule and were reverted the same day: the spotlight cone
+writer (097037d4, reverted b36ca7b6) and the plane set vertex writer (6ac38a18,
+reverted fcf35b0e). Both applied the bone on the CPU to a path that already hands
+`boneIndex` to the shader, so the bone was applied twice.
+
+**The tell: if a writer packs a `boneIndex`, the GPU does the skinning and the CPU
+must pass the UNSKINNED transform.** Plane sets pack it in TEXCOORD 7; spotlight
+cones and glows pack it at offset 20. That is the same shape as
+`EveTurretSetItem`, already recorded above as bone-aware by a route that does not
+run through the accessor.
