@@ -32,6 +32,7 @@ export class Tw2RenderTarget
     _texture = null;
     _prevViewport = null;
     _prevFramebuffer = null;
+    _isComplete = false;
 
     /**
      * Gets the render target's texture res
@@ -89,6 +90,7 @@ export class Tw2RenderTarget
     {
         return !!(
             this._frameBuffer &&
+            this._isComplete &&
             this._texture &&
             this._texture.IsGood() &&
             (!this.hasDepth || this._renderBuffer)
@@ -101,6 +103,8 @@ export class Tw2RenderTarget
     Destroy()
     {
         const { gl } = tw2;
+
+        this._isComplete = false;
 
         if (this._texture)
         {
@@ -204,11 +208,25 @@ export class Tw2RenderTarget
             gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._renderBuffer);
         }
 
+        // A WebGL texture and framebuffer object may both exist even when
+        // texImage2D storage allocation failed (for example during a temporary
+        // multi-character composition peak). Treating that object as good
+        // produces a successfully "attached" but permanently black material.
+        const frameBufferStatus = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+        this._isComplete = frameBufferStatus === gl.FRAMEBUFFER_COMPLETE;
+
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         this.hasDepth = hasDepth;
         this.colorFormat = colorFormat;
+        if (!this._isComplete)
+        {
+            // Framebuffer incompleteness can be transient. Keep the core target
+            // fail-soft so owning scene passes can disable themselves through
+            // IsGood() without taking down the whole frame.
+            this.Destroy();
+        }
     }
 
     /**
@@ -342,9 +360,15 @@ export class Tw2RenderTarget
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
         gl.viewport(0, 0, this.width, this.height);
-        func(this);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, prevFramebuffer);
-        gl.viewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+        try
+        {
+            func(this);
+        }
+        finally
+        {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, prevFramebuffer);
+            gl.viewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+        }
         return true;
     }
 

@@ -51,6 +51,7 @@
     "test:carbon-data": "node scripts/test-carbon-data.js",
     "test:camera-fit": "node scripts/test-camera-fit.mjs",
     "test:carbon-shadow": "node scripts/test-carbon-shadow.mjs",
+    "test:render-target": "node scripts/test-render-target-fail-soft.js",
     "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs",
     "test:light-persisted-fields": "node scripts/test-light-persisted-fields.mjs"
   },
