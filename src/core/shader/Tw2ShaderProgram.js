@@ -1,19 +1,7 @@
 import { meta } from "utils";
-import { device } from "global";
+import { device, tw2 } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { ErrShaderLink } from "./Tw2Shader";
-
-
-/**
- * How many `s#` sampler uniforms `SetupGLSLShader` actually assigns.
- *
- * WebGL2 guarantees 16 texture image units per stage and the setup loop is
- * written to that guarantee. It is deliberately NOT the driver limit: a driver
- * reporting more does not make the loop assign more, so this is the register
- * above which a sampler needs remapping.
- * @type {Number}
- */
-const SAMPLER_SETUP_UNITS = 16;
 
 /**
  * Highest constant-buffer register Carbon itself uses.
@@ -242,7 +230,7 @@ export class Tw2ShaderProgram
     {
         const MAX_UNITS = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
         const remap = new Map();    // sampler registerIndex -> texture unit
-        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, MAX_UNITS);
+        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, MAX_UNITS, program.program, gl);
 
         // SetupCarbonResources runs first and allocates from the same low
         // range, so its units are already spoken for.
@@ -253,24 +241,24 @@ export class Tw2ShaderProgram
             for (const texture of pass.stages[s].textures || [])
             {
                 const reg = texture.registerIndex;
-
-                // Compare against the s# SETUP LOOP BOUND, not the driver limit.
-                // `SetupGLSLShader` sets `s0`..`s15` and nothing above, so any
-                // register at 16 or beyond has no uniform set whatever the
-                // hardware reports - and an unset sampler uniform defaults to 0,
-                // colliding with the samplerCube EnvMap that samples unit 0
-                // (GL_INVALID_OPERATION, and the draw is DROPPED).
-                //
-                // This previously read `reg < MAX_UNITS`, which is the driver
-                // value and is 32 on most desktop GPUs. There, registers 16-18
-                // fell in a gap: too high for the setup loop, too low to be
-                // remapped. The collision therefore appeared or vanished with the
-                // GPU, which is exactly how it evaded being pinned down.
-                if (reg < SAMPLER_SETUP_UNITS || remap.has(reg)) continue;
+                if (reg < MAX_UNITS || remap.has(reg)) continue;
 
                 let unit = 0;
                 while (unit < MAX_UNITS && occupied.has(unit)) unit++;
-                if (unit >= MAX_UNITS) continue; // over the unit budget; nothing free
+                if (unit >= MAX_UNITS)
+                {
+                    // Say so. A silent give-up here leaves the sampler on unit 0,
+                    // where it collides with whatever samples unit 0 and the DRAW
+                    // IS DROPPED - the object simply does not appear, with nothing
+                    // in the log tying it to a texture unit. That silence is what
+                    // kept this one unexplained.
+                    tw2.Debug({
+                        name: "Shader program",
+                        message: `No free texture unit for sampler register ${reg}`
+                            + ` (${MAX_UNITS} units, all occupied); it will collide on unit 0`
+                    });
+                    continue;
+                }
 
                 occupied.add(unit);
                 remap.set(reg, unit);
@@ -319,7 +307,7 @@ export class Tw2ShaderProgram
      * @param {Number} maxUnits
      * @returns {Set<Number>}
      */
-    static OccupiedTextureUnits(pass, maxUnits)
+    static OccupiedTextureUnits(pass, maxUnits, program, gl)
     {
         const occupied = new Set();
 
@@ -327,7 +315,31 @@ export class Tw2ShaderProgram
         {
             for (const texture of pass.stages[s].textures || [])
             {
-                if (texture.registerIndex < maxUnits) occupied.add(texture.registerIndex);
+                if (texture.registerIndex >= maxUnits) continue;
+
+                // A register the MANIFEST declares is not necessarily a sampler
+                // the shader HAS. The webgl emitter merges and folds: on the v5
+                // quad depth shaders Detail1Map/Detail2Map/Detail3Map (14/15/16)
+                // become one `sDetailArrayMap`, the two light buffers become one
+                // `cjsLocalLightTexture`, and `LightProfileArray` (13) is replaced
+                // by a constant. Counting all seventeen manifest registers marked
+                // 13, 14 and 15 as taken while nothing sampled them, so on a
+                // 16-unit driver every unit looked occupied and the out-of-range
+                // remap below had nowhere to go - it gave up, and the register at
+                // 16 kept the default unit 0, colliding with the samplerCube there
+                // (GL_INVALID_OPERATION, draw dropped).
+                //
+                // The linker is the authority: a uniform it did not keep is a
+                // sampler nothing reads, so its unit is genuinely free. When no
+                // program is supplied the old assumption stands, since there is
+                // nothing better to ask.
+                if (program && gl)
+                {
+                    const symbol = texture._glslSymbol || ("s" + texture.registerIndex);
+                    if (!gl.getUniformLocation(program, symbol)) continue;
+                }
+
+                occupied.add(texture.registerIndex);
             }
             for (const sampler of pass.stages[s].samplers || [])
             {
@@ -357,7 +369,7 @@ export class Tw2ShaderProgram
         // error anywhere, and the shader silently reads zero. Allocate these
         // out of the same low range every other sampler uses.
         const maxUnits = Tw2ShaderProgram.GetMaxTextureImageUnits(gl);
-        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, maxUnits);
+        const occupied = Tw2ShaderProgram.OccupiedTextureUnits(pass, maxUnits, program.program, gl);
         // Allocate DOWNWARD from the ceiling. Texture bindings are global GL
         // state shared by every program, while ordinary material samplers take
         // unit == registerIndex counting up from zero. Handing a data texture a
