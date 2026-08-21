@@ -1,4 +1,5 @@
 import { meta } from "utils";
+import { device } from "global";
 
 
 @meta.define({
@@ -77,7 +78,24 @@ export class Tw2CurveSet extends meta.Model
     {
         if (this.useRealTime)
         {
-            time = Date.now() * 0.001;
+            // Carbon is handed BOTH clocks each tick and picks between them:
+            //
+            //     void TriCurveSet::Update( Be::Time realTime, Be::Time simTime )
+            //     { Update( m_useRealTime ? TimeAsDouble( realTime ) : TimeAsDouble( simTime ) ); }
+            //     (`Curves/TriCurveSet.cpp:51-64`)
+            //
+            // Its `realTime` is a Blue time - seconds since the engine started -
+            // NOT a wall clock. This used to substitute `Date.now() * 0.001`,
+            // which is UNIX EPOCH SECONDS, around 1.79e9. The device already
+            // publishes the right quantity as `currentTime`
+            // (`Tw2Device.js:850`, `(now - startTime) * 0.001`), computed beside
+            // `dt` in the same per-frame block, so it is used here rather than a
+            // second clock being invented.
+            //
+            // Perlin is stationary, so noise sampled at a huge time still LOOKS
+            // like noise - which is why this survived unnoticed. Anything that
+            // cares where the time origin is does not survive it.
+            time = device.currentTime || 0;
         }
 
         if (this.driver && this.driver.GetCurveSetTime)
