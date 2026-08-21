@@ -39,6 +39,7 @@ testAVetoMakesTheStateAskEveryFrameAgain();
 testAnEmptyConditionNeverFires();
 testRangeDurationRecursesIntoChildren();
 testStartArmsTheHoldEvenWhenPlayFindsNothing();
+testStartStateIsAnObjectReference();
 console.log("Controller state machine and expression parity verified");
 
 /**
@@ -706,6 +707,7 @@ function makeMeta()
         wgl: { define: () => value => value },
         todo: () => value => value,
         notImplemented: property,
+        notOwned: property,
         struct: () => property,
         list: () => property,
         string: property,
@@ -977,4 +979,53 @@ function testStartArmsTheHoldEvenWhenPlayFindsNothing()
 
     action.Start(controller, owner);
     assert.equal(action._duration, 4, "the hold must be armed even though Play reported nothing");
+}
+
+
+/**
+ * Carbon persists `startState` as an OBJECT REFERENCE - `Tr2StateMachineStatePtr
+ * m_startState` (`Tr2StateMachine.h:46`), exposed as a plain object attribute
+ * (`Tr2StateMachine_Blue.cpp:18`) - not as an index. ccpwgl declared it
+ * `@meta.uint`, so it read the raw reference id: real content deserialised to
+ * 1237 / 1262 / 1269 against machines of six to eleven states, and every one of
+ * them silently fell back to `states[0]`.
+ *
+ * These machines are authored with a `Start` state that caches each range's
+ * duration into a controller variable, and every later transition asks "has the
+ * range finished?" by comparing `StateTime()` against it. Start anywhere else and
+ * those variables are never written, every test reads 0 and is true one frame
+ * after entry, and the machine walks its whole ring at a state per frame -
+ * replaying a different range of one curve set every frame so nothing plays
+ * through. That is the hologram flicker.
+ */
+function testStartStateIsAnObjectReference()
+{
+    const machine = buildMachine([ "PostKill", "AfterStartDelay", "Kill", "PreKill", "Idle", "Start" ]);
+    const started = [];
+    machine.states.forEach(state => state.actions.push({ Start: () => started.push(state.name) }));
+
+    // How the reader actually delivers it: the state object itself.
+    machine.startState = machine.states[5];
+    machine.Start();
+    assert.equal(machine.GetCurrentState().name, "Start", "an object reference must be honoured");
+    assert.deepEqual(started, [ "Start" ], "and it is the state whose actions run");
+
+    // A numeric index still works, for content authored that way.
+    const byIndex = buildMachine([ "a", "b", "c" ]);
+    byIndex.startState = 2;
+    byIndex.Start();
+    assert.equal(byIndex.GetCurrentState().name, "c", "a real index is still honoured");
+
+    // The failure that was happening: an unresolved reference id. Falling back to
+    // states[0] is the last resort, not the normal path.
+    const stale = buildMachine([ "PostKill", "Start" ]);
+    stale.startState = 1262;
+    stale.Start();
+    assert.equal(stale.GetCurrentState().name, "PostKill", "an out-of-range id falls back rather than crashing");
+
+    // A reference to a state that is not ours is not trusted.
+    const foreign = buildMachine([ "x", "y" ]);
+    foreign.startState = buildMachine([ "somewhere else" ]).states[0];
+    foreign.Start();
+    assert.equal(foreign.GetCurrentState().name, "x", "a foreign state reference falls back");
 }

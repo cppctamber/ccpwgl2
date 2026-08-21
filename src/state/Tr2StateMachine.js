@@ -9,8 +9,36 @@ export class Tr2StateMachine extends meta.Model
     @meta.string
     name = "";
 
-    @meta.uint
-    startState = 0;
+    /**
+     * The state this machine begins in.
+     *
+     * Carbon persists this as an OBJECT REFERENCE - `Tr2StateMachineStatePtr
+     * m_startState`, exposed as `MAP_ATTRIBUTE("startState", m_startState, ...)`
+     * (`Tr2StateMachine.h:46`, `Tr2StateMachine_Blue.cpp:18`) - not an index.
+     * ccpwgl declared it `@meta.uint`, so it read the raw reference id as a
+     * number: real content deserialised to values like 1237 and 1262 against
+     * six-state machines, `states[1262]` was undefined, and every machine fell
+     * back to `states[0]`.
+     *
+     * That is not a cosmetic difference. These machines are authored with a
+     * `Start` state that caches each range's duration into a controller variable
+     * (`Tr2ActionSetValue` with `value: CurveSetTime("Set/Range")`), and every
+     * later transition asks "has the range finished?" by comparing
+     * `StateTime() > _CurveSetTime_Set_Range`. Starting elsewhere means those
+     * variables are never written, so every such test reads 0, is true one frame
+     * after entry, and the machine walks its whole ring at a state per frame -
+     * replaying a different range of the same curve set every frame, so nothing
+     * ever plays through. That is the violent flicker on the Triglavian hologram
+     * VFX, and the reason docking VFX snapped on instead of easing in.
+     *
+     * Kept tolerant of a number so a machine authored with a genuine index still
+     * starts where it says - see `GetStartState`.
+     *
+     * @type {Tr2StateMachineState|Number|null}
+     */
+    @meta.notOwned
+    @meta.struct("Tr2StateMachineState")
+    startState = null;
 
     @meta.list("Tr2StateMachineState")
     states = [];
@@ -114,7 +142,7 @@ export class Tr2StateMachine extends meta.Model
             return;
         }
 
-        this._currentState = this.states[this.startState] || this.states[0] || null;
+        this._currentState = this.GetStartState();
         this._machineTime = 0;
         this._stateTime = 0;
         if (this._currentState && this._currentState.Start)
@@ -122,6 +150,40 @@ export class Tr2StateMachine extends meta.Model
             this._currentState.Start(this._controller);
             this.FollowTransitions(this.GetAllVariableNames());
         }
+    }
+
+    /**
+     * Resolves `startState` to an actual state.
+     *
+     * Carbon stores an object reference and simply assigns it
+     * (`Tr2StateMachine.cpp:160`); if it is null the machine does not start at
+     * all (`:162-165`). ccpwgl falls back to `states[0]` instead of refusing,
+     * because a machine that silently never runs is far harder to notice than
+     * one that starts in the wrong place - but the fallback is now the last
+     * resort it was meant to be, not the normal path.
+     *
+     * A number is still honoured as an index, so content authored that way keeps
+     * working.
+     *
+     * @returns {Tr2StateMachineState|null}
+     */
+    GetStartState()
+    {
+        const start = this.startState;
+
+        // An object reference, as Carbon persists it. Trust it only if it is
+        // actually one of this machine's states - a reference that did not
+        // resolve is worse than the fallback.
+        if (start && typeof start === "object")
+        {
+            if (this.states.includes(start)) return start;
+        }
+        else if (typeof start === "number" && start >= 0 && start < this.states.length)
+        {
+            return this.states[start];
+        }
+
+        return this.states[0] || null;
     }
 
     /**
