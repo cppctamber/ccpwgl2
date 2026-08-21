@@ -100,7 +100,12 @@ export class Tw2ValueBinding extends meta.Model
         {
             destSwizzled = true;
             this._destinationElement = d.element;
-            this._sourceIsRGBA = [ "r", "g", "b", "a" ].includes(d.swizzle);
+            // Was `_sourceIsRGBA` here - a copy-paste of the source branch above,
+            // which both left `_destinationIsRGBA` unset and clobbered the source
+            // flag whenever the DESTINATION carried a swizzle. Only
+            // GetDestinationTarget/GetSourceTarget read these, so the effect was a
+            // wrong attribute string in debug output, never a wrong copy.
+            this._destinationIsRGBA = [ "r", "g", "b", "a" ].includes(d.swizzle);
             this.destinationAttribute = d.attr;
         }
 
