@@ -116,22 +116,17 @@ export class EveBanner extends meta.Model
      */
     GetDirection(out)
     {
-        vec3.set(out, this.transform[8], this.transform[9], this.transform[10]);
+        if (!this._bone)
+        {
+            vec3.set(out, this.transform[8], this.transform[9], this.transform[10]);
+            return vec3.normalize(out, out);
+        }
+
+        const m = mat4.multiply(EveBanner.global.mat4_0, this._bone.offsetTransform, this.transform);
+        vec3.set(out, m[8], m[9], m[10]);
         return vec3.normalize(out, out);
     }
 
-    /**
-     * Gets offset direction
-     * @param {vec3} out
-     * @returns {vec3} out
-     */
-    GetSkinnedDirection(out)
-    {
-        if (!this._bone) return this.GetDirection(out);
-        const mat4_0 = mat4.multiply(EveBanner.global.mat4_0, this._bone.offsetTransform, this.transform);
-        vec3.set(out, mat4_0[8], mat4_0[9], mat4_0[10]);
-        return vec3.normalize(out, out);
-    }
 
     /**
      * Gets local direction
@@ -145,11 +140,12 @@ export class EveBanner extends meta.Model
     }
 
     /**
-     * Gets the banner's local bounding box
+     * The banner's bounding box IN ITS OWN SPACE, before any bone moves it.
+     * Prefer `GetBoundingBox`, which accounts for the bone.
      * @param {box3} out
      * @returns {null|box3}
      */
-    GetBoundingBox(out)
+    GetLocalBoundingBox(out)
     {
         const res = this._geometryResource;
         if (!res && !res.IsGood())
@@ -161,15 +157,39 @@ export class EveBanner extends meta.Model
         return box3.transformMat4(out, out, this.transform);
     }
 
+
     /**
-     * Gets the banner's offset bounding box
+     * The banner's bounding box where it actually IS - bone included.
+     *
+     * This is the default because it is what callers want and what the rest of
+     * the attachment family already returns: `EveShip2.RebuildBounds` unions
+     * `GetBoundingBox` over the attachment arrays to size the hull, and plane,
+     * sprite, spotlight, locator and line set items all fold their bone in. Only
+     * the banner and the turret did not, so a banner riding a moving bone
+     * contributed bounds that stayed behind.
+     *
+     * `GetLocalBoundingBox` remains for the rare caller that genuinely wants the
+     * unmoved box.
+     *
      * @param {box3} out
      * @returns {box3|null}
      */
-    GetSkinnedBoundingBox(out)
+    GetBoundingBox(out)
     {
-        if (!this.GetBoundingBox(out)) return null;
+        if (!this.GetLocalBoundingBox(out)) return null;
         return this._bone ? box3.transformMat4(out, out, this._bone.offsetTransform) : out;
+    }
+
+    /**
+     * The banner's bounding sphere where it actually IS - bone included.
+     * See `GetBoundingBox`.
+     * @param {sph3} out
+     * @returns {sph3|null}
+     */
+    GetBoundingSphere(out)
+    {
+        if (!this.GetLocalBoundingSphere(out)) return null;
+        return this._bone ? sph3.transformMat4(out, out, this._bone.offsetTransform) : out;
     }
 
     /**
@@ -190,11 +210,12 @@ export class EveBanner extends meta.Model
     }
 
     /**
-     * Gets the banner's local bounding sphere
+     * The banner's bounding sphere IN ITS OWN SPACE, before any bone moves it.
+     * Prefer `GetBoundingSphere`, which accounts for the bone.
      * @param {sph3} out
      * @returns {null|sph3}
      */
-    GetBoundingSphere(out)
+    GetLocalBoundingSphere(out)
     {
         const res = this._geometryResource;
         if (!res && !res.IsGood())
@@ -206,16 +227,6 @@ export class EveBanner extends meta.Model
         return sph3.transformMat4(out, out, this.transform);
     }
 
-    /**
-     * Gets the banner's offset bounding sphere
-     * @param {sph3} out
-     * @returns {null|sph3}
-     */
-    GetSkinnedBoundingSphere(out)
-    {
-        if (!this.GetBoundingSphere(out)) return null;
-        return this._bone ? sph3.transformMat4(out, out, this._bone.offsetTransform) : out;
-    }
 
     /**
      * Gets the banner's world bounding sphere
@@ -259,17 +270,6 @@ export class EveBanner extends meta.Model
         }
     }
 
-    /**
-     * Gets the local skinned transform
-     * @param {mat4} m
-     * @returns {mat4}
-     */
-    GetSkinnedTransform(m)
-    {
-        return this._bone
-            ? mat4.multiply(m, this._bone.offsetTransform, this.transform)
-            : mat4.copy(m, this.transform);
-    }
 
     /**
      * Gets the local transform
@@ -278,11 +278,33 @@ export class EveBanner extends meta.Model
      */
     GetTransform(m)
     {
+        return this._bone
+            ? mat4.multiply(m, this._bone.offsetTransform, this.transform)
+            : mat4.copy(m, this.transform);
+    }
+
+    /**
+     * The banner's transform IN ITS OWN SPACE, before any bone moves it. Only for
+     * a caller that genuinely wants the unmoved value; `GetTransform` is the one
+     * to use otherwise.
+     * @param {mat4} m
+     * @returns {mat4}
+     */
+    GetLocalTransform(m)
+    {
         return mat4.copy(m, this.transform);
     }
 
     /**
-     * Sets the local transform
+     * Sets the banner's LOCAL transform, by decomposing into rotation, position
+     * and scaling.
+     *
+     * Its counterpart is `GetLocalTransform`, NOT `GetTransform`. `GetTransform`
+     * returns where the banner actually is, bone included, so
+     * `GetTransform(m); SetTransform(m);` is not a round trip on a skinned banner:
+     * it would bake the bone into the authored fields and then have it applied
+     * again next frame. Use `GetLocalTransform` to read what this writes.
+     *
      * @param {mat4} m
      * @param {Object} [opt]
      */
