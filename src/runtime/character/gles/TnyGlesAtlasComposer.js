@@ -1277,6 +1277,7 @@ export class TnyGlesAtlasComposer
         report.deferred.push(...plan.deferred);
         const targets = [];
         const bindings = {};
+        let committedHead = null;
         const tearductFoundationTextures = {};
         const eyeWetSupportTextures = {};
         const effectiveTearductDiffuseMode = this._tearductDiffuseMode === "base"
@@ -1703,7 +1704,7 @@ export class TnyGlesAtlasComposer
                 report.channels.find(value => value.name === "DiffuseMap")?.targetSize,
                 targets
             );
-            const committed = await commitLegacyConfiguredHeadBindings(effects, bindings, {
+            committedHead = await commitLegacyConfiguredHeadBindings(effects, bindings, {
                 materialMode: this._headMaterialMode
             });
             staged.composedHeadTextures = { ...bindings };
@@ -1745,14 +1746,19 @@ export class TnyGlesAtlasComposer
             staged.compositionTargets ??= [];
             staged.compositionTargets.push(...targets);
             report.status = "applied";
-            report.attachedEffects = committed.attachedEffects;
-            report.effectBindings = committed.effectBindings;
+            report.attachedEffects = committedHead.attachedEffects;
+            report.effectBindings = committedHead.effectBindings;
             return report;
         }
         catch (error)
         {
+            const rollbackFailures = committedHead?.rollback?.() ?? [];
+            staged.composedHeadTextures = null;
             for (const target of targets.reverse()) target.Destroy?.();
-            report.deferred.push({ reason: error.message });
+            report.deferred.push({
+                reason: error.message,
+                rollbackFailures: rollbackFailures.map(value => value.message)
+            });
             return report;
         }
     }
@@ -6168,8 +6174,30 @@ function ResolveSkinBaseColorPath(staged)
     return `dynamic:/color/${colors[0].map(Number).join(",")}`;
 }
 
-/** Binds full-atlas eyes and one retained colorized lash atlas to exact face carriers. */
-export function applyLegacyConfiguredFaceTextures(
+/**
+ * Binds full-atlas eyes and one retained colorized lash atlas atomically.
+ *
+ * Face carriers share the composed head targets, but they remain independent
+ * configured effects.  A rejected carrier must not retain a partial target
+ * attachment: the caller may destroy every unpublished target after this
+ * function throws.
+ */
+export function applyLegacyConfiguredFaceTextures(binding, contributions, options = {})
+{
+    const snapshot = CaptureConfiguredFaceBinding(binding);
+    try
+    {
+        return ApplyLegacyConfiguredFaceTexturesUnsafe(binding, contributions, options);
+    }
+    catch (cause)
+    {
+        const error = new Error(cause.message, { cause });
+        error.rollbackFailures = RestoreConfiguredFaceBinding(snapshot);
+        throw error;
+    }
+}
+
+function ApplyLegacyConfiguredFaceTexturesUnsafe(
     binding,
     contributions,
     {
@@ -6634,6 +6662,87 @@ export function applyLegacyConfiguredFaceTextures(
     result.appliedEffects = appliedEffects;
     if (appliedEffects) result.status = "applied";
     return result;
+}
+
+function CaptureConfiguredFaceBinding(binding)
+{
+    const meshes = Unique((binding?.resolvedMeshBindings ?? [])
+        .map(value => value?.mesh)
+        .filter(Boolean));
+    const effects = Unique(meshes.flatMap(mesh => GetEffects([ mesh ])));
+    const vectorLengths = {
+        TransformUV0: 4,
+        MaterialDiffuseColor: 4,
+        MaterialSpecularColor: 4,
+        MaterialSpecularFactors: 4
+    };
+
+    return {
+        meshes: meshes.map(mesh => ({ mesh, display: mesh.display !== false })),
+        effects: effects.map(effect =>
+        {
+            let passes = null;
+            try
+            {
+                passes = CaptureTechniquePassStates(effect);
+            }
+            catch
+            {
+                // Some retained effects have no prepared pass contract. They
+                // cannot be mutated by the pass-state helpers either.
+            }
+            return {
+                effect,
+                passes,
+                vectors: Object.fromEntries(Object.entries(vectorLengths)
+                    .map(([ name, length ]) => [
+                        name,
+                        ReadEffectVectorParameter(effect, name, length)
+                    ])
+                    .filter(([ , value ]) => value !== null)),
+                textures: Object.keys(effect?.parameters ?? {})
+                    .filter(name => typeof effect.parameters[name]?.AttachTextureRes
+                        === "function")
+                    .map(name => CaptureTextureBinding(effect, name))
+            };
+        })
+    };
+}
+
+function RestoreConfiguredFaceBinding(snapshot)
+{
+    const failures = [];
+    for (const value of [ ...(snapshot?.effects ?? []) ].reverse())
+    {
+        if (value.passes)
+        {
+            failures.push(...RestoreTechniquePassStates([ value.passes ]));
+        }
+        failures.push(...RestoreTextureBindings(value.textures));
+        try
+        {
+            if (Object.keys(value.vectors).length)
+            {
+                value.effect.SetParameters(value.vectors);
+            }
+        }
+        catch (error)
+        {
+            failures.push(error);
+        }
+    }
+    for (const value of [ ...(snapshot?.meshes ?? []) ].reverse())
+    {
+        try
+        {
+            value.mesh.display = value.display;
+        }
+        catch (error)
+        {
+            failures.push(error);
+        }
+    }
+    return failures;
 }
 
 /** Resolves eyebrow colour from the selected appearance preset, then its sibling fallback. */
@@ -9834,6 +9943,13 @@ export async function commitLegacyConfiguredHeadBindings(
         consumer: CaptureConsumerBinding(effect),
         textures: entries.map(([ name ]) => CaptureTextureBinding(effect, name))
     }));
+    let rollbackAvailable = true;
+    const rollback = () =>
+    {
+        if (!rollbackAvailable) return [];
+        rollbackAvailable = false;
+        return RestoreConfiguredHeadBindingSnapshots(snapshots);
+    };
     try
     {
         for (const effect of effects)
@@ -9867,22 +9983,28 @@ export async function commitLegacyConfiguredHeadBindings(
             materialMode,
             attachedEffects: effects.length,
             sampleBounds: [ 0, 0, 1, 1 ],
-            effectBindings: effects.map(SummarizeFoundationEffect)
+            effectBindings: effects.map(SummarizeFoundationEffect),
+            rollback
         };
     }
     catch (cause)
     {
         const error = new Error(cause.message, { cause });
-        const rollbackFailures = [];
-        for (const snapshot of [ ...snapshots ].reverse())
-        {
-            rollbackFailures.push(...RestoreEffectContract(snapshot.contract));
-            rollbackFailures.push(...RestoreTextureBindings(snapshot.textures));
-            rollbackFailures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
-        }
-        error.rollbackFailures = rollbackFailures;
+        error.rollbackFailures = rollback();
         throw error;
     }
+}
+
+function RestoreConfiguredHeadBindingSnapshots(snapshots)
+{
+    const failures = [];
+    for (const snapshot of [ ...snapshots ].reverse())
+    {
+        failures.push(...RestoreEffectContract(snapshot.contract));
+        failures.push(...RestoreTextureBindings(snapshot.textures));
+        failures.push(...RestoreConsumerBindings([ snapshot.consumer ]));
+    }
+    return failures;
 }
 
 /**
