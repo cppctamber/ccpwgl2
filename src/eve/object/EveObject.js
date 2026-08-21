@@ -82,14 +82,32 @@ export class EveObject extends WglTransform
     {
         if (!this.display) return;
 
-        const children = this.effectChildren;
-        if (!children) return;
-
-        for (let i = 0; i < children.length; i++)
+        // Effect children AND attachments. Carbon reaches attachment lights a
+        // different way: a set that owns lights registers itself as an
+        // `ITr2LightOwner` with the component registry
+        // (`EvePlaneSet.cpp:535-541`), and the scene collects from the registry
+        // rather than walking the tree - which is why
+        // `EveSpaceObject2::GetLights` emits only the object's OWN lights and
+        // never descends.
+        //
+        // ccpwgl declares the same component type (`EveComponentType.LightOwner`)
+        // but nothing wires a registry yet - every registration is optional
+        // chained away - and the scene collects by walking
+        // (`EveSpaceScene.PerChildObject("GetLights", ...)`). So the walk stands
+        // in for the registry. Without visiting attachments, a plane, spotlight
+        // or sprite set could fill its lights from SOF and still never have one
+        // collected.
+        for (const list of [ this.effectChildren, this.attachments ])
         {
-            if (children[i] && "GetLights" in children[i])
+            if (!list) continue;
+
+            for (let i = 0; i < list.length; i++)
             {
-                children[i].GetLights(collector, parentContext);
+                const child = list[i];
+                if (child && typeof child.GetLights === "function")
+                {
+                    child.GetLights(collector, parentContext);
+                }
             }
         }
     }

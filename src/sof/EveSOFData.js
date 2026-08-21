@@ -39,6 +39,7 @@ import {
 import { EveStation2 } from "../eve/object/EveStation2";
 import { EveBoosterSet2, EveTrailsSet } from "../unsupported/eve/item";
 import { EveSOFDataPatternLayer } from "sof/pattern";
+import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
@@ -2271,6 +2272,18 @@ export class EveSOFData extends meta.Model
                 item.UpdateValues();
             });
 
+            // Lights the set emits, AFTER the faction colours above: Carbon
+            // saturates the ITEM'S colour to tint each light
+            // (`EveSOF.cpp:1075-1097`), so this cannot run before the item knows
+            // what colour it is.
+            //
+            // sof6 only, matching Carbon's `dna->UsingSof6()` guard - older hulls
+            // carry no light descriptions on their plane items at all.
+            if (sof6)
+            {
+                EveSOFData.SetupPlaneSetLights(set, srcSet);
+            }
+
         });
 
         this.HandleBillboards(obj, options);
@@ -2280,6 +2293,81 @@ export class EveSOFData extends meta.Model
             set.Destroy();
             arr.splice(arr.indexOf(set), 1);
         });
+    }
+
+    /**
+     * Fills a plane set's emitted lights from its SOF description.
+     *
+     * Carbon `EveSOF.cpp:1075-1097`. Each light is authored as MULTIPLIERS plus a
+     * local offset; the item supplies everything that turns those into a world
+     * light:
+     *
+     *   - its scale, whose LARGEST axis scales the radii (`maxScale`);
+     *   - its colour, saturated per light, as the light's colour;
+     *   - its rotation and position, which the light's local offset is carried
+     *     through - rotate the offset, then translate;
+     *   - its bone index, so a light on an animated part follows it.
+     *
+     * `index` counts the ITEMS that carry lights, not the lights, and is what
+     * Carbon hands each light to identify which plane it belongs to.
+     *
+     * @param {EvePlaneSet} set
+     * @param {EveSOFDataHullPlaneSet} srcSet
+     */
+    static SetupPlaneSetLights(set, srcSet)
+    {
+        if (!set || !srcSet || !set.AddLightFromSOF) return;
+
+        set.lights = [];
+
+        const
+            offset = vec3.create(),
+            rotation = quat.create(),
+            color = vec4.create();
+
+        let index = 0;
+
+        for (let i = 0; i < srcSet.items.length; i++)
+        {
+            const
+                src = srcSet.items[i],
+                item = set.items[i];
+
+            if (!src || !item || !src.lights || !src.lights.length) continue;
+
+            const maxScale = Math.max(src.scaling[0], src.scaling[1], src.scaling[2]);
+
+            for (let j = 0; j < src.lights.length; j++)
+            {
+                const light = src.lights[j];
+                if (!light || !light.AsLightData) continue;
+
+                Saturate(color, item.color, light.saturation);
+                const lightData = light.AsLightData(color, maxScale);
+
+                // Carbon rotates the authored offset by the item's rotation and
+                // then translates - the offset is local to the plane, not world.
+                vec3.transformQuat(offset, lightData.position, src.rotation);
+                vec3.add(lightData.position, offset, src.position);
+
+                quat.multiply(rotation, lightData.rotation, src.rotation);
+                quat.normalize(lightData.rotation, rotation);
+
+                lightData.boneIndex = src.boneIndex;
+
+                set.AddLightFromSOF({
+                    lightData,
+                    saturation: light.saturation,
+                    index,
+                    lightProfilePath: light.lightProfilePath,
+                    fadeType: src.blinkMode,
+                    blinkPhase: src.phase,
+                    blinkRate: src.rate
+                });
+            }
+
+            index++;
+        }
     }
 
     /**
