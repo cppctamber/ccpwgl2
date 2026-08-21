@@ -42,6 +42,7 @@ import { EveSOFDataPatternLayer } from "sof/pattern";
 import { Saturate } from "../eve/item/EveSpaceObjectAttachmentUtils";
 import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 import { EveSOFDataParameter } from "sof/shared/EveSOFDataParameter";
+import { EveSOFDataPointLightAttachment } from "sof/shared/EveSOFDataPointLightAttachment";
 import { EveLocatorSetItem, EveLocatorSets } from "eve/item/EveLocatorSets";
 import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetItem";
 import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
@@ -2339,8 +2340,12 @@ export class EveSOFData extends meta.Model
 
             for (let j = 0; j < src.lights.length; j++)
             {
-                const light = src.lights[j];
-                if (!light || !light.AsLightData) continue;
+                // Coerce rather than skip. The list is typed now, but a SOF
+                // delivered as plain JSON still arrives as bags, and silently
+                // dropping every light was indistinguishable from having none.
+                const raw = src.lights[j];
+                if (!raw) continue;
+                const light = raw.AsLightData ? raw : EveSOFDataPointLightAttachment.from(raw);
 
                 Saturate(color, item.color, light.saturation);
                 const lightData = light.AsLightData(color, maxScale);

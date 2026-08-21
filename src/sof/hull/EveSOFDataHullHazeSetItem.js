@@ -25,7 +25,12 @@ export class EveSOFDataHullHazeSetItem extends meta.Model
     @meta.float
     hazeFalloff = 0;
 
-    @meta.list()
+    /**
+     * The lights each item of this set emits. Typed so the reader hydrates real
+     * attachments rather than plain bags - an untyped list leaves them without
+     * `AsLightData`, and the consumer skips what it cannot convert.
+     */
+    @meta.list("EveSOFDataPointLightAttachment")
     lights = [];
 
     @meta.vector3
