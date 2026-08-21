@@ -20,6 +20,7 @@ testBothProfilesAreOverridden();
 testBodyIsSharedNotCopied();
 testEffectPathIsNoLongerPinned();
 testOverrideIsDocumented();
+testKeyCoversEveryShaderVersion();
 console.log("dx11 sprite pool override verified");
 
 /** The store keys overrides on the profile qualified path, so each needs its own. */
@@ -69,4 +70,50 @@ function testOverrideIsDocumented()
 
     assert.ok(/REMOVE THIS/.test(doc), "must say when to remove it");
     assert.ok(/AGENT-FINDINGS-dx11-sprite-sets-2026-08-22.md/.test(doc), "must point at the write up");
+}
+
+/**
+ * The replaces key must carry NO extension.
+ *
+ * Registration stores `replaces` RAW (`overrides.set(registered.replaces, ...)`)
+ * while lookup normalizes the resolved path through NormalizeShaderName, which
+ * STRIPS .fx/.sm_hi/.sm_lo/.sm_depth and lowercases. So one extension-less key
+ * already covers every shader version - that is how it replaces all of them -
+ * and appending .fx would produce a key no lookup ever generates, silently
+ * disabling the override.
+ */
+function testKeyCoversEveryShaderVersion()
+{
+    const normalize = loadNormalizer();
+    const base = "res:/graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool";
+    const marker = "replaces: \"graphics/effect.dx11";
+    const at = source.indexOf(marker);
+    assert.ok(at !== -1, "the dx11 replaces key must exist");
+    const key = source.slice(at + "replaces: \"".length, source.indexOf("\"", at + marker.length));
+
+    for (const ext of [ ".fx", ".sm_hi", ".sm_lo", ".sm_depth" ])
+    {
+        assert.equal(normalize(base + ext), key, ext + " must resolve to the override key");
+    }
+
+    assert.ok(!/.(fx|sm_hi|sm_lo|sm_depth)$/.test(key),
+        "the key must carry no extension - lookup strips it, registration does not");
+}
+
+/** Extracts the shader store own normalizer rather than reimplementing the rule. */
+function loadNormalizer()
+{
+    const store = fs.readFileSync(
+        path.resolve(__dirname, "../src/core/store/Tw2ShaderStore.js"), "utf8");
+    const at = store.indexOf("static NormalizeShaderName(name)");
+    assert.ok(at !== -1, "NormalizeShaderName must exist");
+
+    const open = store.indexOf("{", at);
+    let depth = 0, end = open;
+    for (let i = open; i < store.length; i++)
+    {
+        if (store[i] === "{") depth++;
+        else if (store[i] === "}" && --depth === 0) { end = i; break; }
+    }
+    return new Function("name", store.slice(open + 1, end));
 }
