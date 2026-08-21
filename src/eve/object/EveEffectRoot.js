@@ -2,6 +2,7 @@ import { meta } from "utils";
 import { vec3, quat, mat4, sph3, box3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
+import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
 
 
 @meta.type("EveEffectRoot")
@@ -162,6 +163,67 @@ export class EveEffectRoot extends EveObject
         {
             this.curveSets[i].Stop();
         }
+    }
+
+    /**
+     * Plays a named curve set on this root and its effect children, optionally
+     * only a named range of it. Carbon `EveEffectRoot2::PlayCurveSet`
+     * (cpp:723-747).
+     *
+     * `Start`/`Stop` above play EVERY curve set unconditionally; this is the
+     * addressed form a controller action uses. Without it an effect root was not
+     * reachable as a curve set owner at all, so a state machine whose owner was
+     * the root could neither play its ranges nor be told how long they last.
+     *
+     * Carbon recurses into effect children only here, not `children` - unlike
+     * `EveSpaceObject2`, which walks both.
+     *
+     * @param {String} name
+     * @param {String} [rangeName]
+     * @returns {Boolean}
+     */
+    PlayCurveSet(name, rangeName)
+    {
+        return PlayCurveSetOn(this, name, rangeName, [ this.effectChildren ]);
+    }
+
+    /**
+     * Stops a named curve set on this root and its effect children.
+     * Carbon `EveEffectRoot2::StopCurveSet` (cpp:750-771).
+     * @param {String} name
+     * @returns {Boolean}
+     */
+    StopCurveSet(name)
+    {
+        return StopCurveSetOn(this, name, [ this.effectChildren ]);
+    }
+
+    /**
+     * Duration of a named RANGE of a named curve set, across this root and its
+     * effect children. Carbon `EveEffectRoot2::GetRangeDuration` (cpp:809-827).
+     *
+     * Backs both the `syncToRange` hold in `Tr2ActionPlayCurveSet` and the
+     * `CurveSetTime("Set/Range")` expression builtin - see the note on
+     * `EveShip2.GetRangeDuration` for what a missing answer costs.
+     *
+     * @param {String} setName
+     * @param {String} rangeName
+     * @returns {Number} seconds
+     */
+    GetRangeDuration(setName, rangeName)
+    {
+        return GetRangeDurationOn(this, setName, rangeName, [ this.effectChildren ]);
+    }
+
+    /**
+     * Longest curve duration of a named curve set across this root and its effect
+     * children. Carbon `EveEffectRoot2::GetCurveSetDuration` (cpp:788-807).
+     * @param {String} setName
+     * @returns {Number} seconds
+     */
+    GetCurveSetDuration(setName)
+    {
+        return GetCurveSetDurationOn(this, setName, [ this.effectChildren ]);
     }
 
     /**
