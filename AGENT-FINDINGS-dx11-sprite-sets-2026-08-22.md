@@ -266,3 +266,50 @@ sprite-specific at all: ccpwgl already has a recorded dx11 depth/render-state ga
 same shape. The discriminator is cheap - check whether ANY other additive
 attachment (a spotlight glow, a plane set) also draws through hull geometry on
 dx11. If they do, this is that gap and not a sprite problem.
+
+---
+
+# The symptom narrowed: sprites show through UNSKINNED geometry only
+
+Operator observation with the dx11 override in place: sprites render, but they
+draw through UNSKINNED geometry. Skinned geometry occludes them correctly.
+
+That moves the fault off the sprites entirely. Sprites showing through means the
+depth buffer lacks the hull depth at those pixels, i.e. the unskinned hull is not
+writing depth (or not as expected) on dx11.
+
+## Eliminated while chasing it
+
+**Carbon per-pass render states being dropped.** They ARE allowlisted to decals
+only - `Tw2CarbonEffectReader.RENDER_STATE_PATHS = [ "/decals/" ]`, with a note
+saying to widen it as each family is shown to be honourable. But that is not what
+is happening here: dumping the dx11 `quadv5` container shows
+
+    Main[0]    -> NO STATES
+    Depth[0]   -> NO STATES
+    Picking[0] -> NO STATES
+    Shadow[0]  -> rs22=3 rs168=0 ...
+
+so the unskinned hull's main pass declares no states at all and nothing is being
+dropped for it. Its depth behaviour comes entirely from
+`SetStandardStates(RM_OPAQUE)`.
+
+**A gles2 override shadowing the Carbon hull shader.** There IS a real asymmetry
+in the override table - `quadV5` (unskinned) is overridden, `skinned_quadV5` is
+not - which looked like an exact match for the symptom. It cannot fire: `Tw2Effect`
+calls `device.ToEffectPath` to QUALIFY the path before consulting the store,
+specifically so a gles-keyed definition cannot shadow a Carbon container. The
+comment there records that as a bug already fixed once.
+
+## The live lead (operator, not yet investigated here)
+
+A texture binding error in the scene - s15 appearing to fall back to s0. Being
+followed up separately. Not duplicated here.
+
+## Running tally of dead theories on this bug
+
+fog volume term; instance packing; clip conversion reaching legacy shaders; stale
+legacy per-frame buffer; dropped per-pass render states; gles2 override shadowing.
+All six checked, none held. The lesson each time was the same: confirm the code
+path is the one that executes, and sanity check the theory against Carbon or
+against another profile doing the same thing successfully, BEFORE proposing it.
