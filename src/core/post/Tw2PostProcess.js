@@ -225,6 +225,22 @@ export class Tw2PostProcess extends meta.Model
             return;
         }
 
+        // Nothing can be built at zero size, and trying produces a 0x0 texture
+        // whose framebuffer is INCOMPLETE_ATTACHMENT (0x8cd6). It happens for
+        // real: a renderer booted before its canvas has been laid out renders a
+        // frame at 0x0, and this is reached through RenderDistortion on that
+        // first frame.
+        //
+        // Staying dirty rather than building means the next frame with a real
+        // size rebuilds properly. `Tw2RenderTarget`s own constructor and Rebuild
+        // already guard the same way with `if (this.width && this.height)`; only
+        // `Create` is unguarded, and this is its one unchecked caller.
+        if (!this._effectiveWidth || !this._effectiveHeight)
+        {
+            this._dirty = true;
+            return;
+        }
+
         const { gl, width, height } = tw2;
 
         this.PopulateParameters();
