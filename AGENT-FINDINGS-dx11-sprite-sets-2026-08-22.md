@@ -221,3 +221,48 @@ of these is the fault.
 Method note for next time: confirm the code path is the one actually executed
 before reading its contents as evidence, and sanity check any proposed cause
 against Carbon doing the same thing successfully.
+
+---
+
+# CURRENT STATE - dx11 shader override
+
+The sprite EFFECT PATH pin to `/effect.gles2/` has been REVERTED. It made sprites
+appear, but they drew THROUGH hull geometry, and it left the engine loading a
+gles2 container while running the dx11 profile - a second divergence stacked on
+the first.
+
+Replaced by a manual shader override, which is what `src/toDeprecate/shaders`
+exists for. `blinkinglightspoolDx11` registers the existing hand written pool
+shader against `graphics/effect.dx11/.../blinkinglightspool`; the store keys
+overrides on the profile-qualified path, so each profile needs its own entry. The
+technique body is SHARED BY REFERENCE with the gles2 entry, not copied, so the two
+cannot drift.
+
+The effect path is ordinary and unqualified again, so the profile stays honest,
+and because the definition is now ours, render states can be stated in it if the
+depth behaviour needs correcting - the format supports `states`, as
+`boostervolumetric` does.
+
+## Depth, if it recurs
+
+Under the pin the sprites drew through geometry. Four explanations were checked
+and NONE held, so do not reach for them again:
+
+- the fog volume term (resolves to 1 against an all-zero volume, and Carbon's own
+  empty volume is all-zero);
+- the instance packing (matches `EveSpriteSet::PoolVertex` field for field);
+- the clip conversion reaching legacy shaders (`PackPerFrameVS` writes into a
+  SEPARATE Carbon copy; the legacy `gles` buffer is untouched);
+- a stale legacy per-frame buffer (`perFrameVSData` is a device field the scene
+  updates regardless of profile).
+
+`RM_ADDITIVE` sets `ZENABLE 1`, `ZWRITEENABLE 0`, `ZFUNC LEQUAL`, so the depth
+test IS on and the sprites' z was comparing as nearer than it should.
+
+The unexplored direction, and the one to take next, is whether this is
+sprite-specific at all: ccpwgl already has a recorded dx11 depth/render-state gap
+(the dx11 path dropping per-pass render states) and an open
+"distortion-over-opaque" lead. An additive draw appearing over opaque hull is the
+same shape. The discriminator is cheap - check whether ANY other additive
+attachment (a spotlight glow, a plane set) also draws through hull geometry on
+dx11. If they do, this is that gap and not a sprite problem.

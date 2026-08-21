@@ -557,8 +557,7 @@ export class EveSOFData extends meta.Model
         {
             effect.sprite = Tw2Effect.from({
                 name: "Shared sprite set effect",
-                // PINNED TO gles2 - TEMPORARY, see EveSOFData.PinnedProfile.
-                effectFilePath: EveSOFData.PinnedProfile(effectPath.spriteSet, "effect.gles2"),
+                effectFilePath: effectPath.spriteSet,
                 parameters: {
                     MainIntensity: 1,
                     GradientMap: texturePath.whiteSharp
@@ -2374,65 +2373,6 @@ export class EveSOFData extends meta.Model
 
             index++;
         }
-    }
-
-    /**
-     * Qualifies a shader path to a specific effect profile, ignoring the active
-     * one. TEMPORARY, and used only by sprite sets.
-     *
-     * A path that already names a profile directory is legal whatever
-     * `device.effectProfile` says, and `ToEffectPath` leaves it untouched because
-     * its `/effect/` substitution cannot match an already-qualified path
-     * (`Tw2Device.EffectProfileFromPath`). So this is the supported way to pin
-     * one effect, not a trick.
-     *
-     * WHY SPRITE SETS ARE PINNED
-     *
-     * Sprite sets render nothing on `effect.dx11` and render correctly on
-     * `effect.gles2`, and the cause is not yet known. Because gles2 works from
-     * the SAME setup code, the same buffers, the same vertex declaration and the
-     * same batch, everything up to the effect is proven good by that fact alone;
-     * the divergence is inside the effect. What has been checked and found
-     * CORRECT, so that none of it is re-investigated:
-     *
-     *   - the shader exists on dx11 (`blinkinglightspool`, every quality tier)
-     *     and nothing in the gles2 directory is missing from the dx11 one;
-     *   - the raw, unprefixed path is right - there is no
-     *     `skinned_blinkinglightspool` on either profile, and the spotlight POOL
-     *     branch takes its paths raw for the same reason;
-     *   - the vertex semantics, divisors and 17-float stride all match, and the
-     *     instance packing is field-for-field Carbon's `EveSpriteSet::PoolVertex`
-     *     - position, activation, blinkPhase, blinkRate, minScale, maxScale,
-     *     falloff, color, warpColor;
-     *   - the reversed-depth tail is present and correct;
-     *   - the fog term resolves to 1 with an all-zero volume, and Carbon's own
-     *     empty fog volume is all-zero too;
-     *   - the batch carries `perObjectData` and the accumulator binds it to the
-     *     device before committing.
-     *
-     * The untested suspect is the effect's runtime state - whether the dx11
-     * Carbon effect loads and links at all. If it does not, `RenderQuads` returns
-     * early and draws nothing, silently, which is exactly the symptom.
-     *
-     * Full write-up: AGENT-FINDINGS-dx11-sprite-sets-2026-08-22.md.
-     *
-     * REMOVE THIS once the dx11 sprite effect is understood. It is a visible
-     * divergence from Carbon: sprites keep the legacy shader while everything
-     * around them is translated, so anything the dx11 shader would have done
-     * differently is silently not happening.
-     *
-     * @param {String} path
-     * @param {String} profile - a registered effect profile name
-     * @returns {String}
-     */
-    static PinnedProfile(path, profile)
-    {
-        // The registered profile NAMES are their directory names
-        // (`Tw2Device.EffectProfiles`: "effect.gles2" -> "/effect.gles2/"), so this
-        // needs no import of the device and cannot drift out of step with it for
-        // the two profiles that exist.
-        if (!profile) return path;
-        return String(path).replace("/effect/", "/" + profile + "/");
     }
 
     /**

@@ -154,3 +154,38 @@ export const blinkinglightspool = {
         }
     }
 };
+
+
+/**
+ * The SAME hand written shader, registered against the dx11 path as well.
+ *
+ * `src/toDeprecate/shaders` exists to override shaders that are broken or do not
+ * work, and the dx11 sprite pool is one: sprite sets render nothing at all on
+ * `effect.dx11` while rendering correctly on `effect.gles2`, from identical
+ * setup code, buffers, vertex declaration and batch. The cause is inside the
+ * effect and is not yet understood - see
+ * AGENT-FINDINGS-dx11-sprite-sets-2026-08-22.md for what has already been
+ * eliminated, so it is not re-investigated.
+ *
+ * Overriding is preferred to the earlier approach of pinning the sprite EFFECT
+ * PATH to `/effect.gles2/`. That pin worked in the sense that sprites appeared,
+ * but they drew THROUGH hull geometry, and it left the engine loading a gles2
+ * container while running the dx11 profile - a second divergence to reason about
+ * on top of the first. An override keyed to the dx11 path keeps the profile
+ * honest and, because the definition is ours, lets render states be stated here
+ * if the depth behaviour needs correcting (the format supports `states`, as
+ * `boostervolumetric` does).
+ *
+ * The technique body is SHARED BY REFERENCE with the gles2 entry above rather
+ * than copied: two copies of this GLSL would drift, and there is no reason for
+ * the two profiles to disagree about what the shader computes. If they ever must
+ * differ, split them then - do not let them drift silently.
+ *
+ * REMOVE THIS once the dx11 sprite effect is understood.
+ */
+export const blinkinglightspoolDx11 = {
+    ...blinkinglightspool,
+    name: "blinkinglightspool_dx11",
+    replaces: "graphics/effect.dx11/managed/space/spaceobject/fx/blinkinglightspool",
+    description: "Blinking lights pool (dx11 override - see note)"
+};
