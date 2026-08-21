@@ -3,6 +3,18 @@ import { device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "core/vertex";
 import { ErrShaderLink } from "./Tw2Shader";
 
+
+/**
+ * How many `s#` sampler uniforms `SetupGLSLShader` actually assigns.
+ *
+ * WebGL2 guarantees 16 texture image units per stage and the setup loop is
+ * written to that guarantee. It is deliberately NOT the driver limit: a driver
+ * reporting more does not make the loop assign more, so this is the register
+ * above which a sampler needs remapping.
+ * @type {Number}
+ */
+const SAMPLER_SETUP_UNITS = 16;
+
 /**
  * Highest constant-buffer register Carbon itself uses.
  *
@@ -241,7 +253,20 @@ export class Tw2ShaderProgram
             for (const texture of pass.stages[s].textures || [])
             {
                 const reg = texture.registerIndex;
-                if (reg < MAX_UNITS || remap.has(reg)) continue;
+
+                // Compare against the s# SETUP LOOP BOUND, not the driver limit.
+                // `SetupGLSLShader` sets `s0`..`s15` and nothing above, so any
+                // register at 16 or beyond has no uniform set whatever the
+                // hardware reports - and an unset sampler uniform defaults to 0,
+                // colliding with the samplerCube EnvMap that samples unit 0
+                // (GL_INVALID_OPERATION, and the draw is DROPPED).
+                //
+                // This previously read `reg < MAX_UNITS`, which is the driver
+                // value and is 32 on most desktop GPUs. There, registers 16-18
+                // fell in a gap: too high for the setup loop, too low to be
+                // remapped. The collision therefore appeared or vanished with the
+                // GPU, which is exactly how it evaded being pinned down.
+                if (reg < SAMPLER_SETUP_UNITS || remap.has(reg)) continue;
 
                 let unit = 0;
                 while (unit < MAX_UNITS && occupied.has(unit)) unit++;
