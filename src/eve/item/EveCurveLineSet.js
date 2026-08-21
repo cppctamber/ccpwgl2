@@ -749,7 +749,14 @@ export class EveCurveLineSet extends EveObjectSet
     }
 
     /**
-     * Sets the local transform
+     * Sets the line set's LOCAL transform, by decomposing into rotation, position
+     * and scaling.
+     *
+     * `GetTransform` returns the BONE-AWARE transform, so it is not the partner of
+     * this method: `GetTransform(m); SetTransform(m);` on a line set riding a bone
+     * bakes the bone into the authored fields and it is applied again next frame.
+     * Read back what this writes from the authored `rotation`/`position`/`scaling`.
+     *
      * @param {mat4} m
      * @param {Object} [opt]
      */

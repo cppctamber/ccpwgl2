@@ -232,7 +232,11 @@ export class EveLocator2 extends meta.Model
      */
     GetTranslation(out, worldTransform)
     {
-        mat4.getTranslation(out, this.transform);
+        // The bone, like GetTransform and GetBoundingBox already do. Without it a
+        // locator on an animated bone reported a bone-correct BOX and a stale
+        // POSITION, so anything placed here sat where the locator was authored
+        // rather than where it is.
+        mat4.getTranslation(out, this.GetTransform(EveLocator2.global.mat4_0));
         if (worldTransform) vec3.transformMat4(out, out, worldTransform);
         return out;
     }
@@ -245,7 +249,11 @@ export class EveLocator2 extends meta.Model
      */
     GetDirection(out, worldTransform)
     {
-        vec3.set(out, this.transform[8], this.transform[9], this.transform[10]);
+        // Same as GetTranslation: read the direction off the bone-aware transform,
+        // not the authored one, or a locator on a moving bone points the way it
+        // was authored to point.
+        const m = this.GetTransform(EveLocator2.global.mat4_0);
+        vec3.set(out, m[8], m[9], m[10]);
         if (worldTransform) vec3.transformMat4(out, out, worldTransform);
         vec3.normalize(out, out);
         const scale = this.GetScale();
