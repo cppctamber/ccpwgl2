@@ -1,32 +1,42 @@
 // Ported from CarbonEngine (MIT, (c) 2026 CCP Games) - https://github.com/carbonengine/trinity
 //   trinity/trinity/Eve/SpaceObject/Children/SmartLightSets/EveSmartLightQuad.h
+//   trinity/trinity/Eve/SpaceObject/Children/SmartLightSets/EveSmartLightQuad.cpp
 // Hand-maintained from Carbon source, promoted out of generated intake.
+//
+// THE ONE ADAPTATION: Carbon has no per-set geometry. Every quad-ish child
+// pushes a 108-byte instance record into the process-wide `Tr2QuadRenderer`
+// singleton, which merges the pool once a frame and issues ONE instanced draw
+// per registered effect (Tr2QuadRenderer.cpp:210-313).
+//
+// ccpwgl has no instancing path for this, and `EveChildQuad`
+// (src/unsupported/eve/child/EveChildQuad.js) has already solved the same
+// problem by de-instancing: it replicates the instance record into all four
+// corner vertices of a single quad and draws it with `drawElements`. This class
+// generalises that from one quad to N, so the vertex layout below is
+// `EveChildQuad.vertexDeclarations` unchanged - which is the same layout Carbon
+// declares in `EveChildQuad.cpp:33-51` and that this class reuses verbatim
+// (EveSmartLightQuad.cpp:61,70). Every float lands where the shader expects it;
+// only the draw call differs.
+//
+// The org's `runtime-trinity` carries a CPU port of the singleton
+// (core/Tr2QuadRenderer.js). It is deliberately NOT followed here: its
+// `AddQuads` integer-indexes a named-key record so every instance uploads
+// zeros, and its 108-byte stride conflates the float32 pool with Carbon's
+// float16 tail. ccpwgl keeps everything float32, which is what makes the
+// de-instanced route simpler AND correct.
+//
+// Everything else - the per-placement maths, the quaternion order, the matrix
+// packing, the alpha asymmetry - is the org transcription unchanged.
 import { meta } from "utils";
 import { quat, mat4, vec3, vec4 } from "math";
-// TODO(port): EveChildTransform does not exist yet in ccpwgl
-// (src/eve/child/EveChildTransform.js). Kept as the faithful base class from
-// runtime-trinity - it supplies `worldTransform` and `UpdateTransform`, both
-// used below, which are unresolved until EveChildTransform is ported.
-import { EveChildTransform } from "../child/EveChildTransform.js";
-// TODO(port): ccpwgl's EveChildQuad currently lives at
-// src/unsupported/eve/child/EveChildQuad.js (not src/eve/child/EveChildQuad.js)
-// and has no `GetQuadDefinition()` static - kept as the faithful import path
-// from runtime-trinity; unresolved until EveChildQuad is promoted/ported with
-// that method.
-import { EveChildQuad } from "../child/EveChildQuad.js";
-import { resolveGroupColor } from "./EveSmartLightBaseGroup.js";
-// TODO(port): ccpwgl has no Tr2Effect class - the nearest analog is
-// src/core/mesh/Tw2Effect.js. Kept as the faithful import path from
-// runtime-trinity; unresolved until Tr2Effect (or an equivalent) is ported.
-import { Tr2Effect } from "../../shader/Tr2Effect.js";
-// TODO(port): ccpwgl has no TriBatchType enum (no quad-renderer module
-// exists yet at all - RegisterEffect/AddQuads below are unresolved). Kept as
-// the closest bare-specifier guess (global/constant already exists as a
-// module, just without this export); unresolved until quad-renderer
-// infrastructure is ported.
-import { TriBatchType } from "global/constant";
+import { device } from "global/tw2";
+import { Tw2Effect, Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from "core";
+import { EveChildTransform } from "../child/EveChildTransform";
+import { EveChildQuad } from "unsupported/eve/child/EveChildQuad";
+import { resolveGroupColor } from "./EveSmartLightBaseGroup";
 
-/** A smart-light group member that places faction-colour-aware flare quads at each distribution placement and submits them to the quad renderer. */
+
+/** A smart-light group member that places faction-colour-aware flare quads at each distribution placement. */
 @meta.type("EveSmartLightQuad")
 @meta.ccp.define("EveSmartLightQuad")
 export class EveSmartLightQuad extends EveChildTransform
@@ -36,8 +46,8 @@ export class EveSmartLightQuad extends EveChildTransform
     @meta.string
     name = "";
 
-    /** m_effect (Tr2EffectPtr) [READWRITE, PERSIST] */
-    @meta.struct("Tr2Effect")
+    /** m_effect (Tr2EffectPtr) [READWRITE, PERSIST] - ccpwgl's Tw2Effect. */
+    @meta.struct("Tw2Effect")
     effect = null;
 
     /** m_brightness (float) [READWRITE, PERSIST] */
@@ -56,7 +66,7 @@ export class EveSmartLightQuad extends EveChildTransform
     @meta.vector3
     staticOffsetTranslation = vec3.create();
 
-    /** m_editMode (bool) [READWRITE] */
+    /** m_editMode (bool) [READWRITE] - not persisted (EveSmartLightQuad_Blue.cpp). */
     @meta.boolean
     editMode = false;
 
@@ -65,8 +75,8 @@ export class EveSmartLightQuad extends EveChildTransform
     softQuad = false;
 
     // Flattened EveSmartLightBaseGroup secondary base (Carbon multiple
-    // inheritance; EveSmartLightBaseGroup_Blue.cpp:15-20 - the wire format of
-    // this class carries these fields).
+    // inheritance; EXPOSURE_CHAINTO at EveSmartLightQuad_Blue.cpp:28 is why
+    // these fields are on this class's wire format).
 
     /** m_selectedColor (int32_t) [READWRITE, PERSIST, NOTIFY, ENUM] (EveSmartLightBaseGroup.h:31) */
     @meta.int32
@@ -81,23 +91,35 @@ export class EveSmartLightQuad extends EveChildTransform
     attributeModifiers = [];
 
     /** m_color (Color) [READWRITE, PERSIST] (EveSmartLightBaseGroup.h:30) */
-    // TODO(port): vec4.createLinear() does not exist in ccpwgl's math/vec4 -
-    // kept verbatim from runtime-trinity; verify the intended default once a
-    // ccpwgl equivalent is ported.
     @meta.color
     customColor = vec4.createLinear();
 
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
-    /** m_effectKey (unsigned) - cached Tr2Effect hash used as the quad-renderer bucket key (EveSmartLightQuad.h:59). */
-    _effectKey = 0;
-
     /** m_activationStrength (float) - captured from the update params (EveSmartLightQuad.h:54). */
     _activationStrength = 1;
 
     /** Last softQuad value the settle hook applied (JS-only change detection). */
     _lastAppliedSoftQuad = false;
+
+    _decl = Tw2VertexDeclaration.from(EveChildQuad.vertexDeclarations);
+    _perObjectData = Tw2PerObjectData.from(EveChildQuad.perObjectData);
+
+    /** CPU-side vertex scratch, grown on demand; `_quadCount` is how much of it is live. */
+    _array = null;
+    _quadCount = 0;
+    _capacity = 0;
+    _vertexBuffer = null;
+    _indexBuffer = null;
+
+    /**
+     * The frustum the owning set captured in `UpdateLod`. Carbon culls per
+     * placement inside AddQuadsToQuadRenderer, which runs at render time with a
+     * frustum in hand; ccpwgl's equivalent hand-off point is UpdateLod, so the
+     * set stores it and passes it down. Null means "cull nothing".
+     */
+    _frustum = null;
 
     /**
      * Faction-aware group color (Carbon base EveSmartLightBaseGroup.cpp:43-53).
@@ -110,24 +132,13 @@ export class EveSmartLightQuad extends EveChildTransform
         return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
     }
 
-    /**
-     * Overwrites the custom color (Carbon base EveSmartLightBaseGroup.cpp:55-58).
-     *
-     * Carbon inherits EveSmartLightBaseGroup; JS single inheritance flattens
-     * the base-group surface.
-     */
+    /** Overwrites the custom color (Carbon base EveSmartLightBaseGroup.cpp:55-58). */
     SetColor(color)
     {
         vec4.copy(this.customColor, color);
     }
 
-    /**
-     * Stores the inherited faction color set and fans it out to the attribute
-     * modifiers (Carbon base EveSmartLightBaseGroup.cpp:30-41).
-     *
-     * Carbon inherits EveSmartLightBaseGroup; JS single inheritance flattens
-     * the base-group surface.
-     */
+    /** Stores the inherited faction color set and fans it out (Carbon base EveSmartLightBaseGroup.cpp:30-41). */
     SetInheritProperties(colorSet)
     {
         if (colorSet)
@@ -141,12 +152,7 @@ export class EveSmartLightQuad extends EveChildTransform
         }
     }
 
-    /**
-     * Fans a controller variable out to the attribute modifiers (Carbon base EveSmartLightBaseGroup.cpp:60-66).
-     *
-     * Carbon inherits EveSmartLightBaseGroup; JS single inheritance flattens
-     * the base-group surface.
-     */
+    /** Fans a controller variable out to the attribute modifiers (Carbon base EveSmartLightBaseGroup.cpp:60-66). */
     SetControllerVariable(name, value)
     {
         for (const attributeModifier of this.attributeModifiers)
@@ -196,83 +202,105 @@ export class EveSmartLightQuad extends EveChildTransform
         return true;
     }
 
-    /**
-     * Creates the default flare-quad effect when none was authored (Carbon
-     * constructor, EveSmartLightQuad.cpp:10-34) and caches the effect key
-     * (EveSmartLightQuad.cpp:56-65).
-     *
-     * Tr2QuadRenderer::Instance() is engine-owned; Initialize caches the
-     * effect key and defers effect registration to RegisterWithQuadRenderer.
-     */
+    /** Creates the default flare-quad effect when none was authored (Carbon constructor, EveSmartLightQuad.cpp:10-34). */
     Initialize()
     {
         if (!this.effect)
         {
-            this.effect = new Tr2Effect();
+            this.effect = new Tw2Effect();
             this._ApplyEffectPath();
         }
-        this._effectKey = Number(this.effect.GetHashValue?.() ?? 0) >>> 0;
         this._lastAppliedSoftQuad = this.softQuad;
         return true;
     }
 
-    /**
-     * Registers the effect bucket with a quad renderer (EveSmartLightQuad.cpp:68-71).
-     *
-     * The quad renderer is an injected engine-owned capability; the Carbon
-     * arguments are forwarded through a duck-typed contract using
-     * EveChildQuad's shared quad definition.
-     */
-    RegisterWithQuadRenderer(quadRenderer)
+    /** Applies the softQuad-selected flare effect path (EveSmartLightQuad.cpp:25-33 and cpp:40-51). */
+    _ApplyEffectPath()
     {
-        quadRenderer?.RegisterEffect?.(
-            this._effectKey,
-            TriBatchType.TRIBATCHTYPE_ADDITIVE,
-            EveSmartLightQuad.QUAD_INSTANCE_SIZE,
-            1,
-            EveChildQuad.GetQuadDefinition(),
-            this.effect
+        // Both paths are tier-pinned to sm_hi in src/config.js (FX_TIER_PINS):
+        // their sm_depth bodies disable depth testing and sample an unpublished
+        // DepthMap, so the pinned tier is what keeps them behind the hull.
+        this.effect?.SetValue?.(
+            this.softQuad
+                ? "res:/Graphics/Effect/Managed/Space/SpecialFX/flarequadsoft.fx"
+                : "res:/Graphics/Effect/Managed/Space/SpecialFX/FlareQuad.fx"
         );
     }
 
-    /**
-     * Captures the activation strength, refreshes the effect key in edit mode,
-     * and updates the attribute modifiers with full strength
-     * (EveSmartLightQuad.cpp:73-98).
-     *
-     * Carbon re-registers through the Tr2QuadRenderer singleton; the
-     * relocated renderer arrives via the threaded update context when
-     * present.
-     */
-    UpdateSyncronous(updateContext, params, _distribution)
+    /** @returns {Boolean} */
+    IsGood()
     {
-        this._activationStrength = params?.activationStrength ?? 1;
+        return !!(this.effect && this.effect.IsGood() && this._vertexBuffer && this._quadCount);
+    }
 
-        if (this.editMode)
+    /** Keeps the effect alive. */
+    KeepAlive()
+    {
+        if (this.effect) this.effect.KeepAlive();
+    }
+
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]]
+     * @returns {Array}
+     */
+    GetResources(out = [])
+    {
+        if (this.effect) this.effect.GetResources(out);
+        return out;
+    }
+
+    /** Unloads the gl buffers. */
+    Unload()
+    {
+        const { gl } = device;
+
+        if (this._vertexBuffer)
         {
-            if (this.effect)
-            {
-                const key = Number(this.effect.GetHashValue?.() ?? 0) >>> 0;
-                if (key !== this._effectKey)
-                {
-                    this._effectKey = key;
-                    const quadRenderer = updateContext?.GetQuadRenderer?.() ?? updateContext?.quadRenderer;
-                    if (quadRenderer)
-                    {
-                        this.RegisterWithQuadRenderer(quadRenderer);
-                    }
-                }
-            }
-            else
-            {
-                this._effectKey = 0;
-            }
+            gl.deleteBuffer(this._vertexBuffer);
+            this._vertexBuffer = null;
         }
+
+        if (this._indexBuffer)
+        {
+            gl.deleteBuffer(this._indexBuffer);
+            this._indexBuffer = null;
+        }
+
+        this._quadCount = 0;
+        this._capacity = 0;
+        this._array = null;
+    }
+
+    /**
+     * Captures the activation strength and updates the attribute modifiers with
+     * full strength (EveSmartLightQuad.cpp:73-98), then builds this frame's
+     * geometry.
+     *
+     * Carbon does the build at render time inside AddQuadsToQuadRenderer;
+     * ccpwgl builds here because this is the one call per frame that has the
+     * distribution in hand regardless of render mode.
+     *
+     * The edit-mode effect-key refresh (cpp:78-90) has no counterpart: the key
+     * exists only to pick a bucket in the quad-renderer singleton, and there is
+     * no singleton here.
+     */
+    UpdateSyncronous(updateContext, params, distribution)
+    {
+        this._activationStrength = params && params.activationStrength !== undefined
+            ? params.activationStrength
+            : 1;
 
         for (const attributeModifier of this.attributeModifiers)
         {
             attributeModifier?.UpdateSyncronous?.(updateContext, params, 1);
         }
+
+        if (!this.effect) this.Initialize();
+
+        const placements = distribution?.GetPlacementData?.() || [];
+        const size = Number(distribution?.GetNumberOfPlacements?.() ?? placements.length);
+        this.BuildQuads(placements, size, this._frustum);
     }
 
     /**
@@ -298,26 +326,32 @@ export class EveSmartLightQuad extends EveChildTransform
     }
 
     /**
-     * Builds one frustum-culled quad per placement and submits it to the quad
-     * renderer (EveSmartLightQuad.cpp:116-170). The transforms are packed as
-     * Carbon's Vector4 rows (_11,_21,_31,_41 / ...), which on the shared
-     * D3D-row-major / GL-column-major byte layout is the column-stride pattern
-     * (m[0],m[4],m[8],m[12]) etc. Color/brightness stay float32; the half
-     * packing happens at buffer-build time in the engine.
+     * Builds one frustum-culled quad per placement (EveSmartLightQuad.cpp:116-170).
      *
-     * The quad renderer and frustum are injected engine-owned capabilities
-     * reached through duck-typed contracts; a missing frustum is treated as
-     * visible.
+     * The transforms are packed as Carbon's Vector4 rows (_11,_21,_31,_41 /
+     * ...), which on the shared D3D-row-major / GL-column-major byte layout is
+     * the column-stride pattern (m[0],m[4],m[8],m[12]) - the same packing
+     * EveChildQuad.Rebuild already writes.
+     *
+     * Note two faithful asymmetries that read as bugs and are not:
+     *  - alpha comes from the RAW customColor, not from the faction-resolved
+     *    group colour (cpp:162);
+     *  - localTransform here is SYNTHESISED per placement (diagonal scale plus
+     *    the placement translation), unlike EveChildQuad which copies its own
+     *    authored localTransform.
+     *
+     * @param {Array} placements
+     * @param {Number} size - may be SMALLER than placements.length; Carbon
+     *  passes the live count separately and it is the one that counts.
+     * @param {?Tw2Frustum} frustum - null culls nothing
      */
-    AddQuadsToQuadRenderer(placements, size, frustum, quadRenderer)
+    BuildQuads(placements, size, frustum)
     {
-        if (!this.display || !this.effect)
-        {
-            return;
-        }
+        this._quadCount = 0;
+
+        if (!this.display || !this.effect) return;
 
         const statics = EveSmartLightQuad;
-        const quad = statics._quad;
         const rotation = statics._rotation;
         const position = statics._position;
         const direction = statics._direction;
@@ -327,6 +361,14 @@ export class EveSmartLightQuad extends EveChildTransform
         const m = this.worldTransform;
         const groupColor = this.GetGroupColor();
         const count = Math.min(Number(size ?? placements?.length ?? 0), placements?.length ?? 0);
+
+        if (!count) return;
+
+        const vertexSize = EveChildQuad.vertexSize;
+        this._Reserve(count);
+
+        const array = this._array;
+        let written = 0;
 
         for (let index = 0; index < count; index++)
         {
@@ -359,43 +401,181 @@ export class EveSmartLightQuad extends EveChildTransform
             vec3.transformMat4(worldPosition, position, m);
             vec4.set(sphere, worldPosition[0], worldPosition[1], worldPosition[2], maxScale);
 
-            if (frustum?.IsSphereVisible?.(sphere) !== false)
+            if (frustum?.IsSphereVisible?.(sphere) === false) continue;
+
+            const strength = this._activationStrength;
+            vec3.set(color, groupColor[0] * strength, groupColor[1] * strength, groupColor[2] * strength);
+
+            for (const attributeModifier of this.attributeModifiers)
             {
-                const strength = this._activationStrength;
-                vec3.set(color, groupColor[0] * strength, groupColor[1] * strength, groupColor[2] * strength);
+                attributeModifier?.ProcessAttributeModifier?.(color, placement, worldPosition, direction, strength);
+            }
 
-                for (const attributeModifier of this.attributeModifiers)
-                {
-                    attributeModifier?.ProcessAttributeModifier?.(color, placement, worldPosition, direction, strength);
-                }
+            // De-instanced: the record is replicated into all four corners, the
+            // corner index riding in float 0 exactly as EveChildQuad does.
+            const base = written * 4 * vertexSize;
 
-                vec4.set(quad.parentTransform0, m[0], m[4], m[8], m[12]);
-                vec4.set(quad.parentTransform1, m[1], m[5], m[9], m[13]);
-                vec4.set(quad.parentTransform2, m[2], m[6], m[10], m[14]);
-                vec4.set(quad.localTransform0, scaleX, 0, 0, position[0]);
-                vec4.set(quad.localTransform1, 0, scaleY, 0, position[1]);
-                vec4.set(quad.localTransform2, 0, 0, scaleZ, position[2]);
-                vec4.set(quad.color, color[0], color[1], color[2], this.customColor[3]);
-                quad.brightness[0] = this.brightness;
-                quad.brightness[1] = 0;
+            for (let corner = 0; corner < 4; corner++)
+            {
+                const o = base + corner * vertexSize;
 
-                quadRenderer?.AddQuads?.(this._effectKey, quad, 1);
+                array[o] = corner;
+
+                array[o + 1] = m[0];
+                array[o + 2] = m[4];
+                array[o + 3] = m[8];
+                array[o + 4] = m[12];
+
+                array[o + 5] = m[1];
+                array[o + 6] = m[5];
+                array[o + 7] = m[9];
+                array[o + 8] = m[13];
+
+                array[o + 9] = m[2];
+                array[o + 10] = m[6];
+                array[o + 11] = m[10];
+                array[o + 12] = m[14];
+
+                array[o + 13] = scaleX;
+                array[o + 14] = 0;
+                array[o + 15] = 0;
+                array[o + 16] = position[0];
+
+                array[o + 17] = 0;
+                array[o + 18] = scaleY;
+                array[o + 19] = 0;
+                array[o + 20] = position[1];
+
+                array[o + 21] = 0;
+                array[o + 22] = 0;
+                array[o + 23] = scaleZ;
+                array[o + 24] = position[2];
+
+                array[o + 25] = color[0];
+                array[o + 26] = color[1];
+                array[o + 27] = color[2];
+                // Carbon takes alpha from the raw authored colour (cpp:162).
+                array[o + 28] = this.customColor[3];
+
+                array[o + 29] = this.brightness;
+                array[o + 30] = 0;
+            }
+
+            written++;
+        }
+
+        this._quadCount = written;
+
+        if (written) this._Upload(written * 4 * vertexSize);
+    }
+
+    /**
+     * Grows the CPU array and the index buffer to hold `count` quads.
+     * @param {Number} count
+     */
+    _Reserve(count)
+    {
+        if (count <= this._capacity && this._array) return;
+
+        const { gl } = device;
+        const vertexSize = EveChildQuad.vertexSize;
+
+        this._array = new Float32Array(count * 4 * vertexSize);
+        this._capacity = count;
+
+        // Carbon's quad index order (Tr2QuadRenderer.cpp:222), offset by 4 per
+        // quad (cpp:228). Verified in ccpwgl at EveChildQuad.js:260-261: the
+        // reversed winding culls these quads away entirely.
+        const indices = new Uint16Array(count * 6);
+        const pattern = EveChildQuad.indices;
+        for (let q = 0; q < count; q++)
+        {
+            for (let i = 0; i < 6; i++)
+            {
+                indices[q * 6 + i] = pattern[i] + q * 4;
             }
         }
+
+        if (!this._indexBuffer) this._indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
-    /** Applies the softQuad-selected flare effect path (EveSmartLightQuad.cpp:25-33 and cpp:40-51). */
-    _ApplyEffectPath()
+    /**
+     * Uploads the live prefix of the CPU array.
+     *
+     * The buffer is reused rather than recreated: creating a fresh one per
+     * rebuild leaks a VBO per frame on a moving parent, and deleting the old
+     * one poisons any attribute slot still attached to it, silently killing
+     * unrelated draws for the rest of the frame (EveChildQuad.js:232-238).
+     *
+     * @param {Number} floats
+     */
+    _Upload(floats)
     {
-        this.effect?.SetEffectPathName?.(
-            this.softQuad
-                ? "res:/Graphics/Effect/Managed/Space/SpecialFX/flarequadsoft.fx"
-                : "res:/Graphics/Effect/Managed/Space/SpecialFX/FlareQuad.fx"
-        );
+        const { gl } = device;
+
+        if (!this._vertexBuffer) this._vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this._array.subarray(0, floats), gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
 
-    /** sizeof(EveSmartLightQuad::SimplifiedQuad): 6 * 16 + 4 * 2 + 2 * 2 bytes (EveSmartLightQuad.h:38-49). */
-    static QUAD_INSTANCE_SIZE = 108;
+    /**
+     * Gets render batches.
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     * @returns {Boolean} true if batches accumulated
+     */
+    GetBatches(mode, accumulator, perObjectData)
+    {
+        if (!this.display || !this.IsGood() || mode !== device.RM_ADDITIVE) return false;
+
+        const batch = new Tw2ForwardingRenderBatch();
+        batch.geometryProvider = this;
+        // Without this Tw2ForwardingRenderBatch.HasTechnique is always false,
+        // and any collection path with a technique filter discards the batch
+        // silently - see EveChildQuad.js:282.
+        batch.effect = this.effect;
+        batch.perObjectData = this._perObjectData;
+        batch.renderMode = mode;
+        accumulator.Commit(batch);
+        return true;
+    }
+
+    /**
+     * Renders the quads.
+     * @param {String} technique
+     * @returns {Boolean}
+     */
+    Render(technique)
+    {
+        if (!this.display || !this.IsGood()) return false;
+
+        technique = "Main";
+
+        const
+            d = device,
+            gl = d.gl,
+            stride = EveChildQuad.vertexSize * 4;
+
+        d.SetStandardStates(d.RM_ADDITIVE);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+
+        const passCount = this.effect.GetPassCount(technique);
+        for (let pass = 0; pass < passCount; ++pass)
+        {
+            this.effect.ApplyPass(technique, pass);
+            if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), stride)) return false;
+            d.ApplyShadowState();
+            gl.drawElements(gl.TRIANGLES, this._quadCount * 6, gl.UNSIGNED_SHORT, 0);
+        }
+
+        return true;
+    }
 
     /** TriVectorRotateMatrix (TriMath.cpp:81-94): basis-rows multiply, no translation. */
     static _TransformNormal(out, direction, matrix)
@@ -408,19 +588,6 @@ export class EveSmartLightQuad extends EveChildTransform
         out[2] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
         return out;
     }
-
-    // m_quad-equivalent CPU record (SimplifiedQuad, EveSmartLightQuad.h:38-49) -
-    // scratch reused across placements; the quad renderer copies on AddQuads.
-    static _quad = {
-        parentTransform0: vec4.create(),
-        parentTransform1: vec4.create(),
-        parentTransform2: vec4.create(),
-        localTransform0: vec4.create(),
-        localTransform1: vec4.create(),
-        localTransform2: vec4.create(),
-        color: vec4.create(),
-        brightness: new Float32Array(2)
-    };
 
     static _identity = mat4.create();
 
