@@ -336,3 +336,54 @@ unskinned geometry. If they are, the fault is sprite-specific. If they are not,
 it is shared and the sprites are merely the most visible case.
 
 Tally: seven theories on this bug, none held.
+
+---
+
+# Render state allowlist: audited, and deliberately NOT widened
+
+Audited all 40 dx11 shaders under `/v5/quad/`. Only three families declare any
+render state at all, each in plain/skinned/unpacked/unpackedskinned variants:
+
+    quadsailsv5        ZWRITEENABLE 1
+    quadglassv5        CULLMODE 3 then 2, across its two passes
+    quadenvironmentv5  SRCBLEND/DESTBLEND/CULLMODE/ALPHABLENDENABLE on pass 1
+
+None declares `ZENABLE 0`.
+
+The allowlist was briefly widened to `/v5/quad/` on the theory that sails were not
+writing depth on dx11. REVERTED: the operator confirms dx11 sails look correct.
+`RM_OPAQUE` already sets `ZWRITEENABLE 1`, so dropping the container's identical
+request changes nothing - which is exactly why sails are fine. Widening would only
+have changed glass CULLMODE and environment blending, neither of which has an
+observed problem, so it was an unverified behaviour change for no gain.
+
+## Why decals ARE on the list (operator)
+
+Without their states decals disappear as the camera approaches, because they rely
+on depth and the direction is the reverse of what webgl uses. That is the same
+reversed-z story as the `+1e-5` decal lift: toward the camera on a reversed axis,
+into the hull on a forward one, with the error growing as the camera closes in.
+
+## Why the flare family stays OFF (operator)
+
+Flare quads declare `ZENABLE 0` and expect to occlude themselves from a DepthMap
+nothing publishes. That is blocked on DepthMap itself, which is blocked on depth
+map quality at this scene scale and on Carbon reversed z. Do not widen to the
+flare family until DepthMap is dealt with.
+
+## The live lead, from another agent
+
+    GL_INVALID_OPERATION: glDrawElements:
+    Two textures of different types use the same sampler location.
+
+Per frame, WebGL2, dx11 shaders translated in memory, plain hull, no SKINR paint
+and no lens flare (re-confirmed with FLARE: NONE, so not flare damage).
+
+This matters here because **WebGL DROPS THE DRAW** on INVALID_OPERATION. A draw
+that never executes is indistinguishable from one that renders black - which is
+the sprite symptom, on the right profile, on the right backend. It is the texture
+and sampler pairing problem: Carbon shares samplers and the t#/s# pairing lives
+only in DXBC operands, so a consumer guessing by register number can collide two
+different targets onto one location. See /docs/contracts/texture-sampler-pairing.md.
+
+Check this BEFORE resuming any sprite-specific theory.
