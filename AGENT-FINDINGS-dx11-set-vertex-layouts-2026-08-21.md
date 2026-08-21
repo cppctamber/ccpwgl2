@@ -36,7 +36,7 @@ carries.
 | Attachment | Verdict |
 | --- | --- |
 | EvePlaneSet | **MISMATCH** - missing TEXCOORD 8 |
-| EveSpotlightSet | **MISMATCH** - missing COLOR 1, and TEXCOORD 4 is the wrong shape |
+| EveSpotlightSet | declared mismatch, but VERIFIED WORKING on dx11 - see below |
 | EveHazeSet | minor - TEXCOORD 7 carries 3 components where Carbon has 4 |
 | EveSpriteSet | match |
 | EveBoosterSet / EveBoosterSet2 | match |
@@ -65,7 +65,17 @@ Note ccpwgl expands each plane to four vertices with an index buffer rather than
 instancing it as Carbon's quad renderer does. That is a legitimate difference of
 strategy and not itself a bug - only the semantics have to line up.
 
-### EveSpotlightSet - MISMATCH (`EveSpotlightSet.cpp:22-29,40-47` vs `EveSpotlightSet.js:645-652`)
+### EveSpotlightSet - declared mismatch, but works in practice
+
+**Operator check 2026-08-21: spotlights render correctly on dx11.** So whatever
+COLOR 1 and the corner-index stream feed, the shaders in use do not depend on
+them - either those inputs are optimised out (`usedMask === 0`, which
+`buildInputDefinition` drops before the match ever happens) or the second,
+narrower Carbon declaration is the one these effects were built against. Do NOT
+"fix" this on the strength of the source comparison alone; it would change
+working output. Left here as a record of the difference, not as a defect.
+
+#### The difference, for reference (`EveSpotlightSet.cpp:22-29,40-47` vs `EveSpotlightSet.js:645-652`)
 
 Carbon carries TWO declarations. The fuller one:
 
@@ -131,19 +141,21 @@ view. **A one-shot per-effect log naming every declared input that got
 zero-filled would have made this immediate, and is worth adding regardless of the
 fix** - it is the diagnostic this whole class of bug lacks.
 
-## Fix shape (not implemented)
+## Status
 
-Only two sets need work, and both need the declaration AND the buffer writer
-changed together - publishing the right semantics over the wrong bytes renders
-something plausible-but-wrong, which is worse than rendering nothing.
+- **EvePlaneSet: FIXED** (commit 9c186854). TEXCOORD 8 (blinkData) published and
+  TEXCOORD 7 widened to carry pickBufferID; the draw stride now derives from
+  `EvePlaneSet.vertexSize` instead of the literal 140 it had drifted from. This
+  also covers the station video billboards, which are plane sets.
+- **EveSpotlightSet: NOT a defect.** Verified working on dx11 by the operator.
+  Do not change it on the strength of the source comparison.
+- **EveHazeSet**: unverified, low priority, only affects a `.w` nobody may read.
+- **EveBannerSet / EveCurveLineSet**: still uncompared, for the reasons above.
+- **Instanced geometry**: still open, and NOT explained by any of this - that path
+  uses the mesh and instance declarations from the resource, not a hand-built
+  layout.
 
-1. **EvePlaneSet**: add `blinkData` as TEXCOORD 8 (4 components, taking
-   `vertexSize` from 35 to 39) and widen TEXCOORD 7 to 4 to carry
-   `pickBufferID`. Source the blink values from the item; check what
-   `EvePlaneSetItem` already exposes before inventing fields.
-2. **EveSpotlightSet**: publish COLOR 1, and move the corner index to its own
-   per-vertex stream at TEXCOORD 4 with divisor 0, matching Carbon's split.
-
-Both are per-set constants plus their writers, so they can be done independently.
-Verify on `chjita:caldaribase:caldari`, which carries plane and spotlight sets,
-and compare the two profiles side by side rather than judging dx11 alone.
+The one thing worth doing regardless: a one-shot per-effect log naming every
+declared input that got zero-filled. This bug class is silent today, and the
+spotlight case shows why guessing from source alone is not enough - the runtime
+answer and the static answer disagreed.

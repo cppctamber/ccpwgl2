@@ -329,6 +329,65 @@ export class EveSOFDataHullDecalSetItem extends meta.Model
                 mipFilterMode: MipFilterMode.NONE
             }
         },
+        // A cylindrical decal projects its UV AROUND a cylinder, so the lookup
+        // runs past 0..1 by construction and must repeat - bordered or clamped,
+        // everything past the seam reads the border and the projection smears.
+        //
+        // Stated here rather than left to the shader default, and stated for
+        // every spelling, so both profiles agree: `DecalAtMap` is the PACKED
+        // name the legacy gles2 shaders declare, the dx11 shaders are the
+        // unpacked variants declaring `DecalAlbedoMap`/`DecalTransparencyMap`/
+        // `DecalGlowMap`. Naming only one spelling silently does nothing on the
+        // other profile and the blanket CLAMP_TO_BORDER survives - the same trap
+        // that made killmarks render a single column.
+        [Usage.CYLINDRICAL] : {
+            DecalAtMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalAlbedoMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalTransparencyMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            }
+        },
+
+        [Usage.GLOW_CYLINDRICAL] : {
+            DecalAtMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalAlbedoMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalTransparencyMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            },
+            DecalGlowMap : {
+                addressUMode: WrapMode.REPEAT,
+                addressVMode: WrapMode.REPEAT,
+                filterMode: FilterMode.LINEAR,
+                mipFilterMode: MipFilterMode.NONE
+            }
+        },
+
         [Usage.GLOW] : {
             DecalAtMap : {
                 addressUMode: WrapMode.CLAMP_TO_EDGE,
