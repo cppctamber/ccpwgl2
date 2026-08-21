@@ -671,3 +671,21 @@ num.srgbFromLinear = function (a)
         ? a * 12.92
         : 1.055 * Math.pow(a, 1.0 / 2.4) - 0.055;
 };
+/**
+ * Converts a Float to the Dword bit pattern that `num.dwordToFloat` decodes.
+ *
+ * Carbon's render states carry depth bias as a raw dword, and
+ * `Tw2Device.SetRenderState` runs every RS_DEPTHBIAS/RS_SLOPESCALEDEPTHBIAS
+ * value back through `dwordToFloat`. So anything written into a render-state
+ * table has to be encoded first - a plain `2` decodes to a denormal near
+ * 2.8e-45, which is a silent no-op rather than an error.
+ *
+ * @param value
+ * @return {Number}
+ */
+num.floatToDword = function (value)
+{
+    const buffer = new DataView(new ArrayBuffer(4));
+    buffer.setFloat32(0, value, false);
+    return buffer.getUint32(0, false);
+};

@@ -1372,7 +1372,13 @@ export class Tw2Device extends Tw2EventEmitter
             case RS_SLOPESCALEDEPTHBIAS:
             case RS_DEPTHBIAS:
                 value = num.dwordToFloat(value);
-                if (this._depthOffsetState[state] !== value)
+                // `.states[state]`, not `[state]` - the values live one level
+                // down. Reading the wrong level always compared against
+                // `undefined`, so this branch marked the offset dirty on every
+                // single call and re-issued `gl.polygonOffset` on every pass
+                // change. Harmless on its own; it is what made the shadow
+                // caster bias impossible to keep (see Tw2CarbonShadowRenderer).
+                if (this._depthOffsetState.states[state] !== value)
                 {
                     this._depthOffsetState.states[state] = value;
                     this._depthOffsetState.dirty = true;

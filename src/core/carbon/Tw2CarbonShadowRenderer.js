@@ -1,12 +1,12 @@
 import { device, tw2 } from "global";
-import { mat4 } from "math";
+import { mat4, num } from "math";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { Tw2DepthRenderTarget } from "../Tw2DepthRenderTarget";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2RenderBatchContext } from "../batch/Tw2RenderBatchContext";
 import { Tw2CarbonResourceBinder } from "./Tw2CarbonResourceBinder";
 import { Tw2CarbonShadowProducer } from "./Tw2CarbonShadowProducer";
-import { RM_OPAQUE } from "constant";
+import { RM_OPAQUE, RS_SLOPESCALEDEPTHBIAS, RS_DEPTHBIAS } from "constant";
 
 
 // Camera transforms saved across the caster pass, which rebinds them to the light.
@@ -110,23 +110,41 @@ export class Tw2CarbonShadowRenderer
     /**
      * Depth bias applied while rendering casters, as `gl.polygonOffset`.
      *
-     * A DELIBERATE DEVIATION: Carbon applies no bias anywhere in its cascade
-     * path - not in `Tr2ShadowMap.cpp`, not in the cascade loop, and the resolve
-     * does one plain compare. It does not need one, because sixteen cascades at
-     * 2048 texels put its depth quantisation far below the difference between a
-     * surface and itself.
+     * CORRECTED 2026-08-22. This used to say "Carbon applies no bias anywhere in
+     * its cascade path". That is false, and it is false in a way that sends you
+     * looking in the wrong place: Carbon's caster bias is not in the C++ at all.
+     * Its engine-level standard states carry zero
+     * (`Tr2EffectStateManager.cpp:46-49`); the bias is authored PER PASS in the
+     * shipped effect containers and applied at draw time through the rasterizer
+     * descriptor (`Tr2RenderContextDx11.cpp:1831-1844`). Across the corpus:
      *
-     * ccpwgl runs four cascades at 1024 - roughly an eighth of that density - so
-     * a lit surface's own depth and its stored depth land on the same quantum
-     * and the comparison is a TIE. Ties resolve as lit, so shadows thin out or
-     * vanish entirely, and every knob that widens a cascade box makes it worse:
-     * lowering `shadowNear`, raising `shadowDistance`, or extending the box
-     * toward the light all killed shadows outright before this existed.
+     *   `Shadow`              RS_SLOPESCALEDEPTHBIAS +1.0  RS_DEPTHBIAS +1.0  (135 files)
+     *   `DynamicLightShadow`  RS_SLOPESCALEDEPTHBIAS -6.0  RS_DEPTHBIAS -1.0  (135 files)
      *
-     * Pushing stored depths slightly AWAY from the light breaks the tie in the
-     * safe direction - a surface stops shadowing itself, while a genuine
-     * occluder is far enough in front to still win. Raise `units` if shadows
-     * look absent, lower it if they detach from their caster.
+     * We never see those values because `Tw2CarbonEffectReader.RENDER_STATE_PATHS`
+     * only installs per-pass states for `/decals/`, so every hull shader's
+     * `Shadow` states are discarded on read. This field is what stands in for
+     * them.
+     *
+     * The two rows also settle the SIGN, which has burnt time twice. `Shadow` is
+     * positive because Carbon's sun caster pass explicitly opts OUT of reverse-Z
+     * (`EveSpaceScene.cpp:775` `SetInvertedDepthTest(false)`, depth cleared to
+     * 1.0 at `Tr2ShadowMap.cpp:246`, D32_FLOAT) - and ccpwgl matches that.
+     * `DynamicLightShadow` is negative because it is a different pass that does
+     * not opt out. Do not "fix" acne by flipping this negative.
+     *
+     * Ties are still the failure mode: a lit surface's own depth and its stored
+     * depth landing on the same quantum resolve as lit, so shadows thin out or
+     * vanish. Pushing stored depths AWAY from the light breaks the tie safely -
+     * a surface stops shadowing itself while a genuine occluder still wins.
+     *
+     * On a FLOAT depth target the constant term is nearly useless near zero, so
+     * `casterSlopeBias` is the load-bearing knob for triangle-shaped acne and
+     * `casterDepthBias` should mostly be left alone. Raise slope if acne
+     * remains, lower it if shadows detach from their caster (peter-panning).
+     *
+     * We sit at 2/2, i.e. twice Carbon's `Shadow`, because our single fitted
+     * cascade is lower texel density than Carbon's sixteen.
      */
     casterDepthBias = 2;
 
@@ -345,6 +363,11 @@ export class Tw2CarbonShadowRenderer
         const depthClamp = device.GetExtension("EXT_depth_clamp");
         const depthClampEnum = depthClamp && depthClamp.DEPTH_CLAMP_EXT;
         const biased = this.casterDepthBias !== 0 || this.casterSlopeBias !== 0;
+        // The RM_OPAQUE bias override and its saved values - see where they are
+        // installed below.
+        let restoreOpaqueStates = null,
+            restoreSlopeBias = 0,
+            restoreDepthBias = 0;
         const
             prevView = mat4.copy(_prevView, device.view),
             prevProjection = mat4.copy(_prevProjection, device.projection);
@@ -377,10 +400,47 @@ export class Tw2CarbonShadowRenderer
             if (depthClampEnum) gl.enable(depthClampEnum);
 
             // Bias the stored depths away from the light - see `casterDepthBias`.
+            //
+            // Calling `gl.polygonOffset` here is NOT enough, and until
+            // 2026-08-22 that was the whole of it, which is why the hull was
+            // covered in slope acne despite a bias being configured:
+            //
+            //   `Tw2RenderBatchAccumulator` calls `device.SetStandardStates(RM_OPAQUE)`
+            //   for each collected batch; the RM_OPAQUE table carries
+            //   RS_SLOPESCALEDEPTHBIAS 0 / RS_DEPTHBIAS 0 (`Tw2Device.js:272`);
+            //   that lands in `device._depthOffsetState` and `ApplyShadowState`,
+            //   which `Tw2GeometryRes` calls before EVERY draw, flushes it as
+            //   `gl.polygonOffset(0, 0)`.
+            //
+            // So the bias was reliably zeroed before a single caster triangle
+            // was drawn - enabled, configured, and a no-op. The fix is to put
+            // the value where the state machine will keep re-applying it rather
+            // than to fight it: override the RM_OPAQUE table for the duration of
+            // the pass. Values must be DWORD BIT PATTERNS - `SetRenderState`
+            // runs these two states back through `dwordToFloat`, so a plain `2`
+            // decodes to a denormal near 2.8e-45 and is silently no bias at all.
+            //
+            // The sign is positive on purpose. Carbon's authored `Shadow`
+            // technique is +1/+1 and its caster pass explicitly turns reverse-Z
+            // OFF (`EveSpaceScene.cpp:775` SetInvertedDepthTest(false), depth
+            // cleared to 1.0 at `Tr2ShadowMap.cpp:246`), which ccpwgl matches.
+            // `DynamicLightShadow`'s -6/-1 belongs to a different pass that does
+            // not opt out. Do not "fix" this by flipping the sign.
             if (biased)
             {
                 gl.enable(gl.POLYGON_OFFSET_FILL);
                 gl.polygonOffset(this.casterSlopeBias, this.casterDepthBias);
+
+                const opaque = device._renderStates[RM_OPAQUE];
+                if (opaque)
+                {
+                    restoreSlopeBias = opaque.states[RS_SLOPESCALEDEPTHBIAS];
+                    restoreDepthBias = opaque.states[RS_DEPTHBIAS];
+                    restoreOpaqueStates = opaque;
+                    opaque.states[RS_SLOPESCALEDEPTHBIAS] = num.floatToDword(this.casterSlopeBias);
+                    opaque.states[RS_DEPTHBIAS] = num.floatToDword(this.casterDepthBias);
+                    opaque.dirty = true;
+                }
             }
 
             // Casters must be drawn FROM THE LIGHT. Until 2026-08-13 this loop
@@ -471,6 +531,17 @@ export class Tw2CarbonShadowRenderer
             {
                 gl.polygonOffset(0, 0);
                 gl.disable(gl.POLYGON_OFFSET_FILL);
+            }
+
+            // Restore the RM_OPAQUE table whatever happened - left overridden,
+            // every opaque draw in the rest of the frame would carry the caster
+            // bias.
+            if (restoreOpaqueStates)
+            {
+                restoreOpaqueStates.states[RS_SLOPESCALEDEPTHBIAS] = restoreSlopeBias;
+                restoreOpaqueStates.states[RS_DEPTHBIAS] = restoreDepthBias;
+                restoreOpaqueStates.dirty = true;
+                restoreOpaqueStates = null;
             }
 
             device.SetView(prevView);
