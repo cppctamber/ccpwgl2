@@ -27,10 +27,14 @@ export class Tr2ActionPlayCurveSet extends Tw2Action
         owner = owner || (controller && controller.GetOwner ? controller.GetOwner() : null);
         this._duration = 0;
 
-        if (!this.Play(owner))
-        {
-            return false;
-        }
+        // Carbon ignores what PlayCurveSet reported and arms the syncToRange
+        // block unconditionally (`Tr2ActionPlayCurveSet.cpp:24-33`). Returning
+        // early here meant that whenever the curve set was not reachable, the
+        // action ALSO lost its veto and left `_duration` at 0 - so the state it
+        // belongs to could be left one frame after entry. The report is not worth
+        // trusting either way: `PlayCurveSetOn` reports success for a matching
+        // curve set even when the RANGE name did not resolve.
+        const played = this.Play(owner);
 
         if (this.syncToRange && this.rangeName)
         {
@@ -44,7 +48,7 @@ export class Tr2ActionPlayCurveSet extends Tw2Action
             }
         }
 
-        return true;
+        return played;
     }
 
     Stop(controller, owner)

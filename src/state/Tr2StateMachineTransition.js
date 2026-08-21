@@ -49,7 +49,10 @@ export class Tr2StateMachineTransition extends meta.Model
     {
         if (!this._program || this._programSource !== this.condition)
         {
-            this._program = Tr2ExpressionProgram.Compile(this.condition, { emptyValue: 1 });
+            // An empty condition is FALSE, not true - see `CanTransition`. Every
+            // other caller of Compile already passes 0 or null; this was the only
+            // 1 in the codebase.
+            this._program = Tr2ExpressionProgram.Compile(this.condition, { emptyValue: 0 });
             this._programSource = this.condition;
             this._variableNames = this._program.GetVariableNames();
             this._functionNames = this._program.GetFunctionNames();
@@ -59,6 +62,24 @@ export class Tr2StateMachineTransition extends meta.Model
 
     CanTransition(controller, owner, stateMachine, dirtyVariables)
     {
+        // A transition with no condition NEVER fires. Carbon's parser rejects an
+        // empty expression - its own suite asserts it,
+        // `parser/tests/basic.cpp:26` `ASSERT_FALSE(CanParse(""))` - so
+        // `Tr2ControllerExpression::CreateParser` leaves no program, `Eval`
+        // returns {false, 0} and `CanActivate` returns false
+        // (`Tr2ControllerExpression.cpp`, `Tr2StateMachineTransition.cpp:79-82`).
+        //
+        // ccpwgl compiled an empty condition to the literal 1 - always true - so
+        // any state carrying one was left on the very frame it was entered, every
+        // frame, forever. It is also invisible to the dirty-variable gate, because
+        // an empty condition cannot name a variable and so reports a null mask:
+        // that is why gating alone only slowed the hologram flicker instead of
+        // stopping it.
+        if (!this.condition)
+        {
+            return false;
+        }
+
         const program = this.Compile();
         if (!program.IsValid())
         {

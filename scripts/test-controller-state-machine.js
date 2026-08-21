@@ -36,6 +36,9 @@ testNoiseIsPerlinNotAHash();
 testCleanVariablesDoNotRetriggerATransition();
 testAStaleConditionStopsRestartingTheActions();
 testAVetoMakesTheStateAskEveryFrameAgain();
+testAnEmptyConditionNeverFires();
+testRangeDurationRecursesIntoChildren();
+testStartArmsTheHoldEvenWhenPlayFindsNothing();
 console.log("Controller state machine and expression parity verified");
 
 /**
@@ -651,6 +654,8 @@ function loadStateModules()
     const Tr2StateMachine = loadModule("../src/state/Tr2StateMachine.js", { utils });
     const Tr2ControllerFloatVariable = loadModule("../src/state/variable/Tr2ControllerFloatVariable.js", { utils });
     const Tr2Controller = loadModule("../src/state/controller/Tr2Controller.js", { utils });
+    const Tw2Action = loadModule("../src/state/action/Tw2Action.js", { utils });
+    const Tr2ActionPlayCurveSet = loadModule("../src/state/action/Tr2ActionPlayCurveSet.js", { utils, "./Tw2Action": Tw2Action });
 
     return {
         Tr2ExpressionProgram: Tr2ExpressionProgram.Tr2ExpressionProgram,
@@ -662,7 +667,10 @@ function loadStateModules()
         SetControllerVariableOn: controllerVariables.SetControllerVariableOn,
         ReplayControllerVariablesOn: controllerVariables.ReplayControllerVariablesOn,
         PlayCurveSetOn: curveSetOwner.PlayCurveSetOn,
-        StopCurveSetOn: curveSetOwner.StopCurveSetOn
+        StopCurveSetOn: curveSetOwner.StopCurveSetOn,
+        GetRangeDurationOn: curveSetOwner.GetRangeDurationOn,
+        GetCurveSetDurationOn: curveSetOwner.GetCurveSetDurationOn,
+        Tr2ActionPlayCurveSet: Tr2ActionPlayCurveSet.Tr2ActionPlayCurveSet
     };
 }
 
@@ -824,4 +832,149 @@ function testAVetoMakesTheStateAskEveryFrameAgain()
     machine.Update(0.016, new Set());
     assert.equal(machine.GetCurrentState().name, "done",
         "once the action stops refusing, the held state must be able to leave");
+}
+
+
+/**
+ * Carbon's expression parser REJECTS an empty expression - its own suite asserts
+ * it (`parser/tests/basic.cpp:26`). So `Tr2ControllerExpression::CreateParser`
+ * leaves no program, `Eval` returns {false, 0}, and `CanActivate` returns false
+ * (`Tr2StateMachineTransition.cpp:79-82`): a transition with no condition never
+ * fires.
+ *
+ * ccpwgl compiled an empty condition to the literal 1 - the only `emptyValue: 1`
+ * in the codebase - so a state carrying one was left on the frame it was entered,
+ * every frame, forever. It is invisible to the dirty-variable gate too, because
+ * an empty condition names no variables and so reports a null (unnarrowable)
+ * mask - which is why gating alone only slowed the hologram flicker.
+ */
+function testAnEmptyConditionNeverFires()
+{
+    const { Tr2StateMachineTransition } = modules;
+
+    const empty = new Tr2StateMachineTransition();
+    empty.name = "on";
+    assert.equal(empty.CanTransition(null, null, null, undefined), false,
+        "no condition must never activate, not always activate");
+
+    // A real condition still works, and still gates.
+    const real = new Tr2StateMachineTransition();
+    real.name = "on";
+    real.condition = "1";
+    assert.equal(real.CanTransition(null, null, null, undefined), true,
+        "an explicit constant condition is still true");
+
+    // End to end: a state whose only way out has no condition must stay put.
+    const machine = buildMachine([ "idle", "on" ]);
+    const stuck = new Tr2StateMachineTransition();
+    stuck.name = "on";
+    machine.states[0].transitions.push(stuck);
+    machine.states[0].UpdateVariableMask();
+
+    let plays = 0;
+    for (const state of machine.states) state.actions.push({ Start: () => plays++ });
+
+    machine.Start();
+    for (let frame = 0; frame < 30; frame++) machine.Update(0.016, new Set());
+
+    assert.equal(machine.GetCurrentState().name, "idle", "an unconditioned transition must not fire");
+    assert.equal(plays, 1, `the state's actions must start once, not once per frame; got ${plays}`);
+}
+
+
+/**
+ * Carbon makes `GetRangeDuration`/`GetCurveSetDuration` pure-virtual on
+ * `ITr2CurveSetOwner`, so a space object cannot exist without them, and both
+ * recurse into children and effect children taking a max
+ * (`EveSpaceObject2.cpp:3451-3503`). ccpwgl's EveShip2 had only PlayCurveSet and
+ * StopCurveSet - and no `curveSets` property at all - so every hull-level state
+ * machine saw a duration of ZERO.
+ *
+ * That is the root cause of the hologram flicker, and it disarms TWO holds at
+ * once: `syncToRange` on the action, and the `CurveSetTime("Set/Range")`
+ * expression that a condition like `StateTime() > CurveSetTime(...)` compares
+ * against. Both collapsing to 0 walks the whole state ring at one state per
+ * frame, replaying a different range each frame so no curve ever advances.
+ */
+function testRangeDurationRecursesIntoChildren()
+{
+    const { GetRangeDurationOn, GetCurveSetDurationOn } = modules;
+
+    const makeSet = (name, ranges, maxCurve) => ({
+        name,
+        GetRangeDuration: rangeName =>
+        {
+            const range = ranges.find(r => r.name === rangeName);
+            return range ? range.endTime - range.startTime : 0;
+        },
+        GetMaxCurveDuration: () => maxCurve
+    });
+
+    // The shape that matters: the ship owns NO curve sets; they live on an
+    // effect child, which is exactly where skin VFX sit.
+    const effectChild = {
+        curveSets: [ makeSet("Holo", [ { name: "On", startTime: 1, endTime: 6 } ], 26) ],
+        GetRangeDuration(setName, rangeName) { return GetRangeDurationOn(this, setName, rangeName); },
+        GetCurveSetDuration(setName) { return GetCurveSetDurationOn(this, setName); }
+    };
+    const ship = { children: [], effectChildren: [ effectChild ] };
+
+    assert.equal(GetRangeDurationOn(ship, "Holo", "On", [ ship.children, ship.effectChildren ]), 5,
+        "a ship must answer for a range that lives on an effect child, not report 0");
+    assert.equal(GetCurveSetDurationOn(ship, "Holo", [ ship.children, ship.effectChildren ]), 26,
+        "and likewise for the whole-set duration");
+    assert.equal(GetRangeDurationOn(ship, "Holo", "NoSuchRange", [ ship.children, ship.effectChildren ]), 0,
+        "an unknown range is still 0");
+
+    // With a real duration the action arms its veto and HOLDS the state.
+    const { Tr2ActionPlayCurveSet } = modules;
+    const action = new Tr2ActionPlayCurveSet();
+    action.curveSetName = "Holo";
+    action.rangeName = "On";
+    action.syncToRange = true;
+
+    let time = 0;
+    const controller = {
+        GetOwner: () => ship,
+        GetTime: () => time,
+        RegisterUpdateable: () => undefined,
+        UnRegisterUpdateable: () => undefined
+    };
+    ship.PlayCurveSet = () => true;
+    ship.GetRangeDuration = (s, r) => GetRangeDurationOn(ship, s, r, [ ship.children, ship.effectChildren ]);
+
+    action.Start(controller, ship);
+    assert.equal(action._duration, 5, "Start must arm the range duration");
+
+    time = 1;
+    assert.equal(action.CanTransition(controller), false, "part way through the range, the action vetoes");
+
+    time = 6;
+    assert.equal(action.CanTransition(controller), true, "once the range has played, it releases");
+}
+
+
+/**
+ * Carbon ignores what PlayCurveSet reported and arms the syncToRange block
+ * regardless (`Tr2ActionPlayCurveSet.cpp:24-33`). ccpwgl returned early on a
+ * falsy result, so an unreachable curve set ALSO cost the action its veto - a
+ * second, independent path to a state that can be left one frame after entry.
+ */
+function testStartArmsTheHoldEvenWhenPlayFindsNothing()
+{
+    const { Tr2ActionPlayCurveSet } = modules;
+
+    const action = new Tr2ActionPlayCurveSet();
+    action.curveSetName = "Missing";
+    action.rangeName = "On";
+    action.syncToRange = true;
+
+    const owner = {
+        PlayCurveSet: () => false,          // nothing of that name is reachable
+        GetRangeDuration: () => 4           // but the owner still knows the range
+    };
+    const controller = { GetOwner: () => owner, GetTime: () => 0, RegisterUpdateable: () => undefined };
+
+    action.Start(controller, owner);
+    assert.equal(action._duration, 4, "the hold must be armed even though Play reported nothing");
 }

@@ -106,3 +106,103 @@ export function StopCurveSetOn(owner, name, childLists = [])
 
     return stopped;
 }
+
+
+/**
+ * Longest duration of a named RANGE across every curve set of this name on an
+ * owner and everything below it.
+ *
+ * Port of `EveSpaceObject2::GetRangeDuration` (cpp:3479-3503) and
+ * `EveChildContainer::GetRangeDuration`. Both are pure-virtual on Carbon's
+ * `ITr2CurveSetOwner`, so an owner cannot exist without them - which is why
+ * their absence on `EveShip2` went unnoticed here for so long.
+ *
+ * This is load bearing twice over. It arms the `syncToRange` veto in
+ * `Tr2ActionPlayCurveSet`, and it backs the `CurveSetTime("Set/Range")`
+ * expression builtin that transition conditions use to hold a state for as long
+ * as its range plays. Returning 0 from either makes a state machine walk its
+ * whole ring at one state per frame, replaying a different range every frame so
+ * no curve ever advances.
+ *
+ * @param {Object} owner - carries `curveSets`
+ * @param {String} setName
+ * @param {String} rangeName
+ * @param {Array<Array>} [childLists] - child collections to recurse into
+ * @returns {Number} seconds
+ */
+export function GetRangeDurationOn(owner, setName, rangeName, childLists = [])
+{
+    if (!owner || !setName) return 0;
+
+    let duration = 0;
+
+    const curveSets = owner.curveSets || [];
+    for (let i = 0; i < curveSets.length; i++)
+    {
+        const curveSet = curveSets[i];
+        if (curveSet && curveSet.name === setName && curveSet.GetRangeDuration)
+        {
+            duration = Math.max(duration, curveSet.GetRangeDuration(rangeName));
+        }
+    }
+
+    for (let list = 0; list < childLists.length; list++)
+    {
+        const children = childLists[list] || [];
+        for (let i = 0; i < children.length; i++)
+        {
+            const child = children[i];
+            if (child && child.GetRangeDuration)
+            {
+                duration = Math.max(duration, child.GetRangeDuration(setName, rangeName));
+            }
+        }
+    }
+
+    return duration;
+}
+
+
+/**
+ * Longest curve duration across every curve set of this name on an owner and
+ * everything below it - the whole-set answer, as opposed to one named range.
+ *
+ * Port of `EveSpaceObject2::GetCurveSetDuration` (cpp:3451-3477). Backs
+ * `CurveSetTime("Set")` with no slash.
+ *
+ * @param {Object} owner - carries `curveSets`
+ * @param {String} setName
+ * @param {Array<Array>} [childLists] - child collections to recurse into
+ * @returns {Number} seconds
+ */
+export function GetCurveSetDurationOn(owner, setName, childLists = [])
+{
+    if (!owner || !setName) return 0;
+
+    let duration = 0;
+
+    const curveSets = owner.curveSets || [];
+    for (let i = 0; i < curveSets.length; i++)
+    {
+        const curveSet = curveSets[i];
+        if (curveSet && curveSet.name === setName && curveSet.GetMaxCurveDuration)
+        {
+            duration = Math.max(duration, curveSet.GetMaxCurveDuration());
+        }
+    }
+
+    for (let list = 0; list < childLists.length; list++)
+    {
+        const children = childLists[list] || [];
+        for (let i = 0; i < children.length; i++)
+        {
+            const child = children[i];
+            if (child && child.GetCurveSetDuration)
+            {
+                duration = Math.max(duration, child.GetCurveSetDuration(setName));
+            }
+        }
+    }
+
+    return duration;
+}

@@ -1,6 +1,6 @@
 import { isArray, meta } from "utils";
 import { SetControllerVariableOn } from "../../state/controllerVariables";
-import { PlayCurveSetOn, StopCurveSetOn } from "../../curve/curveSetOwner";
+import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
 import { vec3, vec4, mat4, sph3, box3 } from "math";
 import { EveObject } from "eve/object/EveObject";
 import { GLESPerObjectDataEveSpaceObject } from "core/data";
@@ -1020,6 +1020,41 @@ export class EveShip2 extends EveObject
     StopCurveSet(name)
     {
         return StopCurveSetOn(this, name, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Duration of a named RANGE of a named curve set, across this ship and
+     * everything below it. Carbon `EveSpaceObject2::GetRangeDuration`
+     * (cpp:3479-3503).
+     *
+     * Carbon makes this pure-virtual on `ITr2CurveSetOwner`, so a space object
+     * cannot exist without it. ccpwgl had only `PlayCurveSet`/`StopCurveSet`
+     * here, and the fallback path in `Tr2ActionPlayCurveSet` scans `curveSets`
+     * without recursing - which a ship does not even have. Every hull-level
+     * state machine therefore saw a duration of 0, which disarms the
+     * `syncToRange` veto AND makes the `CurveSetTime("Set/Range")` expression
+     * return 0, so a condition like `StateTime() > CurveSetTime(...)` was true
+     * one frame after entry. That walked the whole state ring at a state per
+     * frame, replaying a different range every frame, and no curve advanced.
+     *
+     * @param {String} setName
+     * @param {String} rangeName
+     * @returns {Number} seconds
+     */
+    GetRangeDuration(setName, rangeName)
+    {
+        return GetRangeDurationOn(this, setName, rangeName, [ this.children, this.effectChildren ]);
+    }
+
+    /**
+     * Longest curve duration of a named curve set across this ship and everything
+     * below it. Carbon `EveSpaceObject2::GetCurveSetDuration` (cpp:3451-3477).
+     * @param {String} setName
+     * @returns {Number} seconds
+     */
+    GetCurveSetDuration(setName)
+    {
+        return GetCurveSetDurationOn(this, setName, [ this.children, this.effectChildren ]);
     }
 
     /**
