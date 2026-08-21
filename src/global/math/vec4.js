@@ -11,6 +11,22 @@ const vec4 = { ...glVec4 };
 
 
 /**
+ * Creates a linear colour vec4, black with OPAQUE alpha.
+ *
+ * Port of `@carbonenginejs/runtime-utils` `vec4.createLinear` (`vec4.js:36-41`).
+ * A plain `create()` gives alpha 0, which for a colour means fully transparent
+ * rather than unset - so anything defaulting a colour this way needs the 1.
+ *
+ * @returns {vec4}
+ */
+vec4.createLinear = function()
+{
+    const out = vec4.create();
+    out[3] = 1;
+    return out;
+};
+
+/**
  * Allocates a pooled vec4
  * @returns {Float32Array|vec4}
  */

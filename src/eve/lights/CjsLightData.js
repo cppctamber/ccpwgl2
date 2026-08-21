@@ -25,9 +25,7 @@ export class CjsLightData extends meta.Model
     @meta.vector3
     position = vec3.create();
 
-    // TODO(port): vec4.createLinear() does not exist in ccpwgl's math/vec4 -
-    // kept verbatim from runtime-trinity; verify the intended default once a
-    // ccpwgl equivalent is ported.
+    // Black with OPAQUE alpha - see vec4.createLinear.
     @meta.color
     color = vec4.createLinear();
 
