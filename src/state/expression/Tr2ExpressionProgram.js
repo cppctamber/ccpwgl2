@@ -1,5 +1,6 @@
 import { Tw2Error } from "core";
 import { tw2 } from "global";
+import { noise as noiseMath } from "math";
 
 const BLOCKED_IDENTIFIERS = new Set([
     "__proto__",
@@ -791,8 +792,29 @@ const DEFAULT_FUNCTIONS = {
     randomConstant: (ctx, min = 0, max = 1) => ToNumber(min) + GetRandomConstant(ctx) * (ToNumber(max) - ToNumber(min)),
     randconst: (ctx, min = 0, max = 1) => DEFAULT_FUNCTIONS.randomConstant(ctx, min, max),
     randhash: (ctx, min = 0, max = 1, value = 0) => ToNumber(min) + Hash01(ToNumber(value)) * (ToNumber(max) - ToNumber(min)),
-    noise: (ctx, x) => Hash01(ToNumber(x) + GetRandomConstant(ctx)),
-    fractal: (ctx, x) => Hash01(ToNumber(x) + GetRandomConstant(ctx)),
+    // Carbon `Noise` (`Curves/Tr2CurveScalarExpression.cpp:25-28`):
+    //     ( PerlinNoise1D( x + curve->GetRandomConstant(), 1.0, 1.0, 1 ) + 1.0 ) / 2.0
+    // SMOOTH one-octave Perlin, remapped to 0..1 - Carbon's own term list calls it
+    // "simple one-octave noise".
+    //
+    // Both of these used to be `Hash01`, which is the GLSL
+    // `fract(sin(x * 12.9898 + 78.233) * 43758.5453)` hash. For a continuously
+    // varying input like time that is WHITE NOISE: consecutive samples are
+    // uncorrelated, so anything driven by it FLICKERS rather than wandering. It
+    // is CPU side, so it flickered on every profile.
+    //
+    // `carbonPerlin1D` is already in this repo and is already the Carbon
+    // implementation - `Tw2PerlinCurve` uses it (`:125`).
+    noise: (ctx, x) => PerlinUnit(ToNumber(x) + GetRandomConstant(ctx), 1, 1, 1),
+
+    // Carbon `Fractal` (`cpp:20-22`) is the same with the octave parameters
+    // exposed, rounded with `int(n + 0.5f)`. The old version ignored all three.
+    fractal: (ctx, x, alpha = 1, beta = 1, n = 1) => PerlinUnit(
+        ToNumber(x) + GetRandomConstant(ctx),
+        ToNumber(alpha),
+        ToNumber(beta),
+        Math.round(ToNumber(n))
+    ),
     input: (ctx, index) => GetInputValue(ctx, index),
     inputAt: (ctx, index, time) => GetInputValue(ctx, index, time),
     StateTime: ctx => ctx.stateMachine && ctx.stateMachine.GetStateTime ? ctx.stateMachine.GetStateTime() : ToNumber(ctx.stateTime),
@@ -1166,6 +1188,22 @@ function RoundHalfToEven(value)
     if (diff < 0.5) return floor;
     if (diff > 0.5) return floor + 1;
     return floor % 2 === 0 ? floor : floor + 1;
+}
+
+/**
+ * Carbon's Perlin noise remapped from -1..1 to 0..1.
+ * `PerlinNoise1D(x, alpha, beta, n)` is `noise.carbonPerlin1D(x,
+ * inverseAmplitude, frequency, octaves)` - the arguments line up in that order.
+ * @param {Number} x
+ * @param {Number} alpha
+ * @param {Number} beta
+ * @param {Number} octaves
+ * @returns {Number} 0..1
+ */
+function PerlinUnit(x, alpha, beta, octaves)
+{
+    const safeOctaves = octaves > 0 ? octaves : 1;
+    return (noiseMath.carbonPerlin1D(x, alpha || 1, beta || 1, safeOctaves) + 1) / 2;
 }
 
 function Hash01(value)

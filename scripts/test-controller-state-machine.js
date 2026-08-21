@@ -12,6 +12,9 @@ const path = require("node:path");
 const { transformSync } = require("@babel/core");
 
 
+StubPerlin.calls = [];
+StubPerlin.impl = (x, alpha, beta) => Math.sin(x * (beta || 1)) / (alpha || 1);
+
 const modules = loadStateModules();
 
 testVetoAbandonsTheWholeWalk();
@@ -29,7 +32,53 @@ testExponentOperator();
 testVariableMaskNamesTheVariablesAStateReads();
 testExternalVariableReachesEveryControllerAndChild();
 testCurveSetsPlayThroughTheOwnerAndIntoChildren();
+testNoiseIsPerlinNotAHash();
 console.log("Controller state machine and expression parity verified");
+
+/**
+ * Carbon `Noise` (`Curves/Tr2CurveScalarExpression.cpp:25-28`) is
+ * `(PerlinNoise1D(x + randomConstant, 1, 1, 1) + 1) / 2` - SMOOTH one-octave
+ * Perlin, remapped to 0..1. `Fractal` (`cpp:20-22`) is the same with the octave
+ * parameters exposed and rounded with `int(n + 0.5f)`.
+ *
+ * Both were `Hash01`, the GLSL `fract(sin(x * 12.9898 + 78.233) * 43758.5453)`
+ * hash. Against a continuously varying input that is WHITE NOISE - consecutive
+ * samples uncorrelated - so anything driven by it flickered instead of
+ * wandering, on every profile, because this is CPU side.
+ */
+function testNoiseIsPerlinNotAHash()
+{
+    const program = new modules.Tr2ExpressionProgram();
+
+    StubPerlin.calls.length = 0;
+    program.Compile("noise(2)");
+    const value = program.Evaluate({});
+
+    assert.equal(StubPerlin.calls.length, 1, "noise goes through Perlin, not a hash");
+    assert.deepEqual(StubPerlin.calls[0], [ 2, 1, 1, 1 ], "Carbon passes alpha 1, beta 1, one octave");
+    assert.ok(value >= 0 && value <= 1, "remapped from -1..1 into 0..1");
+
+    // Continuity is the whole point - the hash had none
+    StubPerlin.impl = x => Math.sin(x);
+    const a = evaluateNoise(1.000), b = evaluateNoise(1.001);
+    assert.ok(Math.abs(a - b) < 0.01, `nearby inputs give nearby outputs, got ${a} and ${b}`);
+
+    StubPerlin.calls.length = 0;
+    const fractal = new modules.Tr2ExpressionProgram();
+    fractal.Compile("fractal(2, 3, 4, 5.4)");
+    fractal.Evaluate({});
+    assert.deepEqual(StubPerlin.calls[0], [ 2, 3, 4, 5 ],
+        "fractal forwards alpha/beta and ROUNDS the octave count - it used to ignore all three");
+
+    StubPerlin.impl = (x, alpha, beta) => Math.sin(x * (beta || 1)) / (alpha || 1);
+}
+
+function evaluateNoise(x)
+{
+    const p = new modules.Tr2ExpressionProgram();
+    p.Compile(`noise(${x})`);
+    return p.Evaluate({});
+}
 
 
 /**
@@ -564,6 +613,18 @@ function makeTransition(destinationName, predicate)
     };
 }
 
+/**
+ * A smooth, deterministic stand-in for Carbon's Perlin. The property the
+ * expression `noise` needs is CONTINUITY - nearby inputs give nearby outputs -
+ * which is exactly what the hash it replaced did not have.
+ * @returns {Number} -1..1
+ */
+function StubPerlin(x, alpha, beta, octaves)
+{
+    StubPerlin.calls.push([ x, alpha, beta, octaves ]);
+    return StubPerlin.impl(x, alpha, beta, octaves);
+}
+
 function loadStateModules()
 {
     const
@@ -574,7 +635,7 @@ function loadStateModules()
 
     const Tr2ExpressionProgram = loadModule(
         "../src/state/expression/Tr2ExpressionProgram.js",
-        { core, global: { tw2 } }
+        { core, global: { tw2 }, math: { noise: { carbonPerlin1D: StubPerlin } } }
     );
 
     const Tr2StateMachineTransition = loadModule("../src/state/Tr2StateMachineTransition.js", {
