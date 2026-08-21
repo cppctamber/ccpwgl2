@@ -37,6 +37,9 @@ _kb_stage/
 demo/character/library.review.json
 demo/character/library.short-hair-review.json
 
+# Local demos and character integration proofs
+/demo/
+
 # dotenv environment variables file
 .env
 

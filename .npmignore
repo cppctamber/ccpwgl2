@@ -21,6 +21,7 @@ _internal/
 _review/
 _res/
 artifacts/
+/demo/
 demo/character/library.review.json
 demo/character/library.short-hair-review.json
 public/carbon/
