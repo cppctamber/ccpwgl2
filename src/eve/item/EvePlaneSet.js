@@ -3,6 +3,10 @@ import { device } from "global";
 import { vec3, vec4, quat, mat4, box3, sph3 } from "math";
 import { Tw2VertexDeclaration, Tw2RenderBatch, Tw2Effect } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { CjsLightData } from "../lights/CjsLightData";
+import { Tr2Light } from "../lights/Tr2Light";
+import { CreateLightRecord, CreateLightDataScratch, CopyLightData, AsPerPointLightData } from "../lights/lightConversion";
+import { Fade, FadeType, Saturate } from "./EveSpaceObjectAttachmentUtils";
 
 
 class EvePlaneSetBatch extends Tw2RenderBatch
@@ -197,6 +201,53 @@ export class EvePlaneSetItem extends EveObjectSetItem
 
         return super.set(a, values, opt);
     }
+
+}
+
+
+/**
+ * The light one plane contributes.
+ *
+ * Carbon holds these on the set as `m_lights` and fills them from SOF via
+ * `AddLightFromSOF` (`EvePlaneSet.h:31,87`); they are NOT plane items and do not
+ * render - each one only describes a light the set emits when the scene collects
+ * lights. Its `lightData` radii were derived from the SOF multipliers and the
+ * owning item's scale (see `EveSOFDataPointLightAttachment.AsLightData`).
+ */
+@meta.type("EvePlaneLight")
+@meta.define({ wgl: "EvePlaneLight", ccp: true })
+export class EvePlaneLight extends meta.Model
+{
+
+    @meta.struct("CjsLightData")
+    lightData = new CjsLightData();
+
+    @meta.float
+    saturation = 1;
+
+    @meta.notOwned
+    @meta.struct()
+    lightProfile = null;
+
+    @meta.uint
+    fadeType = FadeType.FT_NONE;
+
+    @meta.float
+    blinkPhase = 0;
+
+    @meta.float
+    blinkRate = 0;
+
+    @meta.uint
+    index = 0;
+
+    @meta.matrix4
+    boneMatrix = mat4.create();
+
+    @meta.path
+    lightProfilePath = "";
+
+    static FadeType = FadeType;
 
 }
 
@@ -511,6 +562,112 @@ export class EvePlaneSet extends EveObjectSet
      * The plane set's item constructor
      * @type {EvePlaneSetItem}
      */
+    /**
+     * The lights this set emits, filled from SOF. Carbon `m_lights`
+     * (`EvePlaneSet.h:87`).
+     * @type {Array<EvePlaneLight>}
+     */
+    @meta.list("EvePlaneLight")
+    lights = [];
+
+    /**
+     * Carbon `EvePlaneSet::AddLightFromSOF` (`cpp`) - a plain push.
+     * @param {EvePlaneLight|Object} light
+     */
+    AddLightFromSOF(light)
+    {
+        if (!light) return;
+        this.lights.push(light instanceof EvePlaneLight ? light : EvePlaneLight.from(light));
+    }
+
+    /**
+     * The tint every light this set emits is multiplied by.
+     *
+     * Carbon `EvePlaneSet::GetAverageColor` (`cpp:499-528`) is the componentwise
+     * product of the four texture parameters' average colours, each defaulting to
+     * white when the map or its resource is missing.
+     *
+     * ccpwgl has no average-colour readback on a texture resource yet (the same
+     * gap `Tr2TexturedPointLight` records), so every map answers white and the
+     * product is white - the light keeps its authored colour untinted. That is
+     * the honest degradation: it is the value Carbon itself uses for a missing
+     * map, so nothing is invented here, and wiring real averages later needs no
+     * change at this call site.
+     *
+     * @param {vec4} [out]
+     * @returns {vec4}
+     */
+    GetAverageColor(out = vec4.create())
+    {
+        return vec4.set(out, 1, 1, 1, 1);
+    }
+
+    /**
+     * Emits this set's lights into the frame's collector.
+     *
+     * Carbon `EvePlaneSet::GetLights` (`cpp:544-568`). The loop iterates BY VALUE
+     * there - `auto light` plus a `lightDataCopy` - so the STORED light data is
+     * never mutated; the scratch copy below preserves that, and it matters
+     * because the tint and fade are reapplied every frame.
+     *
+     * Per light: colour = authored * the set's average colour, componentwise;
+     * then Saturate, which extrapolates above 1; then brightness *= the fade for
+     * its blink type. `parentBrightness` is the set's activation strength.
+     *
+     * @param {Tw2CarbonLightCollector} collector
+     * @param {Object} [parentContext]
+     * @param {Number} [parentContext.animationTime=0] - Carbon reads a global clock here
+     * @param {Number} [parentContext.shadowQuality=0]
+     */
+    GetLights(collector, parentContext = {})
+    {
+        if (!collector || !this.lights.length) return;
+
+        const
+            features = EvePlaneSet._features || (EvePlaneSet._features = { parentBrightness: 1, parentScale: 1, profileIndex: 0 }),
+            averageColor = this.GetAverageColor(EvePlaneSet._averageColor || (EvePlaneSet._averageColor = vec4.create())),
+            dataCopy = EvePlaneSet._lightData || (EvePlaneSet._lightData = CreateLightDataScratch()),
+            animationTime = parentContext.animationTime || 0,
+            shadowQuality = parentContext.shadowQuality || 0;
+
+        // Carbon keeps activation strength on the set itself
+        // (`m_activationStrength`, EvePlaneSet::GetLights cpp:547). ccpwgl has no
+        // such field: activation strength lives on the ROOT object's per-object
+        // data, which is where `EveBoosterSet` reads it from too
+        // (`EveBoosterSet.js:495-515`, `parentData.activationStrength`). So it is
+        // passed down rather than stored, and either spelling is accepted -
+        // the value directly, or the per-object data it rides in.
+        const parentData = parentContext.parentData;
+        features.parentBrightness = parentContext.activationStrength !== undefined
+            ? parentContext.activationStrength
+            : (parentData && parentData.activationStrength !== undefined ? parentData.activationStrength : 1);
+        features.parentScale = 1;
+
+        for (let i = 0; i < this.lights.length; i++)
+        {
+            const light = this.lights[i];
+            if (!light || !light.lightData) continue;
+
+            CopyLightData(dataCopy, light.lightData);
+            dataCopy.color[0] *= averageColor[0];
+            dataCopy.color[1] *= averageColor[1];
+            dataCopy.color[2] *= averageColor[2];
+            dataCopy.color[3] *= averageColor[3];
+            Saturate(dataCopy.color, dataCopy.color, light.saturation);
+
+            dataCopy.brightness *= Fade(animationTime, light.fadeType, light.blinkRate, light.blinkPhase);
+
+            // A FRESH record per light: `Tw2CarbonLightCollector.Collect` stores the
+            // reference it is given, so a shared scratch row would leave every
+            // collected light as a copy of the last one. Carbon can reuse its own
+            // because `Tr2LightManager::AddLight` takes the row by value.
+            const record = CreateLightRecord();
+            AsPerPointLightData(record, dataCopy, light.boneMatrix, features, shadowQuality);
+            record.lightType = Tr2Light.POINT_LIGHT;
+            collector.Collect([ record ]);
+        }
+    }
+
     static Item = EvePlaneSetItem;
 
     /**
