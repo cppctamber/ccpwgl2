@@ -377,21 +377,29 @@ export class EvePlaneSet extends EveObjectSet
             array[offset + 2 * vertexSize + indexOffset] = 2;
             array[offset + 3 * vertexSize + indexOffset] = 3;
 
+            // Ask the item where it IS, rather than reading the authored field
+            // beside it. `_localTransform` carries no bone, while
+            // `EvePlaneSetItem.GetTransform` composes one - so a plane riding a
+            // moving bone used to be BOUNDED where it moved to (GetBoundingBox is
+            // bone aware) and DRAWN where it was authored. Resolved once per item,
+            // not per vertex.
+            const transform = item.GetTransform(EveObjectSet.global.mat4_0);
+
             for (let j = 0; j < 4; ++j)
             {
                 const vtxOffset = offset + j * vertexSize;
-                array[vtxOffset] =      item._localTransform[0];
-                array[vtxOffset + 1] =  item._localTransform[4];
-                array[vtxOffset + 2] =  item._localTransform[8];
-                array[vtxOffset + 3] =  item._localTransform[12];
-                array[vtxOffset + 4] =  item._localTransform[1];
-                array[vtxOffset + 5] =  item._localTransform[5];
-                array[vtxOffset + 6] =  item._localTransform[9];
-                array[vtxOffset + 7] =  item._localTransform[13];
-                array[vtxOffset + 8] =  item._localTransform[2];
-                array[vtxOffset + 9] =  item._localTransform[6];
-                array[vtxOffset + 10] = item._localTransform[10];
-                array[vtxOffset + 11] = item._localTransform[14];
+                array[vtxOffset] =      transform[0];
+                array[vtxOffset + 1] =  transform[4];
+                array[vtxOffset + 2] =  transform[8];
+                array[vtxOffset + 3] =  transform[12];
+                array[vtxOffset + 4] =  transform[1];
+                array[vtxOffset + 5] =  transform[5];
+                array[vtxOffset + 6] =  transform[9];
+                array[vtxOffset + 7] =  transform[13];
+                array[vtxOffset + 8] =  transform[2];
+                array[vtxOffset + 9] =  transform[6];
+                array[vtxOffset + 10] = transform[10];
+                array[vtxOffset + 11] = transform[14];
 
                 array[vtxOffset + 12] = item.color[0];
                 array[vtxOffset + 13] = item.color[1];
