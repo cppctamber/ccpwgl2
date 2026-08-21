@@ -26,6 +26,15 @@ authored, read the `position`, `rotation` and `scaling` fields directly.
 Nothing is cached. The bone is composed when you call the function, and if you do
 not call it, nothing is computed.
 
+### About the name `GetWorld*`
+
+`GetTransform` and `GetWorldTransform` BOTH return boned results. That is the
+contract and it is what to rely on.
+
+The `GetWorld` name is acknowledged as wrong and is deliberately NOT being
+changed (operator, 2026-08-22). Do not "correct" it. Precisely named methods are
+planned for later; until they exist, read the contract above rather than the name.
+
 ## The accessors
 
 ### Bone-aware (the normal case)
@@ -42,7 +51,7 @@ not call it, nothing is computed.
 | `EveCurveLineSet` | `GetTransform`, `GetWorldTransform` - the SET holds the bone; its items defer to it |
 | `EveObjectSet` / `EveObjectSetItem` | the base `GetWorldTransform`, `GetWorldBoundingBox`, `GetWorldBoundingSphere` compose the parent onto whatever the item returned, so they inherit its bone-awareness |
 
-### Three exceptions
+### Two exceptions
 
 **`EveBoosterSetItem` is never bone-aware.** `GetTransform`, `GetBoundingBox`,
 `GetPosition` and `GetDirection` all return the authored value. This matches
@@ -50,12 +59,15 @@ Carbon, where boosters cannot have bones at all, so it is correct rather than
 broken. It also means a booster's placement is fixed even on an animated hull -
 and note its sprite GLOWS are a separate `EveSpriteSet` which IS bone-aware.
 
-**`EveSpaceObjectDecal.GetWorldTransform` does not include the bone**, while its
-`GetTransform` does. It also composes `local x parent`, the reverse of every other
-`GetWorldTransform` here. Treat its world answer as unreliable; prefer
-`GetTransform` and compose the parent yourself. (The decal has no `_bone` - it
-rebuilds an `_offsetTransform` each frame inside `GetBatches` from the packed joint
-matrices, so its answer is only valid after a frame in which it rendered.)
+**`EveSpaceObjectDecal` has a timing caveat.** Its accessors ARE bone-aware, but
+the decal has no `_bone`: its equivalent, `_offsetTransform`, is rebuilt each
+frame inside `GetBatches` from the packed joint matrices. So a decal transform is
+only valid after a frame in which that decal actually rendered - query it before
+first render and you get the unmoved answer.
+
+(Its `GetWorldTransform` used to drop the bone entirely AND compose `local x
+parent` against the repo-wide `parent x local`. Both fixed; `GetWorldDirection`
+derives from it and was fixed with it.)
 
 **`EveShip2.FindLocatorTransformByName` returns the RAW field**, contradicting
 `EveLocator2.GetTransform`. If you have the locator object, call its accessor

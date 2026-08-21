@@ -240,7 +240,18 @@ export class EveSpaceObjectDecal extends meta.Model
      */
     GetWorldTransform(out)
     {
-        return mat4.multiply(out, this._localTransform, this._parentTransform);
+        // Built from GetTransform so the BONE is included. It was
+        // `mat4.multiply(out, this._localTransform, this._parentTransform)`, which
+        // had two faults at once: it dropped the bone that its own GetTransform
+        // applies, and it composed local x parent where every other
+        // GetWorldTransform here - EveObjectSetItem, EveLocator2, EveBanner,
+        // EveLocatorSetItem - composes parent x local.
+        //
+        // The decal has no `_bone`. Its equivalent, `_offsetTransform`, is rebuilt
+        // each frame inside GetBatches from the packed joint matrices, so this
+        // answer is only valid after a frame in which the decal rendered.
+        this.GetTransform(out);
+        return mat4.multiply(out, this._parentTransform, out);
     }
 
     /**

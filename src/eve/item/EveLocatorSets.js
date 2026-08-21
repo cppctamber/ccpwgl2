@@ -54,7 +54,7 @@ export class EveLocatorSetItem extends meta.Model
      */
     GetWorldTransform(m)
     {
-        mat4.copy(m, this._worldTransform);
+        return mat4.copy(m, this._worldTransform);
     }
 
     /**
