@@ -312,6 +312,29 @@ export class EveTurretSet extends EveObjectSet
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _pendingFiring = false;
+
+    /**
+     * Attaches the Carbon packer and its buffers to both per-object data sets.
+     *
+     * A field initialiser cannot reference a sibling field, so this runs here;
+     * everything it touches is inert on the gles2 path, which never asks for a
+     * packer.
+     */
+    constructor()
+    {
+        super();
+
+        const
+            bones = EveTurretSet.MAX_TURRETS * EveTurretSet.MAX_BONES_PER_TURRET * 12,
+            registers = EveTurretSet.CARBON_VS_REGS * 4;
+
+        for (const perObjectData of [ this._perObjectDataActive, this._perObjectDataInactive ])
+        {
+            perObjectData.carbonPerObjectPacker = EveTurretSet.carbonPerObjectPacker;
+            perObjectData._turretCarbonVS = new Float32Array(registers);
+            perObjectData._turretCarbonBones = new Float32Array(bones);
+        }
+    }
     _state = EveTurretSet.State.IDLE;
     _targetPosition = vec3.create();
     _trackingInfluence = 0;
@@ -1388,7 +1411,7 @@ export class EveTurretSet extends EveObjectSet
             const transforms = this._inactiveAnimation.GetBoneMatrices(0);
             if (transforms.length !== 0)
             {
-                this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms, false, this._inactiveAnimation);
+                this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms, false, this._inactiveAnimation, this._perObjectDataInactive._turretCarbonBones);
                 this._perObjectDataInactive.ps = parentPerObjectData.ps;
 
                 const batch = new Tw2ForwardingRenderBatch();
@@ -1404,7 +1427,7 @@ export class EveTurretSet extends EveObjectSet
                     const transforms = this._activeAnimation.GetBoneMatrices(0);
                     if (transforms.length !== 0)
                     {
-                        this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true, this._activeAnimation);
+                        this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true, this._activeAnimation, this._perObjectDataActive._turretCarbonBones);
                         this._perObjectDataActive.ps = parentPerObjectData.ps;
 
                         const batch = new Tw2ForwardingRenderBatch();
@@ -1505,7 +1528,7 @@ export class EveTurretSet extends EveObjectSet
      * @param {Boolean} [skipBoneCalculations]
      * @param {?Tw2AnimationController} [animationController]
      */
-    UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations, animationController)
+    UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations, animationController, carbonBones)
     {
         mat4.transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
         const transformCount = transforms.length / 12;
@@ -1537,6 +1560,18 @@ export class EveTurretSet extends EveObjectSet
                 pose[(i * transformCount + j) * 2 * 4 + 2] = itemTransforms[j * 12 + 11];
                 pose[(i * transformCount + j) * 2 * 4 + 3] = 1;
                 EveTurretSet.mat3x4toquat(itemTransforms, j, pose, (i * transformCount + j) * 2 + 1);
+
+                // The Carbon path wants the bone MATRICES, not the decomposed
+                // pair above. Decomposing and recomposing would be lossy for the
+                // scaled pitch bones, so the mat3x4 is copied as authored - the
+                // same format the hull's JointMat already feeds through the same
+                // bone UBO, which is why no conversion is needed.
+                if (carbonBones)
+                {
+                    const to = (i * transformCount + j) * 12;
+                    const from = j * 12;
+                    for (let k = 0; k < 12; k++) carbonBones[to + k] = itemTransforms[from + k];
+                }
             }
 
             translation[i * 4] = item._localTransform[12];
@@ -1757,6 +1792,113 @@ export class EveTurretSet extends EveObjectSet
             [ "turretRotation", 4 * 24 ],
             [ "turretPoseTransAndRot", 2 * 4 * 72 ]
         ]
+    };
+
+    /** EVE_MAX_TURRETS_PER_SET (EveTurretSet.h:42). */
+    static MAX_TURRETS = 24;
+
+    /** `defaultBonesPerTurret` (EveTurretSet.cpp:2314) - the FALLBACK only. */
+    static DEFAULT_BONES_PER_TURRET = 3;
+
+    /**
+     * Bone slots reserved per turret in the Carbon bone buffer.
+     *
+     * NOT the default of 3: Carbon takes the real count from the skeleton
+     * binding, and a measured turret (`pulse_gatling_t1` on af4_t1) reports
+     * SEVEN. Sizing to the default silently truncated the upload - writes past
+     * a typed array's end are dropped without error - so this reserves Carbon's
+     * SYSBONE_MAX (EveTurretSet.h:258-275) and `UpdatePerObjectData` refuses to
+     * write past it rather than corrupting a neighbouring turret's bones.
+     */
+    static MAX_BONES_PER_TURRET = 16;
+
+    /** Registers in Carbon's EveTurretSetVSData (EveTurretSet.h:47-60). */
+    static CARBON_VS_REGS = 59;
+
+    /**
+     * Carbon per-object packer for the turret constant buffers.
+     *
+     * Without this, the Carbon path falls through to
+     * `Tw2CarbonData.PackPerObjectVS` - the SPACE OBJECT packer - and every
+     * turret register lands in a hull's slot. Nothing errors; the turrets simply
+     * draw from garbage. gles2 is unaffected because it never takes that branch,
+     * which is exactly why turrets rendered there and not on dx11.
+     *
+     * VS layout, `EveTurretSetVSData` (EveTurretSet.h:47-60), 59 registers:
+     *
+     *      0      baseCutoffData
+     *      1      turretSetData     (.x = bones per turret)
+     *      2-5    shipMatrix
+     *      6-9    prevShipMatrix
+     *      10     currentBoneOffset, prevBoneOffset, 2 unused (uints)
+     *      11-34  turretTranslation[24]
+     *      35-58  turretRotation[24]
+     *
+     * PS layout, `EveTurretSetPSData` (h:62-69): shipData, clipData1,
+     * clipRadius2Sq + unused, then shLightingCoefficients[7]. ccpwgl's GLES
+     * space-object PS block leads with exactly those - Shipdata, Clipdata1,
+     * Miscdata (whose .x IS clipRadius2Sq) and ShLighting - so registers 0-9
+     * copy straight across.
+     */
+    static carbonPerObjectPacker = {
+
+        /**
+         * Also hands the bone UBO its data. Carbon indexes a process-wide ring
+         * buffer through `currentBoneOffset`; ccpwgl's bone UBO is per-object
+         * and base-0, so the offsets stay ZERO and the turret's own bones are
+         * simply the whole buffer - the same reasoning the hull path already
+         * uses for its own bones.
+         */
+        OnBeforeCarbonConstants(context)
+        {
+            context.carbonPerObjectPacker = this;
+            const perObjectData = context.perObjectData;
+            context.carbonJointMatrices = (perObjectData && perObjectData._turretCarbonBones) || null;
+        },
+
+        PackPerObjectVS(out, perObjectData)
+        {
+            const vs = perObjectData && perObjectData.vs;
+            if (!vs) return out;
+
+            // Our own buffer, not the caller's: theirs is sized for the 29-register
+            // hull layout and this one needs 59. The binder honours a returned
+            // array and fits it to whatever the shader declared.
+            const packed = perObjectData._turretCarbonVS;
+            packed.fill(0);
+
+            packed.set(vs.Get("baseCutoffData"), 0);
+            packed.set(vs.Get("turretSetData"), 4);
+
+            // Already transposed for the shader by UpdatePerObjectData, and
+            // Carbon stores the same transposed form.
+            const shipMatrix = vs.Get("shipMatrix");
+            packed.set(shipMatrix, 2 * 4);
+            // No previous-frame ship matrix is tracked here. Reusing the current
+            // one yields zero motion, which is wrong only for motion blur and is
+            // far better than the uninitialised alternative.
+            packed.set(shipMatrix, 6 * 4);
+
+            // Register 10 is the bone offsets, left at zero - see above.
+
+            packed.set(vs.Get("turretTranslation"), 11 * 4);
+            packed.set(vs.Get("turretRotation"), 35 * 4);
+
+            return packed;
+        },
+
+        PackPerObjectPS(out, perObjectData)
+        {
+            const ps = perObjectData && perObjectData.ps;
+            if (!ps || !ps.data) return out;
+
+            // Shipdata, Clipdata1, Miscdata, ShLighting[7] - registers 0-9, in
+            // Carbon's order already.
+            const count = Math.min(10 * 4, ps.data.length, out.length);
+            out.set(ps.data.subarray(0, count));
+            return out;
+        }
+
     };
 
     static global = {
