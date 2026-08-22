@@ -289,39 +289,61 @@ export class TnySlot extends Tw2EventEmitter
     }
 
     /**
-     * Binds each locator to its bone, where the hull has one for it.
+     * Binds this slot's locators to their bones.
      *
-     * A locator's own transform is its BIND POSE. On a hull with moving
-     * parts - a tactical destroyer in defence mode, a hull whose hardpoints
-     * ride a deploying wing - the gun is metres from that, and the offset
-     * lives on the bone of the same name. `EveLocator2.GetTransform` folds it
-     * in, but only once `FindBone` has been called; until then it silently
-     * answers the bind pose, which is the failure that looks like a turret
-     * mounted in the wrong place rather than like a missing call.
-     *
-     * `EveShip2.RebuildTurretSet` does this for the ship's own turret sets.
-     * Nothing did it for a slot-mounted one, so this path had every locator
-     * unbound: turret items placed at the bind pose, and any consumer asking
-     * a locator where it is - an annotation, a drop target - given the same
-     * wrong answer.
-     *
-     * Called on every Rebuild rather than once, because the answer changes
-     * with the hull: a rebuilt or re-fetched ship has a new animation
-     * controller, and a bone found against the old one points into geometry
-     * that is gone. Finding a bone is a name comparison over one model's
-     * bone list, and a hull has a handful of locators per slot.
+     * Redundant for a slot that has something mounted - EveShip2.Update
+     * rebuilds every attached turret set every frame and binds them on the
+     * way through - and kept because Rebuild is also what runs when the
+     * locators themselves change, and a bone found against a hull that has
+     * since been re-fetched points into geometry that is gone.
      * @private
      */
     _BindLocatorBones()
     {
-        const animation = this._wrapped?.animation || this._parent?.wrapped?.animation || null;
+        this.constructor.BindLocatorBones(this._parent, this._locators, this.locatorName);
+    }
 
-        if (!animation || !this._locators) return;
+    /**
+     * Binds locators to the bones of the same name on a parent's hull.
+     *
+     * Quiet on a RIGID hull, which has no skeleton at all and where the bind
+     * pose is the right answer. Loud on a hull that HAS one and still has no
+     * bone of that locator's name, because that combination is a fault and
+     * the way it fails is the problem: an unbound locator does not throw or
+     * return nothing, it answers its bind pose, so a gun mounts a few metres
+     * from where it belongs and everything downstream - the turret item, an
+     * annotation, a drop target - agrees about the wrong place. Nothing about
+     * the picture says a call was missed.
+     *
+     * @param {*} parent - the Tny object owning the locators
+     * @param {Array} locators
+     * @param {String} [what] - what is being bound, for the warning
+     */
+    static BindLocatorBones(parent, locators, what = "")
+    {
+        const animation = parent?.wrapped?.animation || null;
 
-        for (let i = 0; i < this._locators.length; i++)
+        if (!animation || !locators) return;
+
+        const unbound = [];
+
+        for (let i = 0; i < locators.length; i++)
         {
-            this._locators[i].FindBone?.(animation);
+            const locator = locators[i];
+
+            if (!locator || typeof locator.FindBone !== "function") continue;
+            if (!locator.FindBone(animation)) unbound.push(locator.name);
         }
+
+        // A hull with no models is rigid, and every locator being unbound is
+        // what rigid MEANS. Saying so for each one would bury the case worth
+        // hearing under every frigate in the game.
+        if (!unbound.length || !animation.models || !animation.models.length) return;
+
+        tw2.Debug({
+            name: "Slots",
+            message: `No bone for ${unbound.length} locator(s)${what ? ` on ${what}` : ""}: ${unbound.join(", ")}`
+        });
     }
 
     _AttachmentArray()
@@ -402,6 +424,22 @@ export class TnySlot extends Tw2EventEmitter
 
         // Locator order is not guaranteed
         groups.sort((a, b) => a.index - b.index);
+
+        // Bones, before anybody asks a locator where it is.
+        //
+        // A locator's own transform is its BIND POSE; where the hull has a
+        // bone of the same name - a tactical destroyer in defence mode, a
+        // hardpoint on a wing that deploys - the real place is that times the
+        // bone's offset, and EveLocator2.GetTransform folds it in only once
+        // FindBone has been called.
+        //
+        // A MOUNTED slot gets this for free: EveShip2.Update rebuilds every
+        // attached turret set whose _locatorDirty is set, that flag is set at
+        // construction and never cleared, and the rebuild calls FindBone. An
+        // EMPTY slot has nothing in attachments, so nothing ever bound its
+        // locators - and an empty slot is exactly the one a consumer asks
+        // about when it is offering somewhere to fit a gun.
+        this.BindLocatorBones(parent, groups.flatMap(group => group.locators), `locator_${type}`);
 
         const orphans = Array.from(targetArray);
         for (const group of groups)
