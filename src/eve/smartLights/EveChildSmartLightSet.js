@@ -166,6 +166,9 @@ export class EveChildSmartLightSet extends EveChild
         catch (err)
         {
             this._failed = true;
+            // Kept because the catch is the only place the error exists - a
+            // latched set otherwise leaves nothing to inspect afterwards.
+            this._failedError = err;
             tw2.Debug({
                 name: "EveChildSmartLightSet",
                 message: `'${this.name}' disabled after an update error: ${err.message}`,
@@ -176,6 +179,9 @@ export class EveChildSmartLightSet extends EveChild
 
     /** Set once an update throws; the set then stays inert. See `Update`. */
     _failed = false;
+
+    /** The error that latched `_failed`, kept for inspection. */
+    _failedError = null;
 
     /**
      * The body of `Update`, separated so the guard above reads as one thing.

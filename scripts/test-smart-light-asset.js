@@ -76,12 +76,18 @@ async function main()
             set.Update(1 / 60, identity(), { activationStrength: 1 }, parent);
         }
 
-        assert.equal(set._failed, false, `${set.name} must survive its update - it latches off on the first throw`);
+        // The set catches and latches, so the message is the only trace of what
+        // went wrong - report it rather than just the boolean.
+        assert.equal(set._failed, false,
+            `${set.name} must survive its update - it latches off on the first throw: ${set._failedError || ""}`);
 
         const d = set.distribution;
         const quads = collectQuads(set);
         const batches = [];
         set.GetBatches(tw2.device.RM_ADDITIVE, { Commit: b => batches.push(b) }, {});
+
+        const meshes = collect(set, "EveSmartLightMesh");
+        const instanced = meshes.reduce((n, m) => n + (m.mesh?.instanceGeometryResource?._count || 0), 0);
 
         report.push({
             set: set.name,
@@ -90,9 +96,13 @@ async function main()
             live: d.placementData.length,
             quads: quads.length,
             built: quads.reduce((n, q) => n + q._quadCount, 0),
+            meshes: meshes.length,
+            instanced,
             batches: batches.length,
             colours: quads.map(q => Array.from(q.GetGroupColor()).map(round).join("/")).join(" ")
         });
+
+        checkInstanceStream(meshes);
     }
 
     console.table(report);
@@ -106,7 +116,43 @@ async function main()
     const lit = withQuads.filter(r => r.colours.split(/[\s/]+/).some(v => Number(v) > 0));
     assert.ok(lit.length > 0, "a quad built with colour 0 is invisible under additive blending - the modifier stack must not zero every group");
 
+    const withInstances = report.filter(r => r.instanced > 0);
+    assert.ok(withInstances.length > 0, "the beams must pack an instance per placement");
+
     console.log("Smart light asset verified");
+}
+
+/**
+ * The packed instance stream, checked against the declaration it claims.
+ *
+ * The failure this guards is silent: a stride that disagrees with the layout,
+ * or a degenerate transform, still uploads and still draws - as nothing, or as
+ * geometry collapsed to a point. Neither errors.
+ */
+function checkInstanceStream(meshes)
+{
+    for (const mesh of meshes)
+    {
+        const data = mesh.mesh?.instanceGeometryResource;
+        if (!data || !data._count) continue;
+
+        const declared = data.GetLayout().elements.reduce((n, e) => n + e.elements * 4, 0);
+        assert.equal(data.GetInstanceStride(), declared, "the stride must come from the declaration, or every instance is read at the wrong offset");
+        assert.equal(data.GetInstanceStride(), 28 * 4, "seven float4 attributes per instance");
+
+        const array = data._lastUpload;
+        assert.equal(array.length, data._count * 28, "one packed instance per placement");
+        assert.ok(array.every(Number.isFinite), "a NaN anywhere in the stream collapses the instance silently");
+
+        // The 3x4 transform's basis must not be degenerate - a zero basis draws
+        // the mesh at a point, which reads as "the beams do not render".
+        for (let i = 0; i < data._count; i++)
+        {
+            const o = i * 28;
+            const basis = [ 0, 1, 2, 4, 5, 6, 8, 9, 10 ].map(k => array[o + k]);
+            assert.ok(basis.some(v => Math.abs(v) > 1e-6), `instance ${i} has a zero basis`);
+        }
+    }
 }
 
 /** Every locator set the asset's generators ask for, answered with one locator. */
@@ -137,20 +183,45 @@ function makeParent(sets)
 }
 
 /** Depth-first walk of the group tree, which nests through colour-share groups. */
-function collectQuads(node, out = [])
+function collect(node, className, out = [])
 {
     for (const group of node.lightGroups || [])
     {
         if (!group) continue;
-        if (group.constructor.name === "EveSmartLightQuad") out.push(group);
-        collectQuads(group, out);
+        if (group.constructor.name === className) out.push(group);
+        collect(group, className, out);
     }
     return out;
 }
 
-/** No GL context here, so the buffer seams are replaced with plain arrays. */
+function collectQuads(node)
+{
+    return collect(node, "EveSmartLightQuad");
+}
+
+/**
+ * No GL context here, so the buffer seams are replaced with plain arrays.
+ *
+ * The instance upload is captured rather than skipped: the packing is the part
+ * worth measuring, and a mesh that packs nothing is indistinguishable from one
+ * that packs garbage once it reaches the gpu.
+ */
 function stubGroupGl(set)
 {
+    for (const mesh of collect(set, "EveSmartLightMesh"))
+    {
+        const data = mesh.ConfigureInstanceData();
+        if (data && !data._captured)
+        {
+            data._captured = true;
+            data.SetData = function (array, count)
+            {
+                this._count = count;
+                this._lastUpload = array ? Float32Array.from(array) : null;
+            };
+        }
+    }
+
     for (const quad of collectQuads(set))
     {
         quad.effect = quad.effect || {};
