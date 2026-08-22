@@ -65,7 +65,10 @@ dist/rollup/
 src/experiments/
 public/carbon/
 
-# scratch build/tooling output (e.g. parityCewgVsLegacy.js reports) - not source
+# Scratch build and tooling output, plus artifacts/notes - the working notes and
+# findings for whatever is in flight. Notes expire when their work lands: promote
+# verified durable content to the org /docs repository, then delete the local
+# copy. ccpwgl has no docs/ tree of its own.
 artifacts/
 
 # test fixtures containing real extracted CCP/EVE game assets (.black, .sm_hi,
@@ -80,12 +83,7 @@ src/**/README.md
 /CLAUDE.md
 /AGENTS.md
 
-# Agent scratch. Notes expire when their work lands: promote verified durable
-# content to the org /docs repository, then delete the local copy. ccpwgl has no
-# docs/ tree of its own - cross-package direction lives in org-root /docs.
+# Guards against notes landing back in the root rather than artifacts/notes
 AGENT-*.md
-NOTES-*.md
 PLAN-*.md
-CLAUDE.md
-AGENTS.md
 docs/
