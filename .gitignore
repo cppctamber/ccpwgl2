@@ -79,3 +79,13 @@ src/**/README.md
 # Agent entry files: generated per checkout, never committed
 /CLAUDE.md
 /AGENTS.md
+
+# Agent scratch. Notes expire when their work lands: promote verified durable
+# content to the org /docs repository, then delete the local copy. ccpwgl has no
+# docs/ tree of its own - cross-package direction lives in org-root /docs.
+AGENT-*.md
+NOTES-*.md
+PLAN-*.md
+CLAUDE.md
+AGENTS.md
+docs/
