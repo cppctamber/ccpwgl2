@@ -403,7 +403,12 @@ export class EveSmartLightQuad extends EveChildTransform
             vec3.transformMat4(worldPosition, position, m);
             vec4.set(sphere, worldPosition[0], worldPosition[1], worldPosition[2], maxScale);
 
-            if (frustum?.IsSphereVisible?.(sphere) === false) continue;
+            // IntersectsSph3, not IsSphereVisible: the latter takes (center,
+            // radius) as two arguments, so handing it a vec4 leaves radius
+            // undefined, every comparison against -NaN is false, and the test
+            // silently passes everything. Accidentally permissive rather than
+            // broken, but it was not testing anything.
+            if (frustum?.IntersectsSph3?.(sphere) === false) continue;
 
             const strength = this._activationStrength;
             vec3.set(color, groupColor[0] * strength, groupColor[1] * strength, groupColor[2] * strength);
