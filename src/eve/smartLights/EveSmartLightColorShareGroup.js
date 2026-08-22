@@ -47,9 +47,6 @@ export class EveSmartLightColorShareGroup extends EveEntity
     attributeModifiers = [];
 
     /** m_color (Color) [READWRITE, PERSIST] (EveSmartLightBaseGroup.h:30) */
-    // TODO(port): vec4.createLinear() does not exist in ccpwgl's math/vec4 -
-    // kept verbatim from runtime-trinity; verify the intended default once a
-    // ccpwgl equivalent is ported.
     @meta.color
     customColor = vec4.createLinear();
 
@@ -182,6 +179,38 @@ export class EveSmartLightColorShareGroup extends EveEntity
             group?.GetRenderables?.(renderables);
         }
         return renderables;
+    }
+
+    /**
+     * Batch fan-out to the shared groups.
+     *
+     * ccpwgl's counterpart to Carbon's GetRenderables/AddQuadsToQuadRenderer
+     * split - it has one batch accumulator, so members accumulate directly.
+     * Without this a group nested under a colour-share group is collected by
+     * nothing and silently never draws, which is exactly the shape smart light
+     * sets ship in (EveChildSmartLightSet > ColorShareGroup > mesh/quad).
+     *
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     * @param {IEveDistributionMethod} distribution
+     * @returns {Boolean} true if any batch was accumulated
+     */
+    GetBatches(mode, accumulator, perObjectData, distribution)
+    {
+        if (!this.display) return false;
+
+        let accumulated = false;
+
+        for (const group of this.lightGroups)
+        {
+            if (group?.GetBatches?.(mode, accumulator, perObjectData, distribution))
+            {
+                accumulated = true;
+            }
+        }
+
+        return accumulated;
     }
 
     /**

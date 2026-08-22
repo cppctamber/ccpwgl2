@@ -20,6 +20,17 @@ export class EveSmartLightAttributeModifierExpressionBucket extends EveSmartLigh
     @meta.string
     name = "bucket";
 
+    /**
+     * m_activationStrength (float) [READ] - "Value after the last update".
+     *
+     * Exposed under a DIFFERENT wire name than the member it reads, and than
+     * the base's own `attributeMultiplier`, which maps the same-named member on
+     * the base class. Both names appear in the data and they are not the same
+     * slot, so this cannot be folded into the base.
+     */
+    @meta.float
+    currentValue = 1;
+
     /** m_inputs (PITriScalarFunctionVector) [READ, PERSIST] */
     @meta.list("ITriScalarFunction")
     expressionInputs = [];

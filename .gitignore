@@ -87,3 +87,8 @@ src/**/README.md
 AGENT-*.md
 PLAN-*.md
 docs/
+
+# Scratch harnesses that need external state (a fetched asset, a running
+# service) so they cannot join the test sweep
+*.local.js
+*.local.mjs

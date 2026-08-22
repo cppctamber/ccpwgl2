@@ -11,6 +11,17 @@ import { EveSmartLightBaseAttributeModifier } from "./EveSmartLightBaseAttribute
 export class EveSmartLightAttributeModifierColor extends EveSmartLightBaseAttributeModifier
 {
 
+    /**
+     * m_name (std::string) [READWRITE, PERSIST] - "organize your buckets".
+     *
+     * Mapped in this class's own exposure rather than inherited: Carbon's
+     * EveSmartLightBaseAttributeModifier does not map a name, so each concrete
+     * modifier that wants one declares it. Without it the reader throws
+     * `Unknown property "name"` and takes the whole .black down.
+     */
+    @meta.string
+    name = "";
+
     /** m_selectedColor (int32_t) [READWRITE, PERSIST, NOTIFY, ENUM] */
     @meta.int32
     factionColor = -1;

@@ -49,9 +49,6 @@ export class EveSmartLightBaseGroup extends meta.Model
     attributeModifiers = [];
 
     /** m_color (Color) [READWRITE, PERSIST] */
-    // TODO(port): vec4.createLinear() does not exist in ccpwgl's math/vec4 -
-    // kept verbatim from runtime-trinity; verify the intended default once a
-    // ccpwgl equivalent is ported.
     @meta.color
     customColor = vec4.createLinear();
 

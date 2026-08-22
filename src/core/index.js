@@ -15,6 +15,7 @@ export * from "./store";
 export * from "./value";
 export * from "./vertex";
 
+export * from "./Tw2DirectInstanceData";
 export * from "./Tw2RuntimeInstanceData";
 export * from "./Tw2Frustum";
 export * from "./Tw2DepthRenderTarget";
