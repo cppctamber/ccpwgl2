@@ -3,13 +3,25 @@ import { mat4, quat, vec3 } from "math";
 import { skippedObject } from "core/reader/Tw2BlackPropertyReaders";
 
 
+/**
+ * Still a stub as a RENDERER - `Update` and `GetBatches` do nothing - but no
+ * longer base-less.
+ *
+ * The placeholders in this folder omit `meta.Model` because nothing walks a
+ * class that will never be reached. This one IS reached:
+ * `EveSmartLightMesh` extends it and is a real implementation, and without a
+ * Model base `Model.Traverse` cannot see it or ANYTHING below it - its mesh,
+ * its areas, their effects, their textures. Every graph-walking pass in the
+ * engine and every console probe silently returns nothing for the beams, which
+ * reads as "the beams do not exist" rather than "the walk cannot reach them".
+ */
 @meta.notImplemented
 @meta.type("EveChildInstanceMeshRenderer", true)
 @meta.define({
     wgl: "EveChildInstanceMeshRenderer",
     ccp: true
 })
-export class EveChildInstanceMeshRenderer
+export class EveChildInstanceMeshRenderer extends meta.Model
 {
     @meta.string
     name = "";
