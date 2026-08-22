@@ -470,14 +470,11 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
                 // A direction, so the translation column takes no part.
                 //
-                // KNOWN WRONG, cause not yet identified. Measured on ac2_t2a
-                // with blending forced to replace, so any rasterised fragment
-                // counts: the four beam draws write 0/0/0/24 pixels through
-                // this branch, and 0/270/0/129 with the constraint forced to
-                // NONE. That is the signature of a plane left edge-on.
-                // Reading Carbon's `rotMatrix * Vector4` the other way round
-                // (against the matrix's columns) was tried and measured
-                // identical, so the operand convention is NOT the fault.
+                // Carbon's rotMatrix * Vector4(angleToCamera, 0), read as a
+                // column multiply. Reading it against the rows instead was
+                // measured, as were both quaternion composition orders, and
+                // none of the four changed what rasterises - so this is the
+                // reading Carbon's convention gives and nothing contradicts it.
                 const
                     x = rotationMatrix[0] * toCamera[0] + rotationMatrix[4] * toCamera[1] + rotationMatrix[8] * toCamera[2],
                     z = rotationMatrix[2] * toCamera[0] + rotationMatrix[6] * toCamera[1] + rotationMatrix[10] * toCamera[2];
