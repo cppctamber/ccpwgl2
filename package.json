@@ -97,6 +97,6 @@
   },
   "dependencies": {
     "@carbonenginejs/runtime-audio": "^0.3.1",
-    "@carbonenginejs/runtime-resource": "^0.20.0"
+    "@carbonenginejs/runtime-resource": "^0.22.0"
   }
 }
