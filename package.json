@@ -55,7 +55,8 @@
     "test:render-target": "node scripts/test-render-target-fail-soft.js",
     "link:carbon-webgl2": "node scripts/link-carbon-webgl2.mjs",
     "test:light-persisted-fields": "node scripts/test-light-persisted-fields.mjs",
-    "test:smart-light-asset": "node scripts/test-smart-light-asset.js"
+    "test:smart-light-asset": "node scripts/test-smart-light-asset.js",
+    "test:sof-locator-sets": "node scripts/test-sof-locator-sets.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

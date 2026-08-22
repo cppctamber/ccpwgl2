@@ -2977,15 +2977,44 @@ export class EveSOFData extends meta.Model
     {
         const { hull } = sof;
 
-        hull.locatorSets.forEach(srcSet =>
+        // A hull's `locatorSets` list is polymorphic: an entry is either an
+        // EveSOFDataHullLocatorSet, which carries `locators` directly, or an
+        // EveSOFDataHullLocatorSetGroup, which carries a nested list of either.
+        // Carbon flattens the tree recursively and MERGES BY NAME
+        // (EveSOFDataMgr::LoadLocatorData, cpp:1188-1218 - `hd.locatorSets[name]
+        // .push_back`), so one named set can be assembled from several groups.
+        //
+        // This used to skip groups entirely with a "not supported yet" log, and
+        // that is why smart lights drew nothing: every set they place against -
+        // primaryspotlight_01, primaryflare_01, dockinglights_01 - is authored
+        // inside a group, so the hull answered `GetLocatorsForSet` with null and
+        // no placement was ever generated. A hull with only flat sets (damage,
+        // steam, contrails) looked perfectly healthy throughout.
+        const byName = new Map();
+
+        (function flatten(entries)
         {
-            const set = new EveLocatorSets();
-            set.name = srcSet.name;
-
-            if ("locators" in srcSet)
+            for (const srcSet of entries)
             {
+                if (!srcSet) continue;
 
-                srcSet.locators.forEach(srcItem =>
+                // The group case: recurse. Groups nest, so this is not one deep.
+                if (!("locators" in srcSet))
+                {
+                    if (Array.isArray(srcSet.locatorSets)) flatten(srcSet.locatorSets);
+                    continue;
+                }
+
+                let set = byName.get(srcSet.name);
+                if (!set)
+                {
+                    set = new EveLocatorSets();
+                    set.name = srcSet.name;
+                    byName.set(srcSet.name, set);
+                    obj.locatorSets.push(set);
+                }
+
+                for (const srcItem of srcSet.locators)
                 {
                     const locator = new EveLocatorSetItem();
                     locator.boneIndex = srcItem.boneIndex;
@@ -2993,19 +3022,9 @@ export class EveSOFData extends meta.Model
                     vec3.copy(locator.position, srcItem.position);
                     quat.copy(locator.rotation, srcItem.rotation);
                     set.locators.push(locator);
-                });
-
-                obj.locatorSets.push(set);
+                }
             }
-            else
-            {
-                tw2.Log({
-                    name: "Space object factory - Locator Groups",
-                    message: "Locator groups not supported yet"
-                });
-            }
-        });
-
+        })(hull.locatorSets);
     }
 
     /**
