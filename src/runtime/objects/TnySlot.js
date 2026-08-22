@@ -279,12 +279,49 @@ export class TnySlot extends Tw2EventEmitter
         const array = this._AttachmentArray();
         if (array && !array.includes(this._turretSet)) array.push(this._turretSet);
 
+        this._BindLocatorBones();
         this._turretSet.UpdateItemsFromLocators(this._locators);
 
         if (this._targetObject) this._turretSet.SetTargetObject?.(this._targetObject);
         else this._turretSet.SetTargetPosition(this._target);
 
         this.UpdateFaction();
+    }
+
+    /**
+     * Binds each locator to its bone, where the hull has one for it.
+     *
+     * A locator's own transform is its BIND POSE. On a hull with moving
+     * parts - a tactical destroyer in defence mode, a hull whose hardpoints
+     * ride a deploying wing - the gun is metres from that, and the offset
+     * lives on the bone of the same name. `EveLocator2.GetTransform` folds it
+     * in, but only once `FindBone` has been called; until then it silently
+     * answers the bind pose, which is the failure that looks like a turret
+     * mounted in the wrong place rather than like a missing call.
+     *
+     * `EveShip2.RebuildTurretSet` does this for the ship's own turret sets.
+     * Nothing did it for a slot-mounted one, so this path had every locator
+     * unbound: turret items placed at the bind pose, and any consumer asking
+     * a locator where it is - an annotation, a drop target - given the same
+     * wrong answer.
+     *
+     * Called on every Rebuild rather than once, because the answer changes
+     * with the hull: a rebuilt or re-fetched ship has a new animation
+     * controller, and a bone found against the old one points into geometry
+     * that is gone. Finding a bone is a name comparison over one model's
+     * bone list, and a hull has a handful of locators per slot.
+     * @private
+     */
+    _BindLocatorBones()
+    {
+        const animation = this._wrapped?.animation || this._parent?.wrapped?.animation || null;
+
+        if (!animation || !this._locators) return;
+
+        for (let i = 0; i < this._locators.length; i++)
+        {
+            this._locators[i].FindBone?.(animation);
+        }
     }
 
     _AttachmentArray()
