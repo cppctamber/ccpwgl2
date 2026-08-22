@@ -37,6 +37,7 @@ testSetFansOutToDistributionAndGroups();
 testSetIsInertWithoutADistribution();
 testQuadVertexLayout();
 testQuadHonoursTheLiveCount();
+testShipExposesLocatorSets();
 console.log("Smart light geometry verified");
 
 /**
@@ -170,6 +171,24 @@ function testQuadHonoursTheLiveCount()
 
     quad.BuildQuads(placements, 0, null);
     assert.equal(quad._quadCount, 0, "a live count of zero builds nothing");
+}
+
+/**
+ * The placement generators ask a hull for a named locator set by Carbon's name.
+ * EveShip2 had only the private `_GetLocatorSetItems`, so the call threw
+ * "parent.GetLocatorsForSet is not a function" from inside EveShip2.Update -
+ * which aborts the whole child loop, taking every sibling after the smart light
+ * set down with it. A missing method on a hot path is not a quiet failure.
+ */
+function testShipExposesLocatorSets()
+{
+    const ship = new (tw2.GetClass("EveShip2"))();
+
+    assert.equal(typeof ship.GetLocatorsForSet, "function", "EveShip2 must answer Carbon's GetLocatorsForSet");
+    assert.equal(ship.GetLocatorsForSet("primaryspotlight_01"), null, "an absent set is null, not a throw");
+
+    ship.locatorSets.push({ name: "primaryspotlight_01", locators: [ 1, 2 ] });
+    assert.deepEqual(ship.GetLocatorsForSet("primaryspotlight_01"), [ 1, 2 ], "a present set returns its locators");
 }
 
 /** A quad with the GL seams stubbed - this test is about float maths, not draws. */

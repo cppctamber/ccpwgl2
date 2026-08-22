@@ -1143,6 +1143,23 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Gets an authored locator set by name.
+     *
+     * Carbon's `IEveSpaceObject2::GetLocatorsForSet`. This is the name the rest
+     * of the engine calls - distribution placement generators ask a hull for the
+     * set they place against (`primaryspotlight_01`, `primaryflare_01` and so
+     * on), and Carbon's classes call it directly. It was private here as
+     * `_GetLocatorSetItems` only because damage locators were the sole caller.
+     *
+     * @param {String} name
+     * @returns {Array<EveLocatorSetItem>|null} null when the hull has no such set
+     */
+    GetLocatorsForSet(name)
+    {
+        return this._GetLocatorSetItems(name);
+    }
+
+    /**
      * Builds a locator transform directly from authored values so targeting
      * does not depend on view-dependent update order
      * @param {mat4} out
