@@ -79,40 +79,14 @@ export class EveTurretSetItem extends EveObjectSetItem
      */
     UpdateTransforms()
     {
-        // COMPOSE the bone with the locator's authored transform; do not
-        // REPLACE it. Overwriting `rotation`/`position` from the bone's world
-        // transform discards whatever the locator says, and on af4_t1 the two
-        // disagree badly - measured against every turret locator on that hull,
-        // the bone sits 12 to 180 degrees away and 17 to 45 units away:
-        //
-        //     locator_turret_1a   180 deg   42.7 units
-        //     locator_turret_3a    80 deg   18.2 units
-        //     locator_turret_4a    13 deg   42.9 units
-        //
-        // Those 180s are hulls that mount a turret upside down. Taking the bone
-        // threw the flip away and put the turret tens of units off, inside the
-        // geometry. The locator data itself is fine - every locator on that hull
-        // has determinant +1, unit scale, and round-trips through the quaternion
-        // losslessly.
-        //
-        // `EveLocatorSetItem.UpdateViewDependentData` already composes this way
-        // (`bone.offsetTransform * localTransform`); this class was the odd one
-        // out. gles2 mostly hid it because that shader also receives the full
-        // per-bone `turretPoseTransAndRot` array, which carries the true
-        // orientation; Carbon has no such array and reads `turretRotation`
-        // directly, so the dx11 path shows it plainly.
-        mat4.fromRotationTranslation(this._localTransform, this.rotation, this.position);
-
         if (this._bone)
         {
-            mat4.multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
+            mat4.getRotation(this.rotation, this._bone.worldTransform);
+            mat4.getTranslation(this.position, this._bone.worldTransform);
         }
 
-        // Both halves of the per-object data must come from the SAME matrix.
-        // The translation is already read off `_localTransform`; taking the
-        // rotation from the raw `rotation` field instead would rotate a turret
-        // about a point it is not standing at.
-        mat4.getRotation(this._localRotation, this._localTransform);
+        mat4.fromRotationTranslation(this._localTransform, this.rotation, this.position);
+        quat.copy(this._localRotation, this.rotation);
     }
 
     /**
@@ -1659,12 +1633,10 @@ export class EveTurretSet extends EveObjectSet
             translation[i * 4 + 2] = item._localTransform[14];
             translation[i * 4 + 3] = 1;
 
-            // The COMPOSED rotation, matching the translation read off
-            // _localTransform above - see EveTurretSetItem.UpdateTransforms.
-            rotation[i * 4] = item._localRotation[0];
-            rotation[i * 4 + 1] = item._localRotation[1];
-            rotation[i * 4 + 2] = item._localRotation[2];
-            rotation[i * 4 + 3] = item._localRotation[3];
+            rotation[i * 4] = item.rotation[0];
+            rotation[i * 4 + 1] = item.rotation[1];
+            rotation[i * 4 + 2] = item.rotation[2];
+            rotation[i * 4 + 3] = item.rotation[3];
         }
     }
 
