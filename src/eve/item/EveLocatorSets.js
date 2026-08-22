@@ -129,39 +129,3 @@ export class EveLocatorSets extends meta.Model
     }
 
 }
-
-
-/**
- * Carbon's standalone `Locator` struct (EveLocatorSets.h), as authored inside a
- * distribution's own locator list rather than on a hull.
- *
- * It is NOT `EveLocatorSetItem`: same four values, different spelling
- * (`direction`/`scale` against `rotation`/`scaling`). Both shapes reach
- * `EveDistributionPlacementGeneratorParentLocators`, which is why that
- * generator accepts either.
- *
- * Registered because `EveDistributionPlacementGeneratorLocators` declares
- * `@meta.list("Locator")`: without a registration the black reader builds an
- * untyped bag and then throws naming a PROPERTY, which reads as a data fault.
- */
-@meta.type("Locator")
-@meta.define({
-    wgl: "Locator",
-    ccp: true
-})
-export class Locator extends meta.Model
-{
-
-    @meta.translation
-    position = vec3.create();
-
-    @meta.rotation
-    direction = quat.create();
-
-    @meta.scaling
-    scale = vec3.fromValues(1, 1, 1);
-
-    @meta.int32
-    boneIndex = -1;
-
-}
