@@ -142,6 +142,27 @@ export class Tw2Library extends Tw2EventEmitter
     enableExperimentalShadows = false;
 
     /**
+     * TEMPORARY. Forces every effect's UBER_DEPTH permutation to UBER_DEPTH_OFF.
+     *
+     * UBER_DEPTH_ON fades a surface against `DepthMap`, which nothing publishes
+     * (`EveSpaceSceneDepthHandler.publishGlobal` is false). The fade therefore
+     * resolves to zero and the surface renders fully transparent - it draws
+     * perfectly, passes every check, and contributes no pixels. That is what
+     * kept smart light beams invisible: measured on ac2_t2a, the beam draws
+     * wrote 0 pixels with the option on and 882/40/170 with it off.
+     *
+     * This is a permutation OPTION, so `config.js`'s path and tier pins cannot
+     * reach it - hence a flag rather than another entry there.
+     *
+     * REMOVE THIS once DepthMap is published, together with the `flarequad` and
+     * `flarequadsoft` tier pins in `config.js`, which exist for the same missing
+     * input. A forced option left in place after the real input arrives silently
+     * holds every surface a permutation below what was authored.
+     * @type {boolean}
+     */
+    forceUberDepthOff = true;
+
+    /**
      * Enables experimental Carbon-shaped render batch context
      * @type {boolean}
      */
@@ -609,6 +630,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.debug !== undefined) this.SetDebugMode(opt.debug);
         if (opt.audioEnabled !== undefined) this.audioEnabled = !!opt.audioEnabled;
         if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
+        if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);

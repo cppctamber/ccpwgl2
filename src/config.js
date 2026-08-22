@@ -74,6 +74,16 @@ export const config = {
     // Enables experimental EveSpaceScene shadow rendering path
     enableExperimentalShadows: false,
 
+    // TEMPORARY. Forces every UBER_DEPTH permutation to its OFF value.
+    //
+    // UBER_DEPTH_ON fades a surface against DepthMap, which nothing publishes,
+    // so the fade resolves to zero and the surface draws perfectly while
+    // contributing no pixels. Smart light beams are the visible case.
+    //
+    // Remove together with the flarequad tier pins below once DepthMap is
+    // published - they exist for the same missing input.
+    forceUberDepthOff: true,
+
     // Enables experimental Carbon-shaped render batch context
     enableExperimentalBatchContext: false,
 

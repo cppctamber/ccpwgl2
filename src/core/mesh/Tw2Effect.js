@@ -540,6 +540,27 @@ export class Tw2Effect extends meta.Model
             }
         }
 
+        // TEMPORARY, see tw2.forceUberDepthOff. Applied HERE rather than to the
+        // authored data: the option surface above is the first point at which
+        // the shader's real axes and values are known, so a shader without
+        // UBER_DEPTH, or one whose off-value is spelled differently, is left
+        // alone instead of being given an option it cannot compile.
+        if (tw2.forceUberDepthOff && Array.isArray(res.permutations))
+        {
+            for (let i = 0; i < res.permutations.length; i++)
+            {
+                const permutation = res.permutations[i];
+                if (!permutation || permutation.name !== "UBER_DEPTH") continue;
+
+                const values = Tw2Effect.getPermutationOptions(permutation.options);
+                const off = values.find(x => String(x).endsWith("_OFF"));
+                if (off && this.options[permutation.name] !== off)
+                {
+                    this.options[permutation.name] = off;
+                }
+            }
+        }
+
         try
         {
             this.shader = res.GetShader(this.options);

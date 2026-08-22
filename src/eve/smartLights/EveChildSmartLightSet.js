@@ -89,7 +89,15 @@ export class EveChildSmartLightSet extends EveChild
         for (let i = 0; i < this.lightGroups.length; i++)
         {
             const group = this.lightGroups[i];
-            if (group && "_frustum" in group) group._frustum = frustum;
+            if (!group) continue;
+
+            if ("_frustum" in group) group._frustum = frustum;
+
+            // Carbon's IEveSmartLightGroup::UpdateVisibility, whose ccpwgl
+            // equivalent moment is this one. Optional because the interface
+            // default is empty (IEveSmartLightGroup.h:19) - only the mesh
+            // overrides it, and a group that does not is not a gap.
+            group.UpdateVisibility?.(this._updateContext, this._worldTransform, parentLod);
         }
     }
 

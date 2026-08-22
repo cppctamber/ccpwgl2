@@ -100,6 +100,12 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     /** m_activationStrength - captured from the update params. */
     _activationStrength = 1;
 
+    /** m_isVisible - set by UpdateVisibility, gates the geometry rebuild. */
+    _isVisible = true;
+
+    /** The parent LOD last seen, for whoever implements screen size. */
+    _parentLod = 0;
+
     /** Packed instance scratch, grown on demand and reused between frames. */
     _instances = null;
 
@@ -164,6 +170,55 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     GetNumberOfEntities()
     {
         return this._lastEntityCount;
+    }
+
+    /**
+     * Visibility pass (EveSmartLightMesh.cpp:149-152, which chains straight to
+     * EveChildInstanceMeshRenderer.cpp:100-114).
+     *
+     * Carbon sets `m_isVisible` and, when visible, lets the mesh base compute
+     * `m_currentScreenSize`; when not, it parks the screen size at -1. Both then
+     * gate the geometry rebuild.
+     *
+     * ccpwgl has no equivalent screen-size measurement on this path, so the size
+     * is reported as UNKNOWN rather than guessed. `_UsesScreenSize` below is
+     * what keeps that honest: an unknown size must not be compared against
+     * `minScreenSize`, because a guess of zero would cull every mesh whose asset
+     * authors a threshold, and a guess of Infinity would silently ignore one the
+     * artist meant.
+     *
+     * @param {Object} [updateContext]
+     * @param {mat4} [parentTransform]
+     * @param {Number} [parentLod]
+     */
+    UpdateVisibility(updateContext, parentTransform, parentLod)
+    {
+        this._isVisible = !!this.display;
+
+        if (!this._isVisible)
+        {
+            this.currentScreenSize = -1;
+            return;
+        }
+
+        if (parentLod !== undefined && parentLod !== null)
+        {
+            this._parentLod = parentLod;
+        }
+    }
+
+    /**
+     * Whether `currentScreenSize` holds a real measurement.
+     *
+     * Nothing sets it yet - see UpdateVisibility - so this is false and the
+     * `minScreenSize` gate is skipped rather than applied to a fabricated
+     * number. When a screen-size measurement arrives, this becomes the single
+     * place that has to change.
+     * @returns {Boolean}
+     */
+    _UsesScreenSize()
+    {
+        return this.currentScreenSize > 0;
     }
 
     /**
@@ -314,8 +369,12 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
         const data = this.ConfigureInstanceData();
         if (!data) return;
 
+        // Carbon's gate (EveChildInstanceMeshRenderer.cpp:229-232): not visible,
+        // nothing to place, or too small on screen.
         const count = Math.min(Number(size ?? 0), placements.length);
-        if (!count || !this.display)
+        const tooSmall = this._UsesScreenSize() && this.currentScreenSize < this.minScreenSize;
+
+        if (!count || !this.display || this._isVisible === false || tooSmall)
         {
             data.SetData(null, 0);
             return;
