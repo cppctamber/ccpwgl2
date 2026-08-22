@@ -158,6 +158,33 @@ export class Tw2CarbonShadowRenderer
     _installed = false;
     _cascade = mat4.create();
     _atlasDebug = null;
+
+    /**
+     * Radius, in texels, of the separable blur applied to the screen-space
+     * visibility buffer. 0 disables it.
+     *
+     * This softens the shadow EDGE, a different problem from shadow RESOLUTION
+     * and not fixed by the same lever. The resolve does a single unfiltered
+     * depth compare per pixel (/docs/contracts/carbon-shadow-resolve.md, "The
+     * lookup"), and a binary in-or-out test aliases at ANY map size - measured
+     * here, 2048 and 8192 both look jagged and differ only in the size of the
+     * stair step. More texels make the steps smaller; only filtering makes
+     * them soft.
+     *
+     * Blurs the VISIBILITY BUFFER, never the cascade depth atlas. Averaging
+     * depth values describes a surface that exists nowhere and leaks light -
+     * the reason variance and exponential shadow maps store moments instead.
+     * The visibility buffer is a screen-space mask, so averaging it is what a
+     * percentage-closer filter would have produced anyway.
+     *
+     * Being screen-space it bleeds across depth discontinuities: an edge
+     * softens even where the geometry behind it jumps. At one or two texels
+     * that reads as antialiasing; far higher and it reads as haze.
+     */
+    blurRadius = 1;
+
+    _resolveBlur = null;
+    _blurProgram = null;
     _casterReport = [];
 
     /**
@@ -272,10 +299,14 @@ export class Tw2CarbonShadowRenderer
         if (!this._resolve)
         {
             this._resolve = new Tw2RenderTarget("CarbonShadowVisibility", width, height, false);
+            this._resolveBlur = new Tw2RenderTarget("CarbonShadowVisibilityBlur", width, height, false);
         }
         else
         {
             this._resolve.Update(width, height, false);
+            // Must track the resolve exactly - a ping-pong between mismatched
+            // targets samples outside the written region.
+            if (this._resolveBlur) this._resolveBlur.Update(width, height, false);
         }
 
         // Cascade count is not needed here - the atlas is sized from the cells.
@@ -615,6 +646,11 @@ export class Tw2CarbonShadowRenderer
 
         device.perObjectData = previousPerObjectData;
 
+        // Softens the edge before anything samples it. A single unfiltered
+        // depth compare aliases at any map size, so this is what actually
+        // removes the stair-stepping - see blurRadius.
+        this._BlurVisibility();
+
         // The screen-space visibility buffer, NOT the cascade atlas. Binding the
         // atlas here is the mistake this whole class exists to avoid.
         if (tw2.HasVariable("EveSpaceSceneShadowMap"))
@@ -744,6 +780,139 @@ export class Tw2CarbonShadowRenderer
     }
 
     /**
+     * Separable blur of the visibility buffer: horizontal, then vertical.
+     *
+     * Ping-pongs resolve -> scratch -> resolve, so the softened result lands
+     * back in the target that gets published and nothing downstream needs to
+     * know this ran.
+     *
+     * Separable means two 1D passes rather than one 2D kernel: 2n samples per
+     * pixel instead of n squared, with the same result.
+     *
+     * @returns {Boolean} true when the buffer was blurred
+     * @private
+     */
+    _BlurVisibility()
+    {
+        const radius = Math.max(0, Math.min(16, Math.floor(this.blurRadius)));
+        if (!radius || !this._resolve || !this._resolveBlur) return false;
+
+        const view = this._EnsureBlurProgram();
+        if (!view) return false;
+
+        const
+            { gl } = device,
+            prevDepth = gl.isEnabled(gl.DEPTH_TEST),
+            prevBlend = gl.isEnabled(gl.BLEND),
+            prevVao = gl.getParameter(gl.VERTEX_ARRAY_BINDING),
+            width = this._resolve.width,
+            height = this._resolve.height;
+
+        gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.BLEND);
+        gl.bindVertexArray(view.vao);
+        gl.useProgram(view.program);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.uniform1i(view.sampler, 0);
+        gl.uniform1f(view.radius, radius);
+
+        this._resolveBlur.Set();
+        gl.bindTexture(gl.TEXTURE_2D, this._resolve.texture.texture);
+        gl.uniform2f(view.step, 1 / width, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        this._resolveBlur.Unset();
+
+        this._resolve.Set();
+        gl.bindTexture(gl.TEXTURE_2D, this._resolveBlur.texture.texture);
+        gl.uniform2f(view.step, 0, 1 / height);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        this._resolve.Unset();
+
+        if (prevDepth) gl.enable(gl.DEPTH_TEST); else gl.disable(gl.DEPTH_TEST);
+        if (prevBlend) gl.enable(gl.BLEND); else gl.disable(gl.BLEND);
+        gl.bindVertexArray(prevVao);
+        return true;
+    }
+
+    /**
+     * Compiles the separable blur program on first use.
+     *
+     * Same full-screen triangle as the atlas preview - three vertices from
+     * gl_VertexID, no buffers.
+     * @returns {Object|null}
+     * @private
+     */
+    _EnsureBlurProgram()
+    {
+        if (this._blurProgram) return this._blurProgram;
+
+        const { gl } = device;
+
+        const vs = `#version 300 es
+            void main()
+            {
+                vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+                gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+            }`;
+
+        // A BOX kernel, not a Gaussian. The input is a near-binary mask, so the
+        // weighting barely shows, and a box lets the radius be a uniform rather
+        // than a recompile per kernel size. The loop bound is constant and the
+        // radius clips inside it, which every WebGL2 compiler accepts.
+        const fs = `#version 300 es
+            precision highp float;
+            uniform sampler2D source;
+            uniform vec2 uStep;
+            uniform float uRadius;
+            out vec4 color;
+            void main()
+            {
+                vec2 uv = gl_FragCoord.xy / vec2(textureSize(source, 0));
+                float total = 0.0;
+                float weight = 0.0;
+                for (int i = -16; i <= 16; ++i)
+                {
+                    float offset = float(i);
+                    if (abs(offset) > uRadius) continue;
+                    total += texture(source, uv + uStep * offset).r;
+                    weight += 1.0;
+                }
+                color = vec4(total / max(weight, 1.0), 0.0, 0.0, 1.0);
+            }`;
+
+        const compile = (type, src) =>
+        {
+            const sh = gl.createShader(type);
+            gl.shaderSource(sh, src);
+            gl.compileShader(sh);
+            if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS))
+            {
+                throw new Error(`Shadow blur compile: ${gl.getShaderInfoLog(sh)}`);
+            }
+            return sh;
+        };
+
+        const program = gl.createProgram();
+        gl.attachShader(program, compile(gl.VERTEX_SHADER, vs));
+        gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+        {
+            throw new Error(`Shadow blur link: ${gl.getProgramInfoLog(program)}`);
+        }
+
+        this._blurProgram = {
+            program,
+            vao: gl.createVertexArray(),
+            sampler: gl.getUniformLocation(program, "source"),
+            step: gl.getUniformLocation(program, "uStep"),
+            radius: gl.getUniformLocation(program, "uRadius")
+        };
+
+        return this._blurProgram;
+    }
+
+    /**
      * Compiles the atlas preview program on first use.
      * @returns {Object|null}
      * @private
@@ -820,6 +989,14 @@ export class Tw2CarbonShadowRenderer
         this.Uninstall();
         if (this._atlas) { this._atlas.Destroy(); this._atlas = null; }
         if (this._resolve) { this._resolve.Destroy(); this._resolve = null; }
+        if (this._resolveBlur) { this._resolveBlur.Destroy(); this._resolveBlur = null; }
+
+        if (this._blurProgram)
+        {
+            device.gl.deleteVertexArray(this._blurProgram.vao);
+            device.gl.deleteProgram(this._blurProgram.program);
+            this._blurProgram = null;
+        }
         if (this._atlasDebug)
         {
             const { gl } = device;
