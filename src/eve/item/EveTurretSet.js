@@ -10,24 +10,8 @@ import {
 } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { EveTurretTarget } from "../EveTurretTarget";
-import { AudEventKey } from "../../unsupported/curve/curve/AudEventCurve";
+import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 
-
-/**
- * Temporary class for audio key
- * Probably should be an audio curve with one key
- */
-class AudEvent
-{
-    static blackStruct(reader)
-    {
-        return AudEventKey.from({
-            // Carbon m_value is std::wstring - u16 index into the wide string table
-            value: reader.ReadWStringU16(),
-            time: reader.ReadF32()
-        });
-    }
-}
 
 /**
  * Todo: update with bone offset?
@@ -159,8 +143,78 @@ export class EveTurretSet extends EveObjectSet
     @meta.path
     geometryResPath = "";
 
-    @meta.struct(AudEvent)
-    idleToTargetingMovementAudioEvent = null;
+    /**
+     * m_idleToTargetingMovementAudioEvent (std::wstring) [RW, PERSIST]
+     * (EveTurretSet.h:502, _Blue.cpp:128).
+     *
+     * A BARE wide string, not a struct. It was declared `@meta.struct(AudEvent)`,
+     * and `@meta.struct(<function>)` calls `AudEvent.blackStruct` directly - which
+     * read the string and then a float that does not exist on the wire, taking
+     * four bytes belonging to the next property and desynchronising everything
+     * after it. Read as a string, with a `wstring` blackReader for the width.
+     */
+    @meta.string
+    idleToTargetingMovementAudioEvent = "";
+
+    /** m_targetingToIdleMovementAudioEvent (std::wstring) [RW, PERSIST] (h:503). */
+    @meta.string
+    targetingToIdleMovementAudioEvent = "";
+
+    /** m_playMovementSound (bool) [RW, PERSIST] (h:500, ctor cpp:133). */
+    @meta.notImplemented
+    @meta.boolean
+    playMovementSound = true;
+
+    /** m_maxTrackingTime (float) [RW, PERSIST] - "How long does tracking take?" (h:429). */
+    @meta.float
+    maxTrackingTime = 1;
+
+    /**
+     * m_state (State) [READ, PERSIST] (h:471).
+     *
+     * Persisted as a plain int32: Carbon's `State` enum carries no VarChooser
+     * and the attribute has no `Be::ENUM` flag, so this is four bytes on the
+     * wire rather than an enum definition. `@meta.enums` would read a STRING and
+     * desynchronise the stream - see the note on Tr2FactionLight.castsShadows.
+     */
+    @meta.uint
+    state = 2;
+
+    /** m_useLowLodFiringTransform (bool) [RW, PERSIST] (ctor cpp:131). */
+    @meta.notImplemented
+    @meta.boolean
+    useLowLodFiringTransform = false;
+
+    /** m_lowLodFiringEffectScale (Vector3) [RW, PERSIST] - 0 keeps default behaviour (cpp:129). */
+    @meta.notImplemented
+    @meta.vector3
+    lowLodFiringEffectScale = vec3.fromValues(1, 1, 1);
+
+    /** m_lowLodFiringEffectRotation (Quaternion) [RW, PERSIST] (cpp:130). */
+    @meta.notImplemented
+    @meta.quaternion
+    lowLodFiringEffectRotation = quat.create();
+
+    /** m_lowLodFiringEffectTranslation (Vector3) [RW, PERSIST] (cpp:128). */
+    @meta.notImplemented
+    @meta.vector3
+    lowLodFiringEffectTranslation = vec3.create();
+
+    /** m_randomizeExplosionRotation (bool) [RW, PERSIST] - else use the damage-locator rotation (cpp:125). */
+    @meta.notImplemented
+    @meta.boolean
+    randomizeExplosionRotation = true;
+
+    /**
+     * m_ambientEffect (EveSpaceObjectChildPtr) [PERSISTONLY] (_Blue.cpp:121).
+     *
+     * Mapped as an attribute purely so tooling can see bindings inside it; the
+     * engine reaches it through the property pair on the next line. Declared
+     * here so the file READS - the ambient effect itself is unported.
+     */
+    @meta.notImplemented
+    @meta.struct()
+    ambientEffect = null;
 
     @meta.uint
     impactBehaviour = 0;
@@ -1572,6 +1626,22 @@ export class EveTurretSet extends EveObjectSet
      * Turret states
      * @type {{INACTIVE: number, IDLE: number, FIRING: number, PACKING: number, UNPACKING: number, TARGETING: number}}
      */
+    /**
+     * Both movement audio events are Carbon std::wstring (EveTurretSet.h:502-503).
+     */
+    static blackReaders = {
+        idleToTargetingMovementAudioEvent: wstring,
+        targetingToIdleMovementAudioEvent: wstring
+    };
+
+    /**
+     * ccpwgl's own runtime states, which `_state` uses.
+     *
+     * These are NOT Carbon's ordinals and must not be compared against the
+     * persisted `state` field - see CarbonState below. PACKING and UNPACKING
+     * have no Carbon counterpart at all; they belong to ccpwgl's deploy
+     * animation handling, which is why this enum is kept rather than replaced.
+     */
     static State = {
         INACTIVE: 0,
         IDLE: 1,
@@ -1579,6 +1649,25 @@ export class EveTurretSet extends EveObjectSet
         PACKING: 3,
         UNPACKING: 4,
         TARGETING: 5
+    };
+
+    /**
+     * Carbon's `EveTurretSet::State` (EveTurretSet.h:245-253), which is what the
+     * persisted `state` attribute holds.
+     *
+     * The two enums AGREE ON NOTHING except by accident: Carbon has an INVALID
+     * at 0 and no packing states, so every shared name sits at a different
+     * ordinal - IDLE is 2 here and 1 above, FIRING 4 against 2. Reading the wire
+     * value into `_state` without translating would silently put the turret in
+     * the wrong state, so the hookup needs a map, not an assignment.
+     */
+    static CarbonState = {
+        INVALID: 0,
+        DEACTIVE: 1,
+        IDLE: 2,
+        TARGETING: 3,
+        FIRING: 4,
+        RELOADING: 5
     };
 
     /**
