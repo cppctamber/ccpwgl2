@@ -1203,13 +1203,18 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
+        // HANGS THE BROWSER if the `i--` stays. `RemoveItem` splices
+        // `this.items`, but `toRemove` is a separate `Array.from` copy that
+        // never shrinks - so `i--` revisits the SAME entry, whose locatorName is
+        // still set, forever. This method runs every frame (`_locatorDirty` is
+        // never cleared), so it is a hard lock, not a slow frame.
+        //
+        // It survived because `toRemove` is normally emptied by the splice in
+        // the matching branch above: every existing item finds its locator. The
+        // first item that does not is the first hang.
         for (let i = 0; i < toRemove.length; i++)
         {
-            if (toRemove[i].locatorName)
-            {
-                this.RemoveItem(toRemove[i]);
-                i--;
-            }
+            if (toRemove[i].locatorName) this.RemoveItem(toRemove[i]);
         }
 
         this.RebuildItemsFromLocators();
@@ -1450,6 +1455,26 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Whether this effect's shader takes the turret index per draw (TEXCOORD1)
+     * rather than from the instance id.
+     *
+     * Asked of the PASS INPUT rather than assumed from the profile: the
+     * distinction is what the shader declares, and an effect can be routed to
+     * another profile's directory by a config pin.
+     *
+     * @param {String} technique
+     * @returns {Boolean} true when the de-instanced per-draw loop is correct
+     */
+    _UsesPerDrawTurretIndex(technique)
+    {
+        const input = this.turretEffect.GetPassInput(technique, 0);
+        if (!input || !input.elements) return true;
+
+        return input.elements.some(el =>
+            el.usage === Tw2VertexElement.Type.TEXCOORD && el.usageIndex === 1);
+    }
+
+    /**
      * Gets turret firing effect batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -1501,6 +1526,35 @@ export class EveTurretSet extends EveObjectSet
                     message: "Could not find usage TEXCOORD usage 1"
                 });
             }
+        }
+
+        // Which turret a draw is FOR is carried differently by the two shader
+        // families, and the difference is silent.
+        //
+        // The gles2 shader takes it as TEXCOORD1, supplied per draw by the
+        // customSetter above - so ccpwgl de-instances into one draw per turret.
+        // The Carbon shader has NO TEXCOORD1 (measured on
+        // effect.dx11/managed/space/turret/v5/quadv5.sm_hi: POSITION0,
+        // BLENDINDICES0, TEXCOORD0, TANGENT0, TEXCOORD2) because Carbon draws
+        // the set INSTANCED and selects by instance id.
+        //
+        // Run against the Carbon shader, the de-instanced loop leaves the index
+        // unset - SetPartialDeclaration never reaches a customSetter for an
+        // attribute the pass does not declare - so every draw renders turret
+        // ZERO. N turrets stack on the first locator, which reads as "only one
+        // locator got filled" rather than as a missing attribute.
+        if (!this._UsesPerDrawTurretIndex(technique))
+        {
+            // The firing turret is deliberately not split out here. Its
+            // separate per-object data cannot be selected by instance id in a
+            // single instanced draw, and drawing it alone would render instance
+            // 0 - turret zero - not the one that is firing. Nothing is lost
+            // while firing is unported; revisit with the firing state.
+            if (batch.renderActive) return false;
+
+            const count = this._visibleItems.length;
+            if (!count) return false;
+            return this.geometryResource.RenderAreas(0, 0, 1, this.turretEffect, technique, count);
         }
 
         let rendered = 0;

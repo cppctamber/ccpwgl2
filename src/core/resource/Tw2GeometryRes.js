@@ -535,7 +535,7 @@ export class Tw2GeometryRes extends Tw2Resource
      * @param {String} technique
      * @returns {Boolean}
      */
-    RenderAreas(meshIx, start, count, effect, technique = effect.defaultTechnique)
+    RenderAreas(meshIx, start, count, effect, technique = effect.defaultTechnique, instanceCount)
     {
         this.KeepAlive();
         const passCount = effect.GetPassCount(technique);
@@ -591,7 +591,20 @@ export class Tw2GeometryRes extends Tw2Resource
                         areaCount += area.count;
                         ++i;
                     }
-                    gl.drawElements(gl.TRIANGLES, areaCount, mesh.indexType, areaStart);
+                    // `instanceCount` draws the same geometry N times with a
+                    // varying gl_InstanceID and NO instance vertex stream - for
+                    // a shader that selects per-instance data from a constant
+                    // array by instance id, which is how Carbon draws a turret
+                    // set. Distinct from RenderAreasInstanced below, which binds
+                    // an instance buffer.
+                    if (instanceCount > 0)
+                    {
+                        gl.drawElementsInstanced(gl.TRIANGLES, areaCount, mesh.indexType, areaStart, instanceCount);
+                    }
+                    else
+                    {
+                        gl.drawElements(gl.TRIANGLES, areaCount, mesh.indexType, areaStart);
+                    }
                 }
             }
         }
