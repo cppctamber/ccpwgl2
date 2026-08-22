@@ -97,6 +97,9 @@ export class EveSmartLightQuad extends EveChildTransform
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** m_activationStrength (float) - captured from the update params (EveSmartLightQuad.h:54). */
     _activationStrength = 1;
 
@@ -129,7 +132,7 @@ export class EveSmartLightQuad extends EveChildTransform
      */
     GetGroupColor()
     {
-        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
+        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /** Overwrites the custom color (Carbon base EveSmartLightBaseGroup.cpp:55-58). */

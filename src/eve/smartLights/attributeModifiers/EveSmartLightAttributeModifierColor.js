@@ -3,6 +3,7 @@
 import { meta } from "utils";
 import { vec4 } from "math";
 import { EveSmartLightBaseAttributeModifier } from "./EveSmartLightBaseAttributeModifier.js";
+import { resolveGroupColor } from "../EveSmartLightBaseGroup";
 
 
 /** EveSmartLightAttributeModifierColor (eve/smartLights/attributeModifiers) - generated from schema shapeHash 1d22dfd5.... */
@@ -49,6 +50,9 @@ export class EveSmartLightAttributeModifierColor extends EveSmartLightBaseAttrib
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** Stores the inherited faction color set (EveSmartLightAttributeModifierColor.cpp:18-24). */
     SetInheritProperties(colorSet)
     {
@@ -61,21 +65,25 @@ export class EveSmartLightAttributeModifierColor extends EveSmartLightBaseAttrib
     /**
      * Resolves the blend color: the selected faction color when enabled and in
      * range, otherwise the authored blend color
-     * (EveSmartLightAttributeModifierColor.cpp:26-36). Carbon's bound is
-     * SOFDataFactionColorChooser::TYPE_MAX; the inherited JS color set is
-     * exactly that array, so its length is the bound.
+     * (EveSmartLightAttributeModifierColor.cpp:26-36).
+     *
+     * This is the same lookup the groups do, and it had the same defect: the
+     * inherited set is an `EveSOFDataFactionColorSet` with NAMED fields, not the
+     * raw `Color[TYPE_MAX]` Carbon indexes, so `index < undefined` was always
+     * false and this always returned `blendColor`.
+     *
+     * It matters more here than anywhere else. `blendColor` is the authored
+     * OVERRIDE, and Carbon never reads it while `useFactionColor` is set - so
+     * nothing constrains what an artist leaves in it. On
+     * amarr_primaryspotlight_01a the speed-driven modifier carries
+     * `useFactionColor = true`, `factionColor = 37` (SecondarySpotlight) and a
+     * leftover `blendColor` of (1, 0, 0.699): magenta. Blending that in at full
+     * strength and multiplying by brightness 2 clamps to (1, 0, 1) - which is
+     * the pink the lights turned when the ship got up to speed.
      */
     GetGroupColor()
     {
-        if (this.useFactionColor && this._parentColorSet)
-        {
-            const index = this.factionColor | 0;
-            if (index >= 0 && index < this._parentColorSet.length && this._parentColorSet[index])
-            {
-                return this._parentColorSet[index];
-            }
-        }
-        return this.blendColor;
+        return resolveGroupColor(this.blendColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /** Advances the crossfade state machine (EveSmartLightAttributeModifierColor.cpp:38-41). */

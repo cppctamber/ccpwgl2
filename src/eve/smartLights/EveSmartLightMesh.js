@@ -88,6 +88,9 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** m_lastEntityCount - placement count the geometry was last built for. */
     _lastEntityCount = 0;
 
@@ -103,7 +106,7 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
     /** Faction-aware group color (EveSmartLightBaseGroup.cpp:43-53). */
     GetGroupColor()
     {
-        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
+        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /** Overwrites the custom color (EveSmartLightBaseGroup.cpp:55-58). */

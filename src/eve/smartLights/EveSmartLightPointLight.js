@@ -95,6 +95,9 @@ export class EveSmartLightPointLight extends EveEntity
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** m_activationStrength (float) - captured from the update params (EveSmartLightPointLight.h:49). */
     _activationStrength = 1;
 
@@ -144,7 +147,7 @@ export class EveSmartLightPointLight extends EveEntity
      */
     GetGroupColor()
     {
-        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
+        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /**

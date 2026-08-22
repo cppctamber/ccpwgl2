@@ -8,23 +8,54 @@ import { vec4 } from "math";
  * Faction-color resolution shared by every class that flattens Carbon's
  * EveSmartLightBaseGroup secondary base (EveSmartLightBaseGroup.cpp:43-53):
  * the selected faction color when enabled and in range, otherwise the custom
- * color. Carbon's bound is SOFDataFactionColorChooser::TYPE_MAX; the inherited
- * JS color set (EveChildInheritProperties.GetProperties()) is exactly that
- * array, so its length is the bound. Returns a live vec4 - callers read only.
+ * color.
+ *
+ * Carbon's set is a raw `Color[TYPE_MAX]` indexed by the ColorType enum, so the
+ * port indexed `parentColorSet[index]` and bounded it with `.length`. What
+ * ccpwgl actually hands down is an `EveSOFDataFactionColorSet` - a model with
+ * NAMED colour fields, addressed through its own `Get(type, out)` and bounded
+ * by its static `Type` list. It has no `length` and no numeric keys, so
+ * `index < undefined` was false for every index and this ALWAYS returned
+ * `customColor`: `useFactionColor` and `factionColor` had no effect anywhere in
+ * the engine, and a group whose authored colour is only a placeholder - because
+ * Carbon never reads it when the flag is set - rendered that placeholder.
+ *
+ * `out` is the caller's own scratch, filled and returned only on the faction
+ * path; the custom colour is still returned live. Callers read it immediately
+ * and must not retain it, which is what every call site already does.
+ *
  * @param {Float32Array} customColor
  * @param {Boolean} useFactionColor
  * @param {Number} factionColor
- * @param {Array|null} parentColorSet
+ * @param {EveSOFDataFactionColorSet|Array|null} parentColorSet
+ * @param {vec4} [out] - required to resolve a faction colour
  * @returns {Float32Array}
  */
-export function resolveGroupColor(customColor, useFactionColor, factionColor, parentColorSet)
+export function resolveGroupColor(customColor, useFactionColor, factionColor, parentColorSet, out)
 {
     if (useFactionColor && parentColorSet)
     {
         const index = factionColor | 0;
-        if (index >= 0 && index < parentColorSet.length && parentColorSet[index])
+
+        if (index >= 0)
         {
-            return parentColorSet[index];
+            // `Has` and `Get` both throw on an index outside the Type list, and
+            // Carbon simply falls through to the custom colour there, so the
+            // range is checked against Type before either is called.
+            const names = parentColorSet.constructor && parentColorSet.constructor.Type;
+
+            if (out && names && typeof parentColorSet.Get === "function")
+            {
+                if (index < names.length && parentColorSet.Has(index))
+                {
+                    return parentColorSet.Get(index, out);
+                }
+            }
+            else if (index < parentColorSet.length && parentColorSet[index])
+            {
+                // A plain array still works - Carbon's own shape.
+                return parentColorSet[index];
+            }
         }
     }
     return customColor;
@@ -55,10 +86,13 @@ export class EveSmartLightBaseGroup extends meta.Model
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** Faction-aware group color (EveSmartLightBaseGroup.cpp:43-53). */
     GetGroupColor()
     {
-        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
+        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /**

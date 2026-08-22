@@ -246,8 +246,13 @@ export class EveSOFDataFactionColorSet extends meta.Model
     }
 
     /**
-     * A list of all the available color sets
-     * WHO KNOWS HOW THESE ARE INDEXED!!!@#!@#!@#!@#!@#!@#!@
+     * Every available colour, in `SOFDataFactionColorChooser::ColorType` order.
+     *
+     * Verified index for index against Carbon's enum (EveSOFData.h:145-193):
+     * zero-based, 44 entries, `PrimaryLight` at 18, `SecondaryLight` at 19,
+     * `TertiaryLight` at 20. The order is the wire contract - a `factionColor`
+     * int in a .black indexes THIS list, so entries may never be reordered or
+     * inserted into.
      */
     static Type = [
         "Primary",

@@ -42,6 +42,7 @@ testParentLocatorsCopyTheLocatorTransform();
 testSpeedExpressionsReadTheShip();
 testShipPublishesItsControllerVariables();
 testBeamTintReachesTheEffect();
+testFactionColoursResolve();
 console.log("Smart light geometry verified");
 
 /**
@@ -360,6 +361,61 @@ function testBeamTintReachesTheEffect()
     const before = Array.from(inert._lastAreaColor);
     inert.SetMeshColorParameter(colour);
     assert.deepEqual(Array.from(inert._lastAreaColor), before, "nothing applied means nothing cached");
+}
+
+/**
+ * Faction colour resolution, against the object the engine ACTUALLY hands down.
+ *
+ * Carbon's colour set is a raw `Color[TYPE_MAX]` and the port indexed it the
+ * same way, bounded by `.length`. What arrives is an
+ * `EveSOFDataFactionColorSet` - named fields, addressed through `Get(type, out)`
+ * and bounded by its static `Type` list, with no `length` and no numeric keys.
+ * So `index < undefined` was false for every index and the faction path was
+ * dead engine-wide: `useFactionColor` and `factionColor` did nothing, and every
+ * group and colour modifier silently returned its authored colour.
+ *
+ * That is worse than a wrong colour where the authored value is only a
+ * placeholder - Carbon never reads it while the flag is set, so nothing
+ * constrains it, and one of these assets carries a leftover magenta.
+ */
+function testFactionColoursResolve()
+{
+    const set = new (tw2.GetClass("EveSOFDataFactionColorSet"))();
+    const ColorSet = tw2.GetClass("EveSOFDataFactionColorSet");
+
+    // 19 = SecondaryLight, verified against Carbon's ColorType enum.
+    const index = ColorSet.Type.indexOf("SecondaryLight");
+    assert.equal(index, 19, "the Type list is the wire contract and must not be reordered");
+    set.SecondaryLight = Float32Array.from([ 0.25, 0.5, 0.75, 1 ]);
+
+    const quad = new (tw2.GetClass("EveSmartLightQuad"))();
+    quad.customColor = Float32Array.from([ 1, 0, 1, 1 ]);   // the placeholder magenta
+    quad.SetInheritProperties(set);
+
+    quad.useFactionColor = false;
+    assert.deepEqual(Array.from(quad.GetGroupColor()), [ 1, 0, 1, 1 ], "flag off means the authored colour");
+
+    quad.useFactionColor = true;
+    quad.factionColor = index;
+    assert.deepEqual(Array.from(quad.GetGroupColor()).map(round), [ 0.25, 0.5, 0.75, 1 ],
+        "flag on means the SELECTED faction colour, not the authored placeholder");
+
+    // Carbon falls through to the authored colour rather than throwing, and the
+    // accessor throws on an index outside its Type list - so the range has to be
+    // checked before it is called.
+    quad.factionColor = -1;
+    assert.deepEqual(Array.from(quad.GetGroupColor()), [ 1, 0, 1, 1 ], "-1 falls through");
+    quad.factionColor = 9999;
+    assert.deepEqual(Array.from(quad.GetGroupColor()), [ 1, 0, 1, 1 ], "out of range falls through, it does not throw");
+
+    // The colour MODIFIER resolves the same way, off its blendColor.
+    const modifier = new (tw2.GetClass("EveSmartLightAttributeModifierColor"))();
+    modifier.blendColor = Float32Array.from([ 1, 0, 0.699, 1 ]);
+    modifier.SetInheritProperties(set);
+    modifier.useFactionColor = true;
+    modifier.factionColor = index;
+    assert.deepEqual(Array.from(modifier.GetGroupColor()).map(round), [ 0.25, 0.5, 0.75, 1 ],
+        "the modifier must blend the faction colour, not its authored override");
 }
 
 function round(n)

@@ -153,6 +153,9 @@ export class Tr2FactionLight
      */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; consumed immediately by Saturate. */
+    _resolvedFactionColor = vec4.create();
+
     /**
      * Current light color (`m_lightData.color`), derived from the faction
      * palette by `SetLightColorFromFactionColor` - NOT independently
@@ -251,9 +254,23 @@ export class Tr2FactionLight
      */
     SetLightColorFromFactionColor()
     {
-        if (!this._parentColorSet) return;
+        if (!this._parentColorSet || this.factionColor < 0) return;
 
-        if (this.factionColor >= 0 && this.factionColor < this._parentColorSet.length)
+        // The inherited set is an EveSOFDataFactionColorSet - named fields
+        // addressed through Get(type, out), bounded by its static Type list -
+        // not the raw Color[TYPE_MAX] Carbon indexes. Indexing it numerically
+        // and bounding by `.length` compared against undefined, so this never
+        // fired and faction lights kept whatever colour they were built with.
+        const names = this._parentColorSet.constructor && this._parentColorSet.constructor.Type;
+
+        if (names && typeof this._parentColorSet.Get === "function")
+        {
+            if (this.factionColor < names.length && this._parentColorSet.Has(this.factionColor))
+            {
+                Saturate(this._parentColorSet.Get(this.factionColor, this._resolvedFactionColor), this.saturation, this._color);
+            }
+        }
+        else if (this.factionColor < this._parentColorSet.length)
         {
             Saturate(this._parentColorSet[this.factionColor], this.saturation, this._color);
         }

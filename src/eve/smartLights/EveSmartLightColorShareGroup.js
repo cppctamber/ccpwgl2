@@ -53,6 +53,9 @@ export class EveSmartLightColorShareGroup extends EveEntity
     /** m_parentColorSet (const Color*) - inherited faction color set, never persisted. */
     _parentColorSet = null;
 
+    /** Scratch for a resolved faction colour; read immediately, never retained. */
+    _resolvedGroupColor = vec4.create();
+
     /** Last `display` value the settle hook applied (JS-only change detection). */
     _lastAppliedDisplay = true;
 
@@ -64,7 +67,7 @@ export class EveSmartLightColorShareGroup extends EveEntity
      */
     GetGroupColor()
     {
-        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet);
+        return resolveGroupColor(this.customColor, this.useFactionColor, this.factionColor, this._parentColorSet, this._resolvedGroupColor);
     }
 
     /**
