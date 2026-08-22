@@ -39,6 +39,7 @@ testQuadVertexLayout();
 testQuadHonoursTheLiveCount();
 testShipExposesLocatorSets();
 testParentLocatorsCopyTheLocatorTransform();
+testSpeedExpressionsReadTheShip();
 console.log("Smart light geometry verified");
 
 /**
@@ -232,6 +233,49 @@ function testParentLocatorsCopyTheLocatorTransform()
     assert.deepEqual(slice(data.initialRotation, 0, 4), Array.from(item.rotation), "ccpwgl spells the orientation `rotation`, not Carbon's `direction`");
     assert.deepEqual(Array.from(data.initialScale), [ 4, 5, 6 ], "ccpwgl spells the scale `scaling`, not Carbon's `scale`");
     assert.equal(data.boneIndex, 7, "the bone index rides along so skinned locators follow their bone");
+}
+
+/**
+ * Speed-driven expressions, of which `amarr_primaryspotlight_01a` ships two:
+ * `min(1.0, (shipSpeed*0.5)/max(shipMaxSpeed, 1.0))` on the SpeedDependant
+ * lights.
+ *
+ * Carbon reads speed off `GetWorldVelocity`, which it has a Destiny ball for.
+ * ccpwgl has no physics layer and carries embedder-set telemetry on
+ * `ShipSpeed()`/`ShipMaxSpeed()` instead - so asking for Carbon's accessor got
+ * 0 on every hull ccpwgl can load, and the expression evaluated at a standstill
+ * forever. `shipMaxSpeed` was worse: it read a `params.ownerMaxSpeed` that
+ * nothing sets, so the authored `max(shipMaxSpeed, 1.0)` always collapsed to 1.
+ *
+ * Zero is a legitimate answer for a stationary ship, which is exactly why this
+ * failed silently - it needs a MOVING ship to tell the two apart.
+ */
+function testSpeedExpressionsReadTheShip()
+{
+    const bucket = new (tw2.GetClass("EveSmartLightAttributeModifierExpressionBucket"))();
+    bucket.SetExpression("min(1.0, (shipSpeed*0.5)/max(shipMaxSpeed, 1.0))");
+
+    const context = { GetDeltaT: () => 1 / 60 };
+
+    bucket.UpdateSyncronous(context, { spaceObjectParent: { ShipSpeed: () => 300, ShipMaxSpeed: () => 200 } }, 1);
+    assert.equal(round(bucket.attributeMultiplier), 0.75, "(300 * 0.5) / 200 - both inputs must reach the expression");
+
+    bucket.UpdateSyncronous(context, { spaceObjectParent: { ShipSpeed: () => 0, ShipMaxSpeed: () => 200 } }, 1);
+    assert.equal(bucket.attributeMultiplier, 0, "a stationary ship still evaluates to zero");
+
+    // Carbon's own shape keeps working, so a Carbon-shaped duck is not broken
+    // by preferring ccpwgl's accessor.
+    const carbonShaped = { GetWorldVelocity: out => { out[0] = 300; out[1] = 0; out[2] = 0; return out; }, ShipMaxSpeed: () => 200 };
+    bucket.UpdateSyncronous(context, { spaceObjectParent: carbonShaped }, 1);
+    assert.equal(round(bucket.attributeMultiplier), 0.75, "GetWorldVelocity is still honoured when present");
+
+    bucket.UpdateSyncronous(context, { spaceObjectParent: {} }, 1);
+    assert.equal(bucket.attributeMultiplier, 0, "an object with neither accessor is a standstill, not a throw");
+}
+
+function round(n)
+{
+    return Math.round(n * 10000) / 10000;
 }
 
 /** A quad with the GL seams stubbed - this test is about float maths, not draws. */

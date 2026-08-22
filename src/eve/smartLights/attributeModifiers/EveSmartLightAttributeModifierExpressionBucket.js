@@ -183,9 +183,11 @@ export class EveSmartLightAttributeModifierExpressionBucket extends EveSmartLigh
             return;
         }
 
+        const statics = EveSmartLightAttributeModifierExpressionBucket;
+
         this._arguments.time = this.playTime;
-        this._arguments.shipSpeed = EveSmartLightAttributeModifierExpressionBucket._ShipSpeed(params?.spaceObjectParent);
-        this._arguments.shipMaxSpeed = Number(params?.ownerMaxSpeed ?? 0);
+        this._arguments.shipSpeed = statics._ShipSpeed(params?.spaceObjectParent);
+        this._arguments.shipMaxSpeed = statics._ShipMaxSpeed(params?.spaceObjectParent);
 
         if (this._program?.IsValid())
         {
@@ -210,17 +212,49 @@ export class EveSmartLightAttributeModifierExpressionBucket extends EveSmartLigh
 
     /**
      * Length of the owning space object's world velocity
-     * (EveSmartLightAttributeModifierExpressionBucket.cpp:55-65); the space
-     * object is duck-typed.
+     * (EveSmartLightAttributeModifierExpressionBucket.cpp:55-65).
+     *
+     * Carbon reads `GetWorldVelocity` off the space object, which it can
+     * because it has a Destiny ball behind it. ccpwgl has no physics layer, so
+     * speed is embedder-set telemetry reached through `ShipSpeed()` - the same
+     * accessor the `ShipSpeed()` controller-expression builtin already uses
+     * (EveShip2.js:919, EveChildContainer.js:250).
+     *
+     * Asking for Carbon's accessor instead meant this returned 0 on every hull
+     * ccpwgl can load, so every speed-driven smart light expression - the
+     * `SpeedDependant_Lights` set and its `ShipSpeedFormula` - evaluated at a
+     * standstill forever. Carbon's shape is still accepted first so a
+     * genuinely Carbon-shaped object keeps working.
      */
     static _ShipSpeed(spaceObjectParent)
     {
-        if (!spaceObjectParent?.GetWorldVelocity)
+        if (!spaceObjectParent) return 0;
+
+        if (spaceObjectParent.GetWorldVelocity)
         {
-            return 0;
+            const velocity = spaceObjectParent.GetWorldVelocity(EveSmartLightAttributeModifierExpressionBucket._velocity);
+            return velocity ? vec3.length(velocity) : 0;
         }
-        const velocity = spaceObjectParent.GetWorldVelocity(EveSmartLightAttributeModifierExpressionBucket._velocity);
-        return velocity ? vec3.length(velocity) : 0;
+
+        return spaceObjectParent.ShipSpeed ? Number(spaceObjectParent.ShipSpeed()) || 0 : 0;
+    }
+
+    /**
+     * The hull's maximum speed, normalising `shipSpeed` in authored formulas
+     * like `min(1, (shipSpeed*0.5)/max(shipMaxSpeed, 1.0))`.
+     *
+     * This used to read `params.ownerMaxSpeed`, which nothing anywhere sets -
+     * so it was always 0, the authored `max(shipMaxSpeed, 1.0)` collapsed to 1,
+     * and the formula saturated at a speed of 2 instead of scaling across the
+     * hull's real range. Defaults to 1 for the same reason EveShip2 does.
+     */
+    static _ShipMaxSpeed(spaceObjectParent)
+    {
+        if (spaceObjectParent?.ShipMaxSpeed)
+        {
+            return Number(spaceObjectParent.ShipMaxSpeed()) || 1;
+        }
+        return 1;
     }
 
     static _velocity = vec3.create();
