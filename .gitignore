@@ -86,7 +86,16 @@ src/**/README.md
 # Guards against notes landing back in the root rather than artifacts/notes
 AGENT-*.md
 PLAN-*.md
-docs/
+
+# `docs/` used to be ignored by that same guard. It should not have been: the
+# rule exists to stop scratch notes littering the root, and it also blocked the
+# only legitimate home for knowledge that belongs to THIS repository. With
+# nowhere tracked to put a durable finding, findings went to gitignored scratch
+# instead - five separate stores of it, none backed up, one of them holding the
+# organisation's flow-of-authority rule.
+#
+# docs/ is now TRACKED and curated. Scratch still belongs in artifacts/notes/
+# and still expires when its work lands; see docs/README.md for which is which.
 
 # Scratch harnesses that need external state (a fetched asset, a running
 # service) so they cannot join the test sweep
