@@ -21,8 +21,25 @@ const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 // effect is reached through. See the `black.fx` handler below for why each
 // entry is here and when to remove it.
 const FX_TIER_PINS = [
-    { match: "/specialfx/flarequad.fx", tier: "sm_hi" },
-    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" },
+    // Pinned to gles2 as well as to a tier, because the dx11 body needs an input
+    // ccpwgl cannot supply: its pixel stage samples `s0` as a sampler2DArray -
+    // the flare SHAPE ATLAS, layer chosen per instance - and reads only its
+    // alpha. Nothing in this repo binds a flare array, and the authored quad
+    // effects carry no textures or parameters at all (verified against
+    // amarr_primaryspotlight_01a.black, 2026-08-22), so the sampler falls back
+    // to Tw2Device's white array and every flare renders as a solid white sheet
+    // the size of its quad - which for a staticQuadScale of 100 is the whole
+    // screen.
+    //
+    // The gles2 body has no such dependency: the hand-crafted override in
+    // src/toDeprecate computes its falloff procedurally and samples nothing.
+    // Pinning here is what keeps that override reachable on a dx11 session,
+    // since it `replaces` the gles2 path.
+    //
+    // Remove once something binds the flare array; until then dx11 has a shader
+    // we cannot feed.
+    { match: "/specialfx/flarequad.fx", tier: "sm_hi", dir: "/effect.gles2/" },
+    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi", dir: "/effect.gles2/" },
     // Not a tier pin - a PROFILE pin, on the same list because it is the same
     // substitution. `ubershaderinstanced` is the beam material on smart light
     // sets (EveSmartLightMesh, mesh name "Beam"), and it is ABSENT from the
