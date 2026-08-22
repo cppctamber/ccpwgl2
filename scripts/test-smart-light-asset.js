@@ -136,9 +136,18 @@ function checkInstanceStream(meshes)
         const data = mesh.mesh?.instanceGeometryResource;
         if (!data || !data._count) continue;
 
-        const declared = data.GetLayout().elements.reduce((n, e) => n + e.elements * 4, 0);
+        const layout = data.GetLayout();
+        const declared = layout.elements.reduce((n, e) => n + e.elements * 4, 0);
         assert.equal(data.GetInstanceStride(), declared, "the stride must come from the declaration, or every instance is read at the wrong offset");
         assert.equal(data.GetInstanceStride(), 28 * 4, "seven float4 attributes per instance");
+
+        // The usage indices are the whole binding. ubershaderinstanced's vertex
+        // input signature declares TEXCOORD8/9/10 for the transform; declaring
+        // them anywhere else binds nothing the shader reads and every instance
+        // draws at a zero transform, silently.
+        assert.deepEqual(layout.elements.map(e => e.usageIndex), [ 8, 9, 10, 11, 12, 13, 14 ],
+            "the instance stream lives at TEXCOORD 8..14, not Carbon's generic 0..6");
+        assert.ok(layout.elements.every(e => e.usage === 5), "all seven are TEXCOORD");
 
         const array = data._lastUpload;
         assert.equal(array.length, data._count * 28, "one packed instance per placement");
