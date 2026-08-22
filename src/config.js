@@ -37,7 +37,14 @@ const FX_TIER_PINS = [
     // machinery that already exists, permutations intact, while everything else
     // stays on the session profile. Translating at load is a build step at
     // runtime though, so pin only what is genuinely missing.
-    { match: "/specialfx/ubershaderinstanced.fx", dir: "/effect.dx11/" }
+    { match: "/specialfx/ubershaderinstanced.fx", dir: "/effect.dx11/" },
+    // Same story, found the same way: a gles2 session asked for
+    // effect.gles2/.../fx3dv5.sm_depth and got a 404. It is not a missing TIER
+    // - fx3dv5 is absent from the gles2 tree entirely, sm_hi 404s too, and only
+    // dx11 has it. The 404 was not harmless: the failed fetch unloaded the
+    // resource, the unload notification drove EveTurretSet's PREPARED path,
+    // and that threw on an animation the unload had already taken away.
+    { match: "/specialfx/fx3dv5.fx", dir: "/effect.dx11/" }
 ];
 
 // Default resource serving (the local tools-core service, not provided with

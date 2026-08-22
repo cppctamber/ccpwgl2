@@ -926,8 +926,19 @@ export class EveTurretSet extends EveObjectSet
 
             if (this._state === EveTurretSet.State.PACKING)
             {
+                // GetAnimation returns NULL when the animation is absent, and a
+                // turret reaches this with none whenever its geometry failed:
+                // Tw2GeometryRes.OnError unloads, OnUnloaded fires the resource
+                // notifications, and those run OnResPrepared - the PREPARED
+                // path - on a resource that did not prepare. Dereferencing the
+                // null threw out of the state machine and took the frame with
+                // it, which reads as "turrets do not render" rather than as a
+                // resource that failed to load.
+                //
+                // Resuming a pack at 0 is the same thing an absent Pack
+                // animation means: nothing to resume from.
                 const packAnimation = this._activeAnimation.GetAnimation("Pack");
-                percent = packAnimation.percent;
+                if (packAnimation) percent = packAnimation.percent;
             }
 
             this._activeAnimation.StopAllAnimations();
@@ -1087,6 +1098,18 @@ export class EveTurretSet extends EveObjectSet
     OnResPrepared(res)
     {
         this.geometryResource = res;
+
+        // This fires on UNLOAD as well as on prepare. `Tw2GeometryRes.OnError`
+        // unloads the resource, `OnUnloaded` runs the resource notifications,
+        // and they arrive here - so a geometry fetch that FAILED ends up
+        // driving the prepared path, appending vertex elements to meshes that
+        // are gone and stepping the state machine on animations that no longer
+        // exist. That is how a 404 became a thrown exception several frames
+        // later, in code that never mentions loading.
+        //
+        // Nothing below is meaningful without prepared geometry, so this leaves
+        // rather than guarding each use.
+        if (!res || !res.IsGood || !res.IsGood()) return;
 
         const
             instancedElement = Tw2VertexElement.from({
@@ -1455,26 +1478,6 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
-     * Whether this effect's shader takes the turret index per draw (TEXCOORD1)
-     * rather than from the instance id.
-     *
-     * Asked of the PASS INPUT rather than assumed from the profile: the
-     * distinction is what the shader declares, and an effect can be routed to
-     * another profile's directory by a config pin.
-     *
-     * @param {String} technique
-     * @returns {Boolean} true when the de-instanced per-draw loop is correct
-     */
-    _UsesPerDrawTurretIndex(technique)
-    {
-        const input = this.turretEffect.GetPassInput(technique, 0);
-        if (!input || !input.elements) return true;
-
-        return input.elements.some(el =>
-            el.usage === Tw2VertexElement.Type.TEXCOORD && el.usageIndex === 1);
-    }
-
-    /**
      * Gets turret firing effect batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -1528,35 +1531,13 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        // Which turret a draw is FOR is carried differently by the two shader
-        // families, and the difference is silent.
-        //
-        // The gles2 shader takes it as TEXCOORD1, supplied per draw by the
-        // customSetter above - so ccpwgl de-instances into one draw per turret.
-        // The Carbon shader has NO TEXCOORD1 (measured on
-        // effect.dx11/managed/space/turret/v5/quadv5.sm_hi: POSITION0,
-        // BLENDINDICES0, TEXCOORD0, TANGENT0, TEXCOORD2) because Carbon draws
-        // the set INSTANCED and selects by instance id.
-        //
-        // Run against the Carbon shader, the de-instanced loop leaves the index
-        // unset - SetPartialDeclaration never reaches a customSetter for an
-        // attribute the pass does not declare - so every draw renders turret
-        // ZERO. N turrets stack on the first locator, which reads as "only one
-        // locator got filled" rather than as a missing attribute.
-        if (!this._UsesPerDrawTurretIndex(technique))
-        {
-            // The firing turret is deliberately not split out here. Its
-            // separate per-object data cannot be selected by instance id in a
-            // single instanced draw, and drawing it alone would render instance
-            // 0 - turret zero - not the one that is firing. Nothing is lost
-            // while firing is unported; revisit with the firing state.
-            if (batch.renderActive) return false;
-
-            const count = this._visibleItems.length;
-            if (!count) return false;
-            return this.geometryResource.RenderAreas(0, 0, 1, this.turretEffect, technique, count);
-        }
-
+        // NOTE the dx11 shader declares no TEXCOORD1, so the customSetter
+        // above never fires there and the turret index stays 0. Drawing the
+        // set INSTANCED was tried for that (see the reverted commit) and
+        // stopped turrets rendering entirely - so the Carbon shader is NOT
+        // simply selecting by gl_InstanceID. Where it does get the index is
+        // still open; BLENDINDICES0, which the dx11 pass input declares and
+        // the gles2 one does not, is the obvious next thing to look at.
         let rendered = 0;
         for (; index < this.items.length; ++index)
         {
