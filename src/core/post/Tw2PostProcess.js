@@ -112,6 +112,13 @@ export class Tw2PostProcess extends meta.Model
         if (this._quadRT0 && !this._quadRT0.IsGood()) isGood = false;
         if (this._quadRT1 && !this._quadRT1.IsGood()) isGood = false;
 
+        // A post process with no size is not good: nothing can be built at zero
+        // and building anyway makes a 0x0 texture whose framebuffer is
+        // INCOMPLETE_ATTACHMENT. Saying so HERE rather than guarding inside
+        // Rebuild means both callers already handle it - Rebuild bails and stays
+        // dirty, Render returns false instead of drawing with no targets.
+        if (!this._effectiveWidth || !this._effectiveHeight) isGood = false;
+
         return isGood;
     }
 
@@ -179,14 +186,8 @@ export class Tw2PostProcess extends meta.Model
     Update(dt, scene)
     {
 
-        // Todo: Put this in the OnValueChanged method?
-        let effectiveHeight = tw2.height * this.quality,
-            effectiveWidth = tw2.width * this.quality;
-
-        if (this._effectiveWidth !== effectiveWidth || this._effectiveHeight !== effectiveHeight)
+        if (this._RefreshEffectiveSize())
         {
-            this._effectiveHeight = effectiveHeight;
-            this._effectiveWidth = effectiveWidth;
             // - Do we really need to trigger a "modified" event when this changes
             this.UpdateValues();
         }
@@ -214,6 +215,27 @@ export class Tw2PostProcess extends meta.Model
     }
 
     /**
+     * Recomputes the effective render size from the current viewport and quality.
+     * @returns {Boolean} true if it changed
+     * @private
+     */
+    _RefreshEffectiveSize()
+    {
+        const
+            effectiveHeight = tw2.height * this.quality,
+            effectiveWidth = tw2.width * this.quality;
+
+        if (this._effectiveWidth === effectiveWidth && this._effectiveHeight === effectiveHeight)
+        {
+            return false;
+        }
+
+        this._effectiveHeight = effectiveHeight;
+        this._effectiveWidth = effectiveWidth;
+        return true;
+    }
+
+    /**
      * Rebuilds the post process
      * @param {Object} [opt]
      */
@@ -225,21 +247,6 @@ export class Tw2PostProcess extends meta.Model
             return;
         }
 
-        // Nothing can be built at zero size, and trying produces a 0x0 texture
-        // whose framebuffer is INCOMPLETE_ATTACHMENT (0x8cd6). It happens for
-        // real: a renderer booted before its canvas has been laid out renders a
-        // frame at 0x0, and this is reached through RenderDistortion on that
-        // first frame.
-        //
-        // Staying dirty rather than building means the next frame with a real
-        // size rebuilds properly. `Tw2RenderTarget`s own constructor and Rebuild
-        // already guard the same way with `if (this.width && this.height)`; only
-        // `Create` is unguarded, and this is its one unchecked caller.
-        if (!this._effectiveWidth || !this._effectiveHeight)
-        {
-            this._dirty = true;
-            return;
-        }
 
         const { gl, width, height } = tw2;
 
@@ -305,6 +312,12 @@ export class Tw2PostProcess extends meta.Model
     Render()
     {
         const { width, height, gl, device } = tw2;
+
+        // Resize itself rather than relying on Update having run: the scene only
+        // calls Update on `this.postprocess` (EveSpaceScene.js:838), so a post
+        // process reached solely through Render - the distortion pass is one -
+        // otherwise keeps a zero size forever and can never be good.
+        if (this._RefreshEffectiveSize()) this._dirty = true;
 
         if (!this.display || width < 0 || height < 0 || !this.IsGood())
         {
