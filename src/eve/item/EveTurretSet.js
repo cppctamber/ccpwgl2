@@ -1111,19 +1111,35 @@ export class EveTurretSet extends EveObjectSet
         // rather than guarding each use.
         if (!res || !res.IsGood || !res.IsGood()) return;
 
+        // The per-draw turret index, which the two shader families take on
+        // DIFFERENT usage indices:
+        //
+        //   gles2  TEXCOORD1, vec2
+        //   dx11   TEXCOORD2, float
+        //
+        // Read out of the translated dx11 vertex body rather than guessed:
+        //
+        //   r0.x = float(uint(in_BLENDINDICES0.x));   // per-vertex bone index
+        //   r0.x = cb3[1].x * in_TEXCOORD2 + r0.x;    // + bonesPerTurret * TURRET
+        //   r0.yz = uintBitsToFloat(cb3[10].xy);      // + bone offsets
+        //   r1 = CjsSb0.data[r0.x * 3];               // bone matrix
+        //
+        // Only TEXCOORD1 was ever created, so on dx11 the index stayed 0 and
+        // every turret in a set drew on the first locator. Both are declared
+        // here and `Render` sets whichever the pass actually asks for; an
+        // element the pass does not declare is simply never bound.
         const
-            instancedElement = Tw2VertexElement.from({
-                usage: "TEXCOORD",
-                usageIndex: 1,
-                elements: 2
-            }),
+            instancedElements = [
+                Tw2VertexElement.from({ usage: "TEXCOORD", usageIndex: 1, elements: 2 }),
+                Tw2VertexElement.from({ usage: "TEXCOORD", usageIndex: 2, elements: 1 })
+            ],
             meshes = this.geometryResource.meshes,
             active = this._activeAnimation,
             inactive = this._inactiveAnimation;
 
         for (let i = 0; i < meshes.length; ++i)
         {
-            meshes[i].declaration.elements.push(instancedElement);
+            for (const element of instancedElements) meshes[i].declaration.elements.push(element);
             meshes[i].declaration.RebuildHash();
         }
 
@@ -1514,19 +1530,29 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < this.geometryResource.meshes.length; ++i)
         {
-            const
-                decl = this.geometryResource.meshes[i].declaration,
-                found = decl.FindUsage(Tw2VertexElement.Type.TEXCOORD, 1);
+            const decl = this.geometryResource.meshes[i].declaration;
 
-            if (found)
+            // gles2 reads the turret index from TEXCOORD1, dx11 from TEXCOORD2.
+            // Both are declared in OnResPrepared; the pass binds whichever it
+            // actually asks for, so setting both is how one draw path serves
+            // either shader without knowing which is loaded.
+            let found = 0;
+
+            for (const usageIndex of [ 1, 2 ])
             {
-                found.customSetter = customSetter;
+                const element = decl.FindUsage(Tw2VertexElement.Type.TEXCOORD, usageIndex);
+                if (element)
+                {
+                    element.customSetter = customSetter;
+                    found++;
+                }
             }
-            else
+
+            if (!found)
             {
                 tw2.Debug({
                     name: "EveTurretSet",
-                    message: "Could not find usage TEXCOORD usage 1"
+                    message: "No turret index element (TEXCOORD 1 or 2) - every turret will draw at index 0"
                 });
             }
         }
