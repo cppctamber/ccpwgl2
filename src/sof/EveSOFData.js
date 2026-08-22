@@ -62,10 +62,6 @@ export class EveSOFData extends meta.Model
 
     @meta.boolean
     @meta.uiDescription("Custom property for debugging")
-    enableChildCurveSets = true;
-
-    @meta.boolean
-    @meta.uiDescription("Custom property for debugging")
     enableSof6 = true;
 
     /**
@@ -3325,18 +3321,6 @@ export class EveSOFData extends meta.Model
             try
             {
                 const effect = await tw2.Fetch(effects[i].redFilePath);
-
-                // Disable curve sets for now (play as authored when enableChildCurveSets is set)
-                if (!data.enableChildCurveSets)
-                {
-                    effect.Traverse(x =>
-                    {
-                        if (x.struct.curveSets)
-                        {
-                            x.struct.curveSets.forEach(x => x.Stop());
-                        }
-                    });
-                }
 
                 quat.copy(effect.rotation, effects[i].rotation);
                 vec3.copy(effect.translation, effects[i].translation);
