@@ -40,6 +40,7 @@ testQuadHonoursTheLiveCount();
 testShipExposesLocatorSets();
 testParentLocatorsCopyTheLocatorTransform();
 testSpeedExpressionsReadTheShip();
+testShipPublishesItsControllerVariables();
 console.log("Smart light geometry verified");
 
 /**
@@ -271,6 +272,43 @@ function testSpeedExpressionsReadTheShip()
 
     bucket.UpdateSyncronous(context, { spaceObjectParent: {} }, 1);
     assert.equal(bucket.attributeMultiplier, 0, "an object with neither accessor is a standstill, not a throw");
+}
+
+/**
+ * A hull's own state reaches its children's controllers, and its smart lights'
+ * ControllerVariableListeners, by NAME - Carbon fans it out with
+ * SetControllerVariable rather than passing it as an update parameter
+ * (EveSpaceObject2.cpp:224-230, and cpp:658-663 for the change case).
+ *
+ * ccpwgl had SetControllerVariable and the replay map, but nothing ever called
+ * them with these seven names, so every listener sat on its authored
+ * defaultValue forever no matter what the ship did.
+ */
+function testShipPublishesItsControllerVariables()
+{
+    const ship = new (tw2.GetClass("EveShip2"))();
+    const published = [];
+    ship.SetControllerVariable = (name, value) => published.push([ name, value ]);
+
+    ship.activationStrength = 0.4;
+    ship._PublishControllerVariables(ship.GetPerObjectDataBagOfStuff({}));
+
+    assert.deepEqual(published.map(p => p[0]), [
+        "DirtLevel", "ActivationStrength", "ShieldDamage", "ArmorDamage",
+        "HullDamage", "ClipSphereFactor", "ClipSphereFactor2"
+    ], "all seven publish on the first frame, in Carbon's order");
+
+    assert.equal(published.find(p => p[0] === "ActivationStrength")[1], 0.4, "the CLAMPED activation strength is what goes out");
+
+    // Carbon re-publishes only on change; a per-frame republish would restart
+    // every listener's crossfade every tick.
+    published.length = 0;
+    ship._PublishControllerVariables(ship.GetPerObjectDataBagOfStuff({}));
+    assert.equal(published.length, 0, "an unchanged frame publishes nothing");
+
+    ship.activationStrength = 0.9;
+    ship._PublishControllerVariables(ship.GetPerObjectDataBagOfStuff({}));
+    assert.deepEqual(published, [ [ "ActivationStrength", 0.9 ] ], "only what changed is republished");
 }
 
 function round(n)

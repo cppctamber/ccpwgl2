@@ -1085,6 +1085,53 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Publishes the space object's own state as controller variables
+     * (EveSpaceObject2.cpp:224-230 at construction, cpp:658-663 on change).
+     *
+     * These are how a hull's state reaches its children's controllers and its
+     * smart lights' `EveSmartLightAttributeModifierControllerVariableListener`s
+     * - Carbon does not pass them as update parameters, it fans them out by
+     * name. ccpwgl had `SetControllerVariable` and the replay map but nothing
+     * ever called them with these seven names, so every listener sat on its
+     * authored `defaultValue` forever no matter what the ship did.
+     *
+     * Only changed values are published, matching Carbon, which re-publishes
+     * ActivationStrength solely when it differs from the previous frame's.
+     * The three damage variables are Carbon's own constants: it publishes 1.0
+     * for each and ccpwgl models no damage state to vary them with.
+     *
+     * @param {Object} bag - the per-object bag, for its CLAMPED values
+     */
+    _PublishControllerVariables(bag)
+    {
+        const published = this._publishedControllerVariables;
+
+        EveShip2.global.controllerVariableValues[0] = bag.dirtLevel;
+        EveShip2.global.controllerVariableValues[1] = bag.activationStrength;
+        EveShip2.global.controllerVariableValues[2] = 1;
+        EveShip2.global.controllerVariableValues[3] = 1;
+        EveShip2.global.controllerVariableValues[4] = 1;
+        EveShip2.global.controllerVariableValues[5] = this.clipSphereFactor;
+        EveShip2.global.controllerVariableValues[6] = this.clipSphereFactor2;
+
+        for (let i = 0; i < EveShip2.CONTROLLER_VARIABLES.length; i++)
+        {
+            const
+                name = EveShip2.CONTROLLER_VARIABLES[i],
+                value = EveShip2.global.controllerVariableValues[i];
+
+            if (published.get(name) !== value)
+            {
+                published.set(name, value);
+                this.SetControllerVariable(name, value);
+            }
+        }
+    }
+
+    /** Last value published for each of CONTROLLER_VARIABLES. */
+    _publishedControllerVariables = new Map();
+
+    /**
      * Every controller variable set on this ship so far, for replaying onto a
      * child whose controllers link after the value was set.
      * @returns {Map<String, Number>}
@@ -1440,6 +1487,10 @@ export class EveShip2 extends EveObject
         }
 
         const perObjectDataBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
+
+        // Published BEFORE the children update, so a controller or smart light
+        // modifier reading one of these acts on this frame's value.
+        this._PublishControllerVariables(perObjectDataBagOfStuff);
 
         for (let i = 0; i < this.children.length; i++)
         {
@@ -2230,8 +2281,23 @@ export class EveShip2 extends EveObject
         targetSource: vec3.create(),
         targetPosition: vec3.create(),
         targetDirection: vec3.create(),
-        targetOffset: vec3.create()
+        targetOffset: vec3.create(),
+        controllerVariableValues: new Float64Array(7)
     };
+
+    /**
+     * The controller variables a space object publishes about itself, in the
+     * order EveSpaceObject2.cpp:224-230 publishes them.
+     */
+    static CONTROLLER_VARIABLES = Object.freeze([
+        "DirtLevel",
+        "ActivationStrength",
+        "ShieldDamage",
+        "ArmorDamage",
+        "HullDamage",
+        "ClipSphereFactor",
+        "ClipSphereFactor2"
+    ]);
 
 }
 
