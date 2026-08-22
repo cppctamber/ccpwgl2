@@ -861,8 +861,22 @@ export class EveTurretSet extends EveObjectSet
 
             if (this._state === EveTurretSet.State.UNPACKING)
             {
+                // The same null EnterStateIdle already guards against, in the
+                // sibling function it was missed in.
+                //
+                // GetAnimation answers NULL when the animation is absent, and a
+                // turret reaches this with none whenever its geometry failed:
+                // Tw2GeometryRes.OnError unloads, OnUnloaded fires the resource
+                // notifications, and those run OnResPrepared - the PREPARED path
+                // - on a resource that did not prepare. Dereferencing the null
+                // threw out of the state machine and took the frame with it,
+                // which reads as "turrets do not render" rather than as a
+                // resource that failed to load.
+                //
+                // Resuming a deploy at 0 is what an absent Deploy animation
+                // means anyway: nothing to resume from.
                 const deployAnimation = this._activeAnimation.GetAnimation("Deploy");
-                percent = deployAnimation.percent;
+                if (deployAnimation) percent = deployAnimation.percent;
             }
 
             this._activeAnimation.StopAllAnimations();
