@@ -490,7 +490,18 @@ export class EveChildContainer extends EveChild
             }
         }
 
-        if (this.controllers.length)
+        // Optional per-frame work, switchable for performance from the space
+        // object parent - `ship.visible.childControllers` / `.childCurveSets`.
+        // These are UPDATE gates, not visibility; they sit in the `visible` bag
+        // only because that is the existing switch bag, and the naming is known
+        // to be wrong (see the note on EveShip2.visible).
+        //
+        // Read off the parent rather than passed as an argument so it reaches
+        // containers at any nesting depth without changing update signatures,
+        // and absent - a parent with no bag, or no parent at all - means ON.
+        const enabled = this._parentSpaceObject && this._parentSpaceObject.visible;
+
+        if (this.controllers.length && (!enabled || enabled.childControllers !== false))
         {
             // Effect-child controllers arrive via deserialization rather than an AddController
             // call, so link them (owner = this container) on first tick before updating.
@@ -502,9 +513,12 @@ export class EveChildContainer extends EveChild
             }
         }
 
-        for (let i = 0; i < this.curveSets.length; i++)
+        if (!enabled || enabled.childCurveSets !== false)
         {
-            this.curveSets[i].UpdateDelta(dt);
+            for (let i = 0; i < this.curveSets.length; i++)
+            {
+                this.curveSets[i].UpdateDelta(dt);
+            }
         }
 
         for (let i = 0; i < this.objects.length; i++)

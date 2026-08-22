@@ -123,11 +123,26 @@ export class EveShip2 extends EveObject
     @meta.list("EveChild")
     effectChildren = [];
 
+    /**
+     * NOTE `childControllers` and `childCurveSets` are not visibility - they
+     * gate per-frame UPDATE work, for performance. They live here for now
+     * because this is the existing switch bag and a second one is not worth the
+     * churn today; `visible` is the wrong word for them and both belong under a
+     * better-named home when this is revisited.
+     *
+     * Both are LIVE toggles read by `EveChildContainer.Update` off the space
+     * object parent, so they reach effect children at any nesting depth without
+     * changing anyone's update signature, and flipping one back on resumes from
+     * the current time. The load-time switch they replace called `Stop()` on
+     * every child curve set and could not be undone without reloading the hull.
+     */
     @meta.plain
     visible = {
         annotations: true,
         banners: true,
         boosters: true,
+        childControllers: true,
+        childCurveSets: true,
         children: true,
         customMasks: true,
         decals: true,
