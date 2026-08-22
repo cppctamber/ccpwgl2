@@ -541,6 +541,16 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
         // Carbon calls `GetAllAreas()`; ccpwgl has no such method - a mesh holds
         // one list per render mode, so "all areas" is their concatenation.
+        //
+        // SetParameterS, plural. There is no `SetParameter` on Tw2Effect, so the
+        // optional call this used to make - `effect?.SetParameter?.(name, color)`
+        // - resolved to undefined and did NOTHING, while the cache below still
+        // recorded the colour as applied. Measured on ac2_t2a: _lastAreaColor
+        // held the group blue 0.032/0.456/1 while DiffuseColor still held the
+        // authored orange 0.918/0.678/0.439. Optional-calling a method that has
+        // to exist turns a rename into silence.
+        let applied = 0;
+
         for (const listName of EveSmartLightMesh.AREA_LISTS)
         {
             const areas = this.mesh[listName];
@@ -548,11 +558,15 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
             for (let i = 0; i < areas.length; i++)
             {
-                areas[i]?.effect?.SetParameter?.(this.shaderParamColorName, color);
+                const effect = areas[i] && areas[i].effect;
+                if (effect && effect.SetParameters({ [this.shaderParamColorName]: color })) applied++;
             }
         }
 
-        vec4.copy(this._lastAreaColor, color);
+        // Only cache once something took it; otherwise the first call latches
+        // the cache and every later frame short-circuits on the equality test
+        // above, so a tint that never applied can never be retried.
+        if (applied) vec4.copy(this._lastAreaColor, color);
     }
 
     /** No asynchronous work of its own (EveSmartLightMesh.cpp:136-139). */

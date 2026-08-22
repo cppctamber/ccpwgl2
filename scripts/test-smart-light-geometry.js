@@ -41,6 +41,7 @@ testShipExposesLocatorSets();
 testParentLocatorsCopyTheLocatorTransform();
 testSpeedExpressionsReadTheShip();
 testShipPublishesItsControllerVariables();
+testBeamTintReachesTheEffect();
 console.log("Smart light geometry verified");
 
 /**
@@ -309,6 +310,56 @@ function testShipPublishesItsControllerVariables()
     ship.activationStrength = 0.9;
     ship._PublishControllerVariables(ship.GetPerObjectDataBagOfStuff({}));
     assert.deepEqual(published, [ [ "ActivationStrength", 0.9 ] ], "only what changed is republished");
+}
+
+/**
+ * The beam tint has to land on the effect, and the "already applied" cache must
+ * not latch until it has.
+ *
+ * `Tw2Effect` has SetParameterS, plural. Calling the singular optionally -
+ * `effect?.SetParameter?.(name, colour)` - resolved to undefined and did
+ * nothing, while the cache still recorded the colour as applied. Measured on
+ * ac2_t2a before the fix: the cache held the group blue while DiffuseColor
+ * still held the authored orange.
+ *
+ * The latch is the part that makes it unrecoverable rather than merely wrong -
+ * once cached, the equality check short-circuits every later frame.
+ */
+function testBeamTintReachesTheEffect()
+{
+    const mesh = new (tw2.GetClass("EveSmartLightMesh"))();
+    mesh.shaderParamColorName = "DiffuseColor";
+
+    const applied = [];
+    const effect = {
+        SetParameters(values) { applied.push(values); return true; }
+    };
+    mesh.mesh = { IsGood: () => true, display: true, additiveAreas: [ { effect } ] };
+    for (const list of [ "transparentAreas", "pickableAreas", "opaqueAreas", "distortionAreas", "depthAreas", "opaquePrepassAreas", "depthNormalAreas" ])
+    {
+        mesh.mesh[list] = [];
+    }
+
+    const colour = Float32Array.from([ 0.032, 0.456, 1, 1 ]);
+    mesh.SetMeshColorParameter(colour);
+
+    assert.equal(applied.length, 1, "the tint must reach the area's effect");
+    // Float32Array, so compare at float precision rather than literally.
+    assert.deepEqual(Array.from(applied[0].DiffuseColor).map(round), [ 0.032, 0.456, 1, 1 ], "under the authored parameter name");
+
+    // An effect that takes nothing must leave the cache alone, so the next
+    // frame tries again rather than short-circuiting forever.
+    const inert = new (tw2.GetClass("EveSmartLightMesh"))();
+    inert.shaderParamColorName = "DiffuseColor";
+    inert.mesh = { IsGood: () => true, display: true, additiveAreas: [ { effect: { SetParameters: () => false } } ] };
+    for (const list of [ "transparentAreas", "pickableAreas", "opaqueAreas", "distortionAreas", "depthAreas", "opaquePrepassAreas", "depthNormalAreas" ])
+    {
+        inert.mesh[list] = [];
+    }
+
+    const before = Array.from(inert._lastAreaColor);
+    inert.SetMeshColorParameter(colour);
+    assert.deepEqual(Array.from(inert._lastAreaColor), before, "nothing applied means nothing cached");
 }
 
 function round(n)
