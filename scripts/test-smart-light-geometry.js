@@ -229,8 +229,8 @@ function testParentLocatorsCopyTheLocatorTransform()
     assert.equal(placements.length, 1, "one locator generates one placement");
     const data = placements[0].placement;
     assert.deepEqual(Array.from(data.initialTranslation), [ 1, 2, 3 ], "position is copied");
-    assert.deepEqual(slice(data.initialRotation, 0, 4), Array.from(item.rotation), "ccpwgl spells the orientation `rotation`, not `direction`");
-    assert.deepEqual(Array.from(data.initialScale), [ 4, 5, 6 ], "ccpwgl spells the scale `scaling`, not `scale`");
+    assert.deepEqual(slice(data.initialRotation, 0, 4), Array.from(item.rotation), "ccpwgl spells the orientation `rotation`, not Carbon's `direction`");
+    assert.deepEqual(Array.from(data.initialScale), [ 4, 5, 6 ], "ccpwgl spells the scale `scaling`, not Carbon's `scale`");
     assert.equal(data.boneIndex, 7, "the bone index rides along so skinned locators follow their bone");
 }
 

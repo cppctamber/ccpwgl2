@@ -13,8 +13,18 @@ export class EveDistributionPlacementGeneratorLocators extends meta.Model
 
     _requestRegeneration = false;
 
-    /** m_locators (PLocatorStructureList) [READ, PERSIST] */
-    @meta.list("Locator")
+    /**
+     * m_locators (PLocatorStructureList) [READ, PERSIST]
+     *
+     * Carbon calls this struct `Locator` (EveLocatorSets.h:10-17). ccpwgl
+     * already models the identical four values as `EveLocatorSetItem`, spelled
+     * position/rotation/scaling/boneIndex - same wire shape, one class, so this
+     * points at the existing one rather than registering a second.
+     *
+     * Not `EveLocator2`/`EveLocator`: those are the hull's NAMED single
+     * locators and carry a matrix, not a decomposed SRT.
+     */
+    @meta.list("EveLocatorSetItem")
     locators = [];
 
     /** Flags the pool as stale when the authored locator list changes. */
@@ -35,8 +45,8 @@ export class EveDistributionPlacementGeneratorLocators extends meta.Model
         {
             const data = new PlacementDataWithIdentifier();
             data.initialTranslation.set(locator.position);
-            data.initialRotation.set(locator.direction);
-            data.initialScale.set(locator.scale);
+            data.initialRotation.set(locator.rotation);
+            data.initialScale.set(locator.scaling);
             data.boneIndex = locator.boneIndex;
             data.uniqueID = trackingID.value++;
 
