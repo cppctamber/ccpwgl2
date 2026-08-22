@@ -44,9 +44,16 @@ export class EveDistributionPlacementGeneratorParentLocators extends meta.Model
         for (const locator of this._locators)
         {
             const data = new PlacementDataWithIdentifier();
+            // Carbon's `Locator` struct spells these position/direction/scale;
+            // what a ccpwgl hull hands back from GetLocatorsForSet is an
+            // `EveLocatorSetItem`, which spells them position/rotation/scaling.
+            // Reading Carbon's names off one of those yields undefined, and
+            // `Float32Array.set(undefined)` THROWS - which the owning smart
+            // light set catches and latches, so the whole set goes permanently
+            // inert with no visible error. Accept either spelling.
             data.initialTranslation.set(locator.position);
-            data.initialRotation.set(locator.direction);
-            data.initialScale.set(locator.scale);
+            data.initialRotation.set(locator.direction || locator.rotation);
+            data.initialScale.set(locator.scale || locator.scaling);
             data.boneIndex = locator.boneIndex;
             data.uniqueID = trackingID.value++;
 

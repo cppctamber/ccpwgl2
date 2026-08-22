@@ -38,6 +38,7 @@ testSetIsInertWithoutADistribution();
 testQuadVertexLayout();
 testQuadHonoursTheLiveCount();
 testShipExposesLocatorSets();
+testParentLocatorsCopyTheLocatorTransform();
 console.log("Smart light geometry verified");
 
 /**
@@ -189,6 +190,48 @@ function testShipExposesLocatorSets()
 
     ship.locatorSets.push({ name: "primaryspotlight_01", locators: [ 1, 2 ] });
     assert.deepEqual(ship.GetLocatorsForSet("primaryspotlight_01"), [ 1, 2 ], "a present set returns its locators");
+}
+
+/**
+ * The generator reads a locator's transform off whatever the hull returns.
+ * Carbon's `Locator` struct spells that position/direction/scale; ccpwgl's
+ * `EveLocatorSetItem` spells it position/rotation/scaling. Reading Carbon's
+ * names off a ccpwgl item gives undefined, and `Float32Array.set(undefined)`
+ * THROWS - which `EveChildSmartLightSet` catches and latches, so the set goes
+ * permanently inert with nothing on screen and nothing obviously wrong.
+ *
+ * That is not hypothetical: it is what shipped the moment `GetLocatorsForSet`
+ * started resolving, because until then `_locators` stayed null and this loop
+ * never ran.
+ */
+function testParentLocatorsCopyTheLocatorTransform()
+{
+    const generator = new (tw2.GetClass("EveDistributionPlacementGeneratorParentLocators"))();
+    generator.locatorSetName = "primaryspotlight_01";
+
+    // Shaped exactly like EveLocatorSetItem, which is what a hull hands back.
+    const item = {
+        position: Float32Array.from([ 1, 2, 3 ]),
+        rotation: Float32Array.from([ 0, 0.7071, 0, 0.7071 ]),
+        scaling: Float32Array.from([ 4, 5, 6 ]),
+        boneIndex: 7
+    };
+
+    const ship = new (tw2.GetClass("EveShip2"))();
+    ship.locatorSets.push({ name: "primaryspotlight_01", locators: [ item ] });
+
+    generator.UpdateSyncronous({ GetDeltaT: () => 0 }, { spaceObjectParent: ship }, null);
+    assert.equal(generator.IsRequestingRegeneration(), true, "resolving a locator set must ask for the pool to be rebuilt");
+
+    const placements = [];
+    generator.GetInitialPlacements(placements, { value: 0 });
+
+    assert.equal(placements.length, 1, "one locator generates one placement");
+    const data = placements[0].placement;
+    assert.deepEqual(Array.from(data.initialTranslation), [ 1, 2, 3 ], "position is copied");
+    assert.deepEqual(slice(data.initialRotation, 0, 4), Array.from(item.rotation), "ccpwgl spells the orientation `rotation`, not `direction`");
+    assert.deepEqual(Array.from(data.initialScale), [ 4, 5, 6 ], "ccpwgl spells the scale `scaling`, not `scale`");
+    assert.equal(data.boneIndex, 7, "the bone index rides along so skinned locators follow their bone");
 }
 
 /** A quad with the GL seams stubbed - this test is about float maths, not draws. */
