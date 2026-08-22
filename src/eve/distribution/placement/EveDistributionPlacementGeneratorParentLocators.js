@@ -3,6 +3,7 @@
 import { meta } from "utils";
 import { InitialPlacement } from "../attributeModifiers/InitialPlacement.js";
 import { PlacementDataWithIdentifier } from "../../PlacementDataWithIdentifier.js";
+import { EveChildInstanceContainer } from "eve/child/EveChildInstanceContainer";
 
 
 /** EveDistributionPlacementGeneratorParentLocators (eve/distribution/placement) - generated from schema shapeHash ebb2456a.... */
@@ -84,7 +85,17 @@ export class EveDistributionPlacementGeneratorParentLocators extends meta.Model
 
         if (!this._regenerated && parent)
         {
-            const locators = parent.GetLocatorsForSet(locatorSetName);
+            // Carbon calls `spaceObject->GetLocatorsForSet(name)` directly, but
+            // ccpwgl's EveShip2 has no such method - its equivalent is the
+            // private `_GetLocatorSetItems`. Calling Carbon's name threw
+            // "parent.GetLocatorsForSet is not a function" from inside
+            // EveShip2.Update, which aborts the whole child loop and takes every
+            // sibling after the smart light set down with it.
+            //
+            // EveChildInstanceContainer already owns that adaptation and two
+            // other classes already use it, so this defers rather than adding a
+            // second copy of the same fallback chain.
+            const locators = EveChildInstanceContainer.GetLocatorsForSet(parent, locatorSetName);
             this._locators = locators;
             if (locators)
             {

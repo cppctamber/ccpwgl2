@@ -29,6 +29,7 @@
 // so a scratch bag is cheaper and clearer than porting EveUpdateContext.
 import { meta } from "utils";
 import { mat4 } from "math";
+import { tw2 } from "global/tw2";
 import { EveChild } from "eve/child";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 
@@ -144,7 +145,46 @@ export class EveChildSmartLightSet extends EveChild
     {
         mat4.copy(this._worldTransform, parentTransform);
 
-        if (!this.distribution || !this.display) return;
+        if (!this.distribution || !this.display || this._failed) return;
+
+        // A smart light set is decoration. It must not be able to take its
+        // parent down, and on 2026-08-22 it did: the parent-locator generator
+        // called Carbon's `GetLocatorsForSet`, which ccpwgl's EveShip2 does not
+        // have, and the resulting throw propagated out through
+        // `EveChildContainer.Update` and `EveShip2.Update` - so every sibling
+        // ordered after this set stopped updating too. The reported symptom was
+        // "smart lights disappeared and some flares stopped working", which
+        // names neither the throw nor its cause.
+        //
+        // Same rule EveSpaceScene already states for post effects: a pass that
+        // fails disables itself rather than throwing. Latched, so a per-frame
+        // fault logs once instead of every frame.
+        try
+        {
+            this._Update(dt, perObjectData, parentSpaceObject);
+        }
+        catch (err)
+        {
+            this._failed = true;
+            tw2.Debug({
+                name: "EveChildSmartLightSet",
+                message: `'${this.name}' disabled after an update error: ${err.message}`,
+                data: { err }
+            });
+        }
+    }
+
+    /** Set once an update throws; the set then stays inert. See `Update`. */
+    _failed = false;
+
+    /**
+     * The body of `Update`, separated so the guard above reads as one thing.
+     * @param {Number} dt
+     * @param {Tw2PerObjectData} [perObjectData]
+     * @param {?EveShip2} [parentSpaceObject]
+     */
+    _Update(dt, perObjectData, parentSpaceObject)
+    {
 
         this._dt = dt;
 

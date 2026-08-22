@@ -92,3 +92,4 @@ docs/
 # service) so they cannot join the test sweep
 *.local.js
 *.local.mjs
+*.local.cjs

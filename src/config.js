@@ -15,13 +15,29 @@ import { device } from "global/tw2";
 
 const typedArray = ctor => ({ type: MT.WglTypedArray, ctor });
 
-// Effects pinned to a quality tier regardless of `device.shaderQuality`.
+// Effects pinned to a quality tier or a profile directory, regardless of the
+// session's `device.shaderQuality` / `device.effectProfile`.
 // Matched on a path fragment, so one entry covers every directory the same
 // effect is reached through. See the `black.fx` handler below for why each
 // entry is here and when to remove it.
 const FX_TIER_PINS = [
     { match: "/specialfx/flarequad.fx", tier: "sm_hi" },
-    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" }
+    { match: "/specialfx/flarequadsoft.fx", tier: "sm_hi" },
+    // Not a tier pin - a PROFILE pin, on the same list because it is the same
+    // substitution. `ubershaderinstanced` is the beam material on smart light
+    // sets (EveSmartLightMesh, mesh name "Beam"), and it is ABSENT from the
+    // gles2 tree: verified against the live resource index on 2026-08-22, dx11
+    // carries sm_hi/sm_lo/sm_depth and gles2 carries none (168 files vs 147
+    // under /managed/space/specialfx/). Without this the beams cannot draw on a
+    // gles2 session whatever the renderer does.
+    //
+    // Routing it to dx11 is not a workaround: `Tw2EffectRes.PrepareCarbon`
+    // resolves the profile from the RESOURCE PATH first and only then falls
+    // back to the device, so this one effect is translated to GLSL at load by
+    // machinery that already exists, permutations intact, while everything else
+    // stays on the session profile. Translating at load is a build step at
+    // runtime though, so pin only what is genuinely missing.
+    { match: "/specialfx/ubershaderinstanced.fx", dir: "/effect.dx11/" }
 ];
 
 // Default resource serving (the local tools-core service, not provided with
@@ -95,7 +111,7 @@ export const config = {
         // needed - everything uses "res:/" directly and "cdn:/" is retired.
         "*": path => path.toLowerCase(),
 
-        // Pin individual effects to a quality tier.
+        // Pin individual effects to a quality tier, a profile directory, or both.
         //
         // Normally a black-authored `.fx` path keeps its extension here and
         // `Tw2Device.ToEffectPath` later swaps `/effect/` for the profile
@@ -122,9 +138,11 @@ export const config = {
                 const pin = FX_TIER_PINS[i];
                 if (path.includes(pin.match))
                 {
+                    // Either axis may be pinned; the other follows the session,
+                    // exactly as ToEffectPath would have resolved it.
                     return path
-                        .replace("/effect/", device.effectDir)
-                        .replace(".fx", `.${pin.tier}`);
+                        .replace("/effect/", pin.dir || device.effectDir)
+                        .replace(".fx", `.${pin.tier || "sm_" + device.shaderModel}`);
                 }
             }
             return path;
