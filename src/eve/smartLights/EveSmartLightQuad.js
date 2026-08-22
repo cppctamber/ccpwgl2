@@ -274,18 +274,24 @@ export class EveSmartLightQuad extends EveChildTransform
 
     /**
      * Captures the activation strength and updates the attribute modifiers with
-     * full strength (EveSmartLightQuad.cpp:73-98), then builds this frame's
-     * geometry.
+     * full strength (EveSmartLightQuad.cpp:73-98).
      *
-     * Carbon does the build at render time inside AddQuadsToQuadRenderer;
-     * ccpwgl builds here because this is the one call per frame that has the
-     * distribution in hand regardless of render mode.
+     * The geometry is NOT built here. It was, and that was wrong: the world
+     * transform this class packs into every vertex is written by
+     * UpdateAsyncronous, which the owning set calls AFTER this - so the quads
+     * were built against an identity transform on the first frame and a
+     * one-frame-stale one after. Identity puts every flare at the world origin,
+     * which is where the ship is, which is where the camera is looking.
+     *
+     * Carbon builds at render time inside AddQuadsToQuadRenderer, after both
+     * update phases have run. GetBatches is the equivalent moment here, so the
+     * build happens there instead - see BuildQuads.
      *
      * The edit-mode effect-key refresh (cpp:78-90) has no counterpart: the key
      * exists only to pick a bucket in the quad-renderer singleton, and there is
      * no singleton here.
      */
-    UpdateSyncronous(updateContext, params, distribution)
+    UpdateSyncronous(updateContext, params, _distribution)
     {
         this._activationStrength = params && params.activationStrength !== undefined
             ? params.activationStrength
@@ -297,10 +303,6 @@ export class EveSmartLightQuad extends EveChildTransform
         }
 
         if (!this.effect) this.Initialize();
-
-        const placements = distribution?.GetPlacementData?.() || [];
-        const size = Number(distribution?.GetNumberOfPlacements?.() ?? placements.length);
-        this.BuildQuads(placements, size, this._frustum);
     }
 
     /**
@@ -529,9 +531,19 @@ export class EveSmartLightQuad extends EveChildTransform
      * @param {Tw2PerObjectData} perObjectData
      * @returns {Boolean} true if batches accumulated
      */
-    GetBatches(mode, accumulator, perObjectData)
+    GetBatches(mode, accumulator, perObjectData, distribution)
     {
-        if (!this.display || !this.IsGood() || mode !== device.RM_ADDITIVE) return false;
+        if (!this.display || mode !== device.RM_ADDITIVE) return false;
+
+        // Built HERE, not during update, because the vertex data packs the world
+        // transform and that is only current once UpdateAsyncronous has run.
+        // This is also where Carbon builds (AddQuadsToQuadRenderer), so the
+        // timing now matches rather than merely working.
+        const placements = distribution?.GetPlacementData?.() || [];
+        const size = Number(distribution?.GetNumberOfPlacements?.() ?? placements.length);
+        this.BuildQuads(placements, size, this._frustum);
+
+        if (!this.IsGood()) return false;
 
         const batch = new Tw2ForwardingRenderBatch();
         batch.geometryProvider = this;
