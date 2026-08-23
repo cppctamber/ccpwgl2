@@ -289,6 +289,65 @@ export class TnySlot extends Tw2EventEmitter
     }
 
     /**
+     * Gets where this slot's turret actually is, right now, in MODEL space -
+     * the locator's own transform with its bone applied.
+     *
+     * Resolved in the same order the engine does, most authoritative first:
+     *
+     *   1. the mounted turret item's own transform, which IS where the gun is
+     *   2. the locator's bone, live - `bone.worldTransform` is already in
+     *      model space despite the name, which is why the turret set composes
+     *      the ship matrix on top of it afterwards
+     *   3. the locator's authored transform - the bind pose, correct for a
+     *      rigid hull and the best available for an unbound locator
+     *
+     * Deliberately NOT `EveLocator2.GetTransform`. That folds the bone in as
+     * `offsetTransform * transform`, and `offsetTransform` is the SKINNING
+     * matrix - bone world times inverse bind pose. It equals the bone's world
+     * transform only when the locator's own transform is exactly the bind
+     * pose, so on anything that moves it answers a different place than the
+     * turret mounted on it. The turret reads `bone.worldTransform` outright
+     * and is correctly placed; this matches the turret.
+     *
+     * @param {mat4} out
+     * @param {Number} [index=0] - which of the slot's locators
+     * @returns {?mat4} out, or null if there is nothing to report
+     */
+    GetTransform(out, index = 0)
+    {
+        const locator = this._locators && this._locators[index];
+        if (!locator) return null;
+
+        const set = this.GetTurretSet();
+        const item = set && set.FindItemByLocatorName ? set.FindItemByLocatorName(locator.name) : null;
+
+        // A mounted turret has already done this work, and its answer includes
+        // anything the turret itself applied on top of the locator.
+        if (item && typeof item.GetTransform === "function") return item.GetTransform(out);
+
+        if (locator._bone) return mat4.copy(out, locator._bone.worldTransform);
+
+        return mat4.copy(out, locator.transform);
+    }
+
+    /**
+     * Gets a transform for every locator in this slot.
+     * @param {Array<mat4>} [out]
+     * @returns {Array<mat4>}
+     */
+    GetTransforms(out = [])
+    {
+        const count = this._locators ? this._locators.length : 0;
+        for (let i = 0; i < count; i++)
+        {
+            if (!out[i]) out[i] = mat4.create();
+            this.GetTransform(out[i], i);
+        }
+        out.length = count;
+        return out;
+    }
+
+    /**
      * Binds this slot's locators to their bones.
      *
      * Redundant for a slot that has something mounted - EveShip2.Update

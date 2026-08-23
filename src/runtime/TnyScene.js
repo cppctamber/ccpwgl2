@@ -1,5 +1,6 @@
 import { resMan, tw2 } from "global";
 import { isString, isVector, meta } from "utils";
+import { Tw2Picker, Tw2RayCaster } from "core";
 import { EveSpaceScene } from "eve/EveSpaceScene";
 
 
@@ -27,6 +28,25 @@ export class TnyScene extends meta.Model
 
     @meta.list()
     lensflares = [];
+
+    /**
+     * Picking, carried over from WrappedScene when that tree was retired.
+     * A scene that can be rendered but not clicked is only half a scene: any
+     * editor over this runtime needs to turn a pointer event into an object,
+     * and the ray/AABB work belongs with the object list rather than with
+     * whichever tool happens to want it.
+     * @type {Tw2RayCaster}
+     */
+    _rayCaster = new Tw2RayCaster();
+
+    /** @type {Tw2Picker} */
+    _picker = new Tw2Picker();
+
+    /**
+     * Gizmos intersect BEFORE ordinary objects so a handle drawn on top of a
+     * hull can still be grabbed - see `IntersectFromEvent`.
+     */
+    gizmoObjects = [];
 
     /**
      * Planets normally go in the scene's planet list, which renders in a
@@ -125,6 +145,102 @@ export class TnyScene extends meta.Model
             this.Rebuild();
             this.EmitEvent("object_removed", this, object);
         }
+        return this;
+    }
+
+    /**
+     * Intersects the scene's objects with a pointer event.
+     *
+     * Gizmos are tested first and, unless `passthrough` is set, a gizmo hit
+     * stops the search - otherwise dragging a handle would also select the
+     * hull behind it.
+     *
+     * @param {MouseEvent} event
+     * @param {HTMLElement} [element]
+     * @param {Object} [options]
+     * @returns {Array} intersections, nearest first
+     */
+    IntersectFromEvent(event, element, options)
+    {
+        const { altKey, ctrlKey, shiftKey } = event;
+        const keys = { altKey, ctrlKey, shiftKey };
+        const intersected = [];
+
+        this._rayCaster.UpdateFromEvent(event, element, options);
+        this.EmitEvent("intersecting", this, undefined, keys);
+
+        const
+            gizmoOptions = options && options.gizmos || {},
+            skipGizmos = gizmoOptions.skip || this._rayCaster.GetOption("gizmos", "skip", false),
+            passthroughGizmos = gizmoOptions.passthrough || this._rayCaster.GetOption("gizmos", "passthrough", false);
+
+        if (!skipGizmos)
+        {
+            this._rayCaster.IntersectObjects(this.gizmoObjects, intersected);
+        }
+
+        if (!intersected.length || passthroughGizmos)
+        {
+            this._rayCaster.IntersectObjects(this.objects, intersected);
+        }
+
+        if (intersected.length)
+        {
+            this.EmitEvent("intersected_objects", this, intersected, keys);
+            this.EmitEvent("intersected_closest", this, intersected[0], keys);
+        }
+        else
+        {
+            this.EmitEvent("intersected_none", this, undefined, keys);
+        }
+
+        return intersected;
+    }
+
+    /**
+     * Picks from a supplied object list rather than the whole scene.
+     *
+     * The picker works on the RAW eve objects, so a hit comes back rooted at
+     * an EveShip2 rather than the TnyShip holding it. Callers want the runtime
+     * object, so the root is translated back and the raw one kept alongside.
+     *
+     * @param {Array} objects
+     * @param {MouseEvent} event
+     * @param {HTMLElement} [element]
+     * @returns {?Object}
+     */
+    PickObjectsFromEvent(objects, event, element)
+    {
+        const result = this._picker.PickFromEvent(objects, event, element);
+        if (result)
+        {
+            const root = this.objects.find(x => x.wrapped === result.root);
+            if (root)
+            {
+                result.wrapped = result.root;
+                result.root = root;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Removes objects by kind, rebuilding once at the end rather than once
+     * per removal.
+     * @param {Boolean} [spaceObjects] - remove everything that is not a planet
+     * @param {Boolean} [planets] - remove planets
+     * @returns {TnyScene}
+     */
+    RemoveAllObjects(spaceObjects, planets)
+    {
+        const keep = this.objects.filter(x => (x.isPlanet ? !planets : !spaceObjects));
+        if (keep.length === this.objects.length) return this;
+
+        const removed = this.objects.filter(x => keep.indexOf(x) === -1);
+        this.objects.length = 0;
+        this.objects.push(...keep);
+        this.Rebuild();
+        removed.forEach(x => this.EmitEvent("object_removed", this, x));
         return this;
     }
 

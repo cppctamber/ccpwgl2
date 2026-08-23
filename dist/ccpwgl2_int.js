@@ -249871,6 +249871,61 @@
 	  }
 
 	  /**
+	   * Gets where this slot's turret actually is, right now, in MODEL space -
+	   * the locator's own transform with its bone applied.
+	   *
+	   * Resolved in the same order the engine does, most authoritative first:
+	   *
+	   *   1. the mounted turret item's own transform, which IS where the gun is
+	   *   2. the locator's bone, live - `bone.worldTransform` is already in
+	   *      model space despite the name, which is why the turret set composes
+	   *      the ship matrix on top of it afterwards
+	   *   3. the locator's authored transform - the bind pose, correct for a
+	   *      rigid hull and the best available for an unbound locator
+	   *
+	   * Deliberately NOT `EveLocator2.GetTransform`. That folds the bone in as
+	   * `offsetTransform * transform`, and `offsetTransform` is the SKINNING
+	   * matrix - bone world times inverse bind pose. It equals the bone's world
+	   * transform only when the locator's own transform is exactly the bind
+	   * pose, so on anything that moves it answers a different place than the
+	   * turret mounted on it. The turret reads `bone.worldTransform` outright
+	   * and is correctly placed; this matches the turret.
+	   *
+	   * @param {mat4} out
+	   * @param {Number} [index=0] - which of the slot's locators
+	   * @returns {?mat4} out, or null if there is nothing to report
+	   */
+	  GetTransform(out) {
+	    var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	    var locator = this._locators && this._locators[index];
+	    if (!locator) return null;
+	    var set = this.GetTurretSet();
+	    var item = set && set.FindItemByLocatorName ? set.FindItemByLocatorName(locator.name) : null;
+
+	    // A mounted turret has already done this work, and its answer includes
+	    // anything the turret itself applied on top of the locator.
+	    if (item && typeof item.GetTransform === "function") return item.GetTransform(out);
+	    if (locator._bone) return mat4$1.copy(out, locator._bone.worldTransform);
+	    return mat4$1.copy(out, locator.transform);
+	  }
+
+	  /**
+	   * Gets a transform for every locator in this slot.
+	   * @param {Array<mat4>} [out]
+	   * @returns {Array<mat4>}
+	   */
+	  GetTransforms() {
+	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var count = this._locators ? this._locators.length : 0;
+	    for (var i = 0; i < count; i++) {
+	      if (!out[i]) out[i] = mat4$1.create();
+	      this.GetTransform(out[i], i);
+	    }
+	    out.length = count;
+	    return out;
+	  }
+
+	  /**
 	   * Binds this slot's locators to their bones.
 	   *
 	   * Redundant for a slot that has something mounted - EveShip2.Update
@@ -250033,7 +250088,7 @@
 	  vec3_0: vec3$3.create()
 	};
 
-	var _excluded$9 = ["dna", "resPath", "typeID", "skinID", "awaitResources"];
+	var _excluded$9 = ["dna", "resPath", "typeID", "graphicID", "skinID", "skinrUUID", "awaitResources", "position"];
 	var _dec$a, _dec2$7, _dec3$6, _class$a, _class2$7, _descriptor$6, _descriptor2$5, _TnySpaceObject;
 	var TnySpaceObject = (_dec$a = define("TnySpaceObject"), _dec2$7 = struct(), _dec3$6 = plain, _dec$a(_class$a = (_class2$7 = (_TnySpaceObject = class TnySpaceObject extends WglTransform {
 	  get display() {
@@ -250285,11 +250340,27 @@
 	  /**
 	   * Fetches a space object async, building through tw2.Fetch so a
 	   * registered dna handler (lazy sof loading) is honoured.
-	   * @param {String|Number|Object} options - dna/res path string, typeID, or options object
+	   *
+	   * Four ways to name what to build, in resolution order: a SKINR design
+	   * id, a typeID, a graphicID, or dna/res path directly. Each resolves to
+	   * dna before anything is fetched, so they all take the same path through
+	   * the engine.
+	   *
+	   * A bare string is dispatched by shape - a UUID is a SKINR design, dna
+	   * looks like dna, anything else is a res path - and a bare number is a
+	   * typeID. graphicID has to be named, because it is a number too and
+	   * guessing between the two would be wrong half the time.
+	   *
+	   * @param {String|Number|Object} options - dna/res path/SKINR id string, typeID, or options
 	   * @param {String} [options.dna]
 	   * @param {String} [options.resPath]
 	   * @param {Number} [options.typeID]        - resolved to dna via the api service
+	   * @param {Number} [options.graphicID]     - resolved to sof dna or a graphic file
+	   * @param {String} [options.skinrUUID]     - a SKINR design id
 	   * @param {Number} [options.skinID]
+	   * @param {Array} [options.position]       - alias for `translation`
+	   * @param {Array} [options.translation]
+	   * @param {Array} [options.rotation]
 	   * @param {Boolean|Function} [options.awaitResources] - await (or watch) resource loading
 	   * @returns {Promise<TnySpaceObject>}
 	   */
@@ -250298,11 +250369,30 @@
 	      _this = this;
 	    return _asyncToGenerator(function* () {
 	      var options = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
+	      // Polymorphic by shape. Each form is identified POSITIVELY, in order,
+	      // so that dna - the one with the loosest shape - is what is left over
+	      // rather than something guessed at:
+	      //
+	      //   UUID      a SKINR design id
+	      //   digits    a typeID, as a number OR a string; ids arrive from urls
+	      //             and json as strings often enough that reading "587" as
+	      //             a path would be a trap
+	      //   prefix:/  a res path - res, local, http, https, any res index -
+	      //             recognised by the `:/` sitting near the front
+	      //   otherwise dna
+	      //
+	      // graphicID is NOT here and cannot be: it is a plain number,
+	      // indistinguishable from a typeID, so it has to be named.
 	      if (isString$1(options)) {
-	        options = isDNA$1(options) ? {
-	          dna: options
+	        var value = options.trim();
+	        options = _this.IsSkinrID(value) ? {
+	          skinrUUID: value
+	        } : /^[0-9]+$/.test(value) ? {
+	          typeID: Number(value)
+	        } : _this.IsResPath(value) ? {
+	          resPath: value
 	        } : {
-	          resPath: options
+	          dna: value
 	        };
 	      } else if (isNumber$1(options)) {
 	        options = {
@@ -250313,25 +250403,113 @@
 	        dna = _options.dna,
 	        resPath = _options.resPath,
 	        typeID = _options.typeID,
+	        graphicID = _options.graphicID,
 	        skinID = _options.skinID,
+	        skinrUUID = _options.skinrUUID,
 	        awaitResources = _options.awaitResources,
+	        position = _options.position,
 	        values = _objectWithoutProperties(_options, _excluded$9);
-	      if (typeID !== undefined && typeID !== null) {
+
+	      // `position` and `translation` are both accepted; the wrapped object
+	      // only knows `translation`, so an unaliased `position` would be set
+	      // on nothing and silently do nothing.
+	      if (position !== undefined && values.translation === undefined) {
+	        values.translation = position;
+	      }
+	      var blendMode = null;
+	      if (skinrUUID) {
+	        var design = yield getApiService().GenerateDnaFromId(skinrUUID);
+	        dna = design.dna;
+	        blendMode = design.blendMode;
+	        if (!values.name && design.name) values.name = design.name;
+
+	        // The generated pattern has to be registered BEFORE the fetch: sof
+	        // resolves pattern names while building, so a design whose pattern
+	        // arrives late draws as an unpatterned hull - which looks like the
+	        // skin failing rather than a missing registration.
+	        if (design.pattern) _this.RegisterPattern(design.pattern);
+	      } else if (typeID !== undefined && typeID !== null) {
 	        var resolved = yield getApiService().ResolveDna({
 	          typeID,
 	          skinID
 	        });
 	        if (!values.name) values.name = resolved.name;
 	        dna = resolved.dna;
+	      } else if (graphicID !== undefined && graphicID !== null) {
+	        // Returns sof dna for a hull, or a graphic file for the things that
+	        // are not sof at all - so it feeds whichever of the two applies.
+	        var path = yield getApiService().GetResPathFromGraphicID(graphicID);
+	        if (!path) throw new ReferenceError("Graphic ".concat(graphicID, " has no SOF DNA or graphic file"));
+	        if (_this.IsResPath(path)) resPath = path;else dna = path;
 	      }
 	      var source = dna || resPath;
 	      if (!source) throw new ReferenceError("Could not identify a dna or resource path");
 	      var wrapped = yield tw2.Fetch(source, awaitResources);
 	      wrapped._resPath = source;
 	      var object = new _this(wrapped, values);
+
+	      // Carbon compiles the blend mode in as a permutation, so it cannot ride
+	      // along in the dna. Left unset, a SKINR design falls back to overlay on
+	      // dx11 while gles2 - which reads it from a constant buffer - looks
+	      // right, and the two profiles disagree over one design.
+	      if (blendMode && wrapped.SetBlendMode) wrapped.SetBlendMode(blendMode);
 	      yield object.RebuildSlots();
 	      return object;
 	    })();
+	  }
+
+	  /**
+	   * True for a resource path: a `prefix:/` at the FRONT of the string -
+	   * `res:/`, `local:/`, `http(s)://`, or any other res index.
+	   *
+	   * Deliberately not checking that the prefix is registered. An
+	   * unregistered one is still a path, and failing the fetch with a name
+	   * says so; quietly treating it as dna would report the wrong thing.
+	   * `near the front` is what makes it a prefix rather than a colon that
+	   * happens to appear inside some longer string.
+	   *
+	   * @param {String} value
+	   * @returns {Boolean}
+	   */
+	  /**
+	   * How far into a string a `:/` can sit and still be a prefix. The
+	   * longest in use is `dynamic` at seven; sixteen leaves room without
+	   * letting a colon deep inside some other string qualify.
+	   * @type {Number}
+	   */
+
+	  static IsResPath(value) {
+	    if (!isString$1(value)) return false;
+	    var index = value.indexOf(":/");
+	    if (index === -1) return false;
+	    return index <= this.RES_PREFIX_MAX_LENGTH;
+	  }
+
+	  /**
+	   * A SKINR design id is a UUID; dna and res paths never are.
+	   * @param {String} value
+	   * @returns {Boolean}
+	   */
+	  static IsSkinrID(value) {
+	    return isString$1(value) && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
+	  }
+
+	  /**
+	   * Registers a generated pattern on the active sof data, replacing any
+	   * pattern of the same name - a SKINR id names one design, so a re-fetch
+	   * has to overwrite rather than accumulate.
+	   * @param {Object} pattern
+	   * @returns {?Object} the registered pattern
+	   */
+	  static RegisterPattern(pattern) {
+	    var sof = tw2.eveSof;
+	    if (!sof || !Array.isArray(sof.pattern) || !pattern || !isString$1(pattern.name)) {
+	      return null;
+	    }
+	    var name = pattern.name.toLowerCase();
+	    var index = sof.pattern.findIndex(x => x && isString$1(x.name) && x.name.toLowerCase() === name);
+	    if (index === -1) sof.pattern.push(pattern);else sof.pattern[index] = pattern;
+	    return pattern;
 	  }
 
 	  /**
@@ -250433,7 +250611,7 @@
 	    }
 	    return updated;
 	  }
-	}, _TnySpaceObject.global = {
+	}, _TnySpaceObject.RES_PREFIX_MAX_LENGTH = 16, _TnySpaceObject.global = {
 	  box3_0: box3.create(),
 	  mat4_0: mat4$1.create(),
 	  sph3_0: sph3.create(),
@@ -250728,6 +250906,22 @@
 	    _initializerDefineProperty(this, "wrapped", _descriptor$5, this);
 	    _initializerDefineProperty(this, "objects", _descriptor2$4, this);
 	    _initializerDefineProperty(this, "lensflares", _descriptor3$2, this);
+	    /**
+	     * Picking, carried over from WrappedScene when that tree was retired.
+	     * A scene that can be rendered but not clicked is only half a scene: any
+	     * editor over this runtime needs to turn a pointer event into an object,
+	     * and the ray/AABB work belongs with the object list rather than with
+	     * whichever tool happens to want it.
+	     * @type {Tw2RayCaster}
+	     */
+	    this._rayCaster = new Tw2RayCaster();
+	    /** @type {Tw2Picker} */
+	    this._picker = new Tw2Picker();
+	    /**
+	     * Gizmos intersect BEFORE ordinary objects so a handle drawn on top of a
+	     * hull can still be grabbed - see `IntersectFromEvent`.
+	     */
+	    this.gizmoObjects = [];
 	    this._treatPlanetsAsObjects = false;
 	    if (values) this.SetValues(values);
 	    if (wrapped) this.SetWrapped(wrapped);
@@ -250780,6 +250974,90 @@
 	      this.Rebuild();
 	      this.EmitEvent("object_removed", this, object);
 	    }
+	    return this;
+	  }
+
+	  /**
+	   * Intersects the scene's objects with a pointer event.
+	   *
+	   * Gizmos are tested first and, unless `passthrough` is set, a gizmo hit
+	   * stops the search - otherwise dragging a handle would also select the
+	   * hull behind it.
+	   *
+	   * @param {MouseEvent} event
+	   * @param {HTMLElement} [element]
+	   * @param {Object} [options]
+	   * @returns {Array} intersections, nearest first
+	   */
+	  IntersectFromEvent(event, element, options) {
+	    var altKey = event.altKey,
+	      ctrlKey = event.ctrlKey,
+	      shiftKey = event.shiftKey;
+	    var keys = {
+	      altKey,
+	      ctrlKey,
+	      shiftKey
+	    };
+	    var intersected = [];
+	    this._rayCaster.UpdateFromEvent(event, element, options);
+	    this.EmitEvent("intersecting", this, undefined, keys);
+	    var gizmoOptions = options && options.gizmos || {},
+	      skipGizmos = gizmoOptions.skip || this._rayCaster.GetOption("gizmos", "skip", false),
+	      passthroughGizmos = gizmoOptions.passthrough || this._rayCaster.GetOption("gizmos", "passthrough", false);
+	    if (!skipGizmos) {
+	      this._rayCaster.IntersectObjects(this.gizmoObjects, intersected);
+	    }
+	    if (!intersected.length || passthroughGizmos) {
+	      this._rayCaster.IntersectObjects(this.objects, intersected);
+	    }
+	    if (intersected.length) {
+	      this.EmitEvent("intersected_objects", this, intersected, keys);
+	      this.EmitEvent("intersected_closest", this, intersected[0], keys);
+	    } else {
+	      this.EmitEvent("intersected_none", this, undefined, keys);
+	    }
+	    return intersected;
+	  }
+
+	  /**
+	   * Picks from a supplied object list rather than the whole scene.
+	   *
+	   * The picker works on the RAW eve objects, so a hit comes back rooted at
+	   * an EveShip2 rather than the TnyShip holding it. Callers want the runtime
+	   * object, so the root is translated back and the raw one kept alongside.
+	   *
+	   * @param {Array} objects
+	   * @param {MouseEvent} event
+	   * @param {HTMLElement} [element]
+	   * @returns {?Object}
+	   */
+	  PickObjectsFromEvent(objects, event, element) {
+	    var result = this._picker.PickFromEvent(objects, event, element);
+	    if (result) {
+	      var root = this.objects.find(x => x.wrapped === result.root);
+	      if (root) {
+	        result.wrapped = result.root;
+	        result.root = root;
+	      }
+	    }
+	    return result;
+	  }
+
+	  /**
+	   * Removes objects by kind, rebuilding once at the end rather than once
+	   * per removal.
+	   * @param {Boolean} [spaceObjects] - remove everything that is not a planet
+	   * @param {Boolean} [planets] - remove planets
+	   * @returns {TnyScene}
+	   */
+	  RemoveAllObjects(spaceObjects, planets) {
+	    var keep = this.objects.filter(x => x.isPlanet ? !planets : !spaceObjects);
+	    if (keep.length === this.objects.length) return this;
+	    var removed = this.objects.filter(x => keep.indexOf(x) === -1);
+	    this.objects.length = 0;
+	    this.objects.push(...keep);
+	    this.Rebuild();
+	    removed.forEach(x => this.EmitEvent("object_removed", this, x));
 	    return this;
 	  }
 
@@ -250960,7 +251238,10 @@
 	}), _applyDecoratedDescriptor(_class2$5.prototype, "treatPlanetsAsObjects", [_dec5$3], Object.getOwnPropertyDescriptor(_class2$5.prototype, "treatPlanetsAsObjects"), _class2$5.prototype), _class2$5)) || _class$6);
 
 	var _excluded$6 = ["api", "apiService", "camera", "cameras", "objects", "scene", "post", "renderer", "clearColor", "view"],
-	  _excluded2$3 = ["client", "render", "scene", "camera", "cameras", "objects", "post", "renderer"];
+	  _excluded2$3 = ["client", "render", "scene", "camera", "cameras", "objects", "post", "renderer"],
+	  _excluded3$1 = ["objects"],
+	  _excluded4$1 = ["type"],
+	  _excluded5 = ["type"];
 	var _dec$5, _class$5, _TnyClient;
 	var TnyClient = (_dec$5 = define("TnyClient"), _dec$5(_class$5 = (_TnyClient = class TnyClient extends Model {
 	  constructor() {
@@ -250976,6 +251257,16 @@
 	    this.renderer = null;
 	    this.accumulator = new Tw2BatchAccumulator();
 	    this.constructors = new Tw2ConstructorStore();
+	    /**
+	     * Await an object's resources before it goes into the scene.
+	     *
+	     * Carried over from WrappedScene, where it was the same flag with the
+	     * same name. With it set, a hull is fully built before anything can draw
+	     * it; without it the object is added straight away and fills in as it
+	     * loads, which is what makes something appear immediately.
+	     * @type {Boolean}
+	     */
+	    this.doWatch = false;
 	    var api = options.api,
 	      apiService = options.apiService,
 	      camera = options.camera,
@@ -251035,9 +251326,18 @@
 	  }
 
 	  /**
-	   * Initializes the engine for this client without fetching runtime
-	   * objects. Scene, camera, post, renderer, and objects must already be
-	   * constructed; resource acquisition remains with their owning APIs.
+	   * Initializes the engine for this client.
+	   *
+	   * `scene` and `camera` accept either a constructed object or the config
+	   * that describes one - a resource path or options for the scene, camera
+	   * values for the camera. Both are resolved AFTER the engine comes up,
+	   * because both need a device: the scene fetches through `tw2.Fetch` and
+	   * the camera reads the canvas.
+	   *
+	   * A caller that has already built them loses nothing; an instance is
+	   * passed straight through. The config form exists so that the common case
+	   * - hand the client a nebula path and some camera values - does not make
+	   * every consumer repeat the same two constructions.
 	   */
 	  Initialize() {
 	    var _arguments = arguments,
@@ -251056,15 +251356,26 @@
 	      if (client) {
 	        _this.options = _objectSpread2(_objectSpread2({}, _this.options), client);
 	      }
-	      if (scene) _this.SetScene(scene);
 	      if (renderer) _this.SetRenderer(renderer);
 	      if (post) _this.SetPost(post);
 	      if (cameras) _this.AddCamera(cameras);
-	      if (camera) _this.SetCamera(camera);
 	      if (objects) _this.AddObject(objects);
+
+	      // Instances can be set now; config has to wait for the device below.
+	      if (scene && scene.isScene) _this.SetScene(scene);
+	      if (camera && _this.constructor.IsCamera(camera)) _this.SetCamera(camera);
 	      yield tw2.Initialize(_objectSpread2(_objectSpread2({}, engineOptions), {}, {
 	        render: render || (dt => _this.Render(dt))
 	      }));
+
+	      // Camera before scene: fetching a scene yields to the network, and a
+	      // frame that ticks in that gap renders nothing without a camera.
+	      if (camera && !_this.constructor.IsCamera(camera)) {
+	        _this.SetCamera(_this.CreateCamera(camera));
+	      }
+	      if (scene && !scene.isScene) {
+	        yield _this.FetchScene(scene);
+	      }
 	      return _this;
 	    })();
 	  }
@@ -251162,55 +251473,162 @@
 	   * @param {String|Object|Array} options - see TnyScene.Fetch
 	   * @returns {Promise<TnyScene>} the fetched scene
 	   */
-	  FetchScene(options) {
+	  /**
+	   * Fetches a scene and makes it the client's.
+	   *
+	   * `objects` is optional and may name anything the runtime can build -
+	   * a dna string, a typeID, a SKINR id, or an options object. They are
+	   * fetched AFTER the scene is set so each one lands in it; fetched
+	   * before, they would be added to the client's own list and then drawn
+	   * outside the scene, which means unlit.
+	   *
+	   * @param {String|Object} options - res path, or TnyScene.Fetch options
+	   * @param {Array} [options.objects] - object specs to populate it with
+	   * @returns {Promise<TnyScene>}
+	   */
+	  FetchScene(options, onProgress) {
 	    var _this2 = this;
 	    return _asyncToGenerator(function* () {
-	      var scene = yield TnyScene.Fetch(options);
+	      var objects = null;
+	      if (options && !isString$1(options) && options.objects) {
+	        var _options = options;
+	        objects = _options.objects;
+	        options = _objectWithoutProperties(_options, _excluded3$1);
+	        _options;
+	      }
+	      var scene = yield TnyScene.Fetch(options, onProgress);
 	      _this2.SetScene(scene);
+	      if (objects) yield _this2.FetchObjects(objects, onProgress);
 	      return scene;
 	    })();
 	  }
 
 	  /**
-	   * Fetches a ship (dna string, typeID or options object) and adds it to
-	   * the client's objects
-	   * @param {String|Number|Object} options - see TnySpaceObject.Fetch
-	   * @returns {Promise<TnyShip>}
+	   * Fetches several objects into the scene, in parallel.
+	   *
+	   * Each spec may carry a `type` naming a registered class; without one it
+	   * is a ship, which is what all but a handful of objects are.
+	   *
+	   * @param {Array|*} specs
+	   * @returns {Promise<Array>} the fetched objects
 	   */
-	  FetchShip(options) {
+	  FetchObjects(specs, onProgress) {
 	    var _this3 = this;
 	    return _asyncToGenerator(function* () {
-	      var ship = yield TnyShip.Fetch(options);
-	      _this3.AddObject(ship);
-	      return ship;
+	      var list = Array.isArray(specs) ? specs : [specs];
+	      return Promise.all(list.map(spec => {
+	        if (spec && !isString$1(spec) && spec.type) {
+	          var type = spec.type,
+	            rest = _objectWithoutProperties(spec, _excluded4$1);
+	          var Constructor = _this3.GetClass(type);
+	          if (!Constructor || !Constructor.Fetch) {
+	            throw new TypeError("Unregistered or unfetchable object type: ".concat(type));
+	          }
+	          return _this3.FetchInto(Constructor, rest, onProgress);
+	        }
+	        return _this3.FetchShip(spec, onProgress);
+	      }));
+	    })();
+	  }
+	  /**
+	   * Fetches through a runtime class and puts the result in the scene.
+	   *
+	   * Signature follows WrappedScene's fetchers - `(options, onProgress,
+	   * doNotAdd)` - because callers of those already know it and the two mean
+	   * the same things here.
+	   *
+	   * Passing `onProgress` turns watching on for that fetch. Wrapped watched
+	   * only when `doWatch` was set, so a caller who supplied a callback without
+	   * it got silence; asking to be told about loading is asking for the load
+	   * to be waited on.
+	   *
+	   * @param {Function} Constructor - a runtime class with a static Fetch
+	   * @param {String|Number|Object} [options] - see TnySpaceObject.Fetch
+	   * @param {Function} [onProgress] - resource watcher callback; implies doWatch
+	   * @param {Boolean} [doNotAdd] - hand it back without adding it
+	   * @returns {Promise<*>} the fetched object
+	   */
+	  FetchInto(Constructor, options, onProgress, doNotAdd) {
+	    var _this4 = this;
+	    return _asyncToGenerator(function* () {
+	      var object = yield Constructor.Fetch(options);
+	      if (_this4.doWatch || onProgress) {
+	        yield _this4.constructor.WatchQuietly(object, onProgress);
+	      }
+	      if (!doNotAdd) _this4.AddObject(object);
+	      return object;
+	    })();
+	  }
+
+	  /**
+	   * Watches an object's resources without letting one bad resource throw.
+	   *
+	   * `resMan.Watch` rejects when ANY watched resource errors. The object is
+	   * built by then, so a failed texture would otherwise discard a usable
+	   * hull - report it and carry on, which is what TnyScene.Fetch does with
+	   * a failed nebula.
+	   *
+	   * @param {*} object
+	   * @param {Function} [onProgress]
+	   * @returns {Promise<*>} the object
+	   */
+	  static WatchQuietly(object, onProgress) {
+	    return _asyncToGenerator(function* () {
+	      try {
+	        yield resMan.Watch(object, onProgress || undefined);
+	      } catch (err) {
+	        tw2.Debug({
+	          name: "TnyClient",
+	          message: "Object loaded with failed resources",
+	          data: {
+	            err
+	          }
+	        });
+	      }
+	      return object;
+	    })();
+	  }
+
+	  /**
+	   * Fetches a ship (dna string, typeID, SKINR id or options object) and
+	   * adds it to the client's objects
+	   * @param {String|Number|Object} options - see TnySpaceObject.Fetch
+	   * @param {Function} [onProgress] - resource watcher callback
+	   * @param {Boolean} [doNotAdd] - hand it back without adding it
+	   * @returns {Promise<TnyShip>}
+	   */
+	  FetchShip(options, onProgress, doNotAdd) {
+	    var _this5 = this;
+	    return _asyncToGenerator(function* () {
+	      return _this5.FetchInto(TnyShip, options, onProgress, doNotAdd);
 	    })();
 	  }
 
 	  /**
 	   * Fetches a planet (or moon) and adds it to the scene
 	   * @param {Number|Object} options - see TnyPlanet.Fetch
+	   * @param {Function} [onProgress] - resource watcher callback
+	   * @param {Boolean} [doNotAdd] - hand it back without adding it
 	   * @returns {Promise<TnyPlanet>}
 	   */
-	  FetchPlanet(options) {
-	    var _this4 = this;
+	  FetchPlanet(options, onProgress, doNotAdd) {
+	    var _this6 = this;
 	    return _asyncToGenerator(function* () {
-	      var planet = yield TnyPlanet.Fetch(options);
-	      _this4.AddObject(planet);
-	      return planet;
+	      return _this6.FetchInto(TnyPlanet, options, onProgress, doNotAdd);
 	    })();
 	  }
 
 	  /**
 	   * Fetches a moon and adds it to the scene
 	   * @param {Number|Object} options - see TnyMoon.Fetch
+	   * @param {Function} [onProgress] - resource watcher callback
+	   * @param {Boolean} [doNotAdd] - hand it back without adding it
 	   * @returns {Promise<TnyMoon>}
 	   */
-	  FetchMoon(options) {
-	    var _this5 = this;
+	  FetchMoon(options, onProgress, doNotAdd) {
+	    var _this7 = this;
 	    return _asyncToGenerator(function* () {
-	      var moon = yield TnyMoon.Fetch(options);
-	      _this5.AddObject(moon);
-	      return moon;
+	      return _this7.FetchInto(TnyMoon, options, onProgress, doNotAdd);
 	    })();
 	  }
 	  GetScene() {
@@ -251222,6 +251640,40 @@
 	  }
 	  GetPost() {
 	    return this.post;
+	  }
+
+	  /**
+	   * True for a constructed camera, false for the config that describes one.
+	   * The class flag is what the runtime cameras actually carry; the instance
+	   * getter and the wrapped form are both checked because a camera can arrive
+	   * as any of the three.
+	   * @param {*} value
+	   * @returns {Boolean}
+	   */
+	  static IsCamera(value) {
+	    if (!value || typeof value !== "object") return false;
+	    return !!(value.isCamera || value.constructor && value.constructor.isCamera || value.wrapped && value.wrapped.isCamera);
+	  }
+
+	  /**
+	   * Builds a camera from config.
+	   *
+	   * `type` selects the class and defaults to the only camera the runtime
+	   * ships. It is a registered-constructor lookup rather than a switch so a
+	   * consumer can register its own camera and name it here.
+	   *
+	   * @param {Object} [options] - camera values, plus an optional `type`
+	   * @returns {*} the constructed camera
+	   */
+	  CreateCamera() {
+	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var _options$type = options.type,
+	      type = _options$type === void 0 ? "TnyCameraTest" : _options$type,
+	      values = _objectWithoutProperties(options, _excluded5);
+	    if (!this.HasClass(type)) {
+	      throw new TypeError("Unregistered camera type: ".concat(type));
+	    }
+	    return this.Create(type, values);
 	  }
 	  SetCamera(camera) {
 	    if (camera) {

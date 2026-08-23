@@ -1,4 +1,4 @@
-import { isDNA, isNumber, isString, meta } from "utils";
+import { isNumber, isString, meta } from "utils";
 import { box3, mat4, sph3, vec3 } from "math";
 import { tw2 } from "global";
 import { WglTransform } from "core/WglTransform";
@@ -344,32 +344,100 @@ export class TnySpaceObject extends WglTransform
     /**
      * Fetches a space object async, building through tw2.Fetch so a
      * registered dna handler (lazy sof loading) is honoured.
-     * @param {String|Number|Object} options - dna/res path string, typeID, or options object
+     *
+     * Four ways to name what to build, in resolution order: a SKINR design
+     * id, a typeID, a graphicID, or dna/res path directly. Each resolves to
+     * dna before anything is fetched, so they all take the same path through
+     * the engine.
+     *
+     * A bare string is dispatched by shape - a UUID is a SKINR design, dna
+     * looks like dna, anything else is a res path - and a bare number is a
+     * typeID. graphicID has to be named, because it is a number too and
+     * guessing between the two would be wrong half the time.
+     *
+     * @param {String|Number|Object} options - dna/res path/SKINR id string, typeID, or options
      * @param {String} [options.dna]
      * @param {String} [options.resPath]
      * @param {Number} [options.typeID]        - resolved to dna via the api service
+     * @param {Number} [options.graphicID]     - resolved to sof dna or a graphic file
+     * @param {String} [options.skinrUUID]     - a SKINR design id
      * @param {Number} [options.skinID]
+     * @param {Array} [options.position]       - alias for `translation`
+     * @param {Array} [options.translation]
+     * @param {Array} [options.rotation]
      * @param {Boolean|Function} [options.awaitResources] - await (or watch) resource loading
      * @returns {Promise<TnySpaceObject>}
      */
     static async Fetch(options = {})
     {
+        // Polymorphic by shape. Each form is identified POSITIVELY, in order,
+        // so that dna - the one with the loosest shape - is what is left over
+        // rather than something guessed at:
+        //
+        //   UUID      a SKINR design id
+        //   digits    a typeID, as a number OR a string; ids arrive from urls
+        //             and json as strings often enough that reading "587" as
+        //             a path would be a trap
+        //   prefix:/  a res path - res, local, http, https, any res index -
+        //             recognised by the `:/` sitting near the front
+        //   otherwise dna
+        //
+        // graphicID is NOT here and cannot be: it is a plain number,
+        // indistinguishable from a typeID, so it has to be named.
         if (isString(options))
         {
-            options = isDNA(options) ? { dna: options } : { resPath: options };
+            const value = options.trim();
+            options = this.IsSkinrID(value) ? { skinrUUID: value }
+                : /^[0-9]+$/.test(value) ? { typeID: Number(value) }
+                    : this.IsResPath(value) ? { resPath: value }
+                        : { dna: value };
         }
         else if (isNumber(options))
         {
             options = { typeID: options };
         }
 
-        let { dna, resPath, typeID, skinID, awaitResources, ...values } = options;
+        let {
+            dna, resPath, typeID, graphicID, skinID, skinrUUID,
+            awaitResources, position, ...values
+        } = options;
 
-        if (typeID !== undefined && typeID !== null)
+        // `position` and `translation` are both accepted; the wrapped object
+        // only knows `translation`, so an unaliased `position` would be set
+        // on nothing and silently do nothing.
+        if (position !== undefined && values.translation === undefined)
+        {
+            values.translation = position;
+        }
+
+        let blendMode = null;
+
+        if (skinrUUID)
+        {
+            const design = await getApiService().GenerateDnaFromId(skinrUUID);
+            dna = design.dna;
+            blendMode = design.blendMode;
+            if (!values.name && design.name) values.name = design.name;
+
+            // The generated pattern has to be registered BEFORE the fetch: sof
+            // resolves pattern names while building, so a design whose pattern
+            // arrives late draws as an unpatterned hull - which looks like the
+            // skin failing rather than a missing registration.
+            if (design.pattern) this.RegisterPattern(design.pattern);
+        }
+        else if (typeID !== undefined && typeID !== null)
         {
             const resolved = await getApiService().ResolveDna({ typeID, skinID });
             if (!values.name) values.name = resolved.name;
             dna = resolved.dna;
+        }
+        else if (graphicID !== undefined && graphicID !== null)
+        {
+            // Returns sof dna for a hull, or a graphic file for the things that
+            // are not sof at all - so it feeds whichever of the two applies.
+            const path = await getApiService().GetResPathFromGraphicID(graphicID);
+            if (!path) throw new ReferenceError(`Graphic ${graphicID} has no SOF DNA or graphic file`);
+            if (this.IsResPath(path)) resPath = path; else dna = path;
         }
 
         const source = dna || resPath;
@@ -378,8 +446,78 @@ export class TnySpaceObject extends WglTransform
         const wrapped = await tw2.Fetch(source, awaitResources);
         wrapped._resPath = source;
         const object = new this(wrapped, values);
+
+        // Carbon compiles the blend mode in as a permutation, so it cannot ride
+        // along in the dna. Left unset, a SKINR design falls back to overlay on
+        // dx11 while gles2 - which reads it from a constant buffer - looks
+        // right, and the two profiles disagree over one design.
+        if (blendMode && wrapped.SetBlendMode) wrapped.SetBlendMode(blendMode);
+
         await object.RebuildSlots();
         return object;
+    }
+
+    /**
+     * True for a resource path: a `prefix:/` at the FRONT of the string -
+     * `res:/`, `local:/`, `http(s)://`, or any other res index.
+     *
+     * Deliberately not checking that the prefix is registered. An
+     * unregistered one is still a path, and failing the fetch with a name
+     * says so; quietly treating it as dna would report the wrong thing.
+     * `near the front` is what makes it a prefix rather than a colon that
+     * happens to appear inside some longer string.
+     *
+     * @param {String} value
+     * @returns {Boolean}
+     */
+    /**
+     * How far into a string a `:/` can sit and still be a prefix. The
+     * longest in use is `dynamic` at seven; sixteen leaves room without
+     * letting a colon deep inside some other string qualify.
+     * @type {Number}
+     */
+    static RES_PREFIX_MAX_LENGTH = 16;
+
+    static IsResPath(value)
+    {
+        if (!isString(value)) return false;
+
+        const index = value.indexOf(":/");
+        if (index === -1) return false;
+
+        return index <= this.RES_PREFIX_MAX_LENGTH;
+    }
+
+    /**
+     * A SKINR design id is a UUID; dna and res paths never are.
+     * @param {String} value
+     * @returns {Boolean}
+     */
+    static IsSkinrID(value)
+    {
+        return isString(value) &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
+    }
+
+    /**
+     * Registers a generated pattern on the active sof data, replacing any
+     * pattern of the same name - a SKINR id names one design, so a re-fetch
+     * has to overwrite rather than accumulate.
+     * @param {Object} pattern
+     * @returns {?Object} the registered pattern
+     */
+    static RegisterPattern(pattern)
+    {
+        const sof = tw2.eveSof;
+        if (!sof || !Array.isArray(sof.pattern) || !pattern || !isString(pattern.name))
+        {
+            return null;
+        }
+
+        const name = pattern.name.toLowerCase();
+        const index = sof.pattern.findIndex(x => x && isString(x.name) && x.name.toLowerCase() === name);
+        if (index === -1) sof.pattern.push(pattern); else sof.pattern[index] = pattern;
+        return pattern;
     }
 
     /**

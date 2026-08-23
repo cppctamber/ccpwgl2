@@ -1,8 +1,8 @@
 import { mat4 } from "math";
 import { Tw2BatchAccumulator } from "core/batch";
 import { Tw2ConstructorStore } from "core/store";
-import { device, tw2 } from "global";
-import { meta } from "utils";
+import { device, resMan, tw2 } from "global";
+import { isString, meta } from "utils";
 import { TnyShip } from "./objects/TnyShip";
 import { TnyPlanet } from "./objects/TnyPlanet";
 import { TnyMoon } from "./objects/TnyMoon";
@@ -116,9 +116,18 @@ export class TnyClient extends meta.Model
     }
 
     /**
-     * Initializes the engine for this client without fetching runtime
-     * objects. Scene, camera, post, renderer, and objects must already be
-     * constructed; resource acquisition remains with their owning APIs.
+     * Initializes the engine for this client.
+     *
+     * `scene` and `camera` accept either a constructed object or the config
+     * that describes one - a resource path or options for the scene, camera
+     * values for the camera. Both are resolved AFTER the engine comes up,
+     * because both need a device: the scene fetches through `tw2.Fetch` and
+     * the camera reads the canvas.
+     *
+     * A caller that has already built them loses nothing; an instance is
+     * passed straight through. The config form exists so that the common case
+     * - hand the client a nebula path and some camera values - does not make
+     * every consumer repeat the same two constructions.
      */
     async Initialize(options = {})
     {
@@ -138,17 +147,31 @@ export class TnyClient extends meta.Model
         {
             this.options = { ...this.options, ...client };
         }
-        if (scene) this.SetScene(scene);
         if (renderer) this.SetRenderer(renderer);
         if (post) this.SetPost(post);
         if (cameras) this.AddCamera(cameras);
-        if (camera) this.SetCamera(camera);
         if (objects) this.AddObject(objects);
+
+        // Instances can be set now; config has to wait for the device below.
+        if (scene && scene.isScene) this.SetScene(scene);
+        if (camera && this.constructor.IsCamera(camera)) this.SetCamera(camera);
 
         await tw2.Initialize({
             ...engineOptions,
             render: render || (dt => this.Render(dt))
         });
+
+        // Camera before scene: fetching a scene yields to the network, and a
+        // frame that ticks in that gap renders nothing without a camera.
+        if (camera && !this.constructor.IsCamera(camera))
+        {
+            this.SetCamera(this.CreateCamera(camera));
+        }
+
+        if (scene && !scene.isScene)
+        {
+            await this.FetchScene(scene);
+        }
 
         return this;
     }
@@ -278,48 +301,168 @@ export class TnyClient extends meta.Model
      * @param {String|Object|Array} options - see TnyScene.Fetch
      * @returns {Promise<TnyScene>} the fetched scene
      */
-    async FetchScene(options)
+    /**
+     * Fetches a scene and makes it the client's.
+     *
+     * `objects` is optional and may name anything the runtime can build -
+     * a dna string, a typeID, a SKINR id, or an options object. They are
+     * fetched AFTER the scene is set so each one lands in it; fetched
+     * before, they would be added to the client's own list and then drawn
+     * outside the scene, which means unlit.
+     *
+     * @param {String|Object} options - res path, or TnyScene.Fetch options
+     * @param {Array} [options.objects] - object specs to populate it with
+     * @returns {Promise<TnyScene>}
+     */
+    async FetchScene(options, onProgress)
     {
-        const scene = await TnyScene.Fetch(options);
+        let objects = null;
+        if (options && !isString(options) && options.objects)
+        {
+            ({ objects, ...options } = options);
+        }
+
+        const scene = await TnyScene.Fetch(options, onProgress);
         this.SetScene(scene);
+
+        if (objects) await this.FetchObjects(objects, onProgress);
         return scene;
     }
 
     /**
-     * Fetches a ship (dna string, typeID or options object) and adds it to
-     * the client's objects
+     * Fetches several objects into the scene, in parallel.
+     *
+     * Each spec may carry a `type` naming a registered class; without one it
+     * is a ship, which is what all but a handful of objects are.
+     *
+     * @param {Array|*} specs
+     * @returns {Promise<Array>} the fetched objects
+     */
+    async FetchObjects(specs, onProgress)
+    {
+        const list = Array.isArray(specs) ? specs : [ specs ];
+        return Promise.all(list.map(spec =>
+        {
+            if (spec && !isString(spec) && spec.type)
+            {
+                const { type, ...rest } = spec;
+                const Constructor = this.GetClass(type);
+                if (!Constructor || !Constructor.Fetch)
+                {
+                    throw new TypeError(`Unregistered or unfetchable object type: ${type}`);
+                }
+                return this.FetchInto(Constructor, rest, onProgress);
+            }
+            return this.FetchShip(spec, onProgress);
+        }));
+    }
+
+    /**
+     * Await an object's resources before it goes into the scene.
+     *
+     * Carried over from WrappedScene, where it was the same flag with the
+     * same name. With it set, a hull is fully built before anything can draw
+     * it; without it the object is added straight away and fills in as it
+     * loads, which is what makes something appear immediately.
+     * @type {Boolean}
+     */
+    doWatch = false;
+
+    /**
+     * Fetches through a runtime class and puts the result in the scene.
+     *
+     * Signature follows WrappedScene's fetchers - `(options, onProgress,
+     * doNotAdd)` - because callers of those already know it and the two mean
+     * the same things here.
+     *
+     * Passing `onProgress` turns watching on for that fetch. Wrapped watched
+     * only when `doWatch` was set, so a caller who supplied a callback without
+     * it got silence; asking to be told about loading is asking for the load
+     * to be waited on.
+     *
+     * @param {Function} Constructor - a runtime class with a static Fetch
+     * @param {String|Number|Object} [options] - see TnySpaceObject.Fetch
+     * @param {Function} [onProgress] - resource watcher callback; implies doWatch
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
+     * @returns {Promise<*>} the fetched object
+     */
+    async FetchInto(Constructor, options, onProgress, doNotAdd)
+    {
+        const object = await Constructor.Fetch(options);
+
+        if (this.doWatch || onProgress)
+        {
+            await this.constructor.WatchQuietly(object, onProgress);
+        }
+
+        if (!doNotAdd) this.AddObject(object);
+        return object;
+    }
+
+    /**
+     * Watches an object's resources without letting one bad resource throw.
+     *
+     * `resMan.Watch` rejects when ANY watched resource errors. The object is
+     * built by then, so a failed texture would otherwise discard a usable
+     * hull - report it and carry on, which is what TnyScene.Fetch does with
+     * a failed nebula.
+     *
+     * @param {*} object
+     * @param {Function} [onProgress]
+     * @returns {Promise<*>} the object
+     */
+    static async WatchQuietly(object, onProgress)
+    {
+        try
+        {
+            await resMan.Watch(object, onProgress || undefined);
+        }
+        catch (err)
+        {
+            tw2.Debug({
+                name: "TnyClient",
+                message: "Object loaded with failed resources",
+                data: { err }
+            });
+        }
+        return object;
+    }
+
+    /**
+     * Fetches a ship (dna string, typeID, SKINR id or options object) and
+     * adds it to the client's objects
      * @param {String|Number|Object} options - see TnySpaceObject.Fetch
+     * @param {Function} [onProgress] - resource watcher callback
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
      * @returns {Promise<TnyShip>}
      */
-    async FetchShip(options)
+    async FetchShip(options, onProgress, doNotAdd)
     {
-        const ship = await TnyShip.Fetch(options);
-        this.AddObject(ship);
-        return ship;
+        return this.FetchInto(TnyShip, options, onProgress, doNotAdd);
     }
 
     /**
      * Fetches a planet (or moon) and adds it to the scene
      * @param {Number|Object} options - see TnyPlanet.Fetch
+     * @param {Function} [onProgress] - resource watcher callback
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
      * @returns {Promise<TnyPlanet>}
      */
-    async FetchPlanet(options)
+    async FetchPlanet(options, onProgress, doNotAdd)
     {
-        const planet = await TnyPlanet.Fetch(options);
-        this.AddObject(planet);
-        return planet;
+        return this.FetchInto(TnyPlanet, options, onProgress, doNotAdd);
     }
 
     /**
      * Fetches a moon and adds it to the scene
      * @param {Number|Object} options - see TnyMoon.Fetch
+     * @param {Function} [onProgress] - resource watcher callback
+     * @param {Boolean} [doNotAdd] - hand it back without adding it
      * @returns {Promise<TnyMoon>}
      */
-    async FetchMoon(options)
+    async FetchMoon(options, onProgress, doNotAdd)
     {
-        const moon = await TnyMoon.Fetch(options);
-        this.AddObject(moon);
-        return moon;
+        return this.FetchInto(TnyMoon, options, onProgress, doNotAdd);
     }
 
     GetScene()
@@ -336,6 +479,42 @@ export class TnyClient extends meta.Model
     GetPost()
     {
         return this.post;
+    }
+
+    /**
+     * True for a constructed camera, false for the config that describes one.
+     * The class flag is what the runtime cameras actually carry; the instance
+     * getter and the wrapped form are both checked because a camera can arrive
+     * as any of the three.
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    static IsCamera(value)
+    {
+        if (!value || typeof value !== "object") return false;
+        return !!(value.isCamera ||
+            value.constructor && value.constructor.isCamera ||
+            value.wrapped && value.wrapped.isCamera);
+    }
+
+    /**
+     * Builds a camera from config.
+     *
+     * `type` selects the class and defaults to the only camera the runtime
+     * ships. It is a registered-constructor lookup rather than a switch so a
+     * consumer can register its own camera and name it here.
+     *
+     * @param {Object} [options] - camera values, plus an optional `type`
+     * @returns {*} the constructed camera
+     */
+    CreateCamera(options = {})
+    {
+        const { type = "TnyCameraTest", ...values } = options;
+        if (!this.HasClass(type))
+        {
+            throw new TypeError(`Unregistered camera type: ${type}`);
+        }
+        return this.Create(type, values);
     }
 
     SetCamera(camera)
