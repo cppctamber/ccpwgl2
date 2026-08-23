@@ -1,6 +1,7 @@
 import { mat4 } from "math";
 import { Tw2BatchAccumulator } from "core/batch";
 import { Tw2ConstructorStore } from "core/store";
+import { getApiService } from "./api";
 import { device, resMan, tw2 } from "global";
 import { isString, meta } from "utils";
 import { TnyShip } from "./objects/TnyShip";
@@ -265,9 +266,24 @@ export class TnyClient extends meta.Model
         return this.SetService("api", service);
     }
 
+    /**
+     * Gets the api service.
+     *
+     * Falls back to the module default, which is what
+     * `tw2.runtime.setApiService` writes and what the retired WrappedClient
+     * returned outright. Without the fallback a consumer that registers its
+     * service the documented way - on the runtime - gets null back from the
+     * client, and every call through it fails somewhere far away, as a null
+     * dereference on whatever it was about to ask for.
+     *
+     * A service set on THIS client still wins, so a second client can run
+     * against a different service without disturbing the default.
+     *
+     * @returns {*} the api service, or null if none has been set anywhere
+     */
     GetApiService()
     {
-        return this.GetService("api");
+        return this.GetService("api") || getApiService() || null;
     }
 
     SetRenderer(renderer)
