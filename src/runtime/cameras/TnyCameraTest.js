@@ -1,6 +1,6 @@
 import { mat4, vec3 } from "math";
 import { isPlain, isString, meta } from "utils";
-import { WrappedTestCamera } from "wrapped/WrappedTestCamera";
+import { WrappedTestCamera } from "./WrappedTestCamera";
 import { distanceToFitSphere } from "./cameraFit";
 
 

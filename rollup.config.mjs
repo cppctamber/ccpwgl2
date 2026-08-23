@@ -51,7 +51,6 @@ const entries = [
     { find: "particle", replacement: path.resolve(root, "src/particle") },
     { find: "sof", replacement: path.resolve(root, "src/sof") },
     { find: "state", replacement: path.resolve(root, "src/state") },
-    { find: "wrapped", replacement: path.resolve(root, "src/wrapped") },
     { find: "unsupported", replacement: path.resolve(root, "src/unsupported") },
     { find: "api", replacement: path.resolve(root, "src/api") },
 

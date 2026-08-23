@@ -35,7 +35,6 @@ tw2.runtime = runtime;
 tw2.Register(config);
 tw2.Register({ shaders: deprecatedShaders });
 
-export { tiny } from "./wrapped";
 export { tny } from "./runtime";
 export { EveSOFDataHandler } from "./sof/EveSOFDataHandler";
 export { deprecatedShaders };
