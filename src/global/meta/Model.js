@@ -766,35 +766,6 @@ export class Model
         return this.constructor.getClassCCPName(this);
     }
 
-    /**
-     * Gets a class definition
-     * @param {String} namespace
-     * @returns {?Object}
-     */
-    GetClassDefinition(namespace)
-    {
-        return this.constructor.getClassDefinition(this, namespace);
-    }
-
-    /**
-     * Gets a class definition name
-     * @param {String} namespace
-     * @returns {?String}
-     */
-    GetClassDefinitionName(namespace)
-    {
-        return this.constructor.getClassDefinitionName(this, namespace);
-    }
-
-    /**
-     * Gets class definitions
-     * @returns {?Object}
-     */
-    GetClassDefinitions()
-    {
-        return this.constructor.getClassDefinitions(this);
-    }
-
     static getConstructor(obj)
     {
         return isFunction(obj) ? obj : obj.constructor;
@@ -802,9 +773,6 @@ export class Model
 
     static getClassCCPName(obj)
     {
-        const ccpDefinition = this.getClassDefinitionName(obj, "ccp");
-        if (ccpDefinition) return ccpDefinition;
-
         const ccp = Tw2Schema.Get(this.getConstructor(obj)).GetCCP();
         return ccp ? ccp : this.getClassName(obj);
     }
@@ -813,21 +781,6 @@ export class Model
     {
         const type = Tw2Schema.Get(this.getConstructor(obj)).GetType();
         return isString(type) ? type : null;
-    }
-
-    static getClassDefinitions(obj)
-    {
-        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitions();
-    }
-
-    static getClassDefinition(obj, namespace)
-    {
-        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinition(namespace);
-    }
-
-    static getClassDefinitionName(obj, namespace)
-    {
-        return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitionName(namespace);
     }
 
     static getPropType(obj, prop)

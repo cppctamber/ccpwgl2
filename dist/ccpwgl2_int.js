@@ -16398,290 +16398,1191 @@
 	  return getAllValidValues(target, property, getOwnMetadataKeys, getOwnMetadata);
 	}
 
-	var HAS_CAPTURE_STACK_TRACE = isFunction$1(Error["captureStackTrace"]);
+	var CACHE = new Map();
 
 	/**
-	 * Tw2Error
-	 *
-	 * @property {String} name    - The error's name
-	 * @property {String} message - The error's message
-	 * @property {Object} data    - Optional error data
+	 * Cached constructor metadata schema
 	 */
-	class Tw2Error extends Error {
+	class Tw2Schema {
+	  /**
+	   * Reads optional ui metadata
+	   * @param {*} target
+	   * @param {String} name
+	   * @returns {?Object}
+	   */
+	  static CreateUI(target, name) {
+	    var ui = {
+	      name: getMetadata("uiName", target, name) || null,
+	      description: getMetadata("uiDescription", target, name) || null,
+	      group: getMetadata("uiGroup", target, name) || null,
+	      widget: getMetadata("uiWidget", target, name) || null,
+	      icon: getMetadata("uiIcon", target, name) || null,
+	      components: getMetadata("uiComponents", target, name) || null,
+	      valueMin: getMetadata("uiValueMin", target, name),
+	      valueMax: getMetadata("uiValueMax", target, name),
+	      valueStep: getMetadata("uiValueStep", target, name),
+	      isDisabled: !!getMetadata("uiDisabled", target, name),
+	      isHidden: !!getMetadata("uiHidden", target, name)
+	    };
+	    return ui.name !== null || ui.description !== null || ui.group !== null || ui.widget !== null || ui.icon !== null || ui.components !== null || ui.valueMin !== undefined || ui.valueMax !== undefined || ui.valueStep !== undefined || ui.isDisabled || ui.isHidden ? ui : null;
+	  }
+
+	  /**
+	   * Gets a cached constructor schema
+	   * @param {Function} Constructor
+	   * @returns {Tw2Schema}
+	   */
+	  static Get(Constructor) {
+	    var schema = CACHE.get(Constructor);
+	    if (!schema) {
+	      schema = new Tw2Schema(Constructor);
+	      CACHE.set(Constructor, schema);
+	    }
+	    return schema;
+	  }
+
+	  /**
+	   * Converts optional metadata lists to arrays
+	   * @param {*} value
+	   * @returns {Array}
+	   */
+	  static ToArray(value) {
+	    return isArray$1(value) ? value : [];
+	  }
+
+	  /**
+	   * Gets a constructor's prototype
+	   * @param {Function} Constructor
+	   * @returns {Object}
+	   */
+	  static GetPrototype(Constructor) {
+	    return Constructor.prototype;
+	  }
+
+	  /**
+	   * Reads property metadata into a cached schema item
+	   * @param {Function} Constructor
+	   * @param {String} name
+	   * @returns {?Object}
+	   */
+	  static CreateProperty(Constructor, name) {
+	    var prototype = Tw2Schema.GetPrototype(Constructor),
+	      type = getMetadata("type", prototype, name);
+	    if (!isNumber$1(type)) {
+	      return null;
+	    }
+	    var alias = getMetadata("alias", prototype, name);
+	    return {
+	      name,
+	      type,
+	      propertyTypeName: getMetadata("propertyTypeName", prototype, name) || null,
+	      blackReaderType: getMetadata("blackReaderType", prototype, name) || null,
+	      alias: isString$1(alias) ? alias : null,
+	      ui: Tw2Schema.CreateUI(prototype, name),
+	      isPrivate: !!getMetadata("isPrivate", prototype, name),
+	      isOwned: getMetadata("isOwned", prototype, name) !== false,
+	      isStruct: false,
+	      isStructList: false
+	    };
+	  }
+
+	  /**
+	   * Reads uncached runtime property metadata
+	   * @param {*} target
+	   * @param {String} name
+	   * @returns {?Object}
+	   */
+	  static CreateRuntimeProperty(target, name) {
+	    var type = getMetadata("type", target, name);
+	    if (!isNumber$1(type)) {
+	      return null;
+	    }
+	    var alias = getMetadata("alias", target, name);
+	    return {
+	      name,
+	      type,
+	      propertyTypeName: getMetadata("propertyTypeName", target, name) || null,
+	      blackReaderType: getMetadata("blackReaderType", target, name) || null,
+	      alias: isString$1(alias) ? alias : null,
+	      ui: Tw2Schema.CreateUI(target, name),
+	      isPrivate: !!getMetadata("isPrivate", target, name),
+	      isOwned: getMetadata("isOwned", target, name) !== false,
+	      isStruct: false,
+	      isStructList: false
+	    };
+	  }
+
+	  /**
+	   * Gets or creates a cached schema property
+	   * @param {Tw2Schema} schema
+	   * @param {String} name
+	   * @returns {?Object}
+	   */
+	  static EnsureProperty(schema, name) {
+	    var property = schema._propertiesByName.get(name);
+	    if (property) {
+	      return property;
+	    }
+	    property = Tw2Schema.CreateProperty(schema._Constructor, name);
+	    if (property) {
+	      schema._properties.push(property);
+	      schema._propertiesByName.set(name, property);
+	    }
+	    return property;
+	  }
+
 	  /**
 	   * Constructor
-	   * @param {String|Object} [data={}]                   - Error message or an object containing relevant data
-	   * @param {String} [defaultMessage='Undefined Error'] - The default error message
+	   * @param {Function} Constructor
 	   */
-	  constructor() {
-	    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var defaultMessage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Undefined error";
-	    var message = defaultMessage;
-	    if (typeof data === "string") {
-	      message = data;
-	      data = {};
-	    } else if (data.message) {
-	      message = data.message;
-	      delete data.message;
+	  constructor(Constructor) {
+	    this._Constructor = Constructor;
+	    this._type = getMetadata("type", Constructor);
+	    this._ccp = getMetadata("ccp", Constructor);
+	    this._ui = Tw2Schema.CreateUI(Constructor) || null;
+	    this._properties = [];
+	    this._propertiesByName = new Map();
+	    this._structs = [];
+	    this._structLists = [];
+	    this._aliases = new Map();
+	    var properties = Tw2Schema.ToArray(getMetadata("properties", Constructor));
+	    for (var i = 0; i < properties.length; i++) {
+	      Tw2Schema.EnsureProperty(this, properties[i]);
 	    }
-	    super();
-	    this.message = template(message, data);
-	    this.name = this.constructor.name;
-	    this.data = data;
-	    if (this.data.data) {
-	      // Temp output
-	      console.debug(JSON.stringify(this.data.data, null, 4));
+	    var structs = Tw2Schema.ToArray(getMetadata("structs", Constructor));
+	    for (var _i = 0; _i < structs.length; _i++) {
+	      var property = Tw2Schema.EnsureProperty(this, structs[_i]);
+	      if (property) {
+	        property.isStruct = true;
+	        this._structs.push(property);
+	      }
 	    }
-	    if (HAS_CAPTURE_STACK_TRACE) {
-	      Error["captureStackTrace"](this, Tw2Error);
-	    } else {
-	      this.stack = new Error(this.message).stack;
+	    var structLists = Tw2Schema.ToArray(getMetadata("structLists", Constructor));
+	    for (var _i2 = 0; _i2 < structLists.length; _i2++) {
+	      var _property = Tw2Schema.EnsureProperty(this, structLists[_i2]);
+	      if (_property) {
+	        _property.isStructList = true;
+	        this._structLists.push(_property);
+	      }
+	    }
+	    var aliases = Tw2Schema.ToArray(getMetadata("aliases", Constructor));
+	    for (var _i3 = 0; _i3 < aliases.length; _i3++) {
+	      var name = aliases[_i3],
+	        alias = getMetadata("alias", Tw2Schema.GetPrototype(Constructor), name),
+	        _property2 = this._propertiesByName.get(name);
+	      if (isString$1(alias)) {
+	        this._aliases.set(name, alias);
+	        if (_property2) {
+	          _property2.alias = alias;
+	        }
+	      }
 	    }
 	  }
 
 	  /**
-	   * Emits an event on a target emitter
-	   * @param {*} emitter
-	   * @param {String} [eventName='error']
-	   * @returns {Tw2Error}
+	   * Gets the legacy serialized type name
+	   * @returns {*}
 	   */
-	  emitOn(emitter) {
-	    var eventName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "error";
-	    if (emitter && emitter.EmitEvent) {
-	      emitter.EmitEvent(eventName, this);
+	  GetType() {
+	    return this._type;
+	  }
+
+	  /**
+	   * Gets legacy CCP metadata
+	   * @returns {*}
+	   */
+	  GetCCP() {
+	    return this._ccp;
+	  }
+
+	  /**
+	   * Gets cached class ui metadata
+	   * @returns {?Object}
+	   */
+	  GetUI() {
+	    return this._ui;
+	  }
+
+	  /**
+	   * Gets cached struct properties
+	   * @returns {Array}
+	   */
+	  GetStructs() {
+	    return this._structs;
+	  }
+
+	  /**
+	   * Gets cached struct list properties
+	   * @returns {Array}
+	   */
+	  GetStructLists() {
+	    return this._structLists;
+	  }
+
+	  /**
+	   * Gets a property's cached ui metadata
+	   * @param {String} name
+	   * @param {*} target
+	   * @returns {?Object}
+	   */
+	  GetPropertyUI(name, target) {
+	    var property = this.GetResolvedProperty(name, target);
+	    return property ? property.ui : null;
+	  }
+
+	  /**
+	   * Gets a property schema with legacy runtime metadata fallback
+	   * @param {String} name
+	   * @param {*} target
+	   * @returns {?Object}
+	   */
+	  GetProperty(name, target) {
+	    return this._propertiesByName.get(name) || (target ? Tw2Schema.CreateRuntimeProperty(target, name) : null);
+	  }
+
+	  /**
+	   * Gets a configured alias target
+	   * @param {String} name
+	   * @param {*} target
+	   * @returns {?String}
+	   */
+	  GetAliasTarget(name, target) {
+	    var alias = this._aliases.get(name);
+	    if (alias) {
+	      return alias;
+	    }
+	    var property = this._propertiesByName.get(name);
+	    if (property && property.alias) {
+	      return property.alias;
+	    }
+	    var runtimeAlias = target ? getMetadata("alias", target, name) : null;
+	    return isString$1(runtimeAlias) ? runtimeAlias : null;
+	  }
+
+	  /**
+	   * Gets a property schema, following alias metadata
+	   * @param {String} name
+	   * @param {*} target
+	   * @returns {?Object}
+	   */
+	  GetResolvedProperty(name, target) {
+	    var alias = this.GetAliasTarget(name, target);
+	    return this.GetProperty(alias || name, target);
+	  }
+	}
+
+	var _excluded$t = ["_clear", "_ids", "skipEvents", "skipUpdate"],
+	  _excluded2$7 = ["skipUpdate"];
+	var getPropType = type => tw2 && tw2.propertyTypes && tw2.propertyTypes.Get(type);
+
+	// TODO: Identify why Model can't extend * without webpack having a fit
+
+	var PRIVATE$1 = new WeakMap();
+	var id = Symbol("id");
+	class Model {
+	  constructor() {
+	    this[id] = null;
+	  }
+	  get _id() {
+	    if (!this[id]) this[id] = generateID();
+	    return this[id];
+	  }
+	  /**
+	   * Emits an event
+	   * @param {String} eventName
+	   * @param args
+	   * @returns {*}
+	   */
+	  EmitEvent(eventName) {
+	    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	      args[_key - 1] = arguments[_key];
+	    }
+	    var events = PRIVATE$1.get(this);
+	    if (!events) return this;
+	    eventName = eventName.toLowerCase();
+	    if (events[eventName]) {
+	      events[eventName].forEach((value, key) => {
+	        key.call(value.context, ...args);
+	        if (value.once) events[eventName].delete(key);
+	      });
+	      if (events[eventName] && events[eventName].size === 0) {
+	        Reflect.deleteProperty(events, eventName);
+	      }
 	    }
 	    return this;
 	  }
-	}
 
-	/**
-	 * Throws when a feature is not implemented
-	 */
-	class ErrFeatureNotImplemented extends Tw2Error {
-	  constructor(data) {
-	    super(data, "%feature=Feature% not implemented");
-	  }
-	}
+	  /**
+	   * Adds events from a plain object
+	   * @param {Object} options
+	   * @returns {*}
+	   */
+	  AddEvents(options) {
+	    if (!options) return this;
+	    for (var key in options) {
+	      if (options.hasOwnProperty(key)) {
+	        var listener = options[key],
+	          eventName = key,
+	          context = void 0,
+	          once = void 0;
 
-	/**
-	 * Throws when an index is out of bounds
-	 */
-	class ErrIndexBounds extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Array index out of bounds");
-	  }
-	}
+	        // Append ".once" to event name to fire only once
+	        if (key.indexOf(".once") !== -1) {
+	          if (key.lastIndexOf(".once") === key.length - 5) {
+	            eventName = key.substring(0, key.length - 5);
+	            once = true;
+	          }
+	        }
 
-	/**
-	 * Throws when invalid wrapped objects are passed as arguments
-	 */
-	class ErrWrapped extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Invalid wrapped object(s) (%reason%)");
-	  }
-	}
-
-	/**
-	 * Throws when a class can only be instantiated once
-	 */
-	class ErrSingletonInstantiation extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Cannot re-instantiate singleton (%class%)");
-	  }
-	}
-
-	/**
-	 * Throws when an abstract classes' method is not implemented directly on a child class
-	 */
-	class ErrAbstractClass extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Abstract class cannot be directly instantiated (%class%)");
-	  }
-	}
-
-	/**
-	 * Throws when an abstract classes' method is not implemented directly on a child class
-	 */
-	class ErrAbstractMethod extends Tw2Error {
-	  constructor(data) {
-	    super(data, "Abstract class method not implemented on class '%class%': (%method%)");
-	  }
-	}
-
-	/**
-	 * Adds a property to a constructor metadata list
-	 * @param {*} target
-	 * @param {String} name
-	 * @param {String} property
-	 */
-	function addConstructorProperty$1(target, name, property) {
-	  var properties = getMetadata(name, target.constructor);
-	  properties = properties ? Array.from(properties) : [];
-	  if (!properties.includes(property)) {
-	    properties.push(property);
-	    properties.sort();
-	    defineMetadata(name, properties, target.constructor);
-	  }
-	}
-	var abstract = createDecorator({
-	  noArgs: true,
-	  ctor(_ref) {
-	    var target = _ref.target;
-	    //defineMetadata("abstract", true, target);
-	    return target;
-	  },
-	  method(_ref2) {
-	    var target = _ref2.target,
-	      property = _ref2.property,
-	      descriptor = _ref2.descriptor;
-	    defineMetadata("abstract", true, target, property);
-	    descriptor.value = function () {
-	      throw new ErrAbstractMethod({
-	        class: this.constructor.name,
-	        method: property
-	      });
-	    };
-	    return descriptor;
-	  }
-	});
-	var singleton = createDecorator({
-	  noArgs: true,
-	  ctor(_ref3) {
-	    var target = _ref3.target;
-	    var count = 0;
-	    return class Singleton extends target {
-	      constructor() {
-	        count++;
-	        if (count > 1) throw new ErrSingletonInstantiation({
-	          class: target.name
-	        });
-	        super(...arguments);
+	        // options as an array/ arguments
+	        if (isArray$1(listener)) {
+	          listener = listener[0];
+	          context = listener[1];
+	        }
+	        if (!isFunction$1(listener)) {
+	          throw new Error("Invalid listener");
+	        }
+	        this.OnEvent(eventName, listener, context, once);
 	      }
-	    };
-	  }
-	});
-	var data = createDecorator({
-	  handler(_ref4, value) {
-	    var target = _ref4.target,
-	      property = _ref4.property;
-	    if (hasMetadata("data", target, property)) {
-	      Object.assign({}, getMetadata("data", target, property), value);
 	    }
-	    defineMetadata("data", value, target, property);
+	    return this;
 	  }
-	});
-	var alias = createDecorator({
-	  property(_ref5, alias) {
-	    var target = _ref5.target,
-	      property = _ref5.property;
-	    defineMetadata("alias", alias, target, property);
-	    addConstructorProperty$1(target, "aliases", property);
-	  }
-	});
-	var readOnly = createDecorator({
-	  noArgs: true,
-	  property(_ref6) {
-	    var descriptor = _ref6.descriptor;
-	    descriptor.writable = false;
-	    descriptor.enumerable = false;
-	    return descriptor;
-	  }
-	});
-	var notOwned = createDecorator({
-	  noArgs: true,
-	  property(_ref7) {
-	    var target = _ref7.target,
-	      property = _ref7.property;
-	    defineMetadata("isOwned", false, target, property);
-	  }
-	});
-	var isPrivate = createDecorator({
-	  noArgs: true,
-	  property(_ref8) {
-	    var target = _ref8.target,
-	      property = _ref8.property;
-	    defineMetadata("isPrivate", true, target, property);
-	  }
-	});
-	var desc = createDecorator({
-	  handler(_ref9, description) {
-	    var target = _ref9.target,
-	      property = _ref9.property;
-	    defineMetadata("desc", description, target, property);
-	  }
-	});
-	var todo = createDecorator({
-	  handler(_ref0, todo) {
-	    var target = _ref0.target,
-	      property = _ref0.property;
-	    var stage = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-	    defineMetadata("todo", todo, target, property);
-	    if (stage !== 0) {
-	      var currentStage = getMetadata("stage", target, property) || 0;
-	      defineMetadata("stage", Math.max(stage, currentStage), target, property);
-	    }
-	  }
-	});
-	var noLongerSupported = createDecorator({
-	  noArgs: true,
-	  handler(_ref1) {
-	    var target = _ref1.target,
-	      property = _ref1.property;
-	    defineMetadata("todo", "No longer supported", target, property);
-	    defineMetadata("stage", 3, target, property);
-	  }
-	});
-	var partialImplementation = createDecorator({
-	  noArgs: true,
-	  handler(_ref10) {
-	    var target = _ref10.target,
-	      property = _ref10.property;
-	    defineMetadata("stage", 2, target, property);
-	  }
-	});
-	var notImplemented$1 = createDecorator({
-	  noArgs: true,
-	  handler(_ref11) {
-	    var target = _ref11.target,
-	      property = _ref11.property;
-	    defineMetadata("stage", 3, target, property);
-	  }
-	});
-	var stage = createDecorator({
-	  ctor(_ref12) {
-	    var target = _ref12.target,
-	      property = _ref12.property;
-	    var stage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	    defineMetadata("stage", stage, target, property);
-	  }
-	});
-	var isNullable = createDecorator({
-	  noArgs: true,
-	  property(_ref13) {
-	    var target = _ref13.target,
-	      property = _ref13.property;
-	    defineMetadata("isNullable", true, target, property);
-	  }
-	});
 
-	var generic = {
-		__proto__: null,
-		abstract: abstract,
-		alias: alias,
-		data: data,
-		desc: desc,
-		isNullable: isNullable,
-		isPrivate: isPrivate,
-		noLongerSupported: noLongerSupported,
-		notImplemented: notImplemented$1,
-		notOwned: notOwned,
-		partialImplementation: partialImplementation,
-		private: isPrivate,
-		readOnly: readOnly,
-		singleton: singleton,
-		stage: stage,
-		todo: todo
-	};
+	  /**
+	   * Adds a listener to an event
+	   * @param {Array|String} eventName
+	   * @param {Function} listener
+	   * @param {*} [context]
+	   * @param {Boolean} [once]
+	   * @returns {*}
+	   */
+	  OnEvent(eventName, listener, context, once) {
+	    // `AddEvents` has always validated this; `OnEvent` did not, so a bad
+	    // listener was stored silently and only failed later from `EmitEvent`.
+	    // Throw at the call site that caused it instead. Must stay above the
+	    // `onListener` hooks below, which would otherwise see the bad value.
+	    if (!isFunction$1(listener)) {
+	      throw new Error("Invalid listener");
+	    }
+	    var events = PRIVATE$1.get(this);
+	    if (!events) {
+	      events = {};
+	      PRIVATE$1.set(this, events);
+	    }
+	    eventName = eventName.toLowerCase();
+	    if (!events[eventName]) {
+	      events[eventName] = new Map();
+	    }
+
+	    // Allow intercepting of a listener when its first added
+	    if (!events[eventName].has(listener)) {
+	      if (this.constructor.onListener) {
+	        if (this.constructor.onListener(this, eventName, listener, context) && once) {
+	          return this;
+	        }
+	      } else if (this["OnEventFirstListener"]) {
+	        if (this["OnEventFirstListener"](this, eventName, listener, context) && once) {
+	          return this;
+	        }
+	      }
+	    }
+	    events[eventName].set(listener, {
+	      context: context,
+	      once: once
+	    });
+	    return this;
+	  }
+
+	  /**
+	   * Adds a listener to an event, and clears it after it's first EmitEvent
+	   * @param {String} eventName
+	   * @param {Function} listener
+	   * @param {*} [context]
+	   * @returns {*}
+	   */
+	  OnceEvent(eventName, listener, context) {
+	    return this.OnEvent(eventName, listener, context, true);
+	  }
+
+	  /**
+	   * Removes a listener from a specific event or from all events by passing "*"
+	   * @param {String} eventName
+	   * @param {Function} listener
+	   * @returns {*}
+	   */
+	  OffEvent(eventName, listener) {
+	    var events = PRIVATE$1.get(this);
+	    if (!events) return this;
+
+	    // Remove listener from all events
+	    if (eventName === "*") {
+	      for (var _eventName in events) {
+	        if (events.hasOwnProperty(_eventName)) {
+	          events[_eventName].delete(listener);
+	          if (events[_eventName].size === 0) {
+	            Reflect.deleteProperty(events, _eventName);
+	          }
+	        }
+	      }
+	      return this;
+	    }
+	    eventName = eventName.toLowerCase();
+	    if (eventName in events) {
+	      events[eventName].delete(listener);
+	      if (events[eventName].size === 0) {
+	        Reflect.deleteProperty(events, eventName);
+	      }
+	    }
+	    return this;
+	  }
+
+	  /**
+	   * Checks if a listener exists on an event, or on any event by passing "*"
+	   * @param {String} eventName
+	   * @param {String|Function} listener
+	   * @returns {boolean}
+	   */
+	  HasEvent(eventName, listener) {
+	    var events = PRIVATE$1.get(this);
+	    if (!events) return false;
+
+	    // Check all events
+	    if (eventName === "*") {
+	      for (var key in events) {
+	        if (events.hasOwnProperty(key)) {
+	          if (events[key].has(listener)) {
+	            return true;
+	          }
+	        }
+	      }
+	      return false;
+	    }
+	    if (listener && eventName in events) {
+	      return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
+	    }
+	    return false;
+	  }
+
+	  /**
+	   * Clears an event of listeners
+	   * @param {String} eventName
+	   * @returns {*}
+	   */
+	  ClearEvent(eventName) {
+	    var events = PRIVATE$1.get(this);
+	    if (!events) return this;
+	    if (eventName === "*") {
+	      PRIVATE$1.delete(this);
+	      return this;
+	    }
+	    eventName = eventName.toLowerCase();
+	    if (eventName in events) {
+	      events[eventName].clear();
+	      Reflect.deleteProperty(events, eventName);
+	    }
+	    return this;
+	  }
+
+	  /**
+	   * Copies an instance's values
+	   * @param {*} a
+	   * @param {Object} opt
+	   * @returns {*}
+	   */
+	  Copy(a, opt) {
+	    return this.constructor.copy(this, a, opt);
+	  }
+
+	  /**
+	   * Clones an instance
+	   * @param {Object} [opt]
+	   * @returns {*}
+	   */
+	  Clone(opt) {
+	    return this.constructor.clone(this, opt);
+	  }
+
+	  /**
+	   * Sets an instances values from a plain  object
+	   * @param {Object} [values]
+	   * @param {Object} [opt]
+	   * @returns {*}
+	   */
+	  SetValues(values) {
+	    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    return this.constructor.set(this, values, opt);
+	  }
+
+	  /**
+	   * Gets an instance's values as a plain object
+	   * @param {Object} [out]
+	   * @param {Object} [opt]
+	   * @returns {Object}
+	   */
+	  GetValues(out, opt) {
+	    return this.constructor.get(this, out, opt);
+	  }
+
+	  /**
+	   * Fires on value updates
+	   * @param {Object} [opt]
+	   */
+	  UpdateValues(opt) {
+	    var skipEvents = opt && opt.skipEvents;
+	    if (!skipEvents) this.EmitEvent("modify", this, opt);
+	    if (this["OnValueChanged"]) this["OnValueChanged"](opt);
+	    if (!skipEvents) this.EmitEvent("modified", this, opt);
+	  }
+
+	  /**
+	   * Adds a listener to modified events
+	   * @param method
+	   * @param context
+	   * @param once
+	   */
+	  OnModified(method, context, once) {
+	    // Two callers with opposite meanings share this name. Here it REGISTERS
+	    // a listener, but `Tr2BindingPoint.NotifyValueChanged` calls
+	    // `target.OnModified(attributeName, value, this)` to ANNOUNCE a change -
+	    // and classes that mean the second sense override this method. One that
+	    // does not (EveChildContainer) lands here with a string.
+	    //
+	    // Ignore it rather than register it. Registering a non-function poisons
+	    // the event map, and throwing aborts the caller's Initialize - which
+	    // took out every light on the object.
+	    if (!isFunction$1(method)) return this;
+	    this.OnEvent("modified", method, context, once);
+	  }
+
+	  /**
+	   * Removes a listener from modified events
+	   * @param method
+	   * @constructor
+	   */
+	  OffModified(method) {
+	    this.OffEvent("modified", method);
+	  }
+
+	  /**
+	   * Prepares the instance for destruction
+	   * @param opt
+	   */
+	  Destroy() {
+	    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    if (!opt || !opt.skipEvents) {
+	      this.EmitEvent("destroy", this, opt);
+	    }
+	    if (this["OnDestroy"]) {
+	      this["OnDestroy"]();
+	    }
+	    if (!opt || !opt.skipChildren) {
+	      this.Clear({
+	        skipUpdate: true,
+	        skipEvents: true,
+	        controller: opt.controller
+	      });
+	    }
+	    if (!opt || !opt.skipEvents) {
+	      this.EmitEvent("destroyed", this, opt);
+	    }
+	    this.ClearEvent("*");
+	  }
+
+	  /**
+	   * Clears all child objects
+	   * @param {Object} [opt={}]
+	   */
+	  Clear() {
+	    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var updated;
+	    if (!opt.skipEvents) {
+	      this.EmitEvent("clear", this);
+	    }
+	    if (this["OnClear"]) {
+	      this["OnClear"]();
+	    }
+	    var childOpt;
+	    var schema = Tw2Schema.Get(this.constructor),
+	      structLists = schema.GetStructLists(),
+	      structs = schema.GetStructs();
+	    if (structLists.length) {
+	      structLists.forEach(property => {
+	        var key = property.name;
+	        if (property.isPrivate) return;
+	        for (var i = 0; i < this[key].length; i++) {
+	          if (this[key][i]) {
+	            if (property.isOwned && this[key][i].Destroy) {
+	              this[key][i].Destroy({
+	                controller: opt.controller
+	              });
+	            }
+	            updated = true;
+	          }
+	        }
+	        this[key].splice(0);
+	      });
+	    }
+	    if (structs.length) {
+	      structs.forEach(property => {
+	        var key = property.name;
+	        if (property.isPrivate) return;
+	        if (this[key]) {
+	          if (property.isOwned && this[key].Destroy) {
+	            childOpt = childOpt || {
+	              controller: opt.controller
+	            };
+	            this[key].Destroy(childOpt);
+	          }
+	          this[key] = null;
+	          updated = true;
+	        }
+	      });
+	    }
+	    if (!opt || !opt.skipEvents) {
+	      this.EmitEvent("cleared", this);
+	    }
+	    if (updated && (!opt || !opt.skipUpdate)) {
+	      this.UpdateValues(opt);
+	    }
+	  }
+
+	  /**
+	   * Fires a function per child struct
+	   * @param {Function}  func
+	   * @param {Boolean} [includeEmpty]
+	   * @returns {*}
+	   */
+	  PerChild(func, includeEmpty) {
+	    var schema = Tw2Schema.Get(this.constructor),
+	      structs = schema.GetStructs(),
+	      structLists = schema.GetStructLists();
+	    if (structs.length) {
+	      for (var i = 0; i < structs.length; i++) {
+	        var property = structs[i],
+	          key = property.name,
+	          struct = this[key];
+	        if (property.isPrivate) {
+	          continue;
+	        }
+	        if (struct || includeEmpty) {
+	          var path = "/".concat(key);
+	          var rv = func({
+	            parent: this,
+	            key,
+	            struct,
+	            path
+	          });
+	          if (rv !== undefined) return rv;
+	        }
+	      }
+	    }
+	    if (structLists.length) {
+	      for (var _i = 0; _i < structLists.length; _i++) {
+	        var _property = structLists[_i],
+	          _key2 = _property.name,
+	          array = this[_key2];
+	        if (_property.isPrivate) {
+	          continue;
+	        }
+	        for (var index = 0; index < array.length; index++) {
+	          var _struct = array[index];
+	          if (_struct || includeEmpty) {
+	            var _path = "/".concat(_key2, "/").concat(index);
+	            var _rv = func({
+	              parent: this,
+	              key: _key2,
+	              struct: _struct,
+	              array,
+	              index,
+	              path: _path
+	            });
+	            if (_rv !== undefined) return _rv;
+	          }
+	        }
+	      }
+	    }
+	  }
+
+	  /**
+	   * Filters all structs
+	   * Todo: Refactor
+	   * @param {Function} func  - the function to call on each struct
+	   * @param {Array} [out=[]] - optional receiving array
+	   * @returns {Array} out    - all structs where the func returned true
+	   */
+	  Filter(func, out) {
+	    console.log("'Filter' has been replaced with 'FilterStruct'");
+	    return this.FilterStruct(func, out);
+	  }
+
+	  /**
+	   * Filters all structs
+	   * @param {Function} func  - the function to call on each struct
+	   * @param {Array} [out=[]] - optional receiving array
+	   * @returns {Array} out    - all structs where the func returned true
+	   */
+	  FilterStruct(func) {
+	    var out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+	    this.Traverse(opt => {
+	      if (func(opt.struct, opt) && !out.includes(opt.struct)) {
+	        out.push(opt.struct);
+	      }
+	    });
+	    return out;
+	  }
+
+	  /**
+	   * Gets every child struct that currently exposes a named permutation option
+	   * (e.g. an effect whose shader has a "BLEND_MODE" option), optionally
+	   * narrowed by a filter. Walks the whole struct graph, so it works from any
+	   * node (`EveShip2`, `Tw2Mesh`, `Tw2MeshArea`, `Tw2Effect`, ...).
+	   *
+	   * This is a query: it only matches effects whose resource is loaded, since
+	   * the option surface comes from the effect resource. To *set* an option in a
+	   * way that also reaches not-yet-loaded effects, use {@link SetEffectsOption}.
+	   * @param {String} option      - permutation option name, e.g. "BLEND_MODE"
+	   * @param {Function} [filter]   - optional predicate `(struct) => boolean`
+	   * @param {Array} [out=[]]
+	   * @returns {Array} out         - the matching structs (usually effects)
+	   */
+	  GetEffectsWithOption(option, filter) {
+	    var out = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+	    return this.FilterStruct(struct => !!struct && typeof struct.HasOption === "function" && struct.HasOption(option) && (!filter || filter(struct)), out);
+	  }
+
+	  /**
+	   * Sets a permutation option across the graph from one place (the "set once,
+	   * apply to each supporting shader" case).
+	   *
+	   * Robust to load order: it applies the value to effects that already expose
+	   * the option, AND to effects whose resource has not loaded yet - those store
+	   * the value on `options`, and `OnResPrepared` applies it on load if the
+	   * shader has the option (or harmlessly ignores it if not). Loaded effects
+	   * that do not have the option are skipped. Scope with `filter` (e.g. to a
+	   * shader family) so the optimistic pre-load set is not sprayed everywhere.
+	   * @param {String} option              - option name, e.g. "BLEND_MODE"
+	   * @param {String} value               - option value, e.g. "BLEND_MODE_SUBTRACT"
+	   * @param {Function} [filter]          - optional predicate `(effect) => boolean`
+	   * @param {Boolean} [skipRebind=false] - set values without rebinding each effect
+	   * @returns {Array} the effects whose option value changed
+	   */
+	  SetEffectsOption(option, value, filter) {
+	    var skipRebind = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+	    var updated = [];
+	    this.Traverse(opt => {
+	      var struct = opt.struct;
+	      if (!struct || typeof struct.SetOption !== "function") return;
+	      if (filter && !filter(struct)) return;
+	      var res = struct.effectRes;
+	      var loaded = !!(res && res.IsGood && res.IsGood() && res.HasPrepared && res.HasPrepared());
+	      var supports = typeof struct.HasOption === "function" && struct.HasOption(option);
+	      if (loaded && !supports) return;
+	      if (struct.SetOption({
+	        [option]: value
+	      }, skipRebind)) updated.push(struct);
+	    });
+	    return updated;
+	  }
+
+	  /**
+	   * Finds an object by it's id
+	   * @param {String} id
+	   * @param {Array} [out] - Optional array for capturing the path to the found object
+	   * @return {*}
+	   */
+	  FindObjectByID(id, out) {
+	    return this.Traverse(x => {
+	      if (x.struct._id === id) {
+	        if (out) {
+	          var parts = x.path.split("/");
+	          parts.shift(); // remove root
+
+	          var cur = this;
+	          for (var i = 0; i < parts.length; i++) {
+	            cur = cur[parts[i]];
+	            out.push(cur);
+	          }
+	        }
+	        return x.struct;
+	      }
+	    });
+	  }
+
+	  /**
+	   * Finds the first struct to satisfy a function
+	   * @param {Function} func
+	   * @return {Array} out
+	   */
+	  FindStruct(func) {
+	    this.Traverse(opt => {
+	      if (func(opt.struct, opt)) return opt.struct;
+	    });
+	    return null;
+	  }
+
+	  /**
+	   * Traverses the object and it's child structs
+	   * @param {Function} func
+	   * @param {Object} [_opt={}]
+	   * @param {Set} [_visited=new Set()]
+	   * @returns {*}
+	   */
+	  Traverse(func) {
+	    var _opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var _visited = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Set();
+	    if (_visited.has(this)) {
+	      return;
+	    }
+	    _visited.add(this);
+	    _opt.path = _opt.path || "root";
+	    _opt.struct = this;
+	    var rv = func(_opt);
+	    if (rv !== undefined) return rv;
+	    return this.PerChild(x => {
+	      if (x.struct && x.struct.Traverse) {
+	        x.path = _opt.path + x.path;
+	        var _rv2 = x.struct.Traverse(func, x, _visited);
+	        if (_rv2 !== undefined) return _rv2;
+	      }
+	    });
+	  }
+
+	  /**
+	   * Gets async tasks
+	   * @param {Set} out
+	   * @returns {Set<Promise>}
+	   */
+	  GetAsyncTasks() {
+	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Set();
+	    return out;
+	  }
+
+	  /**
+	   * Gets a prop's type
+	   * @param {String} prop
+	   * @returns {Number|null}
+	   */
+	  GetPropType(prop) {
+	    return this.constructor.getPropType(this, prop);
+	  }
+
+	  /**
+	   * Gets a prop's normalized type name
+	   * @param {String} prop
+	   * @returns {String|null}
+	   */
+	  GetPropTypeName(prop) {
+	    return this.constructor.getPropTypeName(this, prop);
+	  }
+
+	  /**
+	   * Gets a prop's black reader helper type
+	   * @param {String} prop
+	   * @returns {String|null}
+	   */
+	  GetPropBlackReaderType(prop) {
+	    return this.constructor.getPropBlackReaderType(this, prop);
+	  }
+
+	  /**
+	   * Checks if a property is private
+	   * @param {String} prop
+	   * @returns {boolean}
+	   */
+	  IsPropPrivate(prop) {
+	    return this.constructor.isPropPrivate(this, prop);
+	  }
+
+	  /**
+	   * Gets the class's type name
+	   * @returns {String|null}
+	   */
+	  GetClassName() {
+	    return this.constructor.getClassName(this);
+	  }
+
+	  /**
+	   * Gets the classes CCP name
+	   * @returns {String|null}
+	   */
+	  GetCCPName() {
+	    return this.constructor.getClassCCPName(this);
+	  }
+	  static getConstructor(obj) {
+	    return isFunction$1(obj) ? obj : obj.constructor;
+	  }
+	  static getClassCCPName(obj) {
+	    var ccp = Tw2Schema.Get(this.getConstructor(obj)).GetCCP();
+	    return ccp ? ccp : this.getClassName(obj);
+	  }
+	  static getClassName(obj) {
+	    var type = Tw2Schema.Get(this.getConstructor(obj)).GetType();
+	    return isString$1(type) ? type : null;
+	  }
+	  static getPropType(obj, prop) {
+	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+	    return property ? property.type : null;
+	  }
+	  static getPropTypeName(obj, prop) {
+	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+	    return property ? property.propertyTypeName : null;
+	  }
+	  static getPropBlackReaderType(obj, prop) {
+	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+	    return property ? property.blackReaderType : null;
+	  }
+	  static isPropPrivate(obj, prop) {
+	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
+	    return !!(property && property.isPrivate);
+	  }
+
+	  /**
+	   *
+	   * @param a
+	   * @param b
+	   * @param opt
+	   * @returns {boolean}
+	   */
+	  static copy(a, b) {
+	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    return this.set(a, b.GetValues(), _objectSpread2({
+	      _clear: true
+	    }, opt));
+	  }
+
+	  /**
+	   *
+	   * @param a
+	   * @param opt
+	   * @returns {{Initialize}}
+	   */
+	  static clone(a, opt) {
+	    return this.from(a.GetValues(), opt);
+	  }
+
+	  /**
+	   * Serializes an item
+	   * @param {*} item          - the item to serialize
+	   * @param {Object} [out={}] - optional receiving object
+	   * @param {Object} [opt={}] - options
+	   * @returns {Object} out
+	   */
+	  static get(item) {
+	    var out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    var schema = Tw2Schema.Get(this);
+	    if (!schema.GetType()) {
+	      throw new ReferenceError("No meta type defined");
+	    }
+	    var isFirstGet = !opt._ids;
+	    if (isFirstGet) {
+	      opt._ids = new Map();
+	    } else if (opt._ids.has(item)) {
+	      var result = {
+	        __ref: item._id
+	      };
+	      opt._ids.get(item).push(result);
+	      return result;
+	    }
+	    out = out || {};
+	    for (var key in out) {
+	      if (out.hasOwnProperty(key)) {
+	        Reflect.deleteProperty(out, key);
+	      }
+	    }
+	    out.__type = schema.GetType();
+	    out.__id = item._id;
+	    opt._ids.set(item, [out]);
+	    for (var _key3 in item) {
+	      if (item.hasOwnProperty(_key3)) {
+	        var property = schema.GetProperty(_key3, item);
+	        if (property && !property.isPrivate && !property.alias) {
+	          var handler = getPropType(property.type);
+	          if (!handler) {
+	            throw new TypeError("Unknown type: " + property.type);
+	          }
+	          out[_key3] = handler.Get(item, _key3, opt);
+	        }
+	      }
+	    }
+
+	    // Strip out object ids
+	    // Replace any duplicates with interim string ids
+	    if (isFirstGet && !opt["useObjectIds"]) {
+	      var count = 0;
+	      opt._ids.forEach(value => {
+	        // No need for the id if there is only one object
+	        if (value.length === 1) {
+	          Reflect.deleteProperty(value[0], "__id");
+	          return;
+	        }
+	        var id = "#" + count++;
+	        for (var i = 0; i < value.length; i++) {
+	          if (i === 0) {
+	            value[i].__id = id;
+	          } else {
+	            value[i].__ref = id;
+	          }
+	        }
+	      });
+	    }
+	    return out;
+	  }
+
+	  /**
+	   * Sets an items values from a plain object
+	   * TODO: Reduce values to only be those that would result in a change to the object?
+	   * @param {*} item          - the item to set
+	   * @param {Object} [values] - the values to set
+	   * @param {Object} [opt={}] - set options
+	   * @returns {boolean}       - true if updated
+	   */
+	  static set(item, values) {
+	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	    if (item.constructor !== this) {
+	      throw new ReferenceError("Invalid constructor");
+	    }
+	    var schema = Tw2Schema.Get(this),
+	      constructorType = schema.GetType();
+	    if (!constructorType) {
+	      throw new ReferenceError("No meta type defined");
+	    }
+	    if (values && !isObjectObject$1(values)) {
+	      throw new ReferenceError("Invalid values, expected plain object or object");
+	    }
+	    var _clear = opt._clear,
+	      _opt$_ids = opt._ids,
+	      _ids = _opt$_ids === void 0 ? new Map() : _opt$_ids,
+	      skipEvents = opt.skipEvents,
+	      skipUpdate = opt.skipUpdate,
+	      options = _objectWithoutProperties(opt, _excluded$t);
+	    if (_ids.has(item)) {
+	      return _ids.get(item);
+	    }
+	    options._ids = _ids;
+
+	    // We'll need to clear all structs when copying...
+	    if (_clear) {
+	      item.Clear({
+	        skipUpdate: true,
+	        skipEvents: true
+	      });
+	    }
+	    var skipped;
+	    var updated = false;
+	    if (values) {
+	      for (var key in values) {
+	        if (values.hasOwnProperty(key)) {
+	          var value = values[key];
+	          var property = schema.GetProperty(key, item);
+
+	          /** DEBUGGING START **/
+	          if (values[key] === undefined) {
+	            skipped = skipped || {};
+	            skipped.undefined = skipped.undefined || [];
+	            skipped.undefined.push(key);
+	            continue;
+	          }
+	          if (property && property.isPrivate) {
+	            skipped = skipped || {};
+	            skipped.private = skipped.private || [];
+	            skipped.private.push(key);
+	            continue;
+	          }
+
+	          // Allow aliasing
+	          var alias = schema.GetAliasTarget(key, item);
+	          if (alias) {
+	            key = alias;
+	            property = schema.GetProperty(key, item);
+	          }
+	          if (property && property.isPrivate) {
+	            skipped = skipped || {};
+	            skipped.private = skipped.private || [];
+	            skipped.private.push(key);
+	            continue;
+	          }
+	          if (!property) {
+	            skipped = skipped || {};
+	            skipped.noType = skipped.noType || [];
+	            skipped.noType.push(key);
+	            continue;
+	          }
+	          /** DEBUGGING END **/
+
+	          var type = property.type,
+	            handler = getPropType(type);
+	          if (!handler) {
+	            throw new TypeError("".concat(constructorType, " > Unknown property type: ").concat(type));
+	          }
+
+	          // Delete
+	          if (value === null && handler.Delete) {
+	            if (handler.Delete(item, key, options)) {
+	              updated = true;
+	            }
+	            continue;
+	          }
+	          if (!handler.Is(value)) {
+	            throw new TypeError("".concat(constructorType, " > Unexpected value type for property: ").concat(key));
+	          }
+	          if (handler.Equals(value, item[key])) {
+	            continue;
+	          }
+	          if (handler.Set(item, key, value, options) !== false) {
+	            updated = true;
+	          }
+	        }
+	      }
+	    }
+	    if (updated && !skipUpdate) {
+	      item.UpdateValues(options);
+	    }
+	    _ids.set(item, updated);
+	    if (skipped) {
+	      tw2.Debug({
+	        name: "".concat(constructorType, ".set"),
+	        message: "Properties values skipped",
+	        data: skipped
+	      });
+	    }
+	    return updated;
+	  }
+
+	  /**
+	   * Creates an instance from values
+	   * TODO: Ensure we are passed the correct values
+	   * @param {Object} [values] - values to set
+	   * @param {Object} [opt={}] - create options
+	   * @returns {*}
+	   */
+	  static from(values) {
+	    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var skipUpdate = opt.skipUpdate,
+	      options = _objectWithoutProperties(opt, _excluded2$7);
+	    var item;
+	    if (values && values.__type && Tw2Schema.Get(this).GetType() !== values.__type) {
+	      throw new ReferenceError("Unexpected constructor " + values.__type);
+	    }
+	    if (values && values instanceof this) {
+	      item = values;
+	    } else {
+	      item = new this();
+	      if (values) {
+	        item.SetValues(values, _objectSpread2({
+	          skipUpdate: true
+	        }, options));
+	      }
+	    }
+	    if (!skipUpdate && item.Initialize) {
+	      item.Initialize();
+	    }
+	    return item;
+	  }
+	  static is(obj) {
+	    return obj instanceof this;
+	  }
+	}
 
 	/**
 	 * Common utilities
@@ -33881,6 +34782,116 @@
 		vertex: vertex
 	};
 
+	var HAS_CAPTURE_STACK_TRACE = isFunction$1(Error["captureStackTrace"]);
+
+	/**
+	 * Tw2Error
+	 *
+	 * @property {String} name    - The error's name
+	 * @property {String} message - The error's message
+	 * @property {Object} data    - Optional error data
+	 */
+	class Tw2Error extends Error {
+	  /**
+	   * Constructor
+	   * @param {String|Object} [data={}]                   - Error message or an object containing relevant data
+	   * @param {String} [defaultMessage='Undefined Error'] - The default error message
+	   */
+	  constructor() {
+	    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	    var defaultMessage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Undefined error";
+	    var message = defaultMessage;
+	    if (typeof data === "string") {
+	      message = data;
+	      data = {};
+	    } else if (data.message) {
+	      message = data.message;
+	      delete data.message;
+	    }
+	    super();
+	    this.message = template(message, data);
+	    this.name = this.constructor.name;
+	    this.data = data;
+	    if (this.data.data) {
+	      // Temp output
+	      console.debug(JSON.stringify(this.data.data, null, 4));
+	    }
+	    if (HAS_CAPTURE_STACK_TRACE) {
+	      Error["captureStackTrace"](this, Tw2Error);
+	    } else {
+	      this.stack = new Error(this.message).stack;
+	    }
+	  }
+
+	  /**
+	   * Emits an event on a target emitter
+	   * @param {*} emitter
+	   * @param {String} [eventName='error']
+	   * @returns {Tw2Error}
+	   */
+	  emitOn(emitter) {
+	    var eventName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "error";
+	    if (emitter && emitter.EmitEvent) {
+	      emitter.EmitEvent(eventName, this);
+	    }
+	    return this;
+	  }
+	}
+
+	/**
+	 * Throws when a feature is not implemented
+	 */
+	class ErrFeatureNotImplemented extends Tw2Error {
+	  constructor(data) {
+	    super(data, "%feature=Feature% not implemented");
+	  }
+	}
+
+	/**
+	 * Throws when an index is out of bounds
+	 */
+	class ErrIndexBounds extends Tw2Error {
+	  constructor(data) {
+	    super(data, "Array index out of bounds");
+	  }
+	}
+
+	/**
+	 * Throws when invalid wrapped objects are passed as arguments
+	 */
+	class ErrWrapped extends Tw2Error {
+	  constructor(data) {
+	    super(data, "Invalid wrapped object(s) (%reason%)");
+	  }
+	}
+
+	/**
+	 * Throws when a class can only be instantiated once
+	 */
+	class ErrSingletonInstantiation extends Tw2Error {
+	  constructor(data) {
+	    super(data, "Cannot re-instantiate singleton (%class%)");
+	  }
+	}
+
+	/**
+	 * Throws when an abstract classes' method is not implemented directly on a child class
+	 */
+	class ErrAbstractClass extends Tw2Error {
+	  constructor(data) {
+	    super(data, "Abstract class cannot be directly instantiated (%class%)");
+	  }
+	}
+
+	/**
+	 * Throws when an abstract classes' method is not implemented directly on a child class
+	 */
+	class ErrAbstractMethod extends Tw2Error {
+	  constructor(data) {
+	    super(data, "Abstract class method not implemented on class '%class%': (%method%)");
+	  }
+	}
+
 	/**
 	 * Tw2BlackBinaryReader
 	 * @ccp N/A
@@ -34292,7 +35303,7 @@
 	      [PT_ROTATION]: vector4$1
 	    };
 	  }
-	  return Types[Number(type)] || notImplemented;
+	  return Types[Number(type)] || notImplemented$1;
 	}
 
 	/**
@@ -34739,23 +35750,12 @@
 	 * @param {*} target
 	 * @param {String} property
 	 */
-	function notImplemented(reader, target, property) {
+	function notImplemented$1(reader, target, property) {
 	  throw new ErrFeatureNotImplemented({
 	    feature: "Black reader for property '".concat(property, "'")
 	  });
 	}
-	notImplemented.custom = true;
-
-	var DEFINITION_NAMESPACES = Object.freeze(["ccp", "wgl", "tny"]);
-
-	/**
-	 * Checks if a namespace can be used in class definitions
-	 * @param {String} namespace
-	 * @returns {Boolean}
-	 */
-	function isDefinitionNamespace(namespace) {
-	  return DEFINITION_NAMESPACES.includes(namespace);
-	}
+	notImplemented$1.custom = true;
 
 	/**
 	 * Gets a constructor name for error messages
@@ -34772,133 +35772,13 @@
 	 * @param {String} name
 	 * @param {String} property
 	 */
-	function addConstructorProperty(target, name, property) {
+	function addConstructorProperty$1(target, name, property) {
 	  var properties = getMetadata(name, target.constructor);
 	  properties = properties ? Array.from(properties) : [];
 	  if (!properties.includes(property)) {
 	    properties.push(property);
 	    properties.sort();
 	    defineMetadata(name, properties, target.constructor);
-	  }
-	}
-
-	/**
-	 * Checks if two definition maps match exactly
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Boolean}
-	 */
-	function isSameDefinitionMap(a, b) {
-	  var aKeys = Object.keys(a);
-	  var bKeys = Object.keys(b);
-	  if (aKeys.length !== bKeys.length) return false;
-	  for (var i = 0; i < aKeys.length; i++) {
-	    var key = aKeys[i];
-	    if (!b[key] || a[key].name !== b[key].name) return false;
-	  }
-	  return true;
-	}
-
-	/**
-	 * Normalizes class definition options
-	 * @param {Object|String} definitions
-	 * @param {String} [exclusiveNamespace]
-	 * @returns {{exclusive: Boolean, namespaces: Object}}
-	 */
-	function normalizeDefinitions(definitions, exclusiveNamespace) {
-	  var namespaces = {};
-	  if (exclusiveNamespace) {
-	    if (!isDefinitionNamespace(exclusiveNamespace)) {
-	      throw new ReferenceError("Unknown metadata namespace: " + exclusiveNamespace);
-	    }
-	    if (!isString$1(definitions) || !definitions) {
-	      throw new TypeError("Class definition name must be a non-empty string");
-	    }
-	    namespaces[exclusiveNamespace] = {
-	      name: definitions
-	    };
-	    return {
-	      exclusive: true,
-	      namespaces
-	    };
-	  }
-	  if (!isPlain$1(definitions)) {
-	    throw new TypeError("Class definitions must be a plain object");
-	  }
-	  var keys = Object.keys(definitions);
-	  if (!keys.length) {
-	    throw new TypeError("Class definitions cannot be empty");
-	  }
-	  var primaryName = null;
-	  var primaryCount = 0;
-	  for (var i = 0; i < keys.length; i++) {
-	    var namespace = keys[i];
-	    if (!isDefinitionNamespace(namespace)) {
-	      throw new ReferenceError("Unknown metadata namespace: " + namespace);
-	    }
-	    var value = definitions[namespace];
-	    if (value === false || value === null || value === undefined) {
-	      continue;
-	    }
-	    if (isString$1(value)) {
-	      if (!value) {
-	        throw new TypeError("Class definition name must be a non-empty string");
-	      }
-	      namespaces[namespace] = {
-	        name: value
-	      };
-	      primaryName = value;
-	      primaryCount++;
-	      continue;
-	    }
-	    if (value !== true) {
-	      throw new TypeError("Class definition values must be strings, true, or false");
-	    }
-	  }
-	  for (var _i = 0; _i < keys.length; _i++) {
-	    var _namespace = keys[_i];
-	    if (definitions[_namespace] !== true) continue;
-	    if (primaryCount !== 1) {
-	      throw new ReferenceError("Class definition true shorthand requires exactly one string-valued namespace");
-	    }
-	    namespaces[_namespace] = {
-	      name: primaryName
-	    };
-	  }
-	  if (!Object.keys(namespaces).length) {
-	    throw new TypeError("Class definitions cannot be empty");
-	  }
-	  return {
-	    exclusive: false,
-	    namespaces
-	  };
-	}
-
-	/**
-	 * Defines class definitions
-	 * @param {Function} target
-	 * @param {Object|String} definitions
-	 * @param {String} [exclusiveNamespace]
-	 */
-	function defineClassDefinitions(target, definitions, exclusiveNamespace) {
-	  var next = normalizeDefinitions(definitions, exclusiveNamespace);
-	  var existing = getOwnMetadata("definitions", target);
-	  if (existing) {
-	    var same = existing.exclusive === next.exclusive && isSameDefinitionMap(existing.namespaces, next.namespaces);
-	    if (same) return;
-	    throw new ReferenceError("Class definitions are already frozen for " + getTargetName(target));
-	  }
-	  defineMetadata("definitions", {
-	    frozen: true,
-	    exclusive: next.exclusive,
-	    namespaces: next.namespaces
-	  }, target);
-	  if (!hasOwnMetadata("type", target)) {
-	    var firstNamespace = Object.keys(next.namespaces)[0];
-	    defineMetadata("type", next.namespaces[firstNamespace].name, target);
-	  }
-	  if (exclusiveNamespace) {
-	    defineMetadata("_namespace", exclusiveNamespace, target);
 	  }
 	}
 
@@ -34915,7 +35795,7 @@
 	  if (type !== undefined) {
 	    defineMetadata("type", type, target, property);
 	    defineMetadata("propertyTypeName", getPropertyTypeName(type), target, property);
-	    addConstructorProperty(target, "properties", property);
+	    addConstructorProperty$1(target, "properties", property);
 	  }
 	  for (var _len = arguments.length, typesOf = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
 	    typesOf[_key - 2] = arguments[_key];
@@ -34931,10 +35811,10 @@
 	  switch (type) {
 	    case PT_STRUCT_RAW:
 	    case PT_STRUCT:
-	      addConstructorProperty(target, "structs", property);
+	      addConstructorProperty$1(target, "structs", property);
 	      break;
 	    case PT_STRUCT_LIST:
-	      addConstructorProperty(target, "structLists", property);
+	      addConstructorProperty$1(target, "structLists", property);
 	      break;
 	  }
 	};
@@ -35133,52 +36013,13 @@
 	    }, PT_PLAIN, ...typesOf);
 	  }
 	});
-
-	/**
-	 * Creates a class type decorator with namespace metadata
-	 * @param {String} namespace
-	 * @param {String} name
-	 * @param {...*} opts
-	 * @returns {Function}
-	 */
-	function createTypeDecorator(namespace, name) {
-	  for (var _len5 = arguments.length, opts = new Array(_len5 > 2 ? _len5 - 2 : 0), _key5 = 2; _key5 < _len5; _key5++) {
-	    opts[_key5 - 2] = arguments[_key5];
-	  }
-	  var decorator = type$2(name, ...opts);
-	  return function () {
-	    var rv = decorator(...arguments);
-	    if ((arguments.length <= 0 ? undefined : arguments[0]) && isFunction$1(arguments.length <= 0 ? undefined : arguments[0])) {
-	      defineMetadata("_namespace", namespace, arguments.length <= 0 ? undefined : arguments[0]);
-	    }
-	    return rv;
-	  };
-	}
-
-	/**
-	 * Creates a class definition decorator with namespace metadata
-	 * @param {String} namespace
-	 * @param {String} name
-	 * @returns {Function}
-	 */
-	function createDefinitionDecorator(namespace, name) {
-	  return function (target, property) {
-	    if (property) {
-	      throw new TypeError("Decorator doesn't support properties");
-	    }
-	    defineClassDefinitions(target, name, namespace);
-	    if (target && isFunction$1(target)) {
-	      defineMetadata("_namespace", namespace, target);
-	    }
-	  };
-	}
 	function createObjectType(propertyType) {
 	  return createDecorator({
 	    property(_ref7) {
 	      var target = _ref7.target,
 	        property = _ref7.property;
-	      for (var _len6 = arguments.length, typesOf = new Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
-	        typesOf[_key6 - 1] = arguments[_key6];
+	      for (var _len5 = arguments.length, typesOf = new Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+	        typesOf[_key5 - 1] = arguments[_key5];
 	      }
 	      if (typesOf.length === 1 && isArray$1(typesOf[0])) {
 	        typesOf = typesOf[0];
@@ -35215,55 +36056,161 @@
 	 */
 	var rawObject = createObjectType(PT_STRUCT_RAW);
 
-	var type$3 = {
-		__proto__: null,
-		array: array,
-		boolean: boolean,
-		byte: byte,
-		color: color,
-		createDefinitionDecorator: createDefinitionDecorator,
-		createTypeDecorator: createTypeDecorator,
-		define: define,
-		enums: enums,
-		expression: expression,
-		float: float,
-		float32: float32$1,
-		float32Array: float32Array,
-		float64Array: float64Array,
-		fromList: fromList,
-		int16Array: int16Array,
-		int32: int32$1,
-		int32Array: int32Array,
-		int64: int64$1,
-		int8Array: int8Array,
-		list: list,
-		matrix3: matrix3,
-		matrix4: matrix4,
-		path: path,
-		plain: plain,
-		quaternion: quaternion,
-		rawObject: rawObject,
-		rotation: rotation,
-		scaling: scaling,
-		string: string,
-		struct: struct,
-		translation: translation,
-		type: type$2,
-		uint: uint,
-		uint16: uint16$1,
-		uint16Array: uint16Array,
-		uint32: uint32$1,
-		uint32Array: uint32Array,
-		uint8: uint8$1,
-		uint8Array: uint8Array,
-		uint8ClampedArray: uint8ClampedArray,
-		unknown: unknown,
-		ushort: ushort,
-		vector: vector,
-		vector2: vector2,
-		vector3: vector3,
-		vector4: vector4
-	};
+	/**
+	 * Adds a property to a constructor metadata list
+	 * @param {*} target
+	 * @param {String} name
+	 * @param {String} property
+	 */
+	function addConstructorProperty(target, name, property) {
+	  var properties = getMetadata(name, target.constructor);
+	  properties = properties ? Array.from(properties) : [];
+	  if (!properties.includes(property)) {
+	    properties.push(property);
+	    properties.sort();
+	    defineMetadata(name, properties, target.constructor);
+	  }
+	}
+	var abstract = createDecorator({
+	  noArgs: true,
+	  ctor(_ref) {
+	    var target = _ref.target;
+	    //defineMetadata("abstract", true, target);
+	    return target;
+	  },
+	  method(_ref2) {
+	    var target = _ref2.target,
+	      property = _ref2.property,
+	      descriptor = _ref2.descriptor;
+	    defineMetadata("abstract", true, target, property);
+	    descriptor.value = function () {
+	      throw new ErrAbstractMethod({
+	        class: this.constructor.name,
+	        method: property
+	      });
+	    };
+	    return descriptor;
+	  }
+	});
+	var singleton = createDecorator({
+	  noArgs: true,
+	  ctor(_ref3) {
+	    var target = _ref3.target;
+	    var count = 0;
+	    return class Singleton extends target {
+	      constructor() {
+	        count++;
+	        if (count > 1) throw new ErrSingletonInstantiation({
+	          class: target.name
+	        });
+	        super(...arguments);
+	      }
+	    };
+	  }
+	});
+	var data = createDecorator({
+	  handler(_ref4, value) {
+	    var target = _ref4.target,
+	      property = _ref4.property;
+	    if (hasMetadata("data", target, property)) {
+	      Object.assign({}, getMetadata("data", target, property), value);
+	    }
+	    defineMetadata("data", value, target, property);
+	  }
+	});
+	var alias = createDecorator({
+	  property(_ref5, alias) {
+	    var target = _ref5.target,
+	      property = _ref5.property;
+	    defineMetadata("alias", alias, target, property);
+	    addConstructorProperty(target, "aliases", property);
+	  }
+	});
+	var readOnly = createDecorator({
+	  noArgs: true,
+	  property(_ref6) {
+	    var descriptor = _ref6.descriptor;
+	    descriptor.writable = false;
+	    descriptor.enumerable = false;
+	    return descriptor;
+	  }
+	});
+	var notOwned = createDecorator({
+	  noArgs: true,
+	  property(_ref7) {
+	    var target = _ref7.target,
+	      property = _ref7.property;
+	    defineMetadata("isOwned", false, target, property);
+	  }
+	});
+	var isPrivate = createDecorator({
+	  noArgs: true,
+	  property(_ref8) {
+	    var target = _ref8.target,
+	      property = _ref8.property;
+	    defineMetadata("isPrivate", true, target, property);
+	  }
+	});
+	var desc = createDecorator({
+	  handler(_ref9, description) {
+	    var target = _ref9.target,
+	      property = _ref9.property;
+	    defineMetadata("desc", description, target, property);
+	  }
+	});
+	var todo = createDecorator({
+	  handler(_ref0, todo) {
+	    var target = _ref0.target,
+	      property = _ref0.property;
+	    var stage = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	    defineMetadata("todo", todo, target, property);
+	    if (stage !== 0) {
+	      var currentStage = getMetadata("stage", target, property) || 0;
+	      defineMetadata("stage", Math.max(stage, currentStage), target, property);
+	    }
+	  }
+	});
+	var noLongerSupported = createDecorator({
+	  noArgs: true,
+	  handler(_ref1) {
+	    var target = _ref1.target,
+	      property = _ref1.property;
+	    defineMetadata("todo", "No longer supported", target, property);
+	    defineMetadata("stage", 3, target, property);
+	  }
+	});
+	var partialImplementation = createDecorator({
+	  noArgs: true,
+	  handler(_ref10) {
+	    var target = _ref10.target,
+	      property = _ref10.property;
+	    defineMetadata("stage", 2, target, property);
+	  }
+	});
+	var notImplemented = createDecorator({
+	  noArgs: true,
+	  handler(_ref11) {
+	    var target = _ref11.target,
+	      property = _ref11.property;
+	    defineMetadata("stage", 3, target, property);
+	  }
+	});
+	var stage = createDecorator({
+	  ctor(_ref12) {
+	    var target = _ref12.target,
+	      property = _ref12.property;
+	    var stage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	    defineMetadata("stage", stage, target, property);
+	  }
+	});
+	var isNullable = createDecorator({
+	  noArgs: true,
+	  property(_ref13) {
+	    var target = _ref13.target,
+	      property = _ref13.property;
+	    defineMetadata("isNullable", true, target, property);
+	  }
+	});
 
 	var uiKeys = {
 	  name: "uiName",
@@ -35377,1363 +36324,6 @@
 	  }
 	});
 
-	var ui$1 = {
-		__proto__: null,
-		ui: ui,
-		uiComponents: uiComponents,
-		uiDesc: uiDesc,
-		uiDescription: uiDescription,
-		uiDisabled: uiDisabled,
-		uiGroup: uiGroup,
-		uiHidden: uiHidden,
-		uiIcon: uiIcon,
-		uiName: uiName,
-		uiValueMax: uiValueMax,
-		uiValueMin: uiValueMin,
-		uiValueStep: uiValueStep,
-		uiWidget: uiWidget
-	};
-
-	/**
-	 * Meta namespace helpers
-	 */
-
-	/**
-	 * Creates a strict namespace wrapper for decorators
-	 * @param {Object} decorators
-	 * @param {String} namespace
-	 * @param {Object} options
-	 * @param {String} [options.version]
-	 * @returns {Object}
-	 */
-	function createMetaNamespace(decorators, namespace) {
-	  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-	    version = _ref.version;
-	  var namespaceDecorators = Object.create(null);
-	  Object.defineProperty(namespaceDecorators, "_version", {
-	    value: version || "0",
-	    enumerable: false,
-	    writable: false
-	  });
-	  for (var key in decorators) {
-	    if (key === "_version") continue;
-	    Object.defineProperty(namespaceDecorators, key, {
-	      value: decorators[key],
-	      enumerable: true,
-	      writable: false,
-	      configurable: false
-	    });
-	  }
-	  namespaceDecorators.__namespace = namespace;
-	  return Object.freeze(namespaceDecorators);
-	}
-
-	var CACHE = new Map();
-
-	/**
-	 * Cached constructor metadata schema
-	 */
-	class Tw2Schema {
-	  /**
-	   * Reads optional ui metadata
-	   * @param {*} target
-	   * @param {String} name
-	   * @returns {?Object}
-	   */
-	  static CreateUI(target, name) {
-	    var ui = {
-	      name: getMetadata("uiName", target, name) || null,
-	      description: getMetadata("uiDescription", target, name) || null,
-	      group: getMetadata("uiGroup", target, name) || null,
-	      widget: getMetadata("uiWidget", target, name) || null,
-	      icon: getMetadata("uiIcon", target, name) || null,
-	      components: getMetadata("uiComponents", target, name) || null,
-	      valueMin: getMetadata("uiValueMin", target, name),
-	      valueMax: getMetadata("uiValueMax", target, name),
-	      valueStep: getMetadata("uiValueStep", target, name),
-	      isDisabled: !!getMetadata("uiDisabled", target, name),
-	      isHidden: !!getMetadata("uiHidden", target, name)
-	    };
-	    return ui.name !== null || ui.description !== null || ui.group !== null || ui.widget !== null || ui.icon !== null || ui.components !== null || ui.valueMin !== undefined || ui.valueMax !== undefined || ui.valueStep !== undefined || ui.isDisabled || ui.isHidden ? ui : null;
-	  }
-
-	  /**
-	   * Gets a cached constructor schema
-	   * @param {Function} Constructor
-	   * @returns {Tw2Schema}
-	   */
-	  static Get(Constructor) {
-	    var schema = CACHE.get(Constructor);
-	    if (!schema) {
-	      schema = new Tw2Schema(Constructor);
-	      CACHE.set(Constructor, schema);
-	    }
-	    return schema;
-	  }
-
-	  /**
-	   * Converts optional metadata lists to arrays
-	   * @param {*} value
-	   * @returns {Array}
-	   */
-	  static ToArray(value) {
-	    return isArray$1(value) ? value : [];
-	  }
-
-	  /**
-	   * Gets a constructor's prototype
-	   * @param {Function} Constructor
-	   * @returns {Object}
-	   */
-	  static GetPrototype(Constructor) {
-	    return Constructor.prototype;
-	  }
-
-	  /**
-	   * Reads property metadata into a cached schema item
-	   * @param {Function} Constructor
-	   * @param {String} name
-	   * @returns {?Object}
-	   */
-	  static CreateProperty(Constructor, name) {
-	    var prototype = Tw2Schema.GetPrototype(Constructor),
-	      type = getMetadata("type", prototype, name);
-	    if (!isNumber$1(type)) {
-	      return null;
-	    }
-	    var alias = getMetadata("alias", prototype, name);
-	    return {
-	      name,
-	      type,
-	      propertyTypeName: getMetadata("propertyTypeName", prototype, name) || null,
-	      blackReaderType: getMetadata("blackReaderType", prototype, name) || null,
-	      alias: isString$1(alias) ? alias : null,
-	      ui: Tw2Schema.CreateUI(prototype, name),
-	      isPrivate: !!getMetadata("isPrivate", prototype, name),
-	      isOwned: getMetadata("isOwned", prototype, name) !== false,
-	      isStruct: false,
-	      isStructList: false
-	    };
-	  }
-
-	  /**
-	   * Reads uncached runtime property metadata
-	   * @param {*} target
-	   * @param {String} name
-	   * @returns {?Object}
-	   */
-	  static CreateRuntimeProperty(target, name) {
-	    var type = getMetadata("type", target, name);
-	    if (!isNumber$1(type)) {
-	      return null;
-	    }
-	    var alias = getMetadata("alias", target, name);
-	    return {
-	      name,
-	      type,
-	      propertyTypeName: getMetadata("propertyTypeName", target, name) || null,
-	      blackReaderType: getMetadata("blackReaderType", target, name) || null,
-	      alias: isString$1(alias) ? alias : null,
-	      ui: Tw2Schema.CreateUI(target, name),
-	      isPrivate: !!getMetadata("isPrivate", target, name),
-	      isOwned: getMetadata("isOwned", target, name) !== false,
-	      isStruct: false,
-	      isStructList: false
-	    };
-	  }
-
-	  /**
-	   * Gets or creates a cached schema property
-	   * @param {Tw2Schema} schema
-	   * @param {String} name
-	   * @returns {?Object}
-	   */
-	  static EnsureProperty(schema, name) {
-	    var property = schema._propertiesByName.get(name);
-	    if (property) {
-	      return property;
-	    }
-	    property = Tw2Schema.CreateProperty(schema._Constructor, name);
-	    if (property) {
-	      schema._properties.push(property);
-	      schema._propertiesByName.set(name, property);
-	    }
-	    return property;
-	  }
-
-	  /**
-	   * Constructor
-	   * @param {Function} Constructor
-	   */
-	  constructor(Constructor) {
-	    this._Constructor = Constructor;
-	    this._type = getMetadata("type", Constructor);
-	    this._ccp = getMetadata("ccp", Constructor);
-	    this._definitions = getOwnMetadata("definitions", Constructor) || null;
-	    this._ui = Tw2Schema.CreateUI(Constructor) || null;
-	    this._properties = [];
-	    this._propertiesByName = new Map();
-	    this._structs = [];
-	    this._structLists = [];
-	    this._aliases = new Map();
-	    var properties = Tw2Schema.ToArray(getMetadata("properties", Constructor));
-	    for (var i = 0; i < properties.length; i++) {
-	      Tw2Schema.EnsureProperty(this, properties[i]);
-	    }
-	    var structs = Tw2Schema.ToArray(getMetadata("structs", Constructor));
-	    for (var _i = 0; _i < structs.length; _i++) {
-	      var property = Tw2Schema.EnsureProperty(this, structs[_i]);
-	      if (property) {
-	        property.isStruct = true;
-	        this._structs.push(property);
-	      }
-	    }
-	    var structLists = Tw2Schema.ToArray(getMetadata("structLists", Constructor));
-	    for (var _i2 = 0; _i2 < structLists.length; _i2++) {
-	      var _property = Tw2Schema.EnsureProperty(this, structLists[_i2]);
-	      if (_property) {
-	        _property.isStructList = true;
-	        this._structLists.push(_property);
-	      }
-	    }
-	    var aliases = Tw2Schema.ToArray(getMetadata("aliases", Constructor));
-	    for (var _i3 = 0; _i3 < aliases.length; _i3++) {
-	      var name = aliases[_i3],
-	        alias = getMetadata("alias", Tw2Schema.GetPrototype(Constructor), name),
-	        _property2 = this._propertiesByName.get(name);
-	      if (isString$1(alias)) {
-	        this._aliases.set(name, alias);
-	        if (_property2) {
-	          _property2.alias = alias;
-	        }
-	      }
-	    }
-	  }
-
-	  /**
-	   * Gets the legacy serialized type name
-	   * @returns {*}
-	   */
-	  GetType() {
-	    return this._type;
-	  }
-
-	  /**
-	   * Gets legacy CCP metadata
-	   * @returns {*}
-	   */
-	  GetCCP() {
-	    return this._ccp;
-	  }
-
-	  /**
-	   * Gets class definitions
-	   * @returns {?Object}
-	   */
-	  GetDefinitions() {
-	    return this._definitions;
-	  }
-
-	  /**
-	   * Gets cached class ui metadata
-	   * @returns {?Object}
-	   */
-	  GetUI() {
-	    return this._ui;
-	  }
-
-	  /**
-	   * Gets a class definition
-	   * @param {String} namespace
-	   * @returns {?Object}
-	   */
-	  GetDefinition(namespace) {
-	    var definitions = this.GetDefinitions();
-	    return definitions && definitions.namespaces ? definitions.namespaces[namespace] || null : null;
-	  }
-
-	  /**
-	   * Gets a class definition name
-	   * @param {String} namespace
-	   * @returns {?String}
-	   */
-	  GetDefinitionName(namespace) {
-	    var definition = this.GetDefinition(namespace);
-	    return definition && isString$1(definition.name) ? definition.name : null;
-	  }
-
-	  /**
-	   * Gets cached struct properties
-	   * @returns {Array}
-	   */
-	  GetStructs() {
-	    return this._structs;
-	  }
-
-	  /**
-	   * Gets cached struct list properties
-	   * @returns {Array}
-	   */
-	  GetStructLists() {
-	    return this._structLists;
-	  }
-
-	  /**
-	   * Gets a property's cached ui metadata
-	   * @param {String} name
-	   * @param {*} target
-	   * @returns {?Object}
-	   */
-	  GetPropertyUI(name, target) {
-	    var property = this.GetResolvedProperty(name, target);
-	    return property ? property.ui : null;
-	  }
-
-	  /**
-	   * Gets a property schema with legacy runtime metadata fallback
-	   * @param {String} name
-	   * @param {*} target
-	   * @returns {?Object}
-	   */
-	  GetProperty(name, target) {
-	    return this._propertiesByName.get(name) || (target ? Tw2Schema.CreateRuntimeProperty(target, name) : null);
-	  }
-
-	  /**
-	   * Gets a configured alias target
-	   * @param {String} name
-	   * @param {*} target
-	   * @returns {?String}
-	   */
-	  GetAliasTarget(name, target) {
-	    var alias = this._aliases.get(name);
-	    if (alias) {
-	      return alias;
-	    }
-	    var property = this._propertiesByName.get(name);
-	    if (property && property.alias) {
-	      return property.alias;
-	    }
-	    var runtimeAlias = target ? getMetadata("alias", target, name) : null;
-	    return isString$1(runtimeAlias) ? runtimeAlias : null;
-	  }
-
-	  /**
-	   * Gets a property schema, following alias metadata
-	   * @param {String} name
-	   * @param {*} target
-	   * @returns {?Object}
-	   */
-	  GetResolvedProperty(name, target) {
-	    var alias = this.GetAliasTarget(name, target);
-	    return this.GetProperty(alias || name, target);
-	  }
-	}
-
-	var _excluded$t = ["_clear", "_ids", "skipEvents", "skipUpdate"],
-	  _excluded2$7 = ["skipUpdate"];
-	var getPropType = type => tw2 && tw2.propertyTypes && tw2.propertyTypes.Get(type);
-
-	// TODO: Identify why Model can't extend * without webpack having a fit
-
-	var PRIVATE$1 = new WeakMap();
-	var id = Symbol("id");
-	class Model {
-	  constructor() {
-	    this[id] = null;
-	  }
-	  get _id() {
-	    if (!this[id]) this[id] = generateID();
-	    return this[id];
-	  }
-	  /**
-	   * Emits an event
-	   * @param {String} eventName
-	   * @param args
-	   * @returns {*}
-	   */
-	  EmitEvent(eventName) {
-	    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	      args[_key - 1] = arguments[_key];
-	    }
-	    var events = PRIVATE$1.get(this);
-	    if (!events) return this;
-	    eventName = eventName.toLowerCase();
-	    if (events[eventName]) {
-	      events[eventName].forEach((value, key) => {
-	        key.call(value.context, ...args);
-	        if (value.once) events[eventName].delete(key);
-	      });
-	      if (events[eventName] && events[eventName].size === 0) {
-	        Reflect.deleteProperty(events, eventName);
-	      }
-	    }
-	    return this;
-	  }
-
-	  /**
-	   * Adds events from a plain object
-	   * @param {Object} options
-	   * @returns {*}
-	   */
-	  AddEvents(options) {
-	    if (!options) return this;
-	    for (var key in options) {
-	      if (options.hasOwnProperty(key)) {
-	        var listener = options[key],
-	          eventName = key,
-	          context = void 0,
-	          once = void 0;
-
-	        // Append ".once" to event name to fire only once
-	        if (key.indexOf(".once") !== -1) {
-	          if (key.lastIndexOf(".once") === key.length - 5) {
-	            eventName = key.substring(0, key.length - 5);
-	            once = true;
-	          }
-	        }
-
-	        // options as an array/ arguments
-	        if (isArray$1(listener)) {
-	          listener = listener[0];
-	          context = listener[1];
-	        }
-	        if (!isFunction$1(listener)) {
-	          throw new Error("Invalid listener");
-	        }
-	        this.OnEvent(eventName, listener, context, once);
-	      }
-	    }
-	    return this;
-	  }
-
-	  /**
-	   * Adds a listener to an event
-	   * @param {Array|String} eventName
-	   * @param {Function} listener
-	   * @param {*} [context]
-	   * @param {Boolean} [once]
-	   * @returns {*}
-	   */
-	  OnEvent(eventName, listener, context, once) {
-	    // `AddEvents` has always validated this; `OnEvent` did not, so a bad
-	    // listener was stored silently and only failed later from `EmitEvent`.
-	    // Throw at the call site that caused it instead. Must stay above the
-	    // `onListener` hooks below, which would otherwise see the bad value.
-	    if (!isFunction$1(listener)) {
-	      throw new Error("Invalid listener");
-	    }
-	    var events = PRIVATE$1.get(this);
-	    if (!events) {
-	      events = {};
-	      PRIVATE$1.set(this, events);
-	    }
-	    eventName = eventName.toLowerCase();
-	    if (!events[eventName]) {
-	      events[eventName] = new Map();
-	    }
-
-	    // Allow intercepting of a listener when its first added
-	    if (!events[eventName].has(listener)) {
-	      if (this.constructor.onListener) {
-	        if (this.constructor.onListener(this, eventName, listener, context) && once) {
-	          return this;
-	        }
-	      } else if (this["OnEventFirstListener"]) {
-	        if (this["OnEventFirstListener"](this, eventName, listener, context) && once) {
-	          return this;
-	        }
-	      }
-	    }
-	    events[eventName].set(listener, {
-	      context: context,
-	      once: once
-	    });
-	    return this;
-	  }
-
-	  /**
-	   * Adds a listener to an event, and clears it after it's first EmitEvent
-	   * @param {String} eventName
-	   * @param {Function} listener
-	   * @param {*} [context]
-	   * @returns {*}
-	   */
-	  OnceEvent(eventName, listener, context) {
-	    return this.OnEvent(eventName, listener, context, true);
-	  }
-
-	  /**
-	   * Removes a listener from a specific event or from all events by passing "*"
-	   * @param {String} eventName
-	   * @param {Function} listener
-	   * @returns {*}
-	   */
-	  OffEvent(eventName, listener) {
-	    var events = PRIVATE$1.get(this);
-	    if (!events) return this;
-
-	    // Remove listener from all events
-	    if (eventName === "*") {
-	      for (var _eventName in events) {
-	        if (events.hasOwnProperty(_eventName)) {
-	          events[_eventName].delete(listener);
-	          if (events[_eventName].size === 0) {
-	            Reflect.deleteProperty(events, _eventName);
-	          }
-	        }
-	      }
-	      return this;
-	    }
-	    eventName = eventName.toLowerCase();
-	    if (eventName in events) {
-	      events[eventName].delete(listener);
-	      if (events[eventName].size === 0) {
-	        Reflect.deleteProperty(events, eventName);
-	      }
-	    }
-	    return this;
-	  }
-
-	  /**
-	   * Checks if a listener exists on an event, or on any event by passing "*"
-	   * @param {String} eventName
-	   * @param {String|Function} listener
-	   * @returns {boolean}
-	   */
-	  HasEvent(eventName, listener) {
-	    var events = PRIVATE$1.get(this);
-	    if (!events) return false;
-
-	    // Check all events
-	    if (eventName === "*") {
-	      for (var key in events) {
-	        if (events.hasOwnProperty(key)) {
-	          if (events[key].has(listener)) {
-	            return true;
-	          }
-	        }
-	      }
-	      return false;
-	    }
-	    if (listener && eventName in events) {
-	      return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
-	    }
-	    return false;
-	  }
-
-	  /**
-	   * Clears an event of listeners
-	   * @param {String} eventName
-	   * @returns {*}
-	   */
-	  ClearEvent(eventName) {
-	    var events = PRIVATE$1.get(this);
-	    if (!events) return this;
-	    if (eventName === "*") {
-	      PRIVATE$1.delete(this);
-	      return this;
-	    }
-	    eventName = eventName.toLowerCase();
-	    if (eventName in events) {
-	      events[eventName].clear();
-	      Reflect.deleteProperty(events, eventName);
-	    }
-	    return this;
-	  }
-
-	  /**
-	   * Copies an instance's values
-	   * @param {*} a
-	   * @param {Object} opt
-	   * @returns {*}
-	   */
-	  Copy(a, opt) {
-	    return this.constructor.copy(this, a, opt);
-	  }
-
-	  /**
-	   * Clones an instance
-	   * @param {Object} [opt]
-	   * @returns {*}
-	   */
-	  Clone(opt) {
-	    return this.constructor.clone(this, opt);
-	  }
-
-	  /**
-	   * Sets an instances values from a plain  object
-	   * @param {Object} [values]
-	   * @param {Object} [opt]
-	   * @returns {*}
-	   */
-	  SetValues(values) {
-	    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    return this.constructor.set(this, values, opt);
-	  }
-
-	  /**
-	   * Gets an instance's values as a plain object
-	   * @param {Object} [out]
-	   * @param {Object} [opt]
-	   * @returns {Object}
-	   */
-	  GetValues(out, opt) {
-	    return this.constructor.get(this, out, opt);
-	  }
-
-	  /**
-	   * Fires on value updates
-	   * @param {Object} [opt]
-	   */
-	  UpdateValues(opt) {
-	    var skipEvents = opt && opt.skipEvents;
-	    if (!skipEvents) this.EmitEvent("modify", this, opt);
-	    if (this["OnValueChanged"]) this["OnValueChanged"](opt);
-	    if (!skipEvents) this.EmitEvent("modified", this, opt);
-	  }
-
-	  /**
-	   * Adds a listener to modified events
-	   * @param method
-	   * @param context
-	   * @param once
-	   */
-	  OnModified(method, context, once) {
-	    // Two callers with opposite meanings share this name. Here it REGISTERS
-	    // a listener, but `Tr2BindingPoint.NotifyValueChanged` calls
-	    // `target.OnModified(attributeName, value, this)` to ANNOUNCE a change -
-	    // and classes that mean the second sense override this method. One that
-	    // does not (EveChildContainer) lands here with a string.
-	    //
-	    // Ignore it rather than register it. Registering a non-function poisons
-	    // the event map, and throwing aborts the caller's Initialize - which
-	    // took out every light on the object.
-	    if (!isFunction$1(method)) return this;
-	    this.OnEvent("modified", method, context, once);
-	  }
-
-	  /**
-	   * Removes a listener from modified events
-	   * @param method
-	   * @constructor
-	   */
-	  OffModified(method) {
-	    this.OffEvent("modified", method);
-	  }
-
-	  /**
-	   * Prepares the instance for destruction
-	   * @param opt
-	   */
-	  Destroy() {
-	    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    if (!opt || !opt.skipEvents) {
-	      this.EmitEvent("destroy", this, opt);
-	    }
-	    if (this["OnDestroy"]) {
-	      this["OnDestroy"]();
-	    }
-	    if (!opt || !opt.skipChildren) {
-	      this.Clear({
-	        skipUpdate: true,
-	        skipEvents: true,
-	        controller: opt.controller
-	      });
-	    }
-	    if (!opt || !opt.skipEvents) {
-	      this.EmitEvent("destroyed", this, opt);
-	    }
-	    this.ClearEvent("*");
-	  }
-
-	  /**
-	   * Clears all child objects
-	   * @param {Object} [opt={}]
-	   */
-	  Clear() {
-	    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	    var updated;
-	    if (!opt.skipEvents) {
-	      this.EmitEvent("clear", this);
-	    }
-	    if (this["OnClear"]) {
-	      this["OnClear"]();
-	    }
-	    var childOpt;
-	    var schema = Tw2Schema.Get(this.constructor),
-	      structLists = schema.GetStructLists(),
-	      structs = schema.GetStructs();
-	    if (structLists.length) {
-	      structLists.forEach(property => {
-	        var key = property.name;
-	        if (property.isPrivate) return;
-	        for (var i = 0; i < this[key].length; i++) {
-	          if (this[key][i]) {
-	            if (property.isOwned && this[key][i].Destroy) {
-	              this[key][i].Destroy({
-	                controller: opt.controller
-	              });
-	            }
-	            updated = true;
-	          }
-	        }
-	        this[key].splice(0);
-	      });
-	    }
-	    if (structs.length) {
-	      structs.forEach(property => {
-	        var key = property.name;
-	        if (property.isPrivate) return;
-	        if (this[key]) {
-	          if (property.isOwned && this[key].Destroy) {
-	            childOpt = childOpt || {
-	              controller: opt.controller
-	            };
-	            this[key].Destroy(childOpt);
-	          }
-	          this[key] = null;
-	          updated = true;
-	        }
-	      });
-	    }
-	    if (!opt || !opt.skipEvents) {
-	      this.EmitEvent("cleared", this);
-	    }
-	    if (updated && (!opt || !opt.skipUpdate)) {
-	      this.UpdateValues(opt);
-	    }
-	  }
-
-	  /**
-	   * Fires a function per child struct
-	   * @param {Function}  func
-	   * @param {Boolean} [includeEmpty]
-	   * @returns {*}
-	   */
-	  PerChild(func, includeEmpty) {
-	    var schema = Tw2Schema.Get(this.constructor),
-	      structs = schema.GetStructs(),
-	      structLists = schema.GetStructLists();
-	    if (structs.length) {
-	      for (var i = 0; i < structs.length; i++) {
-	        var property = structs[i],
-	          key = property.name,
-	          struct = this[key];
-	        if (property.isPrivate) {
-	          continue;
-	        }
-	        if (struct || includeEmpty) {
-	          var path = "/".concat(key);
-	          var rv = func({
-	            parent: this,
-	            key,
-	            struct,
-	            path
-	          });
-	          if (rv !== undefined) return rv;
-	        }
-	      }
-	    }
-	    if (structLists.length) {
-	      for (var _i = 0; _i < structLists.length; _i++) {
-	        var _property = structLists[_i],
-	          _key2 = _property.name,
-	          array = this[_key2];
-	        if (_property.isPrivate) {
-	          continue;
-	        }
-	        for (var index = 0; index < array.length; index++) {
-	          var _struct = array[index];
-	          if (_struct || includeEmpty) {
-	            var _path = "/".concat(_key2, "/").concat(index);
-	            var _rv = func({
-	              parent: this,
-	              key: _key2,
-	              struct: _struct,
-	              array,
-	              index,
-	              path: _path
-	            });
-	            if (_rv !== undefined) return _rv;
-	          }
-	        }
-	      }
-	    }
-	  }
-
-	  /**
-	   * Filters all structs
-	   * Todo: Refactor
-	   * @param {Function} func  - the function to call on each struct
-	   * @param {Array} [out=[]] - optional receiving array
-	   * @returns {Array} out    - all structs where the func returned true
-	   */
-	  Filter(func, out) {
-	    console.log("'Filter' has been replaced with 'FilterStruct'");
-	    return this.FilterStruct(func, out);
-	  }
-
-	  /**
-	   * Filters all structs
-	   * @param {Function} func  - the function to call on each struct
-	   * @param {Array} [out=[]] - optional receiving array
-	   * @returns {Array} out    - all structs where the func returned true
-	   */
-	  FilterStruct(func) {
-	    var out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-	    this.Traverse(opt => {
-	      if (func(opt.struct, opt) && !out.includes(opt.struct)) {
-	        out.push(opt.struct);
-	      }
-	    });
-	    return out;
-	  }
-
-	  /**
-	   * Gets every child struct that currently exposes a named permutation option
-	   * (e.g. an effect whose shader has a "BLEND_MODE" option), optionally
-	   * narrowed by a filter. Walks the whole struct graph, so it works from any
-	   * node (`EveShip2`, `Tw2Mesh`, `Tw2MeshArea`, `Tw2Effect`, ...).
-	   *
-	   * This is a query: it only matches effects whose resource is loaded, since
-	   * the option surface comes from the effect resource. To *set* an option in a
-	   * way that also reaches not-yet-loaded effects, use {@link SetEffectsOption}.
-	   * @param {String} option      - permutation option name, e.g. "BLEND_MODE"
-	   * @param {Function} [filter]   - optional predicate `(struct) => boolean`
-	   * @param {Array} [out=[]]
-	   * @returns {Array} out         - the matching structs (usually effects)
-	   */
-	  GetEffectsWithOption(option, filter) {
-	    var out = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-	    return this.FilterStruct(struct => !!struct && typeof struct.HasOption === "function" && struct.HasOption(option) && (!filter || filter(struct)), out);
-	  }
-
-	  /**
-	   * Sets a permutation option across the graph from one place (the "set once,
-	   * apply to each supporting shader" case).
-	   *
-	   * Robust to load order: it applies the value to effects that already expose
-	   * the option, AND to effects whose resource has not loaded yet - those store
-	   * the value on `options`, and `OnResPrepared` applies it on load if the
-	   * shader has the option (or harmlessly ignores it if not). Loaded effects
-	   * that do not have the option are skipped. Scope with `filter` (e.g. to a
-	   * shader family) so the optimistic pre-load set is not sprayed everywhere.
-	   * @param {String} option              - option name, e.g. "BLEND_MODE"
-	   * @param {String} value               - option value, e.g. "BLEND_MODE_SUBTRACT"
-	   * @param {Function} [filter]          - optional predicate `(effect) => boolean`
-	   * @param {Boolean} [skipRebind=false] - set values without rebinding each effect
-	   * @returns {Array} the effects whose option value changed
-	   */
-	  SetEffectsOption(option, value, filter) {
-	    var skipRebind = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-	    var updated = [];
-	    this.Traverse(opt => {
-	      var struct = opt.struct;
-	      if (!struct || typeof struct.SetOption !== "function") return;
-	      if (filter && !filter(struct)) return;
-	      var res = struct.effectRes;
-	      var loaded = !!(res && res.IsGood && res.IsGood() && res.HasPrepared && res.HasPrepared());
-	      var supports = typeof struct.HasOption === "function" && struct.HasOption(option);
-	      if (loaded && !supports) return;
-	      if (struct.SetOption({
-	        [option]: value
-	      }, skipRebind)) updated.push(struct);
-	    });
-	    return updated;
-	  }
-
-	  /**
-	   * Finds an object by it's id
-	   * @param {String} id
-	   * @param {Array} [out] - Optional array for capturing the path to the found object
-	   * @return {*}
-	   */
-	  FindObjectByID(id, out) {
-	    return this.Traverse(x => {
-	      if (x.struct._id === id) {
-	        if (out) {
-	          var parts = x.path.split("/");
-	          parts.shift(); // remove root
-
-	          var cur = this;
-	          for (var i = 0; i < parts.length; i++) {
-	            cur = cur[parts[i]];
-	            out.push(cur);
-	          }
-	        }
-	        return x.struct;
-	      }
-	    });
-	  }
-
-	  /**
-	   * Finds the first struct to satisfy a function
-	   * @param {Function} func
-	   * @return {Array} out
-	   */
-	  FindStruct(func) {
-	    this.Traverse(opt => {
-	      if (func(opt.struct, opt)) return opt.struct;
-	    });
-	    return null;
-	  }
-
-	  /**
-	   * Traverses the object and it's child structs
-	   * @param {Function} func
-	   * @param {Object} [_opt={}]
-	   * @param {Set} [_visited=new Set()]
-	   * @returns {*}
-	   */
-	  Traverse(func) {
-	    var _opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    var _visited = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Set();
-	    if (_visited.has(this)) {
-	      return;
-	    }
-	    _visited.add(this);
-	    _opt.path = _opt.path || "root";
-	    _opt.struct = this;
-	    var rv = func(_opt);
-	    if (rv !== undefined) return rv;
-	    return this.PerChild(x => {
-	      if (x.struct && x.struct.Traverse) {
-	        x.path = _opt.path + x.path;
-	        var _rv2 = x.struct.Traverse(func, x, _visited);
-	        if (_rv2 !== undefined) return _rv2;
-	      }
-	    });
-	  }
-
-	  /**
-	   * Gets async tasks
-	   * @param {Set} out
-	   * @returns {Set<Promise>}
-	   */
-	  GetAsyncTasks() {
-	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Set();
-	    return out;
-	  }
-
-	  /**
-	   * Gets a prop's type
-	   * @param {String} prop
-	   * @returns {Number|null}
-	   */
-	  GetPropType(prop) {
-	    return this.constructor.getPropType(this, prop);
-	  }
-
-	  /**
-	   * Gets a prop's normalized type name
-	   * @param {String} prop
-	   * @returns {String|null}
-	   */
-	  GetPropTypeName(prop) {
-	    return this.constructor.getPropTypeName(this, prop);
-	  }
-
-	  /**
-	   * Gets a prop's black reader helper type
-	   * @param {String} prop
-	   * @returns {String|null}
-	   */
-	  GetPropBlackReaderType(prop) {
-	    return this.constructor.getPropBlackReaderType(this, prop);
-	  }
-
-	  /**
-	   * Checks if a property is private
-	   * @param {String} prop
-	   * @returns {boolean}
-	   */
-	  IsPropPrivate(prop) {
-	    return this.constructor.isPropPrivate(this, prop);
-	  }
-
-	  /**
-	   * Gets the class's type name
-	   * @returns {String|null}
-	   */
-	  GetClassName() {
-	    return this.constructor.getClassName(this);
-	  }
-
-	  /**
-	   * Gets the classes CCP name
-	   * @returns {String|null}
-	   */
-	  GetCCPName() {
-	    return this.constructor.getClassCCPName(this);
-	  }
-
-	  /**
-	   * Gets a class definition
-	   * @param {String} namespace
-	   * @returns {?Object}
-	   */
-	  GetClassDefinition(namespace) {
-	    return this.constructor.getClassDefinition(this, namespace);
-	  }
-
-	  /**
-	   * Gets a class definition name
-	   * @param {String} namespace
-	   * @returns {?String}
-	   */
-	  GetClassDefinitionName(namespace) {
-	    return this.constructor.getClassDefinitionName(this, namespace);
-	  }
-
-	  /**
-	   * Gets class definitions
-	   * @returns {?Object}
-	   */
-	  GetClassDefinitions() {
-	    return this.constructor.getClassDefinitions(this);
-	  }
-	  static getConstructor(obj) {
-	    return isFunction$1(obj) ? obj : obj.constructor;
-	  }
-	  static getClassCCPName(obj) {
-	    var ccpDefinition = this.getClassDefinitionName(obj, "ccp");
-	    if (ccpDefinition) return ccpDefinition;
-	    var ccp = Tw2Schema.Get(this.getConstructor(obj)).GetCCP();
-	    return ccp ? ccp : this.getClassName(obj);
-	  }
-	  static getClassName(obj) {
-	    var type = Tw2Schema.Get(this.getConstructor(obj)).GetType();
-	    return isString$1(type) ? type : null;
-	  }
-	  static getClassDefinitions(obj) {
-	    return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitions();
-	  }
-	  static getClassDefinition(obj, namespace) {
-	    return Tw2Schema.Get(this.getConstructor(obj)).GetDefinition(namespace);
-	  }
-	  static getClassDefinitionName(obj, namespace) {
-	    return Tw2Schema.Get(this.getConstructor(obj)).GetDefinitionName(namespace);
-	  }
-	  static getPropType(obj, prop) {
-	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
-	    return property ? property.type : null;
-	  }
-	  static getPropTypeName(obj, prop) {
-	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
-	    return property ? property.propertyTypeName : null;
-	  }
-	  static getPropBlackReaderType(obj, prop) {
-	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
-	    return property ? property.blackReaderType : null;
-	  }
-	  static isPropPrivate(obj, prop) {
-	    var property = Tw2Schema.Get(this.getConstructor(obj)).GetResolvedProperty(prop, obj);
-	    return !!(property && property.isPrivate);
-	  }
-
-	  /**
-	   *
-	   * @param a
-	   * @param b
-	   * @param opt
-	   * @returns {boolean}
-	   */
-	  static copy(a, b) {
-	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	    return this.set(a, b.GetValues(), _objectSpread2({
-	      _clear: true
-	    }, opt));
-	  }
-
-	  /**
-	   *
-	   * @param a
-	   * @param opt
-	   * @returns {{Initialize}}
-	   */
-	  static clone(a, opt) {
-	    return this.from(a.GetValues(), opt);
-	  }
-
-	  /**
-	   * Serializes an item
-	   * @param {*} item          - the item to serialize
-	   * @param {Object} [out={}] - optional receiving object
-	   * @param {Object} [opt={}] - options
-	   * @returns {Object} out
-	   */
-	  static get(item) {
-	    var out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	    var schema = Tw2Schema.Get(this);
-	    if (!schema.GetType()) {
-	      throw new ReferenceError("No meta type defined");
-	    }
-	    var isFirstGet = !opt._ids;
-	    if (isFirstGet) {
-	      opt._ids = new Map();
-	    } else if (opt._ids.has(item)) {
-	      var result = {
-	        __ref: item._id
-	      };
-	      opt._ids.get(item).push(result);
-	      return result;
-	    }
-	    out = out || {};
-	    for (var key in out) {
-	      if (out.hasOwnProperty(key)) {
-	        Reflect.deleteProperty(out, key);
-	      }
-	    }
-	    out.__type = schema.GetType();
-	    out.__id = item._id;
-	    opt._ids.set(item, [out]);
-	    for (var _key3 in item) {
-	      if (item.hasOwnProperty(_key3)) {
-	        var property = schema.GetProperty(_key3, item);
-	        if (property && !property.isPrivate && !property.alias) {
-	          var handler = getPropType(property.type);
-	          if (!handler) {
-	            throw new TypeError("Unknown type: " + property.type);
-	          }
-	          out[_key3] = handler.Get(item, _key3, opt);
-	        }
-	      }
-	    }
-
-	    // Strip out object ids
-	    // Replace any duplicates with interim string ids
-	    if (isFirstGet && !opt["useObjectIds"]) {
-	      var count = 0;
-	      opt._ids.forEach(value => {
-	        // No need for the id if there is only one object
-	        if (value.length === 1) {
-	          Reflect.deleteProperty(value[0], "__id");
-	          return;
-	        }
-	        var id = "#" + count++;
-	        for (var i = 0; i < value.length; i++) {
-	          if (i === 0) {
-	            value[i].__id = id;
-	          } else {
-	            value[i].__ref = id;
-	          }
-	        }
-	      });
-	    }
-	    return out;
-	  }
-
-	  /**
-	   * Sets an items values from a plain object
-	   * TODO: Reduce values to only be those that would result in a change to the object?
-	   * @param {*} item          - the item to set
-	   * @param {Object} [values] - the values to set
-	   * @param {Object} [opt={}] - set options
-	   * @returns {boolean}       - true if updated
-	   */
-	  static set(item, values) {
-	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	    if (item.constructor !== this) {
-	      throw new ReferenceError("Invalid constructor");
-	    }
-	    var schema = Tw2Schema.Get(this),
-	      constructorType = schema.GetType();
-	    if (!constructorType) {
-	      throw new ReferenceError("No meta type defined");
-	    }
-	    if (values && !isObjectObject$1(values)) {
-	      throw new ReferenceError("Invalid values, expected plain object or object");
-	    }
-	    var _clear = opt._clear,
-	      _opt$_ids = opt._ids,
-	      _ids = _opt$_ids === void 0 ? new Map() : _opt$_ids,
-	      skipEvents = opt.skipEvents,
-	      skipUpdate = opt.skipUpdate,
-	      options = _objectWithoutProperties(opt, _excluded$t);
-	    if (_ids.has(item)) {
-	      return _ids.get(item);
-	    }
-	    options._ids = _ids;
-
-	    // We'll need to clear all structs when copying...
-	    if (_clear) {
-	      item.Clear({
-	        skipUpdate: true,
-	        skipEvents: true
-	      });
-	    }
-	    var skipped;
-	    var updated = false;
-	    if (values) {
-	      for (var key in values) {
-	        if (values.hasOwnProperty(key)) {
-	          var value = values[key];
-	          var property = schema.GetProperty(key, item);
-
-	          /** DEBUGGING START **/
-	          if (values[key] === undefined) {
-	            skipped = skipped || {};
-	            skipped.undefined = skipped.undefined || [];
-	            skipped.undefined.push(key);
-	            continue;
-	          }
-	          if (property && property.isPrivate) {
-	            skipped = skipped || {};
-	            skipped.private = skipped.private || [];
-	            skipped.private.push(key);
-	            continue;
-	          }
-
-	          // Allow aliasing
-	          var alias = schema.GetAliasTarget(key, item);
-	          if (alias) {
-	            key = alias;
-	            property = schema.GetProperty(key, item);
-	          }
-	          if (property && property.isPrivate) {
-	            skipped = skipped || {};
-	            skipped.private = skipped.private || [];
-	            skipped.private.push(key);
-	            continue;
-	          }
-	          if (!property) {
-	            skipped = skipped || {};
-	            skipped.noType = skipped.noType || [];
-	            skipped.noType.push(key);
-	            continue;
-	          }
-	          /** DEBUGGING END **/
-
-	          var type = property.type,
-	            handler = getPropType(type);
-	          if (!handler) {
-	            throw new TypeError("".concat(constructorType, " > Unknown property type: ").concat(type));
-	          }
-
-	          // Delete
-	          if (value === null && handler.Delete) {
-	            if (handler.Delete(item, key, options)) {
-	              updated = true;
-	            }
-	            continue;
-	          }
-	          if (!handler.Is(value)) {
-	            throw new TypeError("".concat(constructorType, " > Unexpected value type for property: ").concat(key));
-	          }
-	          if (handler.Equals(value, item[key])) {
-	            continue;
-	          }
-	          if (handler.Set(item, key, value, options) !== false) {
-	            updated = true;
-	          }
-	        }
-	      }
-	    }
-	    if (updated && !skipUpdate) {
-	      item.UpdateValues(options);
-	    }
-	    _ids.set(item, updated);
-	    if (skipped) {
-	      tw2.Debug({
-	        name: "".concat(constructorType, ".set"),
-	        message: "Properties values skipped",
-	        data: skipped
-	      });
-	    }
-	    return updated;
-	  }
-
-	  /**
-	   * Creates an instance from values
-	   * TODO: Ensure we are passed the correct values
-	   * @param {Object} [values] - values to set
-	   * @param {Object} [opt={}] - create options
-	   * @returns {*}
-	   */
-	  static from(values) {
-	    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-	    var skipUpdate = opt.skipUpdate,
-	      options = _objectWithoutProperties(opt, _excluded2$7);
-	    var item;
-	    if (values && values.__type && Tw2Schema.Get(this).GetType() !== values.__type) {
-	      throw new ReferenceError("Unexpected constructor " + values.__type);
-	    }
-	    if (values && values instanceof this) {
-	      item = values;
-	    } else {
-	      item = new this();
-	      if (values) {
-	        item.SetValues(values, _objectSpread2({
-	          skipUpdate: true
-	        }, options));
-	      }
-	    }
-	    if (!skipUpdate && item.Initialize) {
-	      item.Initialize();
-	    }
-	    return item;
-	  }
-	  static is(obj) {
-	    return obj instanceof this;
-	  }
-	}
-
-	var coreMetadata = _objectSpread2(_objectSpread2(_objectSpread2({}, type$3), generic), ui$1);
-	var METADATA_VERSION = "1.0.0";
-	var ccpMetadata = _objectSpread2(_objectSpread2({}, coreMetadata), {}, {
-	  type: function () {
-	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-	    return createTypeDecorator("ccp", ...args);
-	  },
-	  define: function () {
-	    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-	      args[_key2] = arguments[_key2];
-	    }
-	    return createDefinitionDecorator("ccp", ...args);
-	  }
-	});
-	var wglMetadata = _objectSpread2(_objectSpread2({}, coreMetadata), {}, {
-	  type: function () {
-	    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-	      args[_key3] = arguments[_key3];
-	    }
-	    return createTypeDecorator("wgl", ...args);
-	  },
-	  define: function () {
-	    for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-	      args[_key4] = arguments[_key4];
-	    }
-	    return createDefinitionDecorator("wgl", ...args);
-	  }
-	});
-	var tnyMetadata = _objectSpread2(_objectSpread2({}, coreMetadata), {}, {
-	  type: function () {
-	    for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-	      args[_key5] = arguments[_key5];
-	    }
-	    return createTypeDecorator("tny", ...args);
-	  },
-	  define: function () {
-	    for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-	      args[_key6] = arguments[_key6];
-	    }
-	    return createDefinitionDecorator("tny", ...args);
-	  }
-	});
-	var ccp = createMetaNamespace(ccpMetadata, "ccp", {
-	  version: METADATA_VERSION
-	});
-	var wgl = createMetaNamespace(wglMetadata, "wgl", {
-	  version: METADATA_VERSION
-	});
-	var tny$1 = createMetaNamespace(tnyMetadata, "tny", {
-	  version: METADATA_VERSION
-	});
-
 	var index$2 = {
 		__proto__: null,
 		Model: Model,
@@ -36743,11 +36333,7 @@
 		array: array,
 		boolean: boolean,
 		byte: byte,
-		ccp: ccp,
 		color: color,
-		createDefinitionDecorator: createDefinitionDecorator,
-		createMetaNamespace: createMetaNamespace,
-		createTypeDecorator: createTypeDecorator,
 		data: data,
 		define: define,
 		desc: desc,
@@ -36769,7 +36355,7 @@
 		matrix3: matrix3,
 		matrix4: matrix4,
 		noLongerSupported: noLongerSupported,
-		notImplemented: notImplemented$1,
+		notImplemented: notImplemented,
 		notOwned: notOwned,
 		partialImplementation: partialImplementation,
 		path: path,
@@ -36784,7 +36370,6 @@
 		stage: stage,
 		string: string,
 		struct: struct,
-		tny: tny$1,
 		todo: todo,
 		translation: translation,
 		type: type$2,
@@ -36814,8 +36399,7 @@
 		vector: vector,
 		vector2: vector2,
 		vector3: vector3,
-		vector4: vector4,
-		wgl: wgl
+		vector4: vector4
 	};
 
 	var util$1 = {
@@ -41718,7 +41302,7 @@
 	 * filter 3=anisotropic) — NOT D3D9's 1-based enums; check ResolveModes
 	 * interprets them correctly before relying on overrides at draw time.
 	 */
-	var Tw2SamplerOverride = (_dec$7R = define("Tw2SamplerOverride"), _dec2$7b = string, _dec3$6y = boolean, _dec4$5E = int32$1, _dec5$4$ = int32$1, _dec6$4l = int32$1, _dec7$3I = int32$1, _dec8$3a = int32$1, _dec9$2M = int32$1, _dec0$2C = notImplemented$1, _dec1$2p = int32$1, _dec10$25 = notImplemented$1, _dec11$1W = int32$1, _dec12$1G = int32$1, _dec$7R(_class$7R = (_class2$6Z = class Tw2SamplerOverride extends Model {
+	var Tw2SamplerOverride = (_dec$7R = define("Tw2SamplerOverride"), _dec2$7b = string, _dec3$6y = boolean, _dec4$5E = int32$1, _dec5$4$ = int32$1, _dec6$4l = int32$1, _dec7$3I = int32$1, _dec8$3a = int32$1, _dec9$2M = int32$1, _dec0$2C = notImplemented, _dec1$2p = int32$1, _dec10$25 = notImplemented, _dec11$1W = int32$1, _dec12$1G = int32$1, _dec$7R(_class$7R = (_class2$6Z = class Tw2SamplerOverride extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$72, this);
@@ -44351,7 +43935,7 @@
 	    return item;
 	  }
 	}
-	var Tw2Effect = (_dec$7M = define("Tw2Effect", "Tr2Effect"), _dec2$77 = stage(1), _dec3$6u = string, _dec4$5B = path, _dec5$4Y = struct("Tw2EffectRes"), _dec6$4i = isPrivate, _dec7$3G = isPrivate, _dec8$39 = notImplemented$1, _dec9$2L = notImplemented$1, _dec0$2B = struct("Tw2Shader"), _dec1$2o = isPrivate, _dec10$24 = boolean, _dec11$1V = string, _dec12$1F = boolean, _dec$7M(_class$7M = _dec2$77(_class$7M = (_class2$6W = (_Tw2Effect = class Tw2Effect extends Model {
+	var Tw2Effect = (_dec$7M = define("Tw2Effect", "Tr2Effect"), _dec2$77 = stage(1), _dec3$6u = string, _dec4$5B = path, _dec5$4Y = struct("Tw2EffectRes"), _dec6$4i = isPrivate, _dec7$3G = isPrivate, _dec8$39 = notImplemented, _dec9$2L = notImplemented, _dec0$2B = struct("Tw2Shader"), _dec1$2o = isPrivate, _dec10$24 = boolean, _dec11$1V = string, _dec12$1F = boolean, _dec$7M(_class$7M = _dec2$77(_class$7M = (_class2$6W = (_Tw2Effect = class Tw2Effect extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6_, this);
@@ -157417,7 +157001,7 @@
 	 * the abstract base `Tr2Light` (see Tr2PointLight.js for the shared-property
 	 * rationale - ccpwgl has no Tr2Light base class file).
 	 */
-	var Tr2SpotLight = (_dec$70 = notImplemented$1, _dec2$6x = define("Tr2SpotLight", true), _dec3$62 = string, _dec4$5i = int32$1, _dec5$4J = float, _dec6$48 = notImplemented$1, _dec7$3z = int32$1, _dec8$35 = color, _dec9$2H = notImplemented$1, _dec0$2x = ushort, _dec1$2l = float, _dec10$22 = float, _dec11$1T = notImplemented$1, _dec12$1D = boolean, _dec13$1p = notImplemented$1, _dec14$1f = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec15$1c = struct(), _dec16$13 = path, _dec17$Z = float, _dec18$V = float, _dec19$K = uint, _dec20$I = float, _dec21$F = vector3, _dec22$B = float, _dec23$y = quaternion, _dec$70(_class$70 = _dec2$6x(_class$70 = (_class2$6k = class Tr2SpotLight extends Model {
+	var Tr2SpotLight = (_dec$70 = notImplemented, _dec2$6x = define("Tr2SpotLight", true), _dec3$62 = string, _dec4$5i = int32$1, _dec5$4J = float, _dec6$48 = notImplemented, _dec7$3z = int32$1, _dec8$35 = color, _dec9$2H = notImplemented, _dec0$2x = ushort, _dec1$2l = float, _dec10$22 = float, _dec11$1T = notImplemented, _dec12$1D = boolean, _dec13$1p = notImplemented, _dec14$1f = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec15$1c = struct(), _dec16$13 = path, _dec17$Z = float, _dec18$V = float, _dec19$K = uint, _dec20$I = float, _dec21$F = vector3, _dec22$B = float, _dec23$y = quaternion, _dec$70(_class$70 = _dec2$6x(_class$70 = (_class2$6k = class Tr2SpotLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6o, this);
@@ -157727,7 +157311,7 @@
 	 * this folder) the full LightData-derived property set is declared flatly
 	 * on each of Tr2PointLight/Tr2SpotLight/Tr2TexturedPointLight/Tr2FactionLight.
 	 */
-	var Tr2PointLight = (_dec$6$ = notImplemented$1, _dec2$6w = define("Tr2PointLight", true), _dec3$61 = string, _dec4$5h = int32$1, _dec5$4I = float, _dec6$47 = notImplemented$1, _dec7$3y = int32$1, _dec8$34 = color, _dec9$2G = notImplemented$1, _dec0$2w = ushort, _dec1$2k = float, _dec10$21 = notImplemented$1, _dec11$1S = boolean, _dec12$1C = notImplemented$1, _dec13$1o = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec14$1e = struct(), _dec15$1b = path, _dec16$12 = float, _dec17$Y = float, _dec18$U = uint, _dec19$J = vector3, _dec20$H = float, _dec21$E = quaternion, _dec$6$(_class$6$ = _dec2$6w(_class$6$ = (_class2$6j = (_Tr2PointLight = class Tr2PointLight extends Model {
+	var Tr2PointLight = (_dec$6$ = notImplemented, _dec2$6w = define("Tr2PointLight", true), _dec3$61 = string, _dec4$5h = int32$1, _dec5$4I = float, _dec6$47 = notImplemented, _dec7$3y = int32$1, _dec8$34 = color, _dec9$2G = notImplemented, _dec0$2w = ushort, _dec1$2k = float, _dec10$21 = notImplemented, _dec11$1S = boolean, _dec12$1C = notImplemented, _dec13$1o = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec14$1e = struct(), _dec15$1b = path, _dec16$12 = float, _dec17$Y = float, _dec18$U = uint, _dec19$J = vector3, _dec20$H = float, _dec21$E = quaternion, _dec$6$(_class$6$ = _dec2$6w(_class$6$ = (_class2$6j = (_Tr2PointLight = class Tr2PointLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6n, this);
@@ -158131,7 +157715,7 @@
 	 * (9 SH coefficients), each packed down to `PACKED_COEFFICIENT_COUNT` (7)
 	 * Vector4s for shader consumption.
 	 */
-	var Tr2ShLightingManager = (_dec$6_ = define("Tr2ShLightingManager", true), _dec2$6v = float, _dec3$60 = float, _dec4$5g = notImplemented$1, _dec5$4H = desc("Additional Tr2PointLight 'primary' sources treated as secondary-lighting sources (Carbon: PTr2PointLightVector m_lights, Be::READ|PERSIST)."), _dec6$46 = list("Tr2PointLight"), _dec$6_(_class$6_ = (_class2$6i = (_Tr2ShLightingManager = class Tr2ShLightingManager extends Model {
+	var Tr2ShLightingManager = (_dec$6_ = define("Tr2ShLightingManager", true), _dec2$6v = float, _dec3$60 = float, _dec4$5g = notImplemented, _dec5$4H = desc("Additional Tr2PointLight 'primary' sources treated as secondary-lighting sources (Carbon: PTr2PointLightVector m_lights, Be::READ|PERSIST)."), _dec6$46 = list("Tr2PointLight"), _dec$6_(_class$6_ = (_class2$6i = (_Tr2ShLightingManager = class Tr2ShLightingManager extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "primaryIntensity", _descriptor$6m, this);
@@ -158502,7 +158086,7 @@
 	 * had them, and per the "do not touch black-reader property names" rule
 	 * they are left in place rather than removed.
 	 */
-	var Tr2TexturedPointLight = (_dec$6Z = notImplemented$1, _dec2$6u = define("Tr2TexturedPointLight", true), _dec3$5$ = string, _dec4$5f = int32$1, _dec5$4G = float, _dec6$45 = notImplemented$1, _dec7$3x = int32$1, _dec8$33 = vector4, _dec9$2F = notImplemented$1, _dec0$2v = ushort, _dec1$2j = notImplemented$1, _dec10$20 = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec11$1R = float, _dec12$1B = float, _dec13$1n = notImplemented$1, _dec14$1d = boolean, _dec15$1a = notImplemented$1, _dec16$11 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$X = struct(), _dec18$T = path, _dec19$I = float, _dec20$G = float, _dec21$D = uint, _dec22$A = notImplemented$1, _dec23$x = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec24$u = float, _dec25$r = vector3, _dec26$n = float, _dec27$k = quaternion, _dec28$i = notImplemented$1, _dec29$g = desc("Texture resource whose average color drives `color` every Update() - ccpwgl has no equivalent Tw2TextureRes.GetAverageColor()/mip-average readback yet (carbonengine Resources/TriTextureRes, Tr2TexturedPointLight.cpp:51-56)."), _dec30$e = struct(), _dec31$d = path, _dec$6Z(_class$6Z = _dec2$6u(_class$6Z = (_class2$6h = class Tr2TexturedPointLight extends Model {
+	var Tr2TexturedPointLight = (_dec$6Z = notImplemented, _dec2$6u = define("Tr2TexturedPointLight", true), _dec3$5$ = string, _dec4$5f = int32$1, _dec5$4G = float, _dec6$45 = notImplemented, _dec7$3x = int32$1, _dec8$33 = vector4, _dec9$2F = notImplemented, _dec0$2v = ushort, _dec1$2j = notImplemented, _dec10$20 = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec11$1R = float, _dec12$1B = float, _dec13$1n = notImplemented, _dec14$1d = boolean, _dec15$1a = notImplemented, _dec16$11 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$X = struct(), _dec18$T = path, _dec19$I = float, _dec20$G = float, _dec21$D = uint, _dec22$A = notImplemented, _dec23$x = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec24$u = float, _dec25$r = vector3, _dec26$n = float, _dec27$k = quaternion, _dec28$i = notImplemented, _dec29$g = desc("Texture resource whose average color drives `color` every Update() - ccpwgl has no equivalent Tw2TextureRes.GetAverageColor()/mip-average readback yet (carbonengine Resources/TriTextureRes, Tr2TexturedPointLight.cpp:51-56)."), _dec30$e = struct(), _dec31$d = path, _dec$6Z(_class$6Z = _dec2$6u(_class$6Z = (_class2$6h = class Tr2TexturedPointLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6l, this);
@@ -158856,7 +158440,7 @@
 	 * @property {null} radius - Carbon type: LightData; member: m_lightData.radius
 	 * @property {number} saturation - Carbon type: float; member: m_saturation
 	 */
-	var Tr2FactionLight = (_dec$6Y = notImplemented$1, _dec2$6t = define("Tr2FactionLight", true), _dec3$5_ = vector3, _dec4$5e = rotation, _dec5$4F = int32$1, _dec6$44 = float, _dec7$3w = notImplemented$1, _dec8$32 = int32$1, _dec9$2E = int32$1, _dec0$2u = notImplemented$1, _dec1$2i = ushort, _dec10$1$ = float, _dec11$1Q = float, _dec12$1A = boolean, _dec13$1m = notImplemented$1, _dec14$1c = boolean, _dec15$19 = notImplemented$1, _dec16$10 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$W = struct(), _dec18$S = path, _dec19$H = string, _dec20$F = float, _dec21$C = float, _dec22$z = uint, _dec23$w = float, _dec24$t = float, _dec25$q = float, _dec$6Y(_class$6Y = _dec2$6t(_class$6Y = (_class2$6g = class Tr2FactionLight {
+	var Tr2FactionLight = (_dec$6Y = notImplemented, _dec2$6t = define("Tr2FactionLight", true), _dec3$5_ = vector3, _dec4$5e = rotation, _dec5$4F = int32$1, _dec6$44 = float, _dec7$3w = notImplemented, _dec8$32 = int32$1, _dec9$2E = int32$1, _dec0$2u = notImplemented, _dec1$2i = ushort, _dec10$1$ = float, _dec11$1Q = float, _dec12$1A = boolean, _dec13$1m = notImplemented, _dec14$1c = boolean, _dec15$19 = notImplemented, _dec16$10 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$W = struct(), _dec18$S = path, _dec19$H = string, _dec20$F = float, _dec21$C = float, _dec22$z = uint, _dec23$w = float, _dec24$t = float, _dec25$q = float, _dec$6Y(_class$6Y = _dec2$6t(_class$6Y = (_class2$6g = class Tr2FactionLight {
 	  constructor() {
 	    _initializerDefineProperty(this, "position", _descriptor$6k, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor2$5M, this);
@@ -159229,7 +158813,7 @@
 	// non-class members (constants/functions). Import it by path instead.
 
 	var _dec$6X, _dec2$6s, _dec3$5Z, _dec4$5d, _dec5$4E, _dec6$43, _dec7$3v, _dec8$31, _dec9$2D, _dec0$2t, _dec1$2h, _dec10$1_, _dec11$1P, _dec12$1z, _dec13$1l, _dec14$1b, _dec15$18, _dec16$$, _dec17$V, _dec18$R, _dec19$G, _dec20$E, _dec21$B, _dec22$y, _dec23$v, _dec24$s, _dec25$p, _dec26$m, _class$6X, _class2$6f, _descriptor$6j, _descriptor2$5L, _descriptor3$50, _descriptor4$4m, _descriptor5$3L, _descriptor6$3a, _descriptor7$2G, _descriptor8$2k, _descriptor9$28, _descriptor0$1X, _descriptor1$1C, _descriptor10$1r, _descriptor11$1d, _descriptor12$18, _descriptor13$12, _descriptor14$Z, _descriptor15$J, _descriptor16$D, _descriptor17$B;
-	var Tw2Mesh = (_dec$6X = define("Tw2Mesh", "Tr2Mesh"), _dec2$6s = string, _dec3$5Z = list("Tw2MeshArea"), _dec4$5d = list("Tw2MeshArea"), _dec5$4E = notImplemented$1, _dec6$43 = boolean, _dec7$3v = notImplemented$1, _dec8$31 = list("Tw2MeshArea"), _dec9$2D = notImplemented$1, _dec0$2t = list("Tw2MeshArea"), _dec1$2h = boolean, _dec10$1_ = list("Tw2MeshArea"), _dec11$1P = path, _dec12$1z = uint, _dec13$1l = list("Tw2MeshArea"), _dec14$1b = notImplemented$1, _dec15$18 = list("Tw2MeshArea"), _dec16$$ = list("Tw2MeshArea"), _dec17$V = list("Tw2MeshArea"), _dec18$R = plain, _dec19$G = struct("Tw2GeometryRes"), _dec20$E = isPrivate, _dec21$B = float, _dec22$y = notImplemented$1, _dec23$v = boolean, _dec24$s = notImplemented$1, _dec25$p = float, _dec26$m = notImplemented$1, _dec$6X(_class$6X = (_class2$6f = class Tw2Mesh extends Model {
+	var Tw2Mesh = (_dec$6X = define("Tw2Mesh", "Tr2Mesh"), _dec2$6s = string, _dec3$5Z = list("Tw2MeshArea"), _dec4$5d = list("Tw2MeshArea"), _dec5$4E = notImplemented, _dec6$43 = boolean, _dec7$3v = notImplemented, _dec8$31 = list("Tw2MeshArea"), _dec9$2D = notImplemented, _dec0$2t = list("Tw2MeshArea"), _dec1$2h = boolean, _dec10$1_ = list("Tw2MeshArea"), _dec11$1P = path, _dec12$1z = uint, _dec13$1l = list("Tw2MeshArea"), _dec14$1b = notImplemented, _dec15$18 = list("Tw2MeshArea"), _dec16$$ = list("Tw2MeshArea"), _dec17$V = list("Tw2MeshArea"), _dec18$R = plain, _dec19$G = struct("Tw2GeometryRes"), _dec20$E = isPrivate, _dec21$B = float, _dec22$y = notImplemented, _dec23$v = boolean, _dec24$s = notImplemented, _dec25$p = float, _dec26$m = notImplemented, _dec$6X(_class$6X = (_class2$6f = class Tw2Mesh extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6j, this);
@@ -159809,7 +159393,7 @@
 	}), _class2$6f)) || _class$6X);
 
 	var _dec$6W, _dec2$6r, _dec3$5Y, _dec4$5c, _dec5$4D, _dec6$42, _dec7$3u, _dec8$30, _dec9$2C, _dec0$2s, _dec1$2g, _dec10$1Z, _dec11$1O, _dec12$1y, _dec13$1k, _dec14$1a, _dec15$17, _dec16$_, _dec17$U, _dec18$Q, _dec19$F, _dec20$D, _dec21$A, _dec22$x, _dec23$u, _dec24$r, _class$6W, _class2$6e, _descriptor$6i, _descriptor2$5K, _descriptor3$4$, _descriptor4$4l, _descriptor5$3K, _descriptor6$39, _descriptor7$2F, _descriptor8$2j, _descriptor9$27, _descriptor0$1W, _descriptor1$1B, _descriptor10$1q, _descriptor11$1c, _descriptor12$17, _descriptor13$11, _descriptor14$Y, _descriptor15$I, _descriptor16$C, _descriptor17$A, _descriptor18$x;
-	var Tw2InstancedMesh = (_dec$6W = todo("Is this deprecated?"), _dec2$6r = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5Y = string, _dec4$5c = boolean, _dec5$4D = list("Tw2MeshArea"), _dec6$42 = struct(), _dec7$3u = list("Tw2MeshArea"), _dec8$30 = notImplemented$1, _dec9$2C = list("Tw2MeshArea"), _dec0$2s = notImplemented$1, _dec1$2g = list("Tw2MeshArea"), _dec10$1Z = struct("Tw2GeometryResource"), _dec11$1O = isPrivate, _dec12$1y = path, _dec13$1k = struct(), _dec14$1a = path, _dec15$17 = uint, _dec16$_ = vector3, _dec17$U = notImplemented$1, _dec18$Q = uint, _dec19$F = vector3, _dec20$D = list("Tw2MeshArea"), _dec21$A = list("Tw2MeshArea"), _dec22$x = list("Tw2MeshArea"), _dec23$u = list("Tw2MeshArea"), _dec24$r = plain, _dec$6W(_class$6W = _dec2$6r(_class$6W = (_class2$6e = class Tw2InstancedMesh extends Model {
+	var Tw2InstancedMesh = (_dec$6W = todo("Is this deprecated?"), _dec2$6r = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5Y = string, _dec4$5c = boolean, _dec5$4D = list("Tw2MeshArea"), _dec6$42 = struct(), _dec7$3u = list("Tw2MeshArea"), _dec8$30 = notImplemented, _dec9$2C = list("Tw2MeshArea"), _dec0$2s = notImplemented, _dec1$2g = list("Tw2MeshArea"), _dec10$1Z = struct("Tw2GeometryResource"), _dec11$1O = isPrivate, _dec12$1y = path, _dec13$1k = struct(), _dec14$1a = path, _dec15$17 = uint, _dec16$_ = vector3, _dec17$U = notImplemented, _dec18$Q = uint, _dec19$F = vector3, _dec20$D = list("Tw2MeshArea"), _dec21$A = list("Tw2MeshArea"), _dec22$x = list("Tw2MeshArea"), _dec23$u = list("Tw2MeshArea"), _dec24$r = plain, _dec$6W(_class$6W = _dec2$6r(_class$6W = (_class2$6e = class Tw2InstancedMesh extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6i, this);
@@ -160300,7 +159884,7 @@
 	}), _class2$6e)) || _class$6W) || _class$6W);
 
 	var _dec$6V, _dec2$6q, _dec3$5X, _dec4$5b, _dec5$4C, _dec6$41, _dec7$3t, _dec8$2$, _dec9$2B, _dec0$2r, _dec1$2f, _dec10$1Y, _dec11$1N, _dec12$1x, _class$6V, _class2$6d, _descriptor$6h, _descriptor2$5J, _descriptor3$4_, _descriptor4$4k, _descriptor5$3J, _descriptor6$38, _descriptor7$2E, _descriptor8$2i, _descriptor9$26, _Tw2MeshArea;
-	var Tw2MeshArea = (_dec$6V = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6q = stage(1), _dec3$5X = string, _dec4$5b = boolean, _dec5$4C = uint, _dec6$41 = struct("Tw2Effect"), _dec7$3t = uint, _dec8$2$ = notImplemented$1, _dec9$2B = boolean, _dec0$2r = notImplemented$1, _dec1$2f = boolean, _dec10$1Y = uint, _dec11$1N = plain, _dec12$1x = isPrivate, _dec$6V(_class$6V = _dec2$6q(_class$6V = (_class2$6d = (_Tw2MeshArea = class Tw2MeshArea extends Model {
+	var Tw2MeshArea = (_dec$6V = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6q = stage(1), _dec3$5X = string, _dec4$5b = boolean, _dec5$4C = uint, _dec6$41 = struct("Tw2Effect"), _dec7$3t = uint, _dec8$2$ = notImplemented, _dec9$2B = boolean, _dec0$2r = notImplemented, _dec1$2f = boolean, _dec10$1Y = uint, _dec11$1N = plain, _dec12$1x = isPrivate, _dec$6V(_class$6V = _dec2$6q(_class$6V = (_class2$6d = (_Tw2MeshArea = class Tw2MeshArea extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6h, this);
@@ -160427,7 +160011,7 @@
 	}), _class2$6d)) || _class$6V) || _class$6V);
 
 	var _dec$6U, _dec2$6p, _dec3$5W, _dec4$5a, _dec5$4B, _dec6$40, _dec7$3s, _dec8$2_, _dec9$2A, _dec0$2q, _dec1$2e, _class$6U, _class2$6c, _descriptor$6g, _descriptor2$5I, _descriptor3$4Z, _descriptor4$4j, _descriptor5$3I, _descriptor6$37, _descriptor7$2D, _Tw2MeshLineArea;
-	var Tw2MeshLineArea = (_dec$6U = define("Tw2MeshLineArea"), _dec2$6p = stage(1), _dec3$5W = string, _dec4$5a = boolean, _dec5$4B = uint, _dec6$40 = struct("Tw2Effect"), _dec7$3s = uint, _dec8$2_ = notImplemented$1, _dec9$2A = boolean, _dec0$2q = notImplemented$1, _dec1$2e = boolean, _dec$6U(_class$6U = _dec2$6p(_class$6U = (_class2$6c = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
+	var Tw2MeshLineArea = (_dec$6U = define("Tw2MeshLineArea"), _dec2$6p = stage(1), _dec3$5W = string, _dec4$5a = boolean, _dec5$4B = uint, _dec6$40 = struct("Tw2Effect"), _dec7$3s = uint, _dec8$2_ = notImplemented, _dec9$2A = boolean, _dec0$2q = notImplemented, _dec1$2e = boolean, _dec$6U(_class$6U = _dec2$6p(_class$6U = (_class2$6c = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6g, this);
@@ -167452,7 +167036,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _applyDecoratedDescriptor(_class$6k.prototype, "PickCCP", [notImplemented$1], Object.getOwnPropertyDescriptor(_class$6k.prototype, "PickCCP"), _class$6k.prototype), _class$6k);
+	}), _applyDecoratedDescriptor(_class$6k.prototype, "PickCCP", [notImplemented], Object.getOwnPropertyDescriptor(_class$6k.prototype, "PickCCP"), _class$6k.prototype), _class$6k);
 
 	var core = {
 		__proto__: null,
@@ -176947,7 +176531,7 @@
 	}
 
 	var _dec$5v, _dec2$56, _dec3$4H, _dec4$44, _dec5$3y, _dec6$33, _dec7$2F, _dec8$2j, _dec9$21, _dec0$1U, _dec1$1N, _dec10$1z, _dec11$1r, _dec12$1g, _dec13$15, _dec14$_, _dec15$X, _dec16$Q, _dec17$K, _dec18$G, _dec19$B, _dec20$z, _dec21$x, _dec22$u, _dec23$r, _dec24$o, _dec25$m, _dec26$j, _dec27$i, _dec28$g, _dec29$e, _dec30$d, _dec31$c, _dec32$b, _dec33$9, _dec34$8, _dec35$8, _dec36$8, _dec37$7, _dec38$7, _dec39$6, _dec40$6, _dec41$5, _dec42$4, _dec43$4, _dec44$4, _dec45$4, _class$5v, _class2$4W, _descriptor$4Y, _descriptor2$4t, _descriptor3$3S, _descriptor4$3l, _descriptor5$2V, _descriptor6$2t, _descriptor7$23, _descriptor8$1Q, _descriptor9$1I, _descriptor0$1D, _descriptor1$1l, _descriptor10$1c, _descriptor11$10, _descriptor12$X, _descriptor13$S, _descriptor14$N, _descriptor15$D, _descriptor16$x, _descriptor17$v, _descriptor18$t, _descriptor19$n, _descriptor20$k, _descriptor21$j, _descriptor22$i, _descriptor23$h, _descriptor24$e, _descriptor25$e, _descriptor26$d, _descriptor27$a, _descriptor28$a, _descriptor29$8, _descriptor30$7, _descriptor31$6, _descriptor32$5, _descriptor33$5, _descriptor34$5, _descriptor35$5, _descriptor36$5, _descriptor37$4, _descriptor38$4, _descriptor39$4, _descriptor40$4, _descriptor41$4, _descriptor42$4, _descriptor43$2;
-	var EveChildInheritProperties = (_dec$5v = notImplemented$1, _dec2$56 = define("EveChildInheritProperties", true), _dec3$4H = struct, _dec4$44 = color, _dec5$3y = color, _dec6$33 = color, _dec7$2F = color, _dec8$2j = color, _dec9$21 = color, _dec0$1U = color, _dec1$1N = color, _dec10$1z = color, _dec11$1r = color, _dec12$1g = color, _dec13$15 = color, _dec14$_ = color, _dec15$X = color, _dec16$Q = color, _dec17$K = color, _dec18$G = color, _dec19$B = color, _dec20$z = color, _dec21$x = color, _dec22$u = color, _dec23$r = color, _dec24$o = color, _dec25$m = color, _dec26$j = color, _dec27$i = color, _dec28$g = color, _dec29$e = color, _dec30$d = color, _dec31$c = color, _dec32$b = color, _dec33$9 = color, _dec34$8 = color, _dec35$8 = color, _dec36$8 = color, _dec37$7 = color, _dec38$7 = color, _dec39$6 = color, _dec40$6 = color, _dec41$5 = color, _dec42$4 = color, _dec43$4 = color, _dec44$4 = color, _dec45$4 = color, _dec$5v(_class$5v = _dec2$56(_class$5v = (_class2$4W = class EveChildInheritProperties extends Model {
+	var EveChildInheritProperties = (_dec$5v = notImplemented, _dec2$56 = define("EveChildInheritProperties", true), _dec3$4H = struct, _dec4$44 = color, _dec5$3y = color, _dec6$33 = color, _dec7$2F = color, _dec8$2j = color, _dec9$21 = color, _dec0$1U = color, _dec1$1N = color, _dec10$1z = color, _dec11$1r = color, _dec12$1g = color, _dec13$15 = color, _dec14$_ = color, _dec15$X = color, _dec16$Q = color, _dec17$K = color, _dec18$G = color, _dec19$B = color, _dec20$z = color, _dec21$x = color, _dec22$u = color, _dec23$r = color, _dec24$o = color, _dec25$m = color, _dec26$j = color, _dec27$i = color, _dec28$g = color, _dec29$e = color, _dec30$d = color, _dec31$c = color, _dec32$b = color, _dec33$9 = color, _dec34$8 = color, _dec35$8 = color, _dec36$8 = color, _dec37$7 = color, _dec38$7 = color, _dec39$6 = color, _dec40$6 = color, _dec41$5 = color, _dec42$4 = color, _dec43$4 = color, _dec44$4 = color, _dec45$4 = color, _dec$5v(_class$5v = _dec2$56(_class$5v = (_class2$4W = class EveChildInheritProperties extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "source", _descriptor$4Y, this);
@@ -177332,7 +176916,7 @@
 	}), _class2$4W)) || _class$5v) || _class$5v);
 
 	var _dec$5u, _dec2$55, _dec3$4G, _dec4$43, _dec5$3x, _dec6$32, _dec7$2E, _dec8$2i, _dec9$20, _dec0$1T, _dec1$1M, _dec10$1y, _dec11$1q, _dec12$1f, _dec13$14, _dec14$Z, _dec15$W, _dec16$P, _dec17$J, _dec18$F, _dec19$A, _dec20$y, _dec21$w, _dec22$t, _dec23$q, _dec24$n, _dec25$l, _dec26$i, _dec27$h, _dec28$f, _dec29$d, _dec30$c, _dec31$b, _class$5u, _class2$4V, _descriptor$4X, _descriptor2$4s, _descriptor3$3R, _descriptor4$3k, _descriptor5$2U, _descriptor6$2s, _descriptor7$22, _descriptor8$1P, _descriptor9$1H, _descriptor0$1C, _descriptor1$1k, _descriptor10$1b, _descriptor11$$, _descriptor12$W, _descriptor13$R, _descriptor14$M, _descriptor15$C, _descriptor16$w, _descriptor17$u, _descriptor18$s, _descriptor19$m, _descriptor20$j;
-	var EveChildContainer = (_dec$5u = define("EveChildContainer", true), _dec2$55 = stage(2), _dec3$4G = string, _dec4$43 = notImplemented$1, _dec5$3x = boolean, _dec6$32 = int32$1, _dec7$2E = list("Tr2Controller"), _dec8$2i = list("Tw2CurveSet"), _dec9$20 = boolean, _dec0$1T = notImplemented$1, _dec1$1M = int32$1, _dec10$1y = notImplemented$1, _dec11$1q = list(), _dec12$1f = notImplemented$1, _dec13$14 = boolean, _dec14$Z = notImplemented$1, _dec15$W = struct("EveChildInheritProperties"), _dec16$P = notImplemented$1, _dec17$J = list("Tr2PointLight"), _dec18$F = matrix4, _dec19$A = list("EveChild"), _dec20$y = notImplemented$1, _dec21$w = list("TriObserverLocal"), _dec22$t = quaternion, _dec23$q = vector3, _dec24$n = notImplemented$1, _dec25$l = boolean, _dec26$i = boolean, _dec27$h = boolean, _dec28$f = notImplemented$1, _dec29$d = list("EveChildModifier"), _dec30$c = vector3, _dec31$b = boolean, _dec$5u(_class$5u = _dec2$55(_class$5u = (_class2$4V = class EveChildContainer extends EveChild {
+	var EveChildContainer = (_dec$5u = define("EveChildContainer", true), _dec2$55 = stage(2), _dec3$4G = string, _dec4$43 = notImplemented, _dec5$3x = boolean, _dec6$32 = int32$1, _dec7$2E = list("Tr2Controller"), _dec8$2i = list("Tw2CurveSet"), _dec9$20 = boolean, _dec0$1T = notImplemented, _dec1$1M = int32$1, _dec10$1y = notImplemented, _dec11$1q = list(), _dec12$1f = notImplemented, _dec13$14 = boolean, _dec14$Z = notImplemented, _dec15$W = struct("EveChildInheritProperties"), _dec16$P = notImplemented, _dec17$J = list("Tr2PointLight"), _dec18$F = matrix4, _dec19$A = list("EveChild"), _dec20$y = notImplemented, _dec21$w = list("TriObserverLocal"), _dec22$t = quaternion, _dec23$q = vector3, _dec24$n = notImplemented, _dec25$l = boolean, _dec26$i = boolean, _dec27$h = boolean, _dec28$f = notImplemented, _dec29$d = list("EveChildModifier"), _dec30$c = vector3, _dec31$b = boolean, _dec$5u(_class$5u = _dec2$55(_class$5u = (_class2$4V = class EveChildContainer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4X, this);
@@ -178046,7 +177630,7 @@
 	 * modifier to reach the same field. Same result through the path that is already
 	 * exercised.
 	 */
-	var EveChildInstanceContainer = (_dec6$31 = define("EveChildInstanceContainer", true), _dec7$2D = stage(2), _dec8$2h = string, _dec9$1$ = boolean, _dec0$1S = boolean, _dec1$1L = struct(), _dec10$1x = string, _dec11$1p = list("EveChildInstanceTransform"), _dec12$1e = list("EveChildModifier"), _dec13$13 = notImplemented$1, _dec14$Y = struct("EveChildInheritProperties"), _dec15$V = vector3, _dec16$O = quaternion, _dec17$I = vector3, _dec18$E = matrix4, _dec19$z = boolean, _dec20$x = boolean, _dec21$v = boolean, _dec6$31(_class3$l = _dec7$2D(_class3$l = (_class4$j = (_EveChildInstanceContainer = class EveChildInstanceContainer extends EveChild {
+	var EveChildInstanceContainer = (_dec6$31 = define("EveChildInstanceContainer", true), _dec7$2D = stage(2), _dec8$2h = string, _dec9$1$ = boolean, _dec0$1S = boolean, _dec1$1L = struct(), _dec10$1x = string, _dec11$1p = list("EveChildInstanceTransform"), _dec12$1e = list("EveChildModifier"), _dec13$13 = notImplemented, _dec14$Y = struct("EveChildInheritProperties"), _dec15$V = vector3, _dec16$O = quaternion, _dec17$I = vector3, _dec18$E = matrix4, _dec19$z = boolean, _dec20$x = boolean, _dec21$v = boolean, _dec6$31(_class3$l = _dec7$2D(_class3$l = (_class4$j = (_EveChildInstanceContainer = class EveChildInstanceContainer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor5$2T, this);
@@ -179769,7 +179353,7 @@
 	  SPHERED: 2,
 	  CURVED: 3
 	};
-	var EveCurveLineSetItem = (_dec$5q = define("EveCurveLineSetItem", true), _dec2$51 = float, _dec3$4C = float, _dec4$3$ = color, _dec5$3t = color, _dec6$2_ = vector3, _dec7$2A = color, _dec8$2f = float, _dec9$1Z = uint, _dec0$1Q = color, _dec1$1J = vector3, _dec10$1v = vector3, _dec11$1n = float, _dec12$1c = uint, _dec13$11 = notImplemented$1, _dec$5q(_class$5q = (_class2$4R = (_EveCurveLineSetItem = class EveCurveLineSetItem extends EveObjectSetItem {
+	var EveCurveLineSetItem = (_dec$5q = define("EveCurveLineSetItem", true), _dec2$51 = float, _dec3$4C = float, _dec4$3$ = color, _dec5$3t = color, _dec6$2_ = vector3, _dec7$2A = color, _dec8$2f = float, _dec9$1Z = uint, _dec0$1Q = color, _dec1$1J = vector3, _dec10$1v = vector3, _dec11$1n = float, _dec12$1c = uint, _dec13$11 = notImplemented, _dec$5q(_class$5q = (_class2$4R = (_EveCurveLineSetItem = class EveCurveLineSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "animationSpeed", _descriptor$4T, this);
@@ -180071,7 +179655,7 @@
 	    return LineType.INVALID;
 	  }
 	}), _applyDecoratedDescriptor(_class2$4R.prototype, "GetBoundingBox", [_dec13$11], Object.getOwnPropertyDescriptor(_class2$4R.prototype, "GetBoundingBox"), _class2$4R.prototype), _class2$4R)) || _class$5q);
-	var EveCurveLineSet = (_dec14$W = define("EveCurveLineSet", true), _dec15$T = boolean, _dec16$M = struct("Tw2Effect"), _dec17$G = struct("Tw2Effect"), _dec18$C = notImplemented$1, _dec19$x = float, _dec20$v = float, _dec21$t = notImplemented$1, _dec22$r = float, _dec23$o = boolean, _dec24$l = quaternion, _dec25$j = vector3, _dec26$h = vector3, _dec27$g = matrix4, _dec28$e = int32$1, _dec29$c = boolean, _dec30$b = boolean, _dec14$W(_class3$k = (_class4$i = (_EveCurveLineSet = class EveCurveLineSet extends EveObjectSet {
+	var EveCurveLineSet = (_dec14$W = define("EveCurveLineSet", true), _dec15$T = boolean, _dec16$M = struct("Tw2Effect"), _dec17$G = struct("Tw2Effect"), _dec18$C = notImplemented, _dec19$x = float, _dec20$v = float, _dec21$t = notImplemented, _dec22$r = float, _dec23$o = boolean, _dec24$l = quaternion, _dec25$j = vector3, _dec26$h = vector3, _dec27$g = matrix4, _dec28$e = int32$1, _dec29$c = boolean, _dec30$b = boolean, _dec14$W(_class3$k = (_class4$i = (_EveCurveLineSet = class EveCurveLineSet extends EveObjectSet {
 	  /**
 	   * Constructor
 	   */
@@ -181279,7 +180863,7 @@
 	 * child objects). A `renderType` that asks for objects draws whatever lines it
 	 * also asks for and nothing else, rather than failing.
 	 */
-	var EveChildLineSet = (_dec$5p = define("EveChildLineSet", true), _dec2$50 = stage(2), _dec3$4B = string, _dec4$3_ = boolean, _dec5$3s = boolean, _dec6$2Z = vector4, _dec7$2z = vector4, _dec8$2e = float, _dec9$1Y = float, _dec0$1P = boolean, _dec1$1I = list(), _dec10$1u = struct("EveCurveLineSet"), _dec11$1m = notImplemented$1, _dec12$1b = struct("Tw2Mesh", "Tr2Mesh"), _dec13$10 = notImplemented$1, _dec14$V = float, _dec15$S = uint, _dec16$L = quaternion, _dec17$F = vector3, _dec18$B = float, _dec19$w = vector3, _dec20$u = matrix4, _dec21$s = boolean, _dec22$q = boolean, _dec23$n = boolean, _dec$5p(_class$5p = _dec2$50(_class$5p = (_class2$4Q = (_EveChildLineSet = class EveChildLineSet extends EveChild {
+	var EveChildLineSet = (_dec$5p = define("EveChildLineSet", true), _dec2$50 = stage(2), _dec3$4B = string, _dec4$3_ = boolean, _dec5$3s = boolean, _dec6$2Z = vector4, _dec7$2z = vector4, _dec8$2e = float, _dec9$1Y = float, _dec0$1P = boolean, _dec1$1I = list(), _dec10$1u = struct("EveCurveLineSet"), _dec11$1m = notImplemented, _dec12$1b = struct("Tw2Mesh", "Tr2Mesh"), _dec13$10 = notImplemented, _dec14$V = float, _dec15$S = uint, _dec16$L = quaternion, _dec17$F = vector3, _dec18$B = float, _dec19$w = vector3, _dec20$u = matrix4, _dec21$s = boolean, _dec22$q = boolean, _dec23$n = boolean, _dec$5p(_class$5p = _dec2$50(_class$5p = (_class2$4Q = (_EveChildLineSet = class EveChildLineSet extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4S, this);
@@ -181657,7 +181241,7 @@
 	}), _class2$4Q)) || _class$5p) || _class$5p);
 
 	var _dec$5o, _dec2$4$, _dec3$4A, _dec4$3Z, _dec5$3r, _dec6$2Y, _dec7$2y, _dec8$2d, _dec9$1X, _dec0$1O, _dec1$1H, _dec10$1t, _dec11$1l, _dec12$1a, _dec13$$, _dec14$U, _dec15$R, _dec16$K, _dec17$E, _dec18$A, _dec19$v, _dec20$t, _dec21$r, _dec22$p, _dec23$m, _dec24$k, _dec25$i, _dec26$g, _class$5o, _class2$4P, _descriptor$4R, _descriptor2$4m, _descriptor3$3L, _descriptor4$3f, _descriptor5$2P, _descriptor6$2n, _descriptor7$1Z, _descriptor8$1K, _descriptor9$1C, _descriptor0$1x, _descriptor1$1f, _descriptor10$16, _descriptor11$W, _descriptor12$R, _descriptor13$M, _descriptor14$H, _descriptor15$x, _descriptor16$r, _descriptor17$p, _descriptor18$o, _EveChildMesh;
-	var EveChildMesh = (_dec$5o = define("EveChildMesh", true), _dec2$4$ = string, _dec3$4A = boolean, _dec4$3Z = boolean, _dec5$3r = list(), _dec6$2Y = matrix4, _dec7$2y = notImplemented$1, _dec8$2d = uint, _dec9$1X = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1O = struct("Tr2GrannyAnimation"), _dec1$1H = notImplemented$1, _dec10$1t = float, _dec11$1l = notImplemented$1, _dec12$1a = uint, _dec13$$ = quaternion, _dec14$U = vector3, _dec15$R = notImplemented$1, _dec16$K = float, _dec17$E = notImplemented$1, _dec18$A = boolean, _dec19$v = notImplemented$1, _dec20$t = list("EveChildModifier"), _dec21$r = vector3, _dec22$p = boolean, _dec23$m = boolean, _dec24$k = boolean, _dec25$i = uint, _dec26$g = notImplemented$1, _dec$5o(_class$5o = (_class2$4P = (_EveChildMesh = class EveChildMesh extends EveChild {
+	var EveChildMesh = (_dec$5o = define("EveChildMesh", true), _dec2$4$ = string, _dec3$4A = boolean, _dec4$3Z = boolean, _dec5$3r = list(), _dec6$2Y = matrix4, _dec7$2y = notImplemented, _dec8$2d = uint, _dec9$1X = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1O = struct("Tr2GrannyAnimation"), _dec1$1H = notImplemented, _dec10$1t = float, _dec11$1l = notImplemented, _dec12$1a = uint, _dec13$$ = quaternion, _dec14$U = vector3, _dec15$R = notImplemented, _dec16$K = float, _dec17$E = notImplemented, _dec18$A = boolean, _dec19$v = notImplemented, _dec20$t = list("EveChildModifier"), _dec21$r = vector3, _dec22$p = boolean, _dec23$m = boolean, _dec24$k = boolean, _dec25$i = uint, _dec26$g = notImplemented, _dec$5o(_class$5o = (_class2$4P = (_EveChildMesh = class EveChildMesh extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4R, this);
@@ -182133,7 +181717,7 @@
 	}), _class2$4P)) || _class$5o);
 
 	var _dec$5n, _dec2$4_, _dec3$4z, _dec4$3Y, _dec5$3q, _dec6$2X, _dec7$2x, _dec8$2c, _dec9$1W, _dec0$1N, _dec1$1G, _dec10$1s, _dec11$1k, _dec12$19, _dec13$_, _dec14$T, _dec15$Q, _dec16$J, _dec17$D, _dec18$z, _class$5n, _class2$4O, _descriptor$4Q, _descriptor2$4l, _descriptor3$3K, _descriptor4$3e, _descriptor5$2O, _descriptor6$2m, _descriptor7$1Y, _descriptor8$1J, _descriptor9$1B, _descriptor0$1w, _descriptor1$1e, _descriptor10$15, _descriptor11$V, _descriptor12$Q, _descriptor13$L;
-	var EveChildParticleSystem = (_dec$5n = define("EveChildParticleSystem", true), _dec2$4_ = stage(1), _dec3$4z = string, _dec4$3Y = boolean, _dec5$3q = matrix4, _dec6$2X = notImplemented$1, _dec7$2x = float, _dec8$2c = struct("Tw2InstancedMesh"), _dec9$1W = notImplemented$1, _dec0$1N = float, _dec1$1G = list("Tw2ParticleEmitter"), _dec10$1s = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec11$1k = uint, _dec12$19 = quaternion, _dec13$_ = vector3, _dec14$T = vector3, _dec15$Q = list(), _dec16$J = notImplemented$1, _dec17$D = boolean, _dec18$z = boolean, _dec$5n(_class$5n = _dec2$4_(_class$5n = (_class2$4O = class EveChildParticleSystem extends EveChild {
+	var EveChildParticleSystem = (_dec$5n = define("EveChildParticleSystem", true), _dec2$4_ = stage(1), _dec3$4z = string, _dec4$3Y = boolean, _dec5$3q = matrix4, _dec6$2X = notImplemented, _dec7$2x = float, _dec8$2c = struct("Tw2InstancedMesh"), _dec9$1W = notImplemented, _dec0$1N = float, _dec1$1G = list("Tw2ParticleEmitter"), _dec10$1s = list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec11$1k = uint, _dec12$19 = quaternion, _dec13$_ = vector3, _dec14$T = vector3, _dec15$Q = list(), _dec16$J = notImplemented, _dec17$D = boolean, _dec18$z = boolean, _dec$5n(_class$5n = _dec2$4_(_class$5n = (_class2$4O = class EveChildParticleSystem extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4Q, this);
@@ -182667,7 +182251,7 @@
 	 * is carried for round-tripping and `Rebind` is a no-op until content needs it.
 	 * (Scan scope: `shared/fx` only - hangar, ship, station and scene not covered.)
 	 */
-	var EveChildSocket = (_dec$5k = define("EveChildSocket", true), _dec2$4X = stage(2), _dec3$4w = path, _dec4$3W = struct("EveChildPlug"), _dec5$3o = notImplemented$1, _dec6$2W = list(), _dec7$2w = notImplemented$1, _dec$5k(_class$5k = _dec2$4X(_class$5k = (_class2$4L = class EveChildSocket extends EveChildContainer {
+	var EveChildSocket = (_dec$5k = define("EveChildSocket", true), _dec2$4X = stage(2), _dec3$4w = path, _dec4$3W = struct("EveChildPlug"), _dec5$3o = notImplemented, _dec6$2W = list(), _dec7$2w = notImplemented, _dec$5k(_class$5k = _dec2$4X(_class$5k = (_class2$4L = class EveChildSocket extends EveChildContainer {
 	  constructor() {
 	    super(...arguments);
 	    /**
@@ -183042,7 +182626,7 @@
 	}), _class2$4K)) || _class$5j);
 
 	var _dec$5i, _dec2$4V, _dec3$4u, _dec4$3V, _dec5$3n, _dec6$2V, _dec7$2v, _dec8$2b, _dec9$1V, _dec0$1M, _dec1$1F, _dec10$1r, _dec11$1j, _dec12$18, _dec13$Z, _dec14$S, _dec15$P, _dec16$I, _dec17$C, _dec18$y, _dec19$u, _dec20$s, _dec21$q, _dec22$o, _dec23$l, _class$5i, _class2$4J, _descriptor$4L, _descriptor2$4h, _descriptor3$3H, _descriptor4$3d, _descriptor5$2N, _descriptor6$2l, _descriptor7$1X, _descriptor8$1I, _descriptor9$1A, _descriptor0$1v, _descriptor1$1d, _descriptor10$14, _descriptor11$U, _descriptor12$P, _descriptor13$K, _descriptor14$G, _descriptor15$w, _descriptor16$q, _descriptor17$o, _descriptor18$n, _descriptor19$i, _EveLensflare;
-	var EveLensflare = (_dec$5i = define("EveLensflare", true), _dec2$4V = string, _dec3$4u = notImplemented$1, _dec4$3V = list("EveOccluder"), _dec5$3n = list("Tw2ValueBinding"), _dec6$2V = list("Tw2Curve"), _dec7$2v = list("Tw2Curve"), _dec8$2b = struct("Tw2Mesh"), _dec9$1V = list("EveOccluder"), _dec0$1M = vector3, _dec1$1F = list("Tw2Curve"), _dec10$1r = list("Tw2Curve"), _dec11$1j = list("Tw2Curve"), _dec12$18 = list("Tw2Curve"), _dec13$Z = boolean, _dec14$S = boolean, _dec15$P = boolean, _dec16$I = boolean, _dec17$C = float, _dec18$y = list("EveLensflare"), _dec19$u = todo("Deprecated?"), _dec20$s = float, _dec21$q = float, _dec22$o = list("Tw2CurveSet"), _dec23$l = todo("Deprecated?"), _dec$5i(_class$5i = (_class2$4J = (_EveLensflare = class EveLensflare extends Model {
+	var EveLensflare = (_dec$5i = define("EveLensflare", true), _dec2$4V = string, _dec3$4u = notImplemented, _dec4$3V = list("EveOccluder"), _dec5$3n = list("Tw2ValueBinding"), _dec6$2V = list("Tw2Curve"), _dec7$2v = list("Tw2Curve"), _dec8$2b = struct("Tw2Mesh"), _dec9$1V = list("EveOccluder"), _dec0$1M = vector3, _dec1$1F = list("Tw2Curve"), _dec10$1r = list("Tw2Curve"), _dec11$1j = list("Tw2Curve"), _dec12$18 = list("Tw2Curve"), _dec13$Z = boolean, _dec14$S = boolean, _dec15$P = boolean, _dec16$I = boolean, _dec17$C = float, _dec18$y = list("EveLensflare"), _dec19$u = todo("Deprecated?"), _dec20$s = float, _dec21$q = float, _dec22$o = list("Tw2CurveSet"), _dec23$l = todo("Deprecated?"), _dec$5i(_class$5i = (_class2$4J = (_EveLensflare = class EveLensflare extends Model {
 	  /**
 	   * Constructor
 	   */
@@ -183448,7 +183032,7 @@
 	}), _class2$4J)) || _class$5i);
 
 	var _dec$5h, _dec2$4U, _dec3$4t, _dec4$3U, _dec5$3m, _dec6$2U, _dec7$2u, _dec8$2a, _dec9$1U, _dec0$1L, _dec1$1E, _dec10$1q, _class$5h, _class2$4I, _descriptor$4K, _descriptor2$4g, _descriptor3$3G, _descriptor4$3c, _descriptor5$2M, _descriptor6$2k, _descriptor7$1W, _descriptor8$1H, _descriptor9$1z, _descriptor0$1u;
-	var EveMeshOverlayEffect = (_dec$5h = define("EveMeshOverlayEffect", true), _dec2$4U = string, _dec3$4t = list("Tw2Effect"), _dec4$3U = struct("Tw2CurveSet"), _dec5$3m = list("Tw2Effect"), _dec6$2U = boolean, _dec7$2u = notImplemented$1, _dec8$2a = list("Tw2Effect"), _dec9$1U = list("Tw2Effect"), _dec0$1L = list("Tw2Effect"), _dec1$1E = boolean, _dec10$1q = plain, _dec$5h(_class$5h = (_class2$4I = class EveMeshOverlayEffect extends Model {
+	var EveMeshOverlayEffect = (_dec$5h = define("EveMeshOverlayEffect", true), _dec2$4U = string, _dec3$4t = list("Tw2Effect"), _dec4$3U = struct("Tw2CurveSet"), _dec5$3m = list("Tw2Effect"), _dec6$2U = boolean, _dec7$2u = notImplemented, _dec8$2a = list("Tw2Effect"), _dec9$1U = list("Tw2Effect"), _dec0$1L = list("Tw2Effect"), _dec1$1E = boolean, _dec10$1q = plain, _dec$5h(_class$5h = (_class2$4I = class EveMeshOverlayEffect extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4K, this);
@@ -183648,7 +183232,7 @@
 	}), _class2$4I)) || _class$5h);
 
 	var _dec$5g, _dec2$4T, _dec3$4s, _dec4$3T, _dec5$3l, _dec6$2T, _dec7$2t, _dec8$29, _dec9$1T, _dec0$1K, _dec1$1D, _dec10$1p, _dec11$1i, _dec12$17, _dec13$Y, _dec14$R, _dec15$O, _dec16$H, _dec17$B, _dec18$x, _dec19$t, _dec20$r, _dec21$p, _class$5g, _class2$4H, _descriptor$4J, _descriptor2$4f, _descriptor3$3F, _descriptor4$3b, _descriptor5$2L, _descriptor6$2j, _descriptor7$1V, _descriptor8$1G, _descriptor9$1y, _descriptor0$1t, _descriptor1$1c, _descriptor10$13, _descriptor11$T, _descriptor12$O, _descriptor13$J, _EveStretch$2;
-	var EveStretch = (_dec$5g = define("EveStretch", true), _dec2$4T = string, _dec3$4s = list("Tw2CurveSet"), _dec4$3T = boolean, _dec5$3l = struct(), _dec6$2T = notOwned, _dec7$2t = struct(), _dec8$29 = struct("Tw2Float"), _dec9$1T = notImplemented$1, _dec0$1K = struct("Tw2CurveSet"), _dec1$1D = notImplemented$1, _dec10$1p = struct(), _dec11$1i = notImplemented$1, _dec12$17 = struct("Tw2Curve"), _dec13$Y = struct(), _dec14$R = notImplemented$1, _dec15$O = list("Tr2PointLight"), _dec16$H = notOwned, _dec17$B = struct(), _dec18$x = struct(), _dec19$t = boolean, _dec20$r = notImplemented$1, _dec21$p = boolean, _dec$5g(_class$5g = (_class2$4H = (_EveStretch$2 = class EveStretch extends Model {
+	var EveStretch = (_dec$5g = define("EveStretch", true), _dec2$4T = string, _dec3$4s = list("Tw2CurveSet"), _dec4$3T = boolean, _dec5$3l = struct(), _dec6$2T = notOwned, _dec7$2t = struct(), _dec8$29 = struct("Tw2Float"), _dec9$1T = notImplemented, _dec0$1K = struct("Tw2CurveSet"), _dec1$1D = notImplemented, _dec10$1p = struct(), _dec11$1i = notImplemented, _dec12$17 = struct("Tw2Curve"), _dec13$Y = struct(), _dec14$R = notImplemented, _dec15$O = list("Tr2PointLight"), _dec16$H = notOwned, _dec17$B = struct(), _dec18$x = struct(), _dec19$t = boolean, _dec20$r = notImplemented, _dec21$p = boolean, _dec$5g(_class$5g = (_class2$4H = (_EveStretch$2 = class EveStretch extends Model {
 	  /**
 	   * Constructor
 	   */
@@ -184782,7 +184366,7 @@
 	    this.started = false;
 	  }
 	}
-	var EveTurretFiringFX = (_dec$5e = define("EveTurretFiringFX", true), _dec2$4R = stage(2), _dec3$4q = string, _dec4$3R = string, _dec5$3j = boolean, _dec6$2R = notImplemented$1, _dec7$2r = struct("TriObserverLocal"), _dec8$27 = float, _dec9$1R = float, _dec0$1I = float, _dec1$1B = float, _dec10$1n = float, _dec11$1g = todo("Deprecated?"), _dec12$15 = float, _dec13$W = todo("Deprecated?"), _dec14$P = float, _dec15$M = todo("Deprecated?"), _dec16$F = float, _dec17$z = todo("Deprecated?"), _dec18$v = float, _dec19$s = float, _dec20$q = boolean, _dec21$o = float, _dec22$n = float, _dec23$k = float, _dec24$j = float, _dec25$h = boolean, _dec26$f = notImplemented$1, _dec27$f = struct("TriObserverLocal"), _dec28$d = notImplemented$1, _dec29$b = struct("Tw2CurveSet"), _dec30$a = notImplemented$1, _dec31$9 = struct("Tw2CurveSet"), _dec32$9 = list(["EveStretch", "EveStretch2"]), _dec33$8 = boolean, _dec$5e(_class$5e = _dec2$4R(_class$5e = (_class2$4F = (_EveTurretFiringFX = class EveTurretFiringFX extends Model {
+	var EveTurretFiringFX = (_dec$5e = define("EveTurretFiringFX", true), _dec2$4R = stage(2), _dec3$4q = string, _dec4$3R = string, _dec5$3j = boolean, _dec6$2R = notImplemented, _dec7$2r = struct("TriObserverLocal"), _dec8$27 = float, _dec9$1R = float, _dec0$1I = float, _dec1$1B = float, _dec10$1n = float, _dec11$1g = todo("Deprecated?"), _dec12$15 = float, _dec13$W = todo("Deprecated?"), _dec14$P = float, _dec15$M = todo("Deprecated?"), _dec16$F = float, _dec17$z = todo("Deprecated?"), _dec18$v = float, _dec19$s = float, _dec20$q = boolean, _dec21$o = float, _dec22$n = float, _dec23$k = float, _dec24$j = float, _dec25$h = boolean, _dec26$f = notImplemented, _dec27$f = struct("TriObserverLocal"), _dec28$d = notImplemented, _dec29$b = struct("Tw2CurveSet"), _dec30$a = notImplemented, _dec31$9 = struct("Tw2CurveSet"), _dec32$9 = list(["EveStretch", "EveStretch2"]), _dec33$8 = boolean, _dec$5e(_class$5e = _dec2$4R(_class$5e = (_class2$4F = (_EveTurretFiringFX = class EveTurretFiringFX extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4H, this);
@@ -185285,7 +184869,7 @@
 	}), _class2$4F)) || _class$5e) || _class$5e);
 
 	var _dec$5d, _dec2$4Q, _dec3$4p, _dec4$3Q, _dec5$3i, _dec6$2Q, _dec7$2q, _dec8$26, _dec9$1Q, _dec0$1H, _dec1$1A, _dec10$1m, _dec11$1f, _dec12$14, _dec13$V, _class$5d, _class2$4E, _descriptor$4G, _descriptor2$4c, _descriptor3$3C, _descriptor4$38, _descriptor5$2I, _descriptor6$2g, _descriptor7$1S, _descriptor8$1D, _descriptor9$1v, _descriptor0$1q, _descriptor1$19, _EveBanner;
-	var EveBanner = (_dec$5d = define("EveBanner", true), _dec2$4Q = notImplemented$1, _dec3$4p = string, _dec4$3Q = float, _dec5$3i = notImplemented$1, _dec6$2Q = float, _dec7$2q = notImplemented$1, _dec8$26 = int32$1, _dec9$1Q = boolean, _dec0$1H = translation, _dec1$1A = rotation, _dec10$1m = scaling, _dec11$1f = uint, _dec12$14 = matrix4, _dec13$V = struct(), _dec$5d(_class$5d = _dec2$4Q(_class$5d = (_class2$4E = (_EveBanner = class EveBanner extends Model {
+	var EveBanner = (_dec$5d = define("EveBanner", true), _dec2$4Q = notImplemented, _dec3$4p = string, _dec4$3Q = float, _dec5$3i = notImplemented, _dec6$2Q = float, _dec7$2q = notImplemented, _dec8$26 = int32$1, _dec9$1Q = boolean, _dec0$1H = translation, _dec1$1A = rotation, _dec10$1m = scaling, _dec11$1f = uint, _dec12$14 = matrix4, _dec13$V = struct(), _dec$5d(_class$5d = _dec2$4Q(_class$5d = (_class2$4E = (_EveBanner = class EveBanner extends Model {
 	  /* CCPWGL ONLY */
 
 	  constructor() {
@@ -186583,7 +186167,7 @@
 	 * Todo: replace locator update with bones...
 	 */
 
-	var EveBoosterSet = (_dec1$1y = define("EveBoosterSet", true), _dec10$1k = notImplemented$1, _dec11$1d = boolean, _dec12$12 = struct("Tw2Effect"), _dec13$T = color, _dec14$N = struct("EveSpriteSet"), _dec15$K = float, _dec16$D = color, _dec17$x = float, _dec18$t = float, _dec19$r = notImplemented$1, _dec20$p = float, _dec21$n = float, _dec22$m = color, _dec23$j = vector4, _dec24$i = color, _dec25$g = color, _dec26$e = float, _dec27$e = float, _dec28$c = float, _dec29$a = plain, _dec1$1y(_class3$i = (_class4$g = (_EveBoosterSet$1 = class EveBoosterSet extends EveObjectSet {
+	var EveBoosterSet = (_dec1$1y = define("EveBoosterSet", true), _dec10$1k = notImplemented, _dec11$1d = boolean, _dec12$12 = struct("Tw2Effect"), _dec13$T = color, _dec14$N = struct("EveSpriteSet"), _dec15$K = float, _dec16$D = color, _dec17$x = float, _dec18$t = float, _dec19$r = notImplemented, _dec20$p = float, _dec21$n = float, _dec22$m = color, _dec23$j = vector4, _dec24$i = color, _dec25$g = color, _dec26$e = float, _dec27$e = float, _dec28$c = float, _dec29$a = plain, _dec1$1y(_class3$i = (_class4$g = (_EveBoosterSet$1 = class EveBoosterSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "alwaysOn", _descriptor0$1o, this);
@@ -188893,7 +188477,7 @@
 	    return this.planeSet.effect && this.planeSet.effect.HasTechnique(technique);
 	  }
 	}
-	var EvePlaneSetItem = (_dec$55 = define("EvePlaneSetItem", true), _dec2$4I = string, _dec3$4h = int32$1, _dec4$3I = color, _dec5$3a = vector4, _dec6$2I = vector4, _dec7$2i = vector4, _dec8$1_ = vector4, _dec9$1I = uint, _dec0$1A = vector3, _dec1$1t = quaternion, _dec10$1g = vector3, _dec11$19 = int32$1, _dec12$_ = float, _dec13$P = float, _dec14$L = uint, _dec15$I = float, _dec16$B = notImplemented$1, _dec17$w = float, _dec18$s = int32$1, _dec19$q = alias("maskAtlasID"), _dec$55(_class$55 = (_class2$4w = class EvePlaneSetItem extends EveObjectSetItem {
+	var EvePlaneSetItem = (_dec$55 = define("EvePlaneSetItem", true), _dec2$4I = string, _dec3$4h = int32$1, _dec4$3I = color, _dec5$3a = vector4, _dec6$2I = vector4, _dec7$2i = vector4, _dec8$1_ = vector4, _dec9$1I = uint, _dec0$1A = vector3, _dec1$1t = quaternion, _dec10$1g = vector3, _dec11$19 = int32$1, _dec12$_ = float, _dec13$P = float, _dec14$L = uint, _dec15$I = float, _dec16$B = notImplemented, _dec17$w = float, _dec18$s = int32$1, _dec19$q = alias("maskAtlasID"), _dec$55(_class$55 = (_class2$4w = class EvePlaneSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4y, this);
@@ -189214,7 +188798,7 @@
 	    return "";
 	  }
 	}), _class4$e)) || _class3$f);
-	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented$1, _dec35$7 = boolean, _dec36$7 = notImplemented$1, _dec37$6 = byte, _dec38$6 = uint, _dec39$5 = list("EvePlaneSetItem"), _dec40$5 = list("EvePlaneLight"), _dec31$8(_class5$3 = (_class6$1 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
+	var EvePlaneSet = (_dec31$8 = define("EvePlaneSet", true), _dec32$8 = string, _dec33$7 = struct(), _dec34$7 = notImplemented, _dec35$7 = boolean, _dec36$7 = notImplemented, _dec37$6 = byte, _dec38$6 = uint, _dec39$5 = list("EvePlaneSetItem"), _dec40$5 = list("EvePlaneLight"), _dec31$8(_class5$3 = (_class6$1 = (_EvePlaneSet = class EvePlaneSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor26$b, this);
@@ -191373,7 +190957,7 @@
 	    return quat$2.create();
 	  }
 	}), _class2$4s)) || _class$51);
-	var EveTurretSet = (_dec7$2e = define("EveTurretSet", true), _dec8$1W = stage(1), _dec9$1F = string, _dec0$1x = notImplemented$1, _dec1$1q = float, _dec10$1d = vector4, _dec11$16 = boolean, _dec12$X = uint, _dec13$N = path, _dec14$J = path, _dec15$G = string, _dec16$z = string, _dec17$u = notImplemented$1, _dec18$q = boolean, _dec19$o = float, _dec20$m = uint, _dec21$k = notImplemented$1, _dec22$k = boolean, _dec23$h = notImplemented$1, _dec24$g = vector3, _dec25$e = notImplemented$1, _dec26$c = quaternion, _dec27$c = notImplemented$1, _dec28$a = vector3, _dec29$8 = notImplemented$1, _dec30$8 = boolean, _dec31$7 = notImplemented$1, _dec32$7 = struct(), _dec33$6 = uint, _dec34$6 = float, _dec35$6 = boolean, _dec36$6 = string, _dec37$5 = uint, _dec38$5 = notImplemented$1, _dec39$4 = struct(), _dec40$4 = boolean, _dec41$4 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = float, _dec52$1 = struct("Tw2Effect"), _dec53$1 = boolean, _dec54$1 = notImplemented$1, _dec55$1 = boolean, _dec56$1 = boolean, _dec57$1 = struct(), _dec58$1 = struct("EveTurretTarget"), _dec59$1 = struct("Tw2GeometryResource"), _dec60$1 = todo("Make private"), _dec61$1 = plain, _dec62$1 = todo("Update parent class and replace with direct value"), _dec7$2e(_class3$d = _dec8$1W(_class3$d = (_class4$c = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
+	var EveTurretSet = (_dec7$2e = define("EveTurretSet", true), _dec8$1W = stage(1), _dec9$1F = string, _dec0$1x = notImplemented, _dec1$1q = float, _dec10$1d = vector4, _dec11$16 = boolean, _dec12$X = uint, _dec13$N = path, _dec14$J = path, _dec15$G = string, _dec16$z = string, _dec17$u = notImplemented, _dec18$q = boolean, _dec19$o = float, _dec20$m = uint, _dec21$k = notImplemented, _dec22$k = boolean, _dec23$h = notImplemented, _dec24$g = vector3, _dec25$e = notImplemented, _dec26$c = quaternion, _dec27$c = notImplemented, _dec28$a = vector3, _dec29$8 = notImplemented, _dec30$8 = boolean, _dec31$7 = notImplemented, _dec32$7 = struct(), _dec33$6 = uint, _dec34$6 = float, _dec35$6 = boolean, _dec36$6 = string, _dec37$5 = uint, _dec38$5 = notImplemented, _dec39$4 = struct(), _dec40$4 = boolean, _dec41$4 = float, _dec42$3 = float, _dec43$3 = float, _dec44$3 = float, _dec45$3 = float, _dec46$2 = float, _dec47$1 = float, _dec48$1 = float, _dec49$1 = float, _dec50$1 = float, _dec51$1 = float, _dec52$1 = struct("Tw2Effect"), _dec53$1 = boolean, _dec54$1 = notImplemented, _dec55$1 = boolean, _dec56$1 = boolean, _dec57$1 = struct(), _dec58$1 = struct("EveTurretTarget"), _dec59$1 = struct("Tw2GeometryResource"), _dec60$1 = todo("Make private"), _dec61$1 = plain, _dec62$1 = todo("Update parent class and replace with direct value"), _dec7$2e(_class3$d = _dec8$1W(_class3$d = (_class4$c = (_EveTurretSet = class EveTurretSet extends EveObjectSet {
 	  /**
 	   * Attaches the Carbon packer and its buffers to both per-object data sets.
 	   *
@@ -193460,7 +193044,7 @@
 	 * genuinely differs between a closed circle and an open curve. What is shared is
 	 * the state and the segment count, which are identical expressions in both.
 	 */
-	var IEveLineSetPath = (_dec$4_ = define("IEveLineSetPath", true), _dec2$4C = notImplemented$1, _dec$4_(_class$4_ = (_class2$4q = (_IEveLineSetPath = class IEveLineSetPath extends EveChildTransform {
+	var IEveLineSetPath = (_dec$4_ = define("IEveLineSetPath", true), _dec2$4C = notImplemented, _dec$4_(_class$4_ = (_class2$4q = (_IEveLineSetPath = class IEveLineSetPath extends EveChildTransform {
 	  constructor() {
 	    super(...arguments);
 	    /** Generated points, in this path's local space. @type {Array<vec3>} */
@@ -194323,7 +193907,7 @@
 	  EVE_SIMPLE_HALO: 102,
 	  EVE_CAMERA_ROTATION: 103
 	};
-	var EveTransform = (_dec$4W = define("EveTransform", true), _dec2$4y = string, _dec3$48 = list("EveObject"), _dec4$3z = list("Tw2CurveSet"), _dec5$31 = boolean, _dec6$2z = notImplemented$1, _dec7$2a = float, _dec8$1S = notImplemented$1, _dec9$1B = float, _dec0$1t = notImplemented$1, _dec1$1n = boolean, _dec10$1a = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$13 = uint, _dec12$U = enums(Modifier), _dec13$K = list("Tr2ObserverLocal"), _dec14$G = vector3, _dec15$D = vector3, _dec16$w = list("EveParticleEmitter"), _dec17$r = list("EveParticleSystem"), _dec18$o = notImplemented$1, _dec19$n = float, _dec20$l = boolean, _dec21$j = notImplemented$1, _dec22$j = boolean, _dec23$g = notImplemented$1, _dec24$f = boolean, _dec25$d = notImplemented$1, _dec26$b = float, _dec27$b = plain, _dec$4W(_class$4W = (_class2$4n = (_EveTransform = class EveTransform extends EveObject {
+	var EveTransform = (_dec$4W = define("EveTransform", true), _dec2$4y = string, _dec3$48 = list("EveObject"), _dec4$3z = list("Tw2CurveSet"), _dec5$31 = boolean, _dec6$2z = notImplemented, _dec7$2a = float, _dec8$1S = notImplemented, _dec9$1B = float, _dec0$1t = notImplemented, _dec1$1n = boolean, _dec10$1a = struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec11$13 = uint, _dec12$U = enums(Modifier), _dec13$K = list("Tr2ObserverLocal"), _dec14$G = vector3, _dec15$D = vector3, _dec16$w = list("EveParticleEmitter"), _dec17$r = list("EveParticleSystem"), _dec18$o = notImplemented, _dec19$n = float, _dec20$l = boolean, _dec21$j = notImplemented, _dec22$j = boolean, _dec23$g = notImplemented, _dec24$f = boolean, _dec25$d = notImplemented, _dec26$b = float, _dec27$b = plain, _dec$4W(_class$4W = (_class2$4n = (_EveTransform = class EveTransform extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4p, this);
@@ -195338,7 +194922,7 @@
 	// TODO: Add "OnValueChanged" handler
 	// TODO: Handle height map resolution size
 
-	var EvePlanet = (_dec$4U = define("EvePlanet", true), _dec2$4w = list("Tw2CurveSet"), _dec3$46 = list("Tr2Controller"), _dec4$3x = struct("EveTransform"), _dec5$2$ = struct("Tw2Effect"), _dec6$2x = struct("Tw2RenderTarget"), _dec7$28 = struct("EveTransform"), _dec8$1Q = uint, _dec9$1z = uint, _dec0$1r = isPrivate, _dec1$1l = path, _dec10$18 = isPrivate, _dec11$11 = path, _dec12$S = isPrivate, _dec13$J = list("EveChild"), _dec14$F = notImplemented$1, _dec15$C = float, _dec16$v = uint, _dec17$q = notImplemented$1, _dec18$n = uint, _dec19$m = notImplemented$1, _dec$4U(_class$4U = (_class2$4l = (_EvePlanet = class EvePlanet extends EveObject {
+	var EvePlanet = (_dec$4U = define("EvePlanet", true), _dec2$4w = list("Tw2CurveSet"), _dec3$46 = list("Tr2Controller"), _dec4$3x = struct("EveTransform"), _dec5$2$ = struct("Tw2Effect"), _dec6$2x = struct("Tw2RenderTarget"), _dec7$28 = struct("EveTransform"), _dec8$1Q = uint, _dec9$1z = uint, _dec0$1r = isPrivate, _dec1$1l = path, _dec10$18 = isPrivate, _dec11$11 = path, _dec12$S = isPrivate, _dec13$J = list("EveChild"), _dec14$F = notImplemented, _dec15$C = float, _dec16$v = uint, _dec17$q = notImplemented, _dec18$n = uint, _dec19$m = notImplemented, _dec$4U(_class$4U = (_class2$4l = (_EvePlanet = class EvePlanet extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "curveSets", _descriptor$4n, this);
@@ -197739,7 +197323,7 @@
 	var sph3_0 = sph3.create();
 
 	var _dec$4Q, _class$4Q, _dec2$4s, _dec3$42, _dec4$3t, _dec5$2X, _dec6$2u, _dec7$25, _dec8$1N, _dec9$1w, _dec0$1o, _dec1$1i, _dec10$15, _dec11$$, _class2$4h, _class3$b, _descriptor$4j, _descriptor2$3R, _descriptor3$3f, _descriptor4$2O, _descriptor5$2n, _descriptor6$1X, _descriptor7$1z, _descriptor8$1l, _descriptor9$1f, _descriptor0$1b, _dec12$Q, _dec13$H, _dec14$D, _dec15$A, _class4$a, _class5$2, _descriptor1$X, _descriptor10$Q, _EveHazeSet;
-	var EveHazeSetBatch = (_dec$4Q = notImplemented$1, _dec$4Q(_class$4Q = class EveHazeSetBatch extends Tw2RenderBatch {
+	var EveHazeSetBatch = (_dec$4Q = notImplemented, _dec$4Q(_class$4Q = class EveHazeSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
 	    this.hazeSet = null;
@@ -197762,7 +197346,7 @@
 	    return this.hazeSet && this.hazeSet.effect && this.hazeSet.effect.HasTechnique(technique);
 	  }
 	}) || _class$4Q);
-	var EveHazeSetItem = (_dec2$4s = notImplemented$1, _dec3$42 = define("EveHazeSetItem", true), _dec4$3t = boolean, _dec5$2X = boolean, _dec6$2u = uint, _dec7$25 = float, _dec8$1N = float, _dec9$1w = vector3, _dec0$1o = quaternion, _dec1$1i = vector3, _dec10$15 = float, _dec11$$ = float, _dec2$4s(_class2$4h = _dec3$42(_class2$4h = (_class3$b = class EveHazeSetItem extends EveObjectSetItem {
+	var EveHazeSetItem = (_dec2$4s = notImplemented, _dec3$42 = define("EveHazeSetItem", true), _dec4$3t = boolean, _dec5$2X = boolean, _dec6$2u = uint, _dec7$25 = float, _dec8$1N = float, _dec9$1w = vector3, _dec0$1o = quaternion, _dec1$1i = vector3, _dec10$15 = float, _dec11$$ = float, _dec2$4s(_class2$4h = _dec3$42(_class2$4h = (_class3$b = class EveHazeSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$4j, this);
@@ -197854,7 +197438,7 @@
 	    return 0;
 	  }
 	}), _class3$b)) || _class2$4h) || _class2$4h);
-	var EveHazeSet = (_dec12$Q = notImplemented$1, _dec13$H = define("EveHazeSet", true), _dec14$D = boolean, _dec15$A = struct(), _dec12$Q(_class4$a = _dec13$H(_class4$a = (_class5$2 = (_EveHazeSet = class EveHazeSet extends EveObjectSet {
+	var EveHazeSet = (_dec12$Q = notImplemented, _dec13$H = define("EveHazeSet", true), _dec14$D = boolean, _dec15$A = struct(), _dec12$Q(_class4$a = _dec13$H(_class4$a = (_class5$2 = (_EveHazeSet = class EveHazeSet extends EveObjectSet {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor1$X, this);
@@ -198133,7 +197717,7 @@
 	}), _class5$2)) || _class4$a) || _class4$a);
 
 	var _dec$4P, _class$4P, _dec2$4r, _dec3$41, _dec4$3s, _dec5$2W, _dec6$2t, _dec7$24, _dec8$1M, _dec9$1v, _dec0$1n, _dec1$1h, _dec10$14, _dec11$_, _dec12$P, _dec13$G, _dec14$C, _dec15$z, _dec16$t, _dec17$o, _class2$4g, _class3$a, _descriptor$4i, _descriptor2$3Q, _descriptor3$3e, _descriptor4$2N, _descriptor5$2m, _descriptor6$1W, _descriptor7$1y, _descriptor8$1k, _descriptor9$1e, _descriptor0$1a, _descriptor1$W, _descriptor10$P, _descriptor11$E, _descriptor12$B, _descriptor13$x, _descriptor14$u, _dec18$l, _dec19$k, _class4$9;
-	var EveSpriteLineSetBatch = (_dec$4P = notImplemented$1, _dec$4P(_class$4P = class EveSpriteLineSetBatch {
+	var EveSpriteLineSetBatch = (_dec$4P = notImplemented, _dec$4P(_class$4P = class EveSpriteLineSetBatch {
 	  constructor() {
 	    this.spriteLineSet = null;
 	  }
@@ -198145,7 +197729,7 @@
 	    this.spriteLineSet.Render(technique);
 	  }
 	}) || _class$4P);
-	var EveSpriteLineSetItem = (_dec2$4r = notImplemented$1, _dec3$41 = define("EveSpriteLineSetItem", true), _dec4$3s = float, _dec5$2W = float, _dec6$2t = float, _dec7$24 = int32$1, _dec8$1M = uint, _dec9$1v = float, _dec0$1n = float, _dec1$1h = boolean, _dec10$14 = float, _dec11$_ = float, _dec12$P = vector3, _dec13$G = quaternion, _dec14$C = vector3, _dec15$z = float, _dec16$t = boolean, _dec17$o = matrix4, _dec2$4r(_class2$4g = _dec3$41(_class2$4g = (_class3$a = class EveSpriteLineSetItem extends EveObjectSetItem {
+	var EveSpriteLineSetItem = (_dec2$4r = notImplemented, _dec3$41 = define("EveSpriteLineSetItem", true), _dec4$3s = float, _dec5$2W = float, _dec6$2t = float, _dec7$24 = int32$1, _dec8$1M = uint, _dec9$1v = float, _dec0$1n = float, _dec1$1h = boolean, _dec10$14 = float, _dec11$_ = float, _dec12$P = vector3, _dec13$G = quaternion, _dec14$C = vector3, _dec15$z = float, _dec16$t = boolean, _dec17$o = matrix4, _dec2$4r(_class2$4g = _dec3$41(_class2$4g = (_class3$a = class EveSpriteLineSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "blinkPhase", _descriptor$4i, this);
@@ -198286,7 +197870,7 @@
 	    return mat4$2.create();
 	  }
 	}), _class3$a)) || _class2$4g) || _class2$4g);
-	var EveSpriteLineSet = (_dec18$l = notImplemented$1, _dec19$k = define("EveSpriteLineSet", true), _dec18$l(_class4$9 = _dec19$k(_class4$9 = class EveSpriteLineSet extends EveObjectSet {}) || _class4$9) || _class4$9);
+	var EveSpriteLineSet = (_dec18$l = notImplemented, _dec19$k = define("EveSpriteLineSet", true), _dec18$l(_class4$9 = _dec19$k(_class4$9 = class EveSpriteLineSet extends EveObjectSet {}) || _class4$9) || _class4$9);
 
 	var _dec$4O, _dec2$4q, _dec3$40, _dec4$3r, _dec5$2V, _dec6$2s, _dec7$23, _dec8$1L, _dec9$1u, _dec0$1m, _dec1$1g, _dec10$13, _dec11$Z, _dec12$O, _dec13$F, _dec14$B, _dec15$y, _dec16$s, _dec17$n, _dec18$k, _dec19$j, _dec20$j, _dec21$h, _dec22$h, _dec23$e, _dec24$d, _dec25$b, _dec26$9, _dec27$9, _dec28$8, _dec29$6, _dec30$6, _dec31$5, _dec32$5, _dec33$4, _dec34$4, _dec35$4, _dec36$4, _dec37$3, _dec38$3, _dec39$3, _dec40$3, _dec41$3, _class$4O, _class2$4f, _descriptor$4h, _descriptor2$3P, _descriptor3$3d, _descriptor4$2M, _descriptor5$2l, _descriptor6$1V, _descriptor7$1x, _descriptor8$1j, _descriptor9$1d, _descriptor0$19, _descriptor1$V, _descriptor10$O, _descriptor11$D, _descriptor12$A, _descriptor13$w, _descriptor14$t, _descriptor15$k, _descriptor16$g, _descriptor17$f, _descriptor18$f, _descriptor19$c, _descriptor20$b, _descriptor21$b, _descriptor22$a, _descriptor23$9, _descriptor24$8, _descriptor25$8, _descriptor26$8, _descriptor27$6, _descriptor28$6, _descriptor29$4, _EveShip;
 	var EveShip2 = (_dec$4O = define("EveShip2", true), _dec2$4q = stage(2), _dec3$40 = struct("Tw2Animation"), _dec4$3r = isPrivate, _dec5$2V = list("EveObjectSet"), _dec6$2s = struct("EveBoosterSet2"), _dec7$23 = vector3, _dec8$1L = isPrivate, _dec9$1u = float, _dec0$1m = isPrivate, _dec1$1g = list("EveObject"), _dec10$13 = list("EveCustomMask"), _dec11$Z = string, _dec12$O = list("EveSpaceObjectDecal"), _dec13$F = string, _dec14$B = list("EveLocatorSets"), _dec15$y = list("EveLocator2"), _dec16$s = struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec17$n = struct("EveCurve"), _dec18$k = isPrivate, _dec19$j = vector3, _dec20$j = isPrivate, _dec21$h = vector3, _dec22$h = isPrivate, _dec23$e = struct("EveCurve"), _dec24$d = isPrivate, _dec25$b = uint, _dec26$9 = uint, _dec27$9 = float, _dec28$8 = vector3, _dec29$6 = float, _dec30$6 = float, _dec31$5 = float, _dec32$5 = float, _dec33$4 = list("EveChild"), _dec34$4 = plain, _dec35$4 = ui({
@@ -206798,7 +206382,7 @@
 	 * engine and every console probe silently returns nothing for the beams, which
 	 * reads as "the beams do not exist" rather than "the walk cannot reach them".
 	 */
-	var EveChildInstanceMeshRenderer = (_dec$4g = notImplemented$1, _dec2$3U = define("EveChildInstanceMeshRenderer", true), _dec3$3w = string, _dec4$2_ = boolean, _dec5$2w = boolean, _dec6$2a = list(), _dec7$1R = matrix4, _dec8$1C = uint, _dec9$1n = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1f = float, _dec1$19 = uint, _dec10$_ = quaternion, _dec11$V = vector3, _dec12$K = float, _dec13$B = boolean, _dec14$y = list("EveChildModifier"), _dec15$v = vector3, _dec16$p = boolean, _dec17$l = boolean, _dec18$i = boolean, _dec19$h = uint, _dec20$h = unknown, _dec21$f = uint, _dec22$f = vector3, _dec23$c = quaternion, _dec24$b = vector3, _dec$4g(_class$4g = _dec2$3U(_class$4g = (_class2$3J = (_EveChildInstanceMeshRenderer = class EveChildInstanceMeshRenderer extends Model {
+	var EveChildInstanceMeshRenderer = (_dec$4g = notImplemented, _dec2$3U = define("EveChildInstanceMeshRenderer", true), _dec3$3w = string, _dec4$2_ = boolean, _dec5$2w = boolean, _dec6$2a = list(), _dec7$1R = matrix4, _dec8$1C = uint, _dec9$1n = struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec0$1f = float, _dec1$19 = uint, _dec10$_ = quaternion, _dec11$V = vector3, _dec12$K = float, _dec13$B = boolean, _dec14$y = list("EveChildModifier"), _dec15$v = vector3, _dec16$p = boolean, _dec17$l = boolean, _dec18$i = boolean, _dec19$h = uint, _dec20$h = unknown, _dec21$f = uint, _dec22$f = vector3, _dec23$c = quaternion, _dec24$b = vector3, _dec$4g(_class$4g = _dec2$3U(_class$4g = (_class2$3J = (_EveChildInstanceMeshRenderer = class EveChildInstanceMeshRenderer extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$3L, this);
@@ -208230,7 +207814,7 @@
 	}), _class2$3H)) || _class$4e);
 
 	var _dec$4d, _dec2$3R, _dec3$3t, _dec4$2X, _dec5$2t, _dec6$27, _dec7$1O, _dec8$1z, _dec9$1l, _dec0$1d, _dec1$17, _dec10$Y, _dec11$T, _dec12$I, _class$4d, _class2$3G, _descriptor$3I, _descriptor2$3g, _descriptor3$2J, _descriptor4$2k, _descriptor5$20, _descriptor6$1E, _descriptor7$1l, _descriptor8$1a, _descriptor9$14, _descriptor0$10, _descriptor1$O, _descriptor10$I, _EveChildQuad;
-	var EveChildQuad = (_dec$4d = notImplemented$1, _dec2$3R = define("EveChildQuad", true), _dec3$3t = boolean, _dec4$2X = string, _dec5$2t = float, _dec6$27 = color, _dec7$1O = struct(), _dec8$1z = matrix4, _dec9$1l = boolean, _dec0$1d = float, _dec1$17 = quaternion, _dec10$Y = vector3, _dec11$T = vector3, _dec12$I = boolean, _dec$4d(_class$4d = _dec2$3R(_class$4d = (_class2$3G = (_EveChildQuad = class EveChildQuad extends EveChild {
+	var EveChildQuad = (_dec$4d = notImplemented, _dec2$3R = define("EveChildQuad", true), _dec3$3t = boolean, _dec4$2X = string, _dec5$2t = float, _dec6$27 = color, _dec7$1O = struct(), _dec8$1z = matrix4, _dec9$1l = boolean, _dec0$1d = float, _dec1$17 = quaternion, _dec10$Y = vector3, _dec11$T = vector3, _dec12$I = boolean, _dec$4d(_class$4d = _dec2$3R(_class$4d = (_class2$3G = (_EveChildQuad = class EveChildQuad extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$3I, this);
@@ -212457,7 +212041,7 @@
 	}), _class2$3B)) || _class$48);
 
 	var _dec$47, _dec2$3L, _dec3$3n, _dec4$2S, _dec5$2o, _dec6$22, _dec7$1J, _dec8$1v, _dec9$1i, _dec0$1a, _dec1$14, _dec10$V, _dec11$Q, _dec12$G, _dec13$y, _dec14$w, _dec15$t, _dec16$n, _dec17$j, _dec18$g, _dec19$f, _dec20$f, _dec21$d, _dec22$d, _dec23$a, _dec24$9, _dec25$8, _dec26$7, _dec27$7, _dec28$6, _dec29$4, _dec30$4, _dec31$3, _dec32$3, _dec33$2, _dec34$2, _dec35$2, _dec36$2, _dec37$2, _dec38$2, _dec39$2, _dec40$2, _dec41$2, _dec42$2, _dec43$2, _dec44$2, _dec45$2, _dec46$1, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _dec58, _dec59, _dec60, _dec61, _dec62, _dec63, _dec64, _dec65, _dec66, _dec67, _dec68, _dec69, _dec70, _dec71, _dec72, _dec73, _dec74, _dec75, _dec76, _dec77, _dec78, _dec79, _dec80, _dec81, _dec82, _dec83, _dec84, _dec85, _dec86, _dec87, _dec88, _dec89, _dec90, _dec91, _dec92, _dec93, _dec94, _dec95, _dec96, _dec97, _dec98, _dec99, _dec100, _dec101, _dec102, _dec103, _dec104, _class$47, _class2$3A, _descriptor$3C, _descriptor2$3a, _descriptor3$2E, _descriptor4$2f, _descriptor5$1X, _descriptor6$1z, _descriptor7$1h, _descriptor8$17, _descriptor9$11, _descriptor0$Z, _descriptor1$L, _descriptor10$F, _descriptor11$w, _descriptor12$u, _descriptor13$r, _descriptor14$o, _descriptor15$f, _descriptor16$c, _descriptor17$b, _descriptor18$b, _descriptor19$9, _descriptor20$8, _descriptor21$8, _descriptor22$7, _descriptor23$7, _descriptor24$6, _descriptor25$6, _descriptor26$6, _descriptor27$4, _descriptor28$4, _descriptor29$2, _descriptor30$2, _descriptor31$2, _descriptor32$2, _descriptor33$2, _descriptor34$2, _descriptor35$2, _descriptor36$2, _descriptor37$2, _descriptor38$2, _descriptor39$2, _descriptor40$2, _descriptor41$2, _descriptor42$2, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52, _descriptor53, _descriptor54, _descriptor55, _descriptor56, _descriptor57, _descriptor58, _descriptor59, _descriptor60, _descriptor61, _descriptor62, _descriptor63, _descriptor64, _descriptor65, _descriptor66, _descriptor67, _descriptor68, _descriptor69, _descriptor70, _descriptor71, _descriptor72, _descriptor73, _descriptor74, _EveSpaceScene;
-	var EveSpaceScene = (_dec$47 = define("EveSpaceScene", true), _dec2$3L = struct("Tw2Effect"), _dec3$3n = list("EveObject"), _dec4$2S = boolean, _dec5$2o = isPrivate, _dec6$22 = notImplemented$1, _dec7$1J = boolean, _dec8$1v = boolean, _dec9$1i = float, _dec0$1a = float, _dec1$14 = uint, _dec10$V = uint, _dec11$Q = boolean, _dec12$G = boolean, _dec13$y = boolean, _dec14$w = path, _dec15$t = isPrivate, _dec16$n = path, _dec17$j = isPrivate, _dec18$g = path, _dec19$f = isPrivate, _dec20$f = quaternion, _dec21$d = notImplemented$1, _dec22$d = list("Tr2ExternalParameter"), _dec23$a = color, _dec24$9 = float, _dec25$8 = float, _dec26$7 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$4 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = color, _dec40$2 = notImplemented$1, _dec41$2 = struct("Tw2Effect"), _dec42$2 = color, _dec43$2 = noLongerSupported, _dec44$2 = float, _dec45$2 = noLongerSupported, _dec46$1 = float, _dec47 = noLongerSupported, _dec48 = float, _dec49 = noLongerSupported, _dec50 = uint, _dec51 = noLongerSupported, _dec52 = uint, _dec53 = noLongerSupported, _dec54 = notImplemented$1, _dec55 = path, _dec56 = isPrivate, _dec57 = notImplemented$1, _dec58 = path, _dec59 = isPrivate, _dec60 = float, _dec61 = notImplemented$1, _dec62 = boolean, _dec63 = notImplemented$1, _dec64 = float, _dec65 = todo("Identify ps/vs frame data"), _dec66 = notImplemented$1, _dec67 = float, _dec68 = todo("Identify ps/vs frame data"), _dec69 = notImplemented$1, _dec70 = struct("Tr2ShLightingManager"), _dec71 = notImplemented$1, _dec72 = struct("EveStarField"), _dec73 = notImplemented$1, _dec74 = color, _dec75 = notImplemented$1, _dec76 = boolean, _dec77 = uint, _dec78 = plain, _dec79 = boolean, _dec80 = boolean, _dec81 = struct("Tw2PostProcess2"), _dec82 = boolean, _dec83 = float, _dec84 = boolean, _dec85 = list("EveCurveLineSet"), _dec86 = plain, _dec87 = color, _dec88 = boolean, _dec89 = path, _dec90 = struct("EveSpaceSceneAO"), _dec91 = struct("EveSpaceSceneDepthHandler"), _dec92 = boolean, _dec93 = boolean, _dec94 = matrix4, _dec95 = matrix4, _dec96 = matrix4, _dec97 = vector4, _dec98 = struct("Tw2TextureRes"), _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec103 = float, _dec104 = float, _dec$47(_class$47 = (_class2$3A = (_EveSpaceScene = class EveSpaceScene extends Model {
+	var EveSpaceScene = (_dec$47 = define("EveSpaceScene", true), _dec2$3L = struct("Tw2Effect"), _dec3$3n = list("EveObject"), _dec4$2S = boolean, _dec5$2o = isPrivate, _dec6$22 = notImplemented, _dec7$1J = boolean, _dec8$1v = boolean, _dec9$1i = float, _dec0$1a = float, _dec1$14 = uint, _dec10$V = uint, _dec11$Q = boolean, _dec12$G = boolean, _dec13$y = boolean, _dec14$w = path, _dec15$t = isPrivate, _dec16$n = path, _dec17$j = isPrivate, _dec18$g = path, _dec19$f = isPrivate, _dec20$f = quaternion, _dec21$d = notImplemented, _dec22$d = list("Tr2ExternalParameter"), _dec23$a = color, _dec24$9 = float, _dec25$8 = float, _dec26$7 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$4 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = color, _dec40$2 = notImplemented, _dec41$2 = struct("Tw2Effect"), _dec42$2 = color, _dec43$2 = noLongerSupported, _dec44$2 = float, _dec45$2 = noLongerSupported, _dec46$1 = float, _dec47 = noLongerSupported, _dec48 = float, _dec49 = noLongerSupported, _dec50 = uint, _dec51 = noLongerSupported, _dec52 = uint, _dec53 = noLongerSupported, _dec54 = notImplemented, _dec55 = path, _dec56 = isPrivate, _dec57 = notImplemented, _dec58 = path, _dec59 = isPrivate, _dec60 = float, _dec61 = notImplemented, _dec62 = boolean, _dec63 = notImplemented, _dec64 = float, _dec65 = todo("Identify ps/vs frame data"), _dec66 = notImplemented, _dec67 = float, _dec68 = todo("Identify ps/vs frame data"), _dec69 = notImplemented, _dec70 = struct("Tr2ShLightingManager"), _dec71 = notImplemented, _dec72 = struct("EveStarField"), _dec73 = notImplemented, _dec74 = color, _dec75 = notImplemented, _dec76 = boolean, _dec77 = uint, _dec78 = plain, _dec79 = boolean, _dec80 = boolean, _dec81 = struct("Tw2PostProcess2"), _dec82 = boolean, _dec83 = float, _dec84 = boolean, _dec85 = list("EveCurveLineSet"), _dec86 = plain, _dec87 = color, _dec88 = boolean, _dec89 = path, _dec90 = struct("EveSpaceSceneAO"), _dec91 = struct("EveSpaceSceneDepthHandler"), _dec92 = boolean, _dec93 = boolean, _dec94 = matrix4, _dec95 = matrix4, _dec96 = matrix4, _dec97 = vector4, _dec98 = struct("Tw2TextureRes"), _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec103 = float, _dec104 = float, _dec$47(_class$47 = (_class2$3A = (_EveSpaceScene = class EveSpaceScene extends Model {
 	  get objectsByDistance() {
 	    var out = [],
 	      cameraWorldPosition = vec3$4.alloc(),
@@ -217329,7 +216913,7 @@
 	 * names" rule, but are flagged here as likely legacy/deprecated schema
 	 * drift rather than removed.
 	 */
-	var Tr2InteriorLightSource = (_dec$43 = notImplemented$1, _dec2$3H = define("Tr2InteriorLightSource", true), _dec3$3l = string, _dec4$2Q = color, _dec5$2m = float, _dec6$20 = float, _dec7$1I = vector3, _dec8$1u = notImplemented$1, _dec9$1h = desc("PTriCurveSetVector m_curveSets - curve sets that animate this light's attributes (Tr2InteriorLightSource.h:119). No equivalent wiring implemented yet, see Update()."), _dec0$19 = list("Tw2CurveSet"), _dec1$13 = float, _dec10$U = notImplemented$1, _dec11$P = desc("Legacy/deprecated schema field - no corresponding member found in current carbonengine/carbonenginejs Tr2InteriorLightSource source. Left in place; do not remove (see class doc)."), _dec12$F = float, _dec13$x = notImplemented$1, _dec14$v = desc("Legacy/deprecated schema field - no corresponding member found in current carbonengine/carbonenginejs Tr2InteriorLightSource source. Left in place; do not remove (see class doc)."), _dec15$s = float, _dec16$m = struct("Tr2KelvinColor"), _dec17$i = vector3, _dec18$f = notImplemented$1, _dec19$e = boolean, _dec20$e = float, _dec21$c = notImplemented$1, _dec22$c = float, _dec23$9 = boolean, _dec$43(_class$43 = _dec2$3H(_class$43 = (_class2$3w = class Tr2InteriorLightSource extends Model {
+	var Tr2InteriorLightSource = (_dec$43 = notImplemented, _dec2$3H = define("Tr2InteriorLightSource", true), _dec3$3l = string, _dec4$2Q = color, _dec5$2m = float, _dec6$20 = float, _dec7$1I = vector3, _dec8$1u = notImplemented, _dec9$1h = desc("PTriCurveSetVector m_curveSets - curve sets that animate this light's attributes (Tr2InteriorLightSource.h:119). No equivalent wiring implemented yet, see Update()."), _dec0$19 = list("Tw2CurveSet"), _dec1$13 = float, _dec10$U = notImplemented, _dec11$P = desc("Legacy/deprecated schema field - no corresponding member found in current carbonengine/carbonenginejs Tr2InteriorLightSource source. Left in place; do not remove (see class doc)."), _dec12$F = float, _dec13$x = notImplemented, _dec14$v = desc("Legacy/deprecated schema field - no corresponding member found in current carbonengine/carbonenginejs Tr2InteriorLightSource source. Left in place; do not remove (see class doc)."), _dec15$s = float, _dec16$m = struct("Tr2KelvinColor"), _dec17$i = vector3, _dec18$f = notImplemented, _dec19$e = boolean, _dec20$e = float, _dec21$c = notImplemented, _dec22$c = float, _dec23$9 = boolean, _dec$43(_class$43 = _dec2$3H(_class$43 = (_class2$3w = class Tr2InteriorLightSource extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$3y, this);
@@ -219060,7 +218644,7 @@
 	 * Converts a black-body color temperature (in Kelvin) plus a green/magenta
 	 * tint and a white-balance reference illuminant into an RGB color.
 	 */
-	var Tr2KelvinColor = (_dec$3_ = notImplemented$1, _dec2$3D = define("Tr2KelvinColor", true), _dec3$3h = float, _dec4$2M = float, _dec$3_(_class$3_ = _dec2$3D(_class$3_ = (_class2$3s = class Tr2KelvinColor extends Model {
+	var Tr2KelvinColor = (_dec$3_ = notImplemented, _dec2$3D = define("Tr2KelvinColor", true), _dec3$3h = float, _dec4$2M = float, _dec$3_(_class$3_ = _dec2$3D(_class$3_ = (_class2$3s = class Tr2KelvinColor extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "temperature", _descriptor$3u, this);
@@ -221778,7 +221362,7 @@
 	 * @property {WebGLBuffer} _vb                                  - Vertex buffer
 	 * @property {Array} _vertexStride                              - Vertex stride
 	 */
-	var Tw2ParticleSystem = (_dec$3z = define("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2$3f = string, _dec3$2_ = boolean, _dec4$2v = boolean, _dec5$25 = list("Tw2ParticleConstraint"), _dec6$1N = list("Tw2ParticleElementDeclaration"), _dec7$1w = struct("Tw2ParticleEmitter"), _dec8$1l = struct("Tw2ParticleEmitter"), _dec9$1a = list("Tw2ParticleForce"), _dec0$13 = uint, _dec1$Z = boolean, _dec10$O = boolean, _dec11$J = boolean, _dec12$A = notImplemented$1, _dec13$s = boolean, _dec14$r = todo("This is unused, remove it?"), _dec15$o = todo("This is unused, remove it?"), _dec$3z(_class$3z = (_class2$35 = (_Tw2ParticleSystem = class Tw2ParticleSystem extends Model {
+	var Tw2ParticleSystem = (_dec$3z = define("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2$3f = string, _dec3$2_ = boolean, _dec4$2v = boolean, _dec5$25 = list("Tw2ParticleConstraint"), _dec6$1N = list("Tw2ParticleElementDeclaration"), _dec7$1w = struct("Tw2ParticleEmitter"), _dec8$1l = struct("Tw2ParticleEmitter"), _dec9$1a = list("Tw2ParticleForce"), _dec0$13 = uint, _dec1$Z = boolean, _dec10$O = boolean, _dec11$J = boolean, _dec12$A = notImplemented, _dec13$s = boolean, _dec14$r = todo("This is unused, remove it?"), _dec15$o = todo("This is unused, remove it?"), _dec$3z(_class$3z = (_class2$35 = (_Tw2ParticleSystem = class Tw2ParticleSystem extends Model {
 	  /**
 	   * Constructor
 	   */
@@ -226066,7 +225650,7 @@
 	}), _class2$2F)) || _class$36);
 
 	var _dec$35, _dec2$2O, _dec3$2A, _dec4$2a, _dec5$1O, _dec6$1v, _dec7$1h, _dec8$18, _dec9$Z, _class$35, _class2$2E, _descriptor$2F, _descriptor2$2n, _descriptor3$1Z, _descriptor4$1F, _descriptor5$1o, _descriptor6$1a, _EveSOFDataGenericShader;
-	var EveSOFDataGenericShader = (_dec$35 = define("EveSOFDataGenericShader", true), _dec2$2O = list("EveSOFDataParameter"), _dec3$2A = list("EveSOFDataTexture"), _dec4$2a = notImplemented$1, _dec5$1O = boolean, _dec6$1v = list("EveSOFDataGenericString"), _dec7$1h = path, _dec8$18 = notImplemented$1, _dec9$Z = string, _dec$35(_class$35 = (_class2$2E = (_EveSOFDataGenericShader = class EveSOFDataGenericShader extends Model {
+	var EveSOFDataGenericShader = (_dec$35 = define("EveSOFDataGenericShader", true), _dec2$2O = list("EveSOFDataParameter"), _dec3$2A = list("EveSOFDataTexture"), _dec4$2a = notImplemented, _dec5$1O = boolean, _dec6$1v = list("EveSOFDataGenericString"), _dec7$1h = path, _dec8$18 = notImplemented, _dec9$Z = string, _dec$35(_class$35 = (_class2$2E = (_EveSOFDataGenericShader = class EveSOFDataGenericShader extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "defaultParameters", _descriptor$2F, this);
@@ -227410,7 +226994,7 @@
 	}), _class2$2s)) || _class$2V);
 
 	var _dec$2U, _dec2$2B, _dec3$2o, _dec4$1$, _dec5$1G, _dec6$1n, _dec7$19, _dec8$10, _dec9$S, _class$2U, _class2$2r, _descriptor$2s, _descriptor2$2b, _descriptor3$1O, _descriptor4$1x, _descriptor5$1g, _descriptor6$12;
-	var EveSOFDataHullBoosterItem = (_dec$2U = define("EveSOFDataHullBoosterItem", true), _dec2$2B = uint, _dec3$2o = uint, _dec4$1$ = vector4, _dec5$1G = notImplemented$1, _dec6$1n = boolean, _dec7$19 = float, _dec8$10 = todo("What should the default value be?"), _dec9$S = matrix4, _dec$2U(_class$2U = (_class2$2r = class EveSOFDataHullBoosterItem extends Model {
+	var EveSOFDataHullBoosterItem = (_dec$2U = define("EveSOFDataHullBoosterItem", true), _dec2$2B = uint, _dec3$2o = uint, _dec4$1$ = vector4, _dec5$1G = notImplemented, _dec6$1n = boolean, _dec7$19 = float, _dec8$10 = todo("What should the default value be?"), _dec9$S = matrix4, _dec$2U(_class$2U = (_class2$2r = class EveSOFDataHullBoosterItem extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "atlasIndex0", _descriptor$2s, this);
@@ -230704,7 +230288,7 @@
 	}), _class2$1P)) || _class$2g);
 
 	var _dec$2f, _dec2$1Y, _dec3$1L, _dec4$1t, _class$2f, _class2$1O, _descriptor$1P, _descriptor2$1y;
-	var EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings = (_dec$2f = define("EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings", true), _dec2$1Y = string, _dec3$1L = notImplemented$1, _dec4$1t = int32$1, _dec$2f(_class$2f = (_class2$1O = class EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings extends Model {
+	var EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings = (_dec$2f = define("EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings", true), _dec2$1Y = string, _dec3$1L = notImplemented, _dec4$1t = int32$1, _dec$2f(_class$2f = (_class2$1O = class EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1P, this);
@@ -236229,7 +235813,7 @@
 	}), _class2$1B)) || _class$21);
 
 	var _dec$20, _dec2$1K, _dec3$1z, _dec4$1k, _dec5$15, _dec6$W, _dec7$P, _class$20, _class2$1A, _descriptor$1B, _descriptor2$1m, _descriptor3$18, _descriptor4$Z, _descriptor5$P;
-	var Tr2ActionOverlay = (_dec$20 = notImplemented$1, _dec2$1K = define("Tr2ActionOverlay", true), _dec3$1z = path, _dec4$1k = string, _dec5$15 = string, _dec6$W = boolean, _dec7$P = boolean, _dec$20(_class$20 = _dec2$1K(_class$20 = (_class2$1A = class Tr2ActionOverlay extends Tw2Action {
+	var Tr2ActionOverlay = (_dec$20 = notImplemented, _dec2$1K = define("Tr2ActionOverlay", true), _dec3$1z = path, _dec4$1k = string, _dec5$15 = string, _dec6$W = boolean, _dec7$P = boolean, _dec$20(_class$20 = _dec2$1K(_class$20 = (_class2$1A = class Tr2ActionOverlay extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "path", _descriptor$1B, this);
@@ -236845,7 +236429,7 @@
 	  if (Array.isArray(value)) return new Uint8Array(value);
 	  return value;
 	}
-	var Tr2ActionPython = (_dec$1Z = notImplemented$1, _dec2$1H = define("Tr2ActionPython", true), _dec3$1w = string, _dec4$1h = string, _dec5$13 = plain, _dec$1Z(_class$1Z = _dec2$1H(_class$1Z = (_class2$1x = class Tr2ActionPython extends Tw2Action {
+	var Tr2ActionPython = (_dec$1Z = notImplemented, _dec2$1H = define("Tr2ActionPython", true), _dec3$1w = string, _dec4$1h = string, _dec5$13 = plain, _dec$1Z(_class$1Z = _dec2$1H(_class$1Z = (_class2$1x = class Tr2ActionPython extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "module", _descriptor$1y, this);
@@ -237622,7 +237206,7 @@
 	}), _class2$1p)) || _class$1R);
 
 	var _dec$1Q, _dec2$1y, _dec3$1n, _dec4$1a, _class$1Q, _class2$1o, _descriptor$1p, _descriptor2$1a;
-	var Tr2ActionSpawnParticles = (_dec$1Q = notImplemented$1, _dec2$1y = define("Tr2ActionSpawnParticles", true), _dec3$1n = struct("Tw2DynamicEmitter"), _dec4$1a = float, _dec$1Q(_class$1Q = _dec2$1y(_class$1Q = (_class2$1o = class Tr2ActionSpawnParticles extends Tw2Action {
+	var Tr2ActionSpawnParticles = (_dec$1Q = notImplemented, _dec2$1y = define("Tr2ActionSpawnParticles", true), _dec3$1n = struct("Tw2DynamicEmitter"), _dec4$1a = float, _dec$1Q(_class$1Q = _dec2$1y(_class$1Q = (_class2$1o = class Tr2ActionSpawnParticles extends Tw2Action {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "emitter", _descriptor$1p, this);
@@ -238819,7 +238403,7 @@
 	 * resource dispatches **synchronously** — the rebuild reads the flag. Reversed,
 	 * a warm resource initialises in the wrong mode.
 	 */
-	var Tr2GrannyAnimation = (_dec$1J = define("Tr2GrannyAnimation"), _dec2$1r = string, _dec3$1i = notImplemented$1, _dec4$16 = path, _dec5$X = string, _dec6$Q = notImplemented$1, _dec7$L = struct(), _dec8$G = notImplemented$1, _dec9$B = struct(), _dec$1J(_class$1J = (_class2$1h = (_Tr2GrannyAnimation = class Tr2GrannyAnimation extends Model {
+	var Tr2GrannyAnimation = (_dec$1J = define("Tr2GrannyAnimation"), _dec2$1r = string, _dec3$1i = notImplemented, _dec4$16 = path, _dec5$X = string, _dec6$Q = notImplemented, _dec7$L = struct(), _dec8$G = notImplemented, _dec9$B = struct(), _dec$1J(_class$1J = (_class2$1h = (_Tr2GrannyAnimation = class Tr2GrannyAnimation extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1i, this);
@@ -239277,7 +238861,7 @@
 	}), _class2$1h)) || _class$1J);
 
 	var _dec$1I, _dec2$1q, _dec3$1h, _dec4$15, _dec5$W, _dec6$P, _dec7$K, _dec8$F, _dec9$A, _dec0$x, _dec1$s, _dec10$p, _dec11$m, _dec12$k, _dec13$e, _dec14$d, _dec15$b, _dec16$a, _dec17$7, _class$1I, _class2$1g, _descriptor$1h, _descriptor2$14, _descriptor3$W, _descriptor4$Q, _descriptor5$J, _descriptor6$G, _descriptor7$z, _descriptor8$t, _descriptor9$q, _descriptor0$m, _descriptor1$g, _descriptor10$f;
-	var Tr2MeshLod = (_dec$1I = notImplemented$1, _dec2$1q = define("Tr2MeshLod", true), _dec3$1h = todo("Implement LOD"), _dec4$15 = string, _dec5$W = list("Tw2MeshArea"), _dec6$P = notImplemented$1, _dec7$K = list("Tw2GeometryRes"), _dec8$F = list("Tw2MeshArea"), _dec9$A = notImplemented$1, _dec0$x = list("Tw2MeshArea"), _dec1$s = notImplemented$1, _dec10$p = list("Tw2MeshArea"), _dec11$m = struct("Tr2LodResource"), _dec12$k = list("Tw2MeshArea"), _dec13$e = list("Tw2MeshArea"), _dec14$d = list("Tw2MeshArea"), _dec15$b = boolean, _dec16$a = plain, _dec17$7 = notImplemented$1, _dec$1I(_class$1I = _dec2$1q(_class$1I = _dec3$1h(_class$1I = (_class2$1g = class Tr2MeshLod extends Model {
+	var Tr2MeshLod = (_dec$1I = notImplemented, _dec2$1q = define("Tr2MeshLod", true), _dec3$1h = todo("Implement LOD"), _dec4$15 = string, _dec5$W = list("Tw2MeshArea"), _dec6$P = notImplemented, _dec7$K = list("Tw2GeometryRes"), _dec8$F = list("Tw2MeshArea"), _dec9$A = notImplemented, _dec0$x = list("Tw2MeshArea"), _dec1$s = notImplemented, _dec10$p = list("Tw2MeshArea"), _dec11$m = struct("Tr2LodResource"), _dec12$k = list("Tw2MeshArea"), _dec13$e = list("Tw2MeshArea"), _dec14$d = list("Tw2MeshArea"), _dec15$b = boolean, _dec16$a = plain, _dec17$7 = notImplemented, _dec$1I(_class$1I = _dec2$1q(_class$1I = _dec3$1h(_class$1I = (_class2$1g = class Tr2MeshLod extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1h, this);
@@ -239527,7 +239111,7 @@
 	}), _applyDecoratedDescriptor(_class2$1g.prototype, "Initialize", [_dec17$7], Object.getOwnPropertyDescriptor(_class2$1g.prototype, "Initialize"), _class2$1g.prototype), _class2$1g)) || _class$1I) || _class$1I) || _class$1I);
 
 	var _dec$1H, _dec2$1p, _dec3$1g, _dec4$14, _dec5$V, _dec6$O, _class$1H, _class2$1f, _descriptor$1g, _descriptor2$13, _descriptor3$V;
-	var Tr2ExternalParameter = (_dec$1H = notImplemented$1, _dec2$1p = define("Tr2ExternalParameter", true), _dec3$1g = string, _dec4$14 = string, _dec5$V = notOwned, _dec6$O = struct(), _dec$1H(_class$1H = _dec2$1p(_class$1H = (_class2$1f = class Tr2ExternalParameter extends Tw2Parameter {
+	var Tr2ExternalParameter = (_dec$1H = notImplemented, _dec2$1p = define("Tr2ExternalParameter", true), _dec3$1g = string, _dec4$14 = string, _dec5$V = notOwned, _dec6$O = struct(), _dec$1H(_class$1H = _dec2$1p(_class$1H = (_class2$1f = class Tr2ExternalParameter extends Tw2Parameter {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1g, this);
@@ -239558,7 +239142,7 @@
 	}), _class2$1f)) || _class$1H) || _class$1H);
 
 	var _dec$1G, _dec2$1o, _dec3$1f, _dec4$13, _class$1G, _class2$1e, _descriptor$1f, _descriptor2$12;
-	var Tr2Texture2dLodParameter = (_dec$1G = notImplemented$1, _dec2$1o = define("Tr2Texture2dLodParameter", true), _dec3$1f = string, _dec4$13 = struct("Tr2LodResource"), _dec$1G(_class$1G = _dec2$1o(_class$1G = (_class2$1e = class Tr2Texture2dLodParameter extends Tw2Parameter {
+	var Tr2Texture2dLodParameter = (_dec$1G = notImplemented, _dec2$1o = define("Tr2Texture2dLodParameter", true), _dec3$1f = string, _dec4$13 = struct("Tr2LodResource"), _dec$1G(_class$1G = _dec2$1o(_class$1G = (_class2$1e = class Tr2Texture2dLodParameter extends Tw2Parameter {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1f, this);
@@ -239581,14 +239165,14 @@
 	}), _class2$1e)) || _class$1G) || _class$1G);
 
 	var _dec$1F, _dec2$1n, _class$1F;
-	var Tr2PPFidelityFXEffect = (_dec$1F = notImplemented$1, _dec2$1n = define("Tr2PPFidelityFXEffect", true), _dec$1F(_class$1F = _dec2$1n(_class$1F = class Tr2PPFidelityFXEffect {}) || _class$1F) || _class$1F);
+	var Tr2PPFidelityFXEffect = (_dec$1F = notImplemented, _dec2$1n = define("Tr2PPFidelityFXEffect", true), _dec$1F(_class$1F = _dec2$1n(_class$1F = class Tr2PPFidelityFXEffect {}) || _class$1F) || _class$1F);
 
 	// Tr2PPFidelityFXEffect only. Carbon does not expose it on Tr2PostProcess2 and
 	// no shipped asset populates it, so it stays here rather than beside the
 	// implemented effects in src/core/post/effect.
 
 	var _dec$1E, _dec2$1m, _dec3$1e, _dec4$12, _dec5$U, _dec6$N, _dec7$J, _class$1E, _class2$1d, _descriptor$1e, _descriptor2$11, _descriptor3$U, _descriptor4$P, _descriptor5$I;
-	var Tr2LodResource = (_dec$1E = notImplemented$1, _dec2$1m = define("Tr2LodResource", true), _dec3$1e = string, _dec4$12 = path, _dec5$U = path, _dec6$N = path, _dec7$J = path, _dec$1E(_class$1E = _dec2$1m(_class$1E = (_class2$1d = class Tr2LodResource extends Model {
+	var Tr2LodResource = (_dec$1E = notImplemented, _dec2$1m = define("Tr2LodResource", true), _dec3$1e = string, _dec4$12 = path, _dec5$U = path, _dec6$N = path, _dec7$J = path, _dec$1E(_class$1E = _dec2$1m(_class$1E = (_class2$1d = class Tr2LodResource extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1e, this);
@@ -239635,7 +239219,7 @@
 	}), _class2$1d)) || _class$1E) || _class$1E);
 
 	var _dec$1D, _dec2$1l, _dec3$1d, _dec4$11, _dec5$T, _dec6$M, _dec7$I, _dec8$E, _dec9$z, _dec0$w, _dec1$r, _dec10$o, _dec11$l, _dec12$j, _dec13$d, _dec14$c, _dec15$a, _dec16$9, _dec17$6, _class$1D, _class2$1c, _descriptor$1d, _descriptor2$10, _descriptor3$T, _descriptor4$O, _descriptor5$H, _descriptor6$F, _descriptor7$y, _descriptor8$s, _descriptor9$p, _descriptor0$l, _descriptor1$f, _descriptor10$e, _descriptor11$b, _descriptor12$b, _descriptor13$8, _descriptor14$8;
-	var TriMatrix = (_dec$1D = notImplemented$1, _dec2$1l = define("TriMatrix", true), _dec3$1d = todo("Should this default to a identity matrix?"), _dec4$11 = float, _dec5$T = float, _dec6$M = float, _dec7$I = float, _dec8$E = float, _dec9$z = float, _dec0$w = float, _dec1$r = float, _dec10$o = float, _dec11$l = float, _dec12$j = float, _dec13$d = float, _dec14$c = float, _dec15$a = float, _dec16$9 = float, _dec17$6 = float, _dec$1D(_class$1D = _dec2$1l(_class$1D = _dec3$1d(_class$1D = (_class2$1c = class TriMatrix extends Model {
+	var TriMatrix = (_dec$1D = notImplemented, _dec2$1l = define("TriMatrix", true), _dec3$1d = todo("Should this default to a identity matrix?"), _dec4$11 = float, _dec5$T = float, _dec6$M = float, _dec7$I = float, _dec8$E = float, _dec9$z = float, _dec0$w = float, _dec1$r = float, _dec10$o = float, _dec11$l = float, _dec12$j = float, _dec13$d = float, _dec14$c = float, _dec15$a = float, _dec16$9 = float, _dec17$6 = float, _dec$1D(_class$1D = _dec2$1l(_class$1D = _dec3$1d(_class$1D = (_class2$1c = class TriMatrix extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "_11", _descriptor$1d, this);
@@ -239770,7 +239354,7 @@
 	}), _class2$1c)) || _class$1D) || _class$1D) || _class$1D);
 
 	var _dec$1C, _dec2$1k, _dec3$1c, _dec4$10, _dec5$S, _dec6$L, _class$1C, _class2$1b, _descriptor$1c, _descriptor2$$, _descriptor3$S, _descriptor4$N;
-	var TriObserverLocal = (_dec$1C = notImplemented$1, _dec2$1k = define("TriObserverLocal", true), _dec3$1c = string, _dec4$10 = vector3, _dec5$S = vector3, _dec6$L = struct(), _dec$1C(_class$1C = _dec2$1k(_class$1C = (_class2$1b = class TriObserverLocal extends Model {
+	var TriObserverLocal = (_dec$1C = notImplemented, _dec2$1k = define("TriObserverLocal", true), _dec3$1c = string, _dec4$10 = vector3, _dec5$S = vector3, _dec6$L = struct(), _dec$1C(_class$1C = _dec2$1k(_class$1C = (_class2$1b = class TriObserverLocal extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$1c, this);
@@ -240010,7 +239594,7 @@
 	    return mat4$2.create();
 	  }
 	}), _class2$19)) || _class$1A);
-	var Tr2BoneMatrixCurve = (_dec3$1a = notImplemented$1, _dec4$_ = define("Tr2BoneMatrixCurve", true), _dec5$Q = string, _dec6$J = float, _dec7$G = boolean, _dec8$C = boolean, _dec9$x = matrix4, _dec0$v = isPrivate, _dec1$q = matrix4, _dec10$n = matrix4, _dec11$k = isPrivate, _dec12$i = notOwned, _dec13$c = struct(), _dec14$b = list("Tr2MatrixKey"), _dec15$9 = string, _dec16$8 = matrix4, _dec3$1a(_class3$5 = _dec4$_(_class3$5 = (_class4$5 = class Tr2BoneMatrixCurve extends Tw2Curve {
+	var Tr2BoneMatrixCurve = (_dec3$1a = notImplemented, _dec4$_ = define("Tr2BoneMatrixCurve", true), _dec5$Q = string, _dec6$J = float, _dec7$G = boolean, _dec8$C = boolean, _dec9$x = matrix4, _dec0$v = isPrivate, _dec1$q = matrix4, _dec10$n = matrix4, _dec11$k = isPrivate, _dec12$i = notOwned, _dec13$c = struct(), _dec14$b = list("Tr2MatrixKey"), _dec15$9 = string, _dec16$8 = matrix4, _dec3$1a(_class3$5 = _dec4$_(_class3$5 = (_class4$5 = class Tr2BoneMatrixCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor2$Z, this);
@@ -240632,7 +240216,7 @@
 	}), _class4$4)) || _class3$4);
 
 	var _dec$1x, _dec2$1f, _dec3$17, _dec4$X, _dec5$N, _dec6$H, _dec7$E, _dec8$A, _dec9$v, _dec0$t, _class$1x, _class2$16, _descriptor$17, _descriptor2$W, _descriptor3$N, _descriptor4$J, _descriptor5$D, _descriptor6$B;
-	var Tr2GrannyTrack = (_dec$1x = notImplemented$1, _dec2$1f = define("Tr2GrannyTrack", true), _dec3$17 = path, _dec4$X = isPrivate, _dec5$N = struct(), _dec6$H = string, _dec7$E = string, _dec8$A = isPrivate, _dec9$v = float, _dec0$t = boolean, _dec$1x(_class$1x = _dec2$1f(_class$1x = (_class2$16 = class Tr2GrannyTrack extends Model {
+	var Tr2GrannyTrack = (_dec$1x = notImplemented, _dec2$1f = define("Tr2GrannyTrack", true), _dec3$17 = path, _dec4$X = isPrivate, _dec5$N = struct(), _dec6$H = string, _dec7$E = string, _dec8$A = isPrivate, _dec9$v = float, _dec0$t = boolean, _dec$1x(_class$1x = _dec2$1f(_class$1x = (_class2$16 = class Tr2GrannyTrack extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "grannyResPath", _descriptor$17, this);
@@ -240697,7 +240281,7 @@
 	}), _class2$16)) || _class$1x) || _class$1x);
 
 	var _dec$1w, _dec2$1e, _dec3$16, _dec4$W, _class$1w, _class2$15, _descriptor$16;
-	var Tr2GrannyEventTrack = (_dec$1w = notImplemented$1, _dec2$1e = define("Tr2GrannyEventTrack", true), _dec3$16 = isPrivate, _dec4$W = struct(), _dec$1w(_class$1w = _dec2$1e(_class$1w = (_class2$15 = class Tr2GrannyEventTrack extends Tr2GrannyTrack {
+	var Tr2GrannyEventTrack = (_dec$1w = notImplemented, _dec2$1e = define("Tr2GrannyEventTrack", true), _dec3$16 = isPrivate, _dec4$W = struct(), _dec$1w(_class$1w = _dec2$1e(_class$1w = (_class2$15 = class Tr2GrannyEventTrack extends Tr2GrannyTrack {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "eventListener", _descriptor$16, this);
@@ -240715,7 +240299,7 @@
 	}), _class2$15)) || _class$1w) || _class$1w);
 
 	var _dec$1v, _dec2$1d, _dec3$15, _dec4$V, _dec5$M, _dec6$G, _dec7$D, _dec8$z, _dec9$u, _dec0$s, _class$1v, _class2$14, _descriptor$15, _descriptor2$V, _descriptor3$M, _descriptor4$I;
-	var Tr2GrannyTransformTrack = (_dec$1v = notImplemented$1, _dec2$1d = define("Tr2GrannyTransformTrack", true), _dec3$15 = isPrivate, _dec4$V = vector3, _dec5$M = isPrivate, _dec6$G = quaternion, _dec7$D = isPrivate, _dec8$z = vector3, _dec9$u = isPrivate, _dec0$s = boolean, _dec$1v(_class$1v = _dec2$1d(_class$1v = (_class2$14 = class Tr2GrannyTransformTrack extends Tr2GrannyTrack {
+	var Tr2GrannyTransformTrack = (_dec$1v = notImplemented, _dec2$1d = define("Tr2GrannyTransformTrack", true), _dec3$15 = isPrivate, _dec4$V = vector3, _dec5$M = isPrivate, _dec6$G = quaternion, _dec7$D = isPrivate, _dec8$z = vector3, _dec9$u = isPrivate, _dec0$s = boolean, _dec$1v(_class$1v = _dec2$1d(_class$1v = (_class2$14 = class Tr2GrannyTransformTrack extends Tr2GrannyTrack {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "translation", _descriptor$15, this);
@@ -240757,7 +240341,7 @@
 	}), _class2$14)) || _class$1v) || _class$1v);
 
 	var _dec$1u, _dec2$1c, _dec3$14, _dec4$U, _class$1u, _class2$13, _descriptor$14;
-	var Tr2GrannyVectorTrack = (_dec$1u = notImplemented$1, _dec2$1c = define("Tr2GrannyVectorTrack", true), _dec3$14 = isPrivate, _dec4$U = float, _dec$1u(_class$1u = _dec2$1c(_class$1u = (_class2$13 = class Tr2GrannyVectorTrack extends Tr2GrannyTrack {
+	var Tr2GrannyVectorTrack = (_dec$1u = notImplemented, _dec2$1c = define("Tr2GrannyVectorTrack", true), _dec3$14 = isPrivate, _dec4$U = float, _dec$1u(_class$1u = _dec2$1c(_class$1u = (_class2$13 = class Tr2GrannyVectorTrack extends Tr2GrannyTrack {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor$14, this);
@@ -241278,7 +240862,7 @@
 	}
 
 	var _dec$1s, _dec2$1a, _dec3$12, _dec4$S, _dec5$K, _dec6$E, _dec7$B, _dec8$x, _dec9$s, _dec0$q, _dec1$n, _dec10$k, _dec11$h, _dec12$f, _class$1s, _class2$11, _descriptor$12, _descriptor2$T, _descriptor3$K, _descriptor4$G, _descriptor5$B, _descriptor6$z, _descriptor7$t, _descriptor8$o, _descriptor9$l;
-	var Tr2ScalarExprCurve = (_dec$1s = define("Tr2ScalarExprCurve", true), _dec2$1a = notImplemented$1, _dec3$12 = float, _dec4$S = float, _dec5$K = float, _dec6$E = float, _dec7$B = isPrivate, _dec8$x = float, _dec9$s = isPrivate, _dec0$q = uint, _dec1$n = uint, _dec10$k = isPrivate, _dec11$h = string, _dec12$f = expression, _dec$1s(_class$1s = _dec2$1a(_class$1s = (_class2$11 = class Tr2ScalarExprCurve extends Tw2Curve {
+	var Tr2ScalarExprCurve = (_dec$1s = define("Tr2ScalarExprCurve", true), _dec2$1a = notImplemented, _dec3$12 = float, _dec4$S = float, _dec5$K = float, _dec6$E = float, _dec7$B = isPrivate, _dec8$x = float, _dec9$s = isPrivate, _dec0$q = uint, _dec1$n = uint, _dec10$k = isPrivate, _dec11$h = string, _dec12$f = expression, _dec$1s(_class$1s = _dec2$1a(_class$1s = (_class2$11 = class Tr2ScalarExprCurve extends Tw2Curve {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "input1", _descriptor$12, this);
@@ -242602,7 +242186,7 @@
 	}), _class2$W)) || _class$1k);
 
 	var _dec$1j, _dec2$12, _dec3$W, _dec4$L, _class$1j, _class2$V, _descriptor$W, _descriptor2$L;
-	var EveAnimation = (_dec$1j = notImplemented$1, _dec2$12 = define("EveAnimation", true), _dec3$W = string, _dec4$L = uint, _dec$1j(_class$1j = _dec2$12(_class$1j = (_class2$V = class EveAnimation {
+	var EveAnimation = (_dec$1j = notImplemented, _dec2$12 = define("EveAnimation", true), _dec3$W = string, _dec4$L = uint, _dec$1j(_class$1j = _dec2$12(_class$1j = (_class2$V = class EveAnimation {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$W, this);
 	    _initializerDefineProperty(this, "loops", _descriptor2$L, this);
@@ -242624,7 +242208,7 @@
 	}), _class2$V)) || _class$1j) || _class$1j);
 
 	var _dec$1i, _dec2$11, _dec3$V, _dec4$K, _class$1i, _class2$U, _descriptor$V;
-	var EveAnimationCommand = (_dec$1i = notImplemented$1, _dec2$11 = define("EveAnimationCommand", true), _dec3$V = uint, _dec4$K = todo("Identify default value"), _dec$1i(_class$1i = _dec2$11(_class$1i = (_class2$U = class EveAnimationCommand {
+	var EveAnimationCommand = (_dec$1i = notImplemented, _dec2$11 = define("EveAnimationCommand", true), _dec3$V = uint, _dec4$K = todo("Identify default value"), _dec$1i(_class$1i = _dec2$11(_class$1i = (_class2$U = class EveAnimationCommand {
 	  constructor() {
 	    _initializerDefineProperty(this, "command", _descriptor$V, this);
 	  }
@@ -242638,7 +242222,7 @@
 	}), _class2$U)) || _class$1i) || _class$1i);
 
 	var _dec$1h, _dec2$10, _dec3$U, _class$1h, _class2$T, _descriptor$U;
-	var EveAnimationCurve = (_dec$1h = notImplemented$1, _dec2$10 = define("EveAnimationCurve", true), _dec3$U = string, _dec$1h(_class$1h = _dec2$10(_class$1h = (_class2$T = class EveAnimationCurve {
+	var EveAnimationCurve = (_dec$1h = notImplemented, _dec2$10 = define("EveAnimationCurve", true), _dec3$U = string, _dec$1h(_class$1h = _dec2$10(_class$1h = (_class2$T = class EveAnimationCurve {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$U, this);
 	  }
@@ -242652,7 +242236,7 @@
 	}), _class2$T)) || _class$1h) || _class$1h);
 
 	var _dec$1g, _dec2$$, _dec3$T, _dec4$J, _class$1g, _class2$S, _descriptor$T, _descriptor2$K;
-	var EveAnimationStateTransition = (_dec$1g = notImplemented$1, _dec2$$ = define("EveAnimationStateTransition", true), _dec3$T = string, _dec4$J = string, _dec$1g(_class$1g = _dec2$$(_class$1g = (_class2$S = class EveAnimationStateTransition {
+	var EveAnimationStateTransition = (_dec$1g = notImplemented, _dec2$$ = define("EveAnimationStateTransition", true), _dec3$T = string, _dec4$J = string, _dec$1g(_class$1g = _dec2$$(_class$1g = (_class2$S = class EveAnimationStateTransition {
 	  constructor() {
 	    _initializerDefineProperty(this, "state", _descriptor$T, this);
 	    _initializerDefineProperty(this, "transition", _descriptor2$K, this);
@@ -242702,7 +242286,7 @@
 	}), _class2$S)) || _class$1g) || _class$1g);
 
 	var _dec$1f, _dec2$_, _dec3$S, _dec4$I, _dec5$D, _dec6$y, _dec7$v, _dec8$r, _class$1f, _class2$R, _descriptor$S, _descriptor2$J, _descriptor3$D, _descriptor4$z, _descriptor5$v, _descriptor6$t;
-	var EveAnimationState = (_dec$1f = notImplemented$1, _dec2$_ = define("EveAnimationState", true), _dec3$S = string, _dec4$I = struct("EveAnimationCurve"), _dec5$D = list("EveAnimationCommand"), _dec6$y = list("EveAnimationCommand"), _dec7$v = list("EveAnimationCommand"), _dec8$r = list(EveAnimationStateTransition), _dec$1f(_class$1f = _dec2$_(_class$1f = (_class2$R = class EveAnimationState {
+	var EveAnimationState = (_dec$1f = notImplemented, _dec2$_ = define("EveAnimationState", true), _dec3$S = string, _dec4$I = struct("EveAnimationCurve"), _dec5$D = list("EveAnimationCommand"), _dec6$y = list("EveAnimationCommand"), _dec7$v = list("EveAnimationCommand"), _dec8$r = list(EveAnimationStateTransition), _dec$1f(_class$1f = _dec2$_(_class$1f = (_class2$R = class EveAnimationState {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$S, this);
 	    _initializerDefineProperty(this, "animation", _descriptor2$J, this);
@@ -242756,7 +242340,7 @@
 	}), _class2$R)) || _class$1f) || _class$1f);
 
 	var _dec$1e, _dec2$Z, _dec3$R, _dec4$H, _dec5$C, _dec6$x, _dec7$u, _dec8$q, _class$1e, _class2$Q, _descriptor$R, _descriptor2$I, _descriptor3$C, _descriptor4$y, _descriptor5$u, _descriptor6$s;
-	var EveAnimationStateMachine = (_dec$1e = notImplemented$1, _dec2$Z = define("EveAnimationStateMachine", true), _dec3$R = string, _dec4$H = boolean, _dec5$C = list("EveAnimationState"), _dec6$x = list("EveAnimationStateTransition"), _dec7$u = string, _dec8$q = string, _dec$1e(_class$1e = _dec2$Z(_class$1e = (_class2$Q = class EveAnimationStateMachine {
+	var EveAnimationStateMachine = (_dec$1e = notImplemented, _dec2$Z = define("EveAnimationStateMachine", true), _dec3$R = string, _dec4$H = boolean, _dec5$C = list("EveAnimationState"), _dec6$x = list("EveAnimationStateTransition"), _dec7$u = string, _dec8$q = string, _dec$1e(_class$1e = _dec2$Z(_class$1e = (_class2$Q = class EveAnimationStateMachine {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$R, this);
 	    _initializerDefineProperty(this, "autoPlayDefault", _descriptor2$I, this);
@@ -242810,7 +242394,7 @@
 	}), _class2$Q)) || _class$1e) || _class$1e);
 
 	var _dec$1d, _dec2$Y, _dec3$Q, _dec4$G, _dec5$B, _dec6$w, _dec7$t, _dec8$p, _dec9$m, _dec0$l, _dec1$j, _dec10$g, _dec11$f, _dec12$d, _dec13$9, _class$1d, _class2$P, _descriptor$Q, _descriptor2$H, _descriptor3$B, _descriptor4$x, _descriptor5$t, _descriptor6$r, _descriptor7$o, _EveCameraFxAttributes;
-	var EveCameraFxAttributes = (_dec$1d = define("EveCameraFxAttributes", true), _dec2$Y = string, _dec3$Q = list(), _dec4$G = notImplemented$1, _dec5$B = quaternion, _dec6$w = notImplemented$1, _dec7$t = quaternion, _dec8$p = notImplemented$1, _dec9$m = quaternion, _dec0$l = notImplemented$1, _dec1$j = float, _dec10$g = notImplemented$1, _dec11$f = float, _dec12$d = notImplemented$1, _dec13$9 = notImplemented$1, _dec$1d(_class$1d = (_class2$P = (_EveCameraFxAttributes = class EveCameraFxAttributes extends Model {
+	var EveCameraFxAttributes = (_dec$1d = define("EveCameraFxAttributes", true), _dec2$Y = string, _dec3$Q = list(), _dec4$G = notImplemented, _dec5$B = quaternion, _dec6$w = notImplemented, _dec7$t = quaternion, _dec8$p = notImplemented, _dec9$m = quaternion, _dec0$l = notImplemented, _dec1$j = float, _dec10$g = notImplemented, _dec11$f = float, _dec12$d = notImplemented, _dec13$9 = notImplemented, _dec$1d(_class$1d = (_class2$P = (_EveCameraFxAttributes = class EveCameraFxAttributes extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$Q, this);
@@ -242970,7 +242554,7 @@
 	 * @property {Number} yaw                     -
 	 * @property {Tr2CurveScalar} zoomCurve       -
 	 */
-	var EveCamera = (_dec$1c = notImplemented$1, _dec2$X = define("EveCamera", true), _dec3$P = float, _dec4$F = float, _dec5$A = float, _dec6$v = boolean, _dec7$s = float, _dec8$o = float, _dec9$l = vector3, _dec0$k = float, _dec1$i = float, _dec10$f = struct(), _dec11$e = float, _dec12$c = vector3, _dec13$8 = quaternion, _dec14$8 = float, _dec15$6 = float, _dec16$6 = struct(), _dec$1c(_class$1c = _dec2$X(_class$1c = (_class2$O = class EveCamera extends Model {
+	var EveCamera = (_dec$1c = notImplemented, _dec2$X = define("EveCamera", true), _dec3$P = float, _dec4$F = float, _dec5$A = float, _dec6$v = boolean, _dec7$s = float, _dec8$o = float, _dec9$l = vector3, _dec0$k = float, _dec1$i = float, _dec10$f = struct(), _dec11$e = float, _dec12$c = vector3, _dec13$8 = quaternion, _dec14$8 = float, _dec15$6 = float, _dec16$6 = struct(), _dec$1c(_class$1c = _dec2$X(_class$1c = (_class2$O = class EveCamera extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "fieldOfView", _descriptor$P, this);
@@ -243126,7 +242710,7 @@
 	}, _EveChildModifier)) || _class$1b);
 
 	var _dec$1a, _dec2$W, _dec3$O, _class$1a, _class2$N, _descriptor$O;
-	var EveChildModifierAttachToBone = (_dec$1a = notImplemented$1, _dec2$W = define("EveChildModifierAttachToBone", true), _dec3$O = int32$1, _dec$1a(_class$1a = _dec2$W(_class$1a = (_class2$N = class EveChildModifierAttachToBone extends EveChildModifier {
+	var EveChildModifierAttachToBone = (_dec$1a = notImplemented, _dec2$W = define("EveChildModifierAttachToBone", true), _dec3$O = int32$1, _dec$1a(_class$1a = _dec2$W(_class$1a = (_class2$N = class EveChildModifierAttachToBone extends EveChildModifier {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "boneIndex", _descriptor$O, this);
@@ -243365,7 +242949,7 @@
 	 * EveChildModifierBillboard2D.h/.cpp (no persisted properties;
 	 * EveChildModifierBillboard2D_Blue.cpp's ExposeToBlue() only maps the interface).
 	 */
-	var EveChildModifierBillboard2D = (_dec$19 = notImplemented$1, _dec2$V = define("EveChildModifierBillboard2D", true), _dec$19(_class$19 = _dec2$V(_class$19 = class EveChildModifierBillboard2D extends EveChildModifier {
+	var EveChildModifierBillboard2D = (_dec$19 = notImplemented, _dec2$V = define("EveChildModifierBillboard2D", true), _dec$19(_class$19 = _dec2$V(_class$19 = class EveChildModifierBillboard2D extends EveChildModifier {
 	  /**
 	   * Applies this modifier's transform, mutating `transform` in place
 	   *
@@ -243404,7 +242988,7 @@
 	 * EveChildModifierBillboard3D.h/.cpp; persisted properties from
 	 * EveChildModifierBillboard3D_Blue.cpp's ExposeToBlue() (1 property: "fixed").
 	 */
-	var EveChildModifierBillboard3D = (_dec$18 = notImplemented$1, _dec2$U = define("EveChildModifierBillboard3D", true), _dec3$N = boolean, _dec$18(_class$18 = _dec2$U(_class$18 = (_class2$M = class EveChildModifierBillboard3D extends EveChildModifier {
+	var EveChildModifierBillboard3D = (_dec$18 = notImplemented, _dec2$U = define("EveChildModifierBillboard3D", true), _dec3$N = boolean, _dec$18(_class$18 = _dec2$U(_class$18 = (_class2$M = class EveChildModifierBillboard3D extends EveChildModifier {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "fixed", _descriptor$N, this);
@@ -243485,7 +243069,7 @@
 	 * EveChildModifierBooster.h/.cpp (no persisted properties;
 	 * EveChildModifierBooster_Blue.cpp's ExposeToBlue() only maps the interface).
 	 */
-	var EveChildModifierBooster = (_dec$17 = notImplemented$1, _dec2$T = define("EveChildModifierBooster", true), _dec$17(_class$17 = _dec2$T(_class$17 = class EveChildModifierBooster extends EveChildModifier {
+	var EveChildModifierBooster = (_dec$17 = notImplemented, _dec2$T = define("EveChildModifierBooster", true), _dec$17(_class$17 = _dec2$T(_class$17 = class EveChildModifierBooster extends EveChildModifier {
 	  /**
 	   * Applies this modifier's transform, mutating `transform` in place
 	   *
@@ -243550,7 +243134,7 @@
 	 * camera in the horizontal plane, leaving pitch/roll from the child's own transform
 	 * untouched - a billboard constrained to the Y axis.
 	 */
-	var EveChildModifierCameraOrientedRotationConstrained = (_dec$16 = notImplemented$1, _dec2$S = define("EveChildModifierCameraOrientedRotationConstrained", true), _dec$16(_class$16 = _dec2$S(_class$16 = class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier {
+	var EveChildModifierCameraOrientedRotationConstrained = (_dec$16 = notImplemented, _dec2$S = define("EveChildModifierCameraOrientedRotationConstrained", true), _dec$16(_class$16 = _dec2$S(_class$16 = class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier {
 	  /**
 	   * Builds an axis-angle rotation matrix in Carbon's flat layout, reproducing
 	   * `RotationMatrix(const Vector3& axis, float angle)`
@@ -243715,7 +243299,7 @@
 	    mat4$2.multiply(worldTransform, worldTransform, alignMat);
 	  }
 	}
-	var EveChildModifierHalo = (_dec$15 = notImplemented$1, _dec2$R = define("EveChildModifierHalo", true), _dec$15(_class$15 = _dec2$R(_class$15 = class EveChildModifierHalo extends EveChildModifier {
+	var EveChildModifierHalo = (_dec$15 = notImplemented, _dec2$R = define("EveChildModifierHalo", true), _dec$15(_class$15 = _dec2$R(_class$15 = class EveChildModifierHalo extends EveChildModifier {
 	  /**
 	   * Modifies a parent object
 	   * @param parent
@@ -243758,7 +243342,7 @@
 	 * from `EveChildModifierHalo` (they're siblings with unrelated math), so this
 	 * extends `EveChildModifier` directly rather than `EveChildModifierHalo`.
 	 */
-	var EveChildModifierHaloInverted = (_dec$14 = notImplemented$1, _dec2$Q = define("EveChildModifierHaloInverted", true), _dec$14(_class$14 = _dec2$Q(_class$14 = class EveChildModifierHaloInverted extends EveChildModifier {
+	var EveChildModifierHaloInverted = (_dec$14 = notImplemented, _dec2$Q = define("EveChildModifierHaloInverted", true), _dec$14(_class$14 = _dec2$Q(_class$14 = class EveChildModifierHaloInverted extends EveChildModifier {
 	  /**
 	   * Applies this modifier's transform, mutating `transform` in place
 	   *
@@ -243884,7 +243468,7 @@
 	 * EveChildModifierStretch.h/.cpp; persisted properties from
 	 * EveChildModifierStretch_Blue.cpp's ExposeToBlue() (1 property: "dest").
 	 */
-	var EveChildModifierStretch = (_dec$12 = notImplemented$1, _dec2$O = define("EveChildModifierStretch", true), _dec3$L = notImplemented$1, _dec4$D = struct(), _dec5$z = vector3, _dec$12(_class$12 = _dec2$O(_class$12 = (_class2$K = class EveChildModifierStretch extends EveChildModifier {
+	var EveChildModifierStretch = (_dec$12 = notImplemented, _dec2$O = define("EveChildModifierStretch", true), _dec3$L = notImplemented, _dec4$D = struct(), _dec5$z = vector3, _dec$12(_class$12 = _dec2$O(_class$12 = (_class2$K = class EveChildModifierStretch extends EveChildModifier {
 	  constructor() {
 	    super(...arguments);
 	    // Carbon: ITriVectorFunctionPtr m_dest (an animated/expression-driven
@@ -243969,7 +243553,7 @@
 	 * EveChildModifierTranslateWithCamera_Blue.cpp's ExposeToBlue() (1 property:
 	 * "attachedToCamera").
 	 */
-	var EveChildModifierTranslateWithCamera = (_dec$11 = notImplemented$1, _dec2$N = define("EveChildModifierTranslateWithCamera", true), _dec3$K = boolean, _dec$11(_class$11 = _dec2$N(_class$11 = (_class2$J = class EveChildModifierTranslateWithCamera extends EveChildModifier {
+	var EveChildModifierTranslateWithCamera = (_dec$11 = notImplemented, _dec2$N = define("EveChildModifierTranslateWithCamera", true), _dec3$K = boolean, _dec$11(_class$11 = _dec2$N(_class$11 = (_class2$J = class EveChildModifierTranslateWithCamera extends EveChildModifier {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "attachedToCamera", _descriptor$K, this);
@@ -244101,7 +243685,7 @@
 	}), _class2$I)) || _class$10);
 
 	var _dec$$, _dec2$L, _dec3$I, _dec4$B, _dec5$y, _dec6$u, _dec7$r, _dec8$n, _dec9$k, _dec0$j, _dec1$h, _dec10$e, _dec11$d, _class$$, _class2$H, _descriptor$I, _descriptor2$C, _descriptor3$x, _descriptor4$v, _descriptor5$r, _descriptor6$p, _descriptor7$m, _descriptor8$i, _descriptor9$g, _descriptor0$d, _descriptor1$a, _EveChildBehaviorSystem;
-	var EveChildBehaviorSystem = (_dec$$ = notImplemented$1, _dec2$L = define("EveChildBehaviorSystem", true), _dec3$I = boolean, _dec4$B = quaternion, _dec5$y = vector3, _dec6$u = vector3, _dec7$r = matrix4, _dec8$n = matrix4, _dec9$k = uint, _dec0$j = boolean, _dec1$h = boolean, _dec10$e = list(), _dec11$d = list(), _dec$$(_class$$ = _dec2$L(_class$$ = (_class2$H = (_EveChildBehaviorSystem = class EveChildBehaviorSystem {
+	var EveChildBehaviorSystem = (_dec$$ = notImplemented, _dec2$L = define("EveChildBehaviorSystem", true), _dec3$I = boolean, _dec4$B = quaternion, _dec5$y = vector3, _dec6$u = vector3, _dec7$r = matrix4, _dec8$n = matrix4, _dec9$k = uint, _dec0$j = boolean, _dec1$h = boolean, _dec10$e = list(), _dec11$d = list(), _dec$$(_class$$ = _dec2$L(_class$$ = (_class2$H = (_EveChildBehaviorSystem = class EveChildBehaviorSystem {
 	  constructor() {
 	    _initializerDefineProperty(this, "display", _descriptor$I, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor2$C, this);
@@ -244208,7 +243792,7 @@
 	}), _class2$H)) || _class$$) || _class$$);
 
 	var _dec$_, _dec2$K, _dec3$H, _dec4$A, _dec5$x, _dec6$t, _dec7$q, _class$_, _class2$G, _descriptor$H, _descriptor2$B, _descriptor3$w, _descriptor4$u, _descriptor5$q;
-	var EveChildBulletStorm = (_dec$_ = notImplemented$1, _dec2$K = define("EveChildBulletStorm", true), _dec3$H = struct("Tw2Effect"), _dec4$A = uint, _dec5$x = float, _dec6$t = string, _dec7$q = float, _dec$_(_class$_ = _dec2$K(_class$_ = (_class2$G = class EveChildBulletStorm extends EveChild {
+	var EveChildBulletStorm = (_dec$_ = notImplemented, _dec2$K = define("EveChildBulletStorm", true), _dec3$H = struct("Tw2Effect"), _dec4$A = uint, _dec5$x = float, _dec6$t = string, _dec7$q = float, _dec$_(_class$_ = _dec2$K(_class$_ = (_class2$G = class EveChildBulletStorm extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "effect", _descriptor$H, this);
@@ -244265,7 +243849,7 @@
 	}), _class2$G)) || _class$_) || _class$_);
 
 	var _dec$Z, _dec2$J, _dec3$G, _dec4$z, _dec5$w, _dec6$s, _dec7$p, _dec8$m, _dec9$j, _dec0$i, _class$Z, _class2$F, _descriptor$G, _descriptor2$A, _descriptor3$v, _descriptor4$t, _descriptor5$p, _descriptor6$o, _descriptor7$l, _descriptor8$h;
-	var EveChildCloud = (_dec$Z = notImplemented$1, _dec2$J = define("EveChildCloud", true), _dec3$G = string, _dec4$z = float, _dec5$w = struct("Tw2Effect"), _dec6$s = uint, _dec7$p = quaternion, _dec8$m = vector3, _dec9$j = float, _dec0$i = vector3, _dec$Z(_class$Z = _dec2$J(_class$Z = (_class2$F = class EveChildCloud extends EveChild {
+	var EveChildCloud = (_dec$Z = notImplemented, _dec2$J = define("EveChildCloud", true), _dec3$G = string, _dec4$z = float, _dec5$w = struct("Tw2Effect"), _dec6$s = uint, _dec7$p = quaternion, _dec8$m = vector3, _dec9$j = float, _dec0$i = vector3, _dec$Z(_class$Z = _dec2$J(_class$Z = (_class2$F = class EveChildCloud extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$G, this);
@@ -244346,7 +243930,7 @@
 	}), _class2$F)) || _class$Z) || _class$Z);
 
 	var _dec$Y, _dec2$I, _dec3$F, _dec4$y, _dec5$v, _dec6$r, _dec7$o, _dec8$l, _dec9$i, _dec0$h, _dec1$g, _class$Y, _class2$E, _descriptor$F, _descriptor2$z, _descriptor3$u, _descriptor4$s, _descriptor5$o, _descriptor6$n, _descriptor7$k, _descriptor8$g, _descriptor9$f;
-	var EveChildCloud2 = (_dec$Y = notImplemented$1, _dec2$I = define("EveChildCloud2", true), _dec3$F = string, _dec4$y = struct(), _dec5$v = list(), _dec6$r = float, _dec7$o = vector3, _dec8$l = vector3, _dec9$i = quaternion, _dec0$h = struct(), _dec1$g = int32$1, _dec$Y(_class$Y = _dec2$I(_class$Y = (_class2$E = class EveChildCloud2 extends EveChild {
+	var EveChildCloud2 = (_dec$Y = notImplemented, _dec2$I = define("EveChildCloud2", true), _dec3$F = string, _dec4$y = struct(), _dec5$v = list(), _dec6$r = float, _dec7$o = vector3, _dec8$l = vector3, _dec9$i = quaternion, _dec0$h = struct(), _dec1$g = int32$1, _dec$Y(_class$Y = _dec2$I(_class$Y = (_class2$E = class EveChildCloud2 extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$F, this);
@@ -244425,7 +244009,7 @@
 	}), _class2$E)) || _class$Y) || _class$Y);
 
 	var _dec$X, _dec2$H, _dec3$E, _dec4$x, _dec5$u, _dec6$q, _dec7$n, _dec8$k, _dec9$h, _dec0$g, _dec1$f, _dec10$d, _dec11$c, _dec12$b, _dec13$7, _dec14$7, _class$X, _class2$D, _descriptor$E, _descriptor2$y, _descriptor3$t, _descriptor4$r, _descriptor5$n, _descriptor6$m, _descriptor7$j, _descriptor8$f, _descriptor9$e, _descriptor0$c, _descriptor1$9, _descriptor10$9, _descriptor11$7, _descriptor12$7;
-	var EveChildExplosion = (_dec$X = notImplemented$1, _dec2$H = define("EveChildExplosion", true), _dec3$E = string, _dec4$x = float, _dec5$u = struct("EveChildExplosion"), _dec6$q = float, _dec7$n = vector3, _dec8$k = float, _dec9$h = struct("EveChildExplosion"), _dec0$g = float, _dec1$f = float, _dec10$d = struct("EveChildExplosion"), _dec11$c = list("EveChildExplosion"), _dec12$b = matrix4, _dec13$7 = quaternion, _dec14$7 = vector3, _dec$X(_class$X = _dec2$H(_class$X = (_class2$D = class EveChildExplosion extends EveChild {
+	var EveChildExplosion = (_dec$X = notImplemented, _dec2$H = define("EveChildExplosion", true), _dec3$E = string, _dec4$x = float, _dec5$u = struct("EveChildExplosion"), _dec6$q = float, _dec7$n = vector3, _dec8$k = float, _dec9$h = struct("EveChildExplosion"), _dec0$g = float, _dec1$f = float, _dec10$d = struct("EveChildExplosion"), _dec11$c = list("EveChildExplosion"), _dec12$b = matrix4, _dec13$7 = quaternion, _dec14$7 = vector3, _dec$X(_class$X = _dec2$H(_class$X = (_class2$D = class EveChildExplosion extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$E, this);
@@ -244558,7 +244142,7 @@
 	}), _class2$D)) || _class$X) || _class$X);
 
 	var _dec$W, _dec2$G, _dec3$D, _dec4$w, _dec5$t, _dec6$p, _class$W, _class2$C, _descriptor$D, _descriptor2$x, _descriptor3$s, _descriptor4$q, _EveChildFogVolume;
-	var EveChildFogVolume = (_dec$W = notImplemented$1, _dec2$G = define("EveChildFogVolume", true), _dec3$D = string, _dec4$w = vector3, _dec5$t = float, _dec6$p = list(), _dec$W(_class$W = _dec2$G(_class$W = (_class2$C = (_EveChildFogVolume = class EveChildFogVolume {
+	var EveChildFogVolume = (_dec$W = notImplemented, _dec2$G = define("EveChildFogVolume", true), _dec3$D = string, _dec4$w = vector3, _dec5$t = float, _dec6$p = list(), _dec$W(_class$W = _dec2$G(_class$W = (_class2$C = (_EveChildFogVolume = class EveChildFogVolume {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$D, this);
 	    _initializerDefineProperty(this, "boundingSphereCenter", _descriptor2$x, this);
@@ -244609,7 +244193,7 @@
 	}), _class2$C)) || _class$W) || _class$W);
 
 	var _dec$V, _dec2$F, _dec3$C, _class$V, _class2$B, _descriptor$C, _EveChildInstancedMeshes;
-	var EveChildInstancedMeshes = (_dec$V = notImplemented$1, _dec2$F = define("EveChildInstancedMeshes", true), _dec3$C = string, _dec$V(_class$V = _dec2$F(_class$V = (_class2$B = (_EveChildInstancedMeshes = class EveChildInstancedMeshes {
+	var EveChildInstancedMeshes = (_dec$V = notImplemented, _dec2$F = define("EveChildInstancedMeshes", true), _dec3$C = string, _dec$V(_class$V = _dec2$F(_class$V = (_class2$B = (_EveChildInstancedMeshes = class EveChildInstancedMeshes {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$C, this);
 	  }
@@ -244652,7 +244236,7 @@
 	}), _class2$B)) || _class$V) || _class$V);
 
 	var _dec$U, _dec2$E, _dec3$B, _class$U, _class2$A, _descriptor$B, _EveChildLightingOverride;
-	var EveChildLightingOverride = (_dec$U = notImplemented$1, _dec2$E = define("EveChildLightingOverride", true), _dec3$B = string, _dec$U(_class$U = _dec2$E(_class$U = (_class2$A = (_EveChildLightingOverride = class EveChildLightingOverride {
+	var EveChildLightingOverride = (_dec$U = notImplemented, _dec2$E = define("EveChildLightingOverride", true), _dec3$B = string, _dec$U(_class$U = _dec2$E(_class$U = (_class2$A = (_EveChildLightingOverride = class EveChildLightingOverride {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$B, this);
 	  }
@@ -244679,7 +244263,7 @@
 	}), _class2$A)) || _class$U) || _class$U);
 
 	var _dec$T, _dec2$D, _dec3$A, _dec4$v, _dec5$s, _dec6$o, _dec7$m, _class$T, _class2$z, _descriptor$A, _descriptor2$w, _descriptor3$r, _descriptor4$p, _descriptor5$m;
-	var EveChildLink = (_dec$T = notImplemented$1, _dec2$D = define("EveChildLink", true), _dec3$A = string, _dec4$v = list("Tw2ValueBinding"), _dec5$s = list("Tw2Curve"), _dec6$o = struct("Tw2Mesh"), _dec7$m = quaternion, _dec$T(_class$T = _dec2$D(_class$T = (_class2$z = class EveChildLink extends EveChild {
+	var EveChildLink = (_dec$T = notImplemented, _dec2$D = define("EveChildLink", true), _dec3$A = string, _dec4$v = list("Tw2ValueBinding"), _dec5$s = list("Tw2Curve"), _dec6$o = struct("Tw2Mesh"), _dec7$m = quaternion, _dec$T(_class$T = _dec2$D(_class$T = (_class2$z = class EveChildLink extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$A, this);
@@ -244736,7 +244320,7 @@
 	}), _class2$z)) || _class$T) || _class$T);
 
 	var _dec$S, _dec2$C, _dec3$z, _dec4$u, _dec5$r, _dec6$n, _dec7$l, _dec8$j, _dec9$g, _dec0$f, _dec1$e, _dec10$c, _dec11$b, _dec12$a, _class$S, _class2$y, _descriptor$z, _descriptor2$v, _descriptor3$q, _descriptor4$o, _descriptor5$l, _descriptor6$l, _descriptor7$i, _descriptor8$e, _descriptor9$d, _descriptor0$b, _descriptor1$8, _descriptor10$8;
-	var EveChildParticleSphere = (_dec$S = notImplemented$1, _dec2$C = define("EveChildParticleSphere", true), _dec3$z = string, _dec4$u = list("Tw2ParticleAttributeGenerator"), _dec5$r = float, _dec6$n = struct("Tw2InstancedMesh"), _dec7$l = float, _dec8$j = struct("Tw2ParticleSystem"), _dec9$g = float, _dec0$f = float, _dec1$e = float, _dec10$c = float, _dec11$b = float, _dec12$a = boolean, _dec$S(_class$S = _dec2$C(_class$S = (_class2$y = class EveChildParticleSphere extends EveChild {
+	var EveChildParticleSphere = (_dec$S = notImplemented, _dec2$C = define("EveChildParticleSphere", true), _dec3$z = string, _dec4$u = list("Tw2ParticleAttributeGenerator"), _dec5$r = float, _dec6$n = struct("Tw2InstancedMesh"), _dec7$l = float, _dec8$j = struct("Tw2ParticleSystem"), _dec9$g = float, _dec0$f = float, _dec1$e = float, _dec10$c = float, _dec11$b = float, _dec12$a = boolean, _dec$S(_class$S = _dec2$C(_class$S = (_class2$y = class EveChildParticleSphere extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$z, this);
@@ -244852,7 +244436,7 @@
 	}), _class2$y)) || _class$S) || _class$S);
 
 	var _dec$R, _dec2$B, _dec3$y, _dec4$t, _dec5$q, _dec6$m, _dec7$k, _dec8$i, _class$R, _class2$x, _descriptor$y, _descriptor2$u, _descriptor3$p, _descriptor4$n, _descriptor5$k, _descriptor6$k, _EveChildPostProcessVolume;
-	var EveChildPostProcessVolume = (_dec$R = notImplemented$1, _dec2$B = define("EveChildPostProcessVolume", true), _dec3$y = string, _dec4$t = vector3, _dec5$q = float, _dec6$m = list(), _dec7$k = list(), _dec8$i = struct(), _dec$R(_class$R = _dec2$B(_class$R = (_class2$x = (_EveChildPostProcessVolume = class EveChildPostProcessVolume {
+	var EveChildPostProcessVolume = (_dec$R = notImplemented, _dec2$B = define("EveChildPostProcessVolume", true), _dec3$y = string, _dec4$t = vector3, _dec5$q = float, _dec6$m = list(), _dec7$k = list(), _dec8$i = struct(), _dec$R(_class$R = _dec2$B(_class$R = (_class2$x = (_EveChildPostProcessVolume = class EveChildPostProcessVolume {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$y, this);
 	    _initializerDefineProperty(this, "boundingSphereCenter", _descriptor2$u, this);
@@ -244919,7 +244503,7 @@
 	}), _class2$x)) || _class$R) || _class$R);
 
 	var _dec$Q, _dec2$A, _dec3$x, _dec4$s, _class$Q, _class2$w, _descriptor$x, _descriptor2$t;
-	var EveChildProceduralContainer = (_dec$Q = notImplemented$1, _dec2$A = define("EveChildProceduralContainer", true), _dec3$x = string, _dec4$s = struct(), _dec$Q(_class$Q = _dec2$A(_class$Q = (_class2$w = class EveChildProceduralContainer extends EveChild {
+	var EveChildProceduralContainer = (_dec$Q = notImplemented, _dec2$A = define("EveChildProceduralContainer", true), _dec3$x = string, _dec4$s = struct(), _dec$Q(_class$Q = _dec2$A(_class$Q = (_class2$w = class EveChildProceduralContainer extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$x, this);
@@ -244942,7 +244526,7 @@
 	}), _class2$w)) || _class$Q) || _class$Q);
 
 	var _dec$P, _dec2$z, _dec3$w, _dec4$r, _dec5$p, _dec6$l, _class$P, _class2$v, _descriptor$w, _descriptor2$s, _descriptor3$o, _descriptor4$m, _dec7$j, _dec8$h, _dec9$f, _dec0$e, _dec1$d, _dec10$b, _dec11$a, _class3$2, _class4$2, _descriptor5$j, _descriptor6$j, _descriptor7$h, _descriptor8$d, _descriptor9$c;
-	var EveProceduralMethodCycling = (_dec$P = notImplemented$1, _dec2$z = define("EveProceduralMethodCycling", true), _dec3$w = float, _dec4$r = boolean, _dec5$p = list("EveProceduralMethodCyclingParameter"), _dec6$l = list(), _dec$P(_class$P = _dec2$z(_class$P = (_class2$v = class EveProceduralMethodCycling extends Model {
+	var EveProceduralMethodCycling = (_dec$P = notImplemented, _dec2$z = define("EveProceduralMethodCycling", true), _dec3$w = float, _dec4$r = boolean, _dec5$p = list("EveProceduralMethodCyclingParameter"), _dec6$l = list(), _dec$P(_class$P = _dec2$z(_class$P = (_class2$v = class EveProceduralMethodCycling extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "startTimeOffset", _descriptor$w, this);
@@ -244979,7 +244563,7 @@
 	    return [];
 	  }
 	}), _class2$v)) || _class$P) || _class$P);
-	var EveProceduralMethodCyclingParameter = (_dec7$j = notImplemented$1, _dec8$h = define("EveProceduralMethodCyclingParameter", true), _dec9$f = string, _dec0$e = struct(), _dec1$d = float, _dec10$b = boolean, _dec11$a = boolean, _dec7$j(_class3$2 = _dec8$h(_class3$2 = (_class4$2 = class EveProceduralMethodCyclingParameter extends Model {
+	var EveProceduralMethodCyclingParameter = (_dec7$j = notImplemented, _dec8$h = define("EveProceduralMethodCyclingParameter", true), _dec9$f = string, _dec0$e = struct(), _dec1$d = float, _dec10$b = boolean, _dec11$a = boolean, _dec7$j(_class3$2 = _dec8$h(_class3$2 = (_class4$2 = class EveProceduralMethodCyclingParameter extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor5$j, this);
@@ -245026,7 +244610,7 @@
 	}), _class4$2)) || _class3$2) || _class3$2);
 
 	var _dec$O, _dec2$y, _dec3$v, _dec4$q, _dec5$o, _dec6$k, _dec7$i, _dec8$g, _class$O, _class2$u, _descriptor$v, _descriptor2$r, _descriptor3$n, _descriptor4$l, _descriptor5$i, _descriptor6$i;
-	var EveChildSpherePin = (_dec$O = notImplemented$1, _dec2$y = define("EveChildSpherePin", true), _dec3$v = string, _dec4$q = vector3, _dec5$o = float, _dec6$k = float, _dec7$i = struct(), _dec8$g = uint, _dec$O(_class$O = _dec2$y(_class$O = (_class2$u = class EveChildSpherePin extends EveChild {
+	var EveChildSpherePin = (_dec$O = notImplemented, _dec2$y = define("EveChildSpherePin", true), _dec3$v = string, _dec4$q = vector3, _dec5$o = float, _dec6$k = float, _dec7$i = struct(), _dec8$g = uint, _dec$O(_class$O = _dec2$y(_class$O = (_class2$u = class EveChildSpherePin extends EveChild {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$v, this);
@@ -245081,7 +244665,7 @@
 	}), _class2$u)) || _class$O) || _class$O);
 
 	var _dec$N, _dec2$x, _dec3$u, _dec4$p, _dec5$n, _dec6$j, _dec7$h, _dec8$f, _dec9$e, _class$N, _class2$t, _descriptor$u, _descriptor2$q, _descriptor3$m, _descriptor4$k, _descriptor5$h, _descriptor6$h, _descriptor7$g;
-	var EveLineChildContainer = (_dec$N = notImplemented$1, _dec2$x = define("EveLineChildContainer", true), _dec3$u = string, _dec4$p = boolean, _dec5$n = boolean, _dec6$j = vector3, _dec7$h = quaternion, _dec8$f = vector3, _dec9$e = list(), _dec$N(_class$N = _dec2$x(_class$N = (_class2$t = class EveLineChildContainer extends IEveLineSetPath {
+	var EveLineChildContainer = (_dec$N = notImplemented, _dec2$x = define("EveLineChildContainer", true), _dec3$u = string, _dec4$p = boolean, _dec5$n = boolean, _dec6$j = vector3, _dec7$h = quaternion, _dec8$f = vector3, _dec9$e = list(), _dec$N(_class$N = _dec2$x(_class$N = (_class2$t = class EveLineChildContainer extends IEveLineSetPath {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$u, this);
@@ -245170,7 +244754,7 @@
 	}), _class2$t)) || _class$N) || _class$N);
 
 	var _dec$M, _dec2$w, _dec3$t, _dec4$o, _dec5$m, _dec6$i, _dec7$g, _dec8$e, _dec9$d, _dec0$d, _dec1$c, _class$M, _class2$s, _descriptor$t, _descriptor2$p, _descriptor3$l, _descriptor4$j, _descriptor5$g, _descriptor6$g, _descriptor7$f, _descriptor8$c, _descriptor9$b;
-	var EveStarfield = (_dec$M = notImplemented$1, _dec2$w = define("EveStarfield", true), _dec3$t = boolean, _dec4$o = struct("Tw2Effect"), _dec5$m = float, _dec6$i = float, _dec7$g = float, _dec8$e = float, _dec9$d = float, _dec0$d = uint, _dec1$c = uint, _dec$M(_class$M = _dec2$w(_class$M = (_class2$s = class EveStarfield extends Model {
+	var EveStarfield = (_dec$M = notImplemented, _dec2$w = define("EveStarfield", true), _dec3$t = boolean, _dec4$o = struct("Tw2Effect"), _dec5$m = float, _dec6$i = float, _dec7$g = float, _dec8$e = float, _dec9$d = float, _dec0$d = uint, _dec1$c = uint, _dec$M(_class$M = _dec2$w(_class$M = (_class2$s = class EveStarfield extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$t, this);
@@ -245306,7 +244890,7 @@
 	 *    likewise omits these).
 	 *  - `GetDebugOptions`/`RenderDebugInfo`: not modeled, matching `EveStretch.js`.
 	 */
-	var EveStretch3 = (_dec$L = notImplemented$1, _dec2$v = define("EveStretch3", true), _dec3$s = string, _dec4$n = notImplemented$1, _dec5$l = struct(), _dec6$h = notImplemented$1, _dec7$f = list("Tr2Controller"), _dec8$d = list("Tw2CurveSet"), _dec9$c = struct(), _dec0$c = notOwned, _dec1$b = struct(), _dec10$a = boolean, _dec11$9 = notImplemented$1, _dec12$9 = list("Tr2DynamicBinding"), _dec13$6 = struct("Tw2Float"), _dec14$6 = struct(), _dec15$5 = struct("Tw2Float"), _dec16$5 = struct(), _dec17$4 = notOwned, _dec18$4 = struct(), _dec19$4 = notImplemented$1, _dec20$4 = struct(), _dec21$4 = struct(), _dec22$4 = boolean, _dec$L(_class$L = _dec2$v(_class$L = (_class2$r = (_EveStretch = class EveStretch3 extends Model {
+	var EveStretch3 = (_dec$L = notImplemented, _dec2$v = define("EveStretch3", true), _dec3$s = string, _dec4$n = notImplemented, _dec5$l = struct(), _dec6$h = notImplemented, _dec7$f = list("Tr2Controller"), _dec8$d = list("Tw2CurveSet"), _dec9$c = struct(), _dec0$c = notOwned, _dec1$b = struct(), _dec10$a = boolean, _dec11$9 = notImplemented, _dec12$9 = list("Tr2DynamicBinding"), _dec13$6 = struct("Tw2Float"), _dec14$6 = struct(), _dec15$5 = struct("Tw2Float"), _dec16$5 = struct(), _dec17$4 = notOwned, _dec18$4 = struct(), _dec19$4 = notImplemented, _dec20$4 = struct(), _dec21$4 = struct(), _dec22$4 = boolean, _dec$L(_class$L = _dec2$v(_class$L = (_class2$r = (_EveStretch = class EveStretch3 extends Model {
 	  /**
 	   * Gets this stretch's resources
 	   * @param {Array} [out=[]]
@@ -245910,7 +245494,7 @@
 	}), _class2$r)) || _class$L) || _class$L);
 
 	var _dec$K, _dec2$u, _dec3$r, _dec4$m, _dec5$k, _dec6$g, _dec7$e, _dec8$c, _dec9$b, _dec0$b, _dec1$a, _dec10$9, _dec11$8, _dec12$8, _dec13$5, _dec14$5, _dec15$4, _dec16$4, _class$K, _class2$q, _descriptor$r, _descriptor2$n, _descriptor3$j, _descriptor4$h, _descriptor5$e, _descriptor6$e, _descriptor7$d, _descriptor8$a, _descriptor9$9, _descriptor0$9, _descriptor1$6, _descriptor10$6, _descriptor11$5, _descriptor12$5, _descriptor13$4, _descriptor14$4;
-	var EveEffectRoot2 = (_dec$K = notImplemented$1, _dec2$u = define("EveEffectRoot2", true), _dec3$r = string, _dec4$m = vector3, _dec5$k = float, _dec6$g = list(), _dec7$e = list("Tw2CurveSet"), _dec8$c = float, _dec9$b = boolean, _dec0$b = list("EveChild"), _dec1$a = list("Tr2PointLight"), _dec10$9 = list("TriObserverLocal"), _dec11$8 = quaternion, _dec12$8 = struct(), _dec13$5 = vector3, _dec14$5 = color, _dec15$4 = float, _dec16$4 = vector3, _dec$K(_class$K = _dec2$u(_class$K = (_class2$q = class EveEffectRoot2 extends EveObject {
+	var EveEffectRoot2 = (_dec$K = notImplemented, _dec2$u = define("EveEffectRoot2", true), _dec3$r = string, _dec4$m = vector3, _dec5$k = float, _dec6$g = list(), _dec7$e = list("Tw2CurveSet"), _dec8$c = float, _dec9$b = boolean, _dec0$b = list("EveChild"), _dec1$a = list("Tr2PointLight"), _dec10$9 = list("TriObserverLocal"), _dec11$8 = quaternion, _dec12$8 = struct(), _dec13$5 = vector3, _dec14$5 = color, _dec15$4 = float, _dec16$4 = vector3, _dec$K(_class$K = _dec2$u(_class$K = (_class2$q = class EveEffectRoot2 extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$r, this);
@@ -246054,7 +245638,7 @@
 	}), _class2$q)) || _class$K) || _class$K);
 
 	var _dec$J, _dec2$t, _dec3$q, _dec4$l, _dec5$j, _dec6$f, _dec7$d, _dec8$b, _dec9$a, _dec0$a, _dec1$9, _dec10$8, _class$J, _class2$p, _descriptor$q, _descriptor2$m, _descriptor3$i, _descriptor4$g, _descriptor5$d, _descriptor6$d, _descriptor7$c, _descriptor8$9, _descriptor9$8, _descriptor0$8;
-	var EveMobile = (_dec$J = notImplemented$1, _dec2$t = define("EveMobile", true), _dec3$q = string, _dec4$l = list("EveObjectSet"), _dec5$j = vector3, _dec6$f = float, _dec7$d = list("EveChild"), _dec8$b = list("EveStateController"), _dec9$a = list("Tw2CurveSet"), _dec0$a = list("EveLocatorSets"), _dec1$9 = struct("Tr2MeshLod"), _dec10$8 = list("TriObserverLocal"), _dec$J(_class$J = _dec2$t(_class$J = (_class2$p = class EveMobile extends EveObject {
+	var EveMobile = (_dec$J = notImplemented, _dec2$t = define("EveMobile", true), _dec3$q = string, _dec4$l = list("EveObjectSet"), _dec5$j = vector3, _dec6$f = float, _dec7$d = list("EveChild"), _dec8$b = list("EveStateController"), _dec9$a = list("Tw2CurveSet"), _dec0$a = list("EveLocatorSets"), _dec1$9 = struct("Tr2MeshLod"), _dec10$8 = list("TriObserverLocal"), _dec$J(_class$J = _dec2$t(_class$J = (_class2$p = class EveMobile extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$q, this);
@@ -246141,7 +245725,7 @@
 	}), _class2$p)) || _class$J) || _class$J);
 
 	var _dec$I, _dec2$s, _dec3$p, _dec4$k, _dec5$i, _dec6$e, _dec7$c, _dec8$a, _dec9$9, _dec0$9, _dec1$8, _dec10$7, _dec11$7, _dec12$7, _dec13$4, _dec14$4, _class$I, _class2$o, _descriptor$p, _descriptor2$l, _descriptor3$h, _descriptor4$f, _descriptor5$c, _descriptor6$c, _descriptor7$b, _descriptor8$8, _descriptor9$7, _descriptor0$7, _descriptor1$5, _descriptor10$5, _descriptor11$4, _descriptor12$4;
-	var EveRootTransform = (_dec$I = notImplemented$1, _dec2$s = define("EveRootTransform", true), _dec3$p = string, _dec4$k = float, _dec5$i = list("EveObject"), _dec6$e = list("Tw2CurveSet"), _dec7$c = boolean, _dec8$a = struct("Tw2Mesh"), _dec9$9 = uint, _dec0$9 = list("TriObserverLocal"), _dec1$8 = quaternion, _dec10$7 = struct("Tw2Curve"), _dec11$7 = vector3, _dec12$7 = float, _dec13$4 = vector3, _dec14$4 = struct("Tw2Curve"), _dec$I(_class$I = _dec2$s(_class$I = (_class2$o = class EveRootTransform extends EveObject {
+	var EveRootTransform = (_dec$I = notImplemented, _dec2$s = define("EveRootTransform", true), _dec3$p = string, _dec4$k = float, _dec5$i = list("EveObject"), _dec6$e = list("Tw2CurveSet"), _dec7$c = boolean, _dec8$a = struct("Tw2Mesh"), _dec9$9 = uint, _dec0$9 = list("TriObserverLocal"), _dec1$8 = quaternion, _dec10$7 = struct("Tw2Curve"), _dec11$7 = vector3, _dec12$7 = float, _dec13$4 = vector3, _dec14$4 = struct("Tw2Curve"), _dec$I(_class$I = _dec2$s(_class$I = (_class2$o = class EveRootTransform extends EveObject {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$p, this);
@@ -246291,7 +245875,7 @@
 	 * @property {EveLocalPositionCurve} sourceObject -
 	 * @property {Number} type                        -
 	 */
-	var EveConnector = (_dec$F = notImplemented$1, _dec2$r = define("EveConnector", true), _dec3$o = color, _dec4$j = float, _dec5$h = float, _dec6$d = color, _dec7$b = notOwned, _dec8$9 = struct(), _dec9$8 = vector3, _dec0$8 = boolean, _dec1$7 = float, _dec10$6 = notOwned, _dec11$6 = struct(), _dec12$6 = uint, _dec$F(_class$F = _dec2$r(_class$F = (_class2$n = class EveConnector extends Model {
+	var EveConnector = (_dec$F = notImplemented, _dec2$r = define("EveConnector", true), _dec3$o = color, _dec4$j = float, _dec5$h = float, _dec6$d = color, _dec7$b = notOwned, _dec8$9 = struct(), _dec9$8 = vector3, _dec0$8 = boolean, _dec1$7 = float, _dec10$6 = notOwned, _dec11$6 = struct(), _dec12$6 = uint, _dec$F(_class$F = _dec2$r(_class$F = (_class2$n = class EveConnector extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "animationColor", _descriptor$o, this);
@@ -246384,7 +245968,7 @@
 	 *
 	 * @property {vec3} value -
 	 */
-	var EveLocalPositionCurve = (_dec$E = notImplemented$1, _dec2$q = define("EveLocalPositionCurve", true), _dec3$n = vector3, _dec$E(_class$E = _dec2$q(_class$E = (_class2$m = class EveLocalPositionCurve extends Model {
+	var EveLocalPositionCurve = (_dec$E = notImplemented, _dec2$q = define("EveLocalPositionCurve", true), _dec3$n = vector3, _dec$E(_class$E = _dec2$q(_class$E = (_class2$m = class EveLocalPositionCurve extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "value", _descriptor$n, this);
@@ -246416,7 +246000,7 @@
 	 * @property {Number} pinRotation            -
 	 * @property {Number} sortValueMultiplier    -
 	 */
-	var EveSpherePin = (_dec$D = notImplemented$1, _dec2$p = define("EveSpherePin", true), _dec3$m = string, _dec4$i = vector3, _dec5$g = color, _dec6$c = list(), _dec7$a = boolean, _dec8$8 = path, _dec9$7 = color, _dec0$7 = struct(), _dec1$6 = float, _dec10$5 = float, _dec11$5 = float, _dec12$5 = float, _dec$D(_class$D = _dec2$p(_class$D = (_class2$l = class EveSpherePin extends Model {
+	var EveSpherePin = (_dec$D = notImplemented, _dec2$p = define("EveSpherePin", true), _dec3$m = string, _dec4$i = vector3, _dec5$g = color, _dec6$c = list(), _dec7$a = boolean, _dec8$8 = path, _dec9$7 = color, _dec0$7 = struct(), _dec1$6 = float, _dec10$5 = float, _dec11$5 = float, _dec12$5 = float, _dec$D(_class$D = _dec2$p(_class$D = (_class2$l = class EveSpherePin extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$m, this);
@@ -246532,7 +246116,7 @@
 	 * @property {Number} targetMaxSegments    -
 	 * @property {Tw2Effect} velocityEffect    -
 	 */
-	var EveTacticalOverlay = (_dec$C = notImplemented$1, _dec2$o = define("EveTacticalOverlay", true), _dec3$l = struct(), _dec4$h = float, _dec5$f = struct(), _dec6$b = float, _dec7$9 = float, _dec8$7 = float, _dec9$6 = float, _dec0$6 = struct(), _dec$C(_class$C = _dec2$o(_class$C = (_class2$k = class EveTacticalOverlay extends Model {
+	var EveTacticalOverlay = (_dec$C = notImplemented, _dec2$o = define("EveTacticalOverlay", true), _dec3$l = struct(), _dec4$h = float, _dec5$f = struct(), _dec6$b = float, _dec7$9 = float, _dec8$7 = float, _dec9$6 = float, _dec0$6 = struct(), _dec$C(_class$C = _dec2$o(_class$C = (_class2$k = class EveTacticalOverlay extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "anchorEffect", _descriptor$l, this);
@@ -246612,7 +246196,7 @@
 	 * @property {Tw2Mesh} mesh                -
 	 * @property {Number} modelScale           -
 	 */
-	var EveUiObject = (_dec$B = notImplemented$1, _dec2$n = define("EveUiObject", true), _dec3$k = string, _dec4$g = float, _dec5$e = struct(), _dec6$a = float, _dec$B(_class$B = _dec2$n(_class$B = (_class2$j = class EveUiObject extends Model {
+	var EveUiObject = (_dec$B = notImplemented, _dec2$n = define("EveUiObject", true), _dec3$k = string, _dec4$g = float, _dec5$e = struct(), _dec6$a = float, _dec$B(_class$B = _dec2$n(_class$B = (_class2$j = class EveUiObject extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$k, this);
@@ -246657,7 +246241,7 @@
 	 *
 	 * @property {EveCurveLineSet} lineSet -
 	 */
-	var EveLineContainer = (_dec$A = notImplemented$1, _dec2$m = define("EveLineContainer", true), _dec3$j = struct("EveCurveLineSet"), _dec$A(_class$A = _dec2$m(_class$A = (_class2$i = class EveLineContainer extends Model {
+	var EveLineContainer = (_dec$A = notImplemented, _dec2$m = define("EveLineContainer", true), _dec3$j = struct("EveCurveLineSet"), _dec$A(_class$A = _dec2$m(_class$A = (_class2$i = class EveLineContainer extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "lineSet", _descriptor$j, this);
@@ -246779,7 +246363,7 @@
 	}), _class2$h)) || _class$z);
 
 	var _dec$y, _dec2$k, _dec3$i, _dec4$f, _dec5$d, _dec6$9, _dec7$8, _dec8$6, _dec9$5, _dec0$5, _dec1$5, _dec10$4, _dec11$4, _dec12$4, _dec13$3, _dec14$3, _dec15$3, _dec16$3, _dec17$3, _dec18$3, _dec19$3, _dec20$3, _dec21$3, _dec22$3, _dec23$2, _dec24$2, _dec25$2, _dec26$1, _dec27$1, _dec28$1, _dec29$1, _dec30$1, _class$y, _class2$g, _descriptor$h, _descriptor2$g, _descriptor3$c, _descriptor4$a, _descriptor5$8, _descriptor6$8, _descriptor7$7, _descriptor8$4, _descriptor9$4, _descriptor0$4, _descriptor1$3, _descriptor10$3, _descriptor11$3, _descriptor12$3, _descriptor13$3, _descriptor14$3, _descriptor15$2, _descriptor16$2, _descriptor17$2, _descriptor18$2, _descriptor19$2, _descriptor20$1, _descriptor21$1, _descriptor22$1, _descriptor23$1, _descriptor24$1, _descriptor25$1, _descriptor26$1, _descriptor27$1, _descriptor28$1;
-	var Tr2GpuSharedEmitter = (_dec$y = define("Tr2GpuSharedEmitter", true), _dec2$k = notImplemented$1, _dec3$i = string, _dec4$f = float, _dec5$d = color, _dec6$9 = color, _dec7$8 = color, _dec8$6 = color, _dec9$5 = float, _dec0$5 = boolean, _dec1$5 = vector3, _dec10$4 = float, _dec11$4 = float, _dec12$4 = float, _dec13$3 = float, _dec14$3 = float, _dec15$3 = float, _dec16$3 = float, _dec17$3 = float, _dec18$3 = float, _dec19$3 = float, _dec20$3 = float, _dec21$3 = struct("Tr2GpuParticleSystem"), _dec22$3 = vector3, _dec23$2 = float, _dec24$2 = float, _dec25$2 = float, _dec26$1 = vector3, _dec27$1 = uint, _dec28$1 = float, _dec29$1 = uint, _dec30$1 = float, _dec$y(_class$y = _dec2$k(_class$y = (_class2$g = class Tr2GpuSharedEmitter extends Tw2ParticleEmitter {
+	var Tr2GpuSharedEmitter = (_dec$y = define("Tr2GpuSharedEmitter", true), _dec2$k = notImplemented, _dec3$i = string, _dec4$f = float, _dec5$d = color, _dec6$9 = color, _dec7$8 = color, _dec8$6 = color, _dec9$5 = float, _dec0$5 = boolean, _dec1$5 = vector3, _dec10$4 = float, _dec11$4 = float, _dec12$4 = float, _dec13$3 = float, _dec14$3 = float, _dec15$3 = float, _dec16$3 = float, _dec17$3 = float, _dec18$3 = float, _dec19$3 = float, _dec20$3 = float, _dec21$3 = struct("Tr2GpuParticleSystem"), _dec22$3 = vector3, _dec23$2 = float, _dec24$2 = float, _dec25$2 = float, _dec26$1 = vector3, _dec27$1 = uint, _dec28$1 = float, _dec29$1 = uint, _dec30$1 = float, _dec$y(_class$y = _dec2$k(_class$y = (_class2$g = class Tr2GpuSharedEmitter extends Tw2ParticleEmitter {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$h, this);
@@ -247103,7 +246687,7 @@
 	}), _class2$g)) || _class$y) || _class$y);
 
 	var _dec$x, _dec2$j, _dec3$h, _dec4$e, _dec5$c, _class$x, _class2$f, _descriptor$g, _descriptor2$f, _descriptor3$b;
-	var Tr2GpuUniqueEmitter = (_dec$x = define("Tr2GpuUniqueEmitter", true), _dec2$j = notImplemented$1, _dec3$h = boolean, _dec4$e = vector3, _dec5$c = float, _dec$x(_class$x = _dec2$j(_class$x = (_class2$f = class Tr2GpuUniqueEmitter extends Tr2GpuSharedEmitter {
+	var Tr2GpuUniqueEmitter = (_dec$x = define("Tr2GpuUniqueEmitter", true), _dec2$j = notImplemented, _dec3$h = boolean, _dec4$e = vector3, _dec5$c = float, _dec$x(_class$x = _dec2$j(_class$x = (_class2$f = class Tr2GpuUniqueEmitter extends Tr2GpuSharedEmitter {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "scaledByParent", _descriptor$g, this);
@@ -247141,7 +246725,7 @@
 	}), _class2$f)) || _class$x) || _class$x);
 
 	var _dec$w, _dec2$i, _dec3$g, _dec4$d, _dec5$b, _dec6$8, _dec7$7, _dec8$5, _dec9$4, _dec0$4, _dec1$4, _dec10$3, _dec11$3, _dec12$3, _dec13$2, _dec14$2, _dec15$2, _dec16$2, _dec17$2, _dec18$2, _dec19$2, _dec20$2, _dec21$2, _dec22$2, _class$w, _class2$e, _descriptor$f, _descriptor2$e, _descriptor3$a, _descriptor4$9, _descriptor5$7, _descriptor6$7, _descriptor7$6, _descriptor8$3, _descriptor9$3, _descriptor0$3, _descriptor1$2, _descriptor10$2, _descriptor11$2, _descriptor12$2, _descriptor13$2, _descriptor14$2;
-	var Tr2GpuParticleSystem = (_dec$w = notImplemented$1, _dec2$i = define("Tr2GpuParticleSystem", true), _dec3$g = struct("Tw2Effect"), _dec4$d = struct("Tw2Effect"), _dec5$b = struct("Tw2Effect"), _dec6$8 = struct("Tw2Effect"), _dec7$7 = struct("Tw2Effect"), _dec8$5 = struct("Tw2Effect"), _dec9$4 = struct("Tw2Effect"), _dec0$4 = struct("Tw2Effect"), _dec1$4 = struct("Tw2Effect"), _dec10$3 = uint, _dec11$3 = isPrivate, _dec12$3 = boolean, _dec13$2 = isPrivate, _dec14$2 = boolean, _dec15$2 = isPrivate, _dec16$2 = boolean, _dec17$2 = isPrivate, _dec18$2 = boolean, _dec19$2 = isPrivate, _dec20$2 = boolean, _dec21$2 = isPrivate, _dec22$2 = uint, _dec$w(_class$w = _dec2$i(_class$w = (_class2$e = class Tr2GpuParticleSystem {
+	var Tr2GpuParticleSystem = (_dec$w = notImplemented, _dec2$i = define("Tr2GpuParticleSystem", true), _dec3$g = struct("Tw2Effect"), _dec4$d = struct("Tw2Effect"), _dec5$b = struct("Tw2Effect"), _dec6$8 = struct("Tw2Effect"), _dec7$7 = struct("Tw2Effect"), _dec8$5 = struct("Tw2Effect"), _dec9$4 = struct("Tw2Effect"), _dec0$4 = struct("Tw2Effect"), _dec1$4 = struct("Tw2Effect"), _dec10$3 = uint, _dec11$3 = isPrivate, _dec12$3 = boolean, _dec13$2 = isPrivate, _dec14$2 = boolean, _dec15$2 = isPrivate, _dec16$2 = boolean, _dec17$2 = isPrivate, _dec18$2 = boolean, _dec19$2 = isPrivate, _dec20$2 = boolean, _dec21$2 = isPrivate, _dec22$2 = uint, _dec$w(_class$w = _dec2$i(_class$w = (_class2$e = class Tr2GpuParticleSystem {
 	  constructor() {
 	    _initializerDefineProperty(this, "clear", _descriptor$f, this);
 	    _initializerDefineProperty(this, "emit", _descriptor2$e, this);

@@ -1,4 +1,4 @@
-import { getMetadata, getOwnMetadata } from "../utils/reflect";
+import { getMetadata } from "../utils/reflect";
 import { isArray, isNumber, isString } from "../utils/type";
 
 const CACHE = new Map();
@@ -176,7 +176,6 @@ export class Tw2Schema
         this._Constructor = Constructor;
         this._type = getMetadata("type", Constructor);
         this._ccp = getMetadata("ccp", Constructor);
-        this._definitions = getOwnMetadata("definitions", Constructor) || null;
         this._ui = Tw2Schema.CreateUI(Constructor) || null;
         this._properties = [];
         this._propertiesByName = new Map();
@@ -250,43 +249,12 @@ export class Tw2Schema
     }
 
     /**
-     * Gets class definitions
-     * @returns {?Object}
-     */
-    GetDefinitions()
-    {
-        return this._definitions;
-    }
-
-    /**
      * Gets cached class ui metadata
      * @returns {?Object}
      */
     GetUI()
     {
         return this._ui;
-    }
-
-    /**
-     * Gets a class definition
-     * @param {String} namespace
-     * @returns {?Object}
-     */
-    GetDefinition(namespace)
-    {
-        const definitions = this.GetDefinitions();
-        return definitions && definitions.namespaces ? definitions.namespaces[namespace] || null : null;
-    }
-
-    /**
-     * Gets a class definition name
-     * @param {String} namespace
-     * @returns {?String}
-     */
-    GetDefinitionName(namespace)
-    {
-        const definition = this.GetDefinition(namespace);
-        return definition && isString(definition.name) ? definition.name : null;
     }
 
     /**
