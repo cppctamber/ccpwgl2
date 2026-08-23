@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Curve } from "../Tw2Curve";
 
 
-@meta.wgl.define("Tw2SineCurve")
+@meta.define("Tw2SineCurve")
 export class Tw2SineCurve extends Tw2Curve
 {
 

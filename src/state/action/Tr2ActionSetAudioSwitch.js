@@ -4,7 +4,7 @@ import { CallEmitter, FindSoundEmitter, GetOwner } from "./Tr2ActionAudioHelpers
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionSetAudioSwitch")
+@meta.define("Tr2ActionSetAudioSwitch", true)
 export class Tr2ActionSetAudioSwitch extends Tw2Action
 {
     @meta.string

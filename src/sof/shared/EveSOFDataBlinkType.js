@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataBlinkType",
-    ccp: true
-})
+@meta.define("EveSOFDataBlinkType", true)
 export class EveSOFDataBlinkType extends meta.Model
 {
 

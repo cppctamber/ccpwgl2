@@ -10,7 +10,7 @@ import { quat, vec3 } from "math";
  * have accumulated, and the identity and lifetime that let those modifiers
  * recognise the same placement between frames.
  */
-@meta.ccp.define("PlacementDataWithIdentifier")
+@meta.define("PlacementDataWithIdentifier", true)
 export class PlacementDataWithIdentifier extends meta.Model
 {
 

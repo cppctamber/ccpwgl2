@@ -15,7 +15,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPColorCorrectionEffect
  */
-@meta.ccp.define("Tr2PPColorCorrectionEffect")
+@meta.define("Tr2PPColorCorrectionEffect", true)
 export class Tr2PPColorCorrectionEffect extends Tr2PPEffect
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2PPFidelityFXEffect")
+@meta.define("Tr2PPFidelityFXEffect", true)
 export class Tr2PPFidelityFXEffect
 {
 

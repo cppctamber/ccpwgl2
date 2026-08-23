@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveAnimation",
-    ccp: true
-})
+@meta.define("EveAnimation", true)
 export class EveAnimation
 {
 

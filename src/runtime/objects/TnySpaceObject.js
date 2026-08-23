@@ -6,8 +6,7 @@ import { getApiService } from "../api";
 import { TnySlot } from "./TnySlot";
 
 
-@meta.tny.type("TnySpaceObject")
-@meta.tny.define("TnySpaceObject")
+@meta.define("TnySpaceObject")
 export class TnySpaceObject extends WglTransform
 {
 

@@ -6,10 +6,7 @@ import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildQuad",
-    ccp: true
-})
+@meta.define("EveChildQuad", true)
 export class EveChildQuad extends EveChild
 {
 

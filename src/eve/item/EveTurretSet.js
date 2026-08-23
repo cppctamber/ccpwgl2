@@ -16,10 +16,7 @@ import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 /**
  * Todo: update with bone offset?
  */
-@meta.define({
-    wgl: "EveTurretSetItem",
-    ccp: true
-})
+@meta.define("EveTurretSetItem", true)
 export class EveTurretSetItem extends EveObjectSetItem
 {
 
@@ -111,10 +108,7 @@ export class EveTurretSetItem extends EveObjectSetItem
 }
 
 
-@meta.define({
-    wgl: "EveTurretSet",
-    ccp: true
-})
+@meta.define("EveTurretSet", true)
 @meta.stage(1)
 export class EveTurretSet extends EveObjectSet
 {

@@ -4,7 +4,7 @@ import { Tr2CurveQuaternionKey } from "./Tr2CurveKeys";
 import { Tr2CurveExtrapolation, Tr2CurveInterpolation } from "./Tr2CurveMath";
 
 
-@meta.ccp.define("Tr2CurveQuaternion")
+@meta.define("Tr2CurveQuaternion", true)
 export class Tr2CurveQuaternion extends meta.Model
 {
     @meta.string

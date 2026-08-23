@@ -13,7 +13,7 @@ import { Tw2ParticleElement } from "../element";
  * rest get a swept segment-vs-sphere test against this frame's motion
  * (`cpp:179-239`).
  */
-@meta.define({ ccp: "Tr2SphereConstraint" })
+@meta.define("Tr2SphereConstraint", true)
 export class Tr2SphereConstraint extends Tw2ParticleConstraint
 {
 

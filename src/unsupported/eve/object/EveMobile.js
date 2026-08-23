@@ -4,10 +4,7 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveMobile",
-    ccp: true
-})
+@meta.define("EveMobile", true)
 export class EveMobile extends EveObject
 {
 

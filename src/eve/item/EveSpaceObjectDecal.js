@@ -4,10 +4,7 @@ import { vec3, quat, mat4 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
-@meta.define({
-    wgl: "EveSpaceObjectDecal",
-    ccp: true
-})
+@meta.define("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends meta.Model
 {
 

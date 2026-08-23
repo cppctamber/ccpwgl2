@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2GeometryAnimation")
+@meta.define("Tw2GeometryAnimation")
 export class Tw2GeometryAnimation
 {
 

@@ -10,10 +10,7 @@ import {
 } from "constant";
 
 
-@meta.define({
-    wgl: "EveMeshOverlayEffect",
-    ccp: true
-})
+@meta.define("EveMeshOverlayEffect", true)
 export class EveMeshOverlayEffect extends meta.Model
 {
 

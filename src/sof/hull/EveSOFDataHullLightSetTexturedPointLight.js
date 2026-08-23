@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullLightSetTexturedPointLight",
-    ccp: true
-})
+@meta.define("EveSOFDataHullLightSetTexturedPointLight", true)
 export class EveSOFDataHullLightSetTexturedPointLight extends meta.Model
 {
 

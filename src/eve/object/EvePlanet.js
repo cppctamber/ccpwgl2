@@ -9,10 +9,7 @@ import { EveShip2 } from "eve";
 // TODO: Add "OnValueChanged" handler
 // TODO: Handle height map resolution size
 
-@meta.define({
-    wgl: "EvePlanet",
-    ccp: true
-})
+@meta.define("EvePlanet", true)
 export class EvePlanet extends EveObject
 {
 

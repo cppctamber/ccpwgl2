@@ -22,10 +22,7 @@ import { EveChildTransform } from "eve/child/EveChildTransform";
  * genuinely differs between a closed circle and an open curve. What is shared is
  * the state and the segment count, which are identical expressions in both.
  */
-@meta.define({
-    wgl: "IEveLineSetPath",
-    ccp: true
-})
+@meta.define("IEveLineSetPath", true)
 export class IEveLineSetPath extends EveChildTransform
 {
 

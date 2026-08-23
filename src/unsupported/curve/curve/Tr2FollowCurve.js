@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.ccp.define("Tr2FollowCurve")
+@meta.define("Tr2FollowCurve", true)
 export class Tr2FollowCurve extends meta.Model
 {
     @meta.string

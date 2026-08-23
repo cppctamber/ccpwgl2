@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { vec2, vec4 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataGenericDamage",
-    ccp: true
-})
+@meta.define("EveSOFDataGenericDamage", true)
 export class EveSOFDataGenericDamage extends meta.Model
 {
 

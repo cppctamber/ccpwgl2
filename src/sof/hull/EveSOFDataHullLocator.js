@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { mat4 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullLocator",
-    ccp: true
-})
+@meta.define("EveSOFDataHullLocator", true)
 export class EveSOFDataHullLocator extends meta.Model
 {
 

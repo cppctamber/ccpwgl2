@@ -19,10 +19,7 @@ import { vec3, vec4 } from "math";
  * @property {Number} sortValueMultiplier    -
  */
 @meta.notImplemented
-@meta.define({
-    wgl: "EveSpherePin",
-    ccp: true
-})
+@meta.define("EveSpherePin", true)
 export class EveSpherePin extends meta.Model
 {
 

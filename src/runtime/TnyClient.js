@@ -9,8 +9,7 @@ import { TnyMoon } from "./objects/TnyMoon";
 import { TnyScene } from "./TnyScene";
 
 
-@meta.tny.type("TnyClient")
-@meta.tny.define("TnyClient")
+@meta.define("TnyClient")
 export class TnyClient extends meta.Model
 {
 

@@ -5,10 +5,7 @@ import { Tr2CurveEulerRotationKey } from "../curve/Tr2CurveKeys";
 import { Tr2CurveInterpolation, Tr2CurveTangentType } from "../curve/Tr2CurveMath";
 
 
-@meta.define({
-    wgl: "Tw2CurveEulerRotation",
-    ccp: "Tr2CurveEulerRotation"
-})
+@meta.define("Tw2CurveEulerRotation", "Tr2CurveEulerRotation")
 export class Tw2CurveEulerRotation extends meta.Model
 {
     @meta.string

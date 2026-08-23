@@ -19,7 +19,7 @@ import { vec3, vec4 } from "math";
  * drift rather than removed.
  */
 @meta.notImplemented
-@meta.ccp.define("Tr2InteriorLightSource")
+@meta.define("Tr2InteriorLightSource", true)
 export class Tr2InteriorLightSource extends meta.Model
 {
 

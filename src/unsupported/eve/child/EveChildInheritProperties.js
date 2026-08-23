@@ -3,10 +3,7 @@ import { vec4 } from "math/vec4";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildInheritProperties",
-    ccp: true
-})
+@meta.define("EveChildInheritProperties", true)
 export class EveChildInheritProperties extends meta.Model
 {
 

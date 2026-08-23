@@ -3,10 +3,7 @@ import { Tw2ParticleElement } from "./Tw2ParticleElement";
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "Tw2ParticleElementDeclaration",
-    ccp: "Tr2ParticleElementDeclaration"
-})
+@meta.define("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
 export class Tw2ParticleElementDeclaration extends meta.Model
 {
 

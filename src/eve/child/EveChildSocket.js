@@ -31,10 +31,7 @@ import { EveChildContainer } from "./EveChildContainer";
  * is carried for round-tripping and `Rebind` is a no-op until content needs it.
  * (Scan scope: `shared/fx` only - hangar, ship, station and scene not covered.)
  */
-@meta.define({
-    wgl: "EveChildSocket",
-    ccp: true
-})
+@meta.define("EveChildSocket", true)
 @meta.stage(2)
 export class EveChildSocket extends EveChildContainer
 {

@@ -25,10 +25,7 @@ import { isArrayLike, isBoolean, isNumber } from "utils";
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
-@meta.define({
-    wgl: "Tw2ValueBinding",
-    ccp: "TriValueBinding"
-})
+@meta.define("Tw2ValueBinding", "TriValueBinding")
 export class Tw2ValueBinding extends meta.Model
 {
 

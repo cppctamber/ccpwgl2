@@ -3,7 +3,7 @@ import { Tw2GeometryLineBatch } from "../batch";
 import { Tw2MeshArea } from "./Tw2MeshArea";
 
 
-@meta.wgl.define("Tw2MeshLineArea")
+@meta.define("Tw2MeshLineArea")
 @meta.stage(1)
 export class Tw2MeshLineArea extends Tw2MeshArea
 {

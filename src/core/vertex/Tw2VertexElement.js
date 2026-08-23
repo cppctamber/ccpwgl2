@@ -2,7 +2,7 @@ import { meta, isString, getKeyFromValue, isNoU } from "utils";
 import * as consts from "constant";
 
 
-@meta.wgl.define("Tw2VertexElement")
+@meta.define("Tw2VertexElement")
 export class Tw2VertexElement
 {
 

@@ -10,7 +10,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPGenericEffect
  */
-@meta.ccp.define("Tr2PPGenericEffect")
+@meta.define("Tr2PPGenericEffect", true)
 export class Tr2PPGenericEffect extends Tr2PPEffect
 {
 

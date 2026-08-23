@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveProceduralMethodCycling",
-    ccp: true
-})
+@meta.define("EveProceduralMethodCycling", true)
 export class EveProceduralMethodCycling extends meta.Model
 {
 
@@ -25,10 +22,7 @@ export class EveProceduralMethodCycling extends meta.Model
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveProceduralMethodCyclingParameter",
-    ccp: true
-})
+@meta.define("EveProceduralMethodCyclingParameter", true)
 export class EveProceduralMethodCyclingParameter extends meta.Model
 {
 

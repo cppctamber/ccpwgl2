@@ -3,10 +3,7 @@ import { meta, findElementByPropertyValue } from "utils";
 import { tw2 } from "global/tw2";
 
 
-@meta.define({
-    wgl: "EveSOFDataGeneric",
-    ccp: true
-})
+@meta.define("EveSOFDataGeneric", true)
 export class EveSOFDataGeneric extends meta.Model
 {
 

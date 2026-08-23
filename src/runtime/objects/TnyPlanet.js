@@ -6,8 +6,7 @@ import { TnyMoon } from "./TnyMoon";
  * A planet: a moon with atmospherics. Same wrapped EvePlanet and the same
  * fetch, keeping the aurora child the templates carry.
  */
-@meta.tny.type("TnyPlanet")
-@meta.tny.define("TnyPlanet")
+@meta.define("TnyPlanet")
 export class TnyPlanet extends TnyMoon
 {
 

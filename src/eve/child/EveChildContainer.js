@@ -7,10 +7,7 @@ import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInherit
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
-@meta.define({
-    wgl: "EveChildContainer",
-    ccp: true
-})
+@meta.define("EveChildContainer", true)
 @meta.stage(2)
 export class EveChildContainer extends EveChild
 {

@@ -12,8 +12,7 @@ import { getApiService } from "../api";
  *
  * TnyPlanet extends this and adds them back.
  */
-@meta.tny.type("TnyMoon")
-@meta.tny.define("TnyMoon")
+@meta.define("TnyMoon")
 export class TnyMoon extends TnySpaceObject
 {
 

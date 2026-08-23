@@ -5,10 +5,7 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2Resource } from "core/resource";
 
 
-@meta.define({
-    wgl: "Tw2TextureParameter",
-    ccp: "TriTextureParameter"
-})
+@meta.define("Tw2TextureParameter", "TriTextureParameter")
 export class Tw2TextureParameter extends Tw2Parameter
 {
 

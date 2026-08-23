@@ -12,7 +12,7 @@ import { ErrShaderLink } from "./Tw2Shader";
 const CARBON_LAST_CB_REGISTER = 7;
 
 
-@meta.wgl.define("Tw2ShaderProgram")
+@meta.define("Tw2ShaderProgram")
 export class Tw2ShaderProgram
 {
 

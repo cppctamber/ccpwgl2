@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat } from "math";
 
 
-@meta.ccp.define("Tr2CurveRandomAxisRotation")
+@meta.define("Tr2CurveRandomAxisRotation", true)
 export class Tr2CurveRandomAxisRotation extends meta.Model
 {
     @meta.string

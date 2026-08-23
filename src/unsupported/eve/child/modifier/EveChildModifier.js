@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { mat4 } from "math";
 
 
-@meta.define({
-    wgl: "EveChildModifier",
-    ccp: true
-})
+@meta.define("EveChildModifier", true)
 export class EveChildModifier extends meta.Model
 {
 

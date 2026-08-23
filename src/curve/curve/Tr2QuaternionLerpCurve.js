@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat } from "math";
 
 
-@meta.ccp.define("Tr2QuaternionLerpCurve")
+@meta.define("Tr2QuaternionLerpCurve", true)
 export class Tr2QuaternionLerpCurve extends meta.Model
 {
     @meta.float

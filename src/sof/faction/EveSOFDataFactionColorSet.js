@@ -3,10 +3,7 @@ import { vec4 } from "math";
 import { Tw2Error } from "core";
 
 
-@meta.define({
-    wgl: "EveSOFDataFactionColorSet",
-    ccp: true
-})
+@meta.define("EveSOFDataFactionColorSet", true)
 export class EveSOFDataFactionColorSet extends meta.Model
 {
 

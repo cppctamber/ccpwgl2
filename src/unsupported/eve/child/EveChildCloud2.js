@@ -4,10 +4,7 @@ import { vec3, quat } from "math";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildCloud2",
-    ccp: true
-})
+@meta.define("EveChildCloud2", true)
 export class EveChildCloud2 extends EveChild
 {
 

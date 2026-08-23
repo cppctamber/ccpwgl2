@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { vec2, vec3 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullPlaneSet",
-    ccp: true
-})
+@meta.define("EveSOFDataHullPlaneSet", true)
 export class EveSOFDataHullPlaneSet extends meta.Model
 {
 

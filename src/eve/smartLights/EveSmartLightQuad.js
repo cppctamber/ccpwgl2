@@ -37,7 +37,7 @@ import { resolveGroupColor } from "./EveSmartLightBaseGroup";
 
 
 /** A smart-light group member that places faction-colour-aware flare quads at each distribution placement. */
-@meta.ccp.define("EveSmartLightQuad")
+@meta.define("EveSmartLightQuad", true)
 export class EveSmartLightQuad extends EveChildTransform
 {
 

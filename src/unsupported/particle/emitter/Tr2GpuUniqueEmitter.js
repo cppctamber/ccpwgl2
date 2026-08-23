@@ -3,7 +3,7 @@ import { vec3 } from "math";
 import { Tr2GpuSharedEmitter } from "./Tr2GpuSharedEmitter";
 
 
-@meta.ccp.define("Tr2GpuUniqueEmitter")
+@meta.define("Tr2GpuUniqueEmitter", true)
 @meta.notImplemented
 export class Tr2GpuUniqueEmitter extends Tr2GpuSharedEmitter
 {

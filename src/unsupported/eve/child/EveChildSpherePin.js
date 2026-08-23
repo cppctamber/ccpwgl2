@@ -4,10 +4,7 @@ import { vec4 } from "math";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildSpherePin",
-    ccp: true
-})
+@meta.define("EveChildSpherePin", true)
 export class EveChildSpherePin extends EveChild
 {
 

@@ -26,7 +26,7 @@ import { meta } from "utils";
  * Every hop stays presence-checked, because Carbon fails OPEN at each missing
  * step: an unresolvable animation must never block a state machine.
  */
-@meta.ccp.define("Tr2SyncToAnimation")
+@meta.define("Tr2SyncToAnimation", true)
 export class Tr2SyncToAnimation extends meta.Model
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Gr2Curve2 } from "./Gr2Curve2";
 
 
-@meta.wgl.define("Gr2CurveOld")
+@meta.define("Gr2CurveOld")
 export class Gr2CurveDataOld extends Gr2Curve2
 {
 

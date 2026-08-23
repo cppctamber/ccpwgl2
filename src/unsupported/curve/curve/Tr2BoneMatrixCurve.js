@@ -3,7 +3,7 @@ import { mat4 } from "math";
 import { Tw2Curve, Tw2CurveKey } from "curve";
 
 
-@meta.ccp.define("Tr2MatrixKey")
+@meta.define("Tr2MatrixKey", true)
 export class Tr2MatrixKey extends Tw2CurveKey
 {
     @meta.matrix4
@@ -12,7 +12,7 @@ export class Tr2MatrixKey extends Tw2CurveKey
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2BoneMatrixCurve")
+@meta.define("Tr2BoneMatrixCurve", true)
 export class Tr2BoneMatrixCurve extends Tw2Curve
 {
     @meta.string

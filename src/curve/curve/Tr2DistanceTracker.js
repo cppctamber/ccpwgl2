@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.ccp.define("Tr2DistanceTracker")
+@meta.define("Tr2DistanceTracker", true)
 export class Tr2DistanceTracker extends meta.Model
 {
     @meta.string

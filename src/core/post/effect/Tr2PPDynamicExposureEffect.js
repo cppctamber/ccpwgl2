@@ -24,7 +24,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPDynamicExposureEffect
  */
-@meta.ccp.define("Tr2PPDynamicExposureEffect")
+@meta.define("Tr2PPDynamicExposureEffect", true)
 export class Tr2PPDynamicExposureEffect extends Tr2PPEffect
 {
 

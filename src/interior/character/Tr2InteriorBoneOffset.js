@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 
 
-@meta.define({
-    wgl: "Tr2InteriorBoneOffset",
-    ccp: "GrannyBoneOffset"
-})
+@meta.define("Tr2InteriorBoneOffset", "GrannyBoneOffset")
 export class Tr2InteriorBoneOffset extends meta.Model
 {
 

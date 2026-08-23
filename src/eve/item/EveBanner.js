@@ -5,10 +5,7 @@ import { resMan } from "global";
 import { RM_ADDITIVE } from "constant";
 
 
-@meta.define({
-    wgl: "EveBanner",
-    ccp: true
-})
+@meta.define("EveBanner", true)
 @meta.notImplemented
 export class EveBanner extends meta.Model
 {

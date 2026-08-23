@@ -14,7 +14,7 @@ import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
  * `VariableBuffer` layout. `perlin`/`perlin_simple` remain hash-based
  * placeholders for the native PerlinNoise1D wrappers.
  */
-@meta.ccp.define("Tr2ScalarExprKey")
+@meta.define("Tr2ScalarExprKey", true)
 export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
@@ -178,7 +178,7 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
  * - The native cycle/reversed time rebasing mixes `front()->m_value` into time
  *   math; that is transcribed verbatim as a documented native quirk.
  */
-@meta.ccp.define("Tr2ScalarExprKeyCurve")
+@meta.define("Tr2ScalarExprKeyCurve", true)
 export class Tr2ScalarExprKeyCurve extends Tw2Curve
 {
 

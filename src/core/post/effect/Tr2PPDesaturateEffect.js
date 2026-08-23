@@ -12,7 +12,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPDesaturateEffect
  */
-@meta.ccp.define("Tr2PPDesaturateEffect")
+@meta.define("Tr2PPDesaturateEffect", true)
 export class Tr2PPDesaturateEffect extends Tr2PPEffect
 {
 

@@ -4,7 +4,7 @@ import { meta } from "utils";
 import { createMinStdRandom, getDistributionSeed } from "../CjsDistributionRandom.js";
 
 
-@meta.ccp.define("EveDistributionSpawnModifierLifeTimeOffset")
+@meta.define("EveDistributionSpawnModifierLifeTimeOffset", true)
 export class EveDistributionSpawnModifierLifeTimeOffset extends meta.Model
 {
 

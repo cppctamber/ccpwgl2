@@ -27,10 +27,7 @@ import { meta } from "utils";
  *
  * @ccp Tr2PostProcess2
  */
-@meta.define({
-    wgl: "Tw2PostProcess2",
-    ccp: "Tr2PostProcess2"
-})
+@meta.define("Tw2PostProcess2", "Tr2PostProcess2")
 export class Tw2PostProcess2 extends meta.Model
 {
 

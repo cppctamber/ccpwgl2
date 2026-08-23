@@ -8,7 +8,7 @@ const Tr2CurveVector3LerpKeyInterpolation = {
 };
 
 
-@meta.ccp.define("Tr2CurveVector3Lerp")
+@meta.define("Tr2CurveVector3Lerp", true)
 export class Tr2CurveVector3Lerp extends meta.Model
 {
     @meta.string

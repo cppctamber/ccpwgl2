@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveAnimationStateTransition",
-    ccp: true
-})
+@meta.define("EveAnimationStateTransition", true)
 export class EveAnimationStateTransition
 {
 

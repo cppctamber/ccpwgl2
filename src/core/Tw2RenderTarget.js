@@ -3,7 +3,7 @@ import { tw2 } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
-@meta.wgl.define("Tw2RenderTarget")
+@meta.define("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
 

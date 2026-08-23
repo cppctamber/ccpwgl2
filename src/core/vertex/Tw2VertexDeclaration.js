@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2VertexElement } from "./Tw2VertexElement";
 
 
-@meta.wgl.define("Tw2VertexDeclaration")
+@meta.define("Tw2VertexDeclaration")
 export class Tw2VertexDeclaration
 {
 

@@ -64,7 +64,7 @@ import { sampleDegreeOneCurve } from "core/geometry/sampleDegreeOneCurve.js";
  * resource dispatches **synchronously** — the rebuild reads the flag. Reversed,
  * a warm resource initialises in the wrong mode.
  */
-@meta.define({ wgl: "Tr2GrannyAnimation" })
+@meta.define("Tr2GrannyAnimation")
 export class Tr2GrannyAnimation extends meta.Model
 {
 

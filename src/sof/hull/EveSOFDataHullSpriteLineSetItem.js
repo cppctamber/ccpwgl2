@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullSpriteLineSetItem",
-    ccp: true
-})
+@meta.define("EveSOFDataHullSpriteLineSetItem", true)
 export class EveSOFDataHullSpriteLineSetItem extends meta.Model
 {
 

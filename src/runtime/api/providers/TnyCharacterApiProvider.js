@@ -2,8 +2,7 @@ import { meta } from "utils";
 import { TnyGeneratedLibraryProvider } from "./TnyGeneratedLibraryProvider";
 
 
-@meta.tny.type("TnyCharacterApiProvider")
-@meta.tny.define("TnyCharacterApiProvider")
+@meta.define("TnyCharacterApiProvider")
 export class TnyCharacterApiProvider extends TnyGeneratedLibraryProvider
 {
 

@@ -13,7 +13,7 @@ import { Tw2ParticleElement } from "../element";
  * are algebraically identical. JS has no alignment distinction, so the single
  * scalar loop below covers all three.
  */
-@meta.define({ ccp: "Tr2ElementBlendConstraint" })
+@meta.define("Tr2ElementBlendConstraint", true)
 export class Tr2ElementBlendConstraint extends Tw2ParticleConstraint
 {
 

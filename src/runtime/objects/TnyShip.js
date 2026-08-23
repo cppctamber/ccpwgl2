@@ -3,8 +3,7 @@ import { EveShip, EveShip2 } from "eve/object";
 import { TnySpaceObject } from "./TnySpaceObject";
 
 
-@meta.tny.type("TnyShip")
-@meta.tny.define("TnyShip")
+@meta.define("TnyShip")
 export class TnyShip extends TnySpaceObject
 {
 

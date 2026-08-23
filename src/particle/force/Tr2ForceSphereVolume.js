@@ -3,7 +3,7 @@ import { vec3 } from "math";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.ccp.define("Tr2ForceSphereVolume")
+@meta.define("Tr2ForceSphereVolume", true)
 export class Tr2ForceSphereVolume extends Tw2ParticleForce
 {
     @meta.list("Tw2ParticleForce")

@@ -3,10 +3,7 @@ import { vec4 } from "math";
 import { EveSOFDataFaction } from "sof";
 
 
-@meta.define({
-    wgl: "EveSOFDataAreaRewire",
-    ccp: true
-})
+@meta.define("EveSOFDataAreaRewire", true)
 export class EveSOFDataAreaRewire extends meta.Model
 {
 

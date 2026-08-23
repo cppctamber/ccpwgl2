@@ -3,10 +3,7 @@ import { mat4 } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.define({
-    wgl: "Tw2Matrix4Parameter",
-    ccp: "Tw2MatrixParameter"
-})
+@meta.define("Tw2Matrix4Parameter", "Tw2MatrixParameter")
 export class Tw2Matrix4Parameter extends Tw2VectorParameter
 {
 

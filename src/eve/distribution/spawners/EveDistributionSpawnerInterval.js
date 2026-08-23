@@ -3,7 +3,7 @@
 import { meta } from "utils";
 
 
-@meta.ccp.define("EveDistributionSpawnerInterval")
+@meta.define("EveDistributionSpawnerInterval", true)
 export class EveDistributionSpawnerInterval extends meta.Model
 {
 

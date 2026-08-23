@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { Tw2Error } from "core";
 import { EveSOFDataAreaMaterial } from "../shared/EveSOFDataAreaMaterial";
 
-@meta.define({
-    wgl: "EveSOFDataArea",
-    ccp: true
-})
+@meta.define("EveSOFDataArea", true)
 export class EveSOFDataArea extends meta.Model
 {
 

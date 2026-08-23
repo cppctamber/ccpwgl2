@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { vec3, vec4, quat, mat4, box3, sph3 } from "math";
 
 
-@meta.define({
-    wgl: "EveLocator2",
-    ccp: true
-})
+@meta.define("EveLocator2", true)
 @meta.stage(1)
 export class EveLocator2 extends meta.Model
 {
@@ -339,10 +336,7 @@ export class EveLocator2 extends meta.Model
 
 }
 
-@meta.define({
-    wgl: "EveLocator",
-    ccp: true
-})
+@meta.define("EveLocator", true)
 export class EveLocator extends EveLocator2
 {
 

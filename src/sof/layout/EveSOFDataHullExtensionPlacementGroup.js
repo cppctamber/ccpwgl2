@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullExtensionPlacementGroup",
-    ccp: true
-})
+@meta.define("EveSOFDataHullExtensionPlacementGroup", true)
 export class EveSOFDataHullExtensionPlacementGroup extends meta.Model
 {
 

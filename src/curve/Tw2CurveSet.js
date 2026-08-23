@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { device } from "global";
 
 
-@meta.define({
-    wgl: "Tw2CurveSet",
-    ccp: "TriCurveSet"
-})
+@meta.define("Tw2CurveSet", "TriCurveSet")
 export class Tw2CurveSet extends meta.Model
 {
     @meta.string

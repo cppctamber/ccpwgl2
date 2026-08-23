@@ -3,10 +3,7 @@ import { vec3, quat, mat4 } from "math";
 import { EveChildModifier } from "./EveChildModifier";
 
 
-@meta.define({
-    wgl: "EveChildModifierSRT",
-    ccp: true
-})
+@meta.define("EveChildModifierSRT", true)
 export class EveChildModifierSRT extends EveChildModifier
 {
 

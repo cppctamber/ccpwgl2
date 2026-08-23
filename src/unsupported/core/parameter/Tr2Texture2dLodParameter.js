@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Parameter } from "core";
 
 @meta.notImplemented
-@meta.ccp.define("Tr2Texture2dLodParameter")
+@meta.define("Tr2Texture2dLodParameter", true)
 export class Tr2Texture2dLodParameter extends Tw2Parameter
 {
 

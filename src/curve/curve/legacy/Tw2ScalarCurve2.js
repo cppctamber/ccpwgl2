@@ -9,7 +9,7 @@ const Interpolation = {
 };
 
 
-@meta.wgl.define("Tw2ScalarKey2")
+@meta.define("Tw2ScalarKey2")
 export class Tw2ScalarKey2 extends Tw2CurveKey
 {
 
@@ -28,7 +28,7 @@ export class Tw2ScalarKey2 extends Tw2CurveKey
 }
 
 
-@meta.wgl.define("Tw2ScalarCurve2")
+@meta.define("Tw2ScalarCurve2")
 export class Tw2ScalarCurve2 extends Tw2Curve
 {
 

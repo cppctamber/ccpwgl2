@@ -3,7 +3,7 @@ import { Tw2Parameter } from "core/parameter/Tw2Parameter";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2ExternalParameter")
+@meta.define("Tr2ExternalParameter", true)
 export class Tr2ExternalParameter extends Tw2Parameter
 {
 

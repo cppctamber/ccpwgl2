@@ -32,10 +32,7 @@ function getScratch()
  * extends `EveChildModifier` directly rather than `EveChildModifierHalo`.
  */
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildModifierHaloInverted",
-    ccp: true
-})
+@meta.define("EveChildModifierHaloInverted", true)
 export class EveChildModifierHaloInverted extends EveChildModifier
 {
 

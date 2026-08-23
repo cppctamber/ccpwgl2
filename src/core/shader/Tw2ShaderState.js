@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2ShaderState")
+@meta.define("Tw2ShaderState")
 export class Tw2ShaderState extends meta.Model
 {
 

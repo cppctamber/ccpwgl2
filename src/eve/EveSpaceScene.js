@@ -26,10 +26,7 @@ import {
 } from "constant";
 
 
-@meta.define({
-    wgl: "EveSpaceScene",
-    ccp: true
-})
+@meta.define("EveSpaceScene", true)
 export class EveSpaceScene extends meta.Model
 {
 

@@ -3,10 +3,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildBulletStorm",
-    ccp: true
-})
+@meta.define("EveChildBulletStorm", true)
 export class EveChildBulletStorm extends EveChild
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2GpuParticleSystem")
+@meta.define("Tr2GpuParticleSystem", true)
 export class Tr2GpuParticleSystem
 {
 

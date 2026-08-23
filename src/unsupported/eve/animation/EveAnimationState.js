@@ -3,10 +3,7 @@ import { EveAnimationStateTransition } from "./EveAnimationStateTransition";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveAnimationState",
-    ccp: true
-})
+@meta.define("EveAnimationState", true)
 export class EveAnimationState
 {
 

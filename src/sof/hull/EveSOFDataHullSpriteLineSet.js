@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullSpriteLineSet",
-    ccp: true
-})
+@meta.define("EveSOFDataHullSpriteLineSet", true)
 export class EveSOFDataHullSpriteLineSet extends meta.Model
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionResetClipSphereCenter")
+@meta.define("Tr2ActionResetClipSphereCenter", true)
 export class Tr2ActionResetClipSphereCenter extends Tw2Action
 {
     static OBJECT_CENTER = 0;

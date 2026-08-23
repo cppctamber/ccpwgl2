@@ -8,7 +8,7 @@ import { DistributionEntityLifeTimeEvent } from "./attributeModifiers/enums.js";
 
 
 /** EveBaseDistributionMethod (eve/distribution) - generated from schema shapeHash 498ea86d.... */
-@meta.ccp.define("EveBaseDistributionMethod")
+@meta.define("EveBaseDistributionMethod", true)
 export class EveBaseDistributionMethod extends meta.Model
 {
 

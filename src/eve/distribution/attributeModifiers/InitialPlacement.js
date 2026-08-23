@@ -4,7 +4,7 @@
 import { meta } from "utils";
 
 
-@meta.ccp.define("InitialPlacement")
+@meta.define("InitialPlacement", true)
 export class InitialPlacement extends meta.Model
 {
 

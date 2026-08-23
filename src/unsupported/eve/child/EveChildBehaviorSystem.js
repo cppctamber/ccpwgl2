@@ -3,10 +3,7 @@ import { mat4, quat, vec3 } from "math";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildBehaviorSystem",
-    ccp: true
-})
+@meta.define("EveChildBehaviorSystem", true)
 export class EveChildBehaviorSystem
 {
     @meta.boolean

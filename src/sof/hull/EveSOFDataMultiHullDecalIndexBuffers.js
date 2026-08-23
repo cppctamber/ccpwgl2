@@ -1,9 +1,6 @@
 import { meta } from "utils";
 
-@meta.define({
-    wgl: "EveSOFDataMultiHullDecalIndexBuffers",
-    ccp: true
-})
+@meta.define("EveSOFDataMultiHullDecalIndexBuffers", true)
 export class EveSOFDataMultiHullDecalIndexBuffers extends meta.Model
 {
 

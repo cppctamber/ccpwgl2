@@ -5,10 +5,7 @@ import { mat4, quat, vec3 } from "math";
  * EveSpaceObjectFxAttributes
  *
  */
-@meta.define({
-    wgl: "EveSpaceObjectFxAttributes",
-    ccp: true
-})
+@meta.define("EveSpaceObjectFxAttributes", true)
 export class EveSpaceObjectFxAttributes extends meta.Model
 {
 

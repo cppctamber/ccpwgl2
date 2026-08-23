@@ -3,7 +3,7 @@ import { Tr2GrannyTrack } from "./Tr2GrannyTrack";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2GrannyVectorTrack")
+@meta.define("Tr2GrannyVectorTrack", true)
 export class Tr2GrannyVectorTrack extends Tr2GrannyTrack
 {
     @meta.private

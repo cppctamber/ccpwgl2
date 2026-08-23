@@ -11,10 +11,7 @@ import { Tw2ParticleElement } from "../element";
  * component in [-1, 1] then normalises, falling back to (1, 0, 0, ...) when the
  * sample lands exactly on zero - there is no rejection loop.
  */
-@meta.define({
-    wgl: "Tw2RandomDirectionAttributeGenerator",
-    ccp: "Tr2RandomDirectionAttributeGenerator"
-})
+@meta.define("Tw2RandomDirectionAttributeGenerator", "Tr2RandomDirectionAttributeGenerator")
 export class Tw2RandomDirectionAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 

@@ -60,7 +60,7 @@ const FilterToModeTable = {
 };
 
 
-@meta.wgl.define("Tw2SamplerState")
+@meta.define("Tw2SamplerState")
 // TODO: Clean this up
 export class Tw2SamplerState extends meta.Model
 {

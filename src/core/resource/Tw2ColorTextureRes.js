@@ -34,7 +34,7 @@ import { Tw2TextureRes } from "./Tw2TextureRes";
  * `sampler2DArray` is an INVALID_OPERATION rather than a wrong picture, so a
  * scene global like `EveSceneFogVolumeMap` needs `colorarray`, not `color`.
  */
-@meta.define({ wgl: "Tw2ColorTextureRes" })
+@meta.define("Tw2ColorTextureRes")
 export class Tw2ColorTextureRes extends Tw2TextureRes
 {
 

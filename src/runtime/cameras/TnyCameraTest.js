@@ -4,8 +4,7 @@ import { WrappedTestCamera } from "wrapped/WrappedTestCamera";
 import { distanceToFitSphere } from "./cameraFit";
 
 
-@meta.tny.type("TnyCameraTest")
-@meta.tny.define("TnyCameraTest")
+@meta.define("TnyCameraTest")
 export class TnyCameraTest extends meta.Model
 {
 

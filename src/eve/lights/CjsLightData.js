@@ -11,7 +11,7 @@ import { PerLightShadowSetting } from "../../core/lighting/Tw2CarbonLightMath";
  * shadow setting and volumetric flag - used as the compat view over a light's
  * flattened fields.
  */
-@meta.ccp.define("CjsLightData")
+@meta.define("CjsLightData", true)
 export class CjsLightData extends meta.Model
 {
     static Fields = [

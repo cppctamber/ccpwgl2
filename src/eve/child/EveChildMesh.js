@@ -4,10 +4,7 @@ import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2RawData } from "c
 import { EveChild } from "./EveChild";
 
 
-@meta.define({
-    wgl: "EveChildMesh",
-    ccp: true
-})
+@meta.define("EveChildMesh", true)
 export class EveChildMesh extends EveChild
 {
 

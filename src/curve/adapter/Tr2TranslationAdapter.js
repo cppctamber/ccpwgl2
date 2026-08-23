@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.ccp.define("Tr2TranslationAdapter")
+@meta.define("Tr2TranslationAdapter", true)
 export class Tr2TranslationAdapter extends meta.Model
 {
     @meta.vector3

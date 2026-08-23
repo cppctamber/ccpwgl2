@@ -22,7 +22,7 @@ function GetDeltaT(updateContextOrDelta)
 }
 
 
-@meta.ccp.define("Tr2ScalarFader")
+@meta.define("Tr2ScalarFader", true)
 export class Tr2ScalarFader extends meta.Model
 {
     @meta.float

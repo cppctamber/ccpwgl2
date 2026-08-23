@@ -6,7 +6,7 @@ import { Tr2InteriorLightSet } from "../lighting/Tr2InteriorLightSet";
 import { Tr2InteriorLightSource } from "../lighting/Tr2InteriorLightSource";
 
 
-@meta.ccp.define("Tr2InteriorScene")
+@meta.define("Tr2InteriorScene", true)
 export class Tr2InteriorScene extends meta.Model
 {
 

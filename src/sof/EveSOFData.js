@@ -48,10 +48,7 @@ import { EveSOFDataHullBannerSetItem } from "sof/hull/EveSOFDataHullBannerSetIte
 import { EveSOFDataHullPlaneSet } from "sof/hull/EveSOFDataHullPlaneSet";
 
 
-@meta.define({
-    wgl: "EveSOFData",
-    ccp: true
-})
+@meta.define("EveSOFData", true)
 export class EveSOFData extends meta.Model
 {
 

@@ -8,7 +8,7 @@ import { meta } from "utils";
  * tracking which registry they belong to and the slot index the registry
  * assigned for each component type.
  */
-@meta.ccp.define("EveEntity")
+@meta.define("EveEntity", true)
 export class EveEntity extends meta.Model
 {
 

@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    ccp: "Tr2CurveSetRange",
-    wgl: "Tw2CurveSetRange"
-})
+@meta.define("Tw2CurveSetRange", "Tr2CurveSetRange")
 export class Tr2CurveSetRange extends meta.Model
 {
     @meta.string

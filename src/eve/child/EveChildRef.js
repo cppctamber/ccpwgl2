@@ -34,10 +34,7 @@ import { EveChildContainer } from "./EveChildContainer";
  * on ref data - the fields are simply absent from the file - and that is the
  * cheaper side of the trade.
  */
-@meta.define({
-    wgl: "EveChildRef",
-    ccp: true
-})
+@meta.define("EveChildRef", true)
 @meta.stage(2)
 export class EveChildRef extends EveChildContainer
 {

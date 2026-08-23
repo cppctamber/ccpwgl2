@@ -48,10 +48,7 @@ export class EveTrailsSetBatch extends Tw2RenderBatch
  *
  * Ported from `EveTrailsSet.h` / `EveTrailsSet.cpp`.
  */
-@meta.define({
-    wgl: "EveTrailsSet",
-    ccp: true
-})
+@meta.define("EveTrailsSet", true)
 export class EveTrailsSet extends meta.Model
 {
 

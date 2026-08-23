@@ -20,7 +20,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPGodRaysEffect
  */
-@meta.ccp.define("Tr2PPGodRaysEffect")
+@meta.define("Tr2PPGodRaysEffect", true)
 export class Tr2PPGodRaysEffect extends Tr2PPEffect
 {
 

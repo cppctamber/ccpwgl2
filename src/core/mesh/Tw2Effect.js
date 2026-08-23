@@ -74,10 +74,7 @@ class Tw2EffectOption
 }
 
 
-@meta.define({
-    wgl: "Tw2Effect",
-    ccp: "Tr2Effect"
-})
+@meta.define("Tw2Effect", "Tr2Effect")
 @meta.stage(1)
 export class Tw2Effect extends meta.Model
 {

@@ -5,10 +5,7 @@ import { EveObject } from "../EveObject";
 import { LodLevelPixels } from "constant/ccpwgl";
 
 
-@meta.define({
-    wgl: "EveSpaceObject",
-    ccp: true
-})
+@meta.define("EveSpaceObject", true)
 export class EveSpaceObject extends EveObject
 {
 

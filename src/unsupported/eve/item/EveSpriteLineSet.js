@@ -22,10 +22,7 @@ export class EveSpriteLineSetBatch
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveSpriteLineSetItem",
-    ccp: true
-})
+@meta.define("EveSpriteLineSetItem", true)
 export class EveSpriteLineSetItem extends EveObjectSetItem
 {
 
@@ -92,10 +89,7 @@ export class EveSpriteLineSetItem extends EveObjectSetItem
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveSpriteLineSet",
-    ccp: true
-})
+@meta.define("EveSpriteLineSet", true)
 export class EveSpriteLineSet extends EveObjectSet
 {
 

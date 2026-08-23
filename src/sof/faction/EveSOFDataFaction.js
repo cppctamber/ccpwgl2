@@ -6,10 +6,7 @@ import { EveSOFDataFactionVisibilityGroupSet } from "./EveSOFDataFactionVisibili
 import { ErrSOFLogoSetTypeNotFound, ErrSOFAreaTypeNotFound, EveSOFDataArea, EveSOFDataLogoSet } from "sof/shared";
 
 
-@meta.define({
-    wgl: "EveSOFDataFaction",
-    ccp: true
-})
+@meta.define("EveSOFDataFaction", true)
 export class EveSOFDataFaction extends meta.Model
 {
 

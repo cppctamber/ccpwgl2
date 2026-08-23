@@ -3,7 +3,7 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2ActionSpawnParticles")
+@meta.define("Tr2ActionSpawnParticles", true)
 export class Tr2ActionSpawnParticles extends Tw2Action
 {
 

@@ -2,8 +2,7 @@ import { meta } from "utils";
 import { EveLensflare } from "eve/effect";
 
 
-@meta.tny.type("TnyLensflare")
-@meta.tny.define("TnyLensflare")
+@meta.define("TnyLensflare")
 export class TnyLensflare extends meta.Model
 {
 

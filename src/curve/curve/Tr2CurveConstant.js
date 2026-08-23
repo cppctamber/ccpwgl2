@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec4 } from "math";
 
 
-@meta.ccp.define("Tr2CurveConstant")
+@meta.define("Tr2CurveConstant", true)
 export class Tr2CurveConstant extends meta.Model
 {
     @meta.string

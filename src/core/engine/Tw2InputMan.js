@@ -19,7 +19,7 @@ const
  * consumers are drained from the library frame boundary so scene mutations do
  * not happen in the middle of browser input propagation.
  */
-@meta.wgl.define("Tw2InputMan")
+@meta.define("Tw2InputMan")
 export class Tw2InputMan extends meta.Model
 {
 

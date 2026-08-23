@@ -16,10 +16,7 @@ class EvePerMuzzleData
 }
 
 
-@meta.define({
-    wgl: "EveTurretFiringFX",
-    ccp: true
-})
+@meta.define("EveTurretFiringFX", true)
 @meta.stage(2)
 export class EveTurretFiringFX extends meta.Model
 {

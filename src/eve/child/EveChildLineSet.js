@@ -27,10 +27,7 @@ import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
  * child objects). A `renderType` that asks for objects draws whatever lines it
  * also asks for and nothing else, rather than failing.
  */
-@meta.define({
-    wgl: "EveChildLineSet",
-    ccp: true
-})
+@meta.define("EveChildLineSet", true)
 @meta.stage(2)
 export class EveChildLineSet extends EveChild
 {

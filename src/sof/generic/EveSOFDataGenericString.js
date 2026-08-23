@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataGenericString",
-    ccp: true
-})
+@meta.define("EveSOFDataGenericString", true)
 export class EveSOFDataGenericString extends meta.Model
 {
 

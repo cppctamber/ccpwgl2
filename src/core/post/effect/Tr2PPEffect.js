@@ -11,7 +11,7 @@ import { meta } from "utils";
  *
  * @ccp Tr2PPEffect
  */
-@meta.ccp.define("Tr2PPEffect")
+@meta.define("Tr2PPEffect", true)
 export class Tr2PPEffect extends meta.Model
 {
 

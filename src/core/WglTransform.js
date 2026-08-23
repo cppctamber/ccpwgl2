@@ -12,7 +12,7 @@ const
     box3_0 = box3.create();
 
 
-@meta.wgl.define("Tw2Transform")
+@meta.define("Tw2Transform")
 export class WglTransform extends meta.Model
 {
 

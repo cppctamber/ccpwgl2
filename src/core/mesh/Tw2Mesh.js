@@ -13,10 +13,7 @@ import { box3 } from "math/box3";
 import { sph3 } from "math/sph3";
 
 
-@meta.define({
-    wgl: "Tw2Mesh",
-    ccp: "Tr2Mesh"
-})
+@meta.define("Tw2Mesh", "Tr2Mesh")
 export class Tw2Mesh extends meta.Model
 {
 

@@ -3,10 +3,7 @@ import { mat4, quat, vec3 } from "math";
 import { device } from "global";
 
 
-@meta.define({
-    wgl: "EveCameraFxAttributes",
-    ccp: true
-})
+@meta.define("EveCameraFxAttributes", true)
 export class EveCameraFxAttributes extends meta.Model
 {
 

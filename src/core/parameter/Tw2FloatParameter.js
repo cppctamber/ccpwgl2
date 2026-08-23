@@ -2,10 +2,7 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { meta, isArrayLike, isNumber } from "utils";
 
 
-@meta.define({
-    wgl: "Tw2FloatParameter",
-    ccp: "Tr2FloatParameter"
-})
+@meta.define("Tw2FloatParameter", "Tr2FloatParameter")
 export class Tw2FloatParameter extends Tw2Parameter
 {
 

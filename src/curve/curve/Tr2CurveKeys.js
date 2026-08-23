@@ -15,10 +15,7 @@ export class Tr2CurveKey extends meta.Model
 }
 
 
-@meta.define({
-    ccp: "Tr2CurveScalarKey",
-    wgl: "Tw2CurveScalarKey"
-})
+@meta.define("Tw2CurveScalarKey", "Tr2CurveScalarKey")
 export class Tr2CurveScalarKey extends Tr2CurveKey
 {
     @meta.float

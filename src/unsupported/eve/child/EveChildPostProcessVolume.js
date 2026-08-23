@@ -3,10 +3,7 @@ import { vec3 } from "math";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildPostProcessVolume",
-    ccp: true
-})
+@meta.define("EveChildPostProcessVolume", true)
 export class EveChildPostProcessVolume
 {
     @meta.string

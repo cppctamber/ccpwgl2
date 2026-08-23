@@ -6,10 +6,7 @@ import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { RM_OPAQUE } from "constant";
 
 
-@meta.define({
-    wgl: "Tw2PostProcess",
-    ccp: "Tr2PostProcess"
-})
+@meta.define("Tw2PostProcess", "Tr2PostProcess")
 export class Tw2PostProcess extends meta.Model
 {
 

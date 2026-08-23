@@ -15,8 +15,7 @@ import { EveSpaceScene } from "eve/EveSpaceScene";
  * per-frame lighting and environment data before collecting batches, so
  * anything drawn outside it comes out unlit.
  */
-@meta.tny.type("TnyScene")
-@meta.tny.define("TnyScene")
+@meta.define("TnyScene")
 export class TnyScene extends meta.Model
 {
 

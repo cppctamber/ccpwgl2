@@ -12,7 +12,7 @@ import {
 } from "./Tr2CurveMath";
 
 
-@meta.ccp.define("Tr2CurveScalar")
+@meta.define("Tr2CurveScalar", true)
 export class Tr2CurveScalar extends meta.Model
 {
     @meta.string

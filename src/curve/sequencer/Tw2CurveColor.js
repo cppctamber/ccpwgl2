@@ -5,10 +5,7 @@ import { Tr2CurveColorKey } from "../curve/Tr2CurveKeys";
 import { Tr2CurveInterpolation, Tr2CurveTangentType } from "../curve/Tr2CurveMath";
 
 
-@meta.define({
-    wgl: "Tw2CurveColor",
-    ccp: "Tr2CurveColor"
-})
+@meta.define("Tw2CurveColor", "Tr2CurveColor")
 export class Tw2CurveColor extends meta.Model
 {
     @meta.string

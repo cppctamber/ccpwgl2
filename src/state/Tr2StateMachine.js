@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ccp.define("Tr2StateMachine")
+@meta.define("Tr2StateMachine", true)
 export class Tr2StateMachine extends meta.Model
 {
 

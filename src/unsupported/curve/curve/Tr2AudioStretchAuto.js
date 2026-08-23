@@ -5,7 +5,7 @@ import { Tr2AudioStretchBase } from "./Tr2AudioStretchBase";
 /**
  * Self-triggering stretch audio, ported from Carbon's Tr2AudioStretchAuto.
  */
-@meta.ccp.define("Tr2AudioStretchAuto")
+@meta.define("Tr2AudioStretchAuto", true)
 export class Tr2AudioStretchAuto extends Tr2AudioStretchBase
 {
 

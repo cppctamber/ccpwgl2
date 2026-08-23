@@ -11,7 +11,7 @@ import {
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2MeshLod")
+@meta.define("Tr2MeshLod", true)
 @meta.todo("Implement LOD")
 export class Tr2MeshLod extends meta.Model
 {

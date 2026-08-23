@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2Model")
+@meta.define("Tw2Model")
 export class Tw2Model
 {
 

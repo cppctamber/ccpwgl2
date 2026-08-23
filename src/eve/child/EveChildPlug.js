@@ -30,10 +30,7 @@ import { EveChildContainer } from "./EveChildContainer";
  * because the socket that holds it owns the placement. The transform fields
  * inherited from the container stay at identity; nothing should write them.
  */
-@meta.define({
-    wgl: "EveChildPlug",
-    ccp: true
-})
+@meta.define("EveChildPlug", true)
 @meta.stage(2)
 export class EveChildPlug extends EveChildContainer
 {

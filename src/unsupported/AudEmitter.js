@@ -9,10 +9,7 @@ import { AudEmitter as CjsAudEmitter } from "@carbonenginejs/runtime-audio";
  * SetPrefix/placement) to a lazily created @carbonenginejs/runtime-audio
  * AudEmitter adopted by tw2.audMan.
  */
-@meta.define({
-    wgl: "AudEmitter",
-    ccp: true
-})
+@meta.define("AudEmitter", true)
 export class AudEmitter extends meta.Model
 {
 

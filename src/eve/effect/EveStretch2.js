@@ -29,10 +29,7 @@ import { Tw2ForwardingRenderBatch, Tw2PerObjectData, Tw2VertexDeclaration } from
  * Carbon packing keep those layouts separate from ship/turret POD.
  * Component registration and debug drawing remain outside ccpwgl's scene API.
  */
-@meta.define({
-    wgl: "EveStretch2",
-    ccp: true
-})
+@meta.define("EveStretch2", true)
 export class EveStretch2 extends meta.Model
 {
 

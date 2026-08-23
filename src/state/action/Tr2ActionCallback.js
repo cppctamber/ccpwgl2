@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionCallback")
+@meta.define("Tr2ActionCallback", true)
 export class Tr2ActionCallback extends Tw2Action
 {
     @meta.string

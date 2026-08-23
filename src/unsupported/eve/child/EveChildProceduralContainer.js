@@ -3,10 +3,7 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildProceduralContainer",
-    ccp: true
-})
+@meta.define("EveChildProceduralContainer", true)
 export class EveChildProceduralContainer extends EveChild
 {
 

@@ -3,7 +3,7 @@ import { CallEmitter, FindSoundEmitter, GetOwner } from "./Tr2ActionAudioHelpers
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionSetAttenuationScaling")
+@meta.define("Tr2ActionSetAttenuationScaling", true)
 export class Tr2ActionSetAttenuationScaling extends Tw2Action
 {
     @meta.string

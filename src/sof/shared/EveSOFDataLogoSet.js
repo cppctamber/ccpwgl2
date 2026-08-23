@@ -3,10 +3,7 @@ import { Tw2Error } from "core";
 import { EveSOFDataLogo } from "./EveSOFDataLogo";
 
 
-@meta.define({
-    wgl: "EveSOFDataLogoSet",
-    ccp: true
-})
+@meta.define("EveSOFDataLogoSet", true)
 export class EveSOFDataLogoSet extends meta.Model
 {
 

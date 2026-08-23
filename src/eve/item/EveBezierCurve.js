@@ -11,10 +11,7 @@ import { IEveLineSetPath } from "./IEveLineSetPath";
  * Port of Carbon `EveBezierCurve`. Unlike `EveCircle` this path is open, so its
  * last segment runs to `point2` rather than back to the first point.
  */
-@meta.define({
-    wgl: "EveBezierCurve",
-    ccp: true
-})
+@meta.define("EveBezierCurve", true)
 export class EveBezierCurve extends IEveLineSetPath
 {
 

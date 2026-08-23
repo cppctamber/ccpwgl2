@@ -16,7 +16,7 @@ import { AudioFormatWem } from "./formats/AudioFormatWem";
  * @property {?HTMLAudioElement} audio - element-backed audio (mp3/ogg/wav)
  * @property {?Uint8Array} data        - raw bytes (wem/bnk)
  */
-@meta.wgl.define("Tw2AudioRes")
+@meta.define("Tw2AudioRes")
 export class Tw2AudioRes extends Tw2Resource
 {
 

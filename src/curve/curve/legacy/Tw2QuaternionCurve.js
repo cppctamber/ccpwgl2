@@ -9,7 +9,7 @@ const Interpolation = {
 };
 
 
-@meta.wgl.define("Tw2QuaternionKey2")
+@meta.define("Tw2QuaternionKey2")
 export class Tw2QuaternionKey2 extends Tw2CurveKey
 {
 
@@ -28,7 +28,7 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
 }
 
 
-@meta.wgl.define("Tw2QuaternionCurve")
+@meta.define("Tw2QuaternionCurve")
 // TODO: Add support for tangents
 export class Tw2QuaternionCurve extends Tw2Curve
 {

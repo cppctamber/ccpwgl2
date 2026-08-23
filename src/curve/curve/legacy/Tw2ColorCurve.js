@@ -18,7 +18,7 @@ const Interpolation = {
 };
 
 
-@meta.wgl.define("Tw2ColorKey")
+@meta.define("Tw2ColorKey")
 export class Tw2ColorKey extends Tw2CurveKey
 {
 
@@ -37,7 +37,7 @@ export class Tw2ColorKey extends Tw2CurveKey
 }
 
 
-@meta.wgl.define("Tw2ColorCurve")
+@meta.define("Tw2ColorCurve")
 export class Tw2ColorCurve extends Tw2Curve
 {
 

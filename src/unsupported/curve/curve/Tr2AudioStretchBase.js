@@ -11,7 +11,7 @@ import { AudEmitter } from "../../AudEmitter";
  * and destination emitters sit on the endpoints and the stretch emitter
  * follows the listener's projection onto the segment.
  */
-@meta.ccp.define("Tr2AudioStretchBase")
+@meta.define("Tr2AudioStretchBase", true)
 export class Tr2AudioStretchBase extends meta.Model
 {
 

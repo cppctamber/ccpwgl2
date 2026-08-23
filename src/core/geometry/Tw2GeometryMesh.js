@@ -6,7 +6,7 @@ import { ErrIndexBounds, Tw2Error } from "core/Tw2Error";
 import { tw2 } from "global";
 
 
-@meta.wgl.define("Tw2GeometryMesh")
+@meta.define("Tw2GeometryMesh")
 export class Tw2GeometryMesh
 {
 

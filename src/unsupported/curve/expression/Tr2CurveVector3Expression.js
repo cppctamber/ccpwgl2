@@ -4,7 +4,7 @@ import { Tw2CurveExpression } from "./Tw2CurveExpression";
 import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
 
 
-@meta.ccp.define("Tr2CurveVector3Expression")
+@meta.define("Tr2CurveVector3Expression", true)
 export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 

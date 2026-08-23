@@ -44,8 +44,7 @@ function normalizeEsiObject(value)
     return out;
 }
 
-@meta.tny.type("TnyESIApiProvider")
-@meta.tny.define("TnyESIApiProvider")
+@meta.define("TnyESIApiProvider")
 export class TnyESIApiProvider
 {
 

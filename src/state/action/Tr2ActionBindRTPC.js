@@ -5,7 +5,7 @@ import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionBindRTPC")
+@meta.define("Tr2ActionBindRTPC", true)
 export class Tr2ActionBindRTPC extends Tw2Action
 {
 

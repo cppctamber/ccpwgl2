@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataDistributionDepletionCounter",
-    ccp: true
-})
+@meta.define("EveSOFDataDistributionDepletionCounter", true)
 export class EveSOFDataDistributionDepletionCounter extends meta.Model
 {
 

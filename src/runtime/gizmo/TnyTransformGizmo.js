@@ -54,8 +54,7 @@ const
 /**
  * Renderable 3D transform gizmo made from EveCurveLineSet parts.
  */
-@meta.tny.type("TnyTransformGizmo")
-@meta.tny.define("TnyTransformGizmo")
+@meta.define("TnyTransformGizmo")
 export class TnyTransformGizmo extends WglTransform
 {
 
@@ -2726,8 +2725,7 @@ export class TnyTransformGizmo extends WglTransform
 }
 
 
-@meta.tny.type("TnyTranslationGizmo")
-@meta.tny.define("TnyTranslationGizmo")
+@meta.define("TnyTranslationGizmo")
 export class TnyTranslationGizmo extends TnyTransformGizmo
 {
     constructor(options = {})
@@ -2737,8 +2735,7 @@ export class TnyTranslationGizmo extends TnyTransformGizmo
 }
 
 
-@meta.tny.type("TnyRotationGizmo")
-@meta.tny.define("TnyRotationGizmo")
+@meta.define("TnyRotationGizmo")
 export class TnyRotationGizmo extends TnyTransformGizmo
 {
     constructor(options = {})
@@ -2748,8 +2745,7 @@ export class TnyRotationGizmo extends TnyTransformGizmo
 }
 
 
-@meta.tny.type("TnyScalingGizmo")
-@meta.tny.define("TnyScalingGizmo")
+@meta.define("TnyScalingGizmo")
 export class TnyScalingGizmo extends TnyTransformGizmo
 {
     constructor(options = {})

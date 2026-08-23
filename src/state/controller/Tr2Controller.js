@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.ccp.define("Tr2Controller")
+@meta.define("Tr2Controller", true)
 export class Tr2Controller extends meta.Model
 {
 

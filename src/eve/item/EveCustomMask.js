@@ -8,10 +8,7 @@ import { EveCurveLineSet } from "eve/item/EveCurveLineSet";
 const VALID_BLEND_MODES = new Set(Object.values(CustomMaskBlendMode));
 
 
-@meta.define({
-    wgl: "EveCustomMask",
-    ccp: true
-})
+@meta.define("EveCustomMask", true)
 @meta.stage(1)
 export class EveCustomMask extends WglTransform
 {

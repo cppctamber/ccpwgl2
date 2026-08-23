@@ -24,7 +24,7 @@ const AREA_PROPERTIES = [
  * are instance state; a renderer must explicitly realize them into the private
  * geometry before drawing.
  */
-@meta.wgl.define("Tw2CharacterMesh")
+@meta.define("Tw2CharacterMesh")
 export class Tw2CharacterMesh extends Tw2Mesh
 {
 

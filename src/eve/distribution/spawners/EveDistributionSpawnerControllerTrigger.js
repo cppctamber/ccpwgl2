@@ -3,7 +3,7 @@
 import { meta } from "utils";
 
 
-@meta.ccp.define("EveDistributionSpawnerControllerTrigger")
+@meta.define("EveDistributionSpawnerControllerTrigger", true)
 export class EveDistributionSpawnerControllerTrigger extends meta.Model
 {
 

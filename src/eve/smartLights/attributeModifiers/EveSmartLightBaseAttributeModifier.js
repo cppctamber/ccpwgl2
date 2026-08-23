@@ -5,7 +5,7 @@ import { LifeTimeFormulas } from "./enums.js";
 
 
 /** EveSmartLightBaseAttributeModifier (eve/smartLights/attributeModifiers) - generated from schema shapeHash d70f7c45.... */
-@meta.ccp.define("EveSmartLightBaseAttributeModifier")
+@meta.define("EveSmartLightBaseAttributeModifier", true)
 export class EveSmartLightBaseAttributeModifier extends meta.Model
 {
 

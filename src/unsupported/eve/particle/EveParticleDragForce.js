@@ -5,10 +5,7 @@ import { meta } from "utils";
  * EveParticleDragForce
  * Todo: Is this just a copy of Tw2ParticleDragForce?
  */
-@meta.define({
-    wgl: "EveParticleDragForce",
-    ccp: true
-})
+@meta.define("EveParticleDragForce", true)
 export class EveParticleDragForce extends Tw2ParticleDragForce
 {
 

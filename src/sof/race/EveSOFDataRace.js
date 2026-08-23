@@ -3,10 +3,7 @@ import { EveSOFDataBooster } from "../shared/EveSOFDataBooster";
 import { EveSOFDataRaceDamage } from "./EveSOFDataRaceDamage";
 
 
-@meta.define({
-    wgl: "EveSOFDataRace",
-    ccp: true
-})
+@meta.define("EveSOFDataRace", true)
 export class EveSOFDataRace extends meta.Model
 {
 

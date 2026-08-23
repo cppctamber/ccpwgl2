@@ -3,7 +3,7 @@ import { mat4, vec3 } from "math";
 import { Tw2CurveKey } from "curve";
 
 
-@meta.ccp.define("Tr2ObjectFollowCurveKey")
+@meta.define("Tr2ObjectFollowCurveKey", true)
 export class Tr2ObjectFollowCurveKey extends Tw2CurveKey
 {
     static NO_ROTATION = 0;
@@ -82,7 +82,7 @@ export class Tr2ObjectFollowCurveKey extends Tw2CurveKey
 }
 
 
-@meta.ccp.define("Tr2CameraFollowCurveKey")
+@meta.define("Tr2CameraFollowCurveKey", true)
 export class Tr2CameraFollowCurveKey extends Tw2CurveKey
 {
     @meta.float

@@ -24,8 +24,7 @@ import { TnySkinApiProvider } from "./TnySkinApiProvider";
  * base, so `skinrUrl` / `apiRoot` / `toolsService` work the same way they do
  * for every sibling.
  */
-@meta.tny.type("TnySkinrApiProvider")
-@meta.tny.define("TnySkinrApiProvider")
+@meta.define("TnySkinrApiProvider")
 export class TnySkinrApiProvider extends TnyGeneratedLibraryProvider
 {
 

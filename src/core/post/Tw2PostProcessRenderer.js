@@ -92,7 +92,7 @@ const DEFAULT_PARAMETERS = {
  * compute stage. The option is forced off, which is a configuration Carbon
  * supports, and the composite degrades to fixed exposure rather than to none.
  */
-@meta.define({ wgl: "Tw2PostProcessRenderer" })
+@meta.define("Tw2PostProcessRenderer")
 export class Tw2PostProcessRenderer
 {
 

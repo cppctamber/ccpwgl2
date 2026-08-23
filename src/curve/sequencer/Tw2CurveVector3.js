@@ -30,10 +30,7 @@ function ResolveSampleArgs(a, b, fallback)
 }
 
 
-@meta.define({
-    wgl: "Tw2CurveVector3",
-    ccp: "Tr2CurveVector3"
-})
+@meta.define("Tw2CurveVector3", "Tr2CurveVector3")
 export class Tw2CurveVector3 extends meta.Model
 {
     @meta.string

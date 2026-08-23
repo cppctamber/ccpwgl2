@@ -3,10 +3,7 @@ import { vec3 } from "math";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.define({
-    wgl: "Tw2ParticleDirectForce",
-    ccp: "Tr2ParticleDirectForce"
-})
+@meta.define("Tw2ParticleDirectForce", "Tr2ParticleDirectForce")
 export class Tw2ParticleDirectForce extends Tw2ParticleForce
 {
 

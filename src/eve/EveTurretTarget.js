@@ -8,10 +8,7 @@ import { vec3, mat4 } from "math";
  * Carbon owns this state separately from EveTurretSet so that tracking,
  * firing effects and impacts all observe the same moving target.
  */
-@meta.define({
-    wgl: "EveTurretTarget",
-    ccp: true
-})
+@meta.define("EveTurretTarget", true)
 @meta.stage(2)
 export class EveTurretTarget extends meta.Model
 {

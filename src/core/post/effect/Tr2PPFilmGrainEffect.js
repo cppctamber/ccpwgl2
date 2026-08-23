@@ -11,7 +11,7 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPFilmGrainEffect
  */
-@meta.ccp.define("Tr2PPFilmGrainEffect")
+@meta.define("Tr2PPFilmGrainEffect", true)
 export class Tr2PPFilmGrainEffect extends Tr2PPEffect
 {
 

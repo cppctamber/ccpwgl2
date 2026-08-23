@@ -20,10 +20,7 @@ const Modifier = {
 
 
 
-@meta.define({
-    wgl: "EveTransform",
-    ccp: true
-})
+@meta.define("EveTransform", true)
 export class EveTransform extends EveObject
 {
 

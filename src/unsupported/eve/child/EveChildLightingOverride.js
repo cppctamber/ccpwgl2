@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildLightingOverride",
-    ccp: true
-})
+@meta.define("EveChildLightingOverride", true)
 export class EveChildLightingOverride
 {
     @meta.string

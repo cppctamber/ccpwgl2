@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { EveSOFDataHullExtensionPlacement } from "./EveSOFDataHullExtensionPlacement";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullExtensionBucket",
-    ccp: true
-})
+@meta.define("EveSOFDataHullExtensionBucket", true)
 export class EveSOFDataHullExtensionBucket extends EveSOFDataHullExtensionPlacement
 {
 

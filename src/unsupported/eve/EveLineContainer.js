@@ -7,10 +7,7 @@ import { meta } from "utils";
  * @property {EveCurveLineSet} lineSet -
  */
 @meta.notImplemented
-@meta.define({
-    wgl: "EveLineContainer",
-    ccp: true
-})
+@meta.define("EveLineContainer", true)
 export class EveLineContainer extends meta.Model
 {
 

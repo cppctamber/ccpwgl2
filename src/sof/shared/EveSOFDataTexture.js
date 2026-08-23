@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataTexture",
-    ccp: true
-})
+@meta.define("EveSOFDataTexture", true)
 export class EveSOFDataTexture extends meta.Model
 {
 

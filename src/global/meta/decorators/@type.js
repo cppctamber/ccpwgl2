@@ -297,10 +297,41 @@ export const type = createDecorator({
     }
 });
 
+/**
+ * Declares a class and, optionally, the name CCP knows it by.
+ *
+ *     @meta.define("Tw2Mesh", "Tr2Mesh")   // different name in the black data
+ *     @meta.define("EveBanner", true)      // same name on both sides
+ *     @meta.define("Tw2GodRaysRenderer")   // ccpwgl only, no black counterpart
+ *
+ * This replaced `@meta.type`, which carried exactly this signature, and the
+ * namespaced `@meta.ccp/wgl/tny.define` form. The namespaces distinguished
+ * nothing a consumer ever read: `_namespace` was never consulted, `exclusive`
+ * only fed a re-definition equality check, and the sole reader of the
+ * definition names was `Model.getClassCCPName` - which is served here by the
+ * `ccp` metadata directly.
+ *
+ * @type {Function}
+ */
 export const define = createDecorator({
-    ctor({ target }, definitions)
+    ctor({ target }, name, ccp)
     {
-        defineClassDefinitions(target, definitions);
+        // The old object form is a silent no-op under this signature - every
+        // name would land as `[object Object]` - so reject it loudly.
+        if (isPlain(name))
+        {
+            throw new TypeError("meta.define takes a name, not a namespace object: define(name, ccpName|true)");
+        }
+
+        if (!isString(name) || !name)
+        {
+            throw new TypeError("Class definition name must be a non-empty string");
+        }
+
+        defineMetadata("type", name, target);
+
+        // `true` is the shorthand for "CCP calls it the same thing".
+        if (ccp) defineMetadata("ccp", ccp === true ? name : ccp, target);
     }
 });
 

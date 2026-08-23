@@ -5,7 +5,7 @@ import { Tw2ShaderAnnotation } from "./Tw2ShaderAnnotation";
 import { Tw2ShaderTechnique } from "./Tw2ShaderTechnique";
 
 
-@meta.wgl.define("Tw2Shader")
+@meta.define("Tw2Shader")
 export class Tw2Shader
 {
 

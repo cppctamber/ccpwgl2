@@ -47,10 +47,7 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
  * One authored booster placement: its local transform, functionality inputs,
  * atlas slots, light scale and whether it emits a trail
  */
-@meta.define({
-    wgl: "EveBoosterSet2Item",
-    ccp: true
-})
+@meta.define("EveBoosterSet2Item", true)
 export class EveBoosterSet2Item extends EveObjectSetItem
 {
 
@@ -134,10 +131,7 @@ export class EveBoosterSet2Item extends EveObjectSetItem
  *
  * Ported from `EveBoosterSet2.h` / `EveBoosterSet2.cpp`.
  */
-@meta.define({
-    wgl: "EveBoosterSet2",
-    ccp: true
-})
+@meta.define("EveBoosterSet2", true)
 export class EveBoosterSet2 extends EveObjectSet
 {
 

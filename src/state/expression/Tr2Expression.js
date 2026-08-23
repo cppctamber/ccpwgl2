@@ -4,7 +4,7 @@ import { Tr2ExpressionProgram } from "./Tr2ExpressionProgram";
 /**
  * Serializable expression wrapper backed by the constrained expression program.
  */
-@meta.ccp.define("Tr2Expression")
+@meta.define("Tr2Expression", true)
 export class Tr2Expression extends meta.Model
 {
     @meta.expression

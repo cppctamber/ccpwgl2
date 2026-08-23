@@ -3,10 +3,7 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildParticleSphere",
-    ccp: true
-})
+@meta.define("EveChildParticleSphere", true)
 export class EveChildParticleSphere extends EveChild
 {
 

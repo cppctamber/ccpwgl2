@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildInstancedMeshes",
-    ccp: true
-})
+@meta.define("EveChildInstancedMeshes", true)
 export class EveChildInstancedMeshes
 {
     @meta.string

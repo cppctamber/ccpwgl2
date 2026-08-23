@@ -3,10 +3,7 @@ import { vec3 } from "math";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.define({
-    wgl: "Tw2ParticleSpring",
-    ccp: "Tr2ParticleSpring"
-})
+@meta.define("Tw2ParticleSpring", "Tr2ParticleSpring")
 export class Tw2ParticleSpring extends Tw2ParticleForce
 {
 

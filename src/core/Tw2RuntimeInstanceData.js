@@ -4,10 +4,7 @@ import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 
 
-@meta.define({
-    wgl: "Tw2RuntimeInstanceData",
-    ccp: "Tr2RuntimeInstanceData"
-})
+@meta.define("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
 export class Tw2RuntimeInstanceData extends meta.Model
 {
 

@@ -3,7 +3,7 @@ import { CallEmitter, FindAudioTarget, FindSoundEmitter, GetOwner } from "./Tr2A
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionPlaySound")
+@meta.define("Tr2ActionPlaySound", true)
 export class Tr2ActionPlaySound extends Tw2Action
 {
 

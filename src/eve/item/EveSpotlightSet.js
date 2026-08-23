@@ -55,10 +55,7 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.define({
-    wgl: "EveSpotlightSetItem",
-    ccp: true
-})
+@meta.define("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
 
@@ -158,10 +155,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
 }
 
 
-@meta.define({
-    wgl: "EveSpotlightSet",
-    ccp: true
-})
+@meta.define("EveSpotlightSet", true)
 export class EveSpotlightSet extends EveObjectSet
 {
 

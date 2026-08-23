@@ -4,10 +4,7 @@ import { IEveLineSetPath } from "eve/item/IEveLineSetPath";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveLineChildContainer",
-    ccp: true
-})
+@meta.define("EveLineChildContainer", true)
 export class EveLineChildContainer extends IEveLineSetPath
 {
 

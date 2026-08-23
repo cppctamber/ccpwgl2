@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDNADescriptor",
-    ccp: true
-})
+@meta.define("EveSOFDNADescriptor", true)
 export class EveSOFDNADescriptor extends meta.Model
 {
     @meta.string

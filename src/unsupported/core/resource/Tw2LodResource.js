@@ -2,7 +2,7 @@ import { meta, toArray } from "utils";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2LodResource")
+@meta.define("Tr2LodResource", true)
 export class Tr2LodResource extends meta.Model
 {
 

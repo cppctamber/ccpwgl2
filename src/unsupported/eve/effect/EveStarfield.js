@@ -2,10 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.define({
-    wgl: "EveStarfield",
-    ccp: true
-})
+@meta.define("EveStarfield", true)
 export class EveStarfield extends meta.Model
 {
     @meta.boolean

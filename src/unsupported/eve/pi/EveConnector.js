@@ -17,10 +17,7 @@ import { vec3, vec4 } from "math";
  * @property {Number} type                        -
  */
 @meta.notImplemented
-@meta.define({
-    wgl: "EveConnector",
-    ccp: true
-})
+@meta.define("EveConnector", true)
 export class EveConnector extends meta.Model
 {
 

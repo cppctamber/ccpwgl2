@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { mat3, mat4, quat, vec3 } from "math";
 
 
-@meta.wgl.define("Tw2Bone")
+@meta.define("Tw2Bone")
 export class Tw2Bone
 {
 

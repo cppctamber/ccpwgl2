@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataGenericSwarm",
-    ccp: true
-})
+@meta.define("EveSOFDataGenericSwarm", true)
 export class EveSOFDataGenericSwarm extends meta.Model
 {
 

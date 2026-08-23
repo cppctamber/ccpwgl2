@@ -39,10 +39,7 @@ const readers = {
  * @property {Array<Tw2GeometryAnimation>} animations
  * @property {Boolean} _boundsDirty
  */
-@meta.define({
-    wgl: "Tw2GeometryRes",
-    ccp: "TriGeometryRes"
-})
+@meta.define("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
 

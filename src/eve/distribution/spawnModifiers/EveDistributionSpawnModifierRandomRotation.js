@@ -5,7 +5,7 @@ import { quat, vec3 } from "math";
 import { createMinStdRandom, getDistributionSeed, setYawPitchRoll } from "../CjsDistributionRandom.js";
 
 
-@meta.ccp.define("EveDistributionSpawnModifierRandomRotation")
+@meta.define("EveDistributionSpawnModifierRandomRotation", true)
 export class EveDistributionSpawnModifierRandomRotation extends meta.Model
 {
 

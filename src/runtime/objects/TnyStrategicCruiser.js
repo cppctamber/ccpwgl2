@@ -4,8 +4,7 @@ import { EveShip, EveShip2 } from "eve/object";
 import { TnyShip } from "./TnyShip";
 
 
-@meta.tny.type("TnyStrategicCruiser")
-@meta.tny.define("TnyStrategicCruiser")
+@meta.define("TnyStrategicCruiser")
 export class TnyStrategicCruiser extends TnyShip
 {
 

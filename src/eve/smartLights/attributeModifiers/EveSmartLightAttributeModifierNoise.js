@@ -6,7 +6,7 @@ import { EveSmartLightBaseAttributeModifier } from "./EveSmartLightBaseAttribute
 
 
 /** EveSmartLightAttributeModifierNoise (eve/smartLights/attributeModifiers) - generated from schema shapeHash 60b52eeb.... */
-@meta.ccp.define("EveSmartLightAttributeModifierNoise")
+@meta.define("EveSmartLightAttributeModifierNoise", true)
 export class EveSmartLightAttributeModifierNoise extends EveSmartLightBaseAttributeModifier
 {
 

@@ -12,7 +12,7 @@ import { ErrHTTPRequest } from "core/engine";
  *
  * @property {?Object} data - the parsed json document
  */
-@meta.wgl.define("Tw2JsonRes")
+@meta.define("Tw2JsonRes")
 export class Tw2JsonRes extends Tw2Resource
 {
 

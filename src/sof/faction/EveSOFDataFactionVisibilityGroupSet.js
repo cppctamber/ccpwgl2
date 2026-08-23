@@ -2,10 +2,7 @@ import { __get, isString, meta } from "utils";
 import { tw2 } from "global";
 
 
-@meta.define({
-    wgl: "EveSOFDataFactionVisibilityGroupSet",
-    ccp: true
-})
+@meta.define("EveSOFDataFactionVisibilityGroupSet", true)
 export class EveSOFDataFactionVisibilityGroupSet extends meta.Model
 {
 

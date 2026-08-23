@@ -5,10 +5,7 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.define({
-    wgl: "EveChildBillboard",
-    ccp: true
-})
+@meta.define("EveChildBillboard", true)
 @meta.todo("Deprecated?")
 export class EveChildBillboard extends EveChild
 {

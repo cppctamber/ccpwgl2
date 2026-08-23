@@ -2,10 +2,7 @@ import { __get, meta } from "utils";
 import { vec4 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataBoosterShape",
-    ccp: true
-})
+@meta.define("EveSOFDataBoosterShape", true)
 export class EveSOFDataBoosterShape extends meta.Model
 {
 

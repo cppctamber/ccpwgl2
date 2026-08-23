@@ -6,10 +6,7 @@ import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 
-@meta.define({
-    wgl: "EveLensflare",
-    ccp: true
-})
+@meta.define("EveLensflare", true)
 export class EveLensflare extends meta.Model
 {
 

@@ -9,10 +9,7 @@ const Tw2EventCurveExtrapolation = {
 };
 
 
-@meta.define({
-    wgl: "Tw2EventKey",
-    ccp: "TriEventKey"
-})
+@meta.define("Tw2EventKey", "TriEventKey")
 export class Tw2EventKey extends Tr2CurveKey
 {
     @meta.string
@@ -54,10 +51,7 @@ export class Tw2EventKey extends Tr2CurveKey
 }
 
 
-@meta.define({
-    wgl: "Tw2EventCurve",
-    ccp: "TriEventCurve"
-})
+@meta.define("Tw2EventCurve", "TriEventCurve")
 export class Tw2EventCurve extends meta.Model
 {
     @meta.string

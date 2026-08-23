@@ -12,10 +12,7 @@ import { LodLevelPixels, CustomMaskBlendMode } from "constant/ccpwgl";
 import { tw2 } from "global";
 
 
-@meta.define({
-    wgl: "EveShip2",
-    ccp: true
-})
+@meta.define("EveShip2", true)
 @meta.stage(2)
 export class EveShip2 extends EveObject
 {

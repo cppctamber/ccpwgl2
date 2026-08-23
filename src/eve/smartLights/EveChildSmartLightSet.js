@@ -34,10 +34,7 @@ import { EveChild } from "eve/child";
 import { EveChildInheritProperties } from "unsupported/eve/child/EveChildInheritProperties";
 
 
-@meta.define({
-    wgl: "EveChildSmartLightSet",
-    ccp: true
-})
+@meta.define("EveChildSmartLightSet", true)
 export class EveChildSmartLightSet extends EveChild
 {
 

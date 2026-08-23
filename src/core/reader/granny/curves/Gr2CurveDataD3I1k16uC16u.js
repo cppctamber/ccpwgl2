@@ -4,7 +4,7 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.wgl.define("Gr2CurveDataD3I1K16uC16u")
+@meta.define("Gr2CurveDataD3I1K16uC16u")
 export class Gr2CurveDataD3I1K16uC16u extends Gr2Curve2
 {
 

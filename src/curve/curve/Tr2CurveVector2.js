@@ -30,7 +30,7 @@ function ResolveSampleArgs(a, b, fallback)
 }
 
 
-@meta.ccp.define("Tr2CurveVector2")
+@meta.define("Tr2CurveVector2", true)
 export class Tr2CurveVector2 extends meta.Model
 {
     @meta.string

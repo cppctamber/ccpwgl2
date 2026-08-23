@@ -2,7 +2,7 @@ import { ErrIndexBounds } from "../Tw2Error";
 import { meta, isArrayLike } from "utils";
 
 
-@meta.wgl.define("Tw2VectorParameter")
+@meta.define("Tw2VectorParameter")
 export class Tw2VectorParameter extends meta.Model
 {
 

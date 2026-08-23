@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataPatternMaterialOverride",
-    ccp: true
-})
+@meta.define("EveSOFDataPatternMaterialOverride", true)
 export class EveSOFDataPatternMaterialOverride extends meta.Model
 {
 

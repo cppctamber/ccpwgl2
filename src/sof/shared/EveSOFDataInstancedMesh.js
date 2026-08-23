@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataInstancedMeshInstanceReader",
-    ccp: true
-})
+@meta.define("EveSOFDataInstancedMeshInstanceReader", true)
 class EveSOFDataInstancedMeshInstanceReader extends meta.Model
 {
 
@@ -20,10 +17,7 @@ class EveSOFDataInstancedMeshInstanceReader extends meta.Model
 }
 
 
-@meta.define({
-    wgl: "EveSOFDataInstancedMesh",
-    ccp: true
-})
+@meta.define("EveSOFDataInstancedMesh", true)
 export class EveSOFDataInstancedMesh extends meta.Model
 {
 

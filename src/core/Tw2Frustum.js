@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec3, mat4, pln, box3 } from "math";
 
 
-@meta.wgl.define("Tw2Frustum")
+@meta.define("Tw2Frustum")
 export class Tw2Frustum
 {
 

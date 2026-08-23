@@ -3,10 +3,7 @@ import { vec3, quat } from "math";
 import { CjsLightData } from "../../eve/lights/CjsLightData";
 
 
-@meta.define({
-    wgl: "EveSOFDataPointLightAttachment",
-    ccp: true
-})
+@meta.define("EveSOFDataPointLightAttachment", true)
 export class EveSOFDataPointLightAttachment extends meta.Model
 {
 

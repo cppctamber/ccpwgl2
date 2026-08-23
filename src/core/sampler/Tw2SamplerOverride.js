@@ -11,7 +11,7 @@ import { Tw2SamplerState } from "./Tw2SamplerState";
  * filter 3=anisotropic) — NOT D3D9's 1-based enums; check ResolveModes
  * interprets them correctly before relying on overrides at draw time.
  */
-@meta.wgl.define("Tw2SamplerOverride")
+@meta.define("Tw2SamplerOverride")
 export class Tw2SamplerOverride extends meta.Model
 {
 

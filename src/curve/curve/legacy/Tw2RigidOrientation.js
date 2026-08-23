@@ -3,7 +3,7 @@ import { vec3, quat } from "math";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 
-@meta.wgl.define("Tw2Torque")
+@meta.define("Tw2Torque")
 export class Tw2Torque extends Tw2CurveKey
 {
 
@@ -19,7 +19,7 @@ export class Tw2Torque extends Tw2CurveKey
 }
 
 
-@meta.wgl.define("Tw2RigidOrientation")
+@meta.define("Tw2RigidOrientation")
 export class Tw2RigidOrientation extends Tw2Curve
 {
 

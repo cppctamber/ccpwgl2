@@ -1,10 +1,7 @@
 import { __get, assignIfExists, isNoU, meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataAreaMaterial",
-    ccp: true
-})
+@meta.define("EveSOFDataAreaMaterial", true)
 export class EveSOFDataAreaMaterial extends meta.Model
 {
 

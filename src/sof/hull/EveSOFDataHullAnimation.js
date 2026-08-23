@@ -2,10 +2,7 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.define({
-    wgl: "EveSOFDataHullAnimation",
-    ccp: true
-})
+@meta.define("EveSOFDataHullAnimation", true)
 export class EveSOFDataHullAnimation extends meta.Model
 {
 

@@ -34,10 +34,7 @@ function getScratch()
  * EveChildModifierStretch_Blue.cpp's ExposeToBlue() (1 property: "dest").
  */
 @meta.notImplemented
-@meta.define({
-    wgl: "EveChildModifierStretch",
-    ccp: true
-})
+@meta.define("EveChildModifierStretch", true)
 export class EveChildModifierStretch extends EveChildModifier
 {
 

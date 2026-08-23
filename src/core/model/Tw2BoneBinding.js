@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2BoneBinding")
+@meta.define("Tw2BoneBinding")
 export class Tw2BoneBinding
 {
 

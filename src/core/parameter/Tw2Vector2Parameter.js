@@ -3,7 +3,7 @@ import { vec2 } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.wgl.define("Tw2Vector2Parameter")
+@meta.define("Tw2Vector2Parameter")
 export class Tw2Vector2Parameter extends Tw2VectorParameter
 {
 

@@ -7,7 +7,7 @@ import { resolveGroupColor } from "../EveSmartLightBaseGroup";
 
 
 /** EveSmartLightAttributeModifierColor (eve/smartLights/attributeModifiers) - generated from schema shapeHash 1d22dfd5.... */
-@meta.ccp.define("EveSmartLightAttributeModifierColor")
+@meta.define("EveSmartLightAttributeModifierColor", true)
 export class EveSmartLightAttributeModifierColor extends EveSmartLightBaseAttributeModifier
 {
 

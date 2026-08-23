@@ -3,7 +3,7 @@ import { vec3 } from "math";
 import { Tw2Curve } from "curve";
 
 
-@meta.wgl.define("Tw2MayaVector3Curve")
+@meta.define("Tw2MayaVector3Curve")
 export class Tw2MayaVector3Curve extends Tw2Curve
 {
 

@@ -5,7 +5,7 @@ import { Tw2Effect, Tw2MeshArea } from "core";
 import { Tw2CharacterMesh } from "./Tw2CharacterMesh";
 
 
-@meta.ccp.define("Tr2SkinnedModel")
+@meta.define("Tr2SkinnedModel", true)
 export class Tr2SkinnedModel extends meta.Model
 {
 

@@ -2,7 +2,7 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.ccp.define("Tr2GrannyTrack")
+@meta.define("Tr2GrannyTrack", true)
 export class Tr2GrannyTrack extends meta.Model
 {
     @meta.path

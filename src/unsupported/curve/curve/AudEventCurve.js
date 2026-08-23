@@ -5,10 +5,7 @@ import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 import { AudEmitter } from "@carbonenginejs/runtime-audio";
 
 
-@meta.define({
-    wgl: "AudEventKey",
-    ccp: true
-})
+@meta.define("AudEventKey", true)
 export class AudEventKey extends Tw2CurveKey
 {
 
@@ -33,10 +30,7 @@ export class AudEventKey extends Tw2CurveKey
  * before the emitter has a placement holds the latest event until one
  * arrives, matching Carbon.
  */
-@meta.define({
-    wgl: "AudEventCurve",
-    ccp: true
-})
+@meta.define("AudEventCurve", true)
 export class AudEventCurve extends Tw2Curve
 {
 

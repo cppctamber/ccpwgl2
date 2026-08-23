@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2GeometryTransformTrack")
+@meta.define("Tw2GeometryTransformTrack")
 export class Tw2GeometryTransformTrack
 {
 

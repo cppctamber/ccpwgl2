@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { vec4 } from "math";
 
 
-@meta.ccp.define("Tr2CurveColorMixer")
+@meta.define("Tr2CurveColorMixer", true)
 export class Tr2CurveColorMixer extends meta.Model
 {
     @meta.string

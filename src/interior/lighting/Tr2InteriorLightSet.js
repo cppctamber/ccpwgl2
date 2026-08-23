@@ -9,7 +9,7 @@ import { sph3 } from "math";
  * block. This GLES version only owns selection/order; packing is handled by
  * `GLESPerObjectDataInterior`.
  */
-@meta.ccp.define("Tr2InteriorLightSet")
+@meta.define("Tr2InteriorLightSet", true)
 export class Tr2InteriorLightSet extends meta.Model
 {
 

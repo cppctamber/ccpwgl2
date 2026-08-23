@@ -3,10 +3,7 @@ import { vec3, quat, mat4 } from "math";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-@meta.define({
-    wgl: "Tw2TransformParameter",
-    ccp: "Tr2TransformParameter"
-})
+@meta.define("Tw2TransformParameter", "Tr2TransformParameter")
 export class Tw2TransformParameter extends Tw2Parameter
 {
 

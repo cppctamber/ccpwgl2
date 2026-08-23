@@ -4,7 +4,7 @@ import { meta } from "utils";
 import { vec3, quat } from "math";
 
 
-@meta.ccp.define("EveDistributionSpawnerTriggerPlane")
+@meta.define("EveDistributionSpawnerTriggerPlane", true)
 export class EveDistributionSpawnerTriggerPlane extends meta.Model
 {
 

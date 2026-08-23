@@ -3,7 +3,7 @@ import { ResolveBindingPath } from "../controller";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionPlayMeshAnimation")
+@meta.define("Tr2ActionPlayMeshAnimation", true)
 export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 

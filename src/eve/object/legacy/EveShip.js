@@ -2,10 +2,7 @@ import { meta, isNumber } from "utils";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
-@meta.define({
-    wgl: "EveShip",
-    ccp: true
-})
+@meta.define("EveShip", true)
 export class EveShip extends EveSpaceObject
 {
 

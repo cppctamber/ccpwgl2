@@ -7,7 +7,7 @@ import { Tr2ExpressionProgram } from "../../../state/expression/Tr2ExpressionPro
 
 
 /** EveSmartLightAttributeModifierExpressionBucket (eve/smartLights/attributeModifiers) - generated from schema shapeHash 02cc58c3.... */
-@meta.ccp.define("EveSmartLightAttributeModifierExpressionBucket")
+@meta.define("EveSmartLightAttributeModifierExpressionBucket", true)
 export class EveSmartLightAttributeModifierExpressionBucket extends EveSmartLightAttributeModifierBucket
 {
 

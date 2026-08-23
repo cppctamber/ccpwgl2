@@ -1,10 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.define({
-    wgl: "EveSOFDataFactionChild",
-    ccp: true
-})
+@meta.define("EveSOFDataFactionChild", true)
 export class EveSOFDataFactionChild extends meta.Model
 {
 

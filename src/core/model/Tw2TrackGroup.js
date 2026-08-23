@@ -1,7 +1,7 @@
 import { meta } from "utils";
 
 
-@meta.wgl.define("Tw2TrackGroup")
+@meta.define("Tw2TrackGroup")
 export class Tw2TrackGroup
 {
 

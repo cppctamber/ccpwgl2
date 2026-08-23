@@ -58,7 +58,7 @@ const GR_FACTORS = [ 1000.0, 0.2, 128.0, 2.0 ];
  *    defaults the buffer to white so the rays draw unoccluded; black there
  *    multiplies the whole pass away with nothing to attribute it to.
  */
-@meta.define({ wgl: "Tw2GodRaysRenderer" })
+@meta.define("Tw2GodRaysRenderer")
 export class Tw2GodRaysRenderer
 {
 

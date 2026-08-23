@@ -4,7 +4,7 @@ import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.ccp.define("Tr2ActionSetValue")
+@meta.define("Tr2ActionSetValue", true)
 export class Tr2ActionSetValue extends Tw2Action
 {
 

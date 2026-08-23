@@ -2,7 +2,7 @@ import { meta } from "utils";
 import { quat } from "math";
 
 
-@meta.ccp.define("Tr2RotationAdapter")
+@meta.define("Tr2RotationAdapter", true)
 export class Tr2RotationAdapter extends meta.Model
 {
     @meta.quaternion

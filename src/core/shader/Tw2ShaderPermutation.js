@@ -2,7 +2,7 @@ import { getKeyFromValue, meta } from "utils";
 import { Tw2Error } from "core/Tw2Error";
 
 
-@meta.wgl.define("Tw2ShaderPermutation")
+@meta.define("Tw2ShaderPermutation")
 export class Tw2ShaderPermutation
 {
 
