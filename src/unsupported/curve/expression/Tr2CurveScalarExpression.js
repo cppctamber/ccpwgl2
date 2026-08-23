@@ -3,7 +3,6 @@ import { meta } from "utils";
 import { Tr2ExpressionProgram } from "state/expression/Tr2ExpressionProgram";
 
 
-@meta.type("Tr2CurveScalarExpression")
 @meta.ccp.define("Tr2CurveScalarExpression")
 export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {

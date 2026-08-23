@@ -4,7 +4,6 @@ import { EveSOFDataPatternLayer } from "./EveSOFDataPatternLayer";
 import { EveSOFDataPatternPerHull } from "./EveSOFDataPatternPerHull";
 
 
-@meta.type("EveSOFDataPattern")
 @meta.define({
     wgl: "EveSOFDataPattern",
     ccp: true

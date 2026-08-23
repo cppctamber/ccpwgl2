@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataGenericSwarm")
 @meta.define({
     wgl: "EveSOFDataGenericSwarm",
     ccp: true

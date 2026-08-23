@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataPatternMaterialOverride")
 @meta.define({
     wgl: "EveSOFDataPatternMaterialOverride",
     ccp: true

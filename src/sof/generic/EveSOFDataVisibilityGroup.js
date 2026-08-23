@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataVisibilityGroup")
 @meta.define({
     wgl: "EveSOFDataVisibilityGroup",
     ccp: true

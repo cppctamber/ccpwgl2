@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec2, vec4 } from "math";
 
 
-@meta.type("EveSOFDataGenericHullDamage")
 @meta.define({
     wgl: "EveSOFDataGenericHullDamage",
     ccp: true

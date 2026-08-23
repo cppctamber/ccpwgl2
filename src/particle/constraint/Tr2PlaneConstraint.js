@@ -14,7 +14,6 @@ import { Tw2ParticleElement } from "../element";
  * Carbon: the plane ADDS tangential noise to the reflected velocity
  * (`cpp:154-165`), while the sphere REPLACES it (`Tr2SphereConstraint.cpp:162-173`).
  */
-@meta.type("Tr2PlaneConstraint")
 @meta.define({ ccp: "Tr2PlaneConstraint" })
 export class Tr2PlaneConstraint extends Tw2ParticleConstraint
 {

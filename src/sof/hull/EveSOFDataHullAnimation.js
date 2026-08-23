@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullAnimation")
 @meta.define({
     wgl: "EveSOFDataHullAnimation",
     ccp: true

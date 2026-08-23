@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataMaterial")
 @meta.define({
     wgl: "EveSOFDataMaterial",
     ccp: true

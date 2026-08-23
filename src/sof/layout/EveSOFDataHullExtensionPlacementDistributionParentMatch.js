@@ -1,6 +1,5 @@
 import { meta } from "utils";
 
-@meta.type("EveSOFDataHullExtensionPlacementDistributionParentMatch")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacementDistributionParentMatch",
     ccp: true

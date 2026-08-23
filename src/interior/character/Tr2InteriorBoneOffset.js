@@ -2,8 +2,10 @@ import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 
 
-@meta.type("Tr2InteriorBoneOffset")
-@meta.ccp.define("GrannyBoneOffset")
+@meta.define({
+    wgl: "Tr2InteriorBoneOffset",
+    ccp: "GrannyBoneOffset"
+})
 export class Tr2InteriorBoneOffset extends meta.Model
 {
 

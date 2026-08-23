@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("Tr2ControllerFloatVariable")
 @meta.ccp.define("Tr2ControllerFloatVariable")
 export class Tr2ControllerFloatVariable extends meta.Model
 {

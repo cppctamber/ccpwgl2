@@ -4,7 +4,6 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.type("EveChildParticleSystem", true)
 @meta.define({
     wgl: "EveChildParticleSystem",
     ccp: true

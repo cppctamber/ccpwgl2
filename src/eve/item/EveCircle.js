@@ -12,7 +12,6 @@ import { IEveLineSetPath } from "./IEveLineSetPath";
  * why the segment count is `numSegments` here and `segments` on
  * `EveBezierCurve` even though both are `m_segments` in Carbon.
  */
-@meta.type("EveCircle")
 @meta.define({
     wgl: "EveCircle",
     ccp: true

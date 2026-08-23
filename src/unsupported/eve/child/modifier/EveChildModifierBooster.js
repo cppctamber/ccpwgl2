@@ -28,7 +28,6 @@ function getScratch()
  * EveChildModifierBooster_Blue.cpp's ExposeToBlue() only maps the interface).
  */
 @meta.notImplemented
-@meta.type("EveChildModifierBooster")
 @meta.define({
     wgl: "EveChildModifierBooster",
     ccp: true

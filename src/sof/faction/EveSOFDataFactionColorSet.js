@@ -3,7 +3,6 @@ import { vec4 } from "math";
 import { Tw2Error } from "core";
 
 
-@meta.type("EveSOFDataFactionColorSet")
 @meta.define({
     wgl: "EveSOFDataFactionColorSet",
     ccp: true

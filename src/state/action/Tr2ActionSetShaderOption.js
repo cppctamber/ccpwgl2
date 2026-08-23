@@ -3,7 +3,6 @@ import { GetCandidates, GetOwner } from "./Tr2ActionAudioHelpers";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.type("Tr2ActionSetShaderOption")
 @meta.ccp.define("Tr2ActionSetShaderOption")
 export class Tr2ActionSetShaderOption extends Tw2Action
 {

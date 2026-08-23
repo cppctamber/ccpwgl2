@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataDistributionDepletionCounter")
 @meta.define({
     wgl: "EveSOFDataDistributionDepletionCounter",
     ccp: true

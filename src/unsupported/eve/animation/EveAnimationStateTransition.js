@@ -2,7 +2,6 @@ import { meta } from "utils";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationStateTransition")
 @meta.define({
     wgl: "EveAnimationStateTransition",
     ccp: true

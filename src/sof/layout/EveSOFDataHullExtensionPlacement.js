@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullExtensionPlacement")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacement",
     ccp: true

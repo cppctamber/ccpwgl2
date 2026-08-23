@@ -74,7 +74,6 @@ class Tw2EffectOption
 }
 
 
-@meta.type("Tw2Effect", "Tr2Effect")
 @meta.define({
     wgl: "Tw2Effect",
     ccp: "Tr2Effect"

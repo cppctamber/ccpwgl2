@@ -3,7 +3,6 @@ import { vec3 } from "math";
 
 
 @meta.notImplemented
-@meta.type("EveChildPostProcessVolume")
 @meta.define({
     wgl: "EveChildPostProcessVolume",
     ccp: true

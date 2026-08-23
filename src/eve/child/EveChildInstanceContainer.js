@@ -18,7 +18,6 @@ import { mat4, quat, vec3 } from "math";
  * by locator set instead, so this shape is ported from the C++ member names and
  * has not been seen against real data.
  */
-@meta.type("EveChildInstanceTransform")
 @meta.define({
     wgl: "EveChildInstanceTransform",
     ccp: true
@@ -59,7 +58,6 @@ export class EveChildInstanceTransform extends meta.Model
  * modifier to reach the same field. Same result through the path that is already
  * exercised.
  */
-@meta.type("EveChildInstanceContainer")
 @meta.define({
     wgl: "EveChildInstanceContainer",
     ccp: true

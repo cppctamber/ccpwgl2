@@ -5,7 +5,6 @@ import { mat4, quat, vec3 } from "math";
  * EveSpaceObjectFxAttributes
  *
  */
-@meta.type("EveSpaceObjectFxAttributes")
 @meta.define({
     wgl: "EveSpaceObjectFxAttributes",
     ccp: true

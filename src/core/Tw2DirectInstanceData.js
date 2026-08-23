@@ -23,7 +23,6 @@ import { device } from "global/tw2";
  * `Float32Array` and uploads it as is, because the producer (a distribution's
  * placement list) already has the data in that shape.
  */
-@meta.type("Tw2DirectInstanceData", "Tr2DirectInstanceData")
 @meta.define({
     wgl: "Tw2DirectInstanceData",
     ccp: "Tr2DirectInstanceData"

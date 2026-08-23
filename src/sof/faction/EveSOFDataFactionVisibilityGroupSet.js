@@ -2,7 +2,6 @@ import { __get, isString, meta } from "utils";
 import { tw2 } from "global";
 
 
-@meta.type("EveSOFDataFactionVisibilityGroupSet")
 @meta.define({
     wgl: "EveSOFDataFactionVisibilityGroupSet",
     ccp: true

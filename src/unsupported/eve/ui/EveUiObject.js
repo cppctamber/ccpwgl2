@@ -9,7 +9,6 @@ import { meta } from "utils";
  * @property {Number} modelScale           -
  */
 @meta.notImplemented
-@meta.type("EveUiObject")
 @meta.define({
     wgl: "EveUiObject",
     ccp: true

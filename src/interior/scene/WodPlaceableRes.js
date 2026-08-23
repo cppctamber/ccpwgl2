@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("WodPlaceableRes")
 @meta.ccp.define("WodPlaceableRes")
 export class WodPlaceableRes extends meta.Model
 {

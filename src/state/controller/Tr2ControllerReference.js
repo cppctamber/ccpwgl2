@@ -5,7 +5,6 @@ import { tw2 } from "global";
  * Controller reference
  * Loads another controller by path and forwards all lifecycle calls to it
  */
-@meta.type("Tr2ControllerReference")
 @meta.ccp.define("Tr2ControllerReference")
 export class Tr2ControllerReference extends meta.Model
 {

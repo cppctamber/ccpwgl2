@@ -5,7 +5,6 @@ import { Tw2TextureParameter } from "./parameter";
 import { Tw2RenderTarget } from "./Tw2RenderTarget";
 
 
-@meta.type("Tw2DepthRenderTarget")
 @meta.wgl.define("Tw2DepthRenderTarget")
 export class Tw2DepthRenderTarget
 {

@@ -3,7 +3,6 @@ import { quat } from "math";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
-@meta.type("Tw2EulerRotation")
 @meta.wgl.define("Tw2EulerRotation")
 export class Tw2EulerRotation extends Tw2CurveSequencer
 {

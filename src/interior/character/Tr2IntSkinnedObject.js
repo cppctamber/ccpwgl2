@@ -5,7 +5,6 @@ import { GLESPerObjectDataInterior } from "../Tr2InteriorPerObjectData";
 import { Tr2InteriorAnimationController } from "./Tr2InteriorAnimationController";
 import { Tr2InteriorScene } from "../scene/Tr2InteriorScene";
 
-@meta.type("Tr2IntSkinnedObject")
 @meta.ccp.define("Tr2IntSkinnedObject")
 export class Tr2IntSkinnedObject extends WglTransform
 {

@@ -19,7 +19,6 @@ import { vec3, vec4 } from "math";
  * @property {Number} sortValueMultiplier    -
  */
 @meta.notImplemented
-@meta.type("EveSpherePin")
 @meta.define({
     wgl: "EveSpherePin",
     ccp: true

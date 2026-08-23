@@ -33,7 +33,6 @@ const TR2_LIGHT_TYPE = Object.freeze({
  * transform, and submits a converted point or spot record to the light manager
  * each frame.
  */
-@meta.type("Tr2Light")
 @meta.ccp.define("Tr2Light")
 export class Tr2Light extends meta.Model
 {

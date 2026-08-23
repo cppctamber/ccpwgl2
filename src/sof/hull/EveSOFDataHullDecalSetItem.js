@@ -18,7 +18,6 @@ const Usage = {
 };
 
 
-@meta.type("EveSOFDataHullDecalSetItem")
 @meta.define({
     wgl: "EveSOFDataHullDecalSetItem",
     ccp: true

@@ -3,7 +3,6 @@ import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.type("Tr2ActionAnimateCurveSet")
 @meta.ccp.define("Tr2ActionAnimateCurveSet")
 export class Tr2ActionAnimateCurveSet extends Tw2Action
 {

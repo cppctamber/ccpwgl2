@@ -1,6 +1,5 @@
 import { meta } from "utils";
 
-@meta.type("EveSOFDataHullExtensionPlacementDistributionRandomChance")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacementDistributionRandomChance",
     ccp: true

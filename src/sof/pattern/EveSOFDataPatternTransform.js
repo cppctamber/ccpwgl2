@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { quat, vec3, mat4 } from "math";
 
 
-@meta.type("EveSOFDataPatternTransform")
 @meta.define({
     wgl: "EveSOFDataPatternTransform",
     ccp: true

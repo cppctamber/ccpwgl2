@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullLightSetTexturedPointLight")
 @meta.define({
     wgl: "EveSOFDataHullLightSetTexturedPointLight",
     ccp: true

@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { mat4, vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullSpotlightSetItem")
 @meta.define({
     wgl: "EveSOFDataHullSpotlightSetItem",
     ccp: true

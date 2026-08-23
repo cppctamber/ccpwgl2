@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataBlinkType")
 @meta.define({
     wgl: "EveSOFDataBlinkType",
     ccp: true

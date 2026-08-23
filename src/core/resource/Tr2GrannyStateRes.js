@@ -24,7 +24,6 @@ import { Tw2Resource } from "./Tw2Resource";
  * @property {Array} animationSets Animation sets carrying GR2 references.
  * @property {Array<String>} gsfReferences Resolved, deduplicated GR2 paths.
  */
-@meta.type("Tr2GrannyStateRes")
 @meta.define({
     wgl: "Tr2GrannyStateRes",
     ccp: "Tr2GrannyStateRes"

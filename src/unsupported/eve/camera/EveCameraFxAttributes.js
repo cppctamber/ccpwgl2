@@ -3,7 +3,6 @@ import { mat4, quat, vec3 } from "math";
 import { device } from "global";
 
 
-@meta.type("EveCameraFxAttributes", true)
 @meta.define({
     wgl: "EveCameraFxAttributes",
     ccp: true

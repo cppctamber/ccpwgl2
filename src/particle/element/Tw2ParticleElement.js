@@ -10,7 +10,6 @@ const ParticleType = {
 };
 
 
-@meta.type("Tw2ParticleElement")
 @meta.wgl.define("Tw2ParticleElement")
 export class Tw2ParticleElement
 {

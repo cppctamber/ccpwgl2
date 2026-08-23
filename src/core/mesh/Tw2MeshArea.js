@@ -3,7 +3,6 @@ import { meta, assignIfExists } from "utils";
 import { Tw2Effect } from "./Tw2Effect";
 
 
-@meta.type("Tw2MeshArea", "Tr2MeshArea")
 @meta.define({
     wgl: "Tw2MeshArea",
     ccp: "Tr2MeshArea"

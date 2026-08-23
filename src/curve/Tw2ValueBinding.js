@@ -25,7 +25,6 @@ import { isArrayLike, isBoolean, isNumber } from "utils";
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
-@meta.type("Tw2ValueBinding", "TriValueBinding")
 @meta.define({
     wgl: "Tw2ValueBinding",
     ccp: "TriValueBinding"

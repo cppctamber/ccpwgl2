@@ -11,7 +11,6 @@ import { TriColorFromKelvin, Tr2StandardIlluminant } from "./TriColorFromKelvin"
  * tint and a white-balance reference illuminant into an RGB color.
  */
 @meta.notImplemented
-@meta.type("Tr2KelvinColor")
 @meta.ccp.define("Tr2KelvinColor")
 export class Tr2KelvinColor extends meta.Model
 {

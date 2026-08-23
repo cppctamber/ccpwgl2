@@ -202,7 +202,6 @@ function ParseAttribute(attribute)
     };
 }
 
-@meta.type("Tr2BindingPoint")
 @meta.ccp.define("Tr2BindingPoint")
 export class Tr2BindingPoint extends meta.Model
 {

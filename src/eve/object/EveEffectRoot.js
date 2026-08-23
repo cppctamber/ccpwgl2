@@ -5,7 +5,6 @@ import { EveObject } from "./EveObject";
 import { PlayCurveSetOn, StopCurveSetOn, GetRangeDurationOn, GetCurveSetDurationOn } from "../../curve/curveSetOwner";
 
 
-@meta.type("EveEffectRoot")
 @meta.define({
     wgl: "EveEffectRoot",
     ccp: true

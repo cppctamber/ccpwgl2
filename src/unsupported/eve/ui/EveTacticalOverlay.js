@@ -14,7 +14,6 @@ import { meta } from "utils";
  * @property {Tw2Effect} velocityEffect    -
  */
 @meta.notImplemented
-@meta.type("EveTacticalOverlay")
 @meta.define({
     wgl: "EveTacticalOverlay",
     ccp: true

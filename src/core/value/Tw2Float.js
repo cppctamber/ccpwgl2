@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("Tw2Float", "TriFloat")
 @meta.define({
     wgl: "Tw2Float",
     ccp: "TriFloat"

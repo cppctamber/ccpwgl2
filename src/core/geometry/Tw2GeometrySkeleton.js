@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("Tw2GeometrySkeleton")
 @meta.wgl.define("Tw2GeometrySkeleton")
 export class Tw2GeometrySkeleton
 {

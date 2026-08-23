@@ -27,7 +27,6 @@ function BytesToString(bytes)
 }
 
 
-@meta.type("Tw2ShaderStage")
 @meta.wgl.define("Tw2ShaderStage")
 export class Tw2ShaderStage
 {

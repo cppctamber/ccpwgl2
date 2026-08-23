@@ -24,7 +24,6 @@ const Method = Object.freeze({
  *
  * @ccp Tr2PPTonemappingEffect
  */
-@meta.type("Tr2PPTonemappingEffect")
 @meta.ccp.define("Tr2PPTonemappingEffect")
 export class Tr2PPTonemappingEffect extends Tr2PPEffect
 {

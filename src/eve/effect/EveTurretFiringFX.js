@@ -16,7 +16,6 @@ class EvePerMuzzleData
 }
 
 
-@meta.type("EveTurretFiringFX")
 @meta.define({
     wgl: "EveTurretFiringFX",
     ccp: true

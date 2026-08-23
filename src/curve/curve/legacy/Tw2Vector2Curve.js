@@ -10,7 +10,6 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2Vector2Key")
 @meta.wgl.define("Tw2Vector2Key")
 export class Tw2Vector2Key extends Tw2CurveKey
 {
@@ -30,7 +29,6 @@ export class Tw2Vector2Key extends Tw2CurveKey
 }
 
 
-@meta.type("Tw2Vector2Curve")
 @meta.wgl.define("Tw2Vector2Curve")
 export class Tw2Vector2Curve extends Tw2Curve
 {

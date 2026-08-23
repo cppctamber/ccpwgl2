@@ -15,7 +15,6 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPVignetteEffect
  */
-@meta.type("Tr2PPVignetteEffect")
 @meta.ccp.define("Tr2PPVignetteEffect")
 export class Tr2PPVignetteEffect extends Tr2PPEffect
 {

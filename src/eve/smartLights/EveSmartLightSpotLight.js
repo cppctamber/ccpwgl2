@@ -10,7 +10,6 @@ import { Tr2Light } from "../lights/Tr2Light.js";
 import { EveSmartLightPointLight } from "./EveSmartLightPointLight.js";
 
 /** EveSmartLightSpotLight (eve/smartLights) - generated from schema shapeHash e98199f3.... */
-@meta.type("EveSmartLightSpotLight")
 @meta.ccp.define("EveSmartLightSpotLight")
 export class EveSmartLightSpotLight extends EveSmartLightPointLight
 {

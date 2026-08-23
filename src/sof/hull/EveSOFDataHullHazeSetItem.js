@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullHazeSetItem")
 @meta.define({
     wgl: "EveSOFDataHullHazeSetItem",
     ccp: true

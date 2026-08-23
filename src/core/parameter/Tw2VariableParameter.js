@@ -3,7 +3,6 @@ import { tw2 } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-@meta.type("Tw2VariableParameter", "TriVariableParameter")
 @meta.define({
     wgl: "Tw2VariableParameter",
     ccp: "TriVariableParameter"

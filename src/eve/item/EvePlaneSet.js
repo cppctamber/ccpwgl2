@@ -37,7 +37,6 @@ class EvePlaneSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EvePlaneSetItem", true)
 @meta.define({
     wgl: "EvePlaneSetItem",
     ccp: true
@@ -214,7 +213,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
  * lights. Its `lightData` radii were derived from the SOF multipliers and the
  * owning item's scale (see `EveSOFDataPointLightAttachment.AsLightData`).
  */
-@meta.type("EvePlaneLight")
 @meta.define({ wgl: "EvePlaneLight", ccp: true })
 export class EvePlaneLight extends meta.Model
 {
@@ -252,7 +250,6 @@ export class EvePlaneLight extends meta.Model
 }
 
 
-@meta.type("EvePlaneSet", true)
 @meta.define({
     wgl: "EvePlaneSet",
     ccp: true

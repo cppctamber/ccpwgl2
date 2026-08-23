@@ -34,7 +34,7 @@ import { TextureFormatDDS } from "./formats/TextureFormatDDS";
  * any texture without mips, and detail maps tile, so a mipless array would
  * silently lose its REPEAT addressing.
  */
-@meta.type("Tw2TextureArrayRes")
+@meta.define({ wgl: "Tw2TextureArrayRes" })
 export class Tw2TextureArrayRes extends Tw2TextureRes
 {
 

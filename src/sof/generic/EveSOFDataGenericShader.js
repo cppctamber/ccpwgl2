@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataGenericShader")
 @meta.define({
     wgl: "EveSOFDataGenericShader",
     ccp: true

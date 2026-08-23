@@ -16,7 +16,6 @@ import { skippedObject } from "core/reader/Tw2BlackPropertyReaders";
  * reads as "the beams do not exist" rather than "the walk cannot reach them".
  */
 @meta.notImplemented
-@meta.type("EveChildInstanceMeshRenderer", true)
 @meta.define({
     wgl: "EveChildInstanceMeshRenderer",
     ccp: true

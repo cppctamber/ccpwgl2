@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataLayout")
 @meta.define({
     wgl: "EveSOFDataLayout",
     ccp: true

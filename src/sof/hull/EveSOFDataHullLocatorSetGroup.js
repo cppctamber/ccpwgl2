@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataHullLocatorSetGroup")
 @meta.define({
     wgl: "EveSOFDataHullLocatorSetGroup",
     ccp: true

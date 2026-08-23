@@ -17,7 +17,6 @@ import { ErrFeatureNotImplemented } from "core";
 
 
 @meta.todo("Is this deprecated?")
-@meta.type("Tw2InstancedMesh", "Tr2InstancedMesh")
 @meta.define({
     wgl: "Tw2InstancedMesh",
     ccp: "Tr2InstancedMesh"

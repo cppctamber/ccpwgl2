@@ -4,7 +4,6 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.type("EveMobile")
 @meta.define({
     wgl: "EveMobile",
     ccp: true

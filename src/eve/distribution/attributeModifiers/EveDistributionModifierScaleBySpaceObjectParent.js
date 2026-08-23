@@ -4,7 +4,6 @@ import { meta } from "utils";
 import { sph3, vec3 } from "math";
 
 
-@meta.type("EveDistributionModifierScaleBySpaceObjectParent")
 @meta.ccp.define("EveDistributionModifierScaleBySpaceObjectParent")
 export class EveDistributionModifierScaleBySpaceObjectParent extends meta.Model
 {

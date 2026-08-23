@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("Tr2ControllerEventHandler")
 @meta.ccp.define("Tr2ControllerEventHandler")
 export class Tr2ControllerEventHandler extends meta.Model
 {

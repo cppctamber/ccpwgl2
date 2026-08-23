@@ -2,7 +2,6 @@ import { __get, meta } from "utils";
 import { vec4 } from "math";
 
 
-@meta.type("EveSOFDataBoosterShape")
 @meta.define({
     wgl: "EveSOFDataBoosterShape",
     ccp: true

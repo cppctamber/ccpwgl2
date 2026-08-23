@@ -10,7 +10,6 @@ import { Tw2TrackGroup } from "./Tw2TrackGroup";
 import { Tw2MeshBinding } from "./Tw2MeshBinding";
 
 
-@meta.type("Tw2AnimationController")
 @meta.wgl.define("Tw2AnimationController")
 @meta.todo("Handle rebuilding bounds in update function")
 export class Tw2AnimationController extends meta.Model

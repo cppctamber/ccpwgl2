@@ -3,7 +3,6 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildProceduralContainer")
 @meta.define({
     wgl: "EveChildProceduralContainer",
     ccp: true

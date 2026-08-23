@@ -4,7 +4,6 @@ import { vec4, mat4 } from "math";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
-@meta.type("EveOccluder")
 @meta.define({
     wgl: "EveOccluder",
     ccp: true

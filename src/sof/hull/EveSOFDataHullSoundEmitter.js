@@ -3,7 +3,6 @@ import { vec3, quat } from "math";
 import { wstring } from "core/reader/Tw2BlackPropertyReaders";
 
 
-@meta.type("EveSOFDataHullSoundEmitter")
 @meta.define({
     wgl: "EveSOFDataHullSoundEmitter",
     ccp: true

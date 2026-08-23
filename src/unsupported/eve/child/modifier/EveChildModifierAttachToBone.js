@@ -4,7 +4,6 @@ import { mat4 } from "math";
 
 
 @meta.notImplemented
-@meta.type("EveChildModifierAttachToBone")
 @meta.define({
     wgl: "EveChildModifierAttachToBone",
     ccp: true

@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleDragForce", "Tr2ParticleDragForce")
 @meta.define({
     wgl: "Tw2ParticleDragForce",
     ccp: "Tr2ParticleDragForce"

@@ -44,7 +44,6 @@ const STRETCH_STATE_STOPPING = 3;
  *  - `GetDebugOptions`/`RenderDebugInfo`: not modeled, matching `EveStretch.js`.
  */
 @meta.notImplemented
-@meta.type("EveStretch3")
 @meta.define({
     wgl: "EveStretch3",
     ccp: true

@@ -12,7 +12,6 @@ import { device } from "global";
  * "attachedToCamera").
  */
 @meta.notImplemented
-@meta.type("EveChildModifierTranslateWithCamera")
 @meta.define({
     wgl: "EveChildModifierTranslateWithCamera",
     ccp: true

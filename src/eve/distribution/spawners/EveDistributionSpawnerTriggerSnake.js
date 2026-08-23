@@ -4,7 +4,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.type("EveDistributionSpawnerTriggerSnake")
 @meta.ccp.define("EveDistributionSpawnerTriggerSnake")
 export class EveDistributionSpawnerTriggerSnake extends meta.Model
 {

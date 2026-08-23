@@ -17,7 +17,6 @@ import { vec3, vec4 } from "math";
  * @property {Number} type                        -
  */
 @meta.notImplemented
-@meta.type("EveConnector")
 @meta.define({
     wgl: "EveConnector",
     ccp: true

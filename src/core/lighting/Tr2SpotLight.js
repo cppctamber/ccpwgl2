@@ -12,7 +12,6 @@ import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSet
  * rationale - ccpwgl has no Tr2Light base class file).
  */
 @meta.notImplemented
-@meta.type("Tr2SpotLight")
 @meta.ccp.define("Tr2SpotLight")
 export class Tr2SpotLight extends meta.Model
 {

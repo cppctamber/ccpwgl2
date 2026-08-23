@@ -29,7 +29,7 @@ import { DEFAULT_AO_POST_EFFECT } from "./ssaoPostEffect.js";
  * it can't run SSAO (depth-in / texture-out). Routing the passes through the
  * shader store / `Tw2Effect` is a later refinement.
  */
-@meta.type("EveSpaceSceneAO")
+@meta.define({ wgl: "EveSpaceSceneAO" })
 export class EveSpaceSceneAO extends meta.Model
 {
 

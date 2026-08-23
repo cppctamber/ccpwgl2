@@ -26,7 +26,6 @@ import { EveShip2 } from "eve/object/EveShip2";
  * `TriPointLight`, on an object type whose content is full of curve sets and
  * point lights. Only the fields `EveShip2` genuinely lacks are declared below.
  */
-@meta.type("EveStation2")
 @meta.define({
     wgl: "EveStation2",
     ccp: true

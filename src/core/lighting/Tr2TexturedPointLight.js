@@ -22,7 +22,6 @@ import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSet
  * they are left in place rather than removed.
  */
 @meta.notImplemented
-@meta.type("Tr2TexturedPointLight")
 @meta.ccp.define("Tr2TexturedPointLight")
 export class Tr2TexturedPointLight extends meta.Model
 {

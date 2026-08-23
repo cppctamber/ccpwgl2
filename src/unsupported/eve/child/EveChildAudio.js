@@ -6,7 +6,6 @@ import { vec3 } from "math";
  * Effect child carrying a sound emitter: follows its parent's world
  * transform and forwards mute state, matching Carbon's EveChildAudio.
  */
-@meta.type("EveChildAudio")
 @meta.define({
     wgl: "EveChildAudio",
     ccp: true

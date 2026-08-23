@@ -13,7 +13,6 @@ import { resolveGroupColor } from "./EveSmartLightBaseGroup.js";
 import { PlacementDataWithIdentifier } from "../PlacementDataWithIdentifier.js";
 
 /** A smart-light group that computes one shared faction-aware colour, applies it to its child light groups, and fans out their per-frame updates. */
-@meta.type("EveSmartLightColorShareGroup")
 @meta.ccp.define("EveSmartLightColorShareGroup")
 export class EveSmartLightColorShareGroup extends EveEntity
 {

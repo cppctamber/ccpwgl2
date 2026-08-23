@@ -1,7 +1,6 @@
 import { __get, assignIfExists, isNoU, meta } from "utils";
 
 
-@meta.type("EveSOFDataAreaMaterial")
 @meta.define({
     wgl: "EveSOFDataAreaMaterial",
     ccp: true

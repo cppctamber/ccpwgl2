@@ -3,7 +3,6 @@ import { vec4 } from "math";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 
-@meta.type("TriColorSequencer")
 @meta.ccp.define("TriColorSequencer")
 @meta.todo("Make backwards compatible with old Tw2ColorSequencer")
 @meta.stage(2)

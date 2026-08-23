@@ -3,7 +3,6 @@ import { vec4 } from "math";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.type("Tw2Vector4Parameter", "TriVector4Parameter", "Tr2Vector4Parameter")
 @meta.define({
     wgl: "Tw2Vector4Parameter",
     ccp: "TriVector4Parameter"

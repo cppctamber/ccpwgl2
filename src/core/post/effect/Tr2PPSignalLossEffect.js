@@ -9,7 +9,6 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPSignalLossEffect
  */
-@meta.type("Tr2PPSignalLossEffect")
 @meta.ccp.define("Tr2PPSignalLossEffect")
 export class Tr2PPSignalLossEffect extends Tr2PPEffect
 {

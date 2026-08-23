@@ -20,7 +20,6 @@ import { EveEntity } from "../EveEntity";
  * transforms, and the rules by which a child's world transform is derived from
  * its parent's each frame.
  */
-@meta.type("EveChildTransform")
 @meta.ccp.define("EveChildTransform")
 export class EveChildTransform extends EveEntity
 {

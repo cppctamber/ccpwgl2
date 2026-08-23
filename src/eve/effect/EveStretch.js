@@ -4,7 +4,6 @@ import { Tw2Float } from "core";
 import { GetAverageAxisScale } from "core/lighting/Tw2CarbonLightMath";
 
 
-@meta.type("EveStretch")
 @meta.define({
     wgl: "EveStretch",
     ccp: true

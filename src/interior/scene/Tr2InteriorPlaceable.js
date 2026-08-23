@@ -5,7 +5,6 @@ import { GLESPerObjectDataInterior } from "../Tr2InteriorPerObjectData";
 import { Tr2InteriorScene } from "./Tr2InteriorScene";
 
 
-@meta.type("Tr2InteriorPlaceable")
 @meta.ccp.define("Tr2InteriorPlaceable")
 export class Tr2InteriorPlaceable extends WglTransform
 {

@@ -3,7 +3,6 @@ import { vec3 } from "math";
 import { CjsLightData } from "../../eve/lights/CjsLightData";
 
 
-@meta.type("EveSOFDataSpotLightAttachment")
 @meta.define({
     wgl: "EveSOFDataSpotLightAttachment",
     ccp: true
@@ -81,7 +80,6 @@ export class EveSOFDataSpotLightAttachment extends meta.Model
 
 }
 
-@meta.type("EveSOFDataSpotlightAttachment")
 @meta.define({
     wgl: "EveSOFDataSpotlightAttachment",
     ccp: true

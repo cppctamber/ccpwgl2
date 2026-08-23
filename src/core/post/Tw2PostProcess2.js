@@ -27,7 +27,6 @@ import { meta } from "utils";
  *
  * @ccp Tr2PostProcess2
  */
-@meta.type("Tw2PostProcess2", "Tr2PostProcess2")
 @meta.define({
     wgl: "Tw2PostProcess2",
     ccp: "Tr2PostProcess2"

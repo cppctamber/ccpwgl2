@@ -4,7 +4,6 @@ import { meta } from "utils";
 import { DistributionEntityLifeTimeEvent } from "./enums.js";
 
 
-@meta.type("EveDistributionModifierProcessLifetime")
 @meta.ccp.define("EveDistributionModifierProcessLifetime")
 export class EveDistributionModifierProcessLifetime extends meta.Model
 {

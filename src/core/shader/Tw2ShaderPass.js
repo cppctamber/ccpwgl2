@@ -5,7 +5,6 @@ import { Tw2ShaderState } from "./Tw2ShaderState";
 import { Tw2ShaderProgram } from "./Tw2ShaderProgram";
 
 
-@meta.type("Tw2ShaderPass")
 @meta.wgl.define("Tw2ShaderPass")
 export class Tw2ShaderPass
 {

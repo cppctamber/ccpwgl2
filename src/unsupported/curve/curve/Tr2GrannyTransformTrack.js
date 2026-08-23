@@ -4,7 +4,6 @@ import { Tr2GrannyTrack } from "./Tr2GrannyTrack";
 
 
 @meta.notImplemented
-@meta.type("Tr2GrannyTransformTrack")
 @meta.ccp.define("Tr2GrannyTransformTrack")
 export class Tr2GrannyTransformTrack extends Tr2GrannyTrack
 {

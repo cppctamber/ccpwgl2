@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataPatternApplicationGroup")
 @meta.define({
     wgl: "EveSOFDataPatternApplicationGroup",
     ccp: true

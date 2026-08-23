@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 import { quat } from "math/quat";
 
-@meta.type("EveSOFDataHullExtensionPlacementDistributionPlacement")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacementDistributionPlacement",
     ccp: true

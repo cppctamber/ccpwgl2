@@ -13,7 +13,6 @@ import { box3 } from "math/box3";
 import { sph3 } from "math/sph3";
 
 
-@meta.type("Tw2Mesh", "Tr2Mesh")
 @meta.define({
     wgl: "Tw2Mesh",
     ccp: "Tr2Mesh"

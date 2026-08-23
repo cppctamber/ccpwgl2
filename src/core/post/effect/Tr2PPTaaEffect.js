@@ -26,7 +26,6 @@ const Debug = Object.freeze({
  *
  * @ccp Tr2PPTaaEffect
  */
-@meta.type("Tr2PPTaaEffect")
 @meta.ccp.define("Tr2PPTaaEffect")
 export class Tr2PPTaaEffect extends Tr2PPEffect
 {

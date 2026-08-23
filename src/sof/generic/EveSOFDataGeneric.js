@@ -3,7 +3,6 @@ import { meta, findElementByPropertyValue } from "utils";
 import { tw2 } from "global/tw2";
 
 
-@meta.type("EveSOFDataGeneric")
 @meta.define({
     wgl: "EveSOFDataGeneric",
     ccp: true

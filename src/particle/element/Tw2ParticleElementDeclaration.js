@@ -3,7 +3,6 @@ import { Tw2ParticleElement } from "./Tw2ParticleElement";
 import { meta } from "utils";
 
 
-@meta.type("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
 @meta.define({
     wgl: "Tw2ParticleElementDeclaration",
     ccp: "Tr2ParticleElementDeclaration"

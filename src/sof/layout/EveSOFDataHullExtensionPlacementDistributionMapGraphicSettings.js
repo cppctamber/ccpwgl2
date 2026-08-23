@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings",
     ccp: true

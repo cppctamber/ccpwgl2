@@ -3,7 +3,6 @@ import { vec3 } from "math";
 
 
 @meta.notImplemented
-@meta.type("EveChildFogVolume")
 @meta.define({
     wgl: "EveChildFogVolume",
     ccp: true

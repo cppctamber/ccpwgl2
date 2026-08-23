@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3, vec4, quat, mat4, box3, sph3 } from "math";
 
 
-@meta.type("EveLocator2")
 @meta.define({
     wgl: "EveLocator2",
     ccp: true
@@ -340,7 +339,6 @@ export class EveLocator2 extends meta.Model
 
 }
 
-@meta.type("EveLocator")
 @meta.define({
     wgl: "EveLocator",
     ccp: true

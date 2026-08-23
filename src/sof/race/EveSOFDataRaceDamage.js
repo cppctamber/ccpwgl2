@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { EveSOFDataParameter, EveSOFDataTexture } from "../shared";
 
 
-@meta.type("EveSOFDataRaceDamage")
 @meta.define({
     wgl: "EveSOFDataRaceDamage",
     ccp: true

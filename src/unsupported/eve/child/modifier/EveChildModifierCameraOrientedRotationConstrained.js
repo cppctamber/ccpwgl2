@@ -37,7 +37,6 @@ function getScratch()
  * untouched - a billboard constrained to the Y axis.
  */
 @meta.notImplemented
-@meta.type("EveChildModifierCameraOrientedRotationConstrained")
 @meta.define({
     wgl: "EveChildModifierCameraOrientedRotationConstrained",
     ccp: true

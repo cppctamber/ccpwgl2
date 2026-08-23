@@ -17,7 +17,6 @@ import { Tw2ParticleElement } from "../element";
  * rather than a behaviour worth reproducing. A range of zero or less pins the
  * component to `minRange` instead.
  */
-@meta.type("Tw2ConsecutiveIntegerAttributeGenerator", "Tr2ConsecutiveIntegerAttributeGenerator")
 @meta.define({
     wgl: "Tw2ConsecutiveIntegerAttributeGenerator",
     ccp: "Tr2ConsecutiveIntegerAttributeGenerator"

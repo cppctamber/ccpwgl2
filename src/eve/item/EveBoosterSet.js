@@ -46,7 +46,6 @@ export class EveBoosterBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EveBoosterSetItem")
 @meta.define({
     wgl: "EveBoosterSetItem",
     ccp: true
@@ -146,7 +145,6 @@ export class EveBoosterSetItem extends EveObjectSetItem
  * Todo: replace locator update with bones...
  */
 
-@meta.type("EveBoosterSet", true)
 @meta.define({
     wgl: "EveBoosterSet",
     ccp: true

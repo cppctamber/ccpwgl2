@@ -36,7 +36,6 @@ import { resolveGroupColor } from "./EveSmartLightBaseGroup";
 
 
 /** A smart-light group member that instances a mesh at each distribution placement and tints it with the faction-aware group colour. */
-@meta.type("EveSmartLightMesh")
 @meta.ccp.define("EveSmartLightMesh")
 export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 {

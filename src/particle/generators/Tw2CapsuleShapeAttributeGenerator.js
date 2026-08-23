@@ -18,7 +18,6 @@ import { Tw2ParticleElement } from "../element";
  * same operation as `vec3.transformQuat`, which is what the sphere generator
  * beside this one already uses.
  */
-@meta.type("Tw2CapsuleShapeAttributeGenerator", "Tr2CapsuleShapeAttributeGenerator")
 @meta.define({
     wgl: "Tw2CapsuleShapeAttributeGenerator",
     ccp: "Tr2CapsuleShapeAttributeGenerator"

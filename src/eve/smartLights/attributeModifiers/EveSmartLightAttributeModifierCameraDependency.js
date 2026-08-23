@@ -6,7 +6,6 @@ import { EveSmartLightAttributeModifierBucket } from "./EveSmartLightAttributeMo
 
 
 /** EveSmartLightAttributeModifierCameraDependency (eve/smartLights/attributeModifiers) - generated from schema shapeHash 5e9c1bd9.... */
-@meta.type("EveSmartLightAttributeModifierCameraDependency")
 @meta.ccp.define("EveSmartLightAttributeModifierCameraDependency")
 export class EveSmartLightAttributeModifierCameraDependency extends EveSmartLightAttributeModifierBucket
 {

@@ -3,7 +3,6 @@ import { Tr2ExpressionProgram } from "../expression/Tr2ExpressionProgram";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.type("Tr2ActionSetExternalControllerVariable")
 @meta.ccp.define("Tr2ActionSetExternalControllerVariable")
 export class Tr2ActionSetExternalControllerVariable extends Tw2Action
 {

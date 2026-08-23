@@ -14,7 +14,7 @@ import { LodLevelPixels } from "constant/ccpwgl";
  *
  * Ported from `EveBoosterSet2.h` / `EveBoosterSet2.cpp` (`EveBoosterSet2Renderable`).
  */
-@meta.type("EveBoosterSet2Renderable")
+@meta.define({ wgl: "EveBoosterSet2Renderable" })
 export class EveBoosterSet2Renderable extends meta.Model
 {
 

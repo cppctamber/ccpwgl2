@@ -3,7 +3,6 @@ import { vec4 } from "math/vec4";
 
 
 @meta.notImplemented
-@meta.type("EveChildInheritProperties")
 @meta.define({
     wgl: "EveChildInheritProperties",
     ccp: true

@@ -22,7 +22,6 @@ const Shape = Object.freeze({
  *
  * @ccp Tr2PPDepthOfFieldEffect
  */
-@meta.type("Tr2PPDepthOfFieldEffect")
 @meta.ccp.define("Tr2PPDepthOfFieldEffect")
 export class Tr2PPDepthOfFieldEffect extends Tr2PPEffect
 {

@@ -23,7 +23,6 @@ import { quat, vec3 } from "math";
  * @property {Tr2CurveScalar} zoomCurve       -
  */
 @meta.notImplemented
-@meta.type("EveCamera")
 @meta.define({
     wgl: "EveCamera",
     ccp: true

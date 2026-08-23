@@ -3,7 +3,6 @@ import { vec4 } from "math";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
-@meta.type("Tw2RGBAScalarSequencer")
 @meta.wgl.define("Tw2RGBAScalarSequencer")
 export class Tw2RGBAScalarSequencer extends Tw2CurveSequencer
 {

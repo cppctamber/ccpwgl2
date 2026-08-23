@@ -2,7 +2,6 @@ import { ErrGr2CurveDataControlSizeInvalid, Gr2Curve2 } from "./Gr2Curve2";
 import { meta } from "utils";
 
 
-@meta.type("Gr2CurveDataDaK32fC32f")
 @meta.wgl.define("Gr2CurveDataDaK32fC32f")
 export class Gr2CurveDataDaK32fC32f extends Gr2Curve2
 {

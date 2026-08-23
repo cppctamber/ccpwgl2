@@ -4,7 +4,6 @@ import { vec4 } from "math";
 
 
 @meta.notImplemented
-@meta.type("EveChildSpherePin")
 @meta.define({
     wgl: "EveChildSpherePin",
     ccp: true

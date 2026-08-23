@@ -2,7 +2,6 @@ import { ErrGr2CurveDataRotationNotSupported, Gr2Curve2 } from "./Gr2Curve2";
 import { meta } from "utils";
 
 
-@meta.type("Gr2CurveDataD9I1K16uC16u")
 @meta.wgl.define("Gr2CurveDataD9I1K16uC16u")
 export class Gr2CurveDataD9I1K16uC16u extends Gr2Curve2
 {

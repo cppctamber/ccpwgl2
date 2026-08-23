@@ -31,7 +31,6 @@ function getScratch()
  * EveChildModifierBillboard3D_Blue.cpp's ExposeToBlue() (1 property: "fixed").
  */
 @meta.notImplemented
-@meta.type("EveChildModifierBillboard3D")
 @meta.define({
     wgl: "EveChildModifierBillboard3D",
     ccp: true

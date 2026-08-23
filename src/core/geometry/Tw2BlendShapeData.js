@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { Tw2VertexDeclaration } from "../vertex";
 
 
-@meta.type("Tw2BlendShapeData")
 @meta.wgl.define("Tw2BlendShapeData")
 export class Tw2BlendShapeData
 {

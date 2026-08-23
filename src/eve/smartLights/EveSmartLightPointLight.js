@@ -25,7 +25,6 @@ import {
 } from "../lights/CjsLightData.js";
 
 /** A smart-light group member that places faction-colour-aware point or spot lights at each distribution placement and submits them to the light manager. */
-@meta.type("EveSmartLightPointLight")
 @meta.ccp.define("EveSmartLightPointLight")
 export class EveSmartLightPointLight extends EveEntity
 {

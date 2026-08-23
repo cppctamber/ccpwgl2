@@ -26,7 +26,6 @@ import {
 } from "constant";
 
 
-@meta.type("EveSpaceScene")
 @meta.define({
     wgl: "EveSpaceScene",
     ccp: true

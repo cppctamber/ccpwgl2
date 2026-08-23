@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataHullExtensionPlacementDistributionDepletionCounter")
 @meta.define({
     wgl: "EveSOFDataHullExtensionPlacementDistributionDepletionCounter",
     ccp: true

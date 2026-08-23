@@ -2,7 +2,6 @@ import { assignIfExists, meta } from "utils";
 import { TEX_VOLUME, TexTypeToString, TexTypeToGLTexture } from "constant/d3d";
 
 
-@meta.type("Tw2ShaderStageTexture")
 @meta.wgl.define("Tw2ShaderStageTexture")
 export class Tw2ShaderStageTexture extends meta.Model
 {

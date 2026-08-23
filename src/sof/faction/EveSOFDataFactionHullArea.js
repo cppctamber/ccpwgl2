@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataFactionHullArea")
 @meta.define({
     wgl: "EveSOFDataFactionHullArea",
     ccp: true

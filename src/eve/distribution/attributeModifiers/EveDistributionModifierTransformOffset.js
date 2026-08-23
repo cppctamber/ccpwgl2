@@ -4,7 +4,6 @@ import { meta } from "utils";
 import { quat, vec3 } from "math";
 
 
-@meta.type("EveDistributionModifierTransformOffset")
 @meta.ccp.define("EveDistributionModifierTransformOffset")
 export class EveDistributionModifierTransformOffset extends meta.Model
 {

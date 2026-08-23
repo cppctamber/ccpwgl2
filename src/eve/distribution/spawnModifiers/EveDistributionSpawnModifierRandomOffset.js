@@ -5,7 +5,6 @@ import { vec3 } from "math";
 import { createMinStdRandom, getDistributionSeed } from "../CjsDistributionRandom.js";
 
 
-@meta.type("EveDistributionSpawnModifierRandomOffset")
 @meta.ccp.define("EveDistributionSpawnModifierRandomOffset")
 export class EveDistributionSpawnModifierRandomOffset extends meta.Model
 {

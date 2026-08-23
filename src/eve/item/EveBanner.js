@@ -5,7 +5,6 @@ import { resMan } from "global";
 import { RM_ADDITIVE } from "constant";
 
 
-@meta.type("EveBanner")
 @meta.define({
     wgl: "EveBanner",
     ccp: true

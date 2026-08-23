@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDNADescriptor")
 @meta.define({
     wgl: "EveSOFDNADescriptor",
     ccp: true

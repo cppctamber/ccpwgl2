@@ -67,7 +67,6 @@ function maxComponent(v)
  * (9 SH coefficients), each packed down to `PACKED_COEFFICIENT_COUNT` (7)
  * Vector4s for shader consumption.
  */
-@meta.type("Tr2ShLightingManager")
 @meta.ccp.define("Tr2ShLightingManager")
 export class Tr2ShLightingManager extends meta.Model
 {

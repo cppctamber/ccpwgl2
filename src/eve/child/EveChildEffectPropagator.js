@@ -71,7 +71,6 @@ function SortByCircleDist(a, b)
  * the component registry, none of which exist on ccpwgl's child path - and the
  * debug renderer holds the only three matrix compositions in the class.
  */
-@meta.type("EveChildEffectPropagator")
 @meta.define({
     wgl: "EveChildEffectPropagator",
     ccp: true

@@ -14,7 +14,6 @@ function CopyStateBytes(value)
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionPython")
 @meta.ccp.define("Tr2ActionPython")
 export class Tr2ActionPython extends Tw2Action
 {

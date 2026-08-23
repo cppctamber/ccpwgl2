@@ -3,7 +3,6 @@ import { vec3, quat, mat4 } from "math";
 import { EveChildModifier } from "./EveChildModifier";
 
 
-@meta.type("EveChildModifierSRT")
 @meta.define({
     wgl: "EveChildModifierSRT",
     ccp: true

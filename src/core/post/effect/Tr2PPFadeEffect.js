@@ -17,7 +17,6 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPFadeEffect
  */
-@meta.type("Tr2PPFadeEffect")
 @meta.ccp.define("Tr2PPFadeEffect")
 export class Tr2PPFadeEffect extends Tr2PPEffect
 {

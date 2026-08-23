@@ -10,7 +10,6 @@ import {
 } from "constant";
 
 
-@meta.type("EveMeshOverlayEffect")
 @meta.define({
     wgl: "EveMeshOverlayEffect",
     ccp: true

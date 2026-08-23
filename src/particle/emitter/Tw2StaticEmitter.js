@@ -4,7 +4,6 @@ import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticle
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-@meta.type("Tw2StaticEmitter", "Tr2StaticEmitter")
 @meta.define({
     wgl: "Tw2StaticEmitter",
     ccp: "Tr2StaticEmitter"

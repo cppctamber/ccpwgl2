@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataPatternLayerProperties")
 @meta.define({
     wgl: "EveSOFDataPatternLayerProperties",
     ccp: true

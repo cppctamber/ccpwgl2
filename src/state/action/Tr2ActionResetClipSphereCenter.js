@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.type("Tr2ActionResetClipSphereCenter")
 @meta.ccp.define("Tr2ActionResetClipSphereCenter")
 export class Tr2ActionResetClipSphereCenter extends Tw2Action
 {

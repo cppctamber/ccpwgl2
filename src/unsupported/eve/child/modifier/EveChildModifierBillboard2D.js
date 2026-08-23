@@ -11,7 +11,6 @@ import { Billboard2D } from "./EveChildModifierTransformCommon";
  * EveChildModifierBillboard2D_Blue.cpp's ExposeToBlue() only maps the interface).
  */
 @meta.notImplemented
-@meta.type("EveChildModifierBillboard2D")
 @meta.define({
     wgl: "EveChildModifierBillboard2D",
     ccp: true

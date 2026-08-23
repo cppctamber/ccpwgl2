@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3 } from "math";
 
 
-@meta.type("EveSOFDataHullSpriteSetItem")
 @meta.define({
     wgl: "EveSOFDataHullSpriteSetItem",
     ccp: true

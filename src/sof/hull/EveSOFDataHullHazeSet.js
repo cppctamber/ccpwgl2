@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataHullHazeSet")
 @meta.define({
     wgl: "EveSOFDataHullHazeSet",
     ccp: true

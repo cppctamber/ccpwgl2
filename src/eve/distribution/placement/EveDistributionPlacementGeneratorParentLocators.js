@@ -7,7 +7,6 @@ import { EveChildInstanceContainer } from "eve/child/EveChildInstanceContainer";
 
 
 /** EveDistributionPlacementGeneratorParentLocators (eve/distribution/placement) - generated from schema shapeHash ebb2456a.... */
-@meta.type("EveDistributionPlacementGeneratorParentLocators")
 @meta.ccp.define("EveDistributionPlacementGeneratorParentLocators")
 export class EveDistributionPlacementGeneratorParentLocators extends meta.Model
 {

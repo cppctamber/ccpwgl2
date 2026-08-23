@@ -3,7 +3,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveDistributionSpawnerBurst")
 @meta.ccp.define("EveDistributionSpawnerBurst")
 export class EveDistributionSpawnerBurst extends meta.Model
 {

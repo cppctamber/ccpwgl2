@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { EveSOFDataTexture } from "./EveSOFDataTexture";
 
 
-@meta.type("EveSOFDataLogo")
 @meta.define({
     wgl: "EveSOFDataLogo",
     ccp: true

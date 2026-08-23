@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { Tw2Action } from "./Tw2Action";
 
 
-@meta.type("Tr2ActionPlayCurveSet")
 @meta.ccp.define("Tr2ActionPlayCurveSet")
 export class Tr2ActionPlayCurveSet extends Tw2Action
 {

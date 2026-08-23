@@ -8,7 +8,6 @@ import { vec3 } from "math";
  * @property {vec3} value -
  */
 @meta.notImplemented
-@meta.type("EveLocalPositionCurve")
 @meta.define({
     wgl: "EveLocalPositionCurve",
     ccp: true

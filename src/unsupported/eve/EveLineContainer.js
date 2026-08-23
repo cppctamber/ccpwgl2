@@ -7,7 +7,6 @@ import { meta } from "utils";
  * @property {EveCurveLineSet} lineSet -
  */
 @meta.notImplemented
-@meta.type("EveLineContainer", true)
 @meta.define({
     wgl: "EveLineContainer",
     ccp: true

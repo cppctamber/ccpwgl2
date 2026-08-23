@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { Tr2ExpressionProgram } from "./expression/Tr2ExpressionProgram";
 
 
-@meta.type("Tr2StateMachineTransition")
 @meta.ccp.define("Tr2StateMachineTransition")
 export class Tr2StateMachineTransition extends meta.Model
 {

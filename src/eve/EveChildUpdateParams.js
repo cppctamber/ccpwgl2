@@ -10,7 +10,6 @@ import { mat4, vec3 } from "math";
  * and the owner's motion and activation state. Rebuilt by the parent for each
  * child update, so nothing in it survives the call.
  */
-@meta.type("EveChildUpdateParams")
 @meta.ccp.define("EveChildUpdateParams")
 export class EveChildUpdateParams extends meta.Model
 {

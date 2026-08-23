@@ -4,7 +4,6 @@ import { vec3, quat, mat4 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
-@meta.type("EveSpaceObjectDecal", true)
 @meta.define({
     wgl: "EveSpaceObjectDecal",
     ccp: true

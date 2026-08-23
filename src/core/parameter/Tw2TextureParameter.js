@@ -5,7 +5,6 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2Resource } from "core/resource";
 
 
-@meta.type("Tw2TextureParameter", "TriTextureParameter")
 @meta.define({
     wgl: "Tw2TextureParameter",
     ccp: "TriTextureParameter"

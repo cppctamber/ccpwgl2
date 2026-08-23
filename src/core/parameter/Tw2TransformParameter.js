@@ -3,7 +3,6 @@ import { vec3, quat, mat4 } from "math";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-@meta.type("Tw2TransformParameter", "Tr2TransformParameter")
 @meta.define({
     wgl: "Tw2TransformParameter",
     ccp: "Tr2TransformParameter"

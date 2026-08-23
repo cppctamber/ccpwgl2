@@ -19,7 +19,6 @@ import { Tr2PPEffect } from "./Tr2PPEffect";
  *
  * @ccp Tr2PPBloomEffect
  */
-@meta.type("Tr2PPBloomEffect")
 @meta.ccp.define("Tr2PPBloomEffect")
 export class Tr2PPBloomEffect extends Tr2PPEffect
 {

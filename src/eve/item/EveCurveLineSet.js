@@ -14,7 +14,6 @@ const LineType = {
 };
 
 
-@meta.type("EveCurveLineSetItem")
 @meta.define({
     wgl: "EveCurveLineSetItem",
     ccp: true
@@ -297,7 +296,6 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveCurveLineSet")
 @meta.define({
     wgl: "EveCurveLineSet",
     ccp: true
@@ -1521,7 +1519,6 @@ export class EveCurveLineSet extends EveObjectSet
 }
 
 
-@meta.type("EveLinesContainer")
 @meta.define({
     wgl: "EveLinesContainer",
     ccp: true

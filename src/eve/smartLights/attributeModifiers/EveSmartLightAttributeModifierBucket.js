@@ -5,7 +5,6 @@ import { EveSmartLightBaseAttributeModifier } from "./EveSmartLightBaseAttribute
 
 
 /** EveSmartLightAttributeModifierBucket (eve/smartLights/attributeModifiers) - generated from schema shapeHash cade668b.... */
-@meta.type("EveSmartLightAttributeModifierBucket")
 @meta.ccp.define("EveSmartLightAttributeModifierBucket")
 export class EveSmartLightAttributeModifierBucket extends EveSmartLightBaseAttributeModifier
 {

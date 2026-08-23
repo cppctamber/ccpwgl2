@@ -4,7 +4,6 @@ import { Tw2Error } from "../Tw2Error";
 import { Tw2Notifications } from "./Tw2Notifications";
 
 
-@meta.type("Tw2Resource")
 @meta.wgl.define("Tw2Resource")
 export class Tw2Resource extends Tw2Notifications
 {

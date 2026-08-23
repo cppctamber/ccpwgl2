@@ -35,7 +35,6 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 
 
 @meta.notImplemented
-@meta.type("EveHazeSetItem")
 @meta.define({
     wgl: "EveHazeSetItem",
     ccp: true
@@ -86,7 +85,6 @@ export class EveHazeSetItem extends EveObjectSetItem
 
 
 @meta.notImplemented
-@meta.type("EveHazeSet")
 @meta.define({
     wgl: "EveHazeSet",
     ccp: true

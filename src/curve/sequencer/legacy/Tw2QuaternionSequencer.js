@@ -3,7 +3,6 @@ import { quat } from "math";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
-@meta.type("Tw2QuaternionSequencer")
 @meta.wgl.define("Tw2QuaternionSequencer")
 export class Tw2QuaternionSequencer extends Tw2CurveSequencer
 {

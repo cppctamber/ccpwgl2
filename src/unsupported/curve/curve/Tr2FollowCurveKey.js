@@ -3,7 +3,6 @@ import { mat4, vec3 } from "math";
 import { Tw2CurveKey } from "curve";
 
 
-@meta.type("Tr2ObjectFollowCurveKey")
 @meta.ccp.define("Tr2ObjectFollowCurveKey")
 export class Tr2ObjectFollowCurveKey extends Tw2CurveKey
 {
@@ -83,7 +82,6 @@ export class Tr2ObjectFollowCurveKey extends Tw2CurveKey
 }
 
 
-@meta.type("Tr2CameraFollowCurveKey")
 @meta.ccp.define("Tr2CameraFollowCurveKey")
 export class Tr2CameraFollowCurveKey extends Tw2CurveKey
 {

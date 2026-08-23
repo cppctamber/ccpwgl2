@@ -2,7 +2,6 @@ import { isArray, meta, toArray } from "utils";
 import { Tw2ShaderPass } from "./Tw2ShaderPass";
 
 
-@meta.type("Tw2ShaderTechnique")
 @meta.wgl.define("Tw2ShaderTechnique")
 export class Tw2ShaderTechnique
 {

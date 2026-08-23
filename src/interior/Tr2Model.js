@@ -2,7 +2,6 @@ import { meta, perArrayChild } from "utils";
 import { box3, sph3 } from "math";
 
 
-@meta.type("Tr2Model")
 @meta.ccp.define("Tr2Model")
 export class Tr2Model extends meta.Model
 {

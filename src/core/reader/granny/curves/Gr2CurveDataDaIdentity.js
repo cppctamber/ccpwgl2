@@ -2,7 +2,6 @@ import { Gr2Curve2 } from "./Gr2Curve2";
 import { meta } from "utils/index";
 
 
-@meta.type("Gr2CurveDataDaIdentity")
 @meta.wgl.define("Gr2CurveDataDaIdentity")
 export class Gr2CurveDataDaIdentity extends Gr2Curve2
 {

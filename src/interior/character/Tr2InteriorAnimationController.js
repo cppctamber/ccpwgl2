@@ -17,7 +17,7 @@ import {
 } from "./Tr2InteriorAdditiveAnimation";
 
 
-@meta.type("Tr2InteriorAnimationController")
+@meta.define({ wgl: "Tr2InteriorAnimationController" })
 export class Tr2InteriorAnimationController extends Tw2AnimationController
 {
 

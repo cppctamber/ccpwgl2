@@ -62,7 +62,6 @@ export function resolveGroupColor(customColor, useFactionColor, factionColor, pa
 }
 
 /** The shared faction-colour resolution and attribute-modifier surface flattened into every smart-light group implementation. */
-@meta.type("EveSmartLightBaseGroup")
 @meta.ccp.define("EveSmartLightBaseGroup")
 export class EveSmartLightBaseGroup extends meta.Model
 {

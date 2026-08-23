@@ -4,7 +4,6 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-@meta.type("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator")
 @meta.define({
     wgl: "Tw2RandomUniformAttributeGenerator",
     ccp: "Tr2RandomUniformAttributeGenerator"

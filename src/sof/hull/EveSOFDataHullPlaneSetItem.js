@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3, vec4, quat } from "math";
 
 
-@meta.type("EveSOFDataHullPlaneSetItem")
 @meta.define({
     wgl: "EveSOFDataHullPlaneSetItem",
     ccp: true

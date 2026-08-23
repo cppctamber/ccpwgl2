@@ -51,7 +51,7 @@ import { Tw2DepthRenderTarget, Tw2RenderTarget } from "core";
  * pointed at {@link depthTextureRes} explicitly, the way
  * `Tw2CarbonShadowRenderer` does for its resolve pass.
  */
-@meta.type("EveSpaceSceneDepthHandler")
+@meta.define({ wgl: "EveSpaceSceneDepthHandler" })
 export class EveSpaceSceneDepthHandler extends meta.Model
 {
 

@@ -1,6 +1,5 @@
 import { meta } from "utils";
 
-@meta.type("EveSOFDataHullSpotlightSet")
 @meta.define({
     wgl: "EveSOFDataHullSpotlightSet",
     ccp: true

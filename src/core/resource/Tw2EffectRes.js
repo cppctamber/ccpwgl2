@@ -26,7 +26,6 @@ function BytesToString(bytes)
 }
 
 
-@meta.type("Tw2EffectRes")
 @meta.wgl.define("Tw2EffectRes")
 export class Tw2EffectRes extends Tw2Resource
 {

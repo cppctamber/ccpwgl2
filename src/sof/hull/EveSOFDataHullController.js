@@ -1,7 +1,6 @@
 import { meta } from "utils";
 
 
-@meta.type("EveSOFDataHullController")
 @meta.define({
     wgl: "EveSOFDataHullController",
     ccp: true

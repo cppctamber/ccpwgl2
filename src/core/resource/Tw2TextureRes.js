@@ -14,7 +14,6 @@ import { TextureFormatVideo } from "./formats/TextureFormatVideo";
 import { TextureFormatHTML } from "./formats/TextureFormatHTML";
 
 
-@meta.type("Tw2TextureRes")
 @meta.wgl.define("Tw2TextureRes")
 export class Tw2TextureRes extends Tw2Resource
 {

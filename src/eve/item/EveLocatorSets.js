@@ -2,7 +2,6 @@ import { meta } from "utils";
 import { vec3, quat, mat4 } from "math";
 
 
-@meta.type("EveLocatorSetItem")
 @meta.define({
     wgl: "EveLocatorSetItem",
     ccp: true
@@ -99,7 +98,6 @@ export class EveLocatorSetItem extends meta.Model
 
 
 
-@meta.type("EveLocatorSets")
 @meta.define({
     wgl: "EveLocatorSets",
     ccp: true

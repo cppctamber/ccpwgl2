@@ -3,7 +3,6 @@ import { vec3, vec4, quat, mat4, sph3, noise } from "math";
 import { GLESPerObjectDataEveMissileWarhead } from "core";
 
 
-@meta.type("EveMissileWarhead")
 @meta.define({
     wgl: "EveMissileWarhead",
     ccp: true
@@ -469,7 +468,6 @@ export class EveMissileWarhead extends meta.Model
 }
 
 
-@meta.type("EveMissile")
 @meta.define({
     wgl: "EveMissile",
     ccp: true

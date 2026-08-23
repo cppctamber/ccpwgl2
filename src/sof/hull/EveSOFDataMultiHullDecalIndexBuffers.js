@@ -1,6 +1,5 @@
 import { meta } from "utils";
 
-@meta.type("EveSOFDataMultiHullDecalIndexBuffers")
 @meta.define({
     wgl: "EveSOFDataMultiHullDecalIndexBuffers",
     ccp: true

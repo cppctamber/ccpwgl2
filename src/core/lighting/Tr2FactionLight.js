@@ -36,7 +36,6 @@ import { ComposeNoiseBrightness, Saturate, Carbon_FLAG_AFFECTS_SURFACES, PerLigh
  * @property {number} saturation - Carbon type: float; member: m_saturation
  */
 @meta.notImplemented
-@meta.type("Tr2FactionLight")
 @meta.ccp.define("Tr2FactionLight")
 export class Tr2FactionLight
 {

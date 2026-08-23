@@ -7,7 +7,6 @@ import { PlacementDataWithIdentifier } from "../../PlacementDataWithIdentifier.j
 
 
 /** EveDistributionPlacementGeneratorVolume (eve/distribution/placement) - generated from schema shapeHash d6e2cbac.... */
-@meta.type("EveDistributionPlacementGeneratorVolume")
 @meta.ccp.define("EveDistributionPlacementGeneratorVolume")
 export class EveDistributionPlacementGeneratorVolume extends meta.Model
 {

@@ -3,7 +3,6 @@ import { EveSOFDataBooster } from "../shared/EveSOFDataBooster";
 import { EveSOFDataRaceDamage } from "./EveSOFDataRaceDamage";
 
 
-@meta.type("EveSOFDataRace")
 @meta.define({
     wgl: "EveSOFDataRace",
     ccp: true
