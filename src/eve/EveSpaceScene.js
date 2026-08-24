@@ -863,11 +863,27 @@ export class EveSpaceScene extends meta.Model
         // screen size in the per-frame constants.
         collector.GetLightList().SetScreenSize(d.viewportWidth || 16, d.viewportHeight || 16);
 
-        // fovY from the projection's [1][1] = 1/tan(fovY/2); frustum
-        // planes are omitted until the Tw2Frustum plane convention is
-        // verified against the collector's (positive-inside) one.
+        // Built here from the device rather than reusing whatever Render left
+        // behind, so the planes, the view position and the projection scale all
+        // describe the same camera. They describe LAST frame's camera: the tick
+        // is Render -> Update -> PrepareRender, and PrepareRender is what sets
+        // the view and projection. `cameraPosition` below has always come from
+        // the same stale device state, so this is consistent rather than newly
+        // wrong, and one frame of latency on a cull is not visible. Carbon
+        // gathers in its update too.
+        //
+        // The convention matches: Tw2Frustum.IntersectsPositionRadius and the
+        // collector's FrustumRejectsSphere are the same test written twice -
+        // normalized planes, normals inward, outside when the signed distance is
+        // below -radius.
+        this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+
+        // fovY from the projection's [1][1] = 1/tan(fovY/2), kept as the
+        // fallback for the pixel-size measure the frustum now provides.
         const projScaleY = d.projection[5] || 1;
         collector.Resolve({
+            frustum: this._frustum,
+            frustumPlanes: this._frustum.GetPlanes(),
             viewportHeight: d.viewportHeight || 0,
             fovY: 2 * Math.atan(1 / Math.abs(projScaleY)),
             cameraPosition: d.eyePosition

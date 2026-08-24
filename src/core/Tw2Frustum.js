@@ -124,6 +124,21 @@ export class Tw2Frustum
     }
 
     /**
+     * The six frustum planes, each `[a, b, c, d]` and normalized, with the
+     * normal pointing INWARD - so a point is inside when `a*x + b*y + c*z + d`
+     * is positive, and a sphere is outside only when that value is less than
+     * `-radius`. IntersectsPositionRadius below is that test.
+     *
+     * Live, not a copy. A caller that keeps them must re-read after any
+     * Initialize or FromViewProjectionMatrix.
+     * @returns {Array<pln>}
+     */
+    GetPlanes()
+    {
+        return this._planes;
+    }
+
+    /**
      * Checks to see if a sphere is visible within the frustum
      * @param {vec3} center
      * @param {Number} radius

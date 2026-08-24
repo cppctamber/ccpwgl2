@@ -44,7 +44,16 @@ const { Tw2CarbonLightCuller } = require("./Tw2CarbonLightCuller");
  *     view aliasing the same buffer as the Float32Array view - it is
  *     never round-tripped through a float, which would corrupt bit
  *     patterns.
- *   - row2: params (4 floats, effect-specific passthrough).
+ *   - row2: Carbon's third texel, packed as four uint32s (Tr2LightManager.h:64-84):
+ *       +8  direction.x  | direction.y << 16          (float16 each)
+ *       +9  direction.z  | projectionPlaneDistance << 16
+ *       +10 outerAngle   | innerAngle << 16
+ *       +11 the shadow-mapping/raytracing union, written as 0
+ *     This used to be four raw floats of caller `params`, which is not a
+ *     layout the shader can read: it fetches this texel for the light's AXIS,
+ *     so a spot light had no cone and a light profile no orientation. Nothing
+ *     reported it, because a cone of zero angle and a direction of zero are
+ *     both legal bit patterns.
  *
  * *** LIGHT INDEX 0 IN BUFFER B IS RESERVED AS THE NULL LIGHT. ***
  * Real lights occupy Buffer B indices 1..maxLights. The null light is
@@ -288,7 +297,17 @@ class Tw2CarbonLightList
     /**
      * Writes a single Buffer B light row
      * @param {number} index 1-based Buffer B index (never 0 - that is the reserved null light)
-     * @param {{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}} light
+     * @param {Object} light
+     * @param {number[]} light.position
+     * @param {number} light.radius
+     * @param {number[]} light.color
+     * @param {number} light.flags
+     * @param {number} [light.innerRadius] where the falloff starts; `params[0]` if absent
+     * @param {number[]} [light.direction] the light's axis; Carbon's (1,0,0) if absent
+     * @param {number} [light.projectionPlaneDistance]
+     * @param {number} [light.outerAngle] cosine, not radians
+     * @param {number} [light.innerAngle] cosine, not radians
+     * @param {number[]} [light.params] legacy row shape - only `params[0]` is still read
      * @private
      */
     _writeLight(index, light)
@@ -319,10 +338,32 @@ class Tw2CarbonLightList
         const innerRadius = light.innerRadius !== undefined ? light.innerRadius : params[0];
         this._bufferBUint[base + 7] = flagsHigh | Float32ToFloat16Bits(innerRadius || 0);
 
-        f[base + 8] = params[0];
-        f[base + 9] = params[1];
-        f[base + 10] = params[2];
-        f[base + 11] = params[3];
+        // Row 2 - Carbon's third texel. See the layout note at the top.
+        //
+        // Carbon's own point-light default is an X axis, not a zero vector
+        // (`AddPointLight`: direction = Vector3(1,0,0), both angles 0), so an
+        // omitted direction takes that rather than something a shader would
+        // normalise into a NaN.
+        const direction = light.direction || Tw2CarbonLightList.DEFAULT_DIRECTION;
+
+        // 1/tan(45deg) = 1, which is what LightData::AsPerPointLightData
+        // computes for a point light.
+        const projectionPlaneDistance = light.projectionPlaneDistance !== undefined
+            ? light.projectionPlaneDistance
+            : 1;
+
+        // Already cosines by the time they reach here - Carbon stores
+        // cos(angle), and the conversion happens in the light classes.
+        const outerAngle = light.outerAngle || 0;
+        const innerAngle = light.innerAngle || 0;
+
+        const u = this._bufferBUint;
+        u[base + 8] = (Float32ToFloat16Bits(direction[1]) << 16 >>> 0) | Float32ToFloat16Bits(direction[0]);
+        u[base + 9] = (Float32ToFloat16Bits(projectionPlaneDistance) << 16 >>> 0) | Float32ToFloat16Bits(direction[2]);
+        u[base + 10] = (Float32ToFloat16Bits(innerAngle) << 16 >>> 0) | Float32ToFloat16Bits(outerAngle);
+
+        // The shadow-mapping / raytracing union. Neither is produced yet.
+        u[base + 11] = 0;
     }
 
     /**
@@ -600,7 +641,10 @@ function Float32ToFloat16Bits(value)
     }
     return sign | ((exponent + 15) << 10) | (mantissa & 0x03FF);
 }
-/** Buffer B floats per light (position.xyz+radius, color.rgb+flags, params x4) */
+/** Carbon's point-light default axis (Tr2LightManager::AddPointLight) */
+Tw2CarbonLightList.DEFAULT_DIRECTION = [ 1, 0, 0 ];
+
+/** Buffer B floats per light (position.xyz+radius, color.rgb+flags, direction/angles) */
 Tw2CarbonLightList.FLOATS_PER_LIGHT = 12;
 
 /** Buffer A elements per tile header record */

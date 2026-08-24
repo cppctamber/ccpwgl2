@@ -7,7 +7,7 @@ const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
  * ccpwgl's Carbon (translated DX11) shader path. Scene-owned light owners
  * (see the `GetLights(collector, parentContext)` hooks added to
  * EveChildContainer / EveEffectRoot2 / EveStretch) push already-composed
- * light rows (the `{position, radius, color, flags, params}` shape
+ * light rows (the `{position, radius, color, flags, innerRadius?, params}` shape
  * `Tr2PointLight#GetCarbonLightData` produces - see
  * src/core/lighting/Tr2PointLight.js) into this collector via
  * `Collect()`; once every owner has been visited for the frame, `Resolve()`
@@ -36,19 +36,29 @@ const { Tw2CarbonLightList } = require("./Tw2CarbonLightList");
  *      1). Both thresholds accept overrides via `Resolve()` options so a
  *      caller can scale them by LOD, matching the "fade band scaled by
  *      LOD" note from the source survey.
- *   4. Optionally (see `premultiplyRadiusIntoColor` below) `color *=
- *      radius` before the row is written.
+ *   4. `color *= radius` before the row is written - see below.
  *
- * PREMULTIPLY OPTION - the source survey flagged that Carbon's
- * `Tr2LightManager::AddLight` appears to do `color *= radius * dimming`
- * before handing the row to the shader-visible light buffer, but whether
- * the Carbon shader contract (reverse engineered independently in
- * Tw2CarbonLightList.js from shipped DX11 bytecode) expects radius
- * premultiplied into color, or expects raw color with radius carried
- * separately (as Tw2CarbonLightList's Buffer B layout does, in `row0.w`), is
- * NOT verified. `premultiplyRadiusIntoColor` therefore defaults OFF; only
- * the (verified-safe) fade dimming multiply is always applied. Flip it on
- * only after confirming the shader-side expectation.
+ * PREMULTIPLY - VERIFIED, and ON. Carbon does this, in one expression with
+ * the dimming (`Tr2LightManager.cpp:342-346`):
+ *
+ *     float dimming = std::min( ( size - m_adjustedCutoff ) / FADE_SIZE, 1.f );
+ *     data.color.x *= data.radius * dimming;
+ *
+ * It defaulted OFF while unverified, on the worry that Buffer B carries
+ * radius separately in `row0.w` and the shader might apply it itself. It
+ * does not - and radius appearing in the row is not evidence either way,
+ * because the shader needs it for ATTENUATION regardless of how the colour
+ * was scaled.
+ *
+ * What settles it is who reads the buffer: this list is consumed only by
+ * translated DX11 shaders, which are Carbon's own shaders. They are fed
+ * premultiplied colour by Carbon, so they expect premultiplied colour from
+ * us. (The legacy v8 path never samples the light-list textures at all.)
+ *
+ * The symptom while it was off is worth recognising again: every light was
+ * too dim by a factor of its own radius, so the error grew with the light.
+ * A small light looked plausible and a large one looked broken, which reads
+ * like a falloff or exposure problem rather than a missing multiply.
  *
  * Pure typed-array/math logic - no GL calls, no ccpwgl "utils"/"global"
  * aliases - so this runs directly under plain node (see
@@ -61,13 +71,13 @@ class Tw2CarbonLightCollector
      * Constructs a Tw2CarbonLightCollector
      * @param {object} [options]
      * @param {object} [options.lightList] forwarded to `new Tw2CarbonLightList(...)`
-     * @param {boolean} [options.premultiplyRadiusIntoColor=false] see class doc - defaults OFF (unverified)
+     * @param {boolean} [options.premultiplyRadiusIntoColor=true] see class doc - Carbon does this, so leave it on
      */
     constructor(options = {})
     {
         this._lightList = new Tw2CarbonLightList(options.lightList || {});
         this._rows = [];
-        this.premultiplyRadiusIntoColor = options.premultiplyRadiusIntoColor === true;
+        this.premultiplyRadiusIntoColor = options.premultiplyRadiusIntoColor !== false;
     }
 
     /**
@@ -88,8 +98,59 @@ class Tw2CarbonLightCollector
     }
 
     /**
+     * Appends ONE light, by value - Carbon's spelling.
+     *
+     * `Tr2LightManager::AddLight( PerLightData& data )` takes its row by value
+     * and the culling happens inside it. Here the culling is deferred to
+     * Resolve, which does the same work over the whole frame's rows, so this is
+     * the gathering half only.
+     *
+     * THE COPY IS THE POINT. A producer that emits many lights from one
+     * placement loop reuses a single scratch record - EveSmartLightPointLight
+     * does exactly that - and Collect stores the reference it is handed, so a
+     * shared scratch would leave every collected light as a copy of the last
+     * one. Carbon is immune because C++ copies on the call; this method makes
+     * that explicit. EvePlaneSet works around it the other way, by allocating a
+     * fresh record per light.
+     *
+     * This method existing is also what connects the two light contracts in
+     * this codebase. The smart-light classes were ported against Carbon's
+     * `GetLights(lightManager)` + `AddLight` shape and called
+     * `lightManager?.AddLight?.(record)` - optional chaining on the METHOD, so
+     * against a collector that had no AddLight, every smart light silently went
+     * nowhere and nothing reported it.
+     *
+     * @param {Object} light - a PerLightData-shaped record; see Collect
+     * @returns {Object|null} the stored copy, or null if there was nothing to store
+     */
+    AddLight(light)
+    {
+        if (!light) return null;
+
+        const position = light.position || [ 0, 0, 0 ];
+        const color = light.color || [ 0, 0, 0 ];
+        const direction = light.direction;
+
+        const row = {
+            position: [ position[0], position[1], position[2] ],
+            color: [ color[0], color[1], color[2] ],
+            radius: light.radius || 0,
+            innerRadius: light.innerRadius,
+            flags: light.flags || 0,
+            direction: direction ? [ direction[0], direction[1], direction[2] ] : undefined,
+            projectionPlaneDistance: light.projectionPlaneDistance,
+            outerAngle: light.outerAngle,
+            innerAngle: light.innerAngle,
+            params: light.params ? light.params.slice() : undefined
+        };
+
+        this._rows.push(row);
+        return row;
+    }
+
+    /**
      * Appends collected light rows for the current frame
-     * @param {Array<{position:number[], radius:number, color:number[], flags:number, params:number[]}>} lightRows
+     * @param {Array<{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}>} lightRows
      */
     Collect(lightRows)
     {
@@ -121,6 +182,7 @@ class Tw2CarbonLightCollector
      * @param {number} [options.viewportHeight=0] viewport height in pixels, used by the pixel-size cutoff. If <= 0, the cutoff never rejects (pixel size cannot be computed).
      * @param {number} [options.fovY=0] vertical field of view in radians, used by the pixel-size cutoff. If <= 0, the cutoff never rejects.
      * @param {number[]} [options.cameraPosition=[0,0,0]] world-space camera position, used by both the pixel-size cutoff and the contribution sort.
+     * @param {{GetPixelSizeAcross:Function}} [options.frustum] measures apparent size the way Carbon does - see below. Duck typed, so this module stays dependency free.
      * @param {number} [options.maxLights] cap on the number of surviving lights (defaults to the owned Tw2CarbonLightList's capacity; always clamped to it).
      * @param {number} [options.cutoffPixelSize=Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE] pixel-size cutoff override (e.g. to scale by LOD).
      * @param {number} [options.fadeBandPixels=Tw2CarbonLightCollector.FADE_BAND_PIXELS] fade-band override (e.g. to scale by LOD).
@@ -132,6 +194,21 @@ class Tw2CarbonLightCollector
         const viewportHeight = options.viewportHeight || 0;
         const fovY = options.fovY || 0;
         const cameraPosition = options.cameraPosition || [ 0, 0, 0 ];
+
+        // Carbon measures apparent size along the VIEW DIRECTION
+        // (TriFrustum::GetPixelSizeAccross: `depth = dot( viewDir, viewPos -
+        // center )`), not by straight-line distance. The two agree only at the
+        // centre of the screen; off to the side, distance exceeds depth and a
+        // light reads smaller than Carbon thinks it is - which now decides
+        // whether it is culled at all, since anything at or below the cutoff is
+        // dropped outright.
+        //
+        // Carbon has BOTH: GetPixelSizeAccrossEst uses distance, and is what
+        // the local-light fallback below amounts to. AddLight uses the depth
+        // one, so a caller that can supply a frustum should.
+        const frustum = options.frustum && typeof options.frustum.GetPixelSizeAcross === "function"
+            ? options.frustum
+            : null;
         const cutoffPixelSize = typeof options.cutoffPixelSize === "number"
             ? options.cutoffPixelSize : Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE;
         const fadeBandPixels = typeof options.fadeBandPixels === "number"
@@ -147,11 +224,11 @@ class Tw2CarbonLightCollector
         {
             const row = this._rows[i];
             const radius = row.radius || 0;
-            const flags = (row.flags || 0) >>> 0;
+            const flags = Tw2CarbonLightCollector.NormalizeFlags(row.flags);
 
-            // Step 1: brightness<=0 (unset enabled bit) / radius<=0.
+            // Step 1: radius<=0, and a light that affects nothing.
             if (radius <= 0) continue;
-            if (!(flags & Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES)) continue;
+            if (!Tw2CarbonLightCollector.AreLightFlagsValid(flags)) continue;
 
             const position = row.position || [ 0, 0, 0 ];
 
@@ -165,7 +242,9 @@ class Tw2CarbonLightCollector
             const distanceSq = dx * dx + dy * dy + dz * dz;
             const distance = Math.sqrt(distanceSq);
 
-            const pixelSize = Tw2CarbonLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
+            const pixelSize = frustum
+                ? frustum.GetPixelSizeAcross(position, radius)
+                : Tw2CarbonLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
             const dimming = Tw2CarbonLightCollector.ComputeSizeDimming(pixelSize, cutoffPixelSize, fadeBandPixels);
             if (dimming <= 0) continue;
 
@@ -174,7 +253,9 @@ class Tw2CarbonLightCollector
             let g = color[1] * dimming;
             let b = color[2] * dimming;
 
-            // Step 4: optional (default OFF) radius premultiply - see class doc.
+            // Step 4: radius premultiply. Carbon folds this into the same
+            // expression as the dimming - `color *= radius * dimming` - and
+            // without it a light is too dim by a factor of its own radius.
             if (this.premultiplyRadiusIntoColor)
             {
                 r *= radius;
@@ -194,6 +275,37 @@ class Tw2CarbonLightCollector
                     radius,
                     color: [ r, g, b ],
                     flags,
+
+                    // INNER RADIUS, which is where the falloff comes from - it is the
+                    // distance the light is at full strength before it begins to fall
+                    // away, and at zero a light has no ramp at all.
+                    //
+                    // Two row shapes reach this collector and they spell it
+                    // differently: Tr2PointLight.GetCarbonLightData passes it as
+                    // `params[0]`, while lightConversion.CreateLightRecord - which is
+                    // what EvePlaneSet and every attachment light use - carries a
+                    // top-level `innerRadius` and no `params` at all.
+                    //
+                    // Only `params` used to be forwarded, so the second shape lost it
+                    // here, silently: Tw2CarbonLightList.SetLight falls back to
+                    // `params[0]`, which was 0, and packed a zero inner radius for
+                    // every light. Nothing downstream can tell an authored zero from a
+                    // dropped value.
+                    innerRadius: row.innerRadius !== undefined
+                        ? row.innerRadius
+                        : (row.params ? row.params[0] : 0),
+
+                    // The light's AXIS and cone, which are Carbon's third texel.
+                    // Same trap as innerRadius one texel up: lightConversion
+                    // computes all three and they were dropped here, so a spot
+                    // light reached the shader with no cone at all. Undefined is
+                    // preserved as undefined rather than defaulted, so the list
+                    // applies Carbon's own defaults in one place.
+                    direction: row.direction ? [ row.direction[0], row.direction[1], row.direction[2] ] : undefined,
+                    projectionPlaneDistance: row.projectionPlaneDistance,
+                    outerAngle: row.outerAngle,
+                    innerAngle: row.innerAngle,
+
                     params: row.params ? row.params.slice() : [ 0, 0, 0, 0 ]
                 }
             });
@@ -281,20 +393,88 @@ class Tw2CarbonLightCollector
      */
     static ComputeSizeDimming(pixelSize, cutoff, fadeBand)
     {
-        if (pixelSize >= cutoff) return 1;
+        // The fade band sits ABOVE the cutoff, not below it
+        // (Tr2LightManager.cpp:340-344):
+        //
+        //     if( size > m_adjustedCutoff )
+        //         dimming = min( ( size - m_adjustedCutoff ) / FADE_SIZE, 1 );
+        //
+        // so a light is absent at or below the cutoff, appears at zero
+        // brightness as it passes it, and reaches full brightness one fade band
+        // further up. The two constants read the other way round - "minimal size
+        // before it is culled out" and "size for the light to start dimming out"
+        // - but the code is what runs: nothing below 7px exists, and 7-12px is
+        // the ramp, not the tail of one.
+        //
+        // This was previously implemented as its mirror image: full brightness
+        // from the cutoff up, fading down to nothing between cutoff-fadeBand and
+        // the cutoff. That is brighter than Carbon everywhere it differs, and it
+        // renders lights Carbon culls outright.
+        if (pixelSize <= cutoff) return 0;
 
-        if (fadeBand <= 0) return 0;
+        if (fadeBand <= 0) return 1;
 
-        const fadeStart = cutoff - fadeBand;
-        if (pixelSize <= fadeStart) return 0;
-
-        return (pixelSize - fadeStart) / fadeBand;
+        return Math.min((pixelSize - cutoff) / fadeBand, 1);
     }
 
 }
 
 /** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
 Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES = 0x10000;
+
+/**
+ * Brings either flag spelling to the pre-shifted one this module tests.
+ *
+ * TWO CONVENTIONS EXIST IN THIS CODEBASE, and a light written in the wrong one
+ * is not mis-shaded - it is DISCARDED, at the enabled-bit gate, silently:
+ *
+ *   Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES = 0x10000   pre-shifted
+ *   Tw2CarbonLightMath.LightDataFlags.AFFECTS_SURFACES = 1      raw Carbon
+ *
+ * The pre-shifted spelling is where the flags SIT in Carbon's packed word -
+ * `innerRadius | flags << 16` - and Tr2PointLight, Tr2SpotLight and
+ * Tr2FactionLight all emit it. The raw spelling is Carbon's own
+ * Tr2LightManager.h:100-105 value, and is what LightData carries: it is what
+ * lightConversion.AsPerPointLightData copies through, so every EvePlaneSet
+ * light and every smart light speaks it.
+ *
+ * Testing only the pre-shifted value therefore threw away that entire second
+ * family before it reached the light buffer. Tw2CarbonLightList._writeLight
+ * already accepted both; this makes the gate agree with it.
+ *
+ * The disambiguation is the same one the list uses, and it is safe because
+ * Carbon's flags occupy bits 0-15 of a uint16: a value that fits in 16 bits is
+ * raw and needs shifting, a larger one is already in place.
+ *
+ * @param {Number} flags
+ * @returns {Number} the pre-shifted form
+ */
+Tw2CarbonLightCollector.NormalizeFlags = function(flags)
+{
+    const raw = (flags || 0) >>> 0;
+    return raw <= 0xFFFF ? (raw << 16) >>> 0 : raw;
+};
+
+/** FLAG_AFFECTS_PARTICLES (Tr2LightManager.h:101), pre-shifted to match. */
+Tw2CarbonLightCollector.FLAG_AFFECTS_PARTICLES = 0x20000;
+
+/**
+ * Carbon AreLightFlagsValid (Tr2LightManager.cpp:677-680):
+ *
+ *     return ( flags & ( FLAG_AFFECTS_SURFACES | FLAG_AFFECTS_PARTICLES ) ) != 0;
+ *
+ * EITHER bit, not just surfaces. A light authored to affect only particles is
+ * a legitimate light that contributes nothing to a surface, and testing
+ * surfaces alone discarded it before it could reach the buffer.
+ *
+ * Expects the pre-shifted form - run NormalizeFlags first.
+ * @param {Number} flags
+ * @returns {Boolean}
+ */
+Tw2CarbonLightCollector.AreLightFlagsValid = function(flags)
+{
+    return (flags & (Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES | Tw2CarbonLightCollector.FLAG_AFFECTS_PARTICLES)) !== 0;
+};
 
 /** Default pixel-size cutoff (Carbon: `CUTOFF_PIXEL_SIZE`, Tr2LightManager.cpp) */
 Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE = 7;

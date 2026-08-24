@@ -42465,7 +42465,16 @@
 	   *     view aliasing the same buffer as the Float32Array view - it is
 	   *     never round-tripped through a float, which would corrupt bit
 	   *     patterns.
-	   *   - row2: params (4 floats, effect-specific passthrough).
+	   *   - row2: Carbon's third texel, packed as four uint32s (Tr2LightManager.h:64-84):
+	   *       +8  direction.x  | direction.y << 16          (float16 each)
+	   *       +9  direction.z  | projectionPlaneDistance << 16
+	   *       +10 outerAngle   | innerAngle << 16
+	   *       +11 the shadow-mapping/raytracing union, written as 0
+	   *     This used to be four raw floats of caller `params`, which is not a
+	   *     layout the shader can read: it fetches this texel for the light's AXIS,
+	   *     so a spot light had no cone and a light profile no orientation. Nothing
+	   *     reported it, because a cone of zero angle and a direction of zero are
+	   *     both legal bit patterns.
 	   *
 	   * *** LIGHT INDEX 0 IN BUFFER B IS RESERVED AS THE NULL LIGHT. ***
 	   * Real lights occupy Buffer B indices 1..maxLights. The null light is
@@ -42669,7 +42678,17 @@
 	    /**
 	     * Writes a single Buffer B light row
 	     * @param {number} index 1-based Buffer B index (never 0 - that is the reserved null light)
-	     * @param {{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}} light
+	     * @param {Object} light
+	     * @param {number[]} light.position
+	     * @param {number} light.radius
+	     * @param {number[]} light.color
+	     * @param {number} light.flags
+	     * @param {number} [light.innerRadius] where the falloff starts; `params[0]` if absent
+	     * @param {number[]} [light.direction] the light's axis; Carbon's (1,0,0) if absent
+	     * @param {number} [light.projectionPlaneDistance]
+	     * @param {number} [light.outerAngle] cosine, not radians
+	     * @param {number} [light.innerAngle] cosine, not radians
+	     * @param {number[]} [light.params] legacy row shape - only `params[0]` is still read
 	     * @private
 	     */
 	    _writeLight(index, light) {
@@ -42695,10 +42714,30 @@
 	      var flagsHigh = rawFlags <= 0xFFFF ? rawFlags << 16 >>> 0 : rawFlags & 0xFFFF0000;
 	      var innerRadius = light.innerRadius !== undefined ? light.innerRadius : params[0];
 	      this._bufferBUint[base + 7] = flagsHigh | Float32ToFloat16Bits(innerRadius || 0);
-	      f[base + 8] = params[0];
-	      f[base + 9] = params[1];
-	      f[base + 10] = params[2];
-	      f[base + 11] = params[3];
+
+	      // Row 2 - Carbon's third texel. See the layout note at the top.
+	      //
+	      // Carbon's own point-light default is an X axis, not a zero vector
+	      // (`AddPointLight`: direction = Vector3(1,0,0), both angles 0), so an
+	      // omitted direction takes that rather than something a shader would
+	      // normalise into a NaN.
+	      var direction = light.direction || Tw2CarbonLightList.DEFAULT_DIRECTION;
+
+	      // 1/tan(45deg) = 1, which is what LightData::AsPerPointLightData
+	      // computes for a point light.
+	      var projectionPlaneDistance = light.projectionPlaneDistance !== undefined ? light.projectionPlaneDistance : 1;
+
+	      // Already cosines by the time they reach here - Carbon stores
+	      // cos(angle), and the conversion happens in the light classes.
+	      var outerAngle = light.outerAngle || 0;
+	      var innerAngle = light.innerAngle || 0;
+	      var u = this._bufferBUint;
+	      u[base + 8] = Float32ToFloat16Bits(direction[1]) << 16 >>> 0 | Float32ToFloat16Bits(direction[0]);
+	      u[base + 9] = Float32ToFloat16Bits(projectionPlaneDistance) << 16 >>> 0 | Float32ToFloat16Bits(direction[2]);
+	      u[base + 10] = Float32ToFloat16Bits(innerAngle) << 16 >>> 0 | Float32ToFloat16Bits(outerAngle);
+
+	      // The shadow-mapping / raytracing union. Neither is produced yet.
+	      u[base + 11] = 0;
 	    }
 
 	    /**
@@ -42958,7 +42997,10 @@
 	    }
 	    return sign | exponent + 15 << 10 | mantissa & 0x03FF;
 	  }
-	  /** Buffer B floats per light (position.xyz+radius, color.rgb+flags, params x4) */
+	  /** Carbon's point-light default axis (Tr2LightManager::AddPointLight) */
+	  Tw2CarbonLightList.DEFAULT_DIRECTION = [1, 0, 0];
+
+	  /** Buffer B floats per light (position.xyz+radius, color.rgb+flags, direction/angles) */
 	  Tw2CarbonLightList.FLOATS_PER_LIGHT = 12;
 
 	  /** Buffer A elements per tile header record */
@@ -152842,7 +152884,7 @@
 	   * ccpwgl's Carbon (translated DX11) shader path. Scene-owned light owners
 	   * (see the `GetLights(collector, parentContext)` hooks added to
 	   * EveChildContainer / EveEffectRoot2 / EveStretch) push already-composed
-	   * light rows (the `{position, radius, color, flags, params}` shape
+	   * light rows (the `{position, radius, color, flags, innerRadius?, params}` shape
 	   * `Tr2PointLight#GetCarbonLightData` produces - see
 	   * src/core/lighting/Tr2PointLight.js) into this collector via
 	   * `Collect()`; once every owner has been visited for the frame, `Resolve()`
@@ -152871,19 +152913,29 @@
 	   *      1). Both thresholds accept overrides via `Resolve()` options so a
 	   *      caller can scale them by LOD, matching the "fade band scaled by
 	   *      LOD" note from the source survey.
-	   *   4. Optionally (see `premultiplyRadiusIntoColor` below) `color *=
-	   *      radius` before the row is written.
+	   *   4. `color *= radius` before the row is written - see below.
 	   *
-	   * PREMULTIPLY OPTION - the source survey flagged that Carbon's
-	   * `Tr2LightManager::AddLight` appears to do `color *= radius * dimming`
-	   * before handing the row to the shader-visible light buffer, but whether
-	   * the Carbon shader contract (reverse engineered independently in
-	   * Tw2CarbonLightList.js from shipped DX11 bytecode) expects radius
-	   * premultiplied into color, or expects raw color with radius carried
-	   * separately (as Tw2CarbonLightList's Buffer B layout does, in `row0.w`), is
-	   * NOT verified. `premultiplyRadiusIntoColor` therefore defaults OFF; only
-	   * the (verified-safe) fade dimming multiply is always applied. Flip it on
-	   * only after confirming the shader-side expectation.
+	   * PREMULTIPLY - VERIFIED, and ON. Carbon does this, in one expression with
+	   * the dimming (`Tr2LightManager.cpp:342-346`):
+	   *
+	   *     float dimming = std::min( ( size - m_adjustedCutoff ) / FADE_SIZE, 1.f );
+	   *     data.color.x *= data.radius * dimming;
+	   *
+	   * It defaulted OFF while unverified, on the worry that Buffer B carries
+	   * radius separately in `row0.w` and the shader might apply it itself. It
+	   * does not - and radius appearing in the row is not evidence either way,
+	   * because the shader needs it for ATTENUATION regardless of how the colour
+	   * was scaled.
+	   *
+	   * What settles it is who reads the buffer: this list is consumed only by
+	   * translated DX11 shaders, which are Carbon's own shaders. They are fed
+	   * premultiplied colour by Carbon, so they expect premultiplied colour from
+	   * us. (The legacy v8 path never samples the light-list textures at all.)
+	   *
+	   * The symptom while it was off is worth recognising again: every light was
+	   * too dim by a factor of its own radius, so the error grew with the light.
+	   * A small light looked plausible and a large one looked broken, which reads
+	   * like a falloff or exposure problem rather than a missing multiply.
 	   *
 	   * Pure typed-array/math logic - no GL calls, no ccpwgl "utils"/"global"
 	   * aliases - so this runs directly under plain node (see
@@ -152894,13 +152946,13 @@
 	     * Constructs a Tw2CarbonLightCollector
 	     * @param {object} [options]
 	     * @param {object} [options.lightList] forwarded to `new Tw2CarbonLightList(...)`
-	     * @param {boolean} [options.premultiplyRadiusIntoColor=false] see class doc - defaults OFF (unverified)
+	     * @param {boolean} [options.premultiplyRadiusIntoColor=true] see class doc - Carbon does this, so leave it on
 	     */
 	    constructor() {
 	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	      this._lightList = new Tw2CarbonLightList(options.lightList || {});
 	      this._rows = [];
-	      this.premultiplyRadiusIntoColor = options.premultiplyRadiusIntoColor === true;
+	      this.premultiplyRadiusIntoColor = options.premultiplyRadiusIntoColor !== false;
 	    }
 
 	    /**
@@ -152919,8 +152971,55 @@
 	    }
 
 	    /**
+	     * Appends ONE light, by value - Carbon's spelling.
+	     *
+	     * `Tr2LightManager::AddLight( PerLightData& data )` takes its row by value
+	     * and the culling happens inside it. Here the culling is deferred to
+	     * Resolve, which does the same work over the whole frame's rows, so this is
+	     * the gathering half only.
+	     *
+	     * THE COPY IS THE POINT. A producer that emits many lights from one
+	     * placement loop reuses a single scratch record - EveSmartLightPointLight
+	     * does exactly that - and Collect stores the reference it is handed, so a
+	     * shared scratch would leave every collected light as a copy of the last
+	     * one. Carbon is immune because C++ copies on the call; this method makes
+	     * that explicit. EvePlaneSet works around it the other way, by allocating a
+	     * fresh record per light.
+	     *
+	     * This method existing is also what connects the two light contracts in
+	     * this codebase. The smart-light classes were ported against Carbon's
+	     * `GetLights(lightManager)` + `AddLight` shape and called
+	     * `lightManager?.AddLight?.(record)` - optional chaining on the METHOD, so
+	     * against a collector that had no AddLight, every smart light silently went
+	     * nowhere and nothing reported it.
+	     *
+	     * @param {Object} light - a PerLightData-shaped record; see Collect
+	     * @returns {Object|null} the stored copy, or null if there was nothing to store
+	     */
+	    AddLight(light) {
+	      if (!light) return null;
+	      var position = light.position || [0, 0, 0];
+	      var color = light.color || [0, 0, 0];
+	      var direction = light.direction;
+	      var row = {
+	        position: [position[0], position[1], position[2]],
+	        color: [color[0], color[1], color[2]],
+	        radius: light.radius || 0,
+	        innerRadius: light.innerRadius,
+	        flags: light.flags || 0,
+	        direction: direction ? [direction[0], direction[1], direction[2]] : undefined,
+	        projectionPlaneDistance: light.projectionPlaneDistance,
+	        outerAngle: light.outerAngle,
+	        innerAngle: light.innerAngle,
+	        params: light.params ? light.params.slice() : undefined
+	      };
+	      this._rows.push(row);
+	      return row;
+	    }
+
+	    /**
 	     * Appends collected light rows for the current frame
-	     * @param {Array<{position:number[], radius:number, color:number[], flags:number, params:number[]}>} lightRows
+	     * @param {Array<{position:number[], radius:number, color:number[], flags:number, innerRadius?:number, params:number[]}>} lightRows
 	     */
 	    Collect(lightRows) {
 	      if (!lightRows) return;
@@ -152949,6 +153048,7 @@
 	     * @param {number} [options.viewportHeight=0] viewport height in pixels, used by the pixel-size cutoff. If <= 0, the cutoff never rejects (pixel size cannot be computed).
 	     * @param {number} [options.fovY=0] vertical field of view in radians, used by the pixel-size cutoff. If <= 0, the cutoff never rejects.
 	     * @param {number[]} [options.cameraPosition=[0,0,0]] world-space camera position, used by both the pixel-size cutoff and the contribution sort.
+	     * @param {{GetPixelSizeAcross:Function}} [options.frustum] measures apparent size the way Carbon does - see below. Duck typed, so this module stays dependency free.
 	     * @param {number} [options.maxLights] cap on the number of surviving lights (defaults to the owned Tw2CarbonLightList's capacity; always clamped to it).
 	     * @param {number} [options.cutoffPixelSize=Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE] pixel-size cutoff override (e.g. to scale by LOD).
 	     * @param {number} [options.fadeBandPixels=Tw2CarbonLightCollector.FADE_BAND_PIXELS] fade-band override (e.g. to scale by LOD).
@@ -152960,6 +153060,19 @@
 	      var viewportHeight = options.viewportHeight || 0;
 	      var fovY = options.fovY || 0;
 	      var cameraPosition = options.cameraPosition || [0, 0, 0];
+
+	      // Carbon measures apparent size along the VIEW DIRECTION
+	      // (TriFrustum::GetPixelSizeAccross: `depth = dot( viewDir, viewPos -
+	      // center )`), not by straight-line distance. The two agree only at the
+	      // centre of the screen; off to the side, distance exceeds depth and a
+	      // light reads smaller than Carbon thinks it is - which now decides
+	      // whether it is culled at all, since anything at or below the cutoff is
+	      // dropped outright.
+	      //
+	      // Carbon has BOTH: GetPixelSizeAccrossEst uses distance, and is what
+	      // the local-light fallback below amounts to. AddLight uses the depth
+	      // one, so a caller that can supply a frustum should.
+	      var frustum = options.frustum && typeof options.frustum.GetPixelSizeAcross === "function" ? options.frustum : null;
 	      var cutoffPixelSize = typeof options.cutoffPixelSize === "number" ? options.cutoffPixelSize : Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE;
 	      var fadeBandPixels = typeof options.fadeBandPixels === "number" ? options.fadeBandPixels : Tw2CarbonLightCollector.FADE_BAND_PIXELS;
 	      var maxLights = typeof options.maxLights === "number" ? Math.min(options.maxLights, this._lightList.maxLights) : this._lightList.maxLights;
@@ -152968,11 +153081,11 @@
 	      for (var i = 0; i < collectedCount; i++) {
 	        var row = this._rows[i];
 	        var radius = row.radius || 0;
-	        var flags = (row.flags || 0) >>> 0;
+	        var flags = Tw2CarbonLightCollector.NormalizeFlags(row.flags);
 
-	        // Step 1: brightness<=0 (unset enabled bit) / radius<=0.
+	        // Step 1: radius<=0, and a light that affects nothing.
 	        if (radius <= 0) continue;
-	        if (!(flags & Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES)) continue;
+	        if (!Tw2CarbonLightCollector.AreLightFlagsValid(flags)) continue;
 	        var position = row.position || [0, 0, 0];
 
 	        // Step 2: frustum sphere test.
@@ -152984,7 +153097,7 @@
 	        var dz = position[2] - cameraPosition[2];
 	        var distanceSq = dx * dx + dy * dy + dz * dz;
 	        var distance = Math.sqrt(distanceSq);
-	        var pixelSize = Tw2CarbonLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
+	        var pixelSize = frustum ? frustum.GetPixelSizeAcross(position, radius) : Tw2CarbonLightCollector.ComputePixelSize(radius, distance, viewportHeight, fovY);
 	        var dimming = Tw2CarbonLightCollector.ComputeSizeDimming(pixelSize, cutoffPixelSize, fadeBandPixels);
 	        if (dimming <= 0) continue;
 	        var color = row.color || [0, 0, 0];
@@ -152992,7 +153105,9 @@
 	        var g = color[1] * dimming;
 	        var b = color[2] * dimming;
 
-	        // Step 4: optional (default OFF) radius premultiply - see class doc.
+	        // Step 4: radius premultiply. Carbon folds this into the same
+	        // expression as the dimming - `color *= radius * dimming` - and
+	        // without it a light is too dim by a factor of its own radius.
 	        if (this.premultiplyRadiusIntoColor) {
 	          r *= radius;
 	          g *= radius;
@@ -153010,6 +153125,32 @@
 	            radius,
 	            color: [r, g, b],
 	            flags,
+	            // INNER RADIUS, which is where the falloff comes from - it is the
+	            // distance the light is at full strength before it begins to fall
+	            // away, and at zero a light has no ramp at all.
+	            //
+	            // Two row shapes reach this collector and they spell it
+	            // differently: Tr2PointLight.GetCarbonLightData passes it as
+	            // `params[0]`, while lightConversion.CreateLightRecord - which is
+	            // what EvePlaneSet and every attachment light use - carries a
+	            // top-level `innerRadius` and no `params` at all.
+	            //
+	            // Only `params` used to be forwarded, so the second shape lost it
+	            // here, silently: Tw2CarbonLightList.SetLight falls back to
+	            // `params[0]`, which was 0, and packed a zero inner radius for
+	            // every light. Nothing downstream can tell an authored zero from a
+	            // dropped value.
+	            innerRadius: row.innerRadius !== undefined ? row.innerRadius : row.params ? row.params[0] : 0,
+	            // The light's AXIS and cone, which are Carbon's third texel.
+	            // Same trap as innerRadius one texel up: lightConversion
+	            // computes all three and they were dropped here, so a spot
+	            // light reached the shader with no cone at all. Undefined is
+	            // preserved as undefined rather than defaulted, so the list
+	            // applies Carbon's own defaults in one place.
+	            direction: row.direction ? [row.direction[0], row.direction[1], row.direction[2]] : undefined,
+	            projectionPlaneDistance: row.projectionPlaneDistance,
+	            outerAngle: row.outerAngle,
+	            innerAngle: row.innerAngle,
 	            params: row.params ? row.params.slice() : [0, 0, 0, 0]
 	          }
 	        });
@@ -153086,16 +153227,83 @@
 	     * @returns {number} dimming factor in [0, 1]
 	     */
 	    static ComputeSizeDimming(pixelSize, cutoff, fadeBand) {
-	      if (pixelSize >= cutoff) return 1;
-	      if (fadeBand <= 0) return 0;
-	      var fadeStart = cutoff - fadeBand;
-	      if (pixelSize <= fadeStart) return 0;
-	      return (pixelSize - fadeStart) / fadeBand;
+	      // The fade band sits ABOVE the cutoff, not below it
+	      // (Tr2LightManager.cpp:340-344):
+	      //
+	      //     if( size > m_adjustedCutoff )
+	      //         dimming = min( ( size - m_adjustedCutoff ) / FADE_SIZE, 1 );
+	      //
+	      // so a light is absent at or below the cutoff, appears at zero
+	      // brightness as it passes it, and reaches full brightness one fade band
+	      // further up. The two constants read the other way round - "minimal size
+	      // before it is culled out" and "size for the light to start dimming out"
+	      // - but the code is what runs: nothing below 7px exists, and 7-12px is
+	      // the ramp, not the tail of one.
+	      //
+	      // This was previously implemented as its mirror image: full brightness
+	      // from the cutoff up, fading down to nothing between cutoff-fadeBand and
+	      // the cutoff. That is brighter than Carbon everywhere it differs, and it
+	      // renders lights Carbon culls outright.
+	      if (pixelSize <= cutoff) return 0;
+	      if (fadeBand <= 0) return 1;
+	      return Math.min((pixelSize - cutoff) / fadeBand, 1);
 	    }
 	  }
 
 	  /** Raw uint32 bit pattern mirroring Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES (0x10000) - duplicated here (not imported) so this module stays a framework-free CJS module runnable under plain node; see src/core/lighting/Tw2CarbonLightMath.js for the ES-module original. */
 	  Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES = 0x10000;
+
+	  /**
+	   * Brings either flag spelling to the pre-shifted one this module tests.
+	   *
+	   * TWO CONVENTIONS EXIST IN THIS CODEBASE, and a light written in the wrong one
+	   * is not mis-shaded - it is DISCARDED, at the enabled-bit gate, silently:
+	   *
+	   *   Tw2CarbonLightMath.Carbon_FLAG_AFFECTS_SURFACES = 0x10000   pre-shifted
+	   *   Tw2CarbonLightMath.LightDataFlags.AFFECTS_SURFACES = 1      raw Carbon
+	   *
+	   * The pre-shifted spelling is where the flags SIT in Carbon's packed word -
+	   * `innerRadius | flags << 16` - and Tr2PointLight, Tr2SpotLight and
+	   * Tr2FactionLight all emit it. The raw spelling is Carbon's own
+	   * Tr2LightManager.h:100-105 value, and is what LightData carries: it is what
+	   * lightConversion.AsPerPointLightData copies through, so every EvePlaneSet
+	   * light and every smart light speaks it.
+	   *
+	   * Testing only the pre-shifted value therefore threw away that entire second
+	   * family before it reached the light buffer. Tw2CarbonLightList._writeLight
+	   * already accepted both; this makes the gate agree with it.
+	   *
+	   * The disambiguation is the same one the list uses, and it is safe because
+	   * Carbon's flags occupy bits 0-15 of a uint16: a value that fits in 16 bits is
+	   * raw and needs shifting, a larger one is already in place.
+	   *
+	   * @param {Number} flags
+	   * @returns {Number} the pre-shifted form
+	   */
+	  Tw2CarbonLightCollector.NormalizeFlags = function (flags) {
+	    var raw = (flags || 0) >>> 0;
+	    return raw <= 0xFFFF ? raw << 16 >>> 0 : raw;
+	  };
+
+	  /** FLAG_AFFECTS_PARTICLES (Tr2LightManager.h:101), pre-shifted to match. */
+	  Tw2CarbonLightCollector.FLAG_AFFECTS_PARTICLES = 0x20000;
+
+	  /**
+	   * Carbon AreLightFlagsValid (Tr2LightManager.cpp:677-680):
+	   *
+	   *     return ( flags & ( FLAG_AFFECTS_SURFACES | FLAG_AFFECTS_PARTICLES ) ) != 0;
+	   *
+	   * EITHER bit, not just surfaces. A light authored to affect only particles is
+	   * a legitimate light that contributes nothing to a surface, and testing
+	   * surfaces alone discarded it before it could reach the buffer.
+	   *
+	   * Expects the pre-shifted form - run NormalizeFlags first.
+	   * @param {Number} flags
+	   * @returns {Boolean}
+	   */
+	  Tw2CarbonLightCollector.AreLightFlagsValid = function (flags) {
+	    return (flags & (Tw2CarbonLightCollector.FLAG_AFFECTS_SURFACES | Tw2CarbonLightCollector.FLAG_AFFECTS_PARTICLES)) !== 0;
+	  };
 
 	  /** Default pixel-size cutoff (Carbon: `CUTOFF_PIXEL_SIZE`, Tr2LightManager.cpp) */
 	  Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE = 7;
@@ -157008,6 +157216,16 @@
 	var _dec$6O, _dec2$6n, _dec3$5V, _dec4$5a, _dec5$4C, _dec6$43, _dec7$3v, _dec8$33, _dec9$2G, _dec0$2w, _dec1$2k, _dec10$21, _dec11$1S, _dec12$1C, _dec13$1o, _dec14$1e, _dec15$1b, _dec16$12, _dec17$Y, _dec18$U, _dec19$J, _dec20$H, _dec21$E, _dec22$A, _dec23$x, _class$6O, _class2$6e, _descriptor$6g, _descriptor2$5I, _descriptor3$4_, _descriptor4$4j, _descriptor5$3K, _descriptor6$39, _descriptor7$2G, _descriptor8$2n, _descriptor9$2b, _descriptor0$1_, _descriptor1$1F, _descriptor10$1u, _descriptor11$1g, _descriptor12$1b, _descriptor13$15, _descriptor14$10, _descriptor15$L, _descriptor16$F;
 
 	/**
+	 * Shared scratch for the light-direction composition below. Module scope
+	 * rather than per-class because these run per light per frame and the values
+	 * never outlive the call.
+	 */
+	var Tr2LightDirectionScratch$2 = {
+	  rotation: mat4$1.create(),
+	  lightRotation: mat4$1.create()
+	};
+
+	/**
 	 * Tr2SpotLight
 	 *
 	 * Source: carbonengine trinity/trinity/Lights/Tr2SpotLight.h/.cpp (thin
@@ -157067,6 +157285,7 @@
 	     * @private
 	     */
 	    this._worldPosition = vec3$3.create();
+	    this._worldDirection = vec3$3.create();
 	    /**
 	     * Seconds elapsed since construction, used as the noise time base
 	     * (Carbon: `BeOS->GetCurrentFrameTime() - m_startTime`, Tr2Light.cpp:45)
@@ -157087,6 +157306,17 @@
 	      worldMatrix = mat4$1.multiply(mat4$1.create(), bones[this.boneIndex], parentMatrix);
 	    }
 	    vec3$3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+	    // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+	    // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+	    // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+	    // w=0 basis application, which is the negated third basis row.
+	    var rot = Tr2LightDirectionScratch$2.rotation;
+	    var lightRotation = Tr2LightDirectionScratch$2.lightRotation;
+	    mat4$1.fromQuat(rot, this.rotation);
+	    mat4$1.multiply(lightRotation, worldMatrix, rot);
+	    vec3$3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+	    vec3$3.normalize(this._worldDirection, this._worldDirection);
 	  }
 
 	  /**
@@ -157129,18 +157359,18 @@
 	   * through to AsPerPointLightData:37-69 for position/color/radius, then
 	   * overrides angle-related fields).
 	   *
-	   * TODO(cone data): Carbon's spotlight PerLightData additionally carries
-	   * a direction vector and cos(inner/outerAngle) (Tr2Light.cpp:75-77), but
-	   * Tw2CarbonLightList's Buffer B struct has only 4 spare `params` floats total
-	   * and no confirmed field for a 3-component direction alongside those
-	   * angles (see Tw2CarbonLightMath.js `Carbon_FLAG_AFFECTS_SURFACES` doc - only bit
-	   * 0x10000 of `flags` and no specific `params` layout are confirmed from
-	   * the shipped bytecode). It is not yet known whether the Carbon tiled
-	   * shader path supports spotlight cones at all (it may treat every light
-	   * as an omnidirectional point light). Until that is reverse engineered,
-	   * this deliberately returns the same point-light-shaped fields as
-	   * Tr2PointLight.GetCarbonLightData (innerRadius passed through as
-	   * params[0]) rather than guessing a cone-angle packing.
+	   * The cone is real, and this used to omit it. The packing was unknown when
+	   * this was written - Buffer B's third row was four spare `params` floats and
+	   * no direction field had been confirmed from the shipped bytecode - so it
+	   * deliberately returned point-light-shaped data rather than guessing.
+	   *
+	   * It is now known from the struct itself (Tr2LightManager.h:64-84): the third
+	   * texel is direction as three float16s, then projectionPlaneDistance, then
+	   * the two angle cosines. Tw2CarbonLightList writes that layout.
+	   *
+	   * Carbon's AsPerSpotLightData (Tr2Light.cpp:71-80) is the point conversion
+	   * plus three overrides, and the ANGLES ARE COSINES OF DEGREES - the authored
+	   * values are degrees, and Carbon stores cos(2pi*deg/360).
 	   * @param {Object} [options]
 	   * @param {Number} [options.parentBrightness=1]
 	   * @param {Number} [options.parentScale=1]
@@ -157158,6 +157388,14 @@
 	      radius,
 	      color: [this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness],
 	      flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+	      innerRadius: this.innerRadius * parentScale,
+	      // Tr2Light.cpp:75-77. Note projectionPlaneDistance is 1/tan(outer),
+	      // which is INFINITE at an outer angle of zero - Carbon has the same
+	      // hole, and a zero-angle spot light is a light that lights nothing.
+	      direction: [this._worldDirection[0], this._worldDirection[1], this._worldDirection[2]],
+	      outerAngle: Math.cos(2 * Math.PI * this.outerAngle / 360),
+	      innerAngle: Math.cos(2 * Math.PI * this.innerAngle / 360),
+	      projectionPlaneDistance: 1 / Math.tan(2 * Math.PI * this.outerAngle / 360),
 	      params: [this.innerRadius * parentScale, 0, 0, 0]
 	    };
 	  }
@@ -157290,6 +157528,16 @@
 	}), _class2$6e)) || _class$6O) || _class$6O);
 
 	var _dec$6N, _dec2$6m, _dec3$5U, _dec4$59, _dec5$4B, _dec6$42, _dec7$3u, _dec8$32, _dec9$2F, _dec0$2v, _dec1$2j, _dec10$20, _dec11$1R, _dec12$1B, _dec13$1n, _dec14$1d, _dec15$1a, _dec16$11, _dec17$X, _dec18$T, _dec19$I, _dec20$G, _dec21$D, _class$6N, _class2$6d, _descriptor$6f, _descriptor2$5H, _descriptor3$4Z, _descriptor4$4i, _descriptor5$3J, _descriptor6$38, _descriptor7$2F, _descriptor8$2m, _descriptor9$2a, _descriptor0$1Z, _descriptor1$1E, _descriptor10$1t, _descriptor11$1f, _descriptor12$1a, _descriptor13$14, _descriptor14$$, _Tr2PointLight;
+
+	/**
+	 * Shared scratch for the light-direction composition below. Module scope
+	 * rather than per-class because these run per light per frame and the values
+	 * never outlive the call.
+	 */
+	var Tr2LightDirectionScratch$1 = {
+	  rotation: mat4$1.create(),
+	  lightRotation: mat4$1.create()
+	};
 	class EvePointLightBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -157377,6 +157625,7 @@
 	     */
 	    this._effect = null;
 	    this._worldPosition = vec3$3.create();
+	    this._worldDirection = vec3$3.create();
 	    this._indexBuffer = null;
 	    /**
 	     * Seconds elapsed since construction, used as the noise time base
@@ -157417,6 +157666,17 @@
 	      worldMatrix = mat4$1.multiply(mat4$1.create(), bones[this.boneIndex], parentMatrix);
 	    }
 	    vec3$3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+	    // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+	    // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+	    // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+	    // w=0 basis application, which is the negated third basis row.
+	    var rot = Tr2LightDirectionScratch$1.rotation;
+	    var lightRotation = Tr2LightDirectionScratch$1.lightRotation;
+	    mat4$1.fromQuat(rot, this.rotation);
+	    mat4$1.multiply(lightRotation, worldMatrix, rot);
+	    vec3$3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+	    vec3$3.normalize(this._worldDirection, this._worldDirection);
 	    if (this._dirty) this.Rebuild();
 	  }
 
@@ -157502,6 +157762,15 @@
 	      radius,
 	      color: [this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness],
 	      flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+	      // Named rather than left in `params`, which the light list reads only
+	      // as a fallback now.
+	      innerRadius: this.innerRadius * parentScale,
+	      // Carbon computes an axis for a POINT light too (Tr2Light.cpp:56) -
+	      // it is what a light profile is oriented by. 1/tan(45deg) = 1.
+	      direction: [this._worldDirection[0], this._worldDirection[1], this._worldDirection[2]],
+	      projectionPlaneDistance: 1,
+	      outerAngle: 0,
+	      innerAngle: 0,
 	      params: [this.innerRadius * parentScale, 0, 0, 0]
 	    };
 	  }
@@ -158423,6 +158692,16 @@
 	var _dec$6K, _dec2$6j, _dec3$5R, _dec4$56, _dec5$4y, _dec6$3$, _dec7$3s, _dec8$30, _dec9$2D, _dec0$2t, _dec1$2h, _dec10$1_, _dec11$1P, _dec12$1z, _dec13$1l, _dec14$1b, _dec15$18, _dec16$$, _dec17$V, _dec18$R, _dec19$G, _dec20$E, _dec21$B, _dec22$y, _dec23$v, _dec24$s, _dec25$p, _class$6K, _class2$6a, _descriptor$6c, _descriptor2$5E, _descriptor3$4W, _descriptor4$4g, _descriptor5$3H, _descriptor6$36, _descriptor7$2D, _descriptor8$2k, _descriptor9$28, _descriptor0$1X, _descriptor1$1C, _descriptor10$1r, _descriptor11$1d, _descriptor12$18, _descriptor13$12, _descriptor14$Z, _descriptor15$J, _descriptor16$D, _descriptor17$B, _descriptor18$x;
 
 	/**
+	 * Shared scratch for the light-direction composition below. Module scope
+	 * rather than per-class because these run per light per frame and the values
+	 * never outlive the call.
+	 */
+	var Tr2LightDirectionScratch = {
+	  rotation: mat4$1.create(),
+	  lightRotation: mat4$1.create()
+	};
+
+	/**
 	 * Generated Carbon/Blue class stub for Tr2FactionLight.
 	 *
 	 * Source schema: lights/Tr2FactionLight.json
@@ -158507,6 +158786,7 @@
 	     * @private
 	     */
 	    this._worldPosition = vec3$3.create();
+	    this._worldDirection = vec3$3.create();
 	    /**
 	     * Seconds elapsed since construction, used as the noise time base
 	     * (Carbon: `BeOS->GetCurrentFrameTime() - m_startTime`, Tr2Light.cpp:45)
@@ -158547,6 +158827,17 @@
 	      worldMatrix = mat4$1.multiply(mat4$1.create(), bones[this.boneIndex], parentMatrix);
 	    }
 	    vec3$3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+	    // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+	    // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+	    // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+	    // w=0 basis application, which is the negated third basis row.
+	    var rot = Tr2LightDirectionScratch.rotation;
+	    var lightRotation = Tr2LightDirectionScratch.lightRotation;
+	    mat4$1.fromQuat(rot, this.rotation);
+	    mat4$1.multiply(lightRotation, worldMatrix, rot);
+	    vec3$3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+	    vec3$3.normalize(this._worldDirection, this._worldDirection);
 	  }
 
 	  /**
@@ -158592,6 +158883,13 @@
 	      radius,
 	      color: [this._color[0] * brightness, this._color[1] * brightness, this._color[2] * brightness],
 	      flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+	      innerRadius: this.innerRadius * parentScale,
+	      // A faction light dispatches to the point or the spot conversion by
+	      // `isSpotlight`, so the cone follows the same rule as Tr2SpotLight.
+	      direction: [this._worldDirection[0], this._worldDirection[1], this._worldDirection[2]],
+	      outerAngle: this.isSpotlight ? Math.cos(2 * Math.PI * this.outerAngle / 360) : 0,
+	      innerAngle: this.isSpotlight ? Math.cos(2 * Math.PI * this.innerAngle / 360) : 0,
+	      projectionPlaneDistance: this.isSpotlight ? 1 / Math.tan(2 * Math.PI * this.outerAngle / 360) : 1,
 	      params: [this.innerRadius * parentScale, 0, 0, 0]
 	    };
 	  }
@@ -165149,6 +165447,20 @@
 	      }
 	    }
 	    return out;
+	  }
+
+	  /**
+	   * The six frustum planes, each `[a, b, c, d]` and normalized, with the
+	   * normal pointing INWARD - so a point is inside when `a*x + b*y + c*z + d`
+	   * is positive, and a sphere is outside only when that value is less than
+	   * `-radius`. IntersectsPositionRadius below is that test.
+	   *
+	   * Live, not a copy. A caller that keeps them must re-read after any
+	   * Initialize or FromViewProjectionMatrix.
+	   * @returns {Array<pln>}
+	   */
+	  GetPlanes() {
+	    return this._planes;
 	  }
 
 	  /**
@@ -213825,11 +214137,27 @@
 	    // screen size in the per-frame constants.
 	    collector.GetLightList().SetScreenSize(d.viewportWidth || 16, d.viewportHeight || 16);
 
-	    // fovY from the projection's [1][1] = 1/tan(fovY/2); frustum
-	    // planes are omitted until the Tw2Frustum plane convention is
-	    // verified against the collector's (positive-inside) one.
+	    // Built here from the device rather than reusing whatever Render left
+	    // behind, so the planes, the view position and the projection scale all
+	    // describe the same camera. They describe LAST frame's camera: the tick
+	    // is Render -> Update -> PrepareRender, and PrepareRender is what sets
+	    // the view and projection. `cameraPosition` below has always come from
+	    // the same stale device state, so this is consistent rather than newly
+	    // wrong, and one frame of latency on a cull is not visible. Carbon
+	    // gathers in its update too.
+	    //
+	    // The convention matches: Tw2Frustum.IntersectsPositionRadius and the
+	    // collector's FrustumRejectsSphere are the same test written twice -
+	    // normalized planes, normals inward, outside when the signed distance is
+	    // below -radius.
+	    this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+
+	    // fovY from the projection's [1][1] = 1/tan(fovY/2), kept as the
+	    // fallback for the pixel-size measure the frustum now provides.
 	    var projScaleY = d.projection[5] || 1;
 	    collector.Resolve({
+	      frustum: this._frustum,
+	      frustumPlanes: this._frustum.GetPlanes(),
 	      viewportHeight: d.viewportHeight || 0,
 	      fovY: 2 * Math.atan(1 / Math.abs(projScaleY)),
 	      cameraPosition: d.eyePosition

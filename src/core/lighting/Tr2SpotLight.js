@@ -2,6 +2,17 @@ import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
 import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
+/**
+ * Shared scratch for the light-direction composition below. Module scope
+ * rather than per-class because these run per light per frame and the values
+ * never outlive the call.
+ */
+const Tr2LightDirectionScratch = {
+    rotation: mat4.create(),
+    lightRotation: mat4.create()
+};
+
+
 
 /**
  * Tr2SpotLight
@@ -106,6 +117,7 @@ export class Tr2SpotLight extends meta.Model
      * @private
      */
     _worldPosition = vec3.create();
+    _worldDirection = vec3.create();
 
     /**
      * Seconds elapsed since construction, used as the noise time base
@@ -131,6 +143,17 @@ export class Tr2SpotLight extends meta.Model
         }
 
         vec3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+        // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+        // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+        // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+        // w=0 basis application, which is the negated third basis row.
+        const rot = Tr2LightDirectionScratch.rotation;
+        const lightRotation = Tr2LightDirectionScratch.lightRotation;
+        mat4.fromQuat(rot, this.rotation);
+        mat4.multiply(lightRotation, worldMatrix, rot);
+        vec3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+        vec3.normalize(this._worldDirection, this._worldDirection);
     }
 
     /**
@@ -186,18 +209,18 @@ export class Tr2SpotLight extends meta.Model
      * through to AsPerPointLightData:37-69 for position/color/radius, then
      * overrides angle-related fields).
      *
-     * TODO(cone data): Carbon's spotlight PerLightData additionally carries
-     * a direction vector and cos(inner/outerAngle) (Tr2Light.cpp:75-77), but
-     * Tw2CarbonLightList's Buffer B struct has only 4 spare `params` floats total
-     * and no confirmed field for a 3-component direction alongside those
-     * angles (see Tw2CarbonLightMath.js `Carbon_FLAG_AFFECTS_SURFACES` doc - only bit
-     * 0x10000 of `flags` and no specific `params` layout are confirmed from
-     * the shipped bytecode). It is not yet known whether the Carbon tiled
-     * shader path supports spotlight cones at all (it may treat every light
-     * as an omnidirectional point light). Until that is reverse engineered,
-     * this deliberately returns the same point-light-shaped fields as
-     * Tr2PointLight.GetCarbonLightData (innerRadius passed through as
-     * params[0]) rather than guessing a cone-angle packing.
+     * The cone is real, and this used to omit it. The packing was unknown when
+     * this was written - Buffer B's third row was four spare `params` floats and
+     * no direction field had been confirmed from the shipped bytecode - so it
+     * deliberately returned point-light-shaped data rather than guessing.
+     *
+     * It is now known from the struct itself (Tr2LightManager.h:64-84): the third
+     * texel is direction as three float16s, then projectionPlaneDistance, then
+     * the two angle cosines. Tw2CarbonLightList writes that layout.
+     *
+     * Carbon's AsPerSpotLightData (Tr2Light.cpp:71-80) is the point conversion
+     * plus three overrides, and the ANGLES ARE COSINES OF DEGREES - the authored
+     * values are degrees, and Carbon stores cos(2pi*deg/360).
      * @param {Object} [options]
      * @param {Number} [options.parentBrightness=1]
      * @param {Number} [options.parentScale=1]
@@ -217,6 +240,16 @@ export class Tr2SpotLight extends meta.Model
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
             flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+            innerRadius: this.innerRadius * parentScale,
+
+            // Tr2Light.cpp:75-77. Note projectionPlaneDistance is 1/tan(outer),
+            // which is INFINITE at an outer angle of zero - Carbon has the same
+            // hole, and a zero-angle spot light is a light that lights nothing.
+            direction: [ this._worldDirection[0], this._worldDirection[1], this._worldDirection[2] ],
+            outerAngle: Math.cos(2 * Math.PI * this.outerAngle / 360),
+            innerAngle: Math.cos(2 * Math.PI * this.innerAngle / 360),
+            projectionPlaneDistance: 1 / Math.tan(2 * Math.PI * this.outerAngle / 360),
+
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

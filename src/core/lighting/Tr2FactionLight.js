@@ -2,6 +2,17 @@ import { meta } from "utils";
 import { mat4, vec3, vec4, quat } from "math";
 import { ComposeNoiseBrightness, Saturate, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
+/**
+ * Shared scratch for the light-direction composition below. Module scope
+ * rather than per-class because these run per light per frame and the values
+ * never outlive the call.
+ */
+const Tr2LightDirectionScratch = {
+    rotation: mat4.create(),
+    lightRotation: mat4.create()
+};
+
+
 
 /**
  * Generated Carbon/Blue class stub for Tr2FactionLight.
@@ -135,6 +146,7 @@ export class Tr2FactionLight
      * @private
      */
     _worldPosition = vec3.create();
+    _worldDirection = vec3.create();
 
     /**
      * Seconds elapsed since construction, used as the noise time base
@@ -183,6 +195,17 @@ export class Tr2FactionLight
         }
 
         vec3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+        // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+        // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+        // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+        // w=0 basis application, which is the negated third basis row.
+        const rot = Tr2LightDirectionScratch.rotation;
+        const lightRotation = Tr2LightDirectionScratch.lightRotation;
+        mat4.fromQuat(rot, this.rotation);
+        mat4.multiply(lightRotation, worldMatrix, rot);
+        vec3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+        vec3.normalize(this._worldDirection, this._worldDirection);
     }
 
     /**
@@ -237,6 +260,17 @@ export class Tr2FactionLight
             radius,
             color: [ this._color[0] * brightness, this._color[1] * brightness, this._color[2] * brightness ],
             flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+            innerRadius: this.innerRadius * parentScale,
+
+            // A faction light dispatches to the point or the spot conversion by
+            // `isSpotlight`, so the cone follows the same rule as Tr2SpotLight.
+            direction: [ this._worldDirection[0], this._worldDirection[1], this._worldDirection[2] ],
+            outerAngle: this.isSpotlight ? Math.cos(2 * Math.PI * this.outerAngle / 360) : 0,
+            innerAngle: this.isSpotlight ? Math.cos(2 * Math.PI * this.innerAngle / 360) : 0,
+            projectionPlaneDistance: this.isSpotlight
+                ? 1 / Math.tan(2 * Math.PI * this.outerAngle / 360)
+                : 1,
+
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }

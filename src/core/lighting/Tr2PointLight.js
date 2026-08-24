@@ -4,6 +4,17 @@ import { device } from "global";
 import { Tw2RenderBatch } from "core/batch";
 import { ComposeNoiseBrightness, Carbon_FLAG_AFFECTS_SURFACES, PerLightShadowSetting, LIGHT_FLAG_DEFAULT } from "./Tw2CarbonLightMath";
 
+/**
+ * Shared scratch for the light-direction composition below. Module scope
+ * rather than per-class because these run per light per frame and the values
+ * never outlive the call.
+ */
+const Tr2LightDirectionScratch = {
+    rotation: mat4.create(),
+    lightRotation: mat4.create()
+};
+
+
 
 export class EvePointLightBatch extends Tw2RenderBatch
 {
@@ -136,6 +147,7 @@ export class Tr2PointLight extends meta.Model
     _effect = null;
 
     _worldPosition = vec3.create();
+    _worldDirection = vec3.create();
     _indexBuffer = null;
 
     /**
@@ -188,6 +200,18 @@ export class Tr2PointLight extends meta.Model
         }
 
         vec3.transformMat4(this._worldPosition, this.position, worldMatrix);
+
+        // Carbon's light AXIS (Tr2Light.cpp:55-56). Row-vector composition:
+        // `RotationMatrix(rotation) * transform` applies the rotation FIRST, so
+        // the gl-matrix operands swap. Transform((0,0,-1,0), lightRotation) is a
+        // w=0 basis application, which is the negated third basis row.
+        const rot = Tr2LightDirectionScratch.rotation;
+        const lightRotation = Tr2LightDirectionScratch.lightRotation;
+        mat4.fromQuat(rot, this.rotation);
+        mat4.multiply(lightRotation, worldMatrix, rot);
+        vec3.set(this._worldDirection, -lightRotation[8], -lightRotation[9], -lightRotation[10]);
+        vec3.normalize(this._worldDirection, this._worldDirection);
+
         if (this._dirty) this.Rebuild();
     }
 
@@ -288,6 +312,18 @@ export class Tr2PointLight extends meta.Model
             radius,
             color: [ this.color[0] * brightness, this.color[1] * brightness, this.color[2] * brightness ],
             flags: enabled ? Carbon_FLAG_AFFECTS_SURFACES : 0,
+
+            // Named rather than left in `params`, which the light list reads only
+            // as a fallback now.
+            innerRadius: this.innerRadius * parentScale,
+
+            // Carbon computes an axis for a POINT light too (Tr2Light.cpp:56) -
+            // it is what a light profile is oriented by. 1/tan(45deg) = 1.
+            direction: [ this._worldDirection[0], this._worldDirection[1], this._worldDirection[2] ],
+            projectionPlaneDistance: 1,
+            outerAngle: 0,
+            innerAngle: 0,
+
             params: [ this.innerRadius * parentScale, 0, 0, 0 ]
         };
     }
