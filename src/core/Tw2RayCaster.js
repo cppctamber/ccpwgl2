@@ -271,6 +271,27 @@ export class Tw2RayCaster
     }
 
     /**
+     * A hit's property path - see the static of the same name.
+     * @param {Object} intersect
+     * @returns {String}
+     */
+    GetPath(intersect)
+    {
+        return Tw2RayCaster.GetPath(intersect);
+    }
+
+    /**
+     * Walks a path back to the thing it names - see the static of the same name.
+     * @param {*} root
+     * @param {String|Object} path
+     * @returns {*}
+     */
+    Resolve(root, path)
+    {
+        return Tw2RayCaster.Resolve(root, path);
+    }
+
+    /**
      * Records where a hit sits in the object graph.
      *
      * An intersection names the leaf it hit and the root it belongs to, and

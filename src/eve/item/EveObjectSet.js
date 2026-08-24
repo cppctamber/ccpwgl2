@@ -328,6 +328,25 @@ export class EveObjectSet extends meta.Model
     {
         if (!this.display || ray.IsMasked(this)) return null;
 
+        // OPT IN, and off by default.
+        //
+        // Set items can only be tested against a bounding volume - a sprite, a
+        // plane, a spotlight cone are built on the GPU and there is no geometry
+        // here to intersect. Those volumes are much larger than what is drawn,
+        // so one routinely sits nearer the camera than the hull surface and
+        // wins the distance sort. Enabling this by default therefore did not
+        // add sets to picking so much as take FACES away from it: the closest
+        // hit stopped being the triangle under the cursor and started being
+        // whichever sprite's sphere happened to enclose it.
+        //
+        // A caller that wants sets asks for them:
+        //
+        //     ray.SetOption("sets", "intersect", true);
+        //
+        // and gets `isBounds` on every hit so it can rank an approximation
+        // below an exact one.
+        if (!ray.GetOption("sets", "intersect", false)) return null;
+
         const before = intersects.length;
         const { sph3_0, box3_0 } = EveObjectSet.global;
 
@@ -360,6 +379,12 @@ export class EveObjectSet extends meta.Model
 
             intersect.item = item;
             intersect.name = item.name || this.name || "";
+
+            // An approximation, and says so. A consumer sorting hits should not
+            // have to guess which of them are exact.
+            intersect.isBounds = true;
+            intersect.boundsPrimitive = sphere ? "sphere" : "box";
+
             intersects.push(intersect);
 
             // Indexed, because set items are routinely identical to each other -

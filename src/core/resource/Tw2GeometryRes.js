@@ -172,6 +172,21 @@ export class Tw2GeometryRes extends Tw2Resource
                     intersect.meshIndex = meshIndex;
                     intersect.mesh = mesh;
                     internalIntersects.push(intersect);
+
+                    // The geometry levels, so a path reaches the ITEM that was hit.
+                    //
+                    // It stops at the mesh, which IS `intersect.item`. Area, face,
+                    // edge and vertex are all DATA about where on that item the ray
+                    // landed, not things a path can name - and pushing them into the
+                    // path would break the invariant worth having, that
+                    // `Resolve(root, path)` returns exactly the item that was hit.
+                    // They are already on the record as `areaIndex`, `faceIndex`,
+                    // `edgeStartIndex`/`edgeEndIndex` and `vertexIndex`.
+                    if (ray.Trail)
+                    {
+                        ray.Trail(intersect, `meshes[${meshIndex}]`);
+                        ray.Trail(intersect, "geometryResource");
+                    }
                 });
         }
 

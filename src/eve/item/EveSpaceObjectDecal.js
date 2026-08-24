@@ -365,6 +365,12 @@ export class EveSpaceObjectDecal extends meta.Model
     Intersect(ray, intersects, worldTransform, cache)
     {
         if (!this.display || ray.IsMasked(this)) return null;
+
+        // Opt in, for the same reason sets are: a decal can only offer its
+        // projection BOX, which sits just off the hull surface it is sprayed onto
+        // and therefore lands nearer the camera than the triangle underneath.
+        // On by default it would quietly replace face hits with decal hits.
+        if (!ray.GetOption("decals", "intersect", false)) return null;
         if (ray.GetOption("decals", "skip")) return null;
 
         const { box3_0 } = EveSpaceObjectDecal.global;
@@ -377,6 +383,8 @@ export class EveSpaceObjectDecal extends meta.Model
 
         intersect.item = this;
         intersect.name = this.name || "";
+        intersect.isBounds = true;
+        intersect.boundsPrimitive = "box";
         intersects.push(intersect);
         return intersect;
     }
