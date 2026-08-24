@@ -217,6 +217,12 @@ export class EveShip2 extends EveObject
     _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
 
+    /**
+     * How many turret SETS are currently firing. Recounted every Update.
+     * @type {Number}
+     */
+    _activeTurretCount = 0;
+
     /** Reused by locator resolution, which runs per hardpoint per frame */
     _locatorBinding = { type: 0, index: -1 };
     _turretTransformPool = [];
@@ -708,6 +714,19 @@ export class EveShip2 extends EveObject
      * @type {Object}
      */
     static LocatorType = { NOT_LOADED: null, NONE: 0, TRANSFORM: 1, BONE: 2 };
+
+    /**
+     * How many turret SETS are currently firing.
+     *
+     * Carbon: EveMobile::GetActiveTurretCount, read by
+     * EveSpaceObjectFxAttributes so an effect can scale itself by how much of
+     * the ship is shooting. Recounted every Update - see the walk there.
+     * @returns {Number}
+     */
+    GetActiveTurretCount()
+    {
+        return this._activeTurretCount;
+    }
 
     /**
      * Resolves a locator name to a kind and an index.
@@ -1848,12 +1867,26 @@ export class EveShip2 extends EveObject
             }
         }
 
+        // Recounted from scratch each frame, in the same walk Carbon uses
+        // (EveMobile.cpp:163-199 counts as it iterates m_turretSets). A count
+        // kept incrementally would drift the moment a set was added, removed or
+        // reset without telling anyone.
+        let activeTurretCount = 0;
+
         for (let i = 0; i < this.attachments.length; i++)
         {
             // TODO: Normalize
-            if (this.attachments[i] instanceof EveTurretSet && this.attachments[i]._locatorDirty)
+            if (this.attachments[i] instanceof EveTurretSet)
             {
-                this.RebuildTurretSet(this.attachments[i]);
+                if (this.attachments[i]._locatorDirty)
+                {
+                    this.RebuildTurretSet(this.attachments[i]);
+                }
+
+                // SETS, not items. A set of six barrels firing counts once,
+                // which is what the attribute means and what an effect reading
+                // it is scaled against.
+                if (this.attachments[i].IsActive()) activeTurretCount++;
             }
 
             this.attachments[i].Update(dt, this);
@@ -1863,6 +1896,8 @@ export class EveShip2 extends EveObject
                 this._boundsDirty = true;
             }
         }
+
+        this._activeTurretCount = activeTurretCount;
 
         const perObjectDataBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
 

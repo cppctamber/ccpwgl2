@@ -1784,6 +1784,29 @@ export class EveTurretSet extends EveObjectSet
      * value into `_state` without translating would silently put the turret in
      * the wrong state, so the hookup needs a map, not an assignment.
      */
+    /**
+     * Whether this SET counts as active - i.e. it is firing.
+     *
+     * Carbon writes the test as `GetState() > STATE_TARGETING`
+     * (EveMobile.cpp:167), which reads as "past targeting" and covers
+     * STATE_FIRING and STATE_RELOADING.
+     *
+     * THAT COMPARISON CANNOT BE PORTED AS WRITTEN. The two enums agree on
+     * nothing - see CarbonState - and TARGETING is the HIGHEST value here
+     * while it sits mid-table in Carbon, so `> TARGETING` would be true for
+     * no state at all and the count would sit at zero forever, looking like
+     * a feature that was simply never hooked up.
+     *
+     * Ported by meaning instead. We have no RELOADING, so FIRING is the whole
+     * of it; add the other arm here rather than at the call site if reloading
+     * is ever modelled.
+     * @returns {Boolean}
+     */
+    IsActive()
+    {
+        return this._state === EveTurretSet.State.FIRING;
+    }
+
     static CarbonState = {
         INVALID: 0,
         DEACTIVE: 1,
