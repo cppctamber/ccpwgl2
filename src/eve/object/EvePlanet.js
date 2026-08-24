@@ -353,6 +353,67 @@ export class EvePlanet extends EveEffectRoot2
     }
 
     /**
+     * The planet's local bounds are its SPHERE, not the union of its effect
+     * children's.
+     *
+     * Carbon says so twice: `GetWorldBoundingBox` builds the box straight from
+     * `m_radius` (`cpp:153-167`) and `IsBoundingBoxReady` tests the radius
+     * rather than the bounding sphere the effect root would use
+     * (`cpp:169-172`). It is also the only answer that is right before the
+     * template's meshes have loaded - a planet knows how big it is from the
+     * moment it is told its radius.
+     */
+    OnRebuildBounds()
+    {
+        const r = this.radius > 0 ? this.radius : 0;
+
+        this._boundingSphere[0] = 0;
+        this._boundingSphere[1] = 0;
+        this._boundingSphere[2] = 0;
+        this._boundingSphere[3] = r;
+
+        this._boundingBox[0] = -r;
+        this._boundingBox[1] = -r;
+        this._boundingBox[2] = -r;
+        this._boundingBox[3] = r;
+        this._boundingBox[4] = r;
+        this._boundingBox[5] = r;
+
+        this._boundsDirty = r <= 0;
+    }
+
+    /**
+     * Ray intersection, for picking.
+     *
+     * Duck-typed by `Tw2RayCaster` (`Tw2RayCaster.js:399-401`), so a planet
+     * without this is silently unpickable rather than an error - which matters
+     * once `treatPlanetsAsObjects` puts one in `scene.objects`.
+     *
+     * Tests the planet's own sphere. The old class tested the rebuilt bounds
+     * union, which for a planet is the same sphere by way of a great deal more
+     * work.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @returns {?Object}
+     */
+    Intersect(ray, intersects)
+    {
+        if (!this.display || this._lod < 1 || ray.IsMasked(this)) return null;
+        if (this.radius <= 0) return null;
+
+        this.RebuildBounds();
+
+        const intersect = ray.IntersectSph3(this._boundingSphere, this._planetTransform);
+        if (!intersect) return null;
+
+        intersect.name = this.name;
+        intersect.item = this;
+        intersects.push(intersect);
+        return intersect;
+    }
+
+    /**
      * Gets resources.
      * @param {Array} [out=[]]
      * @returns {Array} out
