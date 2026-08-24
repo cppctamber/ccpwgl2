@@ -531,14 +531,29 @@ export class EveSmartLightMesh extends EveChildInstanceMeshRenderer
 
                 // A direction, so the translation column takes no part.
                 //
-                // Carbon's rotMatrix * Vector4(angleToCamera, 0), read as a
-                // column multiply. Reading it against the rows instead was
-                // measured, as were both quaternion composition orders, and
-                // none of the four changed what rasterises - so this is the
-                // reading Carbon's convention gives and nothing contradicts it.
+                // Carbon's `rotMatrix * Vector4( angleToCamera, 0.f )`, which is the
+                // `operator*( const Matrix&, Vector4 )` overload - it dots against the
+                // matrix's ROWS (Matrix_inline.h:304-312). Carbon is row-vector, so its
+                // ordinary transform is `p * m`, dotting against columns; using `m * p`
+                // here is therefore the TRANSPOSE, and for an orthonormal rotation the
+                // inverse. That is what is wanted: the camera direction expressed in
+                // the instance's own frame, since rotMatrix is local-to-world.
+                //
+                // The indices are Carbon's own, because a D3D row-major array and a
+                // gl-matrix column-major array of the SAME transform have identical
+                // byte layouts - which is why the translation sits at [12..14] in both.
+                // So `_11 _12 _13` is `[0] [1] [2]`, NOT `[0] [4] [8]`.
+                //
+                // It was `[0] [4] [8]` until 2026-08-24: the transpose of this, and so
+                // the rotation rather than its inverse. The beam then turned the wrong
+                // way with the parent's orientation - right from some angles and
+                // edge-on from others, which reads as a thin sliver rather than as a
+                // wrong matrix. An earlier check cleared this reading by measuring
+                // rasterised pixels, but did it against an identity parent, where the
+                // two are identical and nothing can be told apart.
                 const
-                    x = rotationMatrix[0] * toCamera[0] + rotationMatrix[4] * toCamera[1] + rotationMatrix[8] * toCamera[2],
-                    z = rotationMatrix[2] * toCamera[0] + rotationMatrix[6] * toCamera[1] + rotationMatrix[10] * toCamera[2];
+                    x = rotationMatrix[0] * toCamera[0] + rotationMatrix[1] * toCamera[1] + rotationMatrix[2] * toCamera[2],
+                    z = rotationMatrix[8] * toCamera[0] + rotationMatrix[9] * toCamera[1] + rotationMatrix[10] * toCamera[2];
 
                 quat.setAxisAngle(modification, up, Math.atan2(x, z));
                 quat.multiply(rotation, rotation, modification);
