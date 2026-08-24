@@ -2,6 +2,7 @@ export * from "./child";
 export * from "./effect";
 export * from "./item";
 export * from "./object";
+export * from "./pi";
 
 // Registered, but UNSUPPORTED - see the note at the top of src/index.js for what
 // is still missing. EveSmartLightQuad is excluded from its own barrel because it

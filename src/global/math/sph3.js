@@ -358,21 +358,37 @@ sph3.getClampedPoint = function(out, a, p)
 };
 
 /**
- * Gets the position of a point on a sphere from longitude and latitude
+ * Gets the position of a point on a sphere from longitude and latitude, in
+ * EVE space.
+ *
+ * The POLE IS +Y, because that is where the engine's pole is. This returned a
+ * +Z-up point until 2026-08-25, which put every result a quarter turn out of
+ * the world it was going to be used in - and disagreed with
+ * `vec3.fromSpherical` sitting beside it, so which of the two a caller reached
+ * for decided where its point landed.
+ *
+ * Latitude is measured FROM THE POLE (colatitude): 0 is +Y, PI is -Y. Longitude
+ * runs from +Z toward +X. Both match `vec3.fromSpherical`, which this now
+ * delegates to so the two cannot drift apart again.
  *
  * @param {vec3} out
- * @param {sph3} a
- * @param {number} longitude
- * @param {number} latitude
+ * @param {sph3} a - the sphere; its position is the centre and w the radius
+ * @param {number} longitude - radians
+ * @param {number} latitude - radians, from the +Y pole
  * @returns {vec3} out
  */
 sph3.getPointFromLongLat = function(out, a, longitude, latitude)
 {
-    out[0] = a[0] + a[3] * Math.sin(latitude) * Math.cos(longitude);
-    out[1] = a[1] + a[3] * Math.sin(latitude) * Math.sin(longitude);
-    out[2] = a[2] + a[3] * Math.cos(latitude);
-    return out;
+    const spherical = sph3.getPointFromLongLat.spherical;
+    spherical[0] = latitude;
+    spherical[1] = longitude;
+    spherical[2] = a[3];
+
+    return vec3.fromSpherical(out, spherical, a);
 };
+
+/** Scratch, so a per-point conversion allocates nothing. */
+sph3.getPointFromLongLat.spherical = vec3.createSpherical();
 
 /**
  * Gets the position component of a sph3
