@@ -2,6 +2,7 @@ import { resMan, tw2 } from "global";
 import { isString, isVector, meta } from "utils";
 import { Tw2Picker, Tw2RayCaster } from "core";
 import { EveSpaceScene } from "eve/EveSpaceScene";
+import { TnyLensflare } from "./objects/TnyLensflare";
 
 
 /**
@@ -333,6 +334,61 @@ export class TnyScene extends meta.Model
             if (this.objects[i].GetResources) this.objects[i].GetResources(out);
         }
         return out;
+    }
+
+    /**
+     * Fetches a lensflare and, unless told not to, adds it to this scene.
+     *
+     * Restored from `WrappedScene.FetchLensflare`, which went with `src/wrapped`
+     * in `dc1f81d0`. tny replaced that tree but never took this method, and a
+     * consumer that guards on its existence - `if (!scene?.FetchLensflare)
+     * return false;` is what skindr's SunControl does - then loads nothing and
+     * reports nothing. Same signature as the archived one, so such a consumer
+     * needs no change.
+     *
+     * `AddObject` routes it by `isLensflare`, so it lands in `lensflares`
+     * rather than `objects`; the scene renders those two differently.
+     *
+     * @param {String|Object} options - a res path, or values carrying `resPath`
+     * @param {Function} [onProgress]
+     * @param {Boolean} [doNotAdd] - fetch it without adding it to the scene
+     * @returns {Promise<TnyLensflare>}
+     */
+    async FetchLensflare(options, onProgress, doNotAdd)
+    {
+        const lensflare = await TnyLensflare.fetch(options);
+
+        // The archived version gated this on `this.doWatch`, which was a
+        // WrappedScene property and does not exist here - reading it would have
+        // made the watch dead code. TnyClient's rule is the live one: watch when
+        // asked to, or whenever a progress callback was supplied, since supplying
+        // one and never being called is the confusing outcome.
+        //
+        // Wrapped in try/catch for the same reason `Fetch` below is: a Watch
+        // rejects if ANY watched resource errors, and the flare is already built
+        // by then. `collectsamples.fx` is absent from shipped data, so an
+        // occluder resource failing is the normal case rather than the
+        // exceptional one - discarding the flare over it would mean never
+        // returning one at all.
+        if (this.doWatch || onProgress)
+        {
+            try
+            {
+                await resMan.Watch(lensflare, onProgress);
+            }
+            catch (err)
+            {
+                tw2.Debug({
+                    name: "TnyScene",
+                    message: "Lensflare loaded with failed resources",
+                    data: { err }
+                });
+            }
+        }
+
+        if (!doNotAdd) this.AddObject(lensflare);
+
+        return lensflare;
     }
 
     /**

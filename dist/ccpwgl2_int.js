@@ -15653,7 +15653,7 @@
 	  return res;
 	}
 
-	var _excluded$o = ["handler", "property", "method", "ctor", "noArgs"];
+	var _excluded$p = ["handler", "property", "method", "ctor", "noArgs"];
 
 	/**
 	 * Ensures descriptors always have default values
@@ -15729,7 +15729,7 @@
 	    method = o.method,
 	    ctor = o.ctor,
 	    noArgs = o.noArgs,
-	    options = _objectWithoutProperties(o, _excluded$o);
+	    options = _objectWithoutProperties(o, _excluded$p);
 	  var handlers = normalizeHandlers(o);
 	  if (noArgs) {
 	    return getDecorator(handlers, options);
@@ -16671,7 +16671,7 @@
 	  }
 	}
 
-	var _excluded$n = ["_clear", "_ids", "skipEvents", "skipUpdate"],
+	var _excluded$o = ["_clear", "_ids", "skipEvents", "skipUpdate"],
 	  _excluded2$5 = ["skipUpdate"];
 	var getPropType = type => tw2 && tw2.propertyTypes && tw2.propertyTypes.Get(type);
 
@@ -17455,7 +17455,7 @@
 	      _ids = _opt$_ids === void 0 ? new Map() : _opt$_ids,
 	      skipEvents = opt.skipEvents,
 	      skipUpdate = opt.skipUpdate,
-	      options = _objectWithoutProperties(opt, _excluded$n);
+	      options = _objectWithoutProperties(opt, _excluded$o);
 	    if (_ids.has(item)) {
 	      return _ids.get(item);
 	    }
@@ -46386,7 +46386,7 @@
 		atmosphere: atmosphere
 	};
 
-	var _excluded$m = ["sampler", "ui"];
+	var _excluded$n = ["sampler", "ui"];
 	var _dec$7v, _dec2$6W, _dec3$6i, _dec4$5r, _dec5$4P, _dec6$4b, _dec7$3B, _dec8$37, _dec9$2K, _dec0$2A, _dec1$2n, _dec10$25, _dec11$1W, _dec12$1G, _dec13$1u, _class$7v, _class2$6N, _descriptor$6P, _descriptor2$66, _descriptor3$5e, _descriptor4$4w, _descriptor5$3S, _descriptor6$3f, _descriptor7$2M, _descriptor8$2s, _descriptor9$2g, _descriptor0$22, _descriptor1$1J, _Tw2ShaderStage;
 	var CHAR_CODE_CHUNK_SIZE$1 = 0x8000;
 
@@ -46606,7 +46606,7 @@
 	        _textures$_i$sampler = _textures$_i.sampler,
 	        sampler = _textures$_i$sampler === void 0 ? {} : _textures$_i$sampler,
 	        ui = _textures$_i.ui,
-	        tex = _objectWithoutProperties(_textures$_i, _excluded$m);
+	        tex = _objectWithoutProperties(_textures$_i, _excluded$n);
 
 	      // Texture
 	      tex.registerIndex = getRegisterIndex(tex, _i6);
@@ -63943,7 +63943,7 @@
 	  }
 	}
 
-	var _excluded$l = ["name"];
+	var _excluded$m = ["name"];
 	var CLASS_SCHEMA = new WeakMap();
 
 	// Exported schemas, memoized per class. SCHEMA_GENERATION is bumped by every
@@ -64841,7 +64841,7 @@
 	        throw new TypeError("CjsSchema.define ".concat(memberType, "[").concat(index, "] requires a non-empty name."));
 	      }
 	      var name = member.name,
-	        namespaces = _objectWithoutProperties(member, _excluded$l);
+	        namespaces = _objectWithoutProperties(member, _excluded$m);
 	      return normalizeManualMember(name.trim(), namespaces, memberType);
 	    });
 	  }
@@ -71811,7 +71811,7 @@
 	  return buildCarbonEffectContainer(effectRes, permutationGraph, backendBodySet, GLSL_CONTAINER_BACKEND, options);
 	}
 
-	var _excluded$k = ["bytes", "emit"];
+	var _excluded$l = ["bytes", "emit"];
 
 	/**
 	 * INFO record version for the in-memory build result.
@@ -71938,7 +71938,7 @@
 	  var translatedShaders = Array.from(shaderMap.values()).map(record => {
 	    var bytes = record.bytes,
 	      emit = record.emit,
-	      output = _objectWithoutProperties(record, _excluded$k);
+	      output = _objectWithoutProperties(record, _excluded$l);
 	    output.primaryContract = mergeShaderContracts(output.contracts);
 	    return output;
 	  });
@@ -99703,7 +99703,7 @@
 	  }
 	}
 
-	var _excluded$j = ["actionIndex", "leafIndex", "matchIds", "programBatchId"];
+	var _excluded$k = ["actionIndex", "leafIndex", "matchIds", "programBatchId"];
 
 	// CarbonEngineJS original (no Carbon counterpart). Browser-safe interpreter
 	// for the optional authored SFX program installed with one audio library.
@@ -100293,7 +100293,7 @@
 	        _leafIndex = _ref6.leafIndex,
 	        _matchIds = _ref6.matchIds,
 	        _programBatchId = _ref6.programBatchId,
-	        selection = _objectWithoutProperties(_ref6, _excluded$j);
+	        selection = _objectWithoutProperties(_ref6, _excluded$k);
 	      return Object.freeze(PreserveAuthoredPitch(selections[index], selection));
 	    }) : []);
 	  }
@@ -118114,7 +118114,7 @@
 	  };
 	}
 
-	var _excluded$i = ["classes"];
+	var _excluded$j = ["classes"];
 	/**
 	 * GR2 JSON emitter.
 	 * @author cppctamber
@@ -118753,7 +118753,7 @@
 	  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  var _options$classes = options.classes,
 	    classes = _options$classes === void 0 ? {} : _options$classes,
-	    hydrationOptions = _objectWithoutProperties(options, _excluded$i);
+	    hydrationOptions = _objectWithoutProperties(options, _excluded$j);
 	  return build$2(classes, "Root", {
 	    grannyFileFormatRevision: version | 0,
 	    grannyFileSource: (_fileInfo$FromFileNam = fileInfo.FromFileName) != null ? _fileInfo$FromFileNam : "",
@@ -144096,7 +144096,7 @@
 	 */
 	GR2JsonReader.extension = "gr2_json";
 
-	var _excluded$h = ["classes"];
+	var _excluded$i = ["classes"];
 	/**
 	 * JSON hydration helpers for the shared CarbonEngineJS mesh schema.
 	 */
@@ -144138,7 +144138,7 @@
 	  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
 	    _ref$classes = _ref.classes,
 	    classes = _ref$classes === void 0 ? {} : _ref$classes,
-	    hydrationOptions = _objectWithoutProperties(_ref, _excluded$h);
+	    hydrationOptions = _objectWithoutProperties(_ref, _excluded$i);
 	  return build$1(classes, "Root", {
 	    grannyFileFormatRevision: root.grannyFileFormatRevision,
 	    grannyFileSource: root.grannyFileSource,
@@ -145359,7 +145359,7 @@
 	 */
 	OBJReader.extension = "obj";
 
-	var _excluded$g = ["classes"];
+	var _excluded$h = ["classes"];
 	/**
 	 * JSON hydration helpers for the shared CarbonEngineJS mesh/animation schema.
 	 */
@@ -145397,7 +145397,7 @@
 	  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
 	    _ref$classes = _ref.classes,
 	    classes = _ref$classes === void 0 ? {} : _ref$classes,
-	    hydrationOptions = _objectWithoutProperties(_ref, _excluded$g);
+	    hydrationOptions = _objectWithoutProperties(_ref, _excluded$h);
 	  return build(classes, "Root", {
 	    grannyFileFormatRevision: root.grannyFileFormatRevision,
 	    grannyFileSource: root.grannyFileSource,
@@ -150498,7 +150498,7 @@
 	}
 	Tw2ShaderStore.storeName = "Shader";
 
-	var _excluded$f = ["render", "glParams", "canvas", "canvas3d", "canvas2d", "sof", "capabilities", "input"],
+	var _excluded$g = ["render", "glParams", "canvas", "canvas3d", "canvas2d", "sof", "capabilities", "input"],
 	  _excluded2$4 = ["providers", "process"];
 	var count = 0;
 	class Tw2Library extends Tw2EventEmitter {
@@ -150856,7 +150856,7 @@
 	        sof = _opt$sof === void 0 ? {} : _opt$sof,
 	        capabilities = opt.capabilities,
 	        input = opt.input,
-	        options = _objectWithoutProperties(opt, _excluded$f);
+	        options = _objectWithoutProperties(opt, _excluded$g);
 	      _this2.Register(options);
 	      if (capabilities !== undefined) _this2.RegisterCapabilities(capabilities);
 	      _this2.device.Create({
@@ -166249,7 +166249,7 @@
 	  OBJECT: 9
 	};
 
-	var _excluded$e = ["rotation", "euler", "scale", "radius", "position"];
+	var _excluded$f = ["rotation", "euler", "scale", "radius", "position"];
 	var _dec$68, _dec2$5N, _dec3$5n, _dec4$4M, _dec5$4f, _class$68, _class2$5E, _descriptor$5G, _descriptor2$5b, _descriptor3$4A, _descriptor4$3_, _WglTransform;
 	var vec3_0$3 = vec3$3.create(),
 	  vec3_1$3 = vec3$3.create(),
@@ -167371,7 +167371,7 @@
 	      scale = values.scale,
 	      radius = values.radius,
 	      position = values.position,
-	      temp = _objectWithoutProperties(values, _excluded$e);
+	      temp = _objectWithoutProperties(values, _excluded$f);
 	    if (radius !== undefined) {
 	      scale = radius * 2;
 	    }
@@ -169604,7 +169604,7 @@
 	  }
 	}), _class8);
 
-	var _excluded$d = ["callable", "callableArgs"];
+	var _excluded$e = ["callable", "callableArgs"];
 	var _dec$60, _dec2$5F, _class$60, _class2$5x, _descriptor$5y, _Tw2EventKey, _dec3$5f, _dec4$4F, _dec5$48, _dec6$3E, _dec7$35, _dec8$2I, _dec9$2o, _dec0$2e, _dec1$23, _class3$v, _class4$t, _descriptor2$53, _descriptor3$4s, _descriptor4$3T, _descriptor5$3l, _descriptor6$2P, _descriptor7$2n, _descriptor8$29, _descriptor9$1_, _Tw2EventCurve;
 	var Tw2EventCurveExtrapolation = {
 	  NONE: 0,
@@ -169622,7 +169622,7 @@
 	    var _ref = options || {},
 	      callable = _ref.callable,
 	      callableArgs = _ref.callableArgs,
-	      values = _objectWithoutProperties(_ref, _excluded$d);
+	      values = _objectWithoutProperties(_ref, _excluded$e);
 	    if (values.value === null || values.value === undefined) values.value = "";
 	    super.SetValues(values, opt);
 	    if (options && "callable" in options) this.callable = callable;
@@ -187843,7 +187843,7 @@
 	  }
 	}), _class4$f)) || _class3$h);
 
-	var _excluded$c = ["skipUpdate"];
+	var _excluded$d = ["skipUpdate"];
 	var _dec$4Z, _dec2$4E, _dec3$4e, _dec4$3H, _dec5$3a, _dec6$2K, _dec7$2l, _dec8$23, _dec9$1O, _dec0$1F, _dec1$1y, _dec10$1l, _dec11$1e, _dec12$13, _dec13$W, _class$4Z, _class2$4w, _descriptor$4w, _descriptor2$43, _descriptor3$3u, _descriptor4$30, _descriptor5$2C, _descriptor6$2a, _descriptor7$1P, _descriptor8$1C, _descriptor9$1u, _descriptor0$1p;
 	var VALID_BLEND_MODES = new Set(Object.values(CustomMaskBlendMode));
 	var EveCustomMask = (_dec$4Z = define("EveCustomMask", true), _dec2$4E = stage(1), _dec3$4e = string, _dec4$3H = boolean, _dec5$3a = boolean, _dec6$2K = boolean, _dec7$2l = string, _dec8$23 = uint, _dec9$1O = quaternion, _dec0$1F = vector3, _dec1$1y = vector4, _dec10$1l = plain, _dec11$1e = todo("Move to direct class properties"), _dec12$13 = isPrivate, _dec13$W = vector3, _dec$4Z(_class$4Z = _dec2$4E(_class$4Z = (_class2$4w = class EveCustomMask extends WglTransform {
@@ -188048,7 +188048,7 @@
 	  static set(a, values) {
 	    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	    var skipUpdate = opt.skipUpdate,
-	      options = _objectWithoutProperties(opt, _excluded$c);
+	      options = _objectWithoutProperties(opt, _excluded$d);
 	    var updated = super.set(a, values, _objectSpread2(_objectSpread2({}, options), {}, {
 	      skipUpdate: true
 	    }));
@@ -219939,7 +219939,7 @@
 	  return Number.isFinite(value) ? value : 0;
 	}
 
-	var _excluded$b = ["intoOptions", "deltaOptions", "layerName"];
+	var _excluded$c = ["intoOptions", "deltaOptions", "layerName"];
 	var _dec$3O, _dec2$3u, _dec3$38, _dec4$2F, _dec5$2c, _dec6$1U, _class$3O, _class2$3n, _descriptor$3n, _descriptor2$2Z, _descriptor3$2s, _descriptor4$23, _descriptor5$1N, _Tr2InteriorAnimationController;
 	var Tr2InteriorAnimationController = (_dec$3O = define("Tr2InteriorAnimationController"), _dec2$3u = struct("Tr2InteriorBoneOffset"), _dec3$38 = boolean, _dec4$2F = plain, _dec5$2c = plain, _dec6$1U = plain, _dec$3O(_class$3O = (_class2$3n = (_Tr2InteriorAnimationController = class Tr2InteriorAnimationController extends Tw2AnimationController {
 	  constructor() {
@@ -220094,7 +220094,7 @@
 	      _options$deltaOptions = options.deltaOptions,
 	      deltaOptions = _options$deltaOptions === void 0 ? {} : _options$deltaOptions,
 	      requestedLayerName = options.layerName,
-	      playbackOptions = _objectWithoutProperties(options, _excluded$b),
+	      playbackOptions = _objectWithoutProperties(options, _excluded$c),
 	      intoSource = projection.Into !== undefined ? projection.Into : projection.into,
 	      baseSource = projection.Base !== undefined ? projection.Base : projection.base,
 	      deltaSource = projection.Delta !== undefined ? projection.Delta : projection.delta,
@@ -235013,7 +235013,7 @@
 	  }
 	}), _class2$1A)) || _class$1V);
 
-	var _excluded$a = ["lightOverride"];
+	var _excluded$b = ["lightOverride"];
 	var _dec$1U, _dec2$1F, _dec3$1t, _dec4$1e, _dec5$10, _dec6$R, _dec7$J, _dec8$E, _dec9$z, _dec0$v, _dec1$q, _dec10$n, _dec11$k, _dec12$h, _class$1U, _class2$1z, _descriptor$1y, _descriptor2$1i, _descriptor3$13, _descriptor4$T, _descriptor5$K, _descriptor6$B, _descriptor7$u, _descriptor8$r, _descriptor9$o, _descriptor0$k, _EveSOFData;
 	var EveSOFData = (_dec$1U = define("EveSOFData", true), _dec2$1F = boolean, _dec3$1t = uiDescription("Custom property for debugging"), _dec4$1e = boolean, _dec5$10 = uiDescription("Custom property for debugging"), _dec6$R = string, _dec7$J = uiDescription("Custom property for debugging"), _dec8$E = list("EveSOFDataFaction"), _dec9$z = struct("EveSOFDataGeneric"), _dec0$v = list("EveSOFDataHull"), _dec1$q = list("EveSOFDataLayout"), _dec10$n = list("EveSOFDataMaterial"), _dec11$k = list("EveSOFDataPattern"), _dec12$h = list("EveSOFDataRace"), _dec$1U(_class$1U = (_class2$1z = (_EveSOFData = class EveSOFData extends Model {
 	  constructor() {
@@ -236347,7 +236347,7 @@
 
 	      // Setup base banner
 	      var lightOverride = srcSet.lightOverride,
-	        options = _objectWithoutProperties(srcSet, _excluded$a);
+	        options = _objectWithoutProperties(srcSet, _excluded$b);
 	      set.SetValues(options);
 	      if (lightOverride) {
 	        tw2.Debug({
@@ -254220,7 +254220,7 @@
 	  vec3_0: vec3$3.create()
 	};
 
-	var _excluded$9 = ["dna", "resPath", "typeID", "graphicID", "skinID", "skinrUUID", "awaitResources", "position"];
+	var _excluded$a = ["dna", "resPath", "typeID", "graphicID", "skinID", "skinrUUID", "awaitResources", "position"];
 	var _dec$a, _dec2$7, _dec3$6, _class$a, _class2$7, _descriptor$6, _descriptor2$5, _TnySpaceObject;
 	var TnySpaceObject = (_dec$a = define("TnySpaceObject"), _dec2$7 = struct(), _dec3$6 = plain, _dec$a(_class$a = (_class2$7 = (_TnySpaceObject = class TnySpaceObject extends WglTransform {
 	  get display() {
@@ -254540,7 +254540,7 @@
 	        skinrUUID = _options.skinrUUID,
 	        awaitResources = _options.awaitResources,
 	        position = _options.position,
-	        values = _objectWithoutProperties(_options, _excluded$9);
+	        values = _objectWithoutProperties(_options, _excluded$a);
 
 	      // `position` and `translation` are both accepted; the wrapped object
 	      // only knows `translation`, so an unaliased `position` would be set
@@ -254822,7 +254822,7 @@
 	  }
 	}, _TnyShip.OFFSET_CENTER = true, _TnyShip), _applyDecoratedDescriptor(_class2$6.prototype, "kills", [_dec2$6], Object.getOwnPropertyDescriptor(_class2$6.prototype, "kills"), _class2$6.prototype), _applyDecoratedDescriptor(_class2$6.prototype, "boosterStrength", [_dec3$5], Object.getOwnPropertyDescriptor(_class2$6.prototype, "boosterStrength"), _class2$6.prototype), _applyDecoratedDescriptor(_class2$6.prototype, "boosterLength", [_dec4$4], Object.getOwnPropertyDescriptor(_class2$6.prototype, "boosterLength"), _class2$6.prototype), _class2$6)) || _class$9);
 
-	var _excluded$8 = ["planetID", "moonID", "itemID", "resPath", "heightMap1", "heightMap2", "atmospherePath", "aurora"];
+	var _excluded$9 = ["planetID", "moonID", "itemID", "resPath", "heightMap1", "heightMap2", "atmospherePath", "aurora"];
 	var _dec$8, _class$8, _TnyMoon;
 
 	/**
@@ -254893,7 +254893,7 @@
 	        atmospherePath = _options.atmospherePath,
 	        _options$aurora = _options.aurora,
 	        aurora = _options$aurora === void 0 ? _this.aurora : _options$aurora,
-	        values = _objectWithoutProperties(_options, _excluded$8);
+	        values = _objectWithoutProperties(_options, _excluded$9);
 	      if (planetID || moonID) {
 	        var api = getApiService();
 	        var data = moonID ? yield api.GetMoon(moonID) : yield api.GetPlanet(planetID);
@@ -254992,8 +254992,170 @@
 	  }
 	}, _TnyPlanet.celestialKey = "planetID", _TnyPlanet.aurora = true, _TnyPlanet)) || _class$7);
 
+	var _excluded$8 = ["resPath"];
+	var _dec$6, _dec2$5, _dec3$4, _class$6, _class2$5, _descriptor$5, _descriptor2$4, _TnyLensflare;
+	var TnyLensflare = (_dec$6 = define("TnyLensflare"), _dec2$5 = struct(), _dec3$4 = plain, _dec$6(_class$6 = (_class2$5 = (_TnyLensflare = class TnyLensflare extends Model {
+	  get isLensflare() {
+	    return true;
+	  }
+	  get display() {
+	    return this.wrapped && "display" in this.wrapped ? this.wrapped.display : true;
+	  }
+	  set display(value) {
+	    if (this.wrapped && "display" in this.wrapped) {
+	      this.wrapped.display = value;
+	    }
+	  }
+	  constructor(wrapped, values) {
+	    super();
+	    _initializerDefineProperty(this, "wrapped", _descriptor$5, this);
+	    _initializerDefineProperty(this, "custom", _descriptor2$4, this);
+	    if (wrapped) {
+	      this.SetWrapped(wrapped);
+	    }
+	    if (values) {
+	      this.SetValues(values);
+	    }
+	  }
+	  SetWrapped(wrapped) {
+	    if (wrapped && !(wrapped instanceof EveLensflare)) {
+	      throw new TypeError("Invalid wrapped lensflare");
+	    }
+	    this.wrapped = wrapped || null;
+	    return this;
+	  }
+	  GetBatches(mode, accumulator, perObjectData) {
+	    return this.wrapped && this.wrapped.GetBatches ? this.wrapped.GetBatches(mode, accumulator, perObjectData) : false;
+	  }
+	  GetResources() {
+	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var mesh = this.wrapped && this.wrapped.mesh;
+	    if (mesh && mesh.GetResources) {
+	      mesh.GetResources(out);
+	    }
+	    return out;
+	  }
+	  PrepareRender(sunDirection) {
+	    if (this.wrapped && this.wrapped.PrepareRender) {
+	      this.wrapped.PrepareRender(sunDirection);
+	    }
+	  }
+	  UpdateOccluders() {
+	    if (this.wrapped && this.wrapped.UpdateOccluders) {
+	      this.wrapped.UpdateOccluders();
+	    }
+	  }
+	  Update(dt) {
+	    this.EmitEvent("update", this, dt);
+	    return true;
+	  }
+
+	  /**
+	   * Fetches a lensflare from a res path.
+	   *
+	   * Restored from `WrappedLensflare.fetch`, archived to
+	   * `_review/wrapped-2026-08-23/WrappedLensflare.js` when `src/wrapped` was
+	   * retired (`dc1f81d0`). tny took over that tree's role but never picked
+	   * this up, so `TnyScene.FetchLensflare` was absent and every consumer that
+	   * guarded on it - skindr's `SunControl` does exactly that - silently loaded
+	   * no flare at all.
+	   *
+	   * @param {String|Object} options - a res path, or values carrying `resPath`
+	   * @returns {Promise<TnyLensflare>}
+	   */
+	  static fetch() {
+	    var _arguments = arguments,
+	      _this = this;
+	    return _asyncToGenerator(function* () {
+	      var options = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
+	      if (isString$1(options)) options = {
+	        resPath: options
+	      };
+	      var _options = options,
+	        resPath = _options.resPath,
+	        values = _objectWithoutProperties(_options, _excluded$8);
+	      if (!resPath) throw new ReferenceError("Could not identify resource path");
+
+	      // A res path authored as .red names the same asset as the .black
+	      // container ccpwgl actually reads, as everywhere else in tny.
+	      var wrapped = yield tw2.Fetch(resPath.replace(/\.red$/i, ".black"));
+	      TnyLensflare.DisableBrokenAreas(wrapped);
+	      return new _this(wrapped, values);
+	    })();
+	  }
+
+	  /**
+	   * Hides the two additive areas that do not render correctly.
+	   *
+	   * Carried over verbatim from the archived `WrappedLensflare.fetch`, whose
+	   * comment was only "Remove lensflares that don't work for some reason" - so
+	   * the REASON is not recorded anywhere, and this is preserved as observed
+	   * behaviour rather than as something understood.
+	   *
+	   * What is worth knowing: with the flare's occlusion unavailable on WebGL
+	   * (`lensflareoccludert` needs `atomic_iadd`, which has no WebGL2 lowering),
+	   * these two areas draw at full strength over everything. Hiding them looks
+	   * wrong, and looks considerably less wrong than leaving them in.
+	   *
+	   * Matched on NAME, case-insensitively, because that is all the archived
+	   * code had to go on.
+	   *
+	   * @param {EveLensflare} wrapped
+	   * @returns {Number} how many areas were hidden
+	   */
+	  static DisableBrokenAreas(wrapped) {
+	    var areas = wrapped && wrapped.mesh && wrapped.mesh.additiveAreas;
+	    if (!areas) return 0;
+	    var hidden = 0;
+	    for (var i = 0; i < areas.length; i++) {
+	      var name = areas[i] && areas[i].name;
+	      if (!name) continue;
+	      if (TnyLensflare.brokenAreaNames.includes(name.toLowerCase())) {
+	        areas[i].display = false;
+	        hidden++;
+	      }
+	    }
+	    return hidden;
+	  }
+
+	  /**
+	   * The additive area names hidden by {@link DisableBrokenAreas}.
+	   * @type {Array<String>}
+	   */
+
+	  static FromWrapped(wrapped, values) {
+	    return new this(wrapped, values);
+	  }
+	  static GetWrapped(item) {
+	    return item ? item.wrapped || null : null;
+	  }
+	  static HasWrapped(item) {
+	    return !!this.GetWrapped(item);
+	  }
+	  static ClearWrapped(item) {
+	    if (item && item.SetWrapped) {
+	      item.SetWrapped(null);
+	    }
+	    return item;
+	  }
+	}, _TnyLensflare.brokenAreaNames = ["sun0", "dimwhite"], _TnyLensflare), _descriptor$5 = _applyDecoratedDescriptor(_class2$5.prototype, "wrapped", [_dec2$5], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return null;
+	  }
+	}), _descriptor2$4 = _applyDecoratedDescriptor(_class2$5.prototype, "custom", [_dec3$4], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return {};
+	  }
+	}), _class2$5)) || _class$6);
+
 	var _excluded$7 = ["resPath", "background"];
-	var _dec$6, _dec2$5, _dec3$4, _dec4$3, _dec5$3, _class$6, _class2$5, _descriptor$5, _descriptor2$4, _descriptor3$2;
+	var _dec$5, _dec2$4, _dec3$3, _dec4$3, _dec5$3, _class$5, _class2$4, _descriptor$4, _descriptor2$3, _descriptor3$2;
 
 	/**
 	 * Runtime scene: owns an EveSpaceScene and the runtime objects placed in it.
@@ -255007,7 +255169,7 @@
 	 * per-frame lighting and environment data before collecting batches, so
 	 * anything drawn outside it comes out unlit.
 	 */
-	var TnyScene = (_dec$6 = define("TnyScene"), _dec2$5 = struct(), _dec3$4 = list(), _dec4$3 = list(), _dec5$3 = boolean, _dec$6(_class$6 = (_class2$5 = class TnyScene extends Model {
+	var TnyScene = (_dec$5 = define("TnyScene"), _dec2$4 = struct(), _dec3$3 = list(), _dec4$3 = list(), _dec5$3 = boolean, _dec$5(_class$5 = (_class2$4 = class TnyScene extends Model {
 	  /**
 	   * Planets normally go in the scene's planet list, which renders in a
 	   * dedicated pass with its own depth range (zn 10000, zf 1e11) built for
@@ -255035,8 +255197,8 @@
 	   */
 	  constructor(wrapped, values) {
 	    super();
-	    _initializerDefineProperty(this, "wrapped", _descriptor$5, this);
-	    _initializerDefineProperty(this, "objects", _descriptor2$4, this);
+	    _initializerDefineProperty(this, "wrapped", _descriptor$4, this);
+	    _initializerDefineProperty(this, "objects", _descriptor2$3, this);
 	    _initializerDefineProperty(this, "lensflares", _descriptor3$2, this);
 	    /**
 	     * Picking, carried over from WrappedScene when that tree was retired.
@@ -255274,6 +255436,59 @@
 	  }
 
 	  /**
+	   * Fetches a lensflare and, unless told not to, adds it to this scene.
+	   *
+	   * Restored from `WrappedScene.FetchLensflare`, which went with `src/wrapped`
+	   * in `dc1f81d0`. tny replaced that tree but never took this method, and a
+	   * consumer that guards on its existence - `if (!scene?.FetchLensflare)
+	   * return false;` is what skindr's SunControl does - then loads nothing and
+	   * reports nothing. Same signature as the archived one, so such a consumer
+	   * needs no change.
+	   *
+	   * `AddObject` routes it by `isLensflare`, so it lands in `lensflares`
+	   * rather than `objects`; the scene renders those two differently.
+	   *
+	   * @param {String|Object} options - a res path, or values carrying `resPath`
+	   * @param {Function} [onProgress]
+	   * @param {Boolean} [doNotAdd] - fetch it without adding it to the scene
+	   * @returns {Promise<TnyLensflare>}
+	   */
+	  FetchLensflare(options, onProgress, doNotAdd) {
+	    var _this = this;
+	    return _asyncToGenerator(function* () {
+	      var lensflare = yield TnyLensflare.fetch(options);
+
+	      // The archived version gated this on `this.doWatch`, which was a
+	      // WrappedScene property and does not exist here - reading it would have
+	      // made the watch dead code. TnyClient's rule is the live one: watch when
+	      // asked to, or whenever a progress callback was supplied, since supplying
+	      // one and never being called is the confusing outcome.
+	      //
+	      // Wrapped in try/catch for the same reason `Fetch` below is: a Watch
+	      // rejects if ANY watched resource errors, and the flare is already built
+	      // by then. `collectsamples.fx` is absent from shipped data, so an
+	      // occluder resource failing is the normal case rather than the
+	      // exceptional one - discarding the flare over it would mean never
+	      // returning one at all.
+	      if (_this.doWatch || onProgress) {
+	        try {
+	          yield resMan.Watch(lensflare, onProgress);
+	        } catch (err) {
+	          tw2.Debug({
+	            name: "TnyScene",
+	            message: "Lensflare loaded with failed resources",
+	            data: {
+	              err
+	            }
+	          });
+	        }
+	      }
+	      if (!doNotAdd) _this.AddObject(lensflare);
+	      return lensflare;
+	    })();
+	  }
+
+	  /**
 	   * Fetches a scene.
 	   * @param {String|Object|Array} options - res path, clear colour, or values
 	   * @param {Function} [onProgress]
@@ -255281,7 +255496,7 @@
 	   */
 	  static Fetch() {
 	    var _arguments = arguments,
-	      _this = this;
+	      _this2 = this;
 	    return _asyncToGenerator(function* () {
 	      var options = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
 	      var onProgress = _arguments.length > 1 ? _arguments[1] : undefined;
@@ -255327,7 +255542,7 @@
 	        wrapped.clearColor[2] = background[2];
 	        wrapped.clearColor[3] = background[3] !== undefined ? background[3] : 1;
 	      }
-	      var scene = new _this(wrapped, values);
+	      var scene = new _this2(wrapped, values);
 
 	      // Watch rejects when any watched resource errors. The scene itself is
 	      // already built by then, so a failed nebula texture must not discard
@@ -255346,36 +255561,36 @@
 	      return scene;
 	    })();
 	  }
-	}, _descriptor$5 = _applyDecoratedDescriptor(_class2$5.prototype, "wrapped", [_dec2$5], {
+	}, _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "wrapped", [_dec2$4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor2$4 = _applyDecoratedDescriptor(_class2$5.prototype, "objects", [_dec3$4], {
+	}), _descriptor2$3 = _applyDecoratedDescriptor(_class2$4.prototype, "objects", [_dec3$3], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor3$2 = _applyDecoratedDescriptor(_class2$5.prototype, "lensflares", [_dec4$3], {
+	}), _descriptor3$2 = _applyDecoratedDescriptor(_class2$4.prototype, "lensflares", [_dec4$3], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _applyDecoratedDescriptor(_class2$5.prototype, "treatPlanetsAsObjects", [_dec5$3], Object.getOwnPropertyDescriptor(_class2$5.prototype, "treatPlanetsAsObjects"), _class2$5.prototype), _class2$5)) || _class$6);
+	}), _applyDecoratedDescriptor(_class2$4.prototype, "treatPlanetsAsObjects", [_dec5$3], Object.getOwnPropertyDescriptor(_class2$4.prototype, "treatPlanetsAsObjects"), _class2$4.prototype), _class2$4)) || _class$5);
 
 	var _excluded$6 = ["api", "apiService", "camera", "cameras", "objects", "scene", "post", "renderer", "clearColor", "view"],
 	  _excluded2$3 = ["client", "render", "scene", "camera", "cameras", "objects", "post", "renderer"],
 	  _excluded3$1 = ["objects"],
 	  _excluded4$1 = ["type"],
 	  _excluded5 = ["type"];
-	var _dec$5, _class$5, _TnyClient;
-	var TnyClient = (_dec$5 = define("TnyClient"), _dec$5(_class$5 = (_TnyClient = class TnyClient extends Model {
+	var _dec$4, _class$4, _TnyClient;
+	var TnyClient = (_dec$4 = define("TnyClient"), _dec$4(_class$4 = (_TnyClient = class TnyClient extends Model {
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
@@ -256031,11 +256246,11 @@
 	  projection: mat4$1.create(),
 	  view: mat4$1.create(),
 	  viewport: [0, 0, 0, 0]
-	}, _TnyClient)) || _class$5);
+	}, _TnyClient)) || _class$4);
 
 	var _excluded$5 = ["canvas"];
-	var _dec$4, _dec2$4, _dec3$3, _dec4$2, _dec5$2, _dec6$2, _dec7$2, _dec8$2, _dec9$2, _dec0$2, _dec1$2, _class$4, _class2$4, _descriptor$4, _descriptor2$3, _descriptor3$1, _descriptor4$1, _descriptor5$1, _descriptor6$1, _descriptor7$1, _descriptor8$1, _descriptor9$1, _descriptor0$1, _WrappedTestCamera;
-	var WrappedTestCamera = (_dec$4 = define("WrappedTestCamera"), _dec2$4 = float, _dec3$3 = float, _dec4$2 = float, _dec5$2 = float, _dec6$2 = float, _dec7$2 = float, _dec8$2 = float, _dec9$2 = vector3, _dec0$2 = float, _dec1$2 = float, _dec$4(_class$4 = (_class2$4 = (_WrappedTestCamera = class WrappedTestCamera extends Model {
+	var _dec$3, _dec2$3, _dec3$2, _dec4$2, _dec5$2, _dec6$2, _dec7$2, _dec8$2, _dec9$2, _dec0$2, _dec1$2, _class$3, _class2$3, _descriptor$3, _descriptor2$2, _descriptor3$1, _descriptor4$1, _descriptor5$1, _descriptor6$1, _descriptor7$1, _descriptor8$1, _descriptor9$1, _descriptor0$1, _WrappedTestCamera;
+	var WrappedTestCamera = (_dec$3 = define("WrappedTestCamera"), _dec2$3 = float, _dec3$2 = float, _dec4$2 = float, _dec5$2 = float, _dec6$2 = float, _dec7$2 = float, _dec8$2 = float, _dec9$2 = vector3, _dec0$2 = float, _dec1$2 = float, _dec$3(_class$3 = (_class2$3 = (_WrappedTestCamera = class WrappedTestCamera extends Model {
 	  GetNearPlane() {
 	    return this.nearPlane;
 	  }
@@ -256047,8 +256262,8 @@
 	      throw new ReferenceError("Invalid element");
 	    }
 	    super();
-	    _initializerDefineProperty(this, "distance", _descriptor$4, this);
-	    _initializerDefineProperty(this, "minDistance", _descriptor2$3, this);
+	    _initializerDefineProperty(this, "distance", _descriptor$3, this);
+	    _initializerDefineProperty(this, "minDistance", _descriptor2$2, this);
 	    _initializerDefineProperty(this, "fov", _descriptor3$1, this);
 	    _initializerDefineProperty(this, "minFov", _descriptor4$1, this);
 	    _initializerDefineProperty(this, "maxFov", _descriptor5$1, this);
@@ -256587,77 +256802,77 @@
 	      return new _this(canvas, values);
 	    })();
 	  }
-	}, _WrappedTestCamera.isCamera = true, _WrappedTestCamera), _descriptor$4 = _applyDecoratedDescriptor(_class2$4.prototype, "distance", [_dec2$4], {
+	}, _WrappedTestCamera.isCamera = true, _WrappedTestCamera), _descriptor$3 = _applyDecoratedDescriptor(_class2$3.prototype, "distance", [_dec2$3], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor2$3 = _applyDecoratedDescriptor(_class2$4.prototype, "minDistance", [_dec3$3], {
+	}), _descriptor2$2 = _applyDecoratedDescriptor(_class2$3.prototype, "minDistance", [_dec3$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor3$1 = _applyDecoratedDescriptor(_class2$4.prototype, "fov", [_dec4$2], {
+	}), _descriptor3$1 = _applyDecoratedDescriptor(_class2$3.prototype, "fov", [_dec4$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 50;
 	  }
-	}), _descriptor4$1 = _applyDecoratedDescriptor(_class2$4.prototype, "minFov", [_dec5$2], {
+	}), _descriptor4$1 = _applyDecoratedDescriptor(_class2$3.prototype, "minFov", [_dec5$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 2;
 	  }
-	}), _descriptor5$1 = _applyDecoratedDescriptor(_class2$4.prototype, "maxFov", [_dec6$2], {
+	}), _descriptor5$1 = _applyDecoratedDescriptor(_class2$3.prototype, "maxFov", [_dec6$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 180;
 	  }
-	}), _descriptor6$1 = _applyDecoratedDescriptor(_class2$4.prototype, "rotationX", [_dec7$2], {
+	}), _descriptor6$1 = _applyDecoratedDescriptor(_class2$3.prototype, "rotationX", [_dec7$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor7$1 = _applyDecoratedDescriptor(_class2$4.prototype, "rotationY", [_dec8$2], {
+	}), _descriptor7$1 = _applyDecoratedDescriptor(_class2$3.prototype, "rotationY", [_dec8$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$1 = _applyDecoratedDescriptor(_class2$4.prototype, "poi", [_dec9$2], {
+	}), _descriptor8$1 = _applyDecoratedDescriptor(_class2$3.prototype, "poi", [_dec9$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor9$1 = _applyDecoratedDescriptor(_class2$4.prototype, "nearPlane", [_dec0$2], {
+	}), _descriptor9$1 = _applyDecoratedDescriptor(_class2$3.prototype, "nearPlane", [_dec0$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor0$1 = _applyDecoratedDescriptor(_class2$4.prototype, "farPlane", [_dec1$2], {
+	}), _descriptor0$1 = _applyDecoratedDescriptor(_class2$3.prototype, "farPlane", [_dec1$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _class2$4)) || _class$4);
+	}), _class2$3)) || _class$3);
 
 	/**
 	 * Camera fitting arithmetic, with no engine in it.
@@ -256850,8 +257065,8 @@
 
 	var _excluded$4 = ["canvas"],
 	  _excluded2$2 = ["canvas"];
-	var _dec$3, _dec2$3, _dec3$2, _dec4$1, _dec5$1, _dec6$1, _dec7$1, _dec8$1, _dec9$1, _dec0$1, _dec1$1, _dec10$1, _dec11$1, _dec12$1, _class$3, _class2$3, _descriptor$3, _descriptor2$2, _TnyCameraTest;
-	var TnyCameraTest = (_dec$3 = define("TnyCameraTest"), _dec2$3 = struct(), _dec3$2 = plain, _dec4$1 = float, _dec5$1 = float, _dec6$1 = float, _dec7$1 = float, _dec8$1 = float, _dec9$1 = float, _dec0$1 = float, _dec1$1 = float, _dec10$1 = float, _dec11$1 = float, _dec12$1 = vector3, _dec$3(_class$3 = (_class2$3 = (_TnyCameraTest = class TnyCameraTest extends Model {
+	var _dec$2, _dec2$2, _dec3$1, _dec4$1, _dec5$1, _dec6$1, _dec7$1, _dec8$1, _dec9$1, _dec0$1, _dec1$1, _dec10$1, _dec11$1, _dec12$1, _class$2, _class2$2, _descriptor$2, _descriptor2$1, _TnyCameraTest;
+	var TnyCameraTest = (_dec$2 = define("TnyCameraTest"), _dec2$2 = struct(), _dec3$1 = plain, _dec4$1 = float, _dec5$1 = float, _dec6$1 = float, _dec7$1 = float, _dec8$1 = float, _dec9$1 = float, _dec0$1 = float, _dec1$1 = float, _dec10$1 = float, _dec11$1 = float, _dec12$1 = vector3, _dec$2(_class$2 = (_class2$2 = (_TnyCameraTest = class TnyCameraTest extends Model {
 	  get isCamera() {
 	    return true;
 	  }
@@ -256954,8 +257169,8 @@
 	      values = values ? _objectSpread2(_objectSpread2({}, optionValues), values) : optionValues;
 	    }
 	    super();
-	    _initializerDefineProperty(this, "wrapped", _descriptor$3, this);
-	    _initializerDefineProperty(this, "custom", _descriptor2$2, this);
+	    _initializerDefineProperty(this, "wrapped", _descriptor$2, this);
+	    _initializerDefineProperty(this, "custom", _descriptor2$1, this);
 	    this._controller = null;
 	    this._distance = 1;
 	    this._minDistance = -1;
@@ -257239,21 +257454,21 @@
 	      return new _this(canvas, values);
 	    })();
 	  }
-	}, _TnyCameraTest.isCamera = true, _TnyCameraTest), _descriptor$3 = _applyDecoratedDescriptor(_class2$3.prototype, "wrapped", [_dec2$3], {
+	}, _TnyCameraTest.isCamera = true, _TnyCameraTest), _descriptor$2 = _applyDecoratedDescriptor(_class2$2.prototype, "wrapped", [_dec2$2], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor2$2 = _applyDecoratedDescriptor(_class2$3.prototype, "custom", [_dec3$2], {
+	}), _descriptor2$1 = _applyDecoratedDescriptor(_class2$2.prototype, "custom", [_dec3$1], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return {};
 	  }
-	}), _applyDecoratedDescriptor(_class2$3.prototype, "distance", [_dec4$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "distance"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "minDistance", [_dec5$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "minDistance"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "maxDistance", [_dec6$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "maxDistance"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "fov", [_dec7$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "fov"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "minFov", [_dec8$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "minFov"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "maxFov", [_dec9$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "maxFov"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "rotationX", [_dec0$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "rotationX"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "rotationY", [_dec1$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "rotationY"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "nearPlane", [_dec10$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "nearPlane"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "farPlane", [_dec11$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "farPlane"), _class2$3.prototype), _applyDecoratedDescriptor(_class2$3.prototype, "poi", [_dec12$1], Object.getOwnPropertyDescriptor(_class2$3.prototype, "poi"), _class2$3.prototype), _class2$3)) || _class$3);
+	}), _applyDecoratedDescriptor(_class2$2.prototype, "distance", [_dec4$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "distance"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "minDistance", [_dec5$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "minDistance"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "maxDistance", [_dec6$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "maxDistance"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "fov", [_dec7$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "fov"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "minFov", [_dec8$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "minFov"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "maxFov", [_dec9$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "maxFov"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "rotationX", [_dec0$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "rotationX"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "rotationY", [_dec1$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "rotationY"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "nearPlane", [_dec10$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "nearPlane"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "farPlane", [_dec11$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "farPlane"), _class2$2.prototype), _applyDecoratedDescriptor(_class2$2.prototype, "poi", [_dec12$1], Object.getOwnPropertyDescriptor(_class2$2.prototype, "poi"), _class2$2.prototype), _class2$2)) || _class$2);
 
 	/** Creates a small plain-value proof snapshot from one character session. */
 	function createCharacterDiagnostics(character) {
@@ -272203,7 +272418,7 @@
 	  return client;
 	}
 
-	var _dec$2, _dec2$2, _dec3$1, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec0, _dec1, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _class$2, _class2$2, _descriptor$2, _descriptor2$1, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor0, _descriptor1, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _dec30, _class3, _dec31, _class4, _dec32, _class5;
+	var _dec$1, _dec2$1, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec0, _dec1, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _class$1, _class2$1, _descriptor$1, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor0, _descriptor1, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _dec30, _class3, _dec31, _class4, _dec32, _class5;
 	var AXIS_INDICES = {
 	  x: 0,
 	  y: 1,
@@ -272249,7 +272464,7 @@
 	/**
 	 * Renderable 3D transform gizmo made from EveCurveLineSet parts.
 	 */
-	var TnyTransformGizmo = (_dec$2 = define("TnyTransformGizmo"), _dec2$2 = boolean, _dec3$1 = boolean, _dec4 = string, _dec5 = float, _dec6 = float, _dec7 = uint, _dec8 = boolean, _dec9 = boolean, _dec0 = boolean, _dec1 = boolean, _dec10 = boolean, _dec11 = boolean, _dec12 = boolean, _dec13 = boolean, _dec14 = float, _dec15 = boolean, _dec16 = boolean, _dec17 = boolean, _dec18 = float, _dec19 = float, _dec20 = float, _dec21 = float, _dec22 = float, _dec23 = float, _dec24 = float, _dec25 = float, _dec26 = boolean, _dec27 = boolean, _dec28 = boolean, _dec29 = boolean, _dec$2(_class$2 = (_class2$2 = class TnyTransformGizmo extends WglTransform {
+	var TnyTransformGizmo = (_dec$1 = define("TnyTransformGizmo"), _dec2$1 = boolean, _dec3 = boolean, _dec4 = string, _dec5 = float, _dec6 = float, _dec7 = uint, _dec8 = boolean, _dec9 = boolean, _dec0 = boolean, _dec1 = boolean, _dec10 = boolean, _dec11 = boolean, _dec12 = boolean, _dec13 = boolean, _dec14 = float, _dec15 = boolean, _dec16 = boolean, _dec17 = boolean, _dec18 = float, _dec19 = float, _dec20 = float, _dec21 = float, _dec22 = float, _dec23 = float, _dec24 = float, _dec25 = float, _dec26 = boolean, _dec27 = boolean, _dec28 = boolean, _dec29 = boolean, _dec$1(_class$1 = (_class2$1 = class TnyTransformGizmo extends WglTransform {
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    super();
@@ -272259,8 +272474,8 @@
 	     * @type {null|TnyClient}
 	     */
 	    this.client = null;
-	    _initializerDefineProperty(this, "display", _descriptor$2, this);
-	    _initializerDefineProperty(this, "active", _descriptor2$1, this);
+	    _initializerDefineProperty(this, "display", _descriptor$1, this);
+	    _initializerDefineProperty(this, "active", _descriptor2, this);
 	    _initializerDefineProperty(this, "mode", _descriptor3, this);
 	    _initializerDefineProperty(this, "size", _descriptor4, this);
 	    _initializerDefineProperty(this, "width", _descriptor5, this);
@@ -274356,217 +274571,217 @@
 	    out[2] = right[2] * s + up[2] * c;
 	    return out;
 	  }
-	}, _descriptor$2 = _applyDecoratedDescriptor(_class2$2.prototype, "display", [_dec2$2], {
+	}, _descriptor$1 = _applyDecoratedDescriptor(_class2$1.prototype, "display", [_dec2$1], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor2$1 = _applyDecoratedDescriptor(_class2$2.prototype, "active", [_dec3$1], {
+	}), _descriptor2 = _applyDecoratedDescriptor(_class2$1.prototype, "active", [_dec3], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor3 = _applyDecoratedDescriptor(_class2$2.prototype, "mode", [_dec4], {
+	}), _descriptor3 = _applyDecoratedDescriptor(_class2$1.prototype, "mode", [_dec4], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "all";
 	  }
-	}), _descriptor4 = _applyDecoratedDescriptor(_class2$2.prototype, "size", [_dec5], {
+	}), _descriptor4 = _applyDecoratedDescriptor(_class2$1.prototype, "size", [_dec5], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 100;
 	  }
-	}), _descriptor5 = _applyDecoratedDescriptor(_class2$2.prototype, "width", [_dec6], {
+	}), _descriptor5 = _applyDecoratedDescriptor(_class2$1.prototype, "width", [_dec6], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 2;
 	  }
-	}), _descriptor6 = _applyDecoratedDescriptor(_class2$2.prototype, "rotationSegments", [_dec7], {
+	}), _descriptor6 = _applyDecoratedDescriptor(_class2$1.prototype, "rotationSegments", [_dec7], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 96;
 	  }
-	}), _descriptor7 = _applyDecoratedDescriptor(_class2$2.prototype, "additive", [_dec8], {
+	}), _descriptor7 = _applyDecoratedDescriptor(_class2$1.prototype, "additive", [_dec8], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor8 = _applyDecoratedDescriptor(_class2$2.prototype, "enableDepth", [_dec9], {
+	}), _descriptor8 = _applyDecoratedDescriptor(_class2$1.prototype, "enableDepth", [_dec9], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor9 = _applyDecoratedDescriptor(_class2$2.prototype, "pickable", [_dec0], {
+	}), _descriptor9 = _applyDecoratedDescriptor(_class2$1.prototype, "pickable", [_dec0], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor0 = _applyDecoratedDescriptor(_class2$2.prototype, "intersectable", [_dec1], {
+	}), _descriptor0 = _applyDecoratedDescriptor(_class2$1.prototype, "intersectable", [_dec1], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor1 = _applyDecoratedDescriptor(_class2$2.prototype, "captureShiftCamera", [_dec10], {
+	}), _descriptor1 = _applyDecoratedDescriptor(_class2$1.prototype, "captureShiftCamera", [_dec10], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor10 = _applyDecoratedDescriptor(_class2$2.prototype, "activateOnShortcut", [_dec11], {
+	}), _descriptor10 = _applyDecoratedDescriptor(_class2$1.prototype, "activateOnShortcut", [_dec11], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor11 = _applyDecoratedDescriptor(_class2$2.prototype, "requireTargetForActivation", [_dec12], {
+	}), _descriptor11 = _applyDecoratedDescriptor(_class2$1.prototype, "requireTargetForActivation", [_dec12], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor12 = _applyDecoratedDescriptor(_class2$2.prototype, "deactivateOnTargetClear", [_dec13], {
+	}), _descriptor12 = _applyDecoratedDescriptor(_class2$1.prototype, "deactivateOnTargetClear", [_dec13], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor13 = _applyDecoratedDescriptor(_class2$2.prototype, "pickRadius", [_dec14], {
+	}), _descriptor13 = _applyDecoratedDescriptor(_class2$1.prototype, "pickRadius", [_dec14], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor14 = _applyDecoratedDescriptor(_class2$2.prototype, "inheritTargetRotation", [_dec15], {
+	}), _descriptor14 = _applyDecoratedDescriptor(_class2$1.prototype, "inheritTargetRotation", [_dec15], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor15 = _applyDecoratedDescriptor(_class2$2.prototype, "useTargetScale", [_dec16], {
+	}), _descriptor15 = _applyDecoratedDescriptor(_class2$1.prototype, "useTargetScale", [_dec16], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor16 = _applyDecoratedDescriptor(_class2$2.prototype, "autoSize", [_dec17], {
+	}), _descriptor16 = _applyDecoratedDescriptor(_class2$1.prototype, "autoSize", [_dec17], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor17 = _applyDecoratedDescriptor(_class2$2.prototype, "targetSizeFactor", [_dec18], {
+	}), _descriptor17 = _applyDecoratedDescriptor(_class2$1.prototype, "targetSizeFactor", [_dec18], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1.35;
 	  }
-	}), _descriptor18 = _applyDecoratedDescriptor(_class2$2.prototype, "minAutoSize", [_dec19], {
+	}), _descriptor18 = _applyDecoratedDescriptor(_class2$1.prototype, "minAutoSize", [_dec19], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 20;
 	  }
-	}), _descriptor19 = _applyDecoratedDescriptor(_class2$2.prototype, "maxAutoSize", [_dec20], {
+	}), _descriptor19 = _applyDecoratedDescriptor(_class2$1.prototype, "maxAutoSize", [_dec20], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor20 = _applyDecoratedDescriptor(_class2$2.prototype, "baseSensitivity", [_dec21], {
+	}), _descriptor20 = _applyDecoratedDescriptor(_class2$1.prototype, "baseSensitivity", [_dec21], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor21 = _applyDecoratedDescriptor(_class2$2.prototype, "translationSensitivity", [_dec22], {
+	}), _descriptor21 = _applyDecoratedDescriptor(_class2$1.prototype, "translationSensitivity", [_dec22], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor22 = _applyDecoratedDescriptor(_class2$2.prototype, "rotationSensitivity", [_dec23], {
+	}), _descriptor22 = _applyDecoratedDescriptor(_class2$1.prototype, "rotationSensitivity", [_dec23], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor23 = _applyDecoratedDescriptor(_class2$2.prototype, "scalingSensitivity", [_dec24], {
+	}), _descriptor23 = _applyDecoratedDescriptor(_class2$1.prototype, "scalingSensitivity", [_dec24], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor24 = _applyDecoratedDescriptor(_class2$2.prototype, "shiftSensitivity", [_dec25], {
+	}), _descriptor24 = _applyDecoratedDescriptor(_class2$1.prototype, "shiftSensitivity", [_dec25], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0.1;
 	  }
-	}), _descriptor25 = _applyDecoratedDescriptor(_class2$2.prototype, "invertX", [_dec26], {
+	}), _descriptor25 = _applyDecoratedDescriptor(_class2$1.prototype, "invertX", [_dec26], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor26 = _applyDecoratedDescriptor(_class2$2.prototype, "invertY", [_dec27], {
+	}), _descriptor26 = _applyDecoratedDescriptor(_class2$1.prototype, "invertY", [_dec27], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor27 = _applyDecoratedDescriptor(_class2$2.prototype, "invertZ", [_dec28], {
+	}), _descriptor27 = _applyDecoratedDescriptor(_class2$1.prototype, "invertZ", [_dec28], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor28 = _applyDecoratedDescriptor(_class2$2.prototype, "invertView", [_dec29], {
+	}), _descriptor28 = _applyDecoratedDescriptor(_class2$1.prototype, "invertView", [_dec29], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _class2$2)) || _class$2);
+	}), _class2$1)) || _class$1);
 	var TnyTranslationGizmo = (_dec30 = define("TnyTranslationGizmo"), _dec30(_class3 = class TnyTranslationGizmo extends TnyTransformGizmo {
 	  constructor() {
 	    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -274606,93 +274821,6 @@
 	  grey: COLOR_GREY
 	};
 	TnyTransformGizmo.Axes = AXES;
-
-	var _dec$1, _dec2$1, _dec3, _class$1, _class2$1, _descriptor$1, _descriptor2;
-	var TnyLensflare = (_dec$1 = define("TnyLensflare"), _dec2$1 = struct(), _dec3 = plain, _dec$1(_class$1 = (_class2$1 = class TnyLensflare extends Model {
-	  get isLensflare() {
-	    return true;
-	  }
-	  get display() {
-	    return this.wrapped && "display" in this.wrapped ? this.wrapped.display : true;
-	  }
-	  set display(value) {
-	    if (this.wrapped && "display" in this.wrapped) {
-	      this.wrapped.display = value;
-	    }
-	  }
-	  constructor(wrapped, values) {
-	    super();
-	    _initializerDefineProperty(this, "wrapped", _descriptor$1, this);
-	    _initializerDefineProperty(this, "custom", _descriptor2, this);
-	    if (wrapped) {
-	      this.SetWrapped(wrapped);
-	    }
-	    if (values) {
-	      this.SetValues(values);
-	    }
-	  }
-	  SetWrapped(wrapped) {
-	    if (wrapped && !(wrapped instanceof EveLensflare)) {
-	      throw new TypeError("Invalid wrapped lensflare");
-	    }
-	    this.wrapped = wrapped || null;
-	    return this;
-	  }
-	  GetBatches(mode, accumulator, perObjectData) {
-	    return this.wrapped && this.wrapped.GetBatches ? this.wrapped.GetBatches(mode, accumulator, perObjectData) : false;
-	  }
-	  GetResources() {
-	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-	    var mesh = this.wrapped && this.wrapped.mesh;
-	    if (mesh && mesh.GetResources) {
-	      mesh.GetResources(out);
-	    }
-	    return out;
-	  }
-	  PrepareRender(sunDirection) {
-	    if (this.wrapped && this.wrapped.PrepareRender) {
-	      this.wrapped.PrepareRender(sunDirection);
-	    }
-	  }
-	  UpdateOccluders() {
-	    if (this.wrapped && this.wrapped.UpdateOccluders) {
-	      this.wrapped.UpdateOccluders();
-	    }
-	  }
-	  Update(dt) {
-	    this.EmitEvent("update", this, dt);
-	    return true;
-	  }
-	  static FromWrapped(wrapped, values) {
-	    return new this(wrapped, values);
-	  }
-	  static GetWrapped(item) {
-	    return item ? item.wrapped || null : null;
-	  }
-	  static HasWrapped(item) {
-	    return !!this.GetWrapped(item);
-	  }
-	  static ClearWrapped(item) {
-	    if (item && item.SetWrapped) {
-	      item.SetWrapped(null);
-	    }
-	    return item;
-	  }
-	}, _descriptor$1 = _applyDecoratedDescriptor(_class2$1.prototype, "wrapped", [_dec2$1], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _descriptor2 = _applyDecoratedDescriptor(_class2$1.prototype, "custom", [_dec3], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return {};
-	  }
-	}), _class2$1)) || _class$1);
 
 	var _dec, _dec2, _class, _class2, _descriptor, _TnyStrategicCruiser;
 	var TnyStrategicCruiser = (_dec = define("TnyStrategicCruiser"), _dec2 = list(["EveShip2", "EveShip"]), _dec(_class = (_class2 = (_TnyStrategicCruiser = class TnyStrategicCruiser extends TnyShip {
