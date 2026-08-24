@@ -1,5 +1,6 @@
 export * from "./EveTransform";
 export * from "./EveEffectRoot";
+export * from "./EveEffectRoot2";
 export * from "./EvePlanet";
 export * from "./EveOldPlanet";
 export * from "./EveShip2";

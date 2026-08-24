@@ -207,17 +207,22 @@ export class EveSpaceScene extends meta.Model
     /**
      * Lights that belong to the SCENE rather than to any object in it.
      *
-     * NON-CARBON, and verified so: Carbon's EveSpaceScene has no lights list,
-     * and every caller of Tr2LightManager's AddLight/AddPointLight is an OBJECT -
-     * booster sets, behaviours, stretches, banner and haze sets, effect roots.
-     * Its scene-level lighting is the sun, the ambient colour and the SH lighting
-     * manager, nothing else.
+     * NON-CARBON, and a deliberate SHORTCUT rather than a gap in Carbon.
      *
-     * That is the right model for lighting a WORLD, where every light is emitted
-     * by something in it. It is the wrong one for lighting a SUBJECT, where the
-     * rig has to stay put while the thing under it is swapped out - and there is
-     * no object to hang such a light on, because it belongs to the viewer rather
-     * than to the scene's contents.
+     * The narrow fact is right: Carbon's EveSpaceScene has no lights list, and
+     * every caller of Tr2LightManager's AddLight/AddPointLight is an OBJECT.
+     * Its scene-level lighting is the sun, the ambient colour and the SH
+     * lighting manager, nothing else. That is the right model for lighting a
+     * WORLD, and the wrong one for lighting a SUBJECT, where the rig has to stay
+     * put while the thing under it is swapped out.
+     *
+     * But Carbon DOES have an object for exactly that: `EveEffectRoot2` is an
+     * `ITr2LightOwner` (EveEffectRoot2.h:99-102) with the same AddLight /
+     * ClearLights / GetLights surface, and it can be placed in a scene on its
+     * own. It is ported now (src/eve/object/EveEffectRoot2.js), so a rig that
+     * wants Carbon's answer should hang its lights on one of those and add it to
+     * `objects`. This list stays because it is simpler and because things
+     * already use it - not because there was no other way.
      *
      * These are ordinary light instances and go through the same collector,
      * culling, flag gate and packing as an object's own, so a shader cannot tell

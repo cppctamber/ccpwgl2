@@ -71,7 +71,8 @@
     "test:eve-connector": "node scripts/test-eve-connector.js",
     "test:sphere-pin": "node scripts/test-sphere-pin.js",
     "test:pi-colony": "node scripts/test-pi-colony.js",
-    "test:spherical-convention": "node scripts/test-spherical-convention.js"
+    "test:spherical-convention": "node scripts/test-spherical-convention.js",
+    "test:eve-effect-root2": "node scripts/test-eve-effect-root2.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
