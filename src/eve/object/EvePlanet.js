@@ -687,6 +687,24 @@ export class EvePlanet extends EveEffectRoot2
 
         if (atmosphere) this.effectChildren.push(atmosphere);
 
+        // A planet with no radius is INVISIBLE, not merely small, and silently
+        // so - the pixel-diameter estimate scales with the radius, so Carbon's
+        // default of 1 metre puts every planet under `minScreenSize` at any
+        // real distance, `UpdateLOD` drops it to low detail, and `GetBatches`
+        // returns nothing. That failure looks exactly like a missing template.
+        //
+        // The radius cannot be recovered from the data: a template's own is
+        // whatever the artist left (`p_moon_01.black` says 7.15e22), so there is
+        // nothing sensible to fall back TO. Say so instead of drawing nothing.
+        if (!(this.radius > 1))
+        {
+            tw2.Debug({
+                name: "EvePlanet",
+                message: `Planet "${this.name || resPath}" has no usable radius (${this.radius}) and will not be visible`,
+                data: { itemID: this.itemID, radius: this.radius, resPath }
+            });
+        }
+
         this._boundsDirty = true;
         this.Initialize();
 
