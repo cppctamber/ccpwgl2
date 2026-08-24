@@ -25,15 +25,28 @@ import { EveEffectRoot2 } from "./EveEffectRoot2";
  *      `planetsphere.gr2`. So `Fetch` adopts a template rather than nesting one
  *      inside a wrapper. (554 templates under `template/`, 441 under
  *      `template_hi/`.)
- *   2. The `HeightMap` parameter the surface shaders take is a DUMMY in almost
- *      every template - `res:/texture/global/black.dds` for terrestrial, ice,
- *      lava, ocean, plasma, sandstorm, shattered and thunder; only gas giants
- *      bind a real one, and it is a shipped .dds. So the bake was computing a
- *      texture the data already provides, and dropping it loses nothing.
+ *   2. The dx11 surface shaders DO NOT BAKE. Read off the compiled container's
+ *      pixel stage, `earthlikeplanet` on dx11 binds ten textures and none of
+ *      them is a `HeightMap`: t0 PolesGradient, t1 FillTexture,
+ *      **t2 NormalHeight1, t3 NormalHeight2**, t4/t5 GroundScattering1/2,
+ *      t6 CityLight, t7 CloudsTexture, t8/t9 CityDistribution*. The same
+ *      shader on gles2 declares `HeightMap`, `HeightMapSampler` and
+ *      `HeightMapPoleSampler` and no NormalHeight at all.
  *
- * The bake could not have worked on dx11 in any case: the whole precompute
- * stage - every `*blitheight` and `*export` shader - ships only in the gles2
- * tree, which is why a planet would not load on the dx11 profile at all.
+ *      So the two profiles differ in exactly one input. gles2 BAKES the
+ *      celestial's two height maps into one `HeightMap` through `*blitheight`;
+ *      dx11 takes both source maps directly. Ten of the eleven texture
+ *      parameters are otherwise identical by name - it is the same shader,
+ *      newer.
+ *
+ * An earlier version of this comment claimed the bake was redundant because
+ * the templates bind `HeightMap` to `res:/texture/global/black.dds`. That was
+ * WRONG: black.dds is the unbaked PLACEHOLDER, not an answer. The bake is real
+ * and it is CCP's - every `*blitheight` and `*export` shader ships, confined to
+ * the gles2 tree. What is true is that dx11 does not need one, which is why
+ * this class binds {@link heightMap1} and {@link heightMap2} to NormalHeight1
+ * and NormalHeight2 instead. gles2 still wants a baked map, and `EveOldPlanet`
+ * is still the only thing that produces one.
  */
 @meta.define("EvePlanet", true)
 @meta.stage(2)
@@ -86,6 +99,36 @@ export class EvePlanet extends EveEffectRoot2
     @meta.float
     estimatedPixelDiameter = 0;
 
+
+    /**
+     * NON-CARBON, and the two textures that make a planet look like a planet.
+     *
+     * The SDE gives every celestial two height maps. What happens to them
+     * differs by profile, and that difference is the whole reason a dx11 planet
+     * came out untextured:
+     *
+     *   gles2  `earthlikeplanet` declares ONE `HeightMap`, and the legacy
+     *          pipeline BAKED these two into it through `*blitheight`.
+     *   dx11   `earthlikeplanet` declares no `HeightMap` at all. It takes
+     *          `NormalHeight1` and `NormalHeight2` - these two, directly, with
+     *          no bake. Read off the compiled container's pixel stage:
+     *          t0 PolesGradient, t1 FillTexture, t2 NormalHeight1,
+     *          t3 NormalHeight2, t4/t5 GroundScattering1/2, t6 CityLight,
+     *          t7 CloudsTexture, t8/t9 CityDistribution*.
+     *
+     * The TEMPLATE cannot supply them - it binds `HeightMap` to a placeholder
+     * `res:/texture/global/black.dds` and nothing else - because they are
+     * per-celestial, not per-type. So with them unbound, eight of the ten
+     * textures load and the two that drive the terrain do not.
+     *
+     * @type {String}
+     */
+    @meta.path
+    heightMap1 = "";
+
+    /** @type {String} */
+    @meta.path
+    heightMap2 = "";
 
     /**
      * NON-CARBON. The SDE item id of the celestial this planet stands for.
@@ -153,6 +196,9 @@ export class EvePlanet extends EveEffectRoot2
     // Carbon evaluates its ball curves at the update context's time; ccpwgl's
     // view-dependent pass is handed no clock, so one is accumulated in Update.
     _time = 0;
+
+    // Set once ApplyHeightMaps has bound them, so the walk stops.
+    _heightMapsBound = false;
 
     _resPath = "";
     _atmospherePath = "";
@@ -414,6 +460,67 @@ export class EvePlanet extends EveEffectRoot2
     }
 
     /**
+     * Binds the celestial's two height maps onto every effect whose shader
+     * actually asks for them.
+     *
+     * The gate is `shader.HasTexture("NormalHeight1")`, which makes this
+     * profile-correct without testing the profile: the dx11 surface shaders
+     * declare those textures and the gles2 ones do not, so a gles2 effect is
+     * skipped rather than given a texture it would misuse. It also skips the
+     * z-only, picking and atmosphere effects, which declare neither.
+     *
+     * Deferred rather than done once, because an effect has no `shader` until
+     * its resource has loaded and been prepared - which is usually after
+     * `Fetch` resolves. {@link Update} keeps calling this until it lands.
+     *
+     * @returns {Number} how many effects were bound
+     */
+    ApplyHeightMaps()
+    {
+        if (!this.heightMap1 && !this.heightMap2) return 0;
+
+        const textures = {};
+        if (this.heightMap1) textures.NormalHeight1 = this.heightMap1;
+        if (this.heightMap2) textures.NormalHeight2 = this.heightMap2;
+
+        let bound = 0;
+
+        const visit = (node, seen, depth) =>
+        {
+            if (!node || typeof node !== "object" || depth > 12 || seen.has(node)) return;
+            seen.add(node);
+
+            if (Array.isArray(node))
+            {
+                for (const item of node) visit(item, seen, depth + 1);
+                return;
+            }
+
+            // An effect, loaded far enough to say what it wants.
+            if (typeof node.SetTextures === "function" && node.shader)
+            {
+                if (node.shader.HasTexture && node.shader.HasTexture("NormalHeight1"))
+                {
+                    node.SetTextures(textures);
+                    bound++;
+                }
+                return;
+            }
+
+            for (const key of [ "effectChildren", "objects", "children", "mesh", "effect",
+                "opaqueAreas", "transparentAreas", "additiveAreas", "decalAreas", "depthAreas" ])
+            {
+                if (node[key]) visit(node[key], seen, depth + 1);
+            }
+        };
+
+        visit(this.effectChildren, new Set(), 0);
+
+        if (bound) this._heightMapsBound = true;
+        return bound;
+    }
+
+    /**
      * Gets resources.
      * @param {Array} [out=[]]
      * @returns {Array} out
@@ -543,6 +650,11 @@ export class EvePlanet extends EveEffectRoot2
     {
         this._time += dt || 0;
 
+        // An effect has no `shader` until its resource has loaded and prepared,
+        // which is normally after Fetch resolved. Retried until it lands, then
+        // never again - the flag is what stops this being a per-frame walk.
+        if (!this._heightMapsBound && (this.heightMap1 || this.heightMap2)) this.ApplyHeightMaps();
+
         if (this.controllers.length)
         {
             if (!this._controllersLinked) this.Initialize();
@@ -654,12 +766,17 @@ export class EvePlanet extends EveEffectRoot2
             itemID = 0,
             radius = 0,
             resPath = "",
-            atmospherePath = ""
+            atmospherePath = "",
+            heightMap1 = "",
+            heightMap2 = ""
         } = options;
 
         this.name = name;
         this.itemID = itemID;
         if (radius) this.radius = radius;
+        this.heightMap1 = heightMap1;
+        this.heightMap2 = heightMap2;
+        this._heightMapsBound = false;
         this._resPath = resPath;
         this._atmospherePath = atmospherePath;
 
@@ -707,6 +824,10 @@ export class EvePlanet extends EveEffectRoot2
 
         this._boundsDirty = true;
         this.Initialize();
+
+        // Attempted here for the case where the effects are already prepared,
+        // and retried from Update until it lands - see ApplyHeightMaps.
+        this.ApplyHeightMaps();
 
         return this;
     }
