@@ -148,25 +148,38 @@ export class TnyMoon extends TnySpaceObject
     {
         let removed = 0;
 
-        const prune = (transform) =>
-        {
-            const children = transform && transform.children;
-            if (!Array.isArray(children)) return;
+        // Three list names, because the aurora's home moved with the EvePlanet
+        // rewrite. The old class hung a template under `highDetail.children`;
+        // the Carbon one adopts the template's own `effectChildren`, and a
+        // container nests further children under `objects`. Walking all three
+        // keeps this working against either shape rather than betting on one.
+        const LISTS = [ "effectChildren", "objects", "children" ];
 
-            for (let i = children.length - 1; i >= 0; i--)
+        const prune = (node, seen) =>
+        {
+            if (!node || typeof node !== "object" || seen.has(node)) return;
+            seen.add(node);
+
+            for (const key of LISTS)
             {
-                const child = children[i];
-                if (/aurora/i.test(child?.name || ""))
+                const list = node[key];
+                if (!Array.isArray(list)) continue;
+
+                for (let i = list.length - 1; i >= 0; i--)
                 {
-                    children.splice(i, 1);
-                    removed++;
-                    continue;
+                    const child = list[i];
+                    if (/aurora/i.test(child?.name || ""))
+                    {
+                        list.splice(i, 1);
+                        removed++;
+                        continue;
+                    }
+                    prune(child, seen);
                 }
-                prune(child);
             }
         };
 
-        prune(wrapped?.highDetail);
+        prune(wrapped, new Set());
         return removed;
     }
 
