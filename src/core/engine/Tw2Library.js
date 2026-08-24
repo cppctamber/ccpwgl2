@@ -163,6 +163,33 @@ export class Tw2Library extends Tw2EventEmitter
     forceUberDepthOff = true;
 
     /**
+     * A blanket multiplier on every collected local light's colour.
+     *
+     * NON-CARBON. Carbon has no such control: its lights are authored against
+     * an attenuation and an exposure pipeline that agree with each other, so
+     * there is nothing to correct. This exists because ours do not yet agree,
+     * and it is a KNOB, not a fix - see below.
+     *
+     * `Tr2LightManager::AddLight` scales a light's colour by its RADIUS
+     * (`data.color.x *= data.radius * dimming`, cpp:342-346), which is only
+     * neutral if the shader's falloff divides that radius back out. Carbon's
+     * does. Whether every path of ours does is unverified - the local-light
+     * loop lives only in the dx11 `.sm_depth` containers, which are DXBC and
+     * have to be translated before they can be read - and with radii between
+     * 10 and 100 in a typical scene, a mismatch is a one-to-two order of
+     * magnitude error rather than a subtle one.
+     *
+     * So: turn it down to make a scene usable, and do not read a working value
+     * as evidence that anything is correct. A value other than 1 means the
+     * attenuation still owes an explanation. Applied after the premultiply and
+     * the size dimming, to the colour only - it changes no light's radius,
+     * position or falloff, so it cannot alter which surfaces a light reaches,
+     * only how strongly.
+     * @type {Number}
+     */
+    localLightBrightness = 1;
+
+    /**
      * Enables experimental Carbon-shaped render batch context
      * @type {boolean}
      */
@@ -631,6 +658,7 @@ export class Tw2Library extends Tw2EventEmitter
         if (opt.audioEnabled !== undefined) this.audioEnabled = !!opt.audioEnabled;
         if (opt.enableExperimentalShadows !== undefined) this.enableExperimentalShadows = !!opt.enableExperimentalShadows;
         if (opt.forceUberDepthOff !== undefined) this.forceUberDepthOff = !!opt.forceUberDepthOff;
+        if (opt.localLightBrightness !== undefined) this.localLightBrightness = Number(opt.localLightBrightness);
         if (opt.enableExperimentalBatchContext !== undefined) this.enableExperimentalBatchContext = !!opt.enableExperimentalBatchContext;
         if (opt.capabilities !== undefined) this.RegisterCapabilities(opt.capabilities);
         if (opt.resourceHandler) this.SetCustomResourceHandler(opt.resourceHandler);

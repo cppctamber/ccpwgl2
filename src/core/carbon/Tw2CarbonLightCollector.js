@@ -183,6 +183,7 @@ class Tw2CarbonLightCollector
      * @param {number} [options.fovY=0] vertical field of view in radians, used by the pixel-size cutoff. If <= 0, the cutoff never rejects.
      * @param {number[]} [options.cameraPosition=[0,0,0]] world-space camera position, used by both the pixel-size cutoff and the contribution sort.
      * @param {{GetPixelSizeAcross:Function}} [options.frustum] measures apparent size the way Carbon does - see below. Duck typed, so this module stays dependency free.
+     * @param {Number} [options.brightness=1] blanket multiplier on every surviving light's colour - see tw2.localLightBrightness. Passed in rather than read, so this module stays runnable under plain node.
      * @param {number} [options.maxLights] cap on the number of surviving lights (defaults to the owned Tw2CarbonLightList's capacity; always clamped to it).
      * @param {number} [options.cutoffPixelSize=Tw2CarbonLightCollector.CUTOFF_PIXEL_SIZE] pixel-size cutoff override (e.g. to scale by LOD).
      * @param {number} [options.fadeBandPixels=Tw2CarbonLightCollector.FADE_BAND_PIXELS] fade-band override (e.g. to scale by LOD).
@@ -194,6 +195,14 @@ class Tw2CarbonLightCollector
         const viewportHeight = options.viewportHeight || 0;
         const fovY = options.fovY || 0;
         const cameraPosition = options.cameraPosition || [ 0, 0, 0 ];
+
+        // A blanket colour multiplier, applied last. Non-Carbon: see
+        // tw2.localLightBrightness for why it exists and why a value other than
+        // 1 is a debt rather than a setting. Guarded so a null or a negative
+        // cannot quietly blank the scene.
+        const brightness = typeof options.brightness === "number" && options.brightness >= 0
+            ? options.brightness
+            : 1;
 
         // Carbon measures apparent size along the VIEW DIRECTION
         // (TriFrustum::GetPixelSizeAccross: `depth = dot( viewDir, viewPos -
@@ -261,6 +270,13 @@ class Tw2CarbonLightCollector
                 r *= radius;
                 g *= radius;
                 b *= radius;
+            }
+
+            if (brightness !== 1)
+            {
+                r *= brightness;
+                g *= brightness;
+                b *= brightness;
             }
 
             // Contribution heuristic reused from Tw2CarbonLightCuller (radius^2 / distance^2

@@ -935,6 +935,7 @@ export class EveSpaceScene extends meta.Model
         // fallback for the pixel-size measure the frustum now provides.
         const projScaleY = d.projection[5] || 1;
         collector.Resolve({
+            brightness: tw2.localLightBrightness,
             frustum: this._frustum,
             frustumPlanes: this._frustum.GetPlanes(),
             viewportHeight: d.viewportHeight || 0,
