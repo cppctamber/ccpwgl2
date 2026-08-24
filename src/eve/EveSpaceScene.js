@@ -204,6 +204,33 @@ export class EveSpaceScene extends meta.Model
     @meta.list("EvePlanet")
     planets = [];
 
+    /**
+     * Lights that belong to the SCENE rather than to any object in it.
+     *
+     * NON-CARBON, and verified so: Carbon's EveSpaceScene has no lights list,
+     * and every caller of Tr2LightManager's AddLight/AddPointLight is an OBJECT -
+     * booster sets, behaviours, stretches, banner and haze sets, effect roots.
+     * Its scene-level lighting is the sun, the ambient colour and the SH lighting
+     * manager, nothing else.
+     *
+     * That is the right model for lighting a WORLD, where every light is emitted
+     * by something in it. It is the wrong one for lighting a SUBJECT, where the
+     * rig has to stay put while the thing under it is swapped out - and there is
+     * no object to hang such a light on, because it belongs to the viewer rather
+     * than to the scene's contents.
+     *
+     * These are ordinary light instances and go through the same collector,
+     * culling, flag gate and packing as an object's own, so a shader cannot tell
+     * them apart. The only difference is that the scene updates them against
+     * IDENTITY: their `position` and `rotation` are world space, with no parent
+     * to inherit from and no bone to follow.
+     *
+     * Empty by default, so a scene that adds none behaves exactly as before.
+     * @type {Array}
+     */
+    @meta.list("Tr2PointLight", "Tr2SpotLight", "Tr2FactionLight")
+    lights = [];
+
     @meta.color
     clearColor = vec4.fromValues(0, 0, 0, 1);
 
@@ -882,6 +909,7 @@ export class EveSpaceScene extends meta.Model
 
         collector.Reset();
         this.PerChildObject("GetLights", collector, { dt });
+        this.GetLights(collector, { dt });
 
         // The list's tile-header layout must track the real viewport —
         // the translated shaders derive their tile count from the
@@ -2174,6 +2202,94 @@ export class EveSpaceScene extends meta.Model
     }
 
     /**
+     * Collects the scene's own lights - see the `lights` property.
+     *
+     * Updated against IDENTITY, because a scene light has no parent. That is not
+     * a shortcut: it is what makes the rig stay where it was put when the object
+     * under it is replaced.
+     *
+     * Shaped as `GetLights(collector, parentContext)` so it reads the same as
+     * every light owner in the object graph, and so a caller can hand the scene
+     * to anything that walks them.
+     *
+     * @param {Tw2CarbonLightCollector} collector
+     * @param {Object} [parentContext]
+     * @param {Number} [parentContext.dt=0]
+     * @returns {Number} how many were collected
+     */
+    GetLights(collector, parentContext = {})
+    {
+        if (!collector || !this.lights.length) return 0;
+
+        const identity = EveSpaceScene.global.mat4_identity;
+        const dt = parentContext.dt || 0;
+        let collected = 0;
+
+        for (let i = 0; i < this.lights.length; i++)
+        {
+            const light = this.lights[i];
+
+            // Duck checked rather than assumed: `lights` is a public array a
+            // consumer fills, and a plain object pushed into it should be ignored
+            // rather than throw in the middle of a frame.
+            if (!light || typeof light.Update !== "function" || typeof light.GetCarbonLightData !== "function") continue;
+
+            if (light.display === false) continue;
+
+            light.Update(dt, identity, null);
+            collector.Collect([ light.GetCarbonLightData({ parentBrightness: 1, parentScale: 1 }) ]);
+            collected++;
+        }
+
+        return collected;
+    }
+
+    /**
+     * Adds a light to the scene, if it is not already there.
+     * @param {*} light - a Tr2PointLight, Tr2SpotLight or Tr2FactionLight
+     * @returns {*} the light
+     */
+    AddLight(light)
+    {
+        if (light && !this.lights.includes(light)) this.lights.push(light);
+        return light;
+    }
+
+    /**
+     * Removes a light from the scene.
+     * @param {*} light
+     * @returns {Boolean} true if it was there
+     */
+    RemoveLight(light)
+    {
+        const index = this.lights.indexOf(light);
+        if (index === -1) return false;
+        this.lights.splice(index, 1);
+        return true;
+    }
+
+    /**
+     * Finds a scene light by name.
+     * @param {String} name
+     * @returns {*|null}
+     */
+    FindLightByName(name)
+    {
+        return this.lights.find(x => x && x.name === name) || null;
+    }
+
+    /**
+     * Removes every scene light.
+     * @returns {Number} how many were removed
+     */
+    ClearLights()
+    {
+        const count = this.lights.length;
+        this.lights.length = 0;
+        return count;
+    }
+
+    /**
      * Renders distortion
      * @param {Number} dt
      * @returns {boolean} true if completed
@@ -2887,6 +3003,9 @@ export class EveSpaceScene extends meta.Model
      * @type {?*}
      */
     static global = {
+        // Never written to - a scene light has no parent, and passing a shared
+        // identity keeps that explicit rather than special-casing it downstream.
+        mat4_identity: mat4.create(),
         vec3_ZERO: vec3.create(),
         vec3_0: vec3.create(),
         vec3_sh: vec3.create(),

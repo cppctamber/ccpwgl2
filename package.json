@@ -64,7 +64,8 @@
     "test:turret-pushed-transforms": "node scripts/test-turret-pushed-transforms.js",
     "test:geometry-readiness": "node scripts/test-geometry-readiness.js",
     "test:frustum-plane-convention": "node scripts/test-frustum-plane-convention.js",
-    "test:per-frame-ps-registers": "node scripts/test-per-frame-ps-registers.js"
+    "test:per-frame-ps-registers": "node scripts/test-per-frame-ps-registers.js",
+    "test:scene-lights": "node scripts/test-scene-lights.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {
