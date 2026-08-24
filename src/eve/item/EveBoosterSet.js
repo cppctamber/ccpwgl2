@@ -371,15 +371,34 @@ export class EveBoosterSet extends EveObjectSet
 
     /**
      * Updates booster items that were built from locators
+     *
+     * `transforms` is where the OWNER says each booster goes, and takes
+     * precedence over the locator's authored matrix - the same contract
+     * EveTurretSet.UpdateItemsFromLocators uses, and for the same reason: the
+     * ship owns the skeleton, the mesh index and the loading state, so it is
+     * the only thing that can resolve a name to a place.
+     *
+     * NON-CARBON. Carbon builds boosters from a locator's transform only
+     * (`m_boosters->Add( &locator->GetTransform(), ... )`), so a booster on an
+     * animated bone stays at its bind pose there. We have no reason to carry
+     * that restriction: the ship already resolves bones for turrets, and a
+     * booster asks the same question. A hull whose engines move - a nozzle on
+     * a part that deploys - has its exhaust follow.
+     *
+     * A null entry falls back to the authored transform, so a rigid hull and
+     * a hull still loading both behave exactly as before.
+     *
      * @param {Array.<EveLocator2>} locators
+     * @param {Array} [transforms] - resolved by the owner, one per locator
      */
-    UpdateItemsFromLocators(locators)
+    UpdateItemsFromLocators(locators, transforms)
     {
         const items = Array.from(this.items);
 
         for (let i = 0; i < locators.length; i++)
         {
-            const { name, transform, atlasIndex0, atlasIndex1 } = locators[i];
+            const { name, atlasIndex0, atlasIndex1 } = locators[i];
+            const transform = (transforms && transforms[i]) || locators[i].transform;
 
             let item = this.FindItemByLocatorName(name);
             if (!item)

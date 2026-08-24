@@ -40,7 +40,6 @@ export class EveLocator2 extends meta.Model
 
     _bone = null;
     _meshIndex = -1;
-    _parentTransform = null;
 
     /**
      * Alias for _bone
@@ -85,13 +84,25 @@ export class EveLocator2 extends meta.Model
 
     /**
      * Gets the locator's world transform
+     *
+     * The parent's matrix is PASSED IN. It used to be pushed onto the locator
+     * every frame as `_parentTransform` and read back here, which made a
+     * locator's answer depend on whether its owner had updated yet - and left
+     * this method throwing on a locator nobody had pushed to. The only caller
+     * is Intersect, which is handed the owner's world transform as an argument
+     * already.
+     *
+     * Model space when there is no parent, which is the honest answer for a
+     * locator considered on its own.
+     *
      * @param {mat4} m
+     * @param {mat4} [worldTransform]
      * @returns {mat4} m
      */
-    GetWorldTransform(m)
+    GetWorldTransform(m, worldTransform)
     {
         this.GetTransform(m);
-        return mat4.multiply(m, this._parentTransform, m);
+        return worldTransform ? mat4.multiply(m, worldTransform, m) : m;
     }
 
     /**
@@ -128,14 +139,15 @@ export class EveLocator2 extends meta.Model
     }
 
     /**
-     * Gets the locator's world transform
+     * Gets the locator's world bounding box
      * @param {box3} box
+     * @param {mat4} [worldTransform]
      * @returns {box3} box
      */
-    GetWorldBoundingBox(box)
+    GetWorldBoundingBox(box, worldTransform)
     {
         this.GetBoundingBox(box);
-        return box3.transformMat4(box, box, this._parentTransform);
+        return worldTransform ? box3.transformMat4(box, box, worldTransform) : box;
     }
 
     /**
@@ -152,14 +164,15 @@ export class EveLocator2 extends meta.Model
     }
 
     /**
-     * Gets the locator's world transform
+     * Gets the locator's world bounding sphere
      * @param {sph3} sph
+     * @param {mat4} [worldTransform]
      * @returns {sph3} sph
      */
-    GetWorldBoundingSphere(sph)
+    GetWorldBoundingSphere(sph, worldTransform)
     {
         const box3_0 = box3.alloc();
-        sph3.fromBox3(sph, this.GetWorldBoundingBox(box3_0));
+        sph3.fromBox3(sph, this.GetWorldBoundingBox(box3_0, worldTransform));
         box3.unalloc(box3_0);
         return sph;
     }
@@ -175,7 +188,7 @@ export class EveLocator2 extends meta.Model
     {
         if (!ray.GetOption("locators", "skip"))
         {
-            const intersect = ray.IntersectWorldSph3(this.GetWorldBoundingSphere(EveLocator.global.sph3_0));
+            const intersect = ray.IntersectWorldSph3(this.GetWorldBoundingSphere(EveLocator.global.sph3_0, worldTransform));
             if (intersect)
             {
                 intersect.name = this.name;
@@ -282,7 +295,30 @@ export class EveLocator2 extends meta.Model
     FindBone(animationController, meshIndex=0)
     {
         this._bone = animationController.FindMeshBoneByName(this.name, meshIndex);
-        this._meshIndex = meshIndex;
+
+        // `_meshIndex` is the LATCH - callers skip the lookup while it matches,
+        // and it exists for a good reason: a rigid hull has no bones at all, so
+        // without it every locator would search by name every frame forever.
+        //
+        // But latching on a null treats "not ready yet" as "no such bone". A
+        // locator resolved before its geometry finished loading would then stay
+        // boneless for the life of the ship while a neighbour resolved a moment
+        // later got its bone - one hull, half its hardpoints stuck at the bind
+        // pose, and nothing in the geometry to explain which half.
+        //
+        // So latch on a definitive answer only: either a bone was found, or the
+        // geometry is loaded and genuinely has no bone of this name.
+        //
+        // NOT FindModelForMesh, which was the first thing tried here and is
+        // wrong: it returns null for a RIGID hull too - geometry loaded, no
+        // model binding that mesh - so a rigid hull never latched and every
+        // locator on it searched by name every frame, which is the whole cost
+        // the latch exists to avoid.
+        if (this._bone || animationController.IsGeometryGood())
+        {
+            this._meshIndex = meshIndex;
+        }
+
         return this._bone;
     }
 

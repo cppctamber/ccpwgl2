@@ -1210,7 +1210,25 @@ export class EveTurretSet extends EveObjectSet
      * - Turrets without locator names are ignored
      * @param {Array<EveLocator2>} locators
      */
-    UpdateItemsFromLocators(locators)
+    /**
+     * Updates items from locators.
+     *
+     * `transforms` is how the OWNER says where each turret goes, and is the
+     * form to prefer: Carbon pushes a matrix in (`SetLocalTransform`) because
+     * the ship owns everything the answer depends on - the skeleton, the mesh
+     * index, the locator list. Reading a bone back off a locator, as the
+     * fallback below does, has the turret set reaching through a locator for
+     * state it does not own, and is why a locator ended up caching a bone at
+     * all.
+     *
+     * When a transform is supplied the item takes it as authoritative and gets
+     * NO bone: the matrix already is the bone's world transform where the
+     * binding was a joint, so keeping a bone as well would apply it twice.
+     *
+     * @param {Array} locators - carries the name each item is identified by
+     * @param {Array<mat4>} [transforms] - resolved by the owner, one per locator
+     */
+    UpdateItemsFromLocators(locators, transforms)
     {
         const
             g = EveTurretSet.global,
@@ -1219,7 +1237,10 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < locators.length; i++)
         {
-            const { name, transform, bone = null } = locators[i];
+            const pushed = transforms ? transforms[i] : null;
+            const { name } = locators[i];
+            const transform = pushed || locators[i].transform;
+            const bone = pushed ? null : (locators[i].bone || null);
 
             let item = this.FindItemByLocatorName(name);
             if (!item)

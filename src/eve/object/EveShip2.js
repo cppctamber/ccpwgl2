@@ -217,6 +217,23 @@ export class EveShip2 extends EveObject
     _customMaskBlending = vec4.create();
     _worldTransformLast = mat4.create();
 
+    /** Reused by locator resolution, which runs per hardpoint per frame */
+    _locatorBinding = { type: 0, index: -1 };
+    _turretTransformPool = [];
+    _boosterTransformPool = [];
+    _boosterTransforms = [];
+
+    /**
+     * How many boosters could not be settled: on a bone, so moving, or not
+     * resolvable yet. Zero on a loaded rigid hull, and it is what tells Update
+     * whether the one-shot booster rebuild has to be repeated.
+     *
+     * Starts non-zero so the first Update resolves at least once even if
+     * Initialize never ran.
+     * @type {Number}
+     */
+    _boosterUnsettledCount = 1;
+
     /**
      * Initializes the ship
      */
@@ -660,6 +677,197 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * How a locator name resolves.
+     *
+     * After Carbon's `LocatorType` (EveSpaceObject2.h:700), which a name matches
+     * as one kind or the other and not as a fallback chain - Carbon's own
+     * comment at EveSpaceObject2.cpp:1371 is "using a bone's position has
+     * priority!".
+     *
+     *   BONE       - a bone drives it, and the bone's world transform IS the
+     *                answer. It MOVES, so it must be re-read every frame.
+     *                Carbon spells this ELT_JOINT; everything else in this
+     *                library says bone, so this does too.
+     *   TRANSFORM  - an authored locator. Static: resolve once and keep it.
+     *   NONE       - resolved, and there is nothing of this name. FINAL - a
+     *                caller can stop asking.
+     *   NOT_LOADED - cannot be answered yet. NOT final: ask again.
+     *
+     * The last two are the pair worth being careful about. Carbon collapses
+     * them into one nullptr and can afford to, because it never asks
+     * speculatively - it resolves once loading has finished and skips while
+     * loading. We can be asked at any time, and the two demand opposite
+     * behaviour: one says stop, the other says come back. Collapsing them
+     * means either giving up on a hardpoint that was merely late, or asking
+     * forever about a name that does not exist.
+     *
+     * NOT_LOADED is `null` and NONE is `0`, so BOTH are falsy: `if (!type)` is
+     * still the whole of "no transform was written", and `type === null` is the
+     * narrower "ask again".
+     *
+     * @type {Object}
+     */
+    static LocatorType = { NOT_LOADED: null, NONE: 0, TRANSFORM: 1, BONE: 2 };
+
+    /**
+     * Resolves a locator name to a kind and an index.
+     *
+     * A BONE IS CHECKED FIRST, deliberately - see LocatorType. A hardpoint whose
+     * name matches a bone is driven by that bone even when a locator of the same
+     * name also exists.
+     *
+     * NOTHING RESOLVES UNTIL THE GEOMETRY IS LOADED, and that gate is what
+     * makes the result keepable. Because a bone is checked before an authored
+     * locator, a hardpoint that WILL be driven by a bone resolves to its locator
+     * while the geometry is in flight - and looks entirely settled while doing
+     * so. A caller keeping that answer holds the bind pose for the life of the
+     * ship, having asked at the one moment it could not be known.
+     *
+     * Carbon has the same order and no such gate, because it never asks early:
+     * it resolves in `RebuildCachedData` - "loading of data is done, so check
+     * for locators and re-attach turrets" - and skips while loading
+     * (`if ((event & BELIST_LOADING) == 0)`).
+     *
+     * So a resolved TRANSFORM or BONE can be trusted and kept; NOT_LOADED means
+     * ask again; NONE means the name is genuinely nothing and asking again will
+     * not help.
+     *
+     * @param {String} name
+     * @param {Number} [meshIndex]
+     * @param {Object} [out] - reused rather than reallocated per call
+     * @returns {{type: Number, index: Number}}
+     */
+    DetermineLocatorType(name, meshIndex = this.meshIndex, out = { type: 0, index: -1 })
+    {
+        const types = EveShip2.LocatorType;
+
+        out.type = types.NONE;
+        out.index = -1;
+
+        if (!name) return out;
+
+        if (this.animation && !this.animation.IsGeometryGood())
+        {
+            out.type = types.NOT_LOADED;
+            return out;
+        }
+
+        // A bone first.
+        const model = this.animation ? this.animation.FindModelForMesh(meshIndex) : null;
+        if (model)
+        {
+            for (let i = 0; i < model.bones.length; i++)
+            {
+                const bone = model.bones[i];
+                if (bone && bone.boneRes && bone.boneRes.name === name)
+                {
+                    out.type = types.BONE;
+                    out.index = i;
+                    return out;
+                }
+            }
+        }
+
+        // Then an authored locator.
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            if (this.locators[i] && this.locators[i].name === name)
+            {
+                out.type = types.TRANSFORM;
+                out.index = i;
+                return out;
+            }
+        }
+
+        return out;
+    }
+
+    /**
+     * Writes the transform of a resolved locator into `out`, and reports WHAT
+     * IT IS rather than handing back the matrix.
+     *
+     *   BONE       - written, and it can change. Ask again next frame.
+     *   TRANSFORM  - written, and it never will. Stop asking.
+     *   NOT_LOADED - nothing written. Ask again.
+     *   NONE       - nothing written, and nothing to find. Stop asking.
+     *
+     * `out` is written whenever the result is truthy, and both not-written
+     * states are falsy, so `if (!GetLocatorTransform(...))` is exactly the
+     * no-transform case.
+     *
+     * The type is not just the argument handed back: an index can be stale or
+     * out of range and a bone's pose may be absent, so a caller passing BONE
+     * can legitimately be told NONE.
+     *
+     * This is the fact Carbon keeps, in the place Carbon keeps it -
+     * `m_turretSetsLocatorInfo` caches the resolved type per turret set, and the
+     * per-frame update refreshes only the ELT_JOINT ones, "only animated if is
+     * of type JOINT!" (EveMobile.cpp:178), while an ELT_TRANSFORM turret is
+     * pushed once during the rebuild and never asked again. Returning it means a
+     * caller cannot forget to consult it, and cannot invent a private convention
+     * for the same states.
+     *
+     * @param {mat4} out - written when the result is truthy
+     * @param {Number} type - a LocatorType, from DetermineLocatorType
+     * @param {Number} index
+     * @param {Number} [meshIndex]
+     * @returns {Number|null} a LocatorType: what was written, or why it was not
+     */
+    GetLocatorTransform(out, type, index, meshIndex = this.meshIndex)
+    {
+        const types = EveShip2.LocatorType;
+
+        if (type === types.TRANSFORM)
+        {
+            const locator = this.locators[index];
+            if (!locator) return types.NONE;
+
+            mat4.copy(out, locator.transform);
+            return types.TRANSFORM;
+        }
+
+        if (type === types.BONE)
+        {
+            const model = this.animation ? this.animation.FindModelForMesh(meshIndex) : null;
+            const bone = model ? model.bones[index] : null;
+
+            // A bone the geometry has not delivered yet is the ASK AGAIN case, and
+            // is not the same as a bone that is not there: the caller resolved
+            // this index against loaded geometry, so an absent pose is a timing
+            // fact, not a naming one.
+            if (!bone) return this.animation && !this.animation.IsGeometryGood() ? types.NOT_LOADED : types.NONE;
+
+            // The bone's WORLD transform, which is model space despite the name -
+            // the same matrix a turret item positions itself from, and the reason
+            // turret placement is correct today.
+            mat4.copy(out, bone.worldTransform);
+            return types.BONE;
+        }
+
+        // Whatever the caller was told by DetermineLocatorType, passed straight
+        // back: NOT_LOADED stays ask-again, anything else is nothing to find.
+        return type === types.NOT_LOADED ? types.NOT_LOADED : types.NONE;
+    }
+
+    /**
+     * The transform of a bone, by name.
+     *
+     * The convenience form of the two above for a caller that has a name and
+     * wants a matrix. Same contract: `out` or null, and a null is not an answer
+     * to cache.
+     *
+     * @param {mat4} out
+     * @param {String} name
+     * @param {Number} [meshIndex=0] - ships are 0
+     * @returns {?mat4} out, or null
+     */
+    GetTransformForBone(out, name, meshIndex = 0)
+    {
+        const bone = this.FindMeshBoneByName(name, meshIndex);
+        return bone ? mat4.copy(out, bone.worldTransform) : null;
+    }
+
+    /**
      * Finds a locator's bone by its name
      * @param {String} name
      * @returns {?Tw2Bone} null if not found
@@ -800,17 +1008,121 @@ export class EveShip2 extends EveObject
     }
 
     /**
+     * Names the locators that are driven by a BONE rather than an authored
+     * transform, so they move.
+     *
+     * A diagnostic, and the cheapest way to find a hull that has one. Nothing
+     * in the authored data announces this: `isSkinned` on the SOF hull selects
+     * shader configs and does not describe locators at all, so a hull can report
+     * unskinned and still carry bone-driven hardpoints. Resolution is the only
+     * thing that actually knows.
+     *
+     * EMPTY IS NOT AN ANSWER while the geometry is still loading - nothing
+     * resolves until then. Ask once the hull is drawn.
+     *
+     * @param {String} [prefix] - e.g. "locator_booster"; all locators if omitted
+     * @param {Array} [out]
+     * @returns {Array<String>}
+     */
+    FindBoneBoundLocatorNames(prefix = "", out = [])
+    {
+        const types = EveShip2.LocatorType;
+        const binding = this._locatorBinding;
+
+        out.length = 0;
+
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            const locator = this.locators[i];
+            if (!locator || (prefix && !locator.name.startsWith(prefix))) continue;
+
+            this.DetermineLocatorType(locator.name, this.meshIndex, binding);
+            if (binding.type === types.BONE) out.push(locator.name);
+        }
+
+        return out;
+    }
+
+    /**
+     * Resolves a transform for each of `locators`, into `out`.
+     *
+     * The ship-side half of the pushed-transform contract: a caller hands over
+     * locators and gets back where each one actually is, with nulls for the
+     * ones that cannot be answered yet.
+     *
+     * The return value is what makes a ONE-SHOT rebuild safe: it counts the
+     * entries that are not SETTLED - a bone, which moves, or a name that could
+     * not be answered yet. Zero means every answer is final and the caller
+     * never has to ask again, which is the case on nearly every hull.
+     *
+     * This is Carbon's per-frame test ("only animated if is of type JOINT!")
+     * with the not-yet-loaded case folded in, because unlike Carbon we may be
+     * asked before the geometry lands.
+     *
+     * @param {Array} locators
+     * @param {Array} [out] - the matrices, or null where unanswerable
+     * @param {Array<mat4>} [pool] - reused matrices, to keep this off the heap
+     * @returns {Number} how many are not settled, and so must be asked again
+     */
+    ResolveLocatorTransforms(locators, out = [], pool = [])
+    {
+        const types = EveShip2.LocatorType;
+        const count = locators ? locators.length : 0;
+
+        out.length = count;
+
+        const binding = this._locatorBinding;
+        let unsettled = 0;
+
+        for (let i = 0; i < count; i++)
+        {
+            const locator = locators[i];
+
+            if (!locator)
+            {
+                out[i] = null;
+                continue;
+            }
+
+            if (!pool[i]) pool[i] = mat4.create();
+
+            this.DetermineLocatorType(locator.name, this.meshIndex, binding);
+            const resolved = this.GetLocatorTransform(pool[i], binding.type, binding.index);
+
+            // The MATRIX. `resolved` is a type, and a consumer of `out` is going
+            // to treat these as transforms.
+            out[i] = resolved ? pool[i] : null;
+
+            // Only BONE and NOT_LOADED are worth asking about again. A settled
+            // TRANSFORM never changes, and NONE will not become something - so
+            // counting NONE here would have a hull with one misnamed booster
+            // re-resolving every frame for the life of the scene.
+            if (resolved === types.BONE || resolved === types.NOT_LOADED) unsettled++;
+        }
+
+        return unsettled;
+    }
+
+    /**
      * Rebuilds boosters
      * @return {boolean}
      */
     RebuildBoosterSet()
     {
-        if (this.boosters)
-        {
-            this.boosters.UpdateItemsFromLocators(this.FindLocatorsByPrefix("locator_booster"));
-            return true;
-        }
-        return false;
+        if (!this.boosters) return false;
+
+        const locators = this.FindLocatorsByPrefix("locator_booster");
+        const pool = this._boosterTransformPool;
+        const transforms = this._boosterTransforms;
+
+        // Zero means every booster's place is final, and this method is the
+        // one-shot it has always been - a rigid hull, which is nearly all of
+        // them. Non-zero means at least one booster is on a bone, or the hull
+        // has not finished loading and cannot yet say, so Update keeps asking.
+        this._boosterUnsettledCount = this.ResolveLocatorTransforms(locators, transforms, pool);
+
+        this.boosters.UpdateItemsFromLocators(locators, transforms);
+        return true;
     }
 
     /**
@@ -868,25 +1180,57 @@ export class EveShip2 extends EveObject
      */
     RebuildTurretSet(turretSet)
     {
+        // The SHIP resolves where a turret goes and hands the turret set the
+        // matrix, rather than handing over a locator for the set to read a bone
+        // off. Carbon is explicit about this - `SetLocalTransform( i, matrix )`
+        // with the comment "this ship knows position" (EveMobile.cpp:182) - and
+        // it is the ship that owns every input: the animation controller, the
+        // mesh index, the locator list. A locator contributes only its name.
+        //
+        // Still resolved every frame, because `_locatorDirty` is set at
+        // construction and never cleared, so this method IS the per-frame update
+        // for turret placement. Carbon instead resolves the name once after
+        // loading and re-reads only JOINT bindings by index. Doing that here
+        // needs an invalidation hook this class does not have yet, so the data
+        // flow changes first and the resolution cost comes later.
         const
             prefix = turretSet.locatorName,
             count = this.GetLocatorCount(prefix),
-            locators = [];
+            types = EveShip2.LocatorType,
+            locators = [],
+            transforms = [];
+
+        const binding = this._locatorBinding;
+        const pool = this._turretTransformPool;
 
         for (let j = 0; j < count; ++j)
         {
-            const
-                name = prefix + String.fromCharCode("a".charCodeAt(0) + j),
-                locator = this.FindLocatorByName(name);
+            const name = prefix + String.fromCharCode("a".charCodeAt(0) + j);
 
-            if (locator)
-            {
-                locator.FindBone(this.animation);
-                locators.push(locator);
-            }
+            this.DetermineLocatorType(name, this.meshIndex, binding);
+
+            // Falsy is both not-loaded and no-such-name. Neither yields a matrix,
+            // and for this loop they mean the same thing: leave the turret on its
+            // authored locator, which UpdateItemsFromLocators falls back to.
+            if (!binding.type) continue;
+
+            // Pooled: this runs per turret per frame, and a fresh mat4 each time
+            // would be pure churn.
+            const index = transforms.length;
+            if (!pool[index]) pool[index] = mat4.create();
+
+            // Truthy means `pool[index]` was written, whether or not the answer
+            // can still change; the rebuild wants the matrix either way.
+            if (!this.GetLocatorTransform(pool[index], binding.type, binding.index)) continue;
+
+            // A JOINT need not have a locator at all - Carbon resolves either
+            // kind from a name. Where there is no locator the name is carried on
+            // a stand-in, because the turret set identifies its items by it.
+            locators.push(this.FindLocatorByName(name) || { name, transform: pool[index] });
+            transforms.push(pool[index]);
         }
 
-        turretSet.UpdateItemsFromLocators(locators);
+        turretSet.UpdateItemsFromLocators(locators, transforms);
         return true;
     }
 
@@ -1483,7 +1827,13 @@ export class EveShip2 extends EveObject
 
         if (this.boosters)
         {
-            if (this.boosters._locatorDirty)
+            // `_boosterUnsettledCount` is why this is not just the dirty flag. The
+            // booster set CLEARS _locatorDirty, unlike a turret set, so the
+            // rebuild is one-shot - which is correct only once every booster's
+            // place is final. A booster on a bone is right for the frame it was
+            // resolved in and no other, and a hull mid-load cannot say yet which
+            // it has; both keep the question open, and both are rare.
+            if (this.boosters._locatorDirty || this._boosterUnsettledCount)
             {
                 this.RebuildBoosterSet();
             }
@@ -2171,15 +2521,19 @@ export class EveShip2 extends EveObject
                 // Todo: Find a way to update this without checking every frame
                 for (let i = 0; i < this.locators.length; i++)
                 {
-                    if (this.locators[i]._parentTransform !== this._worldTransform)
-                    {
-                        this.locators[i]._parentTransform = this._worldTransform;
-                    }
-
                     if (this.locators[i]._meshIndex !== this.meshIndex)
                     {
-                        this.locators[i]._bone = this.animation.FindMeshBoneByName(this.locators[i].name, this.meshIndex);
-                        this.locators[i]._meshIndex = this.meshIndex;
+                        // Same latch rule as EveLocator2.FindBone, and the same
+                        // reason: caching a null here as though it were an answer
+                        // leaves any locator that resolved before the geometry was
+                        // ready permanently at its bind pose.
+                        const bone = this.animation.FindMeshBoneByName(this.locators[i].name, this.meshIndex);
+                        this.locators[i]._bone = bone;
+
+                        if (bone || this.animation.IsGeometryGood())
+                        {
+                            this.locators[i]._meshIndex = this.meshIndex;
+                        }
                     }
                 }
             }

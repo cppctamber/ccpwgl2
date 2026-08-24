@@ -279,8 +279,10 @@ export class TnySlot extends Tw2EventEmitter
         const array = this._AttachmentArray();
         if (array && !array.includes(this._turretSet)) array.push(this._turretSet);
 
-        this._BindLocatorBones();
-        this._turretSet.UpdateItemsFromLocators(this._locators);
+        // Resolved by the OWNER and pushed in, rather than bound onto the
+        // locators for the turret set to read back off them. See
+        // _ResolveTransforms.
+        this._turretSet.UpdateItemsFromLocators(this._locators, this._ResolveTransforms());
 
         if (this._targetObject) this._turretSet.SetTargetObject?.(this._targetObject);
         else this._turretSet.SetTargetPosition(this._target);
@@ -309,6 +311,11 @@ export class TnySlot extends Tw2EventEmitter
      * turret mounted on it. The turret reads `bone.worldTransform` outright
      * and is correctly placed; this matches the turret.
      *
+     * Step 2 is asked of the SHIP, not of the locator. A locator is an inert
+     * name and matrix: it owns no skeleton, no mesh index and no loading
+     * state, so it cannot say where a moving hardpoint is - which is why it
+     * had to cache a bone in order to appear to.
+     *
      * @param {mat4} out
      * @param {Number} [index=0] - which of the slot's locators
      * @returns {?mat4} out, or null if there is nothing to report
@@ -325,8 +332,12 @@ export class TnySlot extends Tw2EventEmitter
         // anything the turret itself applied on top of the locator.
         if (item && typeof item.GetTransform === "function") return item.GetTransform(out);
 
-        if (locator._bone) return mat4.copy(out, locator._bone.worldTransform);
+        const resolved = this._ResolveTransform(out, locator.name);
+        if (resolved) return resolved;
 
+        // Nothing resolvable yet - so the authored bind pose, which is the
+        // right answer on a rigid hull and the only one available before the
+        // geometry lands. Nothing latches it, so the next ask can do better.
         return mat4.copy(out, locator.transform);
     }
 
@@ -348,61 +359,136 @@ export class TnySlot extends Tw2EventEmitter
     }
 
     /**
-     * Binds this slot's locators to their bones.
+     * The object that resolves a locator name to a transform.
      *
-     * Redundant for a slot that has something mounted - EveShip2.Update
-     * rebuilds every attached turret set every frame and binds them on the
-     * way through - and kept because Rebuild is also what runs when the
-     * locators themselves change, and a bone found against a hull that has
-     * since been re-fetched points into geometry that is gone.
+     * The ship, not the locator. It owns every input the answer depends on -
+     * the animation controller, the mesh index, the locator list, whether
+     * loading has finished - and Carbon puts the resolution there for exactly
+     * that reason.
+     *
+     * Null for anything that does not resolve names, which is not a fault: a
+     * station or a structure has authored locators and no skeleton, and those
+     * locators' own transforms are the correct answer.
      * @private
      */
-    _BindLocatorBones()
+    _Resolver()
     {
-        this.constructor.BindLocatorBones(this._parent, this._locators, this.locatorName);
+        const candidates = [ this._wrapped, this._parent && this._parent.wrapped ];
+
+        for (let i = 0; i < candidates.length; i++)
+        {
+            const c = candidates[i];
+
+            if (c
+                && typeof c.DetermineLocatorType === "function"
+                && typeof c.GetLocatorTransform === "function") return c;
+        }
+
+        return null;
     }
 
     /**
-     * Binds locators to the bones of the same name on a parent's hull.
-     *
-     * Quiet on a RIGID hull, which has no skeleton at all and where the bind
-     * pose is the right answer. Loud on a hull that HAS one and still has no
-     * bone of that locator's name, because that combination is a fault and
-     * the way it fails is the problem: an unbound locator does not throw or
-     * return nothing, it answers its bind pose, so a gun mounts a few metres
-     * from where it belongs and everything downstream - the turret item, an
-     * annotation, a drop target - agrees about the wrong place. Nothing about
-     * the picture says a call was missed.
-     *
-     * @param {*} parent - the Tny object owning the locators
-     * @param {Array} locators
-     * @param {String} [what] - what is being bound, for the warning
+     * Resolves one locator name into `out`.
+     * @param {mat4} out
+     * @param {String} name
+     * @returns {?mat4} out, or null when there is no answer yet
+     * @private
      */
-    static BindLocatorBones(parent, locators, what = "")
+    _ResolveTransform(out, name)
     {
-        const animation = parent?.wrapped?.animation || null;
+        const resolver = this._Resolver();
+        if (!resolver) return null;
 
-        if (!animation || !locators) return;
+        const binding = resolver.DetermineLocatorType(name, undefined, this._binding);
 
-        const unbound = [];
+        // GetLocatorTransform reports a LocatorType and writes `out` whenever that
+        // is truthy. A caller asking where its turret is wants the matrix, so the
+        // state is collapsed here - the two falsy states, NOT_LOADED and NONE,
+        // both mean there is nothing to report.
+        return resolver.GetLocatorTransform(out, binding.type, binding.index) ? out : null;
+    }
 
-        for (let i = 0; i < locators.length; i++)
+    /**
+     * Resolves a transform for each of this slot's locators.
+     *
+     * A null entry means "no answer yet", and the turret set falls back to the
+     * locator's authored transform for it - the bind pose, correct on a rigid
+     * hull and the best available before geometry lands. Because nothing
+     * latches that, the next frame asks again.
+     *
+     * Warns about the one combination that is a genuine fault: a hull that HAS
+     * a skeleton, where a hardpoint resolves to an authored locator rather than
+     * a bone. Nothing about the picture says so - the gun sits at its bind pose
+     * a few metres from where it belongs, and the turret item, an annotation and
+     * a drop target all agree about the wrong place.
+     *
+     * @param {Array} [out]
+     * @returns {Array}
+     * @private
+     */
+    _ResolveTransforms(out = [])
+    {
+        const locators = this._locators;
+        const count = locators ? locators.length : 0;
+
+        out.length = count;
+        if (!count) return out;
+
+        const resolver = this._Resolver();
+        if (!resolver)
+        {
+            out.fill(null);
+            return out;
+        }
+
+        // Taken off the resolver rather than imported, so this works for anything
+        // that answers the same two calls.
+        const types = resolver.constructor.LocatorType;
+
+        const binding = this._binding || (this._binding = { type: 0, index: -1 });
+        const pool = this._transformPool || (this._transformPool = []);
+        const boneless = [];
+
+        for (let i = 0; i < count; i++)
         {
             const locator = locators[i];
 
-            if (!locator || typeof locator.FindBone !== "function") continue;
-            if (!locator.FindBone(animation)) unbound.push(locator.name);
+            if (!locator)
+            {
+                out[i] = null;
+                continue;
+            }
+
+            if (!pool[i]) pool[i] = mat4.create();
+
+            resolver.DetermineLocatorType(locator.name, undefined, binding);
+            const resolved = resolver.GetLocatorTransform(pool[i], binding.type, binding.index);
+
+            // The matrix, never the type - the turret set treats these as
+            // transforms.
+            out[i] = resolved ? pool[i] : null;
+
+            // TRANSFORM means this hardpoint resolved to an authored locator and
+            // will never move. Nothing resolves at all until the geometry is
+            // loaded, so this cannot fire early on a hull that simply had not
+            // arrived yet - which is what makes it worth warning about.
+            if (types && resolved === types.TRANSFORM) boneless.push(locator.name);
         }
 
-        // A hull with no models is rigid, and every locator being unbound is
-        // what rigid MEANS. Saying so for each one would bury the case worth
-        // hearing under every frigate in the game.
-        if (!unbound.length || !animation.models || !animation.models.length) return;
+        // A hull with no models is rigid, and a hardpoint resolving to an authored
+        // locator is what rigid MEANS. Saying so for each one would bury the case
+        // worth hearing under every frigate in the game.
+        const models = resolver.animation && resolver.animation.models;
 
-        tw2.Debug({
-            name: "Slots",
-            message: `No bone for ${unbound.length} locator(s)${what ? ` on ${what}` : ""}: ${unbound.join(", ")}`
-        });
+        if (boneless.length && models && models.length)
+        {
+            tw2.Debug({
+                name: "Slots",
+                message: `No bone for ${boneless.length} locator(s) on ${this.locatorName}: ${boneless.join(", ")}`
+            });
+        }
+
+        return out;
     }
 
     _AttachmentArray()
@@ -484,21 +570,10 @@ export class TnySlot extends Tw2EventEmitter
         // Locator order is not guaranteed
         groups.sort((a, b) => a.index - b.index);
 
-        // Bones, before anybody asks a locator where it is.
-        //
-        // A locator's own transform is its BIND POSE; where the hull has a
-        // bone of the same name - a tactical destroyer in defence mode, a
-        // hardpoint on a wing that deploys - the real place is that times the
-        // bone's offset, and EveLocator2.GetTransform folds it in only once
-        // FindBone has been called.
-        //
-        // A MOUNTED slot gets this for free: EveShip2.Update rebuilds every
-        // attached turret set whose _locatorDirty is set, that flag is set at
-        // construction and never cleared, and the rebuild calls FindBone. An
-        // EMPTY slot has nothing in attachments, so nothing ever bound its
-        // locators - and an empty slot is exactly the one a consumer asks
-        // about when it is offering somewhere to fit a gun.
-        this.BindLocatorBones(parent, groups.flatMap(group => group.locators), `locator_${type}`);
+        // Nothing to bind. A slot now asks the ship where its locators are at
+        // the moment it is asked, so an EMPTY slot - the one a consumer asks
+        // about when offering somewhere to fit a gun - answers as well as a
+        // mounted one, without anything having walked the skeleton first.
 
         const orphans = Array.from(targetArray);
         for (const group of groups)

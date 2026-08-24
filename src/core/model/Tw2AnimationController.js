@@ -115,6 +115,37 @@ export class Tw2AnimationController extends meta.Model
     }
 
     /**
+     * Checks if the geometry a bone lookup would read is loaded.
+     *
+     * Distinct from IsGood, which also requires animation CLIPS - a hull can
+     * have a full skeleton and no animations at all, and its bones are still
+     * there to be found.
+     *
+     * This is the test that tells a transient null from a permanent one.
+     * FindModelForMesh and FindMeshBoneByName both return null for two
+     * unrelated reasons - the geometry has not arrived, or it has arrived and
+     * genuinely has no such model or bone - and a caller that caches the
+     * first case as though it were the second leaves whatever it was resolving
+     * stuck at its bind pose for the life of the object.
+     *
+     * Reads the same resource FindModelForMesh reads, so it answers the exact
+     * question "could that call have succeeded yet".
+     *
+     * @param {Tw2GeometryRes} [geometryResource]
+     * @returns {boolean}
+     */
+    IsGeometryGood(geometryResource)
+    {
+        if (!geometryResource)
+        {
+            if (!this.geometryResources.length) return false;
+            geometryResource = this.geometryResources[0];
+        }
+
+        return !!geometryResource && geometryResource.IsGood();
+    }
+
+    /**
      * Checks if any animations are playing
      * @returns {boolean}
      */
