@@ -179250,7 +179250,7 @@
 	  }
 	}), _class2$4N)) || _class$5e) || _class$5e);
 
-	var _dec$5d, _dec2$4U, _dec3$4u, _class$5d, _descriptor$4M, _init, _EveObjectSetItem, _dec4$3U, _dec5$3n, _dec6$2W, _dec7$2x, _class2$4M, _descriptor2$4h, _descriptor3$3H, _EveObjectSet;
+	var _dec$5d, _dec2$4U, _dec3$4u, _class$5d, _descriptor$4M, _EveObjectSetItem, _dec4$3U, _dec5$3n, _dec6$2W, _dec7$2x, _class2$4M, _descriptor2$4h, _descriptor3$3H, _EveObjectSet;
 	var EveObjectSetItem = (_dec$5d = boolean, _dec2$4U = abstract, _dec3$4u = abstract, _class$5d = (_EveObjectSetItem = class EveObjectSetItem extends Model {
 	  constructor() {
 	    super(...arguments);
@@ -179310,11 +179310,31 @@
 	  }
 
 	  /**
+	   * Which primitive describes this item's extent for a hit test.
+	   *
+	   * Set items have no geometry to intersect - a sprite, a plane, a
+	   * spotlight cone are all built on the GPU - so a hit test can only ask
+	   * the item to describe its own extent. Which primitive is right depends
+	   * on the item, and getting it wrong is not a rounding error:
+	   *
+	   *   sphere - for anything whose extent does not depend on its rotation.
+	   *            A sprite always faces the camera, so a sphere on its
+	   *            position is both tighter and cheaper than a box.
+	   *
+	   *   box    - for anything that points somewhere. A spotlight rotated
+	   *            ninety degrees covers different space, and a sphere large
+	   *            enough to contain it in every orientation is mostly empty -
+	   *            which reads as a spotlight you can select from well off to
+	   *            one side of it. Haze is the same.
+	   *
+	   * @type {String}
+	   */
+
+	  /**
 	   * Gets the object's local transform
 	   * @param {mat4} out
 	   * @return {mat4} out
 	   */
-
 	  GetTransform(out) {}
 
 	  /**
@@ -179380,14 +179400,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _applyDecoratedDescriptor(_class$5d, "boundsPrimitive", [_dec2$4U], (_init = Object.getOwnPropertyDescriptor(_class$5d, "boundsPrimitive"), _init = _init ? _init.value : undefined, {
-	  enumerable: true,
-	  configurable: true,
-	  writable: true,
-	  initializer: function () {
-	    return _init;
-	  }
-	}), _class$5d), _applyDecoratedDescriptor(_class$5d.prototype, "GetBoundingBox", [_dec3$4u], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetBoundingBox"), _class$5d.prototype), _class$5d);
+	}), _applyDecoratedDescriptor(_class$5d.prototype, "GetTransform", [_dec2$4U], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetTransform"), _class$5d.prototype), _applyDecoratedDescriptor(_class$5d.prototype, "GetBoundingBox", [_dec3$4u], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetBoundingBox"), _class$5d.prototype), _class$5d);
 	var EveObjectSet = (_dec4$3U = boolean, _dec5$3n = list(), _dec6$2W = abstract, _dec7$2x = abstract, _class2$4M = (_EveObjectSet = class EveObjectSet extends Model {
 	  constructor() {
 	    super(...arguments);

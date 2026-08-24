@@ -71,12 +71,6 @@ export class EveObjectSetItem extends meta.Model
     }
 
     /**
-     * Gets the object's local transform
-     * @param {mat4} out
-     * @return {mat4} out
-     */
-    @meta.abstract
-    /**
      * Which primitive describes this item's extent for a hit test.
      *
      * Set items have no geometry to intersect - a sprite, a plane, a
@@ -98,6 +92,12 @@ export class EveObjectSetItem extends meta.Model
      */
     static boundsPrimitive = "box";
 
+    /**
+     * Gets the object's local transform
+     * @param {mat4} out
+     * @return {mat4} out
+     */
+    @meta.abstract
     GetTransform(out)
     {
 
