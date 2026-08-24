@@ -99,27 +99,6 @@ export class EveLensflare extends meta.Model
     {
         if (!this.doOcclusionQueries) return;
 
-        // The sample collector's effect does not exist in shipped data. It asks
-        // for res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx,
-        // which CCP replaced with occludermanagement.fx; the lensflares folder
-        // ships flare, lensflare, lensflareoccludert, lensgrime and
-        // occludermanagement, and nothing else.
-        //
-        // EveOccluder.CollectSamples already bails on that, so occlusionIntensity
-        // stays 1 and lensflares are simply never occluded. What it does NOT skip
-        // is everything below: a full-viewport copyTexImage2D per occluder and a
-        // readPixels stall, every frame, feeding a result that cannot be produced.
-        //
-        // Bailing here also keeps this method off the back buffer entirely, which
-        // matters beyond the wasted work: the loop below clears the bound
-        // framebuffer's alpha and copies from it, so it would scribble on any
-        // render target the scene is drawing into rather than the canvas.
-        const occluder = EveOccluder.global;
-        if (!occluder || !occluder.effect || !occluder.effect.effectRes || !occluder.effect.effectRes.IsGood())
-        {
-            return;
-        }
-
         const
             d = device,
             gl = d.gl,
@@ -209,14 +188,7 @@ export class EveLensflare extends meta.Model
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
-        // Y is NOT a second copy of the intensity - it is a buffer INDEX, read
-        // by bit pattern (`floatBitsToInt(y) & 2047`, `>> 11`) in every shader
-        // that samples FlareOcclusionBuffer. Writing 1.0 there addresses texel
-        // (0, 520192), which is out of range on the 1x1 buffer ccpwgl binds, and
-        // an out-of-range texelFetch returns 0 - silently multiplying the god
-        // ray pass to black. 0 is the only index that buffer has. See the note
-        // on `LensflareFxOccScale` in config.js.
-        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, 0, 0, 0 ]);
+        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 
