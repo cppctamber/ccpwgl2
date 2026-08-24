@@ -5,14 +5,29 @@
 // extends EveEffectRoot2 and persists six values - radius, albedoColor,
 // minScreenSize, zOnlyModel, emissiveColor, estimatedPixelDiameter. It has no
 // heightMap1, no heightMap2, no effectHeight, and Carbon contains no
-// `BlitHeight` shader anywhere. The height-map bake below is ccpwgl`s own
-// invention, and its shader ships ONLY in the gles2 tree:
+// `BlitHeight` shader anywhere.
 //
-//   effect.gles2/.../earthlikeplanetblitheight.sm_hi   200
-//   effect.dx11/.../earthlikeplanetblitheight.sm_hi    404
+// THE BAKE IS NOT CCPWGL`S INVENTION - an earlier note here said it was, and
+// that was wrong. CCP ships the shaders; they are simply confined to the legacy
+// profile. The whole precompute stage is gles2-only, not one shader:
 //
-// which is why a planet drawn on the dx11 profile has a garbage surface: the
-// bake runs with no shader and attaches the result anyway.
+//   gles2 only:  earthlikeplanetblitheight, gasgiantblitheight,
+//                iceplanetblitheight, lavaplanetblitheight,
+//                oceanplanetblitheight, sandstormplanetblitheight,
+//                simplemoonblitheight, thunderstormplanetblitheight,
+//                and every *export shader (barren, earthlike,
+//                earthlikelandmass, gas, ice, lava, ocean, plasma,
+//                thunderstorm)
+//
+//   both:        earthlikeplanet, gasgiant, iceplanet, lavaplanet,
+//                oceanplanet, sandstormplanet, thunderstormplanet,
+//                simplemoon, atmosphere, aurora, rings, planetzonly,
+//                planetpicking, blitgroundscattering
+//
+// So dx11 keeps the SURFACE shaders and drops the bake, which is Carbon`s model
+// - the surface comes from the template`s own effect graph. That is why a
+// planet on dx11 does not load here: this class needs a stage that profile
+// deliberately does not ship.
 //
 // Kept for reference while EvePlanet is rebuilt against Carbon, and because
 // this is the only description we have of the legacy pipeline. Registered under
