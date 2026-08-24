@@ -229,13 +229,38 @@ export class EveSpaceScene extends meta.Model
     @meta.noLongerSupported
     fogStart = 0;
 
-    @meta.uint
-    @meta.noLongerSupported
-    fogBlur = 0;
 
-    @meta.uint
-    @meta.noLongerSupported
-    fogType = 0;
+    /**
+     * Carbon's `SceneMipLodBias` (EveSpaceScene.h:274) - a bias added to the mip
+     * level of EVERY material texture fetch. Carbon keeps it at zero and raises
+     * it only for upscaling (`upscalingInfo.mipLevelBias`) or a post-process that
+     * asks for one, so a scene that does neither wants zero.
+     *
+     * It matters far more than its size suggests: it is the most-read component
+     * of its whole register - over three thousand reads across the translated
+     * shader corpus - because every `SAMPLE_B` passes it as the bias. A positive
+     * value blurs the entire scene's texturing at once, which reads as materials
+     * looking flat rather than as anything to do with mip levels.
+     *
+     * This slot used to carry `fogType`, a retired property read by nothing -
+     * so on the hand-written GLES shaders it was harmless, and on the translated
+     * ones any scene authoring a non-zero fog type silently blurred every
+     * texture. It and `fogBlur` are gone; fog itself is `fogColor`/`fogStart`/
+     * `fogEnd`/`fogMax`, which live in a different register entirely.
+     * @type {Number}
+     */
+    @meta.float
+    sceneMipLodBias = 0;
+
+    /**
+     * Carbon's `Upscaling` (EveSpaceScene.h:275), the upscaling amount - 1 when
+     * nothing is upscaling, which is always here. No shader in the translated
+     * corpus reads it; it is written so the register means what Carbon says it
+     * means rather than carrying a leftover.
+     * @type {Number}
+     */
+    @meta.float
+    upscalingAmount = 1;
 
     @meta.notImplemented
     @meta.path
@@ -2621,19 +2646,22 @@ export class EveSpaceScene extends meta.Model
             // the pixel approaches the fog colour, while true black (no object,
             // no shader) stays black.
             ps.Set("SceneData.FogColor", [ this.fogColor[0], this.fogColor[1], this.fogColor[2], this.fogMax ]);
-            ps.Set("MiscSettings", [
-                d.currentTime,
-                this.fogType,
-                this.fogBlur,
-                this.contrast
-            ]);
         }
         else
         {
             vs.Set("FogFactors", [ 0, 0, 0, 0 ]);
             ps.Set("SceneData.FogColor", [ 0, 0, 0, 0 ]);
-            ps.Set("MiscSettings", [ d.currentTime, 0, 0, this.contrast ]);
         }
+
+        // Fog-independent, despite having lived inside the fog branch: none of
+        // Carbon MiscData is a fog value. Time, the scene mip bias, the upscaling
+        // amount and the gamma the background raises its colour to.
+        ps.Set("MiscSettings", [
+            d.currentTime,
+            this.sceneMipLodBias,
+            this.upscalingAmount,
+            this.contrast
+        ]);
 
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
@@ -2828,7 +2856,13 @@ export class EveSpaceScene extends meta.Model
             [ "ShadowCameraRange", 4 ],
             [ "ProjectionToView", 2 ],
             [ "FovXY", 2 ],
-            [ "MiscSettings", 4 ], // currentTime, fogType, fogBlur, 1
+            // Carbon PerFramePSData's MiscData: Time, SceneMipLodBias, Upscaling,
+            // GammaBrightness (EveSpaceScene.h:272-276). `.y` is the mip bias every
+            // translated SAMPLE_B passes, and `.w` is the gamma the background
+            // raises its colour to - `pow(colour, cb2[21].w)`, which is why
+            // `contrast` belongs there. GLES reads only `.x` and `.w`; nothing
+            // anywhere reads `.z`.
+            [ "MiscSettings", 4 ],
             [ "VolumetricSlices", 4 ]
         ],
         vs: [

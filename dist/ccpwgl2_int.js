@@ -213569,8 +213569,8 @@
 	  }
 	}), _class2$3v)) || _class$3W);
 
-	var _dec$3V, _dec2$3B, _dec3$3e, _dec4$2K, _dec5$2h, _dec6$1Z, _dec7$1F, _dec8$1t, _dec9$1h, _dec0$19, _dec1$13, _dec10$U, _dec11$P, _dec12$F, _dec13$x, _dec14$v, _dec15$s, _dec16$m, _dec17$i, _dec18$f, _dec19$e, _dec20$e, _dec21$c, _dec22$c, _dec23$9, _dec24$8, _dec25$7, _dec26$7, _dec27$7, _dec28$6, _dec29$4, _dec30$4, _dec31$3, _dec32$3, _dec33$2, _dec34$2, _dec35$2, _dec36$2, _dec37$2, _dec38$2, _dec39$2, _dec40$2, _dec41$2, _dec42$2, _dec43$2, _dec44$2, _dec45$2, _dec46$1, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _dec58, _dec59, _dec60, _dec61, _dec62, _dec63, _dec64, _dec65, _dec66, _dec67, _dec68, _dec69, _dec70, _dec71, _dec72, _dec73, _dec74, _dec75, _dec76, _dec77, _dec78, _dec79, _dec80, _dec81, _dec82, _dec83, _dec84, _dec85, _dec86, _dec87, _dec88, _dec89, _dec90, _dec91, _dec92, _dec93, _dec94, _dec95, _dec96, _dec97, _dec98, _dec99, _dec100, _dec101, _dec102, _dec103, _dec104, _class$3V, _class2$3u, _descriptor$3u, _descriptor2$32, _descriptor3$2x, _descriptor4$28, _descriptor5$1S, _descriptor6$1u, _descriptor7$1d, _descriptor8$16, _descriptor9$10, _descriptor0$Y, _descriptor1$K, _descriptor10$E, _descriptor11$v, _descriptor12$t, _descriptor13$q, _descriptor14$n, _descriptor15$e, _descriptor16$b, _descriptor17$a, _descriptor18$a, _descriptor19$8, _descriptor20$8, _descriptor21$8, _descriptor22$7, _descriptor23$7, _descriptor24$6, _descriptor25$6, _descriptor26$6, _descriptor27$4, _descriptor28$4, _descriptor29$2, _descriptor30$2, _descriptor31$2, _descriptor32$2, _descriptor33$2, _descriptor34$2, _descriptor35$2, _descriptor36$2, _descriptor37$2, _descriptor38$2, _descriptor39$2, _descriptor40$2, _descriptor41$2, _descriptor42$2, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52, _descriptor53, _descriptor54, _descriptor55, _descriptor56, _descriptor57, _descriptor58, _descriptor59, _descriptor60, _descriptor61, _descriptor62, _descriptor63, _descriptor64, _descriptor65, _descriptor66, _descriptor67, _descriptor68, _descriptor69, _descriptor70, _descriptor71, _descriptor72, _descriptor73, _descriptor74, _EveSpaceScene;
-	var EveSpaceScene = (_dec$3V = define("EveSpaceScene", true), _dec2$3B = struct("Tw2Effect"), _dec3$3e = list("EveObject"), _dec4$2K = boolean, _dec5$2h = isPrivate, _dec6$1Z = notImplemented, _dec7$1F = boolean, _dec8$1t = boolean, _dec9$1h = float, _dec0$19 = float, _dec1$13 = uint, _dec10$U = uint, _dec11$P = boolean, _dec12$F = boolean, _dec13$x = boolean, _dec14$v = path, _dec15$s = isPrivate, _dec16$m = path, _dec17$i = isPrivate, _dec18$f = path, _dec19$e = isPrivate, _dec20$e = quaternion, _dec21$c = notImplemented, _dec22$c = list("Tr2ExternalParameter"), _dec23$9 = color, _dec24$8 = float, _dec25$7 = float, _dec26$7 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$4 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = color, _dec40$2 = notImplemented, _dec41$2 = struct("Tw2Effect"), _dec42$2 = color, _dec43$2 = noLongerSupported, _dec44$2 = float, _dec45$2 = noLongerSupported, _dec46$1 = float, _dec47 = noLongerSupported, _dec48 = float, _dec49 = noLongerSupported, _dec50 = uint, _dec51 = noLongerSupported, _dec52 = uint, _dec53 = noLongerSupported, _dec54 = notImplemented, _dec55 = path, _dec56 = isPrivate, _dec57 = notImplemented, _dec58 = path, _dec59 = isPrivate, _dec60 = float, _dec61 = notImplemented, _dec62 = boolean, _dec63 = notImplemented, _dec64 = float, _dec65 = todo("Identify ps/vs frame data"), _dec66 = notImplemented, _dec67 = float, _dec68 = todo("Identify ps/vs frame data"), _dec69 = notImplemented, _dec70 = struct("Tr2ShLightingManager"), _dec71 = notImplemented, _dec72 = struct("EveStarField"), _dec73 = notImplemented, _dec74 = color, _dec75 = notImplemented, _dec76 = boolean, _dec77 = uint, _dec78 = plain, _dec79 = boolean, _dec80 = boolean, _dec81 = struct("Tw2PostProcess2"), _dec82 = boolean, _dec83 = float, _dec84 = boolean, _dec85 = list("EveCurveLineSet"), _dec86 = plain, _dec87 = color, _dec88 = boolean, _dec89 = path, _dec90 = struct("EveSpaceSceneAO"), _dec91 = struct("EveSpaceSceneDepthHandler"), _dec92 = boolean, _dec93 = boolean, _dec94 = matrix4, _dec95 = matrix4, _dec96 = matrix4, _dec97 = vector4, _dec98 = struct("Tw2TextureRes"), _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec103 = float, _dec104 = float, _dec$3V(_class$3V = (_class2$3u = (_EveSpaceScene = class EveSpaceScene extends Model {
+	var _dec$3V, _dec2$3B, _dec3$3e, _dec4$2K, _dec5$2h, _dec6$1Z, _dec7$1F, _dec8$1t, _dec9$1h, _dec0$19, _dec1$13, _dec10$U, _dec11$P, _dec12$F, _dec13$x, _dec14$v, _dec15$s, _dec16$m, _dec17$i, _dec18$f, _dec19$e, _dec20$e, _dec21$c, _dec22$c, _dec23$9, _dec24$8, _dec25$7, _dec26$7, _dec27$7, _dec28$6, _dec29$4, _dec30$4, _dec31$3, _dec32$3, _dec33$2, _dec34$2, _dec35$2, _dec36$2, _dec37$2, _dec38$2, _dec39$2, _dec40$2, _dec41$2, _dec42$2, _dec43$2, _dec44$2, _dec45$2, _dec46$1, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _dec58, _dec59, _dec60, _dec61, _dec62, _dec63, _dec64, _dec65, _dec66, _dec67, _dec68, _dec69, _dec70, _dec71, _dec72, _dec73, _dec74, _dec75, _dec76, _dec77, _dec78, _dec79, _dec80, _dec81, _dec82, _dec83, _dec84, _dec85, _dec86, _dec87, _dec88, _dec89, _dec90, _dec91, _dec92, _dec93, _dec94, _dec95, _dec96, _dec97, _dec98, _dec99, _dec100, _dec101, _dec102, _class$3V, _class2$3u, _descriptor$3u, _descriptor2$32, _descriptor3$2x, _descriptor4$28, _descriptor5$1S, _descriptor6$1u, _descriptor7$1d, _descriptor8$16, _descriptor9$10, _descriptor0$Y, _descriptor1$K, _descriptor10$E, _descriptor11$v, _descriptor12$t, _descriptor13$q, _descriptor14$n, _descriptor15$e, _descriptor16$b, _descriptor17$a, _descriptor18$a, _descriptor19$8, _descriptor20$8, _descriptor21$8, _descriptor22$7, _descriptor23$7, _descriptor24$6, _descriptor25$6, _descriptor26$6, _descriptor27$4, _descriptor28$4, _descriptor29$2, _descriptor30$2, _descriptor31$2, _descriptor32$2, _descriptor33$2, _descriptor34$2, _descriptor35$2, _descriptor36$2, _descriptor37$2, _descriptor38$2, _descriptor39$2, _descriptor40$2, _descriptor41$2, _descriptor42$2, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52, _descriptor53, _descriptor54, _descriptor55, _descriptor56, _descriptor57, _descriptor58, _descriptor59, _descriptor60, _descriptor61, _descriptor62, _descriptor63, _descriptor64, _descriptor65, _descriptor66, _descriptor67, _descriptor68, _descriptor69, _descriptor70, _descriptor71, _descriptor72, _descriptor73, _descriptor74, _EveSpaceScene;
+	var EveSpaceScene = (_dec$3V = define("EveSpaceScene", true), _dec2$3B = struct("Tw2Effect"), _dec3$3e = list("EveObject"), _dec4$2K = boolean, _dec5$2h = isPrivate, _dec6$1Z = notImplemented, _dec7$1F = boolean, _dec8$1t = boolean, _dec9$1h = float, _dec0$19 = float, _dec1$13 = uint, _dec10$U = uint, _dec11$P = boolean, _dec12$F = boolean, _dec13$x = boolean, _dec14$v = path, _dec15$s = isPrivate, _dec16$m = path, _dec17$i = isPrivate, _dec18$f = path, _dec19$e = isPrivate, _dec20$e = quaternion, _dec21$c = notImplemented, _dec22$c = list("Tr2ExternalParameter"), _dec23$9 = color, _dec24$8 = float, _dec25$7 = float, _dec26$7 = list("EveObject"), _dec27$7 = list("EveObject"), _dec28$6 = path, _dec29$4 = isPrivate, _dec30$4 = todo("Check case on this property"), _dec31$3 = struct(), _dec32$3 = color, _dec33$2 = vector3, _dec34$2 = boolean, _dec35$2 = vector3, _dec36$2 = isPrivate, _dec37$2 = list("EveLensflare"), _dec38$2 = list("EvePlanet"), _dec39$2 = color, _dec40$2 = notImplemented, _dec41$2 = struct("Tw2Effect"), _dec42$2 = color, _dec43$2 = noLongerSupported, _dec44$2 = float, _dec45$2 = noLongerSupported, _dec46$1 = float, _dec47 = noLongerSupported, _dec48 = float, _dec49 = noLongerSupported, _dec50 = float, _dec51 = float, _dec52 = notImplemented, _dec53 = path, _dec54 = isPrivate, _dec55 = notImplemented, _dec56 = path, _dec57 = isPrivate, _dec58 = float, _dec59 = notImplemented, _dec60 = boolean, _dec61 = notImplemented, _dec62 = float, _dec63 = todo("Identify ps/vs frame data"), _dec64 = notImplemented, _dec65 = float, _dec66 = todo("Identify ps/vs frame data"), _dec67 = notImplemented, _dec68 = struct("Tr2ShLightingManager"), _dec69 = notImplemented, _dec70 = struct("EveStarField"), _dec71 = notImplemented, _dec72 = color, _dec73 = notImplemented, _dec74 = boolean, _dec75 = uint, _dec76 = plain, _dec77 = boolean, _dec78 = boolean, _dec79 = struct("Tw2PostProcess2"), _dec80 = boolean, _dec81 = float, _dec82 = boolean, _dec83 = list("EveCurveLineSet"), _dec84 = plain, _dec85 = color, _dec86 = boolean, _dec87 = path, _dec88 = struct("EveSpaceSceneAO"), _dec89 = struct("EveSpaceSceneDepthHandler"), _dec90 = boolean, _dec91 = boolean, _dec92 = matrix4, _dec93 = matrix4, _dec94 = matrix4, _dec95 = vector4, _dec96 = struct("Tw2TextureRes"), _dec97 = float, _dec98 = float, _dec99 = float, _dec100 = float, _dec101 = float, _dec102 = float, _dec$3V(_class$3V = (_class2$3u = (_EveSpaceScene = class EveSpaceScene extends Model {
 	  get objectsByDistance() {
 	    var out = [],
 	      cameraWorldPosition = vec3$3.alloc(),
@@ -213723,8 +213723,34 @@
 	    _initializerDefineProperty(this, "fogEnd", _descriptor32$2, this);
 	    _initializerDefineProperty(this, "fogMax", _descriptor33$2, this);
 	    _initializerDefineProperty(this, "fogStart", _descriptor34$2, this);
-	    _initializerDefineProperty(this, "fogBlur", _descriptor35$2, this);
-	    _initializerDefineProperty(this, "fogType", _descriptor36$2, this);
+	    /**
+	     * Carbon's `SceneMipLodBias` (EveSpaceScene.h:274) - a bias added to the mip
+	     * level of EVERY material texture fetch. Carbon keeps it at zero and raises
+	     * it only for upscaling (`upscalingInfo.mipLevelBias`) or a post-process that
+	     * asks for one, so a scene that does neither wants zero.
+	     *
+	     * It matters far more than its size suggests: it is the most-read component
+	     * of its whole register - over three thousand reads across the translated
+	     * shader corpus - because every `SAMPLE_B` passes it as the bias. A positive
+	     * value blurs the entire scene's texturing at once, which reads as materials
+	     * looking flat rather than as anything to do with mip levels.
+	     *
+	     * This slot used to carry `fogType`, a retired property read by nothing -
+	     * so on the hand-written GLES shaders it was harmless, and on the translated
+	     * ones any scene authoring a non-zero fog type silently blurred every
+	     * texture. It and `fogBlur` are gone; fog itself is `fogColor`/`fogStart`/
+	     * `fogEnd`/`fogMax`, which live in a different register entirely.
+	     * @type {Number}
+	     */
+	    _initializerDefineProperty(this, "sceneMipLodBias", _descriptor35$2, this);
+	    /**
+	     * Carbon's `Upscaling` (EveSpaceScene.h:275), the upscaling amount - 1 when
+	     * nothing is upscaling, which is always here. No shader in the translated
+	     * corpus reads it; it is written so the register means what Carbon says it
+	     * means rather than carrying a leftover.
+	     * @type {Number}
+	     */
+	    _initializerDefineProperty(this, "upscalingAmount", _descriptor36$2, this);
 	    _initializerDefineProperty(this, "lowQualityNebulaMixResPath", _descriptor37$2, this);
 	    _initializerDefineProperty(this, "lowQualityNebulaResPath", _descriptor38$2, this);
 	    /**
@@ -215498,12 +215524,15 @@
 	      // the pixel approaches the fog colour, while true black (no object,
 	      // no shader) stays black.
 	      ps.Set("SceneData.FogColor", [this.fogColor[0], this.fogColor[1], this.fogColor[2], this.fogMax]);
-	      ps.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, this.contrast]);
 	    } else {
 	      vs.Set("FogFactors", [0, 0, 0, 0]);
 	      ps.Set("SceneData.FogColor", [0, 0, 0, 0]);
-	      ps.Set("MiscSettings", [d.currentTime, 0, 0, this.contrast]);
 	    }
+
+	    // Fog-independent, despite having lived inside the fog branch: none of
+	    // Carbon MiscData is a fog value. Time, the scene mip bias, the upscaling
+	    // amount and the gamma the background raises its colour to.
+	    ps.Set("MiscSettings", [d.currentTime, this.sceneMipLodBias, this.upscalingAmount, this.contrast]);
 	    vs.Set("ViewportAdjustment", [1, 1, 1, 1]);
 	    vs.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
 	    vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
@@ -215662,9 +215691,14 @@
 	  // The per-field descriptions that used to annotate these were
 	  // guesses from ccpwgl's experimental shadow path and have been
 	  // removed rather than left to read as measured facts.
-	  ["ShadowMapSettings", 4], ["ShadowCameraRange", 4], ["ProjectionToView", 2], ["FovXY", 2], ["MiscSettings", 4],
-	  // currentTime, fogType, fogBlur, 1
-	  ["VolumetricSlices", 4]],
+	  ["ShadowMapSettings", 4], ["ShadowCameraRange", 4], ["ProjectionToView", 2], ["FovXY", 2],
+	  // Carbon PerFramePSData's MiscData: Time, SceneMipLodBias, Upscaling,
+	  // GammaBrightness (EveSpaceScene.h:272-276). `.y` is the mip bias every
+	  // translated SAMPLE_B passes, and `.w` is the gamma the background
+	  // raises its colour to - `pow(colour, cb2[21].w)`, which is why
+	  // `contrast` belongs there. GLES reads only `.x` and `.w`; nothing
+	  // anywhere reads `.z`.
+	  ["MiscSettings", 4], ["VolumetricSlices", 4]],
 	  vs: [["ViewInverseTransposeMat", 16], ["ViewProjectionMat", 16], ["ViewMat", 16], ["ProjectionMat", 16], ["ShadowViewMat", 16], ["ShadowViewProjectionMat", 16], ["EnvMapRotationMat", 16], ["SunData.DirWorld", 4], ["SunData.DiffuseColor", 4], ["FogFactors", 4], ["TargetResolution", 4], ["ViewportAdjustment", 4], ["MiscSettings", 4] // currentTime, unused, viewportWidth, viewportHeight
 	  ]
 	}, _EveSpaceScene.global = {
@@ -215927,98 +215961,98 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor35$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "fogBlur", [_dec50, _dec51], {
+	}), _descriptor35$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "sceneMipLodBias", [_dec50], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor36$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "fogType", [_dec52, _dec53], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor37$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "lowQualityNebulaMixResPath", [_dec54, _dec55, _dec56], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "";
-	  }
-	}), _descriptor38$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "lowQualityNebulaResPath", [_dec57, _dec58, _dec59], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "";
-	  }
-	}), _descriptor39$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "reflectionIntensity", [_dec60], {
+	}), _descriptor36$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "upscalingAmount", [_dec51], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor40$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "selfShadowOnly", [_dec61, _dec62], {
+	}), _descriptor37$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "lowQualityNebulaMixResPath", [_dec52, _dec53, _dec54], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "";
+	  }
+	}), _descriptor38$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "lowQualityNebulaResPath", [_dec55, _dec56, _dec57], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "";
+	  }
+	}), _descriptor39$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "reflectionIntensity", [_dec58], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return 1;
+	  }
+	}), _descriptor40$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "selfShadowOnly", [_dec59, _dec60], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor41$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "shadowFadeThreshold", [_dec63, _dec64, _dec65], {
+	}), _descriptor41$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "shadowFadeThreshold", [_dec61, _dec62, _dec63], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor42$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "shadowThreshold", [_dec66, _dec67, _dec68], {
+	}), _descriptor42$2 = _applyDecoratedDescriptor(_class2$3u.prototype, "shadowThreshold", [_dec64, _dec65, _dec66], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 50000;
 	  }
-	}), _descriptor43 = _applyDecoratedDescriptor(_class2$3u.prototype, "shLightingManager", [_dec69, _dec70], {
+	}), _descriptor43 = _applyDecoratedDescriptor(_class2$3u.prototype, "shLightingManager", [_dec67, _dec68], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor44 = _applyDecoratedDescriptor(_class2$3u.prototype, "starfield", [_dec71, _dec72], {
+	}), _descriptor44 = _applyDecoratedDescriptor(_class2$3u.prototype, "starfield", [_dec69, _dec70], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor45 = _applyDecoratedDescriptor(_class2$3u.prototype, "sunDiffuseColorWithDynamicLights", [_dec73, _dec74], {
+	}), _descriptor45 = _applyDecoratedDescriptor(_class2$3u.prototype, "sunDiffuseColorWithDynamicLights", [_dec71, _dec72], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.fromValues(1, 1, 1, 1);
 	  }
-	}), _descriptor46 = _applyDecoratedDescriptor(_class2$3u.prototype, "useSunDiffuseColorWithDynamicLights", [_dec75, _dec76], {
+	}), _descriptor46 = _applyDecoratedDescriptor(_class2$3u.prototype, "useSunDiffuseColorWithDynamicLights", [_dec73, _dec74], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor47 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthPrecision", [_dec77], {
+	}), _descriptor47 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthPrecision", [_dec75], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 16;
 	  }
-	}), _descriptor48 = _applyDecoratedDescriptor(_class2$3u.prototype, "autoNearFarOptions", [_dec78], {
+	}), _descriptor48 = _applyDecoratedDescriptor(_class2$3u.prototype, "autoNearFarOptions", [_dec76], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -216029,56 +216063,56 @@
 	      margin: 0.05
 	    };
 	  }
-	}), _descriptor49 = _applyDecoratedDescriptor(_class2$3u.prototype, "hdr", [_dec79], {
+	}), _descriptor49 = _applyDecoratedDescriptor(_class2$3u.prototype, "hdr", [_dec77], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor50 = _applyDecoratedDescriptor(_class2$3u.prototype, "compositeEnabled", [_dec80], {
+	}), _descriptor50 = _applyDecoratedDescriptor(_class2$3u.prototype, "compositeEnabled", [_dec78], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor51 = _applyDecoratedDescriptor(_class2$3u.prototype, "postProcess2", [_dec81], {
+	}), _descriptor51 = _applyDecoratedDescriptor(_class2$3u.prototype, "postProcess2", [_dec79], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor52 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthCalculation", [_dec82], {
+	}), _descriptor52 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthCalculation", [_dec80], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor53 = _applyDecoratedDescriptor(_class2$3u.prototype, "distortionOffset", [_dec83], {
+	}), _descriptor53 = _applyDecoratedDescriptor(_class2$3u.prototype, "distortionOffset", [_dec81], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1.28;
 	  }
-	}), _descriptor54 = _applyDecoratedDescriptor(_class2$3u.prototype, "useNebulaAsReflection", [_dec84], {
+	}), _descriptor54 = _applyDecoratedDescriptor(_class2$3u.prototype, "useNebulaAsReflection", [_dec82], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor55 = _applyDecoratedDescriptor(_class2$3u.prototype, "lineSets", [_dec85], {
+	}), _descriptor55 = _applyDecoratedDescriptor(_class2$3u.prototype, "lineSets", [_dec83], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor56 = _applyDecoratedDescriptor(_class2$3u.prototype, "visible", [_dec86], {
+	}), _descriptor56 = _applyDecoratedDescriptor(_class2$3u.prototype, "visible", [_dec84], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -216129,126 +216163,126 @@
 	      sceneDepth: true
 	    };
 	  }
-	}), _descriptor57 = _applyDecoratedDescriptor(_class2$3u.prototype, "selectorColor", [_dec87], {
+	}), _descriptor57 = _applyDecoratedDescriptor(_class2$3u.prototype, "selectorColor", [_dec85], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.fromValues(0.5, 0.3, 0.0, 1.0);
 	  }
-	}), _descriptor58 = _applyDecoratedDescriptor(_class2$3u.prototype, "normalCalculation", [_dec88], {
+	}), _descriptor58 = _applyDecoratedDescriptor(_class2$3u.prototype, "normalCalculation", [_dec86], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor59 = _applyDecoratedDescriptor(_class2$3u.prototype, "backgroundTexturePath", [_dec89], {
+	}), _descriptor59 = _applyDecoratedDescriptor(_class2$3u.prototype, "backgroundTexturePath", [_dec87], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor60 = _applyDecoratedDescriptor(_class2$3u.prototype, "aoHandler", [_dec90], {
+	}), _descriptor60 = _applyDecoratedDescriptor(_class2$3u.prototype, "aoHandler", [_dec88], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor61 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthHandler", [_dec91], {
+	}), _descriptor61 = _applyDecoratedDescriptor(_class2$3u.prototype, "depthHandler", [_dec89], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor62 = _applyDecoratedDescriptor(_class2$3u.prototype, "_enableShadowDebugging", [_dec92], {
+	}), _descriptor62 = _applyDecoratedDescriptor(_class2$3u.prototype, "_enableShadowDebugging", [_dec90], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor63 = _applyDecoratedDescriptor(_class2$3u.prototype, "_enableShadowAutoSettings", [_dec93], {
+	}), _descriptor63 = _applyDecoratedDescriptor(_class2$3u.prototype, "_enableShadowAutoSettings", [_dec91], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor64 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowView", [_dec94], {
+	}), _descriptor64 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowView", [_dec92], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor65 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowProjection", [_dec95], {
+	}), _descriptor65 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowProjection", [_dec93], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor66 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowViewProjection", [_dec96], {
+	}), _descriptor66 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowViewProjection", [_dec94], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor67 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapSettings", [_dec97], {
+	}), _descriptor67 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapSettings", [_dec95], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.fromValues(1, 1, 0, 0);
 	  }
-	}), _descriptor68 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapRes", [_dec98], {
+	}), _descriptor68 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapRes", [_dec96], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor69 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapOffsetX", [_dec99], {
+	}), _descriptor69 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapOffsetX", [_dec97], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor70 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapOffsetY", [_dec100], {
+	}), _descriptor70 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMapOffsetY", [_dec98], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor71 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowDepthBias", [_dec101], {
+	}), _descriptor71 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowDepthBias", [_dec99], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor72 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowCameraNear", [_dec102], {
+	}), _descriptor72 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowCameraNear", [_dec100], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor73 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowCameraFar", [_dec103], {
+	}), _descriptor73 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowCameraFar", [_dec101], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 2;
 	  }
-	}), _descriptor74 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMinimumVisibility", [_dec104], {
+	}), _descriptor74 = _applyDecoratedDescriptor(_class2$3u.prototype, "_shadowMinimumVisibility", [_dec102], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
