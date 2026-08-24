@@ -3,6 +3,7 @@
 import { meta } from "utils";
 import { InitialPlacement } from "../attributeModifiers/InitialPlacement.js";
 import { PlacementDataWithIdentifier } from "../../PlacementDataWithIdentifier.js";
+import { Locator } from "../../item/EveLocatorSets.js";
 
 
 /** EveDistributionPlacementGeneratorLocators (eve/distribution/placement) - generated from schema shapeHash f7dad053.... */
@@ -15,15 +16,27 @@ export class EveDistributionPlacementGeneratorLocators extends meta.Model
     /**
      * m_locators (PLocatorStructureList) [READ, PERSIST]
      *
-     * Carbon calls this struct `Locator` (EveLocatorSets.h:10-17). ccpwgl
-     * already models the identical four values as `EveLocatorSetItem`, spelled
-     * position/rotation/scaling/boneIndex - same wire shape, one class, so this
-     * points at the existing one rather than registering a second.
+     * Carbon's `Locator` struct (EveLocatorSets.h:10-17), read straight off the
+     * black file - so it must be the class whose PROPERTY NAMES match what was
+     * authored: position/direction/scale/boneIndex.
      *
-     * Not `EveLocator2`/`EveLocator`: those are the hull's NAMED single
+     * NOT `EveLocatorSetItem`, which carries the same four values under
+     * rotation/scaling. That substitution was tried and reverted: the reader
+     * matches by name, so it built an untyped bag, misread the list, and threw
+     * on the next value it took for a length - which reads as a corrupt asset
+     * rather than a wrong class. See the note on `Locator` itself.
+     *
+     * Not `EveLocator2`/`EveLocator` either: those are the hull's NAMED single
      * locators and carry a matrix, not a decomposed SRT.
+     *
+     * Passed as the CLASS rather than its name, and that is load bearing: the
+     * `list` decorator only wires the packed structure-list reader when it is
+     * handed a constructor. Given a string it falls through to the generic
+     * object-list path, which expects typed objects on the wire, reads a
+     * float as a length, and throws `Argument is too big` naming a number
+     * with no relation to anything - which reads as a corrupt asset.
      */
-    @meta.list("EveLocatorSetItem")
+    @meta.list(Locator)
     locators = [];
 
     /** Flags the pool as stale when the authored locator list changes. */
@@ -43,9 +56,15 @@ export class EveDistributionPlacementGeneratorLocators extends meta.Model
         for (const locator of this.locators)
         {
             const data = new PlacementDataWithIdentifier();
+
+            // Carbon's spelling, because these are Carbon's authored structs.
+            // Reading the other one yields undefined, and
+            // `Float32Array.set(undefined)` THROWS - which the owning smart
+            // light set catches and latches, so the whole set goes permanently
+            // inert with no visible error.
             data.initialTranslation.set(locator.position);
-            data.initialRotation.set(locator.rotation);
-            data.initialScale.set(locator.scaling);
+            data.initialRotation.set(locator.direction);
+            data.initialScale.set(locator.scale);
             data.boneIndex = locator.boneIndex;
             data.uniqueID = trackingID.value++;
 
