@@ -75,6 +75,39 @@ export class EveChildParticleSystem extends EveChild
     }
 
     /**
+     * Intersects the emitter's mesh.
+     *
+     * The MESH only, never the particles. A particle is transient by
+     * definition - it exists for a few frames and is gone - so a hit on one
+     * names something that will not be there when the caller acts on it, and
+     * a selection that dies on its own is worse than no selection. What is
+     * pickable here is the emitter.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} [_worldTransform] - the parent's, unused; see EveChildMesh
+     * @param {Object} [cache]
+     * @returns {?Object} the intersection, if any
+     */
+    Intersect(ray, intersects, _worldTransform, cache)
+    {
+        if (!this.display || ray.IsMasked(this)) return null;
+        if (ray.GetOption("effectChildren", "skip")) return null;
+        if (!this.mesh || !this.mesh.Intersect) return null;
+
+        const before = intersects.length;
+        this.mesh.Intersect(ray, intersects, this._worldTransform, cache);
+
+        for (let i = before; i < intersects.length; i++)
+        {
+            if (!intersects[i].item) intersects[i].item = this;
+            if (!intersects[i].name) intersects[i].name = this.name || "";
+        }
+
+        return intersects.length > before ? intersects[before] : null;
+    }
+
+    /**
      * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]

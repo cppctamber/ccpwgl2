@@ -121,6 +121,29 @@ export class EveChildRef extends EveChildContainer
     }
 
     /**
+     * Intersects the referenced child.
+     *
+     * A ref is indirection and nothing else, so it contributes a segment and
+     * defers. The child may legitimately be absent - a ref whose resource has
+     * not loaded yet is not an error, and a hit test is not where to complain
+     * about it.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache]
+     * @returns {?Object} the first intersection, if any
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        if (!this.child || !this.child.Intersect) return null;
+
+        const before = intersects.length;
+        this.child.Intersect(ray, intersects, worldTransform, cache);
+        return ray.TrailFrom(intersects, before, "child");
+    }
+
+    /**
      * Loads the child from `resPath`, replacing any child already present.
      *
      * Carbon `EveChildRef::LoadChild` (cpp:326-345) unregisters the old child

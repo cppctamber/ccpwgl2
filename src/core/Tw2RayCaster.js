@@ -241,6 +241,133 @@ export class Tw2RayCaster
     }
 
     /**
+     * Records a path segment on a hit - see the static of the same name.
+     *
+     * Instance methods, not just statics, so an `Intersect` implementation
+     * does not have to import the ray caster to describe where a hit came
+     * from. It is already holding one: it is the first argument. Importing
+     * the class into every eve child and object set to reach two helpers
+     * would be a dependency bought for nothing.
+     *
+     * @param {Object} intersect
+     * @param {String} segment
+     * @returns {Object} intersect
+     */
+    Trail(intersect, segment)
+    {
+        return Tw2RayCaster.Trail(intersect, segment);
+    }
+
+    /**
+     * Records a path segment on every hit added since a mark.
+     * @param {Array} intersects
+     * @param {Number} from
+     * @param {String} segment
+     * @returns {?Object} the first hit added, if any
+     */
+    TrailFrom(intersects, from, segment)
+    {
+        return Tw2RayCaster.TrailFrom(intersects, from, segment);
+    }
+
+    /**
+     * Records where a hit sits in the object graph.
+     *
+     * An intersection names the leaf it hit and the root it belongs to, and
+     * nothing about the route between them - so two identical children on one
+     * hull are distinguishable only by object identity, and an instanced hit
+     * cannot say WHICH instance at all. This is what fills that in.
+     *
+     * The path is a PROPERTY PATH, so it resolves: every segment is the name
+     * a parent knows its child by, and the whole thing can be walked back
+     * against the root to reach the thing that was hit. That rules out
+     * descriptive segments - `container:eyes` reads well and resolves to
+     * nothing.
+     *
+     * A parent names its CHILD, never itself, because only the parent knows
+     * which of its properties the child hangs off. Both shapes fall out of
+     * that: a set names its items (`spriteSets[0].items[3]`), and a bare
+     * item array names its entries (`decals[2]`).
+     *
+     * Built by prepending as the stack unwinds, so the string reads
+     * root-first without ever being reversed.
+     *
+     * @param {Object} intersect
+     * @param {String} segment - e.g. "objects[0]", "items[3]", "instance[7]"
+     * @returns {Object} intersect
+     */
+    static Trail(intersect, segment)
+    {
+        if (!intersect || !segment) return intersect;
+        intersect.path = intersect.path ? segment + "." + intersect.path : segment;
+        return intersect;
+    }
+
+    /**
+     * Trails every intersection added since a mark.
+     *
+     * The shape every Intersect implementation needs: note the length before
+     * descending, then tag whatever came back.
+     *
+     * @param {Array} intersects
+     * @param {Number} from - intersects.length before descending
+     * @param {String} segment
+     * @returns {?Object} the first intersection added, if any
+     */
+    static TrailFrom(intersects, from, segment)
+    {
+        for (let i = from; i < intersects.length; i++) this.Trail(intersects[i], segment);
+        return intersects.length > from ? intersects[from] : null;
+    }
+
+    /**
+     * A hit's property path.
+     * @param {Object} intersect
+     * @returns {String} e.g. "effectChildren[2].objects[0].items[3]"
+     */
+    static GetPath(intersect)
+    {
+        return intersect && intersect.path || "";
+    }
+
+    /**
+     * Walks a path back to the thing it names.
+     *
+     * This is what makes the path worth storing rather than a label: a hit
+     * can be recorded, serialised, put in a url, and still resolve to the
+     * same object later - or resolve to nothing, which is the honest answer
+     * once the graph has changed under it.
+     *
+     * @param {*} root - the object the path was recorded against
+     * @param {String|Object} path - a path, or an intersection carrying one
+     * @returns {*} the object, or null
+     */
+    static Resolve(root, path)
+    {
+        const value = typeof path === "string" ? path : (path && path.path) || "";
+        if (!root || !value) return null;
+
+        let target = root;
+
+        for (const segment of value.split("."))
+        {
+            const match = segment.match(/^([A-Za-z_$][A-Za-z0-9_$]*)(?:\[(\d+)\])?$/);
+            if (!match) return null;
+
+            target = target[match[1]];
+            if (target === undefined || target === null) return null;
+
+            if (match[2] !== undefined)
+            {
+                target = target[Number(match[2])];
+                if (target === undefined || target === null) return null;
+            }
+        }
+
+        return target;
+    }
+
+    /**
      * Intersects an object
      * @param {*} object
      * @param {Array} [intersects]

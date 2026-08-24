@@ -159392,8 +159392,8 @@
 	  }
 	}), _class2$69)) || _class$6J);
 
-	var _dec$6I, _dec2$6h, _dec3$5P, _dec4$54, _dec5$4w, _dec6$3Z, _dec7$3q, _dec8$2_, _dec9$2B, _dec0$2r, _dec1$2f, _dec10$1Y, _dec11$1N, _dec12$1x, _dec13$1j, _dec14$19, _dec15$16, _dec16$Z, _dec17$T, _dec18$P, _dec19$E, _dec20$C, _dec21$z, _dec22$w, _dec23$t, _dec24$q, _class$6I, _class2$68, _descriptor$6a, _descriptor2$5C, _descriptor3$4U, _descriptor4$4e, _descriptor5$3F, _descriptor6$34, _descriptor7$2B, _descriptor8$2i, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1p, _descriptor11$1b, _descriptor12$16, _descriptor13$10, _descriptor14$X, _descriptor15$H, _descriptor16$B, _descriptor17$z, _descriptor18$w;
-	var Tw2InstancedMesh = (_dec$6I = todo("Is this deprecated?"), _dec2$6h = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5P = string, _dec4$54 = boolean, _dec5$4w = list("Tw2MeshArea"), _dec6$3Z = struct(), _dec7$3q = list("Tw2MeshArea"), _dec8$2_ = notImplemented, _dec9$2B = list("Tw2MeshArea"), _dec0$2r = notImplemented, _dec1$2f = list("Tw2MeshArea"), _dec10$1Y = struct("Tw2GeometryResource"), _dec11$1N = isPrivate, _dec12$1x = path, _dec13$1j = struct(), _dec14$19 = path, _dec15$16 = uint, _dec16$Z = vector3, _dec17$T = notImplemented, _dec18$P = uint, _dec19$E = vector3, _dec20$C = list("Tw2MeshArea"), _dec21$z = list("Tw2MeshArea"), _dec22$w = list("Tw2MeshArea"), _dec23$t = list("Tw2MeshArea"), _dec24$q = plain, _dec$6I(_class$6I = _dec2$6h(_class$6I = (_class2$68 = class Tw2InstancedMesh extends Model {
+	var _dec$6I, _dec2$6h, _dec3$5P, _dec4$54, _dec5$4w, _dec6$3Z, _dec7$3q, _dec8$2_, _dec9$2B, _dec0$2r, _dec1$2f, _dec10$1Y, _dec11$1N, _dec12$1x, _dec13$1j, _dec14$19, _dec15$16, _dec16$Z, _dec17$T, _dec18$P, _dec19$E, _dec20$C, _dec21$z, _dec22$w, _dec23$t, _dec24$q, _class$6I, _class2$68, _descriptor$6a, _descriptor2$5C, _descriptor3$4U, _descriptor4$4e, _descriptor5$3F, _descriptor6$34, _descriptor7$2B, _descriptor8$2i, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1p, _descriptor11$1b, _descriptor12$16, _descriptor13$10, _descriptor14$X, _descriptor15$H, _descriptor16$B, _descriptor17$z, _descriptor18$w, _Tw2InstancedMesh;
+	var Tw2InstancedMesh = (_dec$6I = todo("Is this deprecated?"), _dec2$6h = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5P = string, _dec4$54 = boolean, _dec5$4w = list("Tw2MeshArea"), _dec6$3Z = struct(), _dec7$3q = list("Tw2MeshArea"), _dec8$2_ = notImplemented, _dec9$2B = list("Tw2MeshArea"), _dec0$2r = notImplemented, _dec1$2f = list("Tw2MeshArea"), _dec10$1Y = struct("Tw2GeometryResource"), _dec11$1N = isPrivate, _dec12$1x = path, _dec13$1j = struct(), _dec14$19 = path, _dec15$16 = uint, _dec16$Z = vector3, _dec17$T = notImplemented, _dec18$P = uint, _dec19$E = vector3, _dec20$C = list("Tw2MeshArea"), _dec21$z = list("Tw2MeshArea"), _dec22$w = list("Tw2MeshArea"), _dec23$t = list("Tw2MeshArea"), _dec24$q = plain, _dec$6I(_class$6I = _dec2$6h(_class$6I = (_class2$68 = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6a, this);
@@ -159485,10 +159485,88 @@
 	   * @param {mat4} worldTransform
 	   * @param {Object} [cache]
 	   */
+	  /**
+	   * The transform of one instance, in the mesh's own space.
+	   *
+	   * Returns null by default, and that is not a stub - it is the honest
+	   * answer. Instance data is handed to the GPU as an opaque buffer plus a
+	   * declaration (see RenderAreas) and the SHADER decides what the elements
+	   * mean; nothing on the CPU ever builds a transform from them. The layout
+	   * differs between users - the smart light meshes carry theirs on TEXCOORD
+	   * 8..14, Carbon's generic instancing on 0..6 - so there is no convention
+	   * here to read.
+	   *
+	   * Anything that KNOWS its own layout should override this, and gets
+	   * per-instance picking for free. Anything that does not gets the whole
+	   * instanced mesh as one hit, which is correct if coarse - and much better
+	   * than a transform assembled from a guessed element order, which would put
+	   * instances in plausible wrong places.
+	   *
+	   * @param {Number} index
+	   * @param {mat4} out
+	   * @returns {?mat4} out, or null when the layout is unknown here
+	   */
+	  GetInstanceTransform(index, out) {
+	    var data = this.instanceGeometryResource;
+	    return data && data.GetInstanceTransform ? data.GetInstanceTransform(index, out) : null;
+	  }
+
+	  /**
+	   * How many instances this mesh draws.
+	   * @returns {Number}
+	   */
+	  GetInstanceCount() {
+	    if (!this.instanceGeometryResource || !this.instanceGeometryResource.GetInstanceCount) return 0;
+	    return this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex) || 0;
+	  }
+
+	  /**
+	   * Intersects the instanced mesh.
+	   *
+	   * Per instance where the layout is known, and the path carries
+	   * `instance[n]` so a caller can tell WHICH one was hit - the question that
+	   * was previously unanswerable. Where it is not known, the base geometry is
+	   * tested once against the mesh's own transform: a coarse hit that names the
+	   * mesh, rather than nothing at all.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} worldTransform
+	   * @param {Object} [cache]
+	   * @returns {?Object} the first intersection, if any
+	   */
 	  Intersect(ray, intersects, worldTransform, cache) {
-	    throw new ErrFeatureNotImplemented({
-	      feature: "Instance mesh intersection"
-	    });
+	    if (!this.display || !this.IsGood() || ray.IsMasked(this)) return null;
+	    var before = intersects.length;
+	    var count = this.GetInstanceCount();
+	    var instance = Tw2InstancedMesh.global.mat4_0;
+	    var combined = Tw2InstancedMesh.global.mat4_1;
+	    var perInstance = false;
+	    for (var i = 0; i < count; i++) {
+	      if (!this.GetInstanceTransform(i, instance)) {
+	        // Asked once. A mesh either knows its layout or does not, and it
+	        // will not start knowing it at instance seven.
+	        break;
+	      }
+	      perInstance = true;
+	      mat4$1.multiply(combined, worldTransform, instance);
+
+	      // A fresh cache per instance: the caller's holds an inverse world
+	      // transform and a ray in local space, and both are wrong for the
+	      // next instance. Sharing it would test every instance against the
+	      // first one's space.
+	      var at = intersects.length;
+	      this.geometryResource.Intersect(ray, intersects, combined, {}, this.meshIndex);
+	      ray.TrailFrom(intersects, at, "instance[".concat(i, "]"));
+	    }
+	    if (!perInstance) {
+	      this.geometryResource.Intersect(ray, intersects, worldTransform, cache, this.meshIndex);
+	    }
+	    for (var _i = before; _i < intersects.length; _i++) {
+	      if (!intersects[_i].item) intersects[_i].item = this;
+	      if (!intersects[_i].name) intersects[_i].name = this.name || "";
+	    }
+	    return intersects.length > before ? intersects[before] : null;
 	  }
 
 	  /**
@@ -159732,7 +159810,14 @@
 	    }
 	    return accumulator.length !== c;
 	  }
-	}, _descriptor$6a = _applyDecoratedDescriptor(_class2$68.prototype, "name", [_dec3$5P], {
+
+	  /**
+	   * Shared scratch
+	   */
+	}, _Tw2InstancedMesh.global = {
+	  mat4_0: mat4$1.create(),
+	  mat4_1: mat4$1.create()
+	}, _Tw2InstancedMesh), _descriptor$6a = _applyDecoratedDescriptor(_class2$68.prototype, "name", [_dec3$5P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -164333,6 +164418,16 @@
 	    this._stride = 0;
 	    this._declaration = null;
 	    this._vb = null;
+	    /**
+	     * The array last uploaded.
+	     *
+	     * A REFERENCE, not a copy - the caller built it and is still holding
+	     * it, so keeping it costs nothing and means the data can answer
+	     * questions about itself instead of the answer having to be wired in
+	     * from whoever happened to write it.
+	     * @type {?Float32Array}
+	     */
+	    this._data = null;
 	  }
 	  /** Carbon Tr2DirectInstanceData::GetCount. */
 	  GetCount() {
@@ -164388,6 +164483,7 @@
 	  SetData(data, count) {
 	    var gl = device.gl;
 	    this._count = count;
+	    this._data = count ? data : null;
 	    if (!count || !this._declaration) {
 	      return;
 	    }
@@ -164417,6 +164513,48 @@
 	  }
 
 	  /** @returns {WebGLBuffer|null} */
+	  /**
+	   * The transform of one instance, decoded from the uploaded data.
+	   *
+	   * Carbon packs an instance transform as the first THREE rows of the
+	   * transposed matrix - on the shared D3D-row-major / GL-column-major byte
+	   * layout that is the column stride - and never stores the fourth, which
+	   * is always (0,0,0,1). Every user of this class writes it that way:
+	   * EveSmartLightMesh, EveSmartLightQuad, and the plane sets Carbon
+	   * declares TEXCOORD 8 upwards for.
+	   *
+	   * Decoding here rather than in whatever wrote it means a hit test can ask
+	   * the data what it holds, instead of the answer having to be threaded in
+	   * from the writer.
+	   *
+	   * @param {Number} index
+	   * @param {mat4} out
+	   * @returns {?mat4} out, or null when there is no such instance
+	   */
+	  GetInstanceTransform(index, out) {
+	    var data = this._data;
+	    var stride = this._stride;
+	    if (!data || !stride || index < 0 || index >= this._count) return null;
+	    var o = index * stride;
+	    if (o + 11 >= data.length) return null;
+	    out[0] = data[o];
+	    out[4] = data[o + 1];
+	    out[8] = data[o + 2];
+	    out[12] = data[o + 3];
+	    out[1] = data[o + 4];
+	    out[5] = data[o + 5];
+	    out[9] = data[o + 6];
+	    out[13] = data[o + 7];
+	    out[2] = data[o + 8];
+	    out[6] = data[o + 9];
+	    out[10] = data[o + 10];
+	    out[14] = data[o + 11];
+	    out[3] = 0;
+	    out[7] = 0;
+	    out[11] = 0;
+	    out[15] = 1;
+	    return out;
+	  }
 	  GetInstanceBuffer() {
 	    return this._vb;
 	  }
@@ -165337,6 +165475,120 @@
 	   */
 	  SetMask(func) {
 	    this._maskFunction = func;
+	  }
+
+	  /**
+	   * Records a path segment on a hit - see the static of the same name.
+	   *
+	   * Instance methods, not just statics, so an `Intersect` implementation
+	   * does not have to import the ray caster to describe where a hit came
+	   * from. It is already holding one: it is the first argument. Importing
+	   * the class into every eve child and object set to reach two helpers
+	   * would be a dependency bought for nothing.
+	   *
+	   * @param {Object} intersect
+	   * @param {String} segment
+	   * @returns {Object} intersect
+	   */
+	  Trail(intersect, segment) {
+	    return Tw2RayCaster.Trail(intersect, segment);
+	  }
+
+	  /**
+	   * Records a path segment on every hit added since a mark.
+	   * @param {Array} intersects
+	   * @param {Number} from
+	   * @param {String} segment
+	   * @returns {?Object} the first hit added, if any
+	   */
+	  TrailFrom(intersects, from, segment) {
+	    return Tw2RayCaster.TrailFrom(intersects, from, segment);
+	  }
+
+	  /**
+	   * Records where a hit sits in the object graph.
+	   *
+	   * An intersection names the leaf it hit and the root it belongs to, and
+	   * nothing about the route between them - so two identical children on one
+	   * hull are distinguishable only by object identity, and an instanced hit
+	   * cannot say WHICH instance at all. This is what fills that in.
+	   *
+	   * The path is a PROPERTY PATH, so it resolves: every segment is the name
+	   * a parent knows its child by, and the whole thing can be walked back
+	   * against the root to reach the thing that was hit. That rules out
+	   * descriptive segments - `container:eyes` reads well and resolves to
+	   * nothing.
+	   *
+	   * A parent names its CHILD, never itself, because only the parent knows
+	   * which of its properties the child hangs off. Both shapes fall out of
+	   * that: a set names its items (`spriteSets[0].items[3]`), and a bare
+	   * item array names its entries (`decals[2]`).
+	   *
+	   * Built by prepending as the stack unwinds, so the string reads
+	   * root-first without ever being reversed.
+	   *
+	   * @param {Object} intersect
+	   * @param {String} segment - e.g. "objects[0]", "items[3]", "instance[7]"
+	   * @returns {Object} intersect
+	   */
+	  static Trail(intersect, segment) {
+	    if (!intersect || !segment) return intersect;
+	    intersect.path = intersect.path ? segment + "." + intersect.path : segment;
+	    return intersect;
+	  }
+
+	  /**
+	   * Trails every intersection added since a mark.
+	   *
+	   * The shape every Intersect implementation needs: note the length before
+	   * descending, then tag whatever came back.
+	   *
+	   * @param {Array} intersects
+	   * @param {Number} from - intersects.length before descending
+	   * @param {String} segment
+	   * @returns {?Object} the first intersection added, if any
+	   */
+	  static TrailFrom(intersects, from, segment) {
+	    for (var i = from; i < intersects.length; i++) this.Trail(intersects[i], segment);
+	    return intersects.length > from ? intersects[from] : null;
+	  }
+
+	  /**
+	   * A hit's property path.
+	   * @param {Object} intersect
+	   * @returns {String} e.g. "effectChildren[2].objects[0].items[3]"
+	   */
+	  static GetPath(intersect) {
+	    return intersect && intersect.path || "";
+	  }
+
+	  /**
+	   * Walks a path back to the thing it names.
+	   *
+	   * This is what makes the path worth storing rather than a label: a hit
+	   * can be recorded, serialised, put in a url, and still resolve to the
+	   * same object later - or resolve to nothing, which is the honest answer
+	   * once the graph has changed under it.
+	   *
+	   * @param {*} root - the object the path was recorded against
+	   * @param {String|Object} path - a path, or an intersection carrying one
+	   * @returns {*} the object, or null
+	   */
+	  static Resolve(root, path) {
+	    var value = typeof path === "string" ? path : path && path.path || "";
+	    if (!root || !value) return null;
+	    var target = root;
+	    for (var segment of value.split(".")) {
+	      var match = segment.match(/^([A-Za-z_$][A-Za-z0-9_$]*)(?:\[(\d+)\])?$/);
+	      if (!match) return null;
+	      target = target[match[1]];
+	      if (target === undefined || target === null) return null;
+	      if (match[2] !== undefined) {
+	        target = target[Number(match[2])];
+	        if (target === undefined || target === null) return null;
+	      }
+	    }
+	    return target;
 	  }
 
 	  /**
@@ -176060,6 +176312,39 @@
 	  }
 
 	  /**
+	   * Whether this child is driven by a bone on the parent's skeleton.
+	   * @returns {Boolean}
+	   */
+	  get isSkinned() {
+	    return this._hasBone === true;
+	  }
+
+	  /**
+	   * Whether this child's transform can change from frame to frame.
+	   *
+	   * Worth asking before trusting a position taken from it. Anything that
+	   * answers true has a transform that is only good for the frame it was
+	   * read on, so a caller must re-read rather than cache - and a tool
+	   * offering to move it by hand is offering something the next frame will
+	   * overwrite.
+	   *
+	   * Three separate ways to move, and a child needs only one of them:
+	   * a bone on the parent's skeleton, an animation of its own, or a
+	   * transform modifier - which is how a camera-facing child moves every
+	   * frame while being neither boned nor animated.
+	   *
+	   * @returns {Boolean}
+	   */
+	  IsAnimated() {
+	    // Authored as a promise that it does not move; believe it.
+	    if (this.staticTransform) return false;
+	    if (this._hasBone) return true;
+	    if (this.updateAnimation && this.animationUpdater) return true;
+	    if (this.transformModifiers && this.transformModifiers.length > 0) return true;
+	    return false;
+	  }
+
+	  /**
 	   * Updates LOD
 	   * @param {Tw2Frustum} frustum
 	   * @param {Number} parentLod
@@ -176165,6 +176450,50 @@
 	    this._worldTransform = mat4$1.create();
 	    this._worldTransformLast = mat4$1.create();
 	  }
+	  /**
+	   * Intersects this child.
+	   *
+	   * The incoming `worldTransform` is the PARENT's, and is deliberately not
+	   * used: `_worldTransform` is rebuilt every frame by Update and already
+	   * carries the parent, the bone and every transform modifier. Composing
+	   * the parent again would apply it twice, and re-deriving from
+	   * `localTransform` would answer the bind pose for anything animated -
+	   * which is exactly the case a hit test on a moving part has to get right.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [_worldTransform] - the parent's, unused; see above
+	   * @param {Object} [cache]
+	   * @returns {?Object} the intersection, if any
+	   */
+	  Intersect(ray, intersects, _worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("effectChildren", "skip")) return null;
+
+	    // NOT gated on lod. A hit test agreeing with what is drawn is the right
+	    // idea, but lod is not implemented properly yet - so a wrong `_lod`
+	    // would make a visible child silently unpickable, and that reads as an
+	    // intersection bug rather than as the lod system being unfinished. Add
+	    // the gate deliberately when lod lands.
+
+	    var target = this.mesh;
+	    if (!target || !target.Intersect) return null;
+	    var before = intersects.length;
+	    target.Intersect(ray, intersects, this._worldTransform, cache);
+
+	    // Name the child rather than the mesh: a caller picking in a scene
+	    // wants the thing it can select, and the mesh is an implementation
+	    // detail of it.
+	    for (var i = before; i < intersects.length; i++) {
+	      if (!intersects[i].item) intersects[i].item = this;
+	      if (!intersects[i].name) intersects[i].name = this.name || "";
+	    }
+
+	    // No segment of its own: a parent names its children, because only
+	    // the parent knows which property they hang off. This is a leaf.
+	    return intersects.length > before ? intersects[before] : null;
+	  }
+
 	  /**
 	   * Gets the child's resources
 	   * @param {Array} [out=[]]
@@ -177164,6 +177493,45 @@
 	  }
 
 	  /**
+	   * Intersects everything this container holds.
+	   *
+	   * Hands each child this container's OWN `_worldTransform` rather than the
+	   * one passed in. Update composes parent, bone and modifiers into it every
+	   * frame, so it is what the children were actually drawn against - and a
+	   * container is frequently the thing carrying the bone, with its children
+	   * rigid inside it.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [_worldTransform] - the parent's, unused; see above
+	   * @param {Object} [cache]
+	   * @returns {?Object} the nearest intersection found below here, if any
+	   */
+	  Intersect(ray, intersects, _worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("effectChildren", "skip")) return null;
+	    var before = intersects.length;
+	    for (var i = 0; i < this.objects.length; i++) {
+	      var child = this.objects[i];
+	      if (!child || !child.Intersect) continue;
+
+	      // Trailed per child WITH ITS INDEX, because two children of one
+	      // container are routinely identical - the same mesh, the same
+	      // name - and the index is the only thing that tells them apart.
+	      var at = intersects.length;
+	      child.Intersect(ray, intersects, this._worldTransform, cache);
+	      ray.TrailFrom(intersects, at, "objects[".concat(i, "]"));
+	    }
+
+	    // A container has no geometry of its own, so it names itself only where
+	    // a child did not - otherwise picking a mesh would report the group.
+	    for (var _i3 = before; _i3 < intersects.length; _i3++) {
+	      if (!intersects[_i3].item) intersects[_i3].item = this;
+	    }
+	    return intersects.length > before ? intersects[before] : null;
+	  }
+
+	  /**
 	   * Gets object resources
 	   * @param {Array} [out=[]] - Optional receiving array
 	   * @returns {Array.<Tw2Resource>} [out]
@@ -177245,8 +177613,8 @@
 	        mat4$1.multiply(this._worldTransform, parentTransform, this.localTransform);
 	      }
 	    }
-	    for (var _i3 = 0; _i3 < this.transformModifiers.length; _i3++) {
-	      var _modifier = this.transformModifiers[_i3];
+	    for (var _i4 = 0; _i4 < this.transformModifiers.length; _i4++) {
+	      var _modifier = this.transformModifiers[_i4];
 	      if ("ApplyTransform" in _modifier) {
 	        _modifier.ApplyTransform(this._worldTransform);
 	      }
@@ -177265,8 +177633,8 @@
 	    // container happens to hold it. `childParent` is `this`, which is the
 	    // distinction Carbon draws: the camera attribute uses the child's own
 	    // transform where it has one, and the root's position otherwise.
-	    for (var _i4 = 0; _i4 < this.fxAttributes.length; _i4++) {
-	      var fx = this.fxAttributes[_i4];
+	    for (var _i5 = 0; _i5 < this.fxAttributes.length; _i5++) {
+	      var fx = this.fxAttributes[_i5];
 	      if (fx && typeof fx.UpdateAsyncronous === "function") {
 	        fx.UpdateAsyncronous(null, {
 	          spaceObjectParent: parentSpaceObject,
@@ -177291,19 +177659,19 @@
 	      // Effect-child controllers arrive via deserialization rather than an AddController
 	      // call, so link them (owner = this container) on first tick before updating.
 	      if (!this._controllersLinked) this.Initialize();
-	      for (var _i5 = 0; _i5 < this.controllers.length; _i5++) {
-	        this.controllers[_i5].Update(dt);
+	      for (var _i6 = 0; _i6 < this.controllers.length; _i6++) {
+	        this.controllers[_i6].Update(dt);
 	      }
 	    }
 	    if (!enabled || enabled.childCurveSets !== false) {
-	      for (var _i6 = 0; _i6 < this.curveSets.length; _i6++) {
-	        this.curveSets[_i6].UpdateDelta(dt);
+	      for (var _i7 = 0; _i7 < this.curveSets.length; _i7++) {
+	        this.curveSets[_i7].UpdateDelta(dt);
 	      }
 	    }
-	    for (var _i7 = 0; _i7 < this.objects.length; _i7++) {
+	    for (var _i8 = 0; _i8 < this.objects.length; _i8++) {
 	      // Forward the same top-level parentSpaceObject (not `this`) so deeply nested
 	      // containers still resolve ShipSpeed() against the ship, not an intermediate container.
-	      this.objects[_i7].Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
+	      this.objects[_i8].Update(dt, this._worldTransform, perObjectData, parentSpaceObject);
 	    }
 
 	    /*
@@ -177355,8 +177723,8 @@
 	        parentScale
 	      })]);
 	    }
-	    for (var _i8 = 0; _i8 < this.objects.length; _i8++) {
-	      var child = this.objects[_i8];
+	    for (var _i9 = 0; _i9 < this.objects.length; _i9++) {
+	      var child = this.objects[_i9];
 	      if (child && typeof child.GetLights === "function") child.GetLights(collector, parentContext);
 	    }
 	  }
@@ -177953,6 +178321,43 @@
 	      if (this.instances[i].GetResources) this.instances[i].GetResources(out);
 	    }
 	    return out;
+	  }
+
+	  /**
+	   * Intersects every placed instance.
+	   *
+	   * The easiest instancing case in the engine, because these instances are
+	   * not a packed buffer at all - each one is a real child object,
+	   * deep-copied from `source` and parented under its own transform. So
+	   * there is nothing to decode: ask each instance, and let it answer for
+	   * itself exactly as it would if it had been placed by hand.
+	   *
+	   * Gated on `_hasUpdated` for the same reason GetBatches is - before the
+	   * first update the instances exist but have not been placed, and a hit
+	   * test against unplaced copies would report them all at the origin.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [worldTransform] - the parent's; instances carry their own
+	   * @param {Object} [cache]
+	   * @returns {?Object} the first intersection, if any
+	   */
+	  Intersect(ray, intersects, worldTransform, cache) {
+	    if (!this.display || !this._hasUpdated || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("effectChildren", "skip")) return null;
+	    var before = intersects.length;
+	    var instances = this.GetInstances();
+	    for (var i = 0; i < instances.length; i++) {
+	      var instance = instances[i];
+	      if (!instance || !instance.Intersect) continue;
+	      var at = intersects.length;
+	      instance.Intersect(ray, intersects, this._worldTransform, cache);
+	      ray.TrailFrom(intersects, at, "instance[".concat(i, "]"));
+	    }
+	    for (var _i2 = before; _i2 < intersects.length; _i2++) {
+	      if (!intersects[_i2].item) intersects[_i2].item = this;
+	    }
+	    return intersects.length > before ? intersects[before] : null;
 	  }
 
 	  /**
@@ -178845,8 +179250,8 @@
 	  }
 	}), _class2$4N)) || _class$5e) || _class$5e);
 
-	var _dec$5d, _dec2$4U, _dec3$4u, _class$5d, _descriptor$4M, _dec4$3U, _dec5$3n, _dec6$2W, _dec7$2x, _class2$4M, _descriptor2$4h, _descriptor3$3H, _EveObjectSet;
-	var EveObjectSetItem = (_dec$5d = boolean, _dec2$4U = abstract, _dec3$4u = abstract, _class$5d = class EveObjectSetItem extends Model {
+	var _dec$5d, _dec2$4U, _dec3$4u, _class$5d, _descriptor$4M, _init, _EveObjectSetItem, _dec4$3U, _dec5$3n, _dec6$2W, _dec7$2x, _class2$4M, _descriptor2$4h, _descriptor3$3H, _EveObjectSet;
+	var EveObjectSetItem = (_dec$5d = boolean, _dec2$4U = abstract, _dec3$4u = abstract, _class$5d = (_EveObjectSetItem = class EveObjectSetItem extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "display", _descriptor$4M, this);
@@ -178909,6 +179314,7 @@
 	   * @param {mat4} out
 	   * @return {mat4} out
 	   */
+
 	  GetTransform(out) {}
 
 	  /**
@@ -178967,14 +179373,21 @@
 	    this.GetBoundingSphere(out);
 	    return sph3.transformMat4(out, out, this._parent.GetParentTransformReference());
 	  }
-	}, _descriptor$4M = _applyDecoratedDescriptor(_class$5d.prototype, "display", [_dec$5d], {
+	}, _EveObjectSetItem.boundsPrimitive = "box", _EveObjectSetItem), _descriptor$4M = _applyDecoratedDescriptor(_class$5d.prototype, "display", [_dec$5d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _applyDecoratedDescriptor(_class$5d.prototype, "GetTransform", [_dec2$4U], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetTransform"), _class$5d.prototype), _applyDecoratedDescriptor(_class$5d.prototype, "GetBoundingBox", [_dec3$4u], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetBoundingBox"), _class$5d.prototype), _class$5d);
+	}), _applyDecoratedDescriptor(_class$5d, "boundsPrimitive", [_dec2$4U], (_init = Object.getOwnPropertyDescriptor(_class$5d, "boundsPrimitive"), _init = _init ? _init.value : undefined, {
+	  enumerable: true,
+	  configurable: true,
+	  writable: true,
+	  initializer: function () {
+	    return _init;
+	  }
+	}), _class$5d), _applyDecoratedDescriptor(_class$5d.prototype, "GetBoundingBox", [_dec3$4u], Object.getOwnPropertyDescriptor(_class$5d.prototype, "GetBoundingBox"), _class$5d.prototype), _class$5d);
 	var EveObjectSet = (_dec4$3U = boolean, _dec5$3n = list(), _dec6$2W = abstract, _dec7$2x = abstract, _class2$4M = (_EveObjectSet = class EveObjectSet extends Model {
 	  constructor() {
 	    super(...arguments);
@@ -179073,6 +179486,70 @@
 	    this.RebuildBounds(force);
 	    sph3.copy(out, this._boundingSphere);
 	    return this._boundsDirty ? null : out;
+	  }
+
+	  /**
+	   * Intersects the set's items.
+	   *
+	   * One implementation for every set, on the base, rather than ten nearly
+	   * identical ones. `EveShip2.Intersect` already maps ten attachment types to
+	   * visibility keys and calls `Intersect` on each - and not one of those
+	   * classes implemented it, so every call was skipped by the `if
+	   * (!item.Intersect)` guard and the whole attachment layer was silently
+	   * unpickable while the code read as though it worked.
+	   *
+	   * Tested per ITEM, not against the set's bounds. A set's bounds cover every
+	   * item in it, so a hit on those answers "somewhere in the sprite set",
+	   * which is not something a user can select.
+	   *
+	   * Each item is tested against the primitive IT declares - see
+	   * `boundsPrimitive`. Set items have no geometry to intersect, so the best a
+	   * hit test can do is ask each one to describe its own extent, and a sprite
+	   * and a spotlight do not describe theirs the same way.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [worldTransform] - the parent's; items resolve their own
+	   * @param {Object} [cache]
+	   * @returns {?Object} the first intersection, if any
+	   */
+	  Intersect(ray, intersects, worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    var before = intersects.length;
+	    var _EveObjectSet$global = EveObjectSet.global,
+	      sph3_0 = _EveObjectSet$global.sph3_0,
+	      box3_0 = _EveObjectSet$global.box3_0;
+
+	    // Visible items when the set has resolved them, all of them otherwise -
+	    // a set that has not been updated yet still has pickable items.
+	    var items = this._visibleItems && this._visibleItems.length ? this._visibleItems : this.items;
+	    for (var i = 0; i < items.length; i++) {
+	      var item = items[i];
+	      if (!item || item.display === false) continue;
+	      var sphere = item.constructor.boundsPrimitive === "sphere";
+	      var intersect = void 0;
+	      try {
+	        intersect = sphere ? ray.IntersectWorldSph3(item.GetWorldBoundingSphere(sph3_0)) : ray.IntersectWorldBox3(item.GetWorldBoundingBox(box3_0));
+	      } catch (err) {
+	        // The base throws when an item has no parent yet. An item that
+	        // cannot say where it is cannot be hit, and a hit test is not the
+	        // place to complain about it.
+	        continue;
+	      }
+	      if (!intersect) continue;
+	      intersect.item = item;
+	      intersect.name = item.name || this.name || "";
+	      intersects.push(intersect);
+
+	      // Indexed, because set items are routinely identical to each other -
+	      // eight sprites of one kind, six turrets of one model - and the index
+	      // is the only thing that separates them.
+	      ray.Trail(intersect, "items[".concat(i, "]"));
+	    }
+
+	    // No segment of its own - the parent names this set by the property it
+	    // hangs off, which is the only name that resolves.
+	    return intersects.length > before ? intersects[before] : null;
 	  }
 
 	  /**
@@ -181045,6 +181522,50 @@
 	  }
 
 	  /**
+	   * Intersects this child.
+	   *
+	   * The incoming `worldTransform` is the PARENT's, and is deliberately not
+	   * used: `_worldTransform` is rebuilt every frame by Update and already
+	   * carries the parent, the bone and every transform modifier. Composing
+	   * the parent again would apply it twice, and re-deriving from
+	   * `localTransform` would answer the bind pose for anything animated -
+	   * which is exactly the case a hit test on a moving part has to get right.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [_worldTransform] - the parent's, unused; see above
+	   * @param {Object} [cache]
+	   * @returns {?Object} the intersection, if any
+	   */
+	  Intersect(ray, intersects, _worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("lineSets", "skip")) return null;
+
+	    // NOT gated on lod. A hit test agreeing with what is drawn is the right
+	    // idea, but lod is not implemented properly yet - so a wrong `_lod`
+	    // would make a visible child silently unpickable, and that reads as an
+	    // intersection bug rather than as the lod system being unfinished. Add
+	    // the gate deliberately when lod lands.
+
+	    var target = this.mesh;
+	    if (!target || !target.Intersect) return null;
+	    var before = intersects.length;
+	    target.Intersect(ray, intersects, this._worldTransform, cache);
+
+	    // Name the child rather than the mesh: a caller picking in a scene
+	    // wants the thing it can select, and the mesh is an implementation
+	    // detail of it.
+	    for (var i = before; i < intersects.length; i++) {
+	      if (!intersects[i].item) intersects[i].item = this;
+	      if (!intersects[i].name) intersects[i].name = this.name || "";
+	    }
+
+	    // No segment of its own: a parent names its children, because only
+	    // the parent knows which property they hang off. This is a leaf.
+	    return intersects.length > before ? intersects[before] : null;
+	  }
+
+	  /**
 	   * @param {Array} [out=[]]
 	   * @returns {Array<Tw2Resource>} out
 	   */
@@ -181289,6 +181810,50 @@
 	    this._perObjectDataBagOfStuff = {};
 	    this._usesFfe = false;
 	  }
+	  /**
+	   * Intersects this child.
+	   *
+	   * The incoming `worldTransform` is the PARENT's, and is deliberately not
+	   * used: `_worldTransform` is rebuilt every frame by Update and already
+	   * carries the parent, the bone and every transform modifier. Composing
+	   * the parent again would apply it twice, and re-deriving from
+	   * `localTransform` would answer the bind pose for anything animated -
+	   * which is exactly the case a hit test on a moving part has to get right.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [_worldTransform] - the parent's, unused; see above
+	   * @param {Object} [cache]
+	   * @returns {?Object} the intersection, if any
+	   */
+	  Intersect(ray, intersects, _worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("effectChildren", "skip")) return null;
+
+	    // NOT gated on lod. A hit test agreeing with what is drawn is the right
+	    // idea, but lod is not implemented properly yet - so a wrong `_lod`
+	    // would make a visible child silently unpickable, and that reads as an
+	    // intersection bug rather than as the lod system being unfinished. Add
+	    // the gate deliberately when lod lands.
+
+	    var target = this.mesh;
+	    if (!target || !target.Intersect) return null;
+	    var before = intersects.length;
+	    target.Intersect(ray, intersects, this._worldTransform, cache);
+
+	    // Name the child rather than the mesh: a caller picking in a scene
+	    // wants the thing it can select, and the mesh is an implementation
+	    // detail of it.
+	    for (var i = before; i < intersects.length; i++) {
+	      if (!intersects[i].item) intersects[i].item = this;
+	      if (!intersects[i].name) intersects[i].name = this.name || "";
+	    }
+
+	    // No segment of its own: a parent names its children, because only
+	    // the parent knows which property they hang off. This is a leaf.
+	    return intersects.length > before ? intersects[before] : null;
+	  }
+
 	  /**
 	   * Gets object resources
 	   * @param {Array} [out=[]] - Optional receiving array
@@ -181750,6 +182315,34 @@
 	  }
 
 	  /**
+	   * Intersects the emitter's mesh.
+	   *
+	   * The MESH only, never the particles. A particle is transient by
+	   * definition - it exists for a few frames and is gone - so a hit on one
+	   * names something that will not be there when the caller acts on it, and
+	   * a selection that dies on its own is worse than no selection. What is
+	   * pickable here is the emitter.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} [_worldTransform] - the parent's, unused; see EveChildMesh
+	   * @param {Object} [cache]
+	   * @returns {?Object} the intersection, if any
+	   */
+	  Intersect(ray, intersects, _worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("effectChildren", "skip")) return null;
+	    if (!this.mesh || !this.mesh.Intersect) return null;
+	    var before = intersects.length;
+	    this.mesh.Intersect(ray, intersects, this._worldTransform, cache);
+	    for (var i = before; i < intersects.length; i++) {
+	      if (!intersects[i].item) intersects[i].item = this;
+	      if (!intersects[i].name) intersects[i].name = this.name || "";
+	    }
+	    return intersects.length > before ? intersects[before] : null;
+	  }
+
+	  /**
 	   * Gets object resources
 	   * @param {Array} [out=[]] - Optional receiving array
 	   * @returns {Array.<Tw2Resource>} [out]
@@ -182115,6 +182708,27 @@
 	   */
 	  SetAutoLoadBlocker(shouldBlockAutoLoad) {
 	    this.loadChildAutomatically = !shouldBlockAutoLoad;
+	  }
+
+	  /**
+	   * Intersects the referenced child.
+	   *
+	   * A ref is indirection and nothing else, so it contributes a segment and
+	   * defers. The child may legitimately be absent - a ref whose resource has
+	   * not loaded yet is not an error, and a hit test is not where to complain
+	   * about it.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} worldTransform
+	   * @param {Object} [cache]
+	   * @returns {?Object} the first intersection, if any
+	   */
+	  Intersect(ray, intersects, worldTransform, cache) {
+	    if (!this.child || !this.child.Intersect) return null;
+	    var before = intersects.length;
+	    this.child.Intersect(ray, intersects, worldTransform, cache);
+	    return ray.TrailFrom(intersects, before, "child");
 	  }
 
 	  /**
@@ -185294,7 +185908,7 @@
 	  }
 	}), _class2$4y)) || _class$4$) || _class$4$);
 
-	var _dec$4_, _dec2$4F, _dec3$4f, _dec4$3H, _dec5$3a, _dec6$2K, _dec7$2l, _dec8$23, _dec9$1O, _dec0$1F, _dec1$1y, _dec10$1k, _dec11$1d, _dec12$12, _class$4_, _class2$4x, _descriptor$4x, _descriptor2$43, _descriptor3$3u, _descriptor4$30, _descriptor5$2C, _descriptor6$2a, _descriptor7$1N, _descriptor8$1B, _descriptor9$1t, _descriptor0$1o, _descriptor1$17, _descriptor10$$, _descriptor11$P, _dec13$T, _dec14$N, _dec15$K, _dec16$D, _dec17$x, _dec18$t, _class3$i, _class4$g, _descriptor12$L, _descriptor13$G, _descriptor14$D, _descriptor15$t, _EveSpriteSet;
+	var _dec$4_, _dec2$4F, _dec3$4f, _dec4$3H, _dec5$3a, _dec6$2K, _dec7$2l, _dec8$23, _dec9$1O, _dec0$1F, _dec1$1y, _dec10$1k, _dec11$1d, _dec12$12, _class$4_, _class2$4x, _descriptor$4x, _descriptor2$43, _descriptor3$3u, _descriptor4$30, _descriptor5$2C, _descriptor6$2a, _descriptor7$1N, _descriptor8$1B, _descriptor9$1t, _descriptor0$1o, _descriptor1$17, _descriptor10$$, _descriptor11$P, _EveSpriteSetItem, _dec13$T, _dec14$N, _dec15$K, _dec16$D, _dec17$x, _dec18$t, _class3$i, _class4$g, _descriptor12$L, _descriptor13$G, _descriptor14$D, _descriptor15$t, _EveSpriteSet;
 	class EveSpriteSetBatch extends Tw2RenderBatch {
 	  constructor() {
 	    super(...arguments);
@@ -185325,7 +185939,7 @@
 	    return this.spriteSet.effect && this.spriteSet.effect.HasTechnique(technique);
 	  }
 	}
-	var EveSpriteSetItem = (_dec$4_ = define("EveSpriteSetItem", true), _dec2$4F = string, _dec3$4f = float, _dec4$3H = float, _dec5$3a = int32$1, _dec6$2K = color, _dec7$2l = float, _dec8$23 = float, _dec9$1O = float, _dec0$1F = float, _dec1$1y = vector3, _dec10$1k = color, _dec11$1d = int32$1, _dec12$12 = int32$1, _dec$4_(_class$4_ = (_class2$4x = class EveSpriteSetItem extends EveObjectSetItem {
+	var EveSpriteSetItem = (_dec$4_ = define("EveSpriteSetItem", true), _dec2$4F = string, _dec3$4f = float, _dec4$3H = float, _dec5$3a = int32$1, _dec6$2K = color, _dec7$2l = float, _dec8$23 = float, _dec9$1O = float, _dec0$1F = float, _dec1$1y = vector3, _dec10$1k = color, _dec11$1d = int32$1, _dec12$12 = int32$1, _dec$4_(_class$4_ = (_class2$4x = (_EveSpriteSetItem = class EveSpriteSetItem extends EveObjectSetItem {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$4x, this);
@@ -185388,6 +186002,11 @@
 	  }
 
 	  /**
+	   * A sprite always faces the camera, so its extent does not turn with it.
+	   * @type {String}
+	   */
+
+	  /**
 	   * Gets the item's bounding sphere
 	   * @param {sph3} out
 	   * @returns {sph3} out
@@ -185429,7 +186048,7 @@
 	    if (this._bone) vec3$3.transformMat4(out, out, this._bone.offsetTransform);
 	    return vec3$3.transformMat4(out, out, this._parent.GetParentTransformReference());
 	  }
-	}, _descriptor$4x = _applyDecoratedDescriptor(_class2$4x.prototype, "name", [_dec2$4F], {
+	}, _EveSpriteSetItem.boundsPrimitive = "sphere", _EveSpriteSetItem), _descriptor$4x = _applyDecoratedDescriptor(_class2$4x.prototype, "name", [_dec2$4F], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -189501,6 +190120,46 @@
 	  }
 
 	  /**
+	   * Gets the decal's bounding box.
+	   *
+	   * A decal is a projection VOLUME - its matrix defines the box it sprays
+	   * through - so the transform is the bounds, and a box is the honest
+	   * primitive. The bone is already folded in by GetTransform.
+	   *
+	   * @param {box3} box
+	   * @returns {box3} box
+	   */
+	  GetBoundingBox(box) {
+	    return box3.fromTransform(box, this.GetTransform(EveSpaceObjectDecal.global.mat4_0));
+	  }
+
+	  /**
+	   * Intersects the decal.
+	   *
+	   * Decals hang directly off the object rather than inside a set, so unlike
+	   * a sprite or a spotlight this implements the test itself.
+	   *
+	   * @param {Tw2RayCaster} ray
+	   * @param {Array} intersects
+	   * @param {mat4} worldTransform - the parent's
+	   * @param {Object} [cache]
+	   * @returns {?Object} the intersection, if any
+	   */
+	  Intersect(ray, intersects, worldTransform, cache) {
+	    if (!this.display || ray.IsMasked(this)) return null;
+	    if (ray.GetOption("decals", "skip")) return null;
+	    var box3_0 = EveSpaceObjectDecal.global.box3_0;
+	    this.GetBoundingBox(box3_0);
+	    if (worldTransform) box3.transformMat4(box3_0, box3_0, worldTransform);
+	    var intersect = ray.IntersectWorldBox3(box3_0);
+	    if (!intersect) return null;
+	    intersect.item = this;
+	    intersect.name = this.name || "";
+	    intersects.push(intersect);
+	    return intersect;
+	  }
+
+	  /**
 	   * Gets effect resources
 	   * @param {Array} [out=[]] - Optional receiving array
 	   * @returns {Array.<Tw2Resource>} [out]
@@ -189786,7 +190445,10 @@
 	  ["clipRadius2Sq", 4],
 	  // 7 packed spherical harmonic lighting coefficients
 	  ["shLighting", 4 * 7]]
-	}, _EveSpaceObjectDecal.enableParentMeshIndex = false, _EveSpaceObjectDecal), _descriptor$4p = _applyDecoratedDescriptor(_class2$4p.prototype, "name", [_dec2$4x], {
+	}, _EveSpaceObjectDecal.enableParentMeshIndex = false, _EveSpaceObjectDecal.global = {
+	  mat4_0: mat4$1.create(),
+	  box3_0: box3.create()
+	}, _EveSpaceObjectDecal), _descriptor$4p = _applyDecoratedDescriptor(_class2$4p.prototype, "name", [_dec2$4x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -197359,6 +198021,17 @@
 	    _initializerDefineProperty(this, "scaling", _descriptor8$1k, this);
 	    _initializerDefineProperty(this, "sourceBrightness", _descriptor9$1e, this);
 	    _initializerDefineProperty(this, "sourceSize", _descriptor0$1a, this);
+	    /**
+	     * The item's own transform, rebuilt whenever its srt changes.
+	     *
+	     * Was USED by OnValueChanged and never declared, so the first value change
+	     * handed `mat4.fromRotationTranslationScale` an undefined output. Nothing
+	     * had hit it because the class is marked notImplemented and never runs.
+	     * @type {mat4}
+	     */
+	    this._transform = mat4$1.create();
+	    /** @type {?Tw2Bone} */
+	    this._bone = null;
 	  }
 	  /**
 	   * Fires on value changes
@@ -197366,6 +198039,23 @@
 	  OnValueChanged() {
 	    mat4$1.fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
 	    this._dirty = true;
+	  }
+
+	  /**
+	   * Gets the item's bounding box.
+	   *
+	   * A box rather than a sphere: haze is placed with a full srt and is not
+	   * camera-facing, so rotating it covers different space - and a sphere big
+	   * enough to hold it in any orientation is mostly empty, which reads as
+	   * haze you can select from well outside it. Same reasoning as spotlights.
+	   *
+	   * @param {box3} box
+	   * @returns {box3} box
+	   */
+	  GetBoundingBox(box) {
+	    box3.fromTransform(box, this._transform);
+	    if (this._bone) box3.transformMat4(box, box, this._bone.offsetTransform);
+	    return box;
 	  }
 	}, _descriptor$4b = _applyDecoratedDescriptor(_class3$a.prototype, "display", [_dec4$3l], {
 	  configurable: true,
@@ -198060,7 +198750,9 @@
 	      root = _cache$root === void 0 ? this : _cache$root;
 	    var args = [ray, intersects, this._worldTransform, cache];
 	    if ("Intersect" in this.mesh && !ray.GetOption("mesh", "skip")) {
+	      var at = intersects.length;
 	      this.mesh.Intersect(...args).forEach(intersect => intersect.root = root);
+	      ray.TrailFrom(intersects, at, "mesh");
 	    }
 	    if (this._lod > 1) {
 	      for (var i = 0; i < this.attachments.length; i++) {
@@ -198098,7 +198790,12 @@
 	            break;
 	        }
 	        if (type && this.visible[type] && !ray.GetOption(type, "skip")) {
+	          // The visibility key is also the property these live on, so
+	          // it doubles as the path segment - and the index within it
+	          // is what separates one turret set from another.
+	          var _at = intersects.length;
 	          itemIntersect = item.Intersect(...args);
+	          ray.TrailFrom(intersects, _at, "".concat(type, "[").concat(this[type] ? this[type].indexOf(item) : i, "]"));
 	        }
 	        if (itemIntersect) {
 	          itemIntersect.root = root;
@@ -198106,36 +198803,42 @@
 	      }
 	    }
 
-	    /*
-	    if (this.visible.decals)
-	    {
-	        for (let i = 0; i < this.decals.length; i++)
-	        {
-	            const itemIntersect = this.decals[i].Intersect(...args);
-	            if (itemIntersect) itemIntersect.root = this;
-	        }
-	    }
-	     */
-
-	    if (!ray.GetOption("locators", "skip")) {
-	      for (var _i = 0; _i < this.locators.length; _i++) {
-	        var _itemIntersect = this.locators[_i].Intersect(...args);
+	    // Uncommented once EveSpaceObjectDecal could actually answer: it had
+	    // no Intersect at all, so this loop would have thrown had it run.
+	    if (this.visible.decals && !ray.GetOption("decals", "skip")) {
+	      for (var _i = 0; _i < this.decals.length; _i++) {
+	        if (!this.decals[_i].Intersect) continue;
+	        var _at2 = intersects.length;
+	        var _itemIntersect = this.decals[_i].Intersect(...args);
+	        ray.TrailFrom(intersects, _at2, "decals[".concat(_i, "]"));
 	        if (_itemIntersect) _itemIntersect.root = root;
 	      }
 	    }
+	    if (!ray.GetOption("locators", "skip")) {
+	      for (var _i2 = 0; _i2 < this.locators.length; _i2++) {
+	        var _at3 = intersects.length;
+	        var _itemIntersect2 = this.locators[_i2].Intersect(...args);
+	        ray.TrailFrom(intersects, _at3, "locators[".concat(_i2, "]"));
+	        if (_itemIntersect2) _itemIntersect2.root = root;
+	      }
+	    }
 	    if (this.visible.effectChildren && !ray.GetOption("effectChildren", "skip")) {
-	      for (var _i2 = 0; _i2 < this.effectChildren.length; _i2++) {
-	        if (this.effectChildren[_i2].Intersect) {
-	          var _itemIntersect2 = this.effectChildren[_i2].Intersect(...args);
-	          if (_itemIntersect2) _itemIntersect2.root = root;
+	      for (var _i3 = 0; _i3 < this.effectChildren.length; _i3++) {
+	        if (this.effectChildren[_i3].Intersect) {
+	          var _at4 = intersects.length;
+	          var _itemIntersect3 = this.effectChildren[_i3].Intersect(...args);
+	          ray.TrailFrom(intersects, _at4, "effectChildren[".concat(_i3, "]"));
+	          if (_itemIntersect3) _itemIntersect3.root = root;
 	        }
 	      }
 	    }
 	    if (this.visible.children && !ray.GetOption("children", "skip")) {
-	      for (var _i3 = 0; _i3 < this.children.length; _i3++) {
-	        if (this.children[_i3].Intersect) {
-	          var _itemIntersect3 = this.children[_i3].Intersect(...args);
-	          if (_itemIntersect3) _itemIntersect3.root = root;
+	      for (var _i4 = 0; _i4 < this.children.length; _i4++) {
+	        if (this.children[_i4].Intersect) {
+	          var _at5 = intersects.length;
+	          var _itemIntersect4 = this.children[_i4].Intersect(...args);
+	          ray.TrailFrom(intersects, _at5, "children[".concat(_i4, "]"));
+	          if (_itemIntersect4) _itemIntersect4.root = root;
 	        }
 	      }
 	    }
@@ -198158,9 +198861,9 @@
 	        this.attachments[i].GetItemByColorType(colorType, out);
 	      }
 	    }
-	    for (var _i4 = 0; _i4 < this.decals.length; _i4++) {
-	      if (this.decals[_i4].colorType === colorType && !out.includes(this.decals[_i4])) {
-	        out.push(this.decals[_i4]);
+	    for (var _i5 = 0; _i5 < this.decals.length; _i5++) {
+	      if (this.decals[_i5].colorType === colorType && !out.includes(this.decals[_i5])) {
+	        out.push(this.decals[_i5]);
 	      }
 	    }
 	    if (this.mesh && this.mesh.GetItemByColorType) {
@@ -198402,8 +199105,8 @@
 	        this.children[i].UpdateLod(frustum, this._lod);
 	      }
 	    }
-	    for (var _i5 = 0; _i5 < this.effectChildren.length; _i5++) {
-	      this.effectChildren[_i5].UpdateLod(frustum, this._lod);
+	    for (var _i6 = 0; _i6 < this.effectChildren.length; _i6++) {
+	      this.effectChildren[_i6].UpdateLod(frustum, this._lod);
 	    }
 
 	    // The booster set 2 has its own lod: the boosters, the trails and the
@@ -198424,8 +199127,8 @@
 	        this.children[i].ResetLod();
 	      }
 	    }
-	    for (var _i6 = 0; _i6 < this.effectChildren.length; _i6++) {
-	      this.effectChildren[_i6].ResetLod();
+	    for (var _i7 = 0; _i7 < this.effectChildren.length; _i7++) {
+	      this.effectChildren[_i7].ResetLod();
 	    }
 	  }
 
@@ -198532,8 +199235,8 @@
 	        i--;
 	      }
 	    }
-	    for (var _i7 = 0; _i7 < overlays.length; _i7++) {
-	      this.attachments.push(overlays[_i7]);
+	    for (var _i8 = 0; _i8 < overlays.length; _i8++) {
+	      this.attachments.push(overlays[_i8]);
 	      updated = true;
 	    }
 	    return updated;
@@ -198942,8 +199645,8 @@
 	    var desiredFit = Math.random() * (0.25 - (1 - bestDirectionFit)) + 0.75;
 	    var bestFit = 1;
 	    var bestLocator = -1;
-	    for (var _i8 = 0; _i8 < locators.length; _i8++) {
-	      this._GetLocatorSetItemTransform(g.targetTransform, locators[_i8], false);
+	    for (var _i9 = 0; _i9 < locators.length; _i9++) {
+	      this._GetLocatorSetItemTransform(g.targetTransform, locators[_i9], false);
 	      mat4$1.getTranslation(g.targetPosition, g.targetTransform);
 	      vec3$3.set(g.targetDirection, g.targetTransform[4], g.targetTransform[5], g.targetTransform[6]);
 	      if (!isLocatorFacing(g.targetDirection, g.targetSource)) continue;
@@ -198959,7 +199662,7 @@
 	      var fit = Math.abs(value - desiredFit);
 	      if (fit < bestFit) {
 	        bestFit = fit;
-	        bestLocator = _i8;
+	        bestLocator = _i9;
 	      }
 	    }
 	    return bestLocator < 0 ? this.GetClosestDamageLocatorIndex(position) : bestLocator;
@@ -199061,22 +199764,22 @@
 	    // Published BEFORE the children update, so a controller or smart light
 	    // modifier reading one of these acts on this frame's value.
 	    this._PublishControllerVariables(perObjectDataBagOfStuff);
-	    for (var _i9 = 0; _i9 < this.children.length; _i9++) {
+	    for (var _i0 = 0; _i0 < this.children.length; _i0++) {
 	      // 4th arg: parent space object, so nested EveChildContainer controllers can resolve
 	      // ShipSpeed()/ShipMaxSpeed() against this ship (carbon parity: EveChildContainer.cpp:603).
-	      this.children[_i9].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
-	      if (this.children[_i9]._boundsDirty) {
+	      this.children[_i0].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+	      if (this.children[_i0]._boundsDirty) {
 	        this._boundsDirty = true;
 	      }
 	    }
-	    for (var _i0 = 0; _i0 < this.effectChildren.length; _i0++) {
-	      this.effectChildren[_i0].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
-	      if (this.effectChildren[_i0]._boundsDirty) {
+	    for (var _i1 = 0; _i1 < this.effectChildren.length; _i1++) {
+	      this.effectChildren[_i1].Update(dt, this._worldTransform, perObjectDataBagOfStuff, this);
+	      if (this.effectChildren[_i1]._boundsDirty) {
 	        this._boundsDirty = true;
 	      }
 	    }
-	    for (var _i1 = 0; _i1 < this.controllers.length; _i1++) {
-	      this.controllers[_i1].Update(dt);
+	    for (var _i10 = 0; _i10 < this.controllers.length; _i10++) {
+	      this.controllers[_i10].Update(dt);
 	    }
 	    if (this.animation) {
 	      this.animation.Update(dt);
@@ -199182,27 +199885,27 @@
 	      if (res) {
 	        if (show.decals) {
 	          var killMarks = show.killmarks && this._lod > 2 ? this.killCount : 0;
-	          for (var _i10 = 0; _i10 < this.decals.length; _i10++) {
-	            this.decals[_i10].GetBatches(mode, accumulator, this._perObjectData, res, killMarks, this.mesh.GetMeshIndex());
+	          for (var _i11 = 0; _i11 < this.decals.length; _i11++) {
+	            this.decals[_i11].GetBatches(mode, accumulator, this._perObjectData, res, killMarks, this.mesh.GetMeshIndex());
 	          }
 	        }
 	      }
 	    }
 	    if (doFiringEffects) {
-	      for (var _i11 = 0; _i11 < this.attachments.length; _i11++) {
-	        if (this.attachments[_i11] instanceof EveTurretSet) {
-	          this.attachments[_i11].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
+	      for (var _i12 = 0; _i12 < this.attachments.length; _i12++) {
+	        if (this.attachments[_i12] instanceof EveTurretSet) {
+	          this.attachments[_i12].GetFiringEffectBatches(mode, accumulator, this._perObjectData);
 	        }
 	      }
 	    }
 	    if (show.children) {
-	      for (var _i12 = 0; _i12 < this.children.length; _i12++) {
-	        this.children[_i12].GetBatches(mode, accumulator, this._perObjectData);
+	      for (var _i13 = 0; _i13 < this.children.length; _i13++) {
+	        this.children[_i13].GetBatches(mode, accumulator, this._perObjectData);
 	      }
 	    }
 	    if (show.effectChildren) {
-	      for (var _i13 = 0; _i13 < this.effectChildren.length; _i13++) {
-	        this.effectChildren[_i13].GetBatches(mode, accumulator, this._perObjectData);
+	      for (var _i14 = 0; _i14 < this.effectChildren.length; _i14++) {
+	        this.effectChildren[_i14].GetBatches(mode, accumulator, this._perObjectData);
 	      }
 	    }
 	    var hasBatches = accumulator.length !== c;
@@ -199575,8 +200278,8 @@
 	    id[13] = 0;
 	    id[14] = 0;
 	    var customMaskBagOfStuff = this.GetPerObjectDataBagOfStuff(this._perObjectDataBagOfStuff);
-	    for (var _i14 = 0; _i14 < this.customMasks.length; ++_i14) {
-	      this.customMasks[_i14].GetPerObjectDataBagOfStuff(id, customMaskBagOfStuff, _i14, this.visible.customMasks);
+	    for (var _i15 = 0; _i15 < this.customMasks.length; ++_i15) {
+	      this.customMasks[_i15].GetPerObjectDataBagOfStuff(id, customMaskBagOfStuff, _i15, this.visible.customMasks);
 	    }
 
 	    // Packed here, after the masks, because the blend mode belongs to the
@@ -199617,22 +200320,22 @@
 	        bones = null;
 	      }
 	    }
-	    for (var _i15 = 0; _i15 < this.children.length; ++_i15) {
-	      this.children[_i15].UpdateViewDependentData(this._worldTransform, dt);
+	    for (var _i16 = 0; _i16 < this.children.length; ++_i16) {
+	      this.children[_i16].UpdateViewDependentData(this._worldTransform, dt);
 	    }
-	    for (var _i16 = 0; _i16 < this.attachments.length; _i16++) {
-	      if ("UpdateViewDependentData" in this.attachments[_i16]) {
-	        this.attachments[_i16].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
+	    for (var _i17 = 0; _i17 < this.attachments.length; _i17++) {
+	      if ("UpdateViewDependentData" in this.attachments[_i17]) {
+	        this.attachments[_i17].UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
 	      }
 	    }
-	    for (var _i17 = 0; _i17 < this.locatorSets.length; _i17++) {
-	      this.locatorSets[_i17].UpdateViewDependentData(this._worldTransform, bones);
+	    for (var _i18 = 0; _i18 < this.locatorSets.length; _i18++) {
+	      this.locatorSets[_i18].UpdateViewDependentData(this._worldTransform, bones);
 	    }
 	    if (this.boosters) {
 	      this.boosters.UpdateViewDependentData(this._worldTransform, bones, this._spriteScale);
 	    }
-	    for (var _i18 = 0; _i18 < this.decals.length; _i18++) {
-	      this.decals[_i18].UpdateViewDependentData(this._worldTransform);
+	    for (var _i19 = 0; _i19 < this.decals.length; _i19++) {
+	      this.decals[_i19].UpdateViewDependentData(this._worldTransform);
 	    }
 	  }
 	  /**

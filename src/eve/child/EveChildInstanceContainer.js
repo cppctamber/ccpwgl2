@@ -478,6 +478,51 @@ export class EveChildInstanceContainer extends EveChild
     }
 
     /**
+     * Intersects every placed instance.
+     *
+     * The easiest instancing case in the engine, because these instances are
+     * not a packed buffer at all - each one is a real child object,
+     * deep-copied from `source` and parented under its own transform. So
+     * there is nothing to decode: ask each instance, and let it answer for
+     * itself exactly as it would if it had been placed by hand.
+     *
+     * Gated on `_hasUpdated` for the same reason GetBatches is - before the
+     * first update the instances exist but have not been placed, and a hit
+     * test against unplaced copies would report them all at the origin.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} [worldTransform] - the parent's; instances carry their own
+     * @param {Object} [cache]
+     * @returns {?Object} the first intersection, if any
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        if (!this.display || !this._hasUpdated || ray.IsMasked(this)) return null;
+        if (ray.GetOption("effectChildren", "skip")) return null;
+
+        const before = intersects.length;
+        const instances = this.GetInstances();
+
+        for (let i = 0; i < instances.length; i++)
+        {
+            const instance = instances[i];
+            if (!instance || !instance.Intersect) continue;
+
+            const at = intersects.length;
+            instance.Intersect(ray, intersects, this._worldTransform, cache);
+            ray.TrailFrom(intersects, at, `instance[${i}]`);
+        }
+
+        for (let i = before; i < intersects.length; i++)
+        {
+            if (!intersects[i].item) intersects[i].item = this;
+        }
+
+        return intersects.length > before ? intersects[before] : null;
+    }
+
+    /**
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData

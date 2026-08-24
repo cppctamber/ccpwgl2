@@ -1,6 +1,6 @@
 import { meta, perArrayChild, get, assignIfExists } from "utils";
 import { tw2 } from "global";
-import { box3, sph3, vec3 } from "math";
+import { box3, mat4, sph3, vec3 } from "math";
 import { Tw2InstancedMeshBatch } from "../batch";
 import { Tw2Mesh } from "./Tw2Mesh";
 import {
@@ -167,9 +167,103 @@ export class Tw2InstancedMesh extends meta.Model
      * @param {mat4} worldTransform
      * @param {Object} [cache]
      */
+    /**
+     * The transform of one instance, in the mesh's own space.
+     *
+     * Returns null by default, and that is not a stub - it is the honest
+     * answer. Instance data is handed to the GPU as an opaque buffer plus a
+     * declaration (see RenderAreas) and the SHADER decides what the elements
+     * mean; nothing on the CPU ever builds a transform from them. The layout
+     * differs between users - the smart light meshes carry theirs on TEXCOORD
+     * 8..14, Carbon's generic instancing on 0..6 - so there is no convention
+     * here to read.
+     *
+     * Anything that KNOWS its own layout should override this, and gets
+     * per-instance picking for free. Anything that does not gets the whole
+     * instanced mesh as one hit, which is correct if coarse - and much better
+     * than a transform assembled from a guessed element order, which would put
+     * instances in plausible wrong places.
+     *
+     * @param {Number} index
+     * @param {mat4} out
+     * @returns {?mat4} out, or null when the layout is unknown here
+     */
+    GetInstanceTransform(index, out)
+    {
+        const data = this.instanceGeometryResource;
+        return data && data.GetInstanceTransform ? data.GetInstanceTransform(index, out) : null;
+    }
+
+    /**
+     * How many instances this mesh draws.
+     * @returns {Number}
+     */
+    GetInstanceCount()
+    {
+        if (!this.instanceGeometryResource || !this.instanceGeometryResource.GetInstanceCount) return 0;
+        return this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex) || 0;
+    }
+
+    /**
+     * Intersects the instanced mesh.
+     *
+     * Per instance where the layout is known, and the path carries
+     * `instance[n]` so a caller can tell WHICH one was hit - the question that
+     * was previously unanswerable. Where it is not known, the base geometry is
+     * tested once against the mesh's own transform: a coarse hit that names the
+     * mesh, rather than nothing at all.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform
+     * @param {Object} [cache]
+     * @returns {?Object} the first intersection, if any
+     */
     Intersect(ray, intersects, worldTransform, cache)
     {
-        throw new ErrFeatureNotImplemented({ feature: "Instance mesh intersection" });
+        if (!this.display || !this.IsGood() || ray.IsMasked(this)) return null;
+
+        const before = intersects.length;
+        const count = this.GetInstanceCount();
+
+        const instance = Tw2InstancedMesh.global.mat4_0;
+        const combined = Tw2InstancedMesh.global.mat4_1;
+
+        let perInstance = false;
+
+        for (let i = 0; i < count; i++)
+        {
+            if (!this.GetInstanceTransform(i, instance))
+            {
+                // Asked once. A mesh either knows its layout or does not, and it
+                // will not start knowing it at instance seven.
+                break;
+            }
+
+            perInstance = true;
+            mat4.multiply(combined, worldTransform, instance);
+
+            // A fresh cache per instance: the caller's holds an inverse world
+            // transform and a ray in local space, and both are wrong for the
+            // next instance. Sharing it would test every instance against the
+            // first one's space.
+            const at = intersects.length;
+            this.geometryResource.Intersect(ray, intersects, combined, {}, this.meshIndex);
+            ray.TrailFrom(intersects, at, `instance[${i}]`);
+        }
+
+        if (!perInstance)
+        {
+            this.geometryResource.Intersect(ray, intersects, worldTransform, cache, this.meshIndex);
+        }
+
+        for (let i = before; i < intersects.length; i++)
+        {
+            if (!intersects[i].item) intersects[i].item = this;
+            if (!intersects[i].name) intersects[i].name = this.name || "";
+        }
+
+        return intersects.length > before ? intersects[before] : null;
     }
 
     /**
@@ -473,5 +567,14 @@ export class Tw2InstancedMesh extends meta.Model
         }
         return accumulator.length !== c;
     }
+
+
+    /**
+     * Shared scratch
+     */
+    static global = {
+        mat4_0: mat4.create(),
+        mat4_1: mat4.create()
+    };
 
 }

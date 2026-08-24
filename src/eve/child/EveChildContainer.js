@@ -347,6 +347,51 @@ export class EveChildContainer extends EveChild
     }
 
     /**
+     * Intersects everything this container holds.
+     *
+     * Hands each child this container's OWN `_worldTransform` rather than the
+     * one passed in. Update composes parent, bone and modifiers into it every
+     * frame, so it is what the children were actually drawn against - and a
+     * container is frequently the thing carrying the bone, with its children
+     * rigid inside it.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} [_worldTransform] - the parent's, unused; see above
+     * @param {Object} [cache]
+     * @returns {?Object} the nearest intersection found below here, if any
+     */
+    Intersect(ray, intersects, _worldTransform, cache)
+    {
+        if (!this.display || ray.IsMasked(this)) return null;
+        if (ray.GetOption("effectChildren", "skip")) return null;
+
+        const before = intersects.length;
+
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            const child = this.objects[i];
+            if (!child || !child.Intersect) continue;
+
+            // Trailed per child WITH ITS INDEX, because two children of one
+            // container are routinely identical - the same mesh, the same
+            // name - and the index is the only thing that tells them apart.
+            const at = intersects.length;
+            child.Intersect(ray, intersects, this._worldTransform, cache);
+            ray.TrailFrom(intersects, at, `objects[${i}]`);
+        }
+
+        // A container has no geometry of its own, so it names itself only where
+        // a child did not - otherwise picking a mesh would report the group.
+        for (let i = before; i < intersects.length; i++)
+        {
+            if (!intersects[i].item) intersects[i].item = this;
+        }
+
+        return intersects.length > before ? intersects[before] : null;
+    }
+
+    /**
      * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]

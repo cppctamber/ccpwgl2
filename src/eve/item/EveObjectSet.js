@@ -76,6 +76,28 @@ export class EveObjectSetItem extends meta.Model
      * @return {mat4} out
      */
     @meta.abstract
+    /**
+     * Which primitive describes this item's extent for a hit test.
+     *
+     * Set items have no geometry to intersect - a sprite, a plane, a
+     * spotlight cone are all built on the GPU - so a hit test can only ask
+     * the item to describe its own extent. Which primitive is right depends
+     * on the item, and getting it wrong is not a rounding error:
+     *
+     *   sphere - for anything whose extent does not depend on its rotation.
+     *            A sprite always faces the camera, so a sphere on its
+     *            position is both tighter and cheaper than a box.
+     *
+     *   box    - for anything that points somewhere. A spotlight rotated
+     *            ninety degrees covers different space, and a sphere large
+     *            enough to contain it in every orientation is mostly empty -
+     *            which reads as a spotlight you can select from well off to
+     *            one side of it. Haze is the same.
+     *
+     * @type {String}
+     */
+    static boundsPrimitive = "box";
+
     GetTransform(out)
     {
 
@@ -275,6 +297,80 @@ export class EveObjectSet extends meta.Model
         this.RebuildBounds(force);
         sph3.copy(out, this._boundingSphere);
         return this._boundsDirty ? null : out;
+    }
+
+    /**
+     * Intersects the set's items.
+     *
+     * One implementation for every set, on the base, rather than ten nearly
+     * identical ones. `EveShip2.Intersect` already maps ten attachment types to
+     * visibility keys and calls `Intersect` on each - and not one of those
+     * classes implemented it, so every call was skipped by the `if
+     * (!item.Intersect)` guard and the whole attachment layer was silently
+     * unpickable while the code read as though it worked.
+     *
+     * Tested per ITEM, not against the set's bounds. A set's bounds cover every
+     * item in it, so a hit on those answers "somewhere in the sprite set",
+     * which is not something a user can select.
+     *
+     * Each item is tested against the primitive IT declares - see
+     * `boundsPrimitive`. Set items have no geometry to intersect, so the best a
+     * hit test can do is ask each one to describe its own extent, and a sprite
+     * and a spotlight do not describe theirs the same way.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} [worldTransform] - the parent's; items resolve their own
+     * @param {Object} [cache]
+     * @returns {?Object} the first intersection, if any
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        if (!this.display || ray.IsMasked(this)) return null;
+
+        const before = intersects.length;
+        const { sph3_0, box3_0 } = EveObjectSet.global;
+
+        // Visible items when the set has resolved them, all of them otherwise -
+        // a set that has not been updated yet still has pickable items.
+        const items = this._visibleItems && this._visibleItems.length ? this._visibleItems : this.items;
+
+        for (let i = 0; i < items.length; i++)
+        {
+            const item = items[i];
+            if (!item || item.display === false) continue;
+            const sphere = item.constructor.boundsPrimitive === "sphere";
+
+            let intersect;
+            try
+            {
+                intersect = sphere
+                    ? ray.IntersectWorldSph3(item.GetWorldBoundingSphere(sph3_0))
+                    : ray.IntersectWorldBox3(item.GetWorldBoundingBox(box3_0));
+            }
+            catch (err)
+            {
+                // The base throws when an item has no parent yet. An item that
+                // cannot say where it is cannot be hit, and a hit test is not the
+                // place to complain about it.
+                continue;
+            }
+
+            if (!intersect) continue;
+
+            intersect.item = item;
+            intersect.name = item.name || this.name || "";
+            intersects.push(intersect);
+
+            // Indexed, because set items are routinely identical to each other -
+            // eight sprites of one kind, six turrets of one model - and the index
+            // is the only thing that separates them.
+            ray.Trail(intersect, `items[${i}]`);
+        }
+
+        // No segment of its own - the parent names this set by the property it
+        // hangs off, which is the only name that resolves.
+        return intersects.length > before ? intersects[before] : null;
     }
 
     /**

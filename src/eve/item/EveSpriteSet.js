@@ -134,6 +134,12 @@ export class EveSpriteSetItem extends EveObjectSetItem
     }
 
     /**
+     * A sprite always faces the camera, so its extent does not turn with it.
+     * @type {String}
+     */
+    static boundsPrimitive = "sphere";
+
+    /**
      * Gets the item's bounding sphere
      * @param {sph3} out
      * @returns {sph3} out

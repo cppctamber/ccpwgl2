@@ -44,6 +44,53 @@ export class EveChildBillboard extends EveChild
 
 
     /**
+     * Intersects this child.
+     *
+     * The incoming `worldTransform` is the PARENT's, and is deliberately not
+     * used: `_worldTransform` is rebuilt every frame by Update and already
+     * carries the parent, the bone and every transform modifier. Composing
+     * the parent again would apply it twice, and re-deriving from
+     * `localTransform` would answer the bind pose for anything animated -
+     * which is exactly the case a hit test on a moving part has to get right.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} [_worldTransform] - the parent's, unused; see above
+     * @param {Object} [cache]
+     * @returns {?Object} the intersection, if any
+     */
+    Intersect(ray, intersects, _worldTransform, cache)
+    {
+        if (!this.display || ray.IsMasked(this)) return null;
+        if (ray.GetOption("effectChildren", "skip")) return null;
+
+        // NOT gated on lod. A hit test agreeing with what is drawn is the right
+        // idea, but lod is not implemented properly yet - so a wrong `_lod`
+        // would make a visible child silently unpickable, and that reads as an
+        // intersection bug rather than as the lod system being unfinished. Add
+        // the gate deliberately when lod lands.
+
+        const target = this.mesh;
+        if (!target || !target.Intersect) return null;
+
+        const before = intersects.length;
+        target.Intersect(ray, intersects, this._worldTransform, cache);
+
+        // Name the child rather than the mesh: a caller picking in a scene
+        // wants the thing it can select, and the mesh is an implementation
+        // detail of it.
+        for (let i = before; i < intersects.length; i++)
+        {
+            if (!intersects[i].item) intersects[i].item = this;
+            if (!intersects[i].name) intersects[i].name = this.name || "";
+        }
+
+        // No segment of its own: a parent names its children, because only
+        // the parent knows which property they hang off. This is a leaf.
+        return intersects.length > before ? intersects[before] : null;
+    }
+
+    /**
      * Gets the child's resources
      * @param {Array} [out=[]]
      * @returns {Array.<Tw2Resource>} out

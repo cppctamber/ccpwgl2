@@ -1,5 +1,5 @@
 import { meta } from "utils";
-import { quat, vec3, vec4, mat4 } from "math";
+import { box3, quat, vec3, vec4, mat4 } from "math";
 import { Tw2Effect, Tw2RenderBatch, Tw2VertexDeclaration } from "core";
 import { EveObjectSet, EveObjectSetItem } from "eve";
 import { device } from "global/tw2";
@@ -70,12 +70,43 @@ export class EveHazeSetItem extends EveObjectSetItem
     sourceSize = 0;
 
     /**
+     * The item's own transform, rebuilt whenever its srt changes.
+     *
+     * Was USED by OnValueChanged and never declared, so the first value change
+     * handed `mat4.fromRotationTranslationScale` an undefined output. Nothing
+     * had hit it because the class is marked notImplemented and never runs.
+     * @type {mat4}
+     */
+    _transform = mat4.create();
+
+    /** @type {?Tw2Bone} */
+    _bone = null;
+
+    /**
      * Fires on value changes
      */
     OnValueChanged()
     {
         mat4.fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
         this._dirty = true;
+    }
+
+    /**
+     * Gets the item's bounding box.
+     *
+     * A box rather than a sphere: haze is placed with a full srt and is not
+     * camera-facing, so rotating it covers different space - and a sphere big
+     * enough to hold it in any orientation is mostly empty, which reads as
+     * haze you can select from well outside it. Same reasoning as spotlights.
+     *
+     * @param {box3} box
+     * @returns {box3} box
+     */
+    GetBoundingBox(box)
+    {
+        box3.fromTransform(box, this._transform);
+        if (this._bone) box3.transformMat4(box, box, this._bone.offsetTransform);
+        return box;
     }
 
 }

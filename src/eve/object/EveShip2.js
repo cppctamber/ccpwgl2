@@ -287,7 +287,9 @@ export class EveShip2 extends EveObject
 
         if ("Intersect" in this.mesh && !ray.GetOption("mesh", "skip"))
         {
+            const at = intersects.length;
             this.mesh.Intersect(...args).forEach(intersect => intersect.root = root);
+            ray.TrailFrom(intersects, at, "mesh");
         }
 
         if (this._lod > 1)
@@ -342,7 +344,12 @@ export class EveShip2 extends EveObject
 
                 if (type && this.visible[type] && !ray.GetOption(type, "skip"))
                 {
+                    // The visibility key is also the property these live on, so
+                    // it doubles as the path segment - and the index within it
+                    // is what separates one turret set from another.
+                    const at = intersects.length;
                     itemIntersect = item.Intersect(...args);
+                    ray.TrailFrom(intersects, at, `${type}[${this[type] ? this[type].indexOf(item) : i}]`);
                 }
 
                 if (itemIntersect)
@@ -352,22 +359,28 @@ export class EveShip2 extends EveObject
             }
         }
 
-        /*
-        if (this.visible.decals)
+        // Uncommented once EveSpaceObjectDecal could actually answer: it had
+        // no Intersect at all, so this loop would have thrown had it run.
+        if (this.visible.decals && !ray.GetOption("decals", "skip"))
         {
             for (let i = 0; i < this.decals.length; i++)
             {
+                if (!this.decals[i].Intersect) continue;
+
+                const at = intersects.length;
                 const itemIntersect = this.decals[i].Intersect(...args);
-                if (itemIntersect) itemIntersect.root = this;
+                ray.TrailFrom(intersects, at, `decals[${i}]`);
+                if (itemIntersect) itemIntersect.root = root;
             }
         }
-         */
 
         if (!ray.GetOption("locators", "skip"))
         {
             for (let i = 0; i < this.locators.length; i++)
             {
+                const at = intersects.length;
                 const itemIntersect = this.locators[i].Intersect(...args);
+                ray.TrailFrom(intersects, at, `locators[${i}]`);
                 if (itemIntersect) itemIntersect.root = root;
             }
         }
@@ -378,7 +391,9 @@ export class EveShip2 extends EveObject
             {
                 if (this.effectChildren[i].Intersect)
                 {
+                    const at = intersects.length;
                     const itemIntersect = this.effectChildren[i].Intersect(...args);
+                    ray.TrailFrom(intersects, at, `effectChildren[${i}]`);
                     if (itemIntersect) itemIntersect.root = root;
                 }
             }
@@ -390,7 +405,9 @@ export class EveShip2 extends EveObject
             {
                 if (this.children[i].Intersect)
                 {
+                    const at = intersects.length;
                     const itemIntersect = this.children[i].Intersect(...args);
+                    ray.TrailFrom(intersects, at, `children[${i}]`);
                     if (itemIntersect) itemIntersect.root = root;
                 }
             }

@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { device, tw2 } from "global";
-import { vec3, quat, mat4 } from "math";
+import { box3, vec3, quat, mat4 } from "math";
 import { GLESPerObjectDataEveSpaceObject, Tw2PerObjectData, Tw2ForwardingRenderBatch, Tw2Effect } from "core";
 
 
@@ -333,6 +333,52 @@ export class EveSpaceObjectDecal extends meta.Model
         mat4.copy(m, this._localTransform);
         if (this._offsetTransform) mat4.multiply(m, this._offsetTransform, m);
         return m;
+    }
+
+    /**
+     * Gets the decal's bounding box.
+     *
+     * A decal is a projection VOLUME - its matrix defines the box it sprays
+     * through - so the transform is the bounds, and a box is the honest
+     * primitive. The bone is already folded in by GetTransform.
+     *
+     * @param {box3} box
+     * @returns {box3} box
+     */
+    GetBoundingBox(box)
+    {
+        return box3.fromTransform(box, this.GetTransform(EveSpaceObjectDecal.global.mat4_0));
+    }
+
+    /**
+     * Intersects the decal.
+     *
+     * Decals hang directly off the object rather than inside a set, so unlike
+     * a sprite or a spotlight this implements the test itself.
+     *
+     * @param {Tw2RayCaster} ray
+     * @param {Array} intersects
+     * @param {mat4} worldTransform - the parent's
+     * @param {Object} [cache]
+     * @returns {?Object} the intersection, if any
+     */
+    Intersect(ray, intersects, worldTransform, cache)
+    {
+        if (!this.display || ray.IsMasked(this)) return null;
+        if (ray.GetOption("decals", "skip")) return null;
+
+        const { box3_0 } = EveSpaceObjectDecal.global;
+
+        this.GetBoundingBox(box3_0);
+        if (worldTransform) box3.transformMat4(box3_0, box3_0, worldTransform);
+
+        const intersect = ray.IntersectWorldBox3(box3_0);
+        if (!intersect) return null;
+
+        intersect.item = this;
+        intersect.name = this.name || "";
+        intersects.push(intersect);
+        return intersect;
     }
 
     /**
@@ -702,6 +748,15 @@ export class EveSpaceObjectDecal extends meta.Model
     };
 
     static enableParentMeshIndex = false;
+
+
+    /**
+     * Shared scratch
+     */
+    static global = {
+        mat4_0: mat4.create(),
+        box3_0: box3.create()
+    };
 
 }
 

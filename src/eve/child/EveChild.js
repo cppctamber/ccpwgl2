@@ -16,6 +16,43 @@ export class EveChild extends meta.Model
     }
 
     /**
+     * Whether this child is driven by a bone on the parent's skeleton.
+     * @returns {Boolean}
+     */
+    get isSkinned()
+    {
+        return this._hasBone === true;
+    }
+
+    /**
+     * Whether this child's transform can change from frame to frame.
+     *
+     * Worth asking before trusting a position taken from it. Anything that
+     * answers true has a transform that is only good for the frame it was
+     * read on, so a caller must re-read rather than cache - and a tool
+     * offering to move it by hand is offering something the next frame will
+     * overwrite.
+     *
+     * Three separate ways to move, and a child needs only one of them:
+     * a bone on the parent's skeleton, an animation of its own, or a
+     * transform modifier - which is how a camera-facing child moves every
+     * frame while being neither boned nor animated.
+     *
+     * @returns {Boolean}
+     */
+    IsAnimated()
+    {
+        // Authored as a promise that it does not move; believe it.
+        if (this.staticTransform) return false;
+
+        if (this._hasBone) return true;
+        if (this.updateAnimation && this.animationUpdater) return true;
+        if (this.transformModifiers && this.transformModifiers.length > 0) return true;
+
+        return false;
+    }
+
+    /**
      * Updates LOD
      * @param {Tw2Frustum} frustum
      * @param {Number} parentLod

@@ -40,6 +40,17 @@ export class Tw2DirectInstanceData extends meta.Model
     _declaration = null;
     _vb = null;
 
+    /**
+     * The array last uploaded.
+     *
+     * A REFERENCE, not a copy - the caller built it and is still holding
+     * it, so keeping it costs nothing and means the data can answer
+     * questions about itself instead of the answer having to be wired in
+     * from whoever happened to write it.
+     * @type {?Float32Array}
+     */
+    _data = null;
+
     /** Carbon Tr2DirectInstanceData::GetCount. */
     GetCount()
     {
@@ -103,6 +114,7 @@ export class Tw2DirectInstanceData extends meta.Model
         const { gl } = device;
 
         this._count = count;
+        this._data = count ? data : null;
 
         if (!count || !this._declaration)
         {
@@ -137,6 +149,41 @@ export class Tw2DirectInstanceData extends meta.Model
     }
 
     /** @returns {WebGLBuffer|null} */
+    /**
+     * The transform of one instance, decoded from the uploaded data.
+     *
+     * Carbon packs an instance transform as the first THREE rows of the
+     * transposed matrix - on the shared D3D-row-major / GL-column-major byte
+     * layout that is the column stride - and never stores the fourth, which
+     * is always (0,0,0,1). Every user of this class writes it that way:
+     * EveSmartLightMesh, EveSmartLightQuad, and the plane sets Carbon
+     * declares TEXCOORD 8 upwards for.
+     *
+     * Decoding here rather than in whatever wrote it means a hit test can ask
+     * the data what it holds, instead of the answer having to be threaded in
+     * from the writer.
+     *
+     * @param {Number} index
+     * @param {mat4} out
+     * @returns {?mat4} out, or null when there is no such instance
+     */
+    GetInstanceTransform(index, out)
+    {
+        const data = this._data;
+        const stride = this._stride;
+        if (!data || !stride || index < 0 || index >= this._count) return null;
+
+        const o = index * stride;
+        if (o + 11 >= data.length) return null;
+
+        out[0] = data[o];      out[4] = data[o + 1];  out[8] = data[o + 2];   out[12] = data[o + 3];
+        out[1] = data[o + 4];  out[5] = data[o + 5];  out[9] = data[o + 6];   out[13] = data[o + 7];
+        out[2] = data[o + 8];  out[6] = data[o + 9];  out[10] = data[o + 10]; out[14] = data[o + 11];
+        out[3] = 0; out[7] = 0; out[11] = 0; out[15] = 1;
+
+        return out;
+    }
+
     GetInstanceBuffer()
     {
         return this._vb;
