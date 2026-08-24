@@ -73510,9 +73510,31 @@
 	    // rest of the frame is not ready for all of them: the flare quads' High
 	    // bodies declare RS_ZENABLE 0 and expect to occlude themselves from a
 	    // DepthMap nothing publishes, so honouring their states put them
-	    // through the hull. Decals need theirs and nothing else does yet, so
-	    // only decals get them. Widen this list as each family's states are
-	    // shown to be honourable, and delete it once they all are.
+	    // through the hull. Widen this list as each family's states are shown
+	    // to be honourable, and delete it once they all are.
+	    //
+	    // `/space/planet/` was added once the planet family's states were read
+	    // out of the compiled containers and found to be ordinary blend and
+	    // cull setup, with nothing depending on a buffer ccpwgl does not
+	    // publish:
+	    //
+	    //   earthlikeclouds  SRCBLEND 2, DESTBLEND 6, ALPHABLENDENABLE 1
+	    //   atmosphere       CULLMODE 1  (CULL_NONE)
+	    //   aurora           CULLMODE 1  (CULL_NONE)
+	    //   blitgroundscattering  ALPHABLENDENABLE 0
+	    //   earthlikeplanet  none at all - it is the opaque surface
+	    //
+	    // Those are exactly the states a shell mesh needs: an atmosphere and an
+	    // aurora are single-sided geometry the camera can be inside, so without
+	    // CULL_NONE they vanish from within, and clouds inherit whatever blend
+	    // the previous batch left rather than their own.
+	    //
+	    // The risk this shares with every other entry is that Carbon does not
+	    // RESTORE pass states, so they leak into the rest of the frame. It is
+	    // bounded here: planets draw in their own pass, before everything else,
+	    // and `SetStandardStates` re-establishes blend and cull at each batch
+	    // mode change. Blend and cull are recoverable that way; a depth-state
+	    // leak would not be, and the planet family declares none.
 	    if (this.constructor.RENDER_STATE_PATHS.some(part => path.includes(part))) {
 	      pass.SetStates(group.states);
 	    }
@@ -73566,7 +73588,7 @@
 	 * @param {Object} stage
 	 * @returns {String}
 	 */
-	Tw2CarbonShaderFactory.RENDER_STATE_PATHS = ["/decals/"];
+	Tw2CarbonShaderFactory.RENDER_STATE_PATHS = ["/decals/", "/space/planet/"];
 	function stageKey(stage) {
 	  return "".concat(stage.techniqueName || "Main", ".pass").concat(stage.passIndex || 0, ".").concat(stage.stageName);
 	}
