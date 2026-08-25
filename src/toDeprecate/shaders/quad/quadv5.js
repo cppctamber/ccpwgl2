@@ -271,12 +271,12 @@ export const quadV5 = {
                             r3.w=r6.x>=0.0?r3.w:cb7[10].x;
 
                             // PatternMask1
-                            r7=cjsAddressed(s9,v6.xy,cb8[9].xy,c34.wwww);
+                            r7=cjsAddressed(s9,v6.xy,cb8[9].xy);
 
                             r7=r7.xxxx*cb4[12];
 
                             // PatternMask2
-                            r9=cjsAddressed(s10,v6.zw,cb8[10].xy,c34.wwww);
+                            r9=cjsAddressed(s10,v6.zw,cb8[10].xy);
 
                             r9=r9.xxxx*cb4[13];
                             applyCustomMaskBlendMode(r7, r9);

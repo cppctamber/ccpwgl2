@@ -252,10 +252,10 @@ export const quadHeatV5 = {
                         // Webgl doesn't support CLAMP_TO_BORDER
 
                         // PatternMask1Map
-                        r7=cjsAddressed(s9,v6.xy, cb8[9].xy, c34.wwww);
+                        r7=cjsAddressed(s9,v6.xy, cb8[9].xy);
 
                         // PatternMask2Map
-                        r8=cjsAddressed(s10,v6.zw, cb8[10].xy, c34.wwww);
+                        r8=cjsAddressed(s10,v6.zw, cb8[10].xy);
 
                         r7=r7.xxxx*cb4[12];
                         r8=r8.xxxx*cb4[13];

@@ -477,6 +477,14 @@ export const linearToSrgb = `
  *
  * `cjsAddressCoord` transforms the coordinate BEFORE the fetch; `cjsAddressBorder`
  * tests the result AFTER it. That is why they are separate.
+ *
+ * `cjsAddressed` takes no border colour, because for these samples it is always
+ * transparent black.  keeps the parameter, since that is the
+ * emitter shape and the emitter does bake other colours for a few effects.
+ *
+ * ONE arity, no overload. A three-argument overload beside a four-argument one
+ * did not resolve under ESSL1 - "no matching overloaded function found" - and a
+ * convenience is not worth a version question.
  * @type {String}
  */
 export const emulatedAddressing = `
@@ -495,14 +503,10 @@ export const emulatedAddressing = `
         return sampled;
     }
 
-    vec4 cjsAddressed(sampler2D ts, vec2 uv, vec2 modes, vec4 borderColor)
-    {
-        vec2 c = cjsAddressCoord(uv, modes);
-        return cjsAddressBorder(texture2D(ts, c), c, modes, borderColor);
-    }
-
     vec4 cjsAddressed(sampler2D ts, vec2 uv, vec2 modes)
     {
-        return cjsAddressed(ts, uv, modes, vec4(0.0));
+        vec2 c = cjsAddressCoord(uv, modes);
+        return cjsAddressBorder(texture2D(ts, c), c, modes, vec4(0.0, 0.0, 0.0, 1.0));
     }
+
 `;
