@@ -91,16 +91,23 @@ vec2 cjsPatternWeights(float p1, float p2, float mode)
  * @type {String}
  */
 export const GLSL_RESOLVE_MATERIAL = `
-float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds)
+float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds, vec4 include)
 {
+    // include = (patterns, paint, details, decals), each 0 or 1.
+    //
+    // A layer type that is EXCLUDED is not merely hidden - the resolution falls
+    // through it to whatever is underneath, so a click passes down to the base
+    // material. That is the point: detail layers are composite textures full of
+    // small greebles, and a user dragging an icon at that scale would otherwise
+    // keep landing on a rivet instead of the hull.
     vec2 pw = cjsPatternWeights(p1, p2, blendMode);
 
-    if (max(pw.x, pw.y) > thresholds.y)
+    if (include.x > 0.5 && max(pw.x, pw.y) > thresholds.y)
     {
         return pw.y > pw.x ? ${PickingMaterial.PMTL2}.0 : ${PickingMaterial.PMTL1}.0;
     }
 
-    if (paint > thresholds.z) return ${PickingMaterial.PAINT}.0;
+    if (include.y > 0.5 && paint > thresholds.z) return ${PickingMaterial.PAINT}.0;
 
     vec4 w = cjsMaterialWeights(materialValue);
 

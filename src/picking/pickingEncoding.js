@@ -32,7 +32,12 @@ export const PickingMaterial = Object.freeze({
     // Not a material layer at all - a DECAL covering the hull. Reported with a
     // decal kind in the shader-kind channel and the decal index in the area
     // channel, so a caller can tell which decal was hit.
-    DECAL: 11
+    DECAL: 11,
+
+    // A sails-specific layer - quadsailsv5 carries SailsDetailData, which is
+    // neither a base material nor a pattern. Reserved, NOT emitted yet: the
+    // selection rule has not been extracted from the shipped shader.
+    SAILS_DETAIL: 12
 });
 
 /**

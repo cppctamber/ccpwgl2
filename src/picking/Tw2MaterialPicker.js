@@ -54,6 +54,23 @@ export class Tw2MaterialPicker
     @meta.vector4
     threshold = vec4.fromValues(0.5, 0.5, 0.5, 0);
 
+    /**
+     * Which layer types participate: `(patterns, paint, details, decals)`, each
+     * 0 or 1.
+     *
+     * An excluded type is not merely hidden - the resolution falls THROUGH it,
+     * so a click reaches whatever is underneath. That is the point rather than a
+     * side effect: detail layers are composite textures full of small greebles,
+     * and a user dragging an icon at that scale would otherwise keep landing on
+     * a rivet instead of on the hull.
+     *
+     * Set `details` to 0 while dragging something large, and back to 1 when the
+     * user is picking deliberately.
+     * @type {vec4}
+     */
+    @meta.vector4
+    include = vec4.fromValues(1, 1, 1, 1);
+
     @meta.boolean
     enabled = true;
 

@@ -81,12 +81,20 @@ uniform vec4 PickingThreshold;
 // (areaType, areaIndex, unused, unused), set per decal by the picker.
 uniform vec4 PickingArea;
 
+// (patterns, paint, details, decals) - each 0 or 1. An excluded layer type is
+// fallen THROUGH, so a click reaches whatever is underneath it.
+uniform vec4 PickingInclude;
+
 varying vec4 texcoord;
 
 ${GLSL_PACK}
 
 void main()
 {
+    // Excluded decals do not draw at all, so the hull underneath keeps the
+    // pixel - the same fall-through the material layers get.
+    if (PickingInclude.w <= 0.5) discard;
+
     // Clamped rather than wrapped. The shipped shader addresses this map with a
     // BORDER mode, so a decal does not tile - sampling outside its own UVs must
     // read as "no coverage" and not as a repeat of the logo.

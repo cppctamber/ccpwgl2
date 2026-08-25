@@ -3,12 +3,23 @@ import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
 
 
 /**
- * Material picking for the `quadv5` family.
+ * Material picking for the ten plain `quadXv5` kinds.
  *
- * A STANDALONE shader, not a technique hung off the shipped one, so it can be
- * called independently and matched to its opaque equivalent. It draws no
- * lighting and samples none of the appearance maps - only the three that decide
+ * STANDALONE shaders, not techniques hung off the shipped ones, so they can be
+ * called independently and matched to their opaque equivalent. They draw no
+ * lighting and sample none of the appearance maps - only the ones that decide
  * which layer a texel belongs to.
+ *
+ * One body, ten definitions. The kinds differ in three ways that matter to
+ * picking and in no others:
+ *
+ *   - whether the pattern masks exist at all (five of ten bind them);
+ *   - whether an alpha clip applies (wreck);
+ *   - which kind constant they report.
+ *
+ * Everything else they differ in - heat glow, oil film, glass fog, wreck
+ * colouring - changes how a surface LOOKS, not which layer it is, so picking is
+ * identical and one body serves all ten.
  *
  * ## What it reproduces, and why exactly
  *
@@ -36,10 +47,31 @@ import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
  * applied, because an influence value fading the paint out has nothing to do
  * with where the paint IS.
  *
- * ## Output
+ * ## NOT YET RESOLVED: the per-kind sub-layers
  *
- * See `cjsPackPicking`. Alpha is unavailable, so material and area type share
- * the red channel, and the background test is on red rather than alpha.
+ * Several kinds carry layers that are neither a base material nor a pattern.
+ * These shaders currently report the base material UNDERNEATH them:
+ *
+ *     quaddetailv5        Detail1Data, Detail2Data, Detail3Data, DetailSelector
+ *     quadheatdetailv5    the same, plus SecondaryDetail2Data
+ *     quadenvironmentv5   Detail1Data, Detail2Data, Detail1Material, Detail2Material
+ *     quadsailsv5         SailsDetailData
+ *     quadwreckv5         WreckColor, WreckFactors
+ *
+ * `DETAIL1..3` and `SAILS_DETAIL` are reserved in the encoding for these and are
+ * NOT emitted yet. The selection rule has not been extracted from the shipped
+ * shaders, and `Detail1Material` / `Detail2Material` on the environment kind
+ * suggests a detail may be ASSIGNED to a material rather than standing beside
+ * it - which would change what a detail region ought to report.
+ *
+ * Guessing that would produce confident wrong answers across whole regions of a
+ * hull. It waits for the same extraction the material tent and the blend modes
+ * got.
+ *
+ * What every kind DOES have, and what is deliberately ignored: every one of the
+ * ten carries `MtlNDustDiffuseColor` and `MtlNHeatGlowData`. Those are
+ * properties OF a material - dust settling on it, heat glowing through it - not
+ * layers standing beside it, so they get no id and never will.
  */
 
 const vs = `
@@ -82,12 +114,40 @@ void main()
 }
 `;
 
-const ps = `
+/**
+ * @param {Number} kind
+ * @param {Boolean} hasPatterns
+ * @param {Boolean} alphaClip
+ * @returns {String}
+ */
+function makePs(kind, hasPatterns, alphaClip)
+{
+    const patternUniforms = hasPatterns
+        ? "uniform sampler2D PatternMask1Map;\nuniform sampler2D PatternMask2Map;"
+        : "";
+
+    const clipUniform = alphaClip ? "uniform sampler2D AlphaThresholdMap;" : "";
+
+    // Wreck geometry is alpha clipped. Without the same clip, picking reports
+    // hits on holes that are not there - and a wreck is mostly holes.
+    const clip = alphaClip
+        ? "    if (texture2D(AlphaThresholdMap, texcoord.xy).x <= 0.5) discard;\n"
+        : "";
+
+    const patterns = hasPatterns
+        ? `    float p1 = texture2D(PatternMask1Map, patternUv.xy).x;
+    float p2 = texture2D(PatternMask2Map, patternUv.zw).x;`
+        : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
+    // occur. Sampling them would read textures the effect never binds.
+    float p1 = 0.0;
+    float p2 = 0.0;`;
+
+    return `
 precision highp float;
 
 uniform sampler2D MaterialMap;
-uniform sampler2D PatternMask1Map;
-uniform sampler2D PatternMask2Map;
+${patternUniforms}
+${clipUniform}
 
 // (material, pattern, paint, unused) - where the boundary sits along a
 // gradient, 0.5 being the even split.
@@ -99,6 +159,10 @@ uniform vec4 PatternBlendMode;
 // (areaType, areaIndex, unused, unused), set per area by the picker.
 uniform vec4 PickingArea;
 
+// (patterns, paint, details, decals) - each 0 or 1. An excluded layer type is
+// fallen THROUGH, so a click reaches whatever is underneath it.
+uniform vec4 PickingInclude;
+
 varying vec4 texcoord;
 varying vec4 patternUv;
 
@@ -106,9 +170,9 @@ ${GLSL_MATERIAL_RESOLVE}
 
 void main()
 {
-    float materialValue = texture2D(MaterialMap, texcoord.xy).x;
-    float p1 = texture2D(PatternMask1Map, patternUv.xy).x;
-    float p2 = texture2D(PatternMask2Map, patternUv.zw).x;
+${clip}    float materialValue = texture2D(MaterialMap, texcoord.xy).x;
+
+${patterns}
 
     // Paint coverage is forced to 1 - see the file header.
     float paint = 1.0;
@@ -116,36 +180,66 @@ void main()
     float material = cjsResolveMaterial(
         materialValue, p1, p2, paint,
         PatternBlendMode.x,
-        PickingThreshold.xyz
+        PickingThreshold.xyz,
+        PickingInclude
     );
 
-    gl_FragColor = cjsPackPicking(material, PickingArea.x, ${PickingShaderKind.QUAD}.0, PickingArea.y);
+    gl_FragColor = cjsPackPicking(material, PickingArea.x, ${kind}.0, PickingArea.y);
 }
 `;
+}
 
-export const quadPickingV5 = {
-    name: "quadpickingv5",
-    description: "material picking for the quadv5 family",
-    techniques: {
-        Main: {
-            vs: {
-                inputDefinitions: [
-                    { usage: "POSITION", usageIndex: 0, elements: 3 },
-                    { usage: "TEXCOORD", usageIndex: 0, elements: 2 }
-                ],
-                shader: vs
-            },
-            ps: {
-                shader: ps
-            },
-            // Ordinary opaque depth so the nearest surface wins the pixel, and
-            // the hull's own winding so picking covers exactly what is drawn.
-            states: {
-                [RS_ZENABLE]: 1,
-                [RS_ZWRITEENABLE]: 1,
-                [RS_ZFUNC]: CMP_LEQUAL,
-                [RS_CULLMODE]: CULL_CW
+/**
+ * @param {String} name
+ * @param {Number} kind
+ * @param {Object} [opt]
+ * @param {Boolean} [opt.patterns]
+ * @param {Boolean} [opt.alphaClip]
+ * @returns {Object}
+ */
+function makeDefinition(name, kind, opt = {})
+{
+    return {
+        name,
+        description: "material picking for the " + name.replace("picking", "") + " family",
+        techniques: {
+            Main: {
+                vs: {
+                    inputDefinitions: [
+                        { usage: "POSITION", usageIndex: 0, elements: 3 },
+                        { usage: "TEXCOORD", usageIndex: 0, elements: 2 }
+                    ],
+                    shader: vs
+                },
+                ps: {
+                    shader: makePs(kind, !!opt.patterns, !!opt.alphaClip)
+                },
+                // Ordinary opaque depth so the nearest surface wins the pixel,
+                // and the hull's own winding so picking covers what is drawn.
+                states: {
+                    [RS_ZENABLE]: 1,
+                    [RS_ZWRITEENABLE]: 1,
+                    [RS_ZFUNC]: CMP_LEQUAL,
+                    [RS_CULLMODE]: CULL_CW
+                }
             }
         }
-    }
-};
+    };
+}
+
+// Which kinds bind the pattern masks was checked against the shipped
+// containers rather than assumed - five of the ten do.
+export const quadPickingV5 = makeDefinition("quadpickingv5", PickingShaderKind.QUAD, { patterns: true });
+export const quadDetailPickingV5 = makeDefinition("quaddetailpickingv5", PickingShaderKind.QUAD_DETAIL, { patterns: true });
+export const quadHeatPickingV5 = makeDefinition("quadheatpickingv5", PickingShaderKind.QUAD_HEAT, { patterns: true });
+export const quadHeatDetailPickingV5 = makeDefinition("quadheatdetailpickingv5", PickingShaderKind.QUAD_HEAT_DETAIL, { patterns: true });
+export const quadInstancedPickingV5 = makeDefinition("quadinstancedpickingv5", PickingShaderKind.QUAD_INSTANCED, { patterns: true });
+
+// These five bind no pattern masks, so PMtl1/PMtl2 cannot occur on them.
+export const quadEnvironmentPickingV5 = makeDefinition("quadenvironmentpickingv5", PickingShaderKind.QUAD_ENVIRONMENT);
+export const quadGlassPickingV5 = makeDefinition("quadglasspickingv5", PickingShaderKind.QUAD_GLASS);
+export const quadOilPickingV5 = makeDefinition("quadoilpickingv5", PickingShaderKind.QUAD_OIL);
+export const quadSailsPickingV5 = makeDefinition("quadsailspickingv5", PickingShaderKind.QUAD_SAILS);
+
+// Wreck alone is alpha clipped.
+export const quadWreckPickingV5 = makeDefinition("quadwreckpickingv5", PickingShaderKind.QUAD_WRECK, { alphaClip: true });
