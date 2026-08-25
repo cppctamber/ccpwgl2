@@ -4,7 +4,7 @@ import { vec4 } from "math";
 import { Tw2RenderTarget } from "core/Tw2RenderTarget";
 import { Tw2BatchAccumulator2 } from "core/batch";
 import { RM_OPAQUE } from "constant";
-import { PickingMaterial, DecodePicking } from "./pickingEncoding";
+import { DecodePicking } from "./pickingEncoding";
 
 
 /**
@@ -15,8 +15,35 @@ import { PickingMaterial, DecodePicking } from "./pickingEncoding";
  * caller states the size, and each query is a coordinate.
  *
  * Modelled on `Tw2Picker`'s harness - render target, own accumulator, read one
- * pixel back - but it decodes a different encoding and uses its own standalone
- * shaders rather than a technique on the shipped ones.
+ * pixel back - but it decodes a different encoding and is meant to use its own
+ * standalone shaders rather than a technique on the shipped ones.
+ *
+ * ## NOT FUNCTIONAL YET - do not ship a consumer against this
+ *
+ * The encoding and the shaders are done and tested. THIS CLASS IS NOT: it
+ * collects the ship's own effects and never substitutes a picking shader, so
+ * `Render()` would draw an ordinary picture of a ship into the buffer and
+ * `Pick` would decode nonsense out of it.
+ *
+ * What is still missing, found by review rather than by running it:
+ *
+ *   1. **Effect substitution.** The batch pipeline forwards a technique
+ *      override but has no EFFECT override, and a technique override is gated
+ *      on the area's own effect declaring that technique - which a standalone
+ *      shader never will. The route is to build a parallel `Tw2Effect` with
+ *      `effectFilePath = "manual:/<name>.sm_json"` and swap it onto the batch,
+ *      as `EveSpaceSceneShadowHandler` does for its own substitute.
+ *   2. **One effect PER AREA.** `PickingArea` differs per mesh area, and
+ *      parameters bind at Commit time, so a single shared effect would give
+ *      every area the last-written value.
+ *   3. **Camera setup.** At a caller-chosen size this needs its own view and
+ *      projection; otherwise the aspect is the canvas's and the coordinates the
+ *      caller sends do not correspond to what was drawn.
+ *   4. **Colour mask.** `Tw2Picker` forces and restores `SetColorMask` around
+ *      its pass. Without that, a channel the scene left masked is silently
+ *      dropped - and the material nibble lives in red, so that is a wrong
+ *      answer rather than a visibly broken one.
+ *   5. **Clear colour is left dirty** on the context after `Unset()`.
  *
  * ## The encoding
  *
@@ -140,11 +167,20 @@ export class Tw2MaterialPicker
     {
         if (!this.enabled || !this._object || !this._width) return false;
 
+        // NOT FUNCTIONAL YET - see the class header. This collects the ship's
+        // OWN effects, so what it would draw is a picture of a ship rather than
+        // a picking buffer. Left in place because the collection and readback
+        // are right; what is missing is the substitute effect.
         const ac = this._accumulator;
         ac.Clear();
 
-        if (this._object.GetBatches) this._object.GetBatches(RM_OPAQUE, ac);
+        // Through GetObjectBatches, NOT object.GetBatches(mode, ac) - the
+        // accumulator refuses a direct Commit unless it set `_reroute` itself,
+        // so calling the object directly throws on the first mesh area.
+        ac.GetObjectBatches(this._object, RM_OPAQUE);
         if (!ac.length) return false;
+
+        if (!this._renderTarget.IsGood()) return false;
 
         this._renderTarget.Set();
 

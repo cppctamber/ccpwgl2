@@ -1,4 +1,10 @@
-import { RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE, CMP_LEQUAL, CULL_CW } from "constant";
+import {
+    RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE,
+    RS_ALPHABLENDENABLE, RS_ALPHATESTENABLE,
+    CMP_LEQUAL, CULL_CW
+} from "constant";
+import { precision } from "../../toDeprecate/shaders/shared/func";
+import { PickingThreshold, PatternBlendMode, PickingArea, PickingInclude, DecalTransparencyMap } from "./pickingInputs";
 import { GLSL_PACK, PickingMaterial, PickingShaderKind } from "./materialResolve";
 
 
@@ -70,20 +76,11 @@ void main()
 function makePs(kind)
 {
     return `
-precision highp float;
+${precision}
 
-uniform sampler2D DecalTransparencyMap;
+uniform sampler2D s0;            // DecalTransparencyMap
 
-// (material, pattern, paint, unused). Decals use .y, the pattern threshold -
-// coverage is a plain 0..1 mask, the same shape as a pattern mask.
-uniform vec4 PickingThreshold;
-
-// (areaType, areaIndex, unused, unused), set per decal by the picker.
-uniform vec4 PickingArea;
-
-// (patterns, paint, details, decals) - each 0 or 1. An excluded layer type is
-// fallen THROUGH, so a click reaches whatever is underneath it.
-uniform vec4 PickingInclude;
+uniform vec4 cb7[4];             // threshold, blendMode, area, include
 
 varying vec4 texcoord;
 
@@ -93,7 +90,7 @@ void main()
 {
     // Excluded decals do not draw at all, so the hull underneath keeps the
     // pixel - the same fall-through the material layers get.
-    if (PickingInclude.w <= 0.5) discard;
+    if (cb7[3].w <= 0.5) discard;
 
     // Clamped rather than wrapped. The shipped shader addresses this map with a
     // BORDER mode, so a decal does not tile - sampling outside its own UVs must
@@ -102,16 +99,16 @@ void main()
 
     if (uv.x != texcoord.x || uv.y != texcoord.y) discard;
 
-    float coverage = texture2D(DecalTransparencyMap, uv).x;
+    float coverage = texture2D(s0, uv).x;
 
     // Discard, so the hull underneath keeps the pixel. See the file header.
-    if (coverage <= PickingThreshold.y) discard;
+    if (coverage <= cb7[0].y) discard;
 
     gl_FragColor = cjsPackPicking(
         ${PickingMaterial.DECAL}.0,
-        PickingArea.x,
+        cb7[2].x,
         ${kind}.0,
-        PickingArea.y
+        cb7[2].y
     );
 }
 `;
@@ -137,6 +134,10 @@ function makeDefinition(name, kind)
                     shader: vs
                 },
                 ps: {
+                    // POSITIONAL binding - the order here IS the cb7 index and the
+                    // s# order. A named uniform would link and never be written.
+                    constants: [ PickingThreshold, PatternBlendMode, PickingArea, PickingInclude ],
+                    textures: [ DecalTransparencyMap ],
                     shader: makePs(kind)
                 },
                 // Depth EQUAL-or-less against the hull already drawn, so a decal
@@ -146,7 +147,12 @@ function makeDefinition(name, kind)
                     [RS_ZENABLE]: 1,
                     [RS_ZWRITEENABLE]: 1,
                     [RS_ZFUNC]: CMP_LEQUAL,
-                    [RS_CULLMODE]: CULL_CW
+                    [RS_CULLMODE]: CULL_CW,
+
+                    // Declared rather than inherited - blending a packed nibble
+                    // would corrupt the id rather than merely dim it.
+                    [RS_ALPHABLENDENABLE]: 0,
+                    [RS_ALPHATESTENABLE]: 0
                 }
             }
         }

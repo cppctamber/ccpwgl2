@@ -1,5 +1,14 @@
-import { RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE, CMP_LEQUAL, CULL_CW } from "constant";
+import {
+    RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE,
+    RS_ALPHABLENDENABLE, RS_ALPHATESTENABLE,
+    CMP_LEQUAL, CULL_CW
+} from "constant";
+import { precision } from "../../toDeprecate/shaders/shared/func";
 import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
+import {
+    PickingThreshold, PatternBlendMode, PickingArea, PickingInclude,
+    MaterialMap, PatternMask1Map, PatternMask2Map, AlphaThresholdMap
+} from "./pickingInputs";
 
 
 /**
@@ -11,33 +20,48 @@ import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
  * which layer a texel belongs to.
  *
  * One body, ten definitions. The kinds differ in three ways that matter to
- * picking and in no others:
+ * picking and in no others: whether the pattern masks exist (five of ten bind
+ * them), whether an alpha clip applies (wreck alone), and which kind they
+ * report. Heat glow, oil film, glass fog and wreck colouring change how a
+ * surface LOOKS, not which layer it is.
  *
- *   - whether the pattern masks exist at all (five of ten bind them);
- *   - whether an alpha clip applies (wreck);
- *   - which kind constant they report.
+ * ## Binding is POSITIONAL, and that is not a style choice
  *
- * Everything else they differ in - heat glow, oil film, glass fog, wreck
- * colouring - changes how a surface LOOKS, not which layer it is, so picking is
- * identical and one body serves all ten.
+ * The manual shader path packs a technique's `constants` into one array
+ * uploaded as `cb7` for the pixel stage, and binds `textures` to sampler unit
+ * == register index, located as `s0`, `s1`, ... There is NO name-based binding.
+ *
+ * So `uniform sampler2D MaterialMap` links, defaults to zero and is never
+ * written - it does not fail, it silently reads nothing. The first version of
+ * this file did exactly that. The declaration arrays below ARE the register
+ * order, and the GLSL indices follow them.
+ *
+ * Because five kinds bind no pattern masks, the register order differs between
+ * kinds, so the indices are computed from the list rather than hardcoded.
  *
  * ## What it reproduces, and why exactly
  *
  * The pattern UVs are NOT the base UV. The shipped vertex stage projects the
  * object-space position through the two custom-mask matrices:
  *
- *     mirror   = -POSITION.x + abs(POSITION.x)          // 0 where x >= 0
- *     p        = CustomMaskData.y * vec3(mirror,0,0) + POSITION.xyz
- *     uv       = (vec2(dot(p4, row1), dot(p4, row2)) + 1.0) * 0.5
+ *     mirror = -POSITION.x + abs(POSITION.x)          // 0 where x >= 0
+ *     p      = vec4(CustomMaskData.y * vec3(mirror,0,0) + POSITION.xyz, 1.0)
+ *     uv     = (vec2(dot(p, row1), dot(p, row2)) + 1.0) * 0.5
  *
  * with `CustomMaskMatrix0` rows 1 and 2 for pattern one and `CustomMaskMatrix1`
  * rows 1 and 2 for pattern two - rows 1 and 2 rather than 0 and 1 because the
  * matrices arrive transposed. `CustomMaskData.y` is the mirror flag, which is
- * what the existing `// enable, mirror` note in Tr2PerObjectData refers to.
+ * what the `// enable, mirror` note in Tr2PerObjectData refers to. Verified
+ * independently against the compiled container.
  *
- * Sampling all four maps at the base UV instead would put both patterns in the
- * wrong place - subtly, and only where a pattern is, which is the worst way for
- * it to be wrong.
+ * Sampling all the maps at the base UV instead would put both patterns in the
+ * wrong place - subtly, and only where a pattern is.
+ *
+ * KNOWN DEVIATION: the shipped pixel stage samples at
+ * `mix(vs_r7, clamp(vs_r7, 0, 1), cb4[26])` - a blend between the raw and the
+ * clamped UV under a constant - where this samples the raw UV. That differs
+ * only outside the 0..1 range, where the shipped shader can clamp and this
+ * does not.
  *
  * ## PaintMaskMap is forced to 1
  *
@@ -49,29 +73,17 @@ import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
  *
  * ## NOT YET RESOLVED: the per-kind sub-layers
  *
- * Several kinds carry layers that are neither a base material nor a pattern.
- * These shaders currently report the base material UNDERNEATH them:
+ * `quaddetailv5`, `quadheatdetailv5` and `quadenvironmentv5` carry three detail
+ * layers, and `quadsailsv5` a sails layer. These report the base material
+ * UNDERNEATH them. The three detail maps are merged by ccpwgl's own emitter
+ * into one `sampler2DArray` (`detail-map-array` -> `DetailArrayMap`), so a
+ * picking shader for them needs an array sampler, and the selection rule has
+ * not been extracted. `DETAIL1..3` and `SAILS_DETAIL` are reserved, not
+ * emitted.
  *
- *     quaddetailv5        Detail1Data, Detail2Data, Detail3Data, DetailSelector
- *     quadheatdetailv5    the same, plus SecondaryDetail2Data
- *     quadenvironmentv5   Detail1Data, Detail2Data, Detail1Material, Detail2Material
- *     quadsailsv5         SailsDetailData
- *     quadwreckv5         WreckColor, WreckFactors
- *
- * `DETAIL1..3` and `SAILS_DETAIL` are reserved in the encoding for these and are
- * NOT emitted yet. The selection rule has not been extracted from the shipped
- * shaders, and `Detail1Material` / `Detail2Material` on the environment kind
- * suggests a detail may be ASSIGNED to a material rather than standing beside
- * it - which would change what a detail region ought to report.
- *
- * Guessing that would produce confident wrong answers across whole regions of a
- * hull. It waits for the same extraction the material tent and the blend modes
- * got.
- *
- * What every kind DOES have, and what is deliberately ignored: every one of the
- * ten carries `MtlNDustDiffuseColor` and `MtlNHeatGlowData`. Those are
- * properties OF a material - dust settling on it, heat glowing through it - not
- * layers standing beside it, so they get no id and never will.
+ * What every kind carries and is deliberately ignored: `MtlNDustDiffuseColor`
+ * and `MtlNHeatGlowData` are properties OF a material - dust on it, heat
+ * through it - not layers beside it, so they get no id.
  */
 
 const vs = `
@@ -114,54 +126,51 @@ void main()
 }
 `;
 
+// The constant order IS the cb7 index order.
+const CONSTANTS = [ PickingThreshold, PatternBlendMode, PickingArea, PickingInclude ];
+
+const CB_THRESHOLD = "cb7[0]";
+const CB_BLEND_MODE = "cb7[1]";
+const CB_AREA = "cb7[2]";
+const CB_INCLUDE = "cb7[3]";
+
 /**
  * @param {Number} kind
+ * @param {Array<Object>} textures - declaration order, which is the s# order
  * @param {Boolean} hasPatterns
  * @param {Boolean} alphaClip
  * @returns {String}
  */
-function makePs(kind, hasPatterns, alphaClip)
+function makePs(kind, textures, hasPatterns, alphaClip)
 {
-    const patternUniforms = hasPatterns
-        ? "uniform sampler2D PatternMask1Map;\nuniform sampler2D PatternMask2Map;"
-        : "";
+    // The register index comes from the declaration list, because it differs
+    // between kinds - five of them declare no pattern masks.
+    const reg = name => "s" + textures.findIndex(t => t.name === name);
 
-    const clipUniform = alphaClip ? "uniform sampler2D AlphaThresholdMap;" : "";
+    const declarations = textures
+        .map((t, i) => `uniform sampler2D s${i};            // ${t.name}`)
+        .join("\n");
 
     // Wreck geometry is alpha clipped. Without the same clip, picking reports
     // hits on holes that are not there - and a wreck is mostly holes.
     const clip = alphaClip
-        ? "    if (texture2D(AlphaThresholdMap, texcoord.xy).x <= 0.5) discard;\n"
+        ? `    if (texture2D(${reg("AlphaThresholdMap")}, texcoord.xy).x <= 0.5) discard;\n`
         : "";
 
     const patterns = hasPatterns
-        ? `    float p1 = texture2D(PatternMask1Map, patternUv.xy).x;
-    float p2 = texture2D(PatternMask2Map, patternUv.zw).x;`
+        ? `    float p1 = texture2D(${reg("PatternMask1Map")}, patternUv.xy).x;
+    float p2 = texture2D(${reg("PatternMask2Map")}, patternUv.zw).x;`
         : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
     // occur. Sampling them would read textures the effect never binds.
     float p1 = 0.0;
     float p2 = 0.0;`;
 
     return `
-precision highp float;
+${precision}
 
-uniform sampler2D MaterialMap;
-${patternUniforms}
-${clipUniform}
+${declarations}
 
-// (material, pattern, paint, unused) - where the boundary sits along a
-// gradient, 0.5 being the even split.
-uniform vec4 PickingThreshold;
-
-// The Carbon permutation option as a float - see PatternBlendMode.
-uniform vec4 PatternBlendMode;
-
-// (areaType, areaIndex, unused, unused), set per area by the picker.
-uniform vec4 PickingArea;
-
-// (patterns, paint, details, decals) - each 0 or 1. An excluded layer type is
-// fallen THROUGH, so a click reaches whatever is underneath it.
-uniform vec4 PickingInclude;
+uniform vec4 cb7[${CONSTANTS.length}];
 
 varying vec4 texcoord;
 varying vec4 patternUv;
@@ -170,7 +179,7 @@ ${GLSL_MATERIAL_RESOLVE}
 
 void main()
 {
-${clip}    float materialValue = texture2D(MaterialMap, texcoord.xy).x;
+${clip}    float materialValue = texture2D(${reg("MaterialMap")}, texcoord.xy).x;
 
 ${patterns}
 
@@ -179,12 +188,12 @@ ${patterns}
 
     float material = cjsResolveMaterial(
         materialValue, p1, p2, paint,
-        PatternBlendMode.x,
-        PickingThreshold.xyz,
-        PickingInclude
+        ${CB_BLEND_MODE}.x,
+        ${CB_THRESHOLD}.xyz,
+        ${CB_INCLUDE}
     );
 
-    gl_FragColor = cjsPackPicking(material, PickingArea.x, ${kind}.0, PickingArea.y);
+    gl_FragColor = cjsPackPicking(material, ${CB_AREA}.x, ${kind}.0, ${CB_AREA}.y);
 }
 `;
 }
@@ -199,6 +208,10 @@ ${patterns}
  */
 function makeDefinition(name, kind, opt = {})
 {
+    const textures = [ MaterialMap ];
+    if (opt.patterns) textures.push(PatternMask1Map, PatternMask2Map);
+    if (opt.alphaClip) textures.push(AlphaThresholdMap);
+
     return {
         name,
         description: "material picking for the " + name.replace("picking", "") + " family",
@@ -212,15 +225,24 @@ function makeDefinition(name, kind, opt = {})
                     shader: vs
                 },
                 ps: {
-                    shader: makePs(kind, !!opt.patterns, !!opt.alphaClip)
+                    constants: CONSTANTS,
+                    textures,
+                    shader: makePs(kind, textures, !!opt.patterns, !!opt.alphaClip)
                 },
-                // Ordinary opaque depth so the nearest surface wins the pixel,
-                // and the hull's own winding so picking covers what is drawn.
                 states: {
+                    // Ordinary opaque depth so the nearest surface wins the
+                    // pixel, and the hull's own winding so picking covers what
+                    // is drawn.
                     [RS_ZENABLE]: 1,
                     [RS_ZWRITEENABLE]: 1,
                     [RS_ZFUNC]: CMP_LEQUAL,
-                    [RS_CULLMODE]: CULL_CW
+                    [RS_CULLMODE]: CULL_CW,
+
+                    // Declared rather than inherited. Render states persist
+                    // between passes, and blending or alpha-testing a packed
+                    // nibble would corrupt the id rather than merely dim it.
+                    [RS_ALPHABLENDENABLE]: 0,
+                    [RS_ALPHATESTENABLE]: 0
                 }
             }
         }
