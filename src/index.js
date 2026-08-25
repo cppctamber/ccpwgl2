@@ -43,7 +43,7 @@ tw2.Register({ shaders: pickingShaders });
 export { tny } from "./runtime";
 export { EveSOFDataHandler } from "./sof/EveSOFDataHandler";
 export { deprecatedShaders };
-export { Tw2MaterialPicker } from "./picking";
+export { Tw2MaterialPicker, Tw2MaterialPickResult } from "./picking";
 export { tw2, tw2 as CCPWGL };
 
 // Carbon (translated DX11 shader path) support modules — exposed for the

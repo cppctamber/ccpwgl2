@@ -4,26 +4,32 @@ import { vec4 } from "math";
 import { Tw2RenderTarget } from "core/Tw2RenderTarget";
 import { Tw2BatchAccumulator2 } from "core/batch";
 import { RM_OPAQUE } from "constant";
-import { DecodePicking } from "./pickingEncoding";
+import { Tw2MaterialPickResult } from "./Tw2MaterialPickResult";
 
 
 /**
- * Renders a ship's material layers as flat colours and answers "what is at this
- * pixel".
+ * Renders objects' material layers as flat colours, so a caller can ask what is
+ * at a pixel.
  *
- * For skindr: pick a material layer with the mouse. One ship at a time, the
- * caller states the size, and each query is a coordinate.
+ * For skindr: a user drags an icon over a ship and, on drop, we say which
+ * material layer and which mesh area they hit.
  *
- * Modelled on `Tw2Picker`'s harness - render target, own accumulator, read one
- * pixel back - but it decodes a different encoding and is meant to use its own
- * standalone shaders rather than a technique on the shipped ones.
+ * ```js
+ * picker.SetSize(width, height, [ ship ]);
+ * const pick = await picker.Pick();
+ * const hit = pick.Get(x, y);
+ * ```
+ *
+ * `Pick()` renders once, on the frame the scene next finishes, and resolves
+ * with a CAPTURE. The capture holds the pixels, so `Get` is array indexing -
+ * no GL, no frame to wait for, and a caller does not need to know the
+ * coordinates in advance, which is the whole point during a drag.
  *
  * ## NOT FUNCTIONAL YET - do not ship a consumer against this
  *
  * The encoding and the shaders are done and tested. THIS CLASS IS NOT: it
- * collects the ship's own effects and never substitutes a picking shader, so
- * `Render()` would draw an ordinary picture of a ship into the buffer and
- * `Pick` would decode nonsense out of it.
+ * collects the objects' own effects and never substitutes a picking shader, so
+ * it draws an ordinary picture of a ship and `Get` decodes nonsense out of it.
  *
  * What is still missing, found by review rather than by running it:
  *
@@ -51,13 +57,13 @@ import { DecodePicking } from "./pickingEncoding";
  *
  * ```
  *   R  low nibble  material     high nibble  area type
- *   G  quad kind   0 = UNKNOWN, which is a DEFECT not an answer
+ *   G  shader kind 0 = UNKNOWN, which is a DEFECT not an answer
  *   B  area index
  * ```
  *
  * The background is solid green and the background test is `(R & 15) === 0` -
  * every real hit has a material of at least 1, so green reads as "nothing"
- * without needing alpha, and green stays a legal quad-kind value elsewhere in
+ * without needing alpha, and green stays a legal shader-kind value elsewhere in
  * the buffer.
  */
 @meta.define("Tw2MaterialPicker")
@@ -65,8 +71,17 @@ export class Tw2MaterialPicker
 {
 
     /**
-     * The background. Solid green, as asked for - and safe, because nothing is
-     * distinguished by colour alone: the material nibble decides.
+     * The scene whose frame the picker rides.
+     *
+     * Held rather than passed per call, so `Pick()` takes no arguments and
+     * cannot be handed a different scene than the objects belong to.
+     * @type {?EveSpaceScene}
+     */
+    scene = null;
+
+    /**
+     * The background. Solid green, and safe because nothing is distinguished by
+     * colour alone: the material nibble decides.
      * @type {vec4}
      */
     @meta.color
@@ -74,8 +89,9 @@ export class Tw2MaterialPicker
 
     /**
      * Where the boundary sits along a gradient, per quantity, 0.5 being the
-     * even split. Materials blend by construction - the tents overlap - so
-     * this is not optional tuning, it is how an ambiguous texel is decided.
+     * even split. Materials blend by construction - the tents overlap across
+     * 94% of the interval between anchors - so this is not optional tuning, it
+     * is how an ambiguous texel is decided.
      * @type {vec4}
      */
     @meta.vector4
@@ -86,13 +102,10 @@ export class Tw2MaterialPicker
      * 0 or 1.
      *
      * An excluded type is not merely hidden - the resolution falls THROUGH it,
-     * so a click reaches whatever is underneath. That is the point rather than a
+     * so a pick reaches whatever is underneath. That is the point rather than a
      * side effect: detail layers are composite textures full of small greebles,
      * and a user dragging an icon at that scale would otherwise keep landing on
      * a rivet instead of on the hull.
-     *
-     * Set `details` to 0 while dragging something large, and back to 1 when the
-     * user is picking deliberately.
      * @type {vec4}
      */
     @meta.vector4
@@ -103,34 +116,56 @@ export class Tw2MaterialPicker
 
     _accumulator = new Tw2BatchAccumulator2();
     _renderTarget = new Tw2RenderTarget();
-    _buffer = new Uint8Array(4);
+    _objects = [];
     _width = 0;
     _height = 0;
-    _object = null;
 
 
     /**
-     * Sets the size of the picking buffer.
+     * @param {EveSpaceScene} [scene]
+     */
+    constructor(scene)
+    {
+        if (scene) this.scene = scene;
+    }
+
+    /**
+     * Sets the buffer size and what to draw into it.
      *
-     * The caller states this rather than it following the canvas: skindr asks
-     * for a size, gets it back, and then sends coordinates in that space. A
-     * buffer that silently resized would make an in-flight coordinate mean
-     * something else.
+     * The caller states the size rather than it following the canvas, and it
+     * does not have to match: a picking buffer at half resolution is a quarter
+     * of the memory and still far finer than a mouse. Whatever is chosen here
+     * is the space `Get` coordinates are in.
      *
      * @param {Number} width
      * @param {Number} height
+     * @param {Array|*} [objects] - what to draw; a single object is accepted
      * @returns {Tw2MaterialPicker}
      */
-    SetSize(width, height)
+    SetSize(width, height, objects)
     {
         width = Math.max(1, Math.floor(width));
         height = Math.max(1, Math.floor(height));
 
-        if (width === this._width && height === this._height) return this;
+        if (width !== this._width || height !== this._height)
+        {
+            this._width = width;
+            this._height = height;
+            this._renderTarget.Create(width, height, true);
+        }
 
-        this._width = width;
-        this._height = height;
-        this._renderTarget.Create(width, height, true);
+        if (objects !== undefined) this.SetObjects(objects);
+        return this;
+    }
+
+    /**
+     * Sets what to draw.
+     * @param {Array|*} objects - a single object is accepted
+     * @returns {Tw2MaterialPicker}
+     */
+    SetObjects(objects)
+    {
+        this._objects = !objects ? [] : (Array.isArray(objects) ? objects.slice() : [ objects ]);
         return this;
     }
 
@@ -144,14 +179,42 @@ export class Tw2MaterialPicker
     }
 
     /**
-     * Sets the one object being picked.
-     * @param {*} object
-     * @returns {Tw2MaterialPicker}
+     * Renders and captures, on the frame the scene next finishes.
+     *
+     * Settles only once the buffer has actually been drawn and read, so there
+     * is no "render now" for a caller to call at the wrong moment and no way to
+     * read a buffer from a frame that never happened.
+     *
+     * Queued onto the SCENE rather than a raw animation frame, and run after
+     * the scene has finished drawing (`EveSpaceScene.RunPendingTasks`). An
+     * offscreen pass that reads its own result needs the frame's state settled
+     * and must leave no trace; that hook gives it both.
+     *
+     * @returns {Promise<?Tw2MaterialPickResult>} null when nothing was drawn
      */
-    SetObject(object)
+    Pick()
     {
-        this._object = object || null;
-        return this;
+        const scene = this.scene;
+
+        if (!scene || typeof scene.EnqueueTask !== "function")
+        {
+            return Promise.reject(new TypeError("Material picking requires a scene that can queue tasks"));
+        }
+
+        return new Promise((resolve, reject) =>
+        {
+            scene.EnqueueTask(() =>
+            {
+                try
+                {
+                    resolve(this.Render() ? this.Capture() : null);
+                }
+                catch (err)
+                {
+                    reject(err);
+                }
+            });
+        });
     }
 
     /**
@@ -159,28 +222,32 @@ export class Tw2MaterialPicker
      *
      * Opaque only. A material layer belongs to a surface, and a transparent or
      * additive pass draws over one without being one - including them would let
-     * a glow decide what a click landed on.
+     * a glow decide what a pick landed on.
      *
      * @returns {Boolean} true if anything was drawn
      */
     Render()
     {
-        if (!this.enabled || !this._object || !this._width) return false;
+        if (!this.enabled || !this._objects.length || !this._width) return false;
+        if (!this._renderTarget.IsGood()) return false;
 
-        // NOT FUNCTIONAL YET - see the class header. This collects the ship's
-        // OWN effects, so what it would draw is a picture of a ship rather than
-        // a picking buffer. Left in place because the collection and readback
-        // are right; what is missing is the substitute effect.
+        // NOT FUNCTIONAL YET - see the class header. This collects the objects'
+        // OWN effects, so what it draws is a picture of a ship rather than a
+        // picking buffer. Left in place because the collection, the render
+        // target and the readback are right; the substitute effect is what is
+        // missing.
         const ac = this._accumulator;
         ac.Clear();
 
         // Through GetObjectBatches, NOT object.GetBatches(mode, ac) - the
         // accumulator refuses a direct Commit unless it set `_reroute` itself,
-        // so calling the object directly throws on the first mesh area.
-        ac.GetObjectBatches(this._object, RM_OPAQUE);
-        if (!ac.length) return false;
+        // so calling an object directly throws on its first mesh area.
+        for (let i = 0; i < this._objects.length; i++)
+        {
+            ac.GetObjectBatches(this._objects[i], RM_OPAQUE);
+        }
 
-        if (!this._renderTarget.IsGood()) return false;
+        if (!ac.length) return false;
 
         this._renderTarget.Set();
 
@@ -194,109 +261,22 @@ export class Tw2MaterialPicker
     }
 
     /**
-     * Picks a list of coordinates, on the next frame the scene finishes.
+     * Reads the WHOLE buffer back into a capture.
      *
-     * This is the API a consumer should use. It renders ONCE and answers every
-     * coordinate from that one buffer, which is what makes a drag cheap: the
-     * ship cannot move while the user is dragging, so one image serves the
-     * whole gesture.
+     * Once, at capture time, rather than a GL call per pick. That is what lets
+     * a result outlive the frame: the render target is reused by the next
+     * capture, but the pixels a caller holds are their own.
      *
-     * It settles only once the buffer has actually been drawn and read. There
-     * is no "render now" for a caller to get wrong, and no way to read a buffer
-     * from a frame that never happened.
-     *
-     * Queued onto the SCENE rather than a raw animation frame, and run after
-     * the scene has finished drawing (`EveSpaceScene.RunPendingTasks`). An
-     * offscreen pass that reads its own result needs the frame's state settled
-     * and must leave no trace; that hook gives it both.
-     *
-     * ```js
-     * const [ a, b ] = await picker.PickAsync(scene, ship, [ [x1, y1], [x2, y2] ]);
-     * ```
-     *
-     * @param {EveSpaceScene} scene   - the scene whose frame to ride
-     * @param {*} object              - the one object to pick against
-     * @param {Array<Array<Number>>} coords - `[ [x, y], ... ]`, buffer pixels
-     * @returns {Promise<Array<?Object>>} one decoded result per coordinate, in order
+     * @returns {?Tw2MaterialPickResult}
      */
-    PickAsync(scene, object, coords)
+    Capture()
     {
-        if (!scene || typeof scene.EnqueueTask !== "function")
-        {
-            return Promise.reject(new TypeError("Material picking requires a scene that can queue tasks"));
-        }
+        if (!this._width || !this._renderTarget.IsGood()) return null;
 
-        const list = Array.isArray(coords) ? coords : [];
+        const data = new Uint8Array(this._width * this._height * 4);
+        this._renderTarget.ReadPixels(data, 0, 0, this._width, this._height);
 
-        return new Promise((resolve, reject) =>
-        {
-            scene.EnqueueTask(() =>
-            {
-                // Cleanup is unconditional. The buffer is a render target and
-                // the object reference pins a whole ship, so an early return or
-                // a throw must not leave either held - a failed pick should
-                // cost nothing but the answer.
-                try
-                {
-                    this.SetObject(object);
-
-                    if (!this.Render())
-                    {
-                        resolve(list.map(() => null));
-                        return;
-                    }
-
-                    resolve(list.map(c => this.Pick(c[0], c[1])));
-                }
-                catch (err)
-                {
-                    reject(err);
-                }
-                finally
-                {
-                    this.SetObject(null);
-                }
-            });
-        });
-    }
-
-    /**
-     * Reads one pixel back and decodes it.
-     *
-     * Synchronous, and only meaningful after a successful {@link Render} in the
-     * same frame. Prefer {@link PickAsync}, which cannot be called at the wrong
-     * moment.
-     *
-     * @param {Number} x
-     * @param {Number} y
-     * @returns {?Object} null when the coordinate is outside the buffer
-     */
-    Pick(x, y)
-    {
-        if (!this._width) return null;
-
-        x = Math.floor(x);
-        y = Math.floor(y);
-
-        if (x < 0 || y < 0 || x >= this._width || y >= this._height) return null;
-
-        this._renderTarget.ReadPixels(this._buffer, x, y, 1, 1);
-        return this.constructor.Decode(this._buffer);
-    }
-
-    /**
-     * Decodes one RGB triple.
-     *
-     * Delegates to the encoding module so the format has ONE definition - a
-     * renderer and a decoder that disagreed about the layout would be a very
-     * quiet bug.
-     *
-     * @param {Uint8Array|Array} rgb
-     * @returns {Object}
-     */
-    static Decode(rgb)
-    {
-        return DecodePicking(rgb);
+        return new Tw2MaterialPickResult(this._width, this._height, data);
     }
 
 }
