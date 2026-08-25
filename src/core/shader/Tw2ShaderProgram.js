@@ -105,6 +105,22 @@ export class Tw2ShaderProgram
             if (match) program.constantBufferSizes[Number(match[1])] = uniform.size;
         }
 
+        // A hand-written shader has no carbon bindings to name the
+        // emulated-addressing register, so it declares the buffer by declaring
+        // the uniform. Same rule identifies it either way: Carbon uses only
+        // cb0-4, 6 and 7, so a linked buffer above that range is this one.
+        if (program.emulatedAddressingRegister === undefined || program.emulatedAddressingRegister === null)
+        {
+            for (let j = CARBON_LAST_CB_REGISTER + 1; j < program.constantBufferSizes.length; j++)
+            {
+                if (program.constantBufferSizes[j] && program.constantBufferHandles[j])
+                {
+                    program.emulatedAddressingRegister = j;
+                    break;
+                }
+            }
+        }
+
         // Samplers
         for (let j = 0; j < 16; ++j)
         {

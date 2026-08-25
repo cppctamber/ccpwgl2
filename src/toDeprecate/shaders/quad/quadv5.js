@@ -1,5 +1,5 @@
 import { constant, texture, vs, ps } from "./shared";
-import { clampToBorder, customMaskBlendModes } from "../shared/func";
+import { clampToBorder, emulatedAddressing, customMaskBlendModes } from "../shared/func";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
@@ -77,6 +77,7 @@ export const quadV5 = {
                         //quadv5.sm_depth
                         ${ps.header}
                         ${clampToBorder}
+                        ${emulatedAddressing}
 
                         varying vec4 texcoord;
                         varying vec4 texcoord1;
@@ -105,6 +106,7 @@ export const quadV5 = {
                         uniform sampler2D s11;  // DustNoiseMap
 
                         uniform vec4 cb2[22];
+                        uniform vec4 cb8[11];
                         uniform vec4 cb4[17];
                         uniform vec4 cb7[24];
 
@@ -269,12 +271,12 @@ export const quadV5 = {
                             r3.w=r6.x>=0.0?r3.w:cb7[10].x;
 
                             // PatternMask1
-                            r7=clampToBorder(s9,v6.xy,cb4[10].yz,c34.wwww);
+                            r7=cjsAddressed(s9,v6.xy,cb8[9].xy,c34.wwww);
 
                             r7=r7.xxxx*cb4[12];
 
                             // PatternMask2
-                            r9=clampToBorder(s10,v6.zw,cb4[11].yz,c34.wwww);
+                            r9=cjsAddressed(s10,v6.zw,cb8[10].xy,c34.wwww);
 
                             r9=r9.xxxx*cb4[13];
                             applyCustomMaskBlendMode(r7, r9);

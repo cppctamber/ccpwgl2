@@ -1,4 +1,4 @@
-import { clampToBorder } from "../../shared/func";
+import { clampToBorder, emulatedAddressing } from "../../shared/func";
 import { quadV5_PosTexTanTex, skinnedQuadV5_PosBwtTexTanTex } from "../shared/vs";
 import { constant, ps, texture } from "../shared";
 import { DustNoiseMap } from "../../shared/texture";
@@ -35,6 +35,7 @@ export const quadUtilityV5 = {
 
                     ${ps.headerNoShadow}
                     ${clampToBorder}
+                        ${emulatedAddressing}
                     ${getMaterialMask}
 
                     varying vec4 texcoord;
@@ -57,6 +58,7 @@ export const quadUtilityV5 = {
                     uniform sampler2D s9;   // PatternMask2Map;
                     uniform sampler2D s10;  // DustNoiseMap
 
+                    uniform vec4 cb8[10];
                     uniform vec4 cb4[16];
                     uniform vec4 cb7[3];
 
@@ -121,14 +123,14 @@ export const quadUtilityV5 = {
                             r1=cb4[13]*materialMask;
                             if(any(greaterThan(materialMask,c0.xxxx))){
                                 patternMask.z=max(r1.w,max(r1.z,max(r1.x,r1.y)));
-                                patternMask.y=patternMask.z*clampToBorder(s9,v6.zw,cb4[11].yz).x;
+                                patternMask.y=patternMask.z*cjsAddressed(s9,v6.zw,cb8[9].xy).x;
                                 materialMask=max(materialMask-patternMask.yyyy,c0.xxxx);
                             }
 
                             r1=cb4[12]*materialMask;
                             if(any(greaterThan(materialMask,c0.xxxx))){
                                 patternMask.z=max(r1.w,max(r1.z,max(r1.x,r1.y)));
-                                patternMask.x=patternMask.z*clampToBorder(s8,v6.xy,cb4[10].yz).x;
+                                patternMask.x=patternMask.z*cjsAddressed(s8,v6.xy,cb8[8].xy).x;
                                 materialMask=max(materialMask-patternMask.xxxx,c0.xxxx);
                             }
 

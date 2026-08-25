@@ -3,7 +3,7 @@ import {
     RS_ALPHABLENDENABLE, RS_ALPHATESTENABLE,
     CMP_LEQUAL, CULL_CW
 } from "constant";
-import { precision, clampToBorder } from "../../toDeprecate/shaders/shared/func";
+import { precision, emulatedAddressing } from "../../toDeprecate/shaders/shared/func";
 import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
 import {
     PickingThreshold, PatternBlendMode, PickingArea, PickingInclude,
@@ -58,11 +58,10 @@ import {
  * Sampling all the maps at the base UV instead would put both patterns in the
  * wrong place - subtly, and only where a pattern is.
  *
- * The clamp lerp the shipped stage applies to those UVs - mix toward
- * clamp(uv,0,1) under CustomMaskClamps - is reproduced. It was a known
- * deviation here until the register was found: EveCustomMask names it cb4[26]
- * for the DX11-translated shaders, and it is cb4[14] in the GLES per-object
- * layout the manual shaders are handed.
+ * Addressing those UVs is the emulated-addressing buffer's job, `cb8`, one
+ * vec4 per texture register carrying the Trinity mode - the same buffer and the
+ * same values the translated shaders read. Clamp-to-edge needs nothing here: it
+ * is a native WebGL mode and arrives on the sampler.
  *
  * ## PaintMaskMap: the MASK is read, the INFLUENCE is not
  *
@@ -266,37 +265,20 @@ const CB_MASK_TARGET_0 = "cb4[12]";
 const CB_MASK_TARGET_1 = "cb4[13]";
 
 /**
- * `CustomMaskMaterialID0/1` - (material index, clampU, clampV, clampW).
+ * The emulated-addressing buffer, the SAME one the translated shaders read.
  *
- * The `.yz` lanes are the clamp-to-BORDER flags, and the shipped quad shader
- * samples both pattern masks through them:
+ * One vec4 per TEXTURE register, (uMode, vMode, wMode, spare), carrying the
+ * Trinity enum: 1 wrap, 2 mirror, 3 clamp-edge, 4 border, 5 mirror-once, and 0
+ * for nothing to emulate. Uploaded by Tw2Effect._ApplyEmulatedAddressing from
+ * the RESOLVED sampler, so an override is already accounted for.
  *
- *     r7 = clampToBorder(s9,  v6.xy, cb4[10].yz, c34.wwww);   // c34.w is 0
- *     r9 = clampToBorder(s10, v6.zw, cb4[11].yz, c34.wwww);
- *
- * WebGL has no border address mode, so it is emulated in the shader: outside
- * 0..1 the sample is the border colour, which is black - no coverage. Sampling
- * raw instead lets the GL wrap mode decide, and REPEAT tiles the pattern across
- * the whole hull. Picking would then report pattern coverage everywhere the
- * projection runs off the edge of the mask.
+ * These shaders used to read the legacy per-mask booleans at cb4[10].yz and
+ * cb4[11].yz instead. Same authored fact, different shape - a boolean per
+ * custom mask rather than an enum per texture - and it handles border only.
+ * Reading the buffer means the picking pass and the shipped pass cannot
+ * disagree about where a pattern reaches, and mirror-once comes for free.
  */
-const CB_MASK_ID_0 = "cb4[10]";
-const CB_MASK_ID_1 = "cb4[11]";
-
-/**
- * NOT READ, and that is the point: `CustomMaskClamps` at `cb4[14]` carries the
- * clamp-to-EDGE flags, and clamp-to-edge is a native WebGL address mode.
- *
- * Only the modes GL cannot do belong in a shader - `CLAMP_TO_BORDER` and
- * `MIRROR_ONCE`, which is the same line `Tw2Effect._ApplyEmulatedAddressing`
- * draws for the translated shaders. Repeat, mirrored repeat and clamp-to-edge
- * are the sampler's job.
- *
- * Reading it too briefly seemed like belt and braces. It is not: it is a second
- * value for a quantity that already has one, and two can disagree. Left named
- * here so the next reader knows it was considered rather than missed.
- */
-const CB_MASK_CLAMPS_UNUSED = "cb4[14]";
+const CB_ADDRESSING = "cb8";
 
 /**
  * @param {Number} kind
@@ -309,7 +291,8 @@ function makePs(kind, textures, hasPatterns, alphaClip)
 {
     // The register index comes from the declaration list, because it differs
     // between kinds - five of them declare no pattern masks.
-    const reg = name => "s" + textures.findIndex(t => t.name === name);
+    const regIndex = name => textures.findIndex(t => t.name === name);
+    const reg = name => "s" + regIndex(name);
 
     const declarations = textures
         .map((t, i) => `uniform sampler2D s${i};            // ${t.name}`)
@@ -338,8 +321,8 @@ function makePs(kind, textures, hasPatterns, alphaClip)
     // native WebGL address modes and are the sampler's job; border is the only
     // one of the pattern modes GL cannot do, so it is the only one emulated.
     // Border colour is black - outside its own mask a pattern has no coverage.
-    float p1 = clampToBorder(${reg("PatternMask1Map")}, patternUv.xy, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
-    float p2 = clampToBorder(${reg("PatternMask2Map")}, patternUv.zw, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
+    float p1 = cjsAddressed(${reg("PatternMask1Map")}, patternUv.xy, ${CB_ADDRESSING}[${regIndex("PatternMask1Map")}].xy).x * ${CB_PRESENCE}.x;
+    float p2 = cjsAddressed(${reg("PatternMask2Map")}, patternUv.zw, ${CB_ADDRESSING}[${regIndex("PatternMask2Map")}].xy).x * ${CB_PRESENCE}.x;`
         : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
     // occur. Sampling them would read textures the effect never binds.
     float p1 = 0.0;
@@ -356,18 +339,25 @@ function makePs(kind, textures, hasPatterns, alphaClip)
         ? [ CB_MASK_TARGET_0, CB_MASK_TARGET_1 ]
         : [ "vec4(0.0)", "vec4(0.0)" ];
 
+    // cb4 for CustomMaskTarget0/1, cb8 for the emulated address modes - one
+    // vec4 per texture register, so it is sized by the declaration list.
+    const patternUniforms = [
+        "uniform vec4 cb4[14];",
+        `uniform vec4 cb8[${textures.length}];`
+    ].join("\n");
+
     return `
 ${precision}
 
 ${declarations}
 
 uniform vec4 cb7[${CONSTANTS.length}];
-${hasPatterns ? "uniform vec4 cb4[15];      // per-object pixel block: mask ids, targets, clamps" : ""}
+${hasPatterns ? patternUniforms : ""}
 
 varying vec4 texcoord;
 varying vec4 patternUv;
 
-${hasPatterns ? clampToBorder : ""}
+${hasPatterns ? emulatedAddressing : ""}
 ${GLSL_MATERIAL_RESOLVE}
 
 void main()

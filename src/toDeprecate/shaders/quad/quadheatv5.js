@@ -2,7 +2,7 @@ import { vs, ps, constant, texture } from "./shared";
 import { EveSpaceSceneEnvMap, EveSpaceSceneShadowMap, DustNoiseMap } from "../shared/texture";
 import { quadDepthV5, skinnedQuadDepthV5 } from "./quaddepthv5";
 import { quadPickingV5, skinnedQuadPickingV5 } from "./quadpickingv5";
-import { clampToBorder, customMaskBlendModes } from "../shared/func";
+import { clampToBorder, emulatedAddressing, customMaskBlendModes } from "../shared/func";
 import { quadOutlineV5, skinnedQuadOutlineV5 } from "./extended/quadOutlineV5";
 import { quadExtendedPickingHeatV5, skinnedQuadExtendedPickingHeatV5 } from "./extended/quadExtendedPickingHeatV5";
 import { quadUtilityHeatV5, skinnedQuadUtilityHeatV5 } from "./extended/quadUtilityHeatV5";
@@ -71,6 +71,7 @@ export const quadHeatV5 = {
 
                     ${ps.header}
                     ${clampToBorder}
+                        ${emulatedAddressing}
 
                     varying vec4 texcoord;
                     varying vec4 texcoord1;
@@ -99,6 +100,7 @@ export const quadHeatV5 = {
                     uniform sampler2D s12;  // DustNoiseMap
 
                     uniform vec4 cb2[22];
+                    uniform vec4 cb8[11];
                     uniform vec4 cb4[17];
                     uniform vec4 cb7[28];
 
@@ -250,10 +252,10 @@ export const quadHeatV5 = {
                         // Webgl doesn't support CLAMP_TO_BORDER
 
                         // PatternMask1Map
-                        r7=clampToBorder(s9,v6.xy, cb4[10].yz, c34.wwww);
+                        r7=cjsAddressed(s9,v6.xy, cb8[9].xy, c34.wwww);
 
                         // PatternMask2Map
-                        r8=clampToBorder(s10,v6.zw, cb4[11].yz, c34.wwww);
+                        r8=cjsAddressed(s10,v6.zw, cb8[10].xy, c34.wwww);
 
                         r7=r7.xxxx*cb4[12];
                         r8=r8.xxxx*cb4[13];

@@ -1,7 +1,7 @@
 import { ps, texture, vs } from "../shared";
 import { ObjectID } from "../../shared/constant";
 import * as func from "./func";
-import { clampToBorder } from "../../shared/func";
+import { clampToBorder, emulatedAddressing } from "../../shared/func";
 import { PickingBlueChannel } from "constant";
 
 // No glow map so materials can be picked
@@ -29,6 +29,7 @@ export const quadExtendedPickingHeatV5 = {
                     ${func.isMasked}
                     ${func.getMaterialMask}
                     ${clampToBorder}
+                    ${emulatedAddressing}
                     ${func.getPatternLayer}
 
                     varying vec4 texcoord;
@@ -40,6 +41,7 @@ export const quadExtendedPickingHeatV5 = {
                     uniform sampler2D s2; // PatternMask1Map
                     uniform sampler2D s3; // PatternMask2Map
 
+                    uniform vec4 cb8[4];
                     uniform vec4 cb4[16];
                     uniform vec4 cb7[1];
 
@@ -76,9 +78,9 @@ export const quadExtendedPickingHeatV5 = {
                             else if (r0.z>0.0) {i0=${PickingBlueChannel.MATERIAL_3};}
                             else {i0=${PickingBlueChannel.MATERIAL_4};}
 
-                            r0.x=getPatternLayer(s2,v6.xy,cb4[10].yz,cb4[12],r0);
+                            r0.x=getPatternLayer(s2,v6.xy,cb8[2].xy,cb4[12],r0);
                             if(r0.x>0.5){i0=${PickingBlueChannel.MATERIAL_5};}
-                            r0.x=getPatternLayer(s3,v6.zw,cb4[11].yz,cb4[13],r0);
+                            r0.x=getPatternLayer(s3,v6.zw,cb8[3].xy,cb4[13],r0);
                             if(r0.x>0.5){i0=${PickingBlueChannel.MATERIAL_6};}
                         }
                         if (i0==0) discard;

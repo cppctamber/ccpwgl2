@@ -454,3 +454,55 @@ export const linearToSrgb = `
         return mix(highPart, lowPart, vec3(cutoff));
     }
 `;
+
+
+/**
+ * The emulated address modes, in the SAME form the translated shaders use.
+ *
+ * WebGL2 does repeat, mirrored repeat and clamp-to-edge natively; it has no
+ * clamp-to-border and no mirror-once. Those two are emulated, and the mode is a
+ * runtime value read from the addressing buffer that
+ * `Tw2Effect._ApplyEmulatedAddressing` uploads - one vec4 per TEXTURE register,
+ * `(uMode, vMode, wMode, spare)`, carrying the Trinity enum as stored:
+ *
+ *     1 wrap   2 mirror   3 clamp-edge   4 border   5 mirror-once
+ *
+ * 0 means "nothing to emulate", which is what every failure produces, so a
+ * missing upload degrades to native addressing rather than to a different
+ * wrong answer.
+ *
+ * Transcribed from `DxbcGlslEmitter`'s own helper sources so the two paths
+ * cannot drift. Two arities because a 2D sample has no third coordinate even
+ * though its sampler may still declare a W mode.
+ *
+ * `cjsAddressCoord` transforms the coordinate BEFORE the fetch; `cjsAddressBorder`
+ * tests the result AFTER it. That is why they are separate.
+ * @type {String}
+ */
+export const emulatedAddressing = `
+
+    vec2 cjsAddressCoord(vec2 uv, vec2 modes)
+    {
+        if (int(modes.x) == 5) uv.x = clamp(abs(uv.x), 0.0, 1.0);
+        if (int(modes.y) == 5) uv.y = clamp(abs(uv.y), 0.0, 1.0);
+        return uv;
+    }
+
+    vec4 cjsAddressBorder(vec4 sampled, vec2 uv, vec2 modes, vec4 borderColor)
+    {
+        if (int(modes.x) == 4 && (uv.x < 0.0 || uv.x > 1.0)) return borderColor;
+        if (int(modes.y) == 4 && (uv.y < 0.0 || uv.y > 1.0)) return borderColor;
+        return sampled;
+    }
+
+    vec4 cjsAddressed(sampler2D ts, vec2 uv, vec2 modes, vec4 borderColor)
+    {
+        vec2 c = cjsAddressCoord(uv, modes);
+        return cjsAddressBorder(texture2D(ts, c), c, modes, borderColor);
+    }
+
+    vec4 cjsAddressed(sampler2D ts, vec2 uv, vec2 modes)
+    {
+        return cjsAddressed(ts, uv, modes, vec4(0.0));
+    }
+`;

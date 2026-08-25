@@ -92,9 +92,11 @@ export const getMaterialMask = `
 
 export const getPatternLayer = `
 
-    float getPatternLayer(sampler2D pattern,vec2 uv,vec2 clamp,vec4 mask,vec4 materialMask)
+    // \`modes\` is this texture's pair of Trinity address modes, from the
+    // emulated-addressing buffer - the same value a translated shader reads.
+    float getPatternLayer(sampler2D pattern,vec2 uv,vec2 modes,vec4 mask,vec4 materialMask)
     {
-        float p=clampToBorder(pattern,uv,clamp).x;
+        float p=cjsAddressed(pattern,uv,modes).x;
         if (any(greaterThan(mask*materialMask*p,vec4(0.0)))) return p;
         return 0.0;
     }

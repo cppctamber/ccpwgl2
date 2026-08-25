@@ -1,4 +1,4 @@
-import { clampToBorder } from "../../shared/func";
+import { clampToBorder, emulatedAddressing } from "../../shared/func";
 import { quadV5_PosTexTanTex, skinnedQuadV5_PosBwtTexTanTex } from "../shared/vs";
 import { constant, ps, texture } from "../shared";
 import { DustNoiseMap } from "../../shared/texture";
@@ -40,6 +40,7 @@ export const quadUtilityHeatV5 = {
 
                     ${ps.headerNoShadow}
                     ${clampToBorder}
+                        ${emulatedAddressing}
                     ${getMaterialMask}
 
                     varying vec4 texcoord;
@@ -63,6 +64,7 @@ export const quadUtilityHeatV5 = {
                     uniform sampler2D s10;  // HeatGlowNoiseMap
                     uniform sampler2D s11;  // DustNoiseMap
 
+                    uniform vec4 cb8[10];
                     uniform vec4 cb4[16];
                     uniform vec4 cb7[7];
 
@@ -116,14 +118,14 @@ export const quadUtilityHeatV5 = {
                             r1=getMaterialMask(s5,v0.xy);
                             r1=cb4[12]*r1;
                             if(any(greaterThan(r1,vec4(0.0)))){
-                                r0.xyz=clampToBorder(s8,v6.xy,cb4[10].yz).xxx;
+                                r0.xyz=cjsAddressed(s8,v6.xy,cb8[8].xy).xxx;
                             }
                         }
                         else if (mode == ${Mode.PATTERN_2_MASK}){
                             r1=getMaterialMask(s5,v0.xy);
                             r1=cb4[13]*v6;
                             if(any(greaterThan(r1,vec4(0.0)))){
-                               r0.xyz=clampToBorder(s9,v6.zw,cb4[11].yz).xxx;
+                               r0.xyz=cjsAddressed(s9,v6.zw,cb8[9].xy).xxx;
                             }
                         }
                         else if (mode == ${Mode.DUST_NOISE_MAP}){
