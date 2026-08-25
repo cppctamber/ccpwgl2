@@ -502,6 +502,25 @@ export class EvePlanet extends EveEffectRoot2
                 if (node.shader.HasTexture && node.shader.HasTexture("NormalHeight1"))
                 {
                     node.SetTextures(textures);
+
+                    // The PER-PLANET SEED, and the template never supplies it.
+                    //
+                    // `earthlikeplanet` declares fourteen constants; the template
+                    // authors twelve of them plus an AtmosphereColor the shader
+                    // does not declare. The two it never authors are `Time`,
+                    // which is the engine's per-frame clock, and `Random` - the
+                    // seed every planet's terrain synthesis varies on. The old
+                    // class set it during the bake (`Random: itemID % 100`) and
+                    // this rewrite dropped it with the bake.
+                    //
+                    // Left at zero, every planet gets the same degenerate seed.
+                    //
+                    // It is also the one constant here that is a single float
+                    // (`size: 4`, `dimension: 1`) where Carbon's wire struct
+                    // stores a Vector4, so it only binds at all because
+                    // Tw2VectorParameter now packs into a narrower slot.
+                    if (this.itemID) node.SetParameters({ Random: this.itemID % 100 });
+
                     bound++;
                 }
                 return;

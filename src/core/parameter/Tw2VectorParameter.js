@@ -7,6 +7,13 @@ export class Tw2VectorParameter extends meta.Model
 {
 
     /**
+     * The slot width this parameter was bound at, in floats. Equals `size`
+     * unless the shader declared a narrower constant - see {@link Bind}.
+     * @type {Number}
+     */
+    _boundSize = 0;
+
+    /**
      * Gets the parameter's constant buffer size
      * @returns {Number} 0 if invalid
      */
@@ -60,7 +67,8 @@ export class Tw2VectorParameter extends meta.Model
      */
     GetValue(out = [])
     {
-        const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
+        const width = this._boundSize || this.size;
+        const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + width) : this.value;
         for (let i = 0; i < value.length; i++) out[i] = value[i];
         return out;
     }
@@ -100,11 +108,34 @@ export class Tw2VectorParameter extends meta.Model
      */
     Bind(constantBuffer, offset, size)
     {
-        if (!this._constantBuffer && size >= this.size)
+        if (this._constantBuffer) return false;
+
+        // A NARROWER slot is legitimate, and refusing it silently loses the
+        // value. Carbon's wire struct has no type:
+        //
+        //     struct Tr2ConstantEffectParameter
+        //     { BlueSharedString name; Vector4 value; };   Tr2Effect.h:41-45
+        //
+        // Every const parameter is stored as a Vector4 even when the shader
+        // declares one float, so `earthlikeplanet`'s `Random` arrives here as a
+        // 4-float parameter for a slot the shader declares as 1 float
+        // (`size: 4` bytes, `dimension: 1`). Under the old `size >= this.size`
+        // test that bind failed, returned false, told nobody, and left the
+        // constant at zero.
+        //
+        // The shader's declared size is the authority - it is the only place
+        // the dimension exists - so the leading components are packed and the
+        // rest dropped. A float slot takes value[0], which is where Carbon puts
+        // a scalar.
+        if (size >= this.size || size > 0)
         {
             this._constantBuffer = constantBuffer;
             this._offset = offset;
-            this.Apply(constantBuffer, offset, size);
+            // Remembered because OnValueChanged re-applies without a size, and
+            // writing the full width then would run past the slot into whatever
+            // constant follows it.
+            this._boundSize = Math.min(size, this.size);
+            this.Apply(constantBuffer, offset, this._boundSize);
             return true;
         }
         return false;
@@ -116,6 +147,7 @@ export class Tw2VectorParameter extends meta.Model
     Unbind()
     {
         this._constantBuffer = null;
+        this._boundSize = 0;
     }
 
     /**
@@ -126,7 +158,20 @@ export class Tw2VectorParameter extends meta.Model
      */
     Apply(constantBuffer, offset, size)
     {
-        constantBuffer.set(this.value, offset);
+        // `size` is the slot's width in floats. It is absent when
+        // OnValueChanged re-applies, which is why the bound width is kept.
+        const width = Math.min(size === undefined ? this._boundSize : size, this.size);
+
+        if (width >= this.size)
+        {
+            constantBuffer.set(this.value, offset);
+            return;
+        }
+
+        // Leading components only - see Bind. Written element by element
+        // because `value` is not always a typed array, so `subarray` cannot be
+        // assumed; at four components at most this costs nothing.
+        for (let i = 0; i < width; i++) constantBuffer[offset + i] = this.value[i];
     }
 
     /**

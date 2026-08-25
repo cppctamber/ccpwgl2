@@ -42073,6 +42073,15 @@
 
 	var _dec$7B, _class$7B, _Tw2VectorParameter;
 	var Tw2VectorParameter = (_dec$7B = define("Tw2VectorParameter"), _dec$7B(_class$7B = (_Tw2VectorParameter = class Tw2VectorParameter extends Model {
+	  constructor() {
+	    super(...arguments);
+	    /**
+	     * The slot width this parameter was bound at, in floats. Equals `size`
+	     * unless the shader declared a narrower constant - see {@link Bind}.
+	     * @type {Number}
+	     */
+	    this._boundSize = 0;
+	  }
 	  /**
 	   * Gets the parameter's constant buffer size
 	   * @returns {Number} 0 if invalid
@@ -42121,7 +42130,8 @@
 	   */
 	  GetValue() {
 	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-	    var value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
+	    var width = this._boundSize || this.size;
+	    var value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + width) : this.value;
 	    for (var i = 0; i < value.length; i++) out[i] = value[i];
 	    return out;
 	  }
@@ -42156,10 +42166,33 @@
 	   * @returns {Boolean} true if bound
 	   */
 	  Bind(constantBuffer, offset, size) {
-	    if (!this._constantBuffer && size >= this.size) {
+	    if (this._constantBuffer) return false;
+
+	    // A NARROWER slot is legitimate, and refusing it silently loses the
+	    // value. Carbon's wire struct has no type:
+	    //
+	    //     struct Tr2ConstantEffectParameter
+	    //     { BlueSharedString name; Vector4 value; };   Tr2Effect.h:41-45
+	    //
+	    // Every const parameter is stored as a Vector4 even when the shader
+	    // declares one float, so `earthlikeplanet`'s `Random` arrives here as a
+	    // 4-float parameter for a slot the shader declares as 1 float
+	    // (`size: 4` bytes, `dimension: 1`). Under the old `size >= this.size`
+	    // test that bind failed, returned false, told nobody, and left the
+	    // constant at zero.
+	    //
+	    // The shader's declared size is the authority - it is the only place
+	    // the dimension exists - so the leading components are packed and the
+	    // rest dropped. A float slot takes value[0], which is where Carbon puts
+	    // a scalar.
+	    if (size >= this.size || size > 0) {
 	      this._constantBuffer = constantBuffer;
 	      this._offset = offset;
-	      this.Apply(constantBuffer, offset, size);
+	      // Remembered because OnValueChanged re-applies without a size, and
+	      // writing the full width then would run past the slot into whatever
+	      // constant follows it.
+	      this._boundSize = Math.min(size, this.size);
+	      this.Apply(constantBuffer, offset, this._boundSize);
 	      return true;
 	    }
 	    return false;
@@ -42170,6 +42203,7 @@
 	   */
 	  Unbind() {
 	    this._constantBuffer = null;
+	    this._boundSize = 0;
 	  }
 
 	  /**
@@ -42179,7 +42213,18 @@
 	   * @param {Number} [size]
 	   */
 	  Apply(constantBuffer, offset, size) {
-	    constantBuffer.set(this.value, offset);
+	    // `size` is the slot's width in floats. It is absent when
+	    // OnValueChanged re-applies, which is why the bound width is kept.
+	    var width = Math.min(size === undefined ? this._boundSize : size, this.size);
+	    if (width >= this.size) {
+	      constantBuffer.set(this.value, offset);
+	      return;
+	    }
+
+	    // Leading components only - see Bind. Written element by element
+	    // because `value` is not always a typed array, so `subarray` cannot be
+	    // assumed; at four components at most this costs nothing.
+	    for (var i = 0; i < width; i++) constantBuffer[offset + i] = this.value[i];
 	  }
 
 	  /**
@@ -197440,6 +197485,26 @@
 	      if (typeof node.SetTextures === "function" && node.shader) {
 	        if (node.shader.HasTexture && node.shader.HasTexture("NormalHeight1")) {
 	          node.SetTextures(textures);
+
+	          // The PER-PLANET SEED, and the template never supplies it.
+	          //
+	          // `earthlikeplanet` declares fourteen constants; the template
+	          // authors twelve of them plus an AtmosphereColor the shader
+	          // does not declare. The two it never authors are `Time`,
+	          // which is the engine's per-frame clock, and `Random` - the
+	          // seed every planet's terrain synthesis varies on. The old
+	          // class set it during the bake (`Random: itemID % 100`) and
+	          // this rewrite dropped it with the bake.
+	          //
+	          // Left at zero, every planet gets the same degenerate seed.
+	          //
+	          // It is also the one constant here that is a single float
+	          // (`size: 4`, `dimension: 1`) where Carbon's wire struct
+	          // stores a Vector4, so it only binds at all because
+	          // Tw2VectorParameter now packs into a narrower slot.
+	          if (this.itemID) node.SetParameters({
+	            Random: this.itemID % 100
+	          });
 	          bound++;
 	        }
 	        return;
