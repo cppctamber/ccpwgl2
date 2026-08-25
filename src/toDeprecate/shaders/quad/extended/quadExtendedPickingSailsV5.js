@@ -30,7 +30,6 @@ export const quadExtendedPickingSailsV5 = {
                     ${func.getVec2FromID}
                     ${func.isMasked}
                     ${func.getMaterialMask}
-                    ${func.getPatternLayer}
 
                     varying vec4 texcoord;
                     varying vec4 texcoord5;

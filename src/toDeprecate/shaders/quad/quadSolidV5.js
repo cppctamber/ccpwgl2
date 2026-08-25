@@ -27,7 +27,6 @@ const _quadExtendedPickingV5 = {
                     ${func.isMasked}
                     ${func.getMaterialMask}
                     ${clampToBorder}
-                    ${func.getPatternLayer}
 
                     varying vec4 texcoord;
                     varying vec4 texcoord5;
