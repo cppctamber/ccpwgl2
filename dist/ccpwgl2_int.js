@@ -281612,11 +281612,11 @@
 	 * Sampling all the maps at the base UV instead would put both patterns in the
 	 * wrong place - subtly, and only where a pattern is.
 	 *
-	 * KNOWN DEVIATION: the shipped pixel stage samples at
-	 * `mix(vs_r7, clamp(vs_r7, 0, 1), cb4[26])` - a blend between the raw and the
-	 * clamped UV under a constant - where this samples the raw UV. That differs
-	 * only outside the 0..1 range, where the shipped shader can clamp and this
-	 * does not.
+	 * The clamp lerp the shipped stage applies to those UVs - mix toward
+	 * clamp(uv,0,1) under CustomMaskClamps - is reproduced. It was a known
+	 * deviation here until the register was found: EveCustomMask names it cb4[26]
+	 * for the DX11-translated shaders, and it is cb4[14] in the GLES per-object
+	 * layout the manual shaders are handed.
 	 *
 	 * ## PaintMaskMap: the MASK is read, the INFLUENCE is not
 	 *
@@ -281771,6 +281771,21 @@
 	var CB_MASK_ID_1 = "cb4[11]";
 
 	/**
+	 * `CustomMaskClamps` - (mask0 U, mask0 V, mask1 U, mask1 V).
+	 *
+	 * The clamp-to-EDGE flags, derived from address mode 3, and the other half of
+	 * the pair: mode 4 (border) rides `CustomMaskMaterialID.yzw`, mode 3 rides
+	 * here. Both are in the constant buffer because neither can be left to the GL
+	 * sampler - border is not a WebGL address mode at all, and edge only reaches
+	 * the sampler if whoever bound the texture also carried its overrides across.
+	 *
+	 * Reading both here is what makes a picking effect independent of that: it
+	 * binds the same texture PATH and gets the same addressing, from the same place
+	 * the shipped shader gets it.
+	 */
+	var CB_MASK_CLAMPS = "cb4[14]";
+
+	/**
 	 * @param {Number} kind
 	 * @param {Array<Object>} textures - declaration order, which is the s# order
 	 * @param {Boolean} hasPatterns
@@ -281798,7 +281813,7 @@
 	  //
 	  // The presence flag stays only for a texture the source effect does not
 	  // bind at all, where the sampler holds whatever was last in that unit.
-	  var patterns = hasPatterns ? "    float p1 = clampToBorder(".concat(reg("PatternMask1Map"), ", patternUv.xy, ").concat(CB_MASK_ID_0, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;\n    float p2 = clampToBorder(").concat(reg("PatternMask2Map"), ", patternUv.zw, ").concat(CB_MASK_ID_1, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;") : "    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot\n    // occur. Sampling them would read textures the effect never binds.\n    float p1 = 0.0;\n    float p2 = 0.0;";
+	  var patterns = hasPatterns ? "    // Clamp-to-EDGE, lerped toward clamp(uv,0,1) under CustomMaskClamps -\n    // the same move the shipped stage makes, and the reason this file used to\n    // carry it as a known deviation.\n    vec2 uv1 = mix(patternUv.xy, clamp(patternUv.xy, 0.0, 1.0), ".concat(CB_MASK_CLAMPS, ".xy);\n    vec2 uv2 = mix(patternUv.zw, clamp(patternUv.zw, 0.0, 1.0), ").concat(CB_MASK_CLAMPS, ".zw);\n\n    // Clamp-to-BORDER, which WebGL has no address mode for at all, emulated\n    // against the flags in CustomMaskMaterialID.yz. Border colour is black:\n    // outside its own mask a pattern has no coverage.\n    float p1 = clampToBorder(").concat(reg("PatternMask1Map"), ", uv1, ").concat(CB_MASK_ID_0, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;\n    float p2 = clampToBorder(").concat(reg("PatternMask2Map"), ", uv2, ").concat(CB_MASK_ID_1, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;") : "    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot\n    // occur. Sampling them would read textures the effect never binds.\n    float p1 = 0.0;\n    float p2 = 0.0;";
 
 	  // Which material slots each pattern REPLACES. `EveCustomMask` writes
 	  // `display && visible ? targetMaterials : ZERO`, so this carries both which
@@ -281808,7 +281823,7 @@
 	  // Without it a pattern targeting only Mtl1 would be reported over an Mtl3
 	  // area, which the shipped shader would never have drawn.
 	  var targets = hasPatterns ? [CB_MASK_TARGET_0, CB_MASK_TARGET_1] : ["vec4(0.0)", "vec4(0.0)"];
-	  return "\n".concat(precision, "\n\n").concat(declarations, "\n\nuniform vec4 cb7[").concat(CONSTANTS.length, "];\n").concat(hasPatterns ? "uniform vec4 cb4[14];      // per-object pixel block, for CustomMaskTarget0/1" : "", "\n\nvarying vec4 texcoord;\nvarying vec4 patternUv;\n\n").concat(hasPatterns ? clampToBorder : "", "\n").concat(GLSL_MATERIAL_RESOLVE, "\n\nvoid main()\n{\n").concat(clip, "    float materialValue = texture2D(").concat(reg("MaterialMap"), ", texcoord.xy).x;\n\n").concat(patterns, "\n\n    // The paint MASK is sampled; what is not applied is PaintMapInfluence.\n    // Forcing the coverage itself to 1 - which the first version did - makes\n    // the whole hull paint, and paint is unselectable, so every drop was\n    // refused. \"Set the paint mask to 1\" meant do not fade it by an influence\n    // value that has nothing to do with where the paint IS.\n    float paint = texture2D(").concat(reg("PaintMaskMap"), ", texcoord.xy).x * ").concat(CB_PRESENCE, ".y;\n\n    float material = cjsResolveMaterial(\n        materialValue, p1, p2, paint,\n        ").concat(CB_BLEND_MODE, ".x,\n        ").concat(CB_THRESHOLD, ".xyz,\n        ").concat(CB_INCLUDE, ",\n        ").concat(targets[0], ", ").concat(targets[1], "\n    );\n\n    gl_FragColor = cjsPackPicking(material, ").concat(CB_AREA, ".x, ").concat(kind, ".0, ").concat(CB_AREA, ".y);\n}\n");
+	  return "\n".concat(precision, "\n\n").concat(declarations, "\n\nuniform vec4 cb7[").concat(CONSTANTS.length, "];\n").concat(hasPatterns ? "uniform vec4 cb4[15];      // per-object pixel block: mask ids, targets, clamps" : "", "\n\nvarying vec4 texcoord;\nvarying vec4 patternUv;\n\n").concat(hasPatterns ? clampToBorder : "", "\n").concat(GLSL_MATERIAL_RESOLVE, "\n\nvoid main()\n{\n").concat(clip, "    float materialValue = texture2D(").concat(reg("MaterialMap"), ", texcoord.xy).x;\n\n").concat(patterns, "\n\n    // The paint MASK is sampled; what is not applied is PaintMapInfluence.\n    // Forcing the coverage itself to 1 - which the first version did - makes\n    // the whole hull paint, and paint is unselectable, so every drop was\n    // refused. \"Set the paint mask to 1\" meant do not fade it by an influence\n    // value that has nothing to do with where the paint IS.\n    float paint = texture2D(").concat(reg("PaintMaskMap"), ", texcoord.xy).x * ").concat(CB_PRESENCE, ".y;\n\n    float material = cjsResolveMaterial(\n        materialValue, p1, p2, paint,\n        ").concat(CB_BLEND_MODE, ".x,\n        ").concat(CB_THRESHOLD, ".xyz,\n        ").concat(CB_INCLUDE, ",\n        ").concat(targets[0], ", ").concat(targets[1], "\n    );\n\n    gl_FragColor = cjsPackPicking(material, ").concat(CB_AREA, ".x, ").concat(kind, ".0, ").concat(CB_AREA, ".y);\n}\n");
 	}
 
 	/**
@@ -282951,22 +282966,17 @@
 	      }
 	    });
 
-	    // The address modes come with the texture, not with the shader.
+	    // The address modes are NOT copied across, and deliberately.
 	    //
-	    // A pattern mask's wrap mode is authored per LAYER - EveSOFData turns
-	    // projectionTypeU/V into addressUMode/addressVMode and puts them on the
-	    // mask's own texture parameter - so binding the same path without them
-	    // lets the default REPEAT tile a pattern that was authored to clamp.
-	    // The shader's border emulation only covers the border case; the choice
-	    // between repeat and clamp-to-edge in range is the sampler's.
-	    for (var _i3 = 0; _i3 < wanted.length; _i3++) {
-	      var _name = wanted[_i3];
-	      var from = source.parameters[_name];
-	      var to = effect.parameters[_name];
-	      if (!from || !to || !from.overrides) continue;
-	      to.SetOverrides(Object.assign({}, from.overrides));
-	      to.useAllOverrides = from.useAllOverrides;
-	    }
+	    // A pattern mask's wrap mode is authored per layer, and ccpwgl already
+	    // forwards the part WebGL cannot do to the shader through the per-object
+	    // constants: `EveCustomMask.GetPerObjectDataBagOfStuff` turns address
+	    // mode 4 into the clamp-to-border flags in CustomMaskMaterialID.yzw and
+	    // mode 3 into CustomMaskClamps. The picking shaders read both, from the
+	    // same buffer the shipped ones read.
+	    //
+	    // So there is nothing to plumb here. Copying sampler overrides as well
+	    // would be a second mechanism for one fact, and the two could disagree.
 	    this._effects.set(source, effect);
 	    return effect;
 	  }

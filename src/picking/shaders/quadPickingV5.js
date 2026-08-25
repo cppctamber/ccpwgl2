@@ -58,11 +58,11 @@ import {
  * Sampling all the maps at the base UV instead would put both patterns in the
  * wrong place - subtly, and only where a pattern is.
  *
- * KNOWN DEVIATION: the shipped pixel stage samples at
- * `mix(vs_r7, clamp(vs_r7, 0, 1), cb4[26])` - a blend between the raw and the
- * clamped UV under a constant - where this samples the raw UV. That differs
- * only outside the 0..1 range, where the shipped shader can clamp and this
- * does not.
+ * The clamp lerp the shipped stage applies to those UVs - mix toward
+ * clamp(uv,0,1) under CustomMaskClamps - is reproduced. It was a known
+ * deviation here until the register was found: EveCustomMask names it cb4[26]
+ * for the DX11-translated shaders, and it is cb4[14] in the GLES per-object
+ * layout the manual shaders are handed.
  *
  * ## PaintMaskMap: the MASK is read, the INFLUENCE is not
  *
@@ -284,6 +284,21 @@ const CB_MASK_ID_0 = "cb4[10]";
 const CB_MASK_ID_1 = "cb4[11]";
 
 /**
+ * `CustomMaskClamps` - (mask0 U, mask0 V, mask1 U, mask1 V).
+ *
+ * The clamp-to-EDGE flags, derived from address mode 3, and the other half of
+ * the pair: mode 4 (border) rides `CustomMaskMaterialID.yzw`, mode 3 rides
+ * here. Both are in the constant buffer because neither can be left to the GL
+ * sampler - border is not a WebGL address mode at all, and edge only reaches
+ * the sampler if whoever bound the texture also carried its overrides across.
+ *
+ * Reading both here is what makes a picking effect independent of that: it
+ * binds the same texture PATH and gets the same addressing, from the same place
+ * the shipped shader gets it.
+ */
+const CB_MASK_CLAMPS = "cb4[14]";
+
+/**
  * @param {Number} kind
  * @param {Array<Object>} textures - declaration order, which is the s# order
  * @param {Boolean} hasPatterns
@@ -318,8 +333,17 @@ function makePs(kind, textures, hasPatterns, alphaClip)
     // The presence flag stays only for a texture the source effect does not
     // bind at all, where the sampler holds whatever was last in that unit.
     const patterns = hasPatterns
-        ? `    float p1 = clampToBorder(${reg("PatternMask1Map")}, patternUv.xy, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
-    float p2 = clampToBorder(${reg("PatternMask2Map")}, patternUv.zw, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
+        ? `    // Clamp-to-EDGE, lerped toward clamp(uv,0,1) under CustomMaskClamps -
+    // the same move the shipped stage makes, and the reason this file used to
+    // carry it as a known deviation.
+    vec2 uv1 = mix(patternUv.xy, clamp(patternUv.xy, 0.0, 1.0), ${CB_MASK_CLAMPS}.xy);
+    vec2 uv2 = mix(patternUv.zw, clamp(patternUv.zw, 0.0, 1.0), ${CB_MASK_CLAMPS}.zw);
+
+    // Clamp-to-BORDER, which WebGL has no address mode for at all, emulated
+    // against the flags in CustomMaskMaterialID.yz. Border colour is black:
+    // outside its own mask a pattern has no coverage.
+    float p1 = clampToBorder(${reg("PatternMask1Map")}, uv1, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
+    float p2 = clampToBorder(${reg("PatternMask2Map")}, uv2, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
         : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
     // occur. Sampling them would read textures the effect never binds.
     float p1 = 0.0;
@@ -342,7 +366,7 @@ ${precision}
 ${declarations}
 
 uniform vec4 cb7[${CONSTANTS.length}];
-${hasPatterns ? "uniform vec4 cb4[14];      // per-object pixel block, for CustomMaskTarget0/1" : ""}
+${hasPatterns ? "uniform vec4 cb4[15];      // per-object pixel block: mask ids, targets, clamps" : ""}
 
 varying vec4 texcoord;
 varying vec4 patternUv;
