@@ -1,7 +1,9 @@
-import * as definitions from "./quadPickingV5";
+import * as quad from "./quadPickingV5";
+import * as decal from "./decalPickingV5";
 
 export * from "./materialResolve";
 export * from "./quadPickingV5";
+export * from "./decalPickingV5";
 
 
 /**
@@ -16,10 +18,13 @@ export * from "./quadPickingV5";
  */
 export const pickingShaders = [];
 
-for (const key in definitions)
+for (const group of [ quad, decal ])
 {
-    if (!Object.prototype.hasOwnProperty.call(definitions, key)) continue;
+    for (const key in group)
+    {
+        if (!Object.prototype.hasOwnProperty.call(group, key)) continue;
 
-    const shader = definitions[key];
-    if (shader && shader.name && shader.techniques) pickingShaders.push(shader);
+        const shader = group[key];
+        if (shader && shader.name && shader.techniques) pickingShaders.push(shader);
+    }
 }

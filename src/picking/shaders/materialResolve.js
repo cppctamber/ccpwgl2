@@ -10,9 +10,9 @@
  * inferred. See `NOTES-material-picking-2026-08-25.md` for the extraction.
  */
 
-import { PickingMaterial, PickingQuadKind } from "../pickingEncoding";
+import { PickingMaterial, PickingShaderKind } from "../pickingEncoding";
 
-export { PickingMaterial, PickingQuadKind, PatternBlendMode, SINGLE_PATTERN_BLEND_MODES } from "../pickingEncoding";
+export { PickingMaterial, PickingShaderKind, PatternBlendMode, SINGLE_PATTERN_BLEND_MODES } from "../pickingEncoding";
 
 
 /**

@@ -1,5 +1,5 @@
 import { RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE, CMP_LEQUAL, CULL_CW } from "constant";
-import { GLSL_MATERIAL_RESOLVE, PickingQuadKind } from "./materialResolve";
+import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
 
 
 /**
@@ -119,7 +119,7 @@ void main()
         PickingThreshold.xyz
     );
 
-    gl_FragColor = cjsPackPicking(material, PickingArea.x, ${PickingQuadKind.QUAD}.0, PickingArea.y);
+    gl_FragColor = cjsPackPicking(material, PickingArea.x, ${PickingShaderKind.QUAD}.0, PickingArea.y);
 }
 `;
 

@@ -27,14 +27,19 @@ export const PickingMaterial = Object.freeze({
     PAINT: 7,
     DETAIL1: 8,
     DETAIL2: 9,
-    DETAIL3: 10
+    DETAIL3: 10,
+
+    // Not a material layer at all - a DECAL covering the hull. Reported with a
+    // decal kind in the shader-kind channel and the decal index in the area
+    // channel, so a caller can tell which decal was hit.
+    DECAL: 11
 });
 
 /**
  * ZERO IS A DEFECT SIGNAL, not a result - see {@link DecodePicking}.
  * @type {Object}
  */
-export const PickingQuadKind = Object.freeze({
+export const PickingShaderKind = Object.freeze({
     UNKNOWN: 0,
     QUAD: 1,
     QUAD_DETAIL: 2,
@@ -45,7 +50,16 @@ export const PickingQuadKind = Object.freeze({
     QUAD_INSTANCED: 7,
     QUAD_OIL: 8,
     QUAD_SAILS: 9,
-    QUAD_WRECK: 10
+    QUAD_WRECK: 10,
+
+    // Decals. Same channel as the quad kinds because it answers the same
+    // question - what KIND of surface is this - and a decal is a surface.
+    DECAL: 11,
+    DECAL_COUNTER: 12,
+    DECAL_CYLINDRIC: 13,
+    DECAL_GLOW: 14,
+    DECAL_GLOW_CYLINDRIC: 15,
+    DECAL_HOLE: 16
 });
 
 /**
@@ -91,15 +105,15 @@ function nameOf(enumeration, value)
  * Packs the four quantities into RGB.
  * @param {Number} material
  * @param {Number} areaType
- * @param {Number} quadKind
+ * @param {Number} shaderKind
  * @param {Number} areaIndex
  * @returns {Array<Number>} r, g, b
  */
-export function EncodePicking(material, areaType, quadKind, areaIndex)
+export function EncodePicking(material, areaType, shaderKind, areaIndex)
 {
     return [
         ((areaType & 15) << 4) | (material & 15),
-        quadKind & 255,
+        shaderKind & 255,
         areaIndex & 255
     ];
 }
@@ -115,7 +129,7 @@ export function DecodePicking(rgb)
     const
         material = rgb[0] & 15,
         areaType = rgb[0] >> 4,
-        quadKind = rgb[1],
+        shaderKind = rgb[1],
         areaIndex = rgb[2];
 
     // THIS is the background test - alpha is unavailable, so it cannot be used,
@@ -124,7 +138,7 @@ export function DecodePicking(rgb)
     // nothing was drawn there. Solid green (0, 255, 0) satisfies it for free.
     if (material === PickingMaterial.NONE)
     {
-        return { hit: false, material: null, areaType: null, quadKind: null, areaIndex: null };
+        return { hit: false, material: null, areaType: null, shaderKind: null, areaIndex: null };
     }
 
     return {
@@ -132,15 +146,15 @@ export function DecodePicking(rgb)
         material,
         materialName: nameOf(PickingMaterial, material),
         areaType,
-        quadKind,
-        quadKindName: nameOf(PickingQuadKind, quadKind),
+        shaderKind,
+        shaderKindName: nameOf(PickingShaderKind, shaderKind),
         areaIndex,
 
         // Reported rather than swallowed. Every picking shader sets its kind
         // explicitly, so a DRAWN pixel reporting UNKNOWN means a shader has no
         // picking equivalent, or forgot its constant. Handing 0 back as though
         // it were an answer would hide that gap permanently.
-        isDefect: quadKind === PickingQuadKind.UNKNOWN,
+        isDefect: shaderKind === PickingShaderKind.UNKNOWN,
 
         // PaintMask is "material -1": authored rather than data driven, so a
         // user cannot recolour it. Worth reporting so a click lands on
