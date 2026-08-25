@@ -1224,10 +1224,26 @@ export class EveSOFData extends meta.Model
         {
             const textureResFilePath = layer.textureResFilePath || EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
 
-            mask.display = textureResFilePath !== EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH
-                && !textureResFilePath.includes("solid_white");
+            // A layer with no pattern binds BLACK - nothing to show - not white.
+            //
+            // Both readings were inert to the shipped shader, which ignores a
+            // mask whose CustomMaskTarget is zero, so a white placeholder never
+            // showed. It is not inert to anything that reads the mask on its own
+            // terms: material picking sampled full coverage and reported the
+            // whole hull as pattern one. White means "everywhere", and an absent
+            // pattern is nowhere.
+            //
+            // `solid_white` stays recognised as an absent pattern because that
+            // is what some authored layers carry, but it is normalised to the
+            // empty texture rather than bound.
+            const isEmpty = textureResFilePath === EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH
+                || textureResFilePath.includes("solid_white");
+
+            mask.display = !isEmpty;
             mask.materialIndex = layer.materialSource;
-            mask.parameters.PatternMaskMap.SetValue(textureResFilePath);
+            mask.parameters.PatternMaskMap.SetValue(
+                isEmpty ? EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH : textureResFilePath
+            );
             vec4.set(mask.targetMaterials,
                 layer.isTargetMtl1 ? 1 : 0,
                 layer.isTargetMtl2 ? 1 : 0,
@@ -1243,7 +1259,7 @@ export class EveSOFData extends meta.Model
             mask.display = false;
             mask.materialIndex = 0;
             mask.blendMode = "overlay";
-            mask.parameters.PatternMaskMap.SetValue("res:/texture/projection/solid_white.dds");
+            mask.parameters.PatternMaskMap.SetValue(EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH);
             vec4.set(mask.targetMaterials, 0, 0, 0, 0);
         }
 

@@ -84,6 +84,25 @@ export const PickingInclude = constant(
 
 
 /**
+ * `(hasPatterns, hasPaint, unused, unused)`, each 0 or 1, set per SOURCE
+ * EFFECT from the textures that effect actually binds.
+ *
+ * Not redundant with an unbound sampler reading zero, which was the assumption
+ * that produced the first wrong answer: a hull with no SKINR pattern applied
+ * reported PMTL1 over every pixel, because an unbound sampler does not
+ * reliably read black - it reads whatever was left in that unit. Multiplying
+ * by a flag the CPU sets from the source effect's own texture list does not
+ * depend on that.
+ * @type {Object}
+ */
+export const PickingPresence = constant(
+    "PickingPresence",
+    [ "has patterns", "has paint", "has decal coverage", "unused" ],
+    [ 1, 1, 1, 0 ]
+);
+
+
+/**
  * The material selector. One scalar in `.x`, four materials anchored at
  * 0, 1/3, 2/3, 1.
  * @type {Object}
@@ -110,4 +129,13 @@ export const AlphaThresholdMap = createTex("AlphaThresholdMap", TEX_2D, {
 /** @type {Object} */
 export const DecalTransparencyMap = createTex("DecalTransparencyMap", TEX_2D, {
     ui: { components: [ "transparency mask" ] }
+});
+
+/**
+ * Paint coverage. "Material -1": the region's colour comes from the authored
+ * albedo RGB rather than from data, so a user cannot recolour it.
+ * @type {Object}
+ */
+export const PaintMaskMap = createTex("PaintMaskMap", TEX_2D, {
+    ui: { components: [ "paint coverage" ] }
 });

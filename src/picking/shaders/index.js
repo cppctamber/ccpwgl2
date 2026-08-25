@@ -24,7 +24,14 @@ for (const group of [ quad, decal ])
     {
         if (!Object.prototype.hasOwnProperty.call(group, key)) continue;
 
-        const shader = group[key];
-        if (shader && shader.name && shader.techniques) pickingShaders.push(shader);
+        // Arrays as well as single definitions: the quad kinds are emitted as a
+        // list because each one has a skinned twin, and collecting only the
+        // named exports would have registered none of them.
+        const value = group[key];
+
+        for (const shader of Array.isArray(value) ? value : [ value ])
+        {
+            if (shader && shader.name && shader.techniques) pickingShaders.push(shader);
+        }
     }
 }

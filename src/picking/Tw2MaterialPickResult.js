@@ -34,6 +34,19 @@ export class Tw2MaterialPickResult
         this.width = width;
         this.height = height;
         this.data = data;
+
+        /**
+         * What the render reported: how many areas were drawn, how many were
+         * skipped, and the names of any shipped shaders we have no picking
+         * equivalent for.
+         *
+         * Carried on the capture rather than logged and forgotten, because
+         * "this hull has areas we cannot pick" is something a consumer needs to
+         * be able to SEE - otherwise those areas read as background and the
+         * miss looks like the user aiming badly.
+         * @type {?Object}
+         */
+        this.report = null;
     }
 
     /**

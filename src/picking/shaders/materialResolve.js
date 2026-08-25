@@ -91,8 +91,37 @@ vec2 cjsPatternWeights(float p1, float p2, float mode)
  * @type {String}
  */
 export const GLSL_RESOLVE_MATERIAL = `
-float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds, vec4 include)
+vec4 cjsBaseSelector(vec4 w)
 {
+    // A 1 in the winning material's lane, zero elsewhere - so a pattern's
+    // target list can be tested against it with a dot product.
+    float best = max(max(w.x, w.y), max(w.z, w.w));
+    if (best <= 0.0) return vec4(0.0);
+
+    vec4 sel = vec4(0.0);
+    if (w.x >= best) sel = vec4(1.0, 0.0, 0.0, 0.0);
+    if (w.y >= best) sel = vec4(0.0, 1.0, 0.0, 0.0);
+    if (w.z >= best) sel = vec4(0.0, 0.0, 1.0, 0.0);
+    if (w.w >= best) sel = vec4(0.0, 0.0, 0.0, 1.0);
+    return sel;
+}
+
+float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds, vec4 include, vec4 target1, vec4 target2)
+{
+    // The BASE material first, because a pattern does not sit over the whole
+    // hull - it replaces named material slots.
+    //
+    // CustomMaskTarget is (isTargetMtl1..4), written by EveCustomMask as
+    // "display && visible ? targetMaterials : ZERO". So a pattern that targets
+    // only Mtl1 must not claim a texel whose base material is Mtl3, and a mask
+    // that is not displayed targets nothing and can never win. Reporting a
+    // pattern the shipped shader would not have drawn there is exactly the
+    // wrong answer this whole file exists to avoid.
+    vec4 w = cjsMaterialWeights(materialValue);
+    vec4 sel = cjsBaseSelector(w);
+
+    if (dot(sel, vec4(1.0)) <= 0.0) return ${PickingMaterial.NONE}.0;
+
     // include = (patterns, paint, details, decals), each 0 or 1.
     //
     // A layer type that is EXCLUDED is not merely hidden - the resolution falls
@@ -102,6 +131,10 @@ float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, f
     // keep landing on a rivet instead of the hull.
     vec2 pw = cjsPatternWeights(p1, p2, blendMode);
 
+    // Zeroed where this pattern does not target the material underneath.
+    pw.x *= step(0.5, dot(sel, target1));
+    pw.y *= step(0.5, dot(sel, target2));
+
     if (include.x > 0.5 && max(pw.x, pw.y) > thresholds.y)
     {
         return pw.y > pw.x ? ${PickingMaterial.PMTL2}.0 : ${PickingMaterial.PMTL1}.0;
@@ -109,17 +142,10 @@ float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, f
 
     if (include.y > 0.5 && paint > thresholds.z) return ${PickingMaterial.PAINT}.0;
 
-    vec4 w = cjsMaterialWeights(materialValue);
-
-    // The winner, and its nearest rival, so the threshold can bias where the
-    // boundary between two overlapping tents falls.
-    float best = max(max(w.x, w.y), max(w.z, w.w));
-    if (best <= 0.0) return ${PickingMaterial.NONE}.0;
-
     float id = ${PickingMaterial.MTL1}.0;
-    if (w.y >= best) id = ${PickingMaterial.MTL2}.0;
-    if (w.z >= best) id = ${PickingMaterial.MTL3}.0;
-    if (w.w >= best) id = ${PickingMaterial.MTL4}.0;
+    if (sel.y > 0.5) id = ${PickingMaterial.MTL2}.0;
+    if (sel.z > 0.5) id = ${PickingMaterial.MTL3}.0;
+    if (sel.w > 0.5) id = ${PickingMaterial.MTL4}.0;
     return id;
 }
 `;
