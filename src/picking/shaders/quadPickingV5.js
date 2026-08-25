@@ -284,19 +284,19 @@ const CB_MASK_ID_0 = "cb4[10]";
 const CB_MASK_ID_1 = "cb4[11]";
 
 /**
- * `CustomMaskClamps` - (mask0 U, mask0 V, mask1 U, mask1 V).
+ * NOT READ, and that is the point: `CustomMaskClamps` at `cb4[14]` carries the
+ * clamp-to-EDGE flags, and clamp-to-edge is a native WebGL address mode.
  *
- * The clamp-to-EDGE flags, derived from address mode 3, and the other half of
- * the pair: mode 4 (border) rides `CustomMaskMaterialID.yzw`, mode 3 rides
- * here. Both are in the constant buffer because neither can be left to the GL
- * sampler - border is not a WebGL address mode at all, and edge only reaches
- * the sampler if whoever bound the texture also carried its overrides across.
+ * Only the modes GL cannot do belong in a shader - `CLAMP_TO_BORDER` and
+ * `MIRROR_ONCE`, which is the same line `Tw2Effect._ApplyEmulatedAddressing`
+ * draws for the translated shaders. Repeat, mirrored repeat and clamp-to-edge
+ * are the sampler's job.
  *
- * Reading both here is what makes a picking effect independent of that: it
- * binds the same texture PATH and gets the same addressing, from the same place
- * the shipped shader gets it.
+ * Reading it too briefly seemed like belt and braces. It is not: it is a second
+ * value for a quantity that already has one, and two can disagree. Left named
+ * here so the next reader knows it was considered rather than missed.
  */
-const CB_MASK_CLAMPS = "cb4[14]";
+const CB_MASK_CLAMPS_UNUSED = "cb4[14]";
 
 /**
  * @param {Number} kind
@@ -333,17 +333,13 @@ function makePs(kind, textures, hasPatterns, alphaClip)
     // The presence flag stays only for a texture the source effect does not
     // bind at all, where the sampler holds whatever was last in that unit.
     const patterns = hasPatterns
-        ? `    // Clamp-to-EDGE, lerped toward clamp(uv,0,1) under CustomMaskClamps -
-    // the same move the shipped stage makes, and the reason this file used to
-    // carry it as a known deviation.
-    vec2 uv1 = mix(patternUv.xy, clamp(patternUv.xy, 0.0, 1.0), ${CB_MASK_CLAMPS}.xy);
-    vec2 uv2 = mix(patternUv.zw, clamp(patternUv.zw, 0.0, 1.0), ${CB_MASK_CLAMPS}.zw);
-
-    // Clamp-to-BORDER, which WebGL has no address mode for at all, emulated
-    // against the flags in CustomMaskMaterialID.yz. Border colour is black:
-    // outside its own mask a pattern has no coverage.
-    float p1 = clampToBorder(${reg("PatternMask1Map")}, uv1, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
-    float p2 = clampToBorder(${reg("PatternMask2Map")}, uv2, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
+        ? `    // ONE value per uv per mask reaches the shader, and it is the
+    // clamp-to-BORDER flag. Repeat, mirrored repeat and clamp-to-edge are
+    // native WebGL address modes and are the sampler's job; border is the only
+    // one of the pattern modes GL cannot do, so it is the only one emulated.
+    // Border colour is black - outside its own mask a pattern has no coverage.
+    float p1 = clampToBorder(${reg("PatternMask1Map")}, patternUv.xy, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
+    float p2 = clampToBorder(${reg("PatternMask2Map")}, patternUv.zw, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
         : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
     // occur. Sampling them would read textures the effect never binds.
     float p1 = 0.0;

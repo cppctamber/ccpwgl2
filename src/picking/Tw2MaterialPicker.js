@@ -654,17 +654,26 @@ export class Tw2MaterialPicker
             }
         });
 
-        // The address modes are NOT copied across, and deliberately.
+        // The sampler carries every address mode GL can do; the shader gets only
+        // the one it cannot.
         //
-        // A pattern mask's wrap mode is authored per layer, and ccpwgl already
-        // forwards the part WebGL cannot do to the shader through the per-object
-        // constants: `EveCustomMask.GetPerObjectDataBagOfStuff` turns address
-        // mode 4 into the clamp-to-border flags in CustomMaskMaterialID.yzw and
-        // mode 3 into CustomMaskClamps. The picking shaders read both, from the
-        // same buffer the shipped ones read.
+        // CLAMP_TO_BORDER has no WebGL address mode, so it is emulated in GLSL
+        // from the per-object flags EveCustomMask already forwards. Repeat,
+        // mirrored repeat and clamp-to-edge are native, so they have to reach
+        // the SAMPLER - and binding a texture by path alone does not carry them,
+        // because they are authored per pattern layer and live on the source
+        // effect's own texture parameter.
         //
-        // So there is nothing to plumb here. Copying sampler overrides as well
-        // would be a second mechanism for one fact, and the two could disagree.
+        // So this copies exactly the half the constant buffer does not.
+        for (let i = 0; i < wanted.length; i++)
+        {
+            const name = wanted[i];
+            const from = source.parameters[name];
+            const to = effect.parameters[name];
+
+            if (from && to && from.overrides) to.overrides = from.overrides;
+        }
+
         this._effects.set(source, effect);
         return effect;
     }
