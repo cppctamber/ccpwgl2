@@ -7,7 +7,7 @@
  * lives here as GLSL text and both families paste it in.
  *
  * Everything below was read out of the shipped `quadv5` container rather than
- * inferred. See `NOTES-material-picking-2026-08-25.md` for the extraction.
+ * inferred. See `.agents/HANDOVER-material-picking-for-skindr-2026-08-25.md` for the extraction.
  */
 
 import { PickingMaterial, PickingShaderKind } from "../pickingEncoding";
