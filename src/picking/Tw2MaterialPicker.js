@@ -654,6 +654,26 @@ export class Tw2MaterialPicker
             }
         });
 
+        // The address modes come with the texture, not with the shader.
+        //
+        // A pattern mask's wrap mode is authored per LAYER - EveSOFData turns
+        // projectionTypeU/V into addressUMode/addressVMode and puts them on the
+        // mask's own texture parameter - so binding the same path without them
+        // lets the default REPEAT tile a pattern that was authored to clamp.
+        // The shader's border emulation only covers the border case; the choice
+        // between repeat and clamp-to-edge in range is the sampler's.
+        for (let i = 0; i < wanted.length; i++)
+        {
+            const name = wanted[i];
+            const from = source.parameters[name];
+            const to = effect.parameters[name];
+
+            if (!from || !to || !from.overrides) continue;
+
+            to.SetOverrides(Object.assign({}, from.overrides));
+            to.useAllOverrides = from.useAllOverrides;
+        }
+
         this._effects.set(source, effect);
         return effect;
     }

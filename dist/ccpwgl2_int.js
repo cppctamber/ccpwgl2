@@ -277263,16 +277263,16 @@
 		DecalTextureScaling: DecalTextureScaling
 	};
 
-	var _createBorderAndWrap = createBorderAndWrap("DecalAlbedoMap", TEX_2D, {
+	var _createBorderAndWrap$1 = createBorderAndWrap("DecalAlbedoMap", TEX_2D, {
 	    isSRGB: 1,
 	    ui: {
 	      suffix: "_a",
 	      components: ["red", "green", "blue"]
 	    }
 	  }),
-	  _createBorderAndWrap2 = _slicedToArray(_createBorderAndWrap, 2),
-	  DecalAlbedoMap_SamplerBorder = _createBorderAndWrap2[0],
-	  DecalAlbedoMap_SamplerWrap = _createBorderAndWrap2[1];
+	  _createBorderAndWrap2$1 = _slicedToArray(_createBorderAndWrap$1, 2),
+	  DecalAlbedoMap_SamplerBorder = _createBorderAndWrap2$1[0],
+	  DecalAlbedoMap_SamplerWrap = _createBorderAndWrap2$1[1];
 	var _createBorderAndWrap3 = createBorderAndWrap("DecalTransparencyMap", TEX_2D, {
 	    ui: {
 	      suffix: "_t",
@@ -281408,7 +281408,7 @@
 	 * gradient at which the boundary sits, 0.5 being the even split.
 	 * @type {String}
 	 */
-	var GLSL_RESOLVE_MATERIAL = "\nvec4 cjsBaseSelector(vec4 w)\n{\n    // A 1 in the winning material's lane, zero elsewhere - so a pattern's\n    // target list can be tested against it with a dot product.\n    float best = max(max(w.x, w.y), max(w.z, w.w));\n    if (best <= 0.0) return vec4(0.0);\n\n    vec4 sel = vec4(0.0);\n    if (w.x >= best) sel = vec4(1.0, 0.0, 0.0, 0.0);\n    if (w.y >= best) sel = vec4(0.0, 1.0, 0.0, 0.0);\n    if (w.z >= best) sel = vec4(0.0, 0.0, 1.0, 0.0);\n    if (w.w >= best) sel = vec4(0.0, 0.0, 0.0, 1.0);\n    return sel;\n}\n\nfloat cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds, vec4 include, vec4 target1, vec4 target2)\n{\n    // The BASE material first, because a pattern does not sit over the whole\n    // hull - it replaces named material slots.\n    //\n    // CustomMaskTarget is (isTargetMtl1..4), written by EveCustomMask as\n    // \"display && visible ? targetMaterials : ZERO\". So a pattern that targets\n    // only Mtl1 must not claim a texel whose base material is Mtl3, and a mask\n    // that is not displayed targets nothing and can never win. Reporting a\n    // pattern the shipped shader would not have drawn there is exactly the\n    // wrong answer this whole file exists to avoid.\n    vec4 w = cjsMaterialWeights(materialValue);\n    vec4 sel = cjsBaseSelector(w);\n\n    if (dot(sel, vec4(1.0)) <= 0.0) return ".concat(PickingMaterial.NONE, ".0;\n\n    // include = (patterns, paint, details, decals), each 0 or 1.\n    //\n    // A layer type that is EXCLUDED is not merely hidden - the resolution falls\n    // through it to whatever is underneath, so a click passes down to the base\n    // material. That is the point: detail layers are composite textures full of\n    // small greebles, and a user dragging an icon at that scale would otherwise\n    // keep landing on a rivet instead of the hull.\n    vec2 pw = cjsPatternWeights(p1, p2, blendMode);\n\n    // Zeroed where this pattern does not target the material underneath.\n    pw.x *= step(0.5, dot(sel, target1));\n    pw.y *= step(0.5, dot(sel, target2));\n\n    if (include.x > 0.5 && max(pw.x, pw.y) > thresholds.y)\n    {\n        return pw.y > pw.x ? ").concat(PickingMaterial.PMTL2, ".0 : ").concat(PickingMaterial.PMTL1, ".0;\n    }\n\n    if (include.y > 0.5 && paint > thresholds.z) return ").concat(PickingMaterial.PAINT, ".0;\n\n    float id = ").concat(PickingMaterial.MTL1, ".0;\n    if (sel.y > 0.5) id = ").concat(PickingMaterial.MTL2, ".0;\n    if (sel.z > 0.5) id = ").concat(PickingMaterial.MTL3, ".0;\n    if (sel.w > 0.5) id = ").concat(PickingMaterial.MTL4, ".0;\n    return id;\n}\n");
+	var GLSL_RESOLVE_MATERIAL = "\nvec4 cjsBaseSelector(vec4 w)\n{\n    // A 1 in the winning material's lane, zero elsewhere - so a pattern's\n    // target list can be tested against it with a dot product.\n    float best = max(max(w.x, w.y), max(w.z, w.w));\n    if (best <= 0.0) return vec4(0.0);\n\n    vec4 sel = vec4(0.0);\n    if (w.x >= best) sel = vec4(1.0, 0.0, 0.0, 0.0);\n    if (w.y >= best) sel = vec4(0.0, 1.0, 0.0, 0.0);\n    if (w.z >= best) sel = vec4(0.0, 0.0, 1.0, 0.0);\n    if (w.w >= best) sel = vec4(0.0, 0.0, 0.0, 1.0);\n    return sel;\n}\n\nfloat cjsResolveMaterial(float materialValue, float p1, float p2, float paint, float blendMode, vec3 thresholds, vec4 include, vec4 target1, vec4 target2)\n{\n    // The BASE material first, because a pattern does not sit over the whole\n    // hull - it replaces named material slots.\n    //\n    // CustomMaskTarget is (isTargetMtl1..4), written by EveCustomMask as\n    // \"display && visible ? targetMaterials : ZERO\". So a pattern that targets\n    // only Mtl1 must not claim a texel whose base material is Mtl3, and a mask\n    // that is not displayed targets nothing and can never win. Reporting a\n    // pattern the shipped shader would not have drawn there is exactly the\n    // wrong answer this whole file exists to avoid.\n    vec4 w = cjsMaterialWeights(materialValue);\n    vec4 sel = cjsBaseSelector(w);\n\n    if (dot(sel, vec4(1.0)) <= 0.0) return ".concat(PickingMaterial.NONE, ".0;\n\n    // include = (patterns, paint, details, decals), each 0 or 1.\n    //\n    // A layer type that is EXCLUDED is not merely hidden - the resolution falls\n    // through it to whatever is underneath, so a click passes down to the base\n    // material. That is the point: detail layers are composite textures full of\n    // small greebles, and a user dragging an icon at that scale would otherwise\n    // keep landing on a rivet instead of the hull.\n    vec2 pw = cjsPatternWeights(p1, p2, blendMode);\n\n    // Scaled by how much this pattern targets the material underneath, which is\n    // what the shipped shader does: r7 = r7.xxxx * cb4[12] multiplies the mask\n    // value by the whole target vector. So the target is a per-material weight,\n    // not a boolean - and a zero target simply weighs nothing.\n    pw.x *= clamp(dot(sel, target1), 0.0, 1.0);\n    pw.y *= clamp(dot(sel, target2), 0.0, 1.0);\n\n    if (include.x > 0.5 && max(pw.x, pw.y) > thresholds.y)\n    {\n        return pw.y > pw.x ? ").concat(PickingMaterial.PMTL2, ".0 : ").concat(PickingMaterial.PMTL1, ".0;\n    }\n\n    if (include.y > 0.5 && paint > thresholds.z) return ").concat(PickingMaterial.PAINT, ".0;\n\n    float id = ").concat(PickingMaterial.MTL1, ".0;\n    if (sel.y > 0.5) id = ").concat(PickingMaterial.MTL2, ".0;\n    if (sel.z > 0.5) id = ").concat(PickingMaterial.MTL3, ".0;\n    if (sel.w > 0.5) id = ").concat(PickingMaterial.MTL4, ".0;\n    return id;\n}\n");
 
 	/**
 	 * Packs the resolved values into the RGB the picker reads back.
@@ -281543,18 +281543,23 @@
 	  }
 	});
 
-	/** @type {Object} */
-	var DecalTransparencyMap = createTex("DecalTransparencyMap", TEX_2D, {
-	  ui: {
-	    components: ["transparency mask"]
-	  }
-	});
-
 	/**
-	 * Paint coverage. "Material -1": the region's colour comes from the authored
-	 * albedo RGB rather than from data, so a user cannot recolour it.
-	 * @type {Object}
+	 * Decal coverage, in BOTH address modes.
+	 *
+	 * Which one a decal uses is per decal TYPE, and it is not cosmetic: a killmark
+	 * counter tiles its strip, so its coverage repeats past 0..1, while a logo
+	 * clamps and stops. Built with the same helper the shipped decal shaders use,
+	 * so the sampler names and modes are theirs rather than a copy.
+	 * @type {Array<Object>}
 	 */
+	var _createBorderAndWrap = createBorderAndWrap("DecalTransparencyMap", TEX_2D, {
+	    ui: {
+	      components: ["transparency mask"]
+	    }
+	  }),
+	  _createBorderAndWrap2 = _slicedToArray(_createBorderAndWrap, 2),
+	  DecalTransparencyMap_Border = _createBorderAndWrap2[0],
+	  DecalTransparencyMap_Wrap = _createBorderAndWrap2[1];
 	var PaintMaskMap = createTex("PaintMaskMap", TEX_2D, {
 	  ui: {
 	    components: ["paint coverage"]
@@ -281748,6 +281753,24 @@
 	var CB_MASK_TARGET_1 = "cb4[13]";
 
 	/**
+	 * `CustomMaskMaterialID0/1` - (material index, clampU, clampV, clampW).
+	 *
+	 * The `.yz` lanes are the clamp-to-BORDER flags, and the shipped quad shader
+	 * samples both pattern masks through them:
+	 *
+	 *     r7 = clampToBorder(s9,  v6.xy, cb4[10].yz, c34.wwww);   // c34.w is 0
+	 *     r9 = clampToBorder(s10, v6.zw, cb4[11].yz, c34.wwww);
+	 *
+	 * WebGL has no border address mode, so it is emulated in the shader: outside
+	 * 0..1 the sample is the border colour, which is black - no coverage. Sampling
+	 * raw instead lets the GL wrap mode decide, and REPEAT tiles the pattern across
+	 * the whole hull. Picking would then report pattern coverage everywhere the
+	 * projection runs off the edge of the mask.
+	 */
+	var CB_MASK_ID_0 = "cb4[10]";
+	var CB_MASK_ID_1 = "cb4[11]";
+
+	/**
 	 * @param {Number} kind
 	 * @param {Array<Object>} textures - declaration order, which is the s# order
 	 * @param {Boolean} hasPatterns
@@ -281775,7 +281798,7 @@
 	  //
 	  // The presence flag stays only for a texture the source effect does not
 	  // bind at all, where the sampler holds whatever was last in that unit.
-	  var patterns = hasPatterns ? "    float p1 = texture2D(".concat(reg("PatternMask1Map"), ", patternUv.xy).x * ").concat(CB_PRESENCE, ".x;\n    float p2 = texture2D(").concat(reg("PatternMask2Map"), ", patternUv.zw).x * ").concat(CB_PRESENCE, ".x;") : "    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot\n    // occur. Sampling them would read textures the effect never binds.\n    float p1 = 0.0;\n    float p2 = 0.0;";
+	  var patterns = hasPatterns ? "    float p1 = clampToBorder(".concat(reg("PatternMask1Map"), ", patternUv.xy, ").concat(CB_MASK_ID_0, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;\n    float p2 = clampToBorder(").concat(reg("PatternMask2Map"), ", patternUv.zw, ").concat(CB_MASK_ID_1, ".yz, vec4(0.0)).x * ").concat(CB_PRESENCE, ".x;") : "    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot\n    // occur. Sampling them would read textures the effect never binds.\n    float p1 = 0.0;\n    float p2 = 0.0;";
 
 	  // Which material slots each pattern REPLACES. `EveCustomMask` writes
 	  // `display && visible ? targetMaterials : ZERO`, so this carries both which
@@ -281785,7 +281808,7 @@
 	  // Without it a pattern targeting only Mtl1 would be reported over an Mtl3
 	  // area, which the shipped shader would never have drawn.
 	  var targets = hasPatterns ? [CB_MASK_TARGET_0, CB_MASK_TARGET_1] : ["vec4(0.0)", "vec4(0.0)"];
-	  return "\n".concat(precision, "\n\n").concat(declarations, "\n\nuniform vec4 cb7[").concat(CONSTANTS.length, "];\n").concat(hasPatterns ? "uniform vec4 cb4[14];      // per-object pixel block, for CustomMaskTarget0/1" : "", "\n\nvarying vec4 texcoord;\nvarying vec4 patternUv;\n\n").concat(GLSL_MATERIAL_RESOLVE, "\n\nvoid main()\n{\n").concat(clip, "    float materialValue = texture2D(").concat(reg("MaterialMap"), ", texcoord.xy).x;\n\n").concat(patterns, "\n\n    // The paint MASK is sampled; what is not applied is PaintMapInfluence.\n    // Forcing the coverage itself to 1 - which the first version did - makes\n    // the whole hull paint, and paint is unselectable, so every drop was\n    // refused. \"Set the paint mask to 1\" meant do not fade it by an influence\n    // value that has nothing to do with where the paint IS.\n    float paint = texture2D(").concat(reg("PaintMaskMap"), ", texcoord.xy).x * ").concat(CB_PRESENCE, ".y;\n\n    float material = cjsResolveMaterial(\n        materialValue, p1, p2, paint,\n        ").concat(CB_BLEND_MODE, ".x,\n        ").concat(CB_THRESHOLD, ".xyz,\n        ").concat(CB_INCLUDE, ",\n        ").concat(targets[0], ", ").concat(targets[1], "\n    );\n\n    gl_FragColor = cjsPackPicking(material, ").concat(CB_AREA, ".x, ").concat(kind, ".0, ").concat(CB_AREA, ".y);\n}\n");
+	  return "\n".concat(precision, "\n\n").concat(declarations, "\n\nuniform vec4 cb7[").concat(CONSTANTS.length, "];\n").concat(hasPatterns ? "uniform vec4 cb4[14];      // per-object pixel block, for CustomMaskTarget0/1" : "", "\n\nvarying vec4 texcoord;\nvarying vec4 patternUv;\n\n").concat(hasPatterns ? clampToBorder : "", "\n").concat(GLSL_MATERIAL_RESOLVE, "\n\nvoid main()\n{\n").concat(clip, "    float materialValue = texture2D(").concat(reg("MaterialMap"), ", texcoord.xy).x;\n\n").concat(patterns, "\n\n    // The paint MASK is sampled; what is not applied is PaintMapInfluence.\n    // Forcing the coverage itself to 1 - which the first version did - makes\n    // the whole hull paint, and paint is unselectable, so every drop was\n    // refused. \"Set the paint mask to 1\" meant do not fade it by an influence\n    // value that has nothing to do with where the paint IS.\n    float paint = texture2D(").concat(reg("PaintMaskMap"), ", texcoord.xy).x * ").concat(CB_PRESENCE, ".y;\n\n    float material = cjsResolveMaterial(\n        materialValue, p1, p2, paint,\n        ").concat(CB_BLEND_MODE, ".x,\n        ").concat(CB_THRESHOLD, ".xyz,\n        ").concat(CB_INCLUDE, ",\n        ").concat(targets[0], ", ").concat(targets[1], "\n    );\n\n    gl_FragColor = cjsPackPicking(material, ").concat(CB_AREA, ".x, ").concat(kind, ".0, ").concat(CB_AREA, ".y);\n}\n");
 	}
 
 	/**
@@ -281966,8 +281989,8 @@
 	 * @param {Number} kind - a {@link PickingShaderKind} decal value
 	 * @returns {String}
 	 */
-	function makePs(kind) {
-	  return "\n".concat(precision, "\n\nuniform sampler2D s0;            // DecalTransparencyMap\n\nuniform vec4 cb7[5];             // threshold, blendMode, area, include, presence\n\nvarying vec4 texcoord;\n\n").concat(GLSL_PACK, "\n\nvoid main()\n{\n    // Excluded decals do not draw at all, so the hull underneath keeps the\n    // pixel - the same fall-through the material layers get.\n    if (cb7[3].w <= 0.5) discard;\n\n    // Clamped rather than wrapped. The shipped shader addresses this map with a\n    // BORDER mode, so a decal does not tile - sampling outside its own UVs must\n    // read as \"no coverage\" and not as a repeat of the logo.\n    vec2 uv = clamp(texcoord.xy, 0.0, 1.0);\n\n    if (uv.x != texcoord.x || uv.y != texcoord.y) discard;\n\n    // Presence-gated: a decal with no transparency map covers its whole quad,\n    // rather than reading an unbound sampler and discarding - or not - by\n    // whatever was last left in the unit.\n    float coverage = mix(1.0, texture2D(s0, uv).x, cb7[4].z);\n\n    // Discard, so the hull underneath keeps the pixel. See the file header.\n    if (coverage <= cb7[0].y) discard;\n\n    gl_FragColor = cjsPackPicking(\n        ").concat(PickingMaterial.DECAL, ".0,\n        cb7[2].x,\n        ").concat(kind, ".0,\n        cb7[2].y\n    );\n}\n");
+	function makePs(kind, wrap) {
+	  return "\n".concat(precision, "\n\nuniform sampler2D s0;            // DecalTransparencyMap\n\nuniform vec4 cb7[5];             // threshold, blendMode, area, include, presence\n\nvarying vec4 texcoord;\n\n").concat(GLSL_PACK, "\n\nvoid main()\n{\n    // Excluded decals do not draw at all, so the hull underneath keeps the\n    // pixel - the same fall-through the material layers get.\n    if (cb7[3].w <= 0.5) discard;\n\n").concat(wrap ? "    // This decal type TILES. Its coverage repeats past 0..1 by design - a\n    // killmark counter is a strip of digits addressed with a wrap sampler - so\n    // there is no outside to fall off, and cutting at 0..1 would report the\n    // hull everywhere the decal actually is.\n    vec2 uv = texcoord.xy;" : "    // This decal type does NOT tile: the shipped shader addresses its\n    // coverage with the border sampler, so outside its own UVs there is no\n    // decal and the hull underneath keeps the pixel.\n    vec2 uv = clamp(texcoord.xy, 0.0, 1.0);\n\n    if (uv.x != texcoord.x || uv.y != texcoord.y) discard;", "\n\n    // Presence-gated: a decal with no transparency map covers its whole quad,\n    // rather than reading an unbound sampler and discarding - or not - by\n    // whatever was last left in the unit.\n    float coverage = mix(1.0, texture2D(s0, uv).x, cb7[4].z);\n\n    // Discard, so the hull underneath keeps the pixel. See the file header.\n    if (coverage <= cb7[0].y) discard;\n\n    gl_FragColor = cjsPackPicking(\n        ").concat(PickingMaterial.DECAL, ".0,\n        cb7[2].x,\n        ").concat(kind, ".0,\n        cb7[2].y\n    );\n}\n");
 	}
 
 	/**
@@ -281975,7 +281998,7 @@
 	 * @param {Number} kind
 	 * @returns {Object}
 	 */
-	function makeDefinition(name, kind) {
+	function makeDefinition(name, kind, wrap) {
 	  return {
 	    name,
 	    description: "material picking for the " + name.replace("picking", "") + " family",
@@ -281995,8 +282018,8 @@
 	          // POSITIONAL binding - the order here IS the cb7 index and the
 	          // s# order. A named uniform would link and never be written.
 	          constants: [PickingThreshold, PatternBlendMode, PickingArea, PickingInclude, PickingPresence],
-	          textures: [DecalTransparencyMap],
-	          shader: makePs(kind)
+	          textures: [wrap ? DecalTransparencyMap_Wrap : DecalTransparencyMap_Border],
+	          shader: makePs(kind, !!wrap)
 	        },
 	        // Depth EQUAL-or-less against the hull already drawn, so a decal
 	        // wins its pixel where it covers. It writes depth too, so two
@@ -282015,11 +282038,27 @@
 	    }
 	  };
 	}
+
+	// WHICH ADDRESS MODE IS PER DECAL TYPE, and it is not cosmetic - it decides how
+	// far a decal's coverage reaches. Read off the shipped shaders' own texture
+	// declarations rather than assumed:
+	//
+	//   decalv5                 DecalTransparencyMap_SamplerBorder
+	//   decalcounterv5          DecalTransparencyMap_SamplerWrap      <- tiles
+	//   decalcylindricv5        DecalTransparencyMap_SamplerBorder
+	//   decalglowv5             both; the BORDER one carries the coverage at the
+	//                           base UV, the wrap one an animated glow overlay
+	//   decalglowcylindricv5    DecalTransparencyMap_SamplerWrap      <- tiles
+	//   decalholev5             DecalTransparencyMap_SamplerBorder
+	//
+	// A killmark counter is a strip of digits meant to repeat. Clamping it, as one
+	// shared decal shader did, cuts its coverage at the first tile and reports the
+	// hull everywhere else on it.
 	var decalPickingV5 = makeDefinition("cjspickingdecalv5", PickingShaderKind.DECAL);
-	var decalCounterPickingV5 = makeDefinition("cjspickingdecalcounterv5", PickingShaderKind.DECAL_COUNTER);
+	var decalCounterPickingV5 = makeDefinition("cjspickingdecalcounterv5", PickingShaderKind.DECAL_COUNTER, true);
 	var decalCylindricPickingV5 = makeDefinition("cjspickingdecalcylindricv5", PickingShaderKind.DECAL_CYLINDRIC);
 	var decalGlowPickingV5 = makeDefinition("cjspickingdecalglowv5", PickingShaderKind.DECAL_GLOW);
-	var decalGlowCylindricPickingV5 = makeDefinition("cjspickingdecalglowcylindricv5", PickingShaderKind.DECAL_GLOW_CYLINDRIC);
+	var decalGlowCylindricPickingV5 = makeDefinition("cjspickingdecalglowcylindricv5", PickingShaderKind.DECAL_GLOW_CYLINDRIC, true);
 	var decalHolePickingV5 = makeDefinition("cjspickingdecalholev5", PickingShaderKind.DECAL_HOLE);
 
 	var decal = {
@@ -282911,6 +282950,23 @@
 	        PickingPresence: presence
 	      }
 	    });
+
+	    // The address modes come with the texture, not with the shader.
+	    //
+	    // A pattern mask's wrap mode is authored per LAYER - EveSOFData turns
+	    // projectionTypeU/V into addressUMode/addressVMode and puts them on the
+	    // mask's own texture parameter - so binding the same path without them
+	    // lets the default REPEAT tile a pattern that was authored to clamp.
+	    // The shader's border emulation only covers the border case; the choice
+	    // between repeat and clamp-to-edge in range is the sampler's.
+	    for (var _i3 = 0; _i3 < wanted.length; _i3++) {
+	      var _name = wanted[_i3];
+	      var from = source.parameters[_name];
+	      var to = effect.parameters[_name];
+	      if (!from || !to || !from.overrides) continue;
+	      to.SetOverrides(Object.assign({}, from.overrides));
+	      to.useAllOverrides = from.useAllOverrides;
+	    }
 	    this._effects.set(source, effect);
 	    return effect;
 	  }

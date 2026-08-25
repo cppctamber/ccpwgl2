@@ -1,4 +1,4 @@
-import { createTex, TEX_2D, WidgetType } from "../../toDeprecate/shaders/shared/util";
+import { createBorderAndWrap, createTex, TEX_2D, WidgetType } from "../../toDeprecate/shaders/shared/util";
 
 
 /**
@@ -126,10 +126,19 @@ export const AlphaThresholdMap = createTex("AlphaThresholdMap", TEX_2D, {
     ui: { components: [ "alpha clip" ] }
 });
 
-/** @type {Object} */
-export const DecalTransparencyMap = createTex("DecalTransparencyMap", TEX_2D, {
-    ui: { components: [ "transparency mask" ] }
-});
+/**
+ * Decal coverage, in BOTH address modes.
+ *
+ * Which one a decal uses is per decal TYPE, and it is not cosmetic: a killmark
+ * counter tiles its strip, so its coverage repeats past 0..1, while a logo
+ * clamps and stops. Built with the same helper the shipped decal shaders use,
+ * so the sampler names and modes are theirs rather than a copy.
+ * @type {Array<Object>}
+ */
+export const [ DecalTransparencyMap_Border, DecalTransparencyMap_Wrap ] =
+    createBorderAndWrap("DecalTransparencyMap", TEX_2D, {
+        ui: { components: [ "transparency mask" ] }
+    });
 
 /**
  * Paint coverage. "Material -1": the region's colour comes from the authored

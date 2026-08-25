@@ -6,7 +6,7 @@ import {
 import { precision } from "../../toDeprecate/shaders/shared/func";
 import {
     PickingThreshold, PatternBlendMode, PickingArea, PickingInclude, PickingPresence,
-    DecalTransparencyMap
+    DecalTransparencyMap_Border, DecalTransparencyMap_Wrap
 } from "./pickingInputs";
 import { GLSL_PACK, PickingMaterial, PickingShaderKind } from "./materialResolve";
 
@@ -108,7 +108,7 @@ void main()
  * @param {Number} kind - a {@link PickingShaderKind} decal value
  * @returns {String}
  */
-function makePs(kind)
+function makePs(kind, wrap)
 {
     return `
 ${precision}
@@ -127,12 +127,18 @@ void main()
     // pixel - the same fall-through the material layers get.
     if (cb7[3].w <= 0.5) discard;
 
-    // Clamped rather than wrapped. The shipped shader addresses this map with a
-    // BORDER mode, so a decal does not tile - sampling outside its own UVs must
-    // read as "no coverage" and not as a repeat of the logo.
+${wrap
+        ? `    // This decal type TILES. Its coverage repeats past 0..1 by design - a
+    // killmark counter is a strip of digits addressed with a wrap sampler - so
+    // there is no outside to fall off, and cutting at 0..1 would report the
+    // hull everywhere the decal actually is.
+    vec2 uv = texcoord.xy;`
+        : `    // This decal type does NOT tile: the shipped shader addresses its
+    // coverage with the border sampler, so outside its own UVs there is no
+    // decal and the hull underneath keeps the pixel.
     vec2 uv = clamp(texcoord.xy, 0.0, 1.0);
 
-    if (uv.x != texcoord.x || uv.y != texcoord.y) discard;
+    if (uv.x != texcoord.x || uv.y != texcoord.y) discard;`}
 
     // Presence-gated: a decal with no transparency map covers its whole quad,
     // rather than reading an unbound sampler and discarding - or not - by
@@ -157,7 +163,7 @@ void main()
  * @param {Number} kind
  * @returns {Object}
  */
-function makeDefinition(name, kind)
+function makeDefinition(name, kind, wrap)
 {
     return {
         name,
@@ -176,8 +182,8 @@ function makeDefinition(name, kind)
                     // POSITIONAL binding - the order here IS the cb7 index and the
                     // s# order. A named uniform would link and never be written.
                     constants: [ PickingThreshold, PatternBlendMode, PickingArea, PickingInclude, PickingPresence ],
-                    textures: [ DecalTransparencyMap ],
-                    shader: makePs(kind)
+                    textures: [ wrap ? DecalTransparencyMap_Wrap : DecalTransparencyMap_Border ],
+                    shader: makePs(kind, !!wrap)
                 },
                 // Depth EQUAL-or-less against the hull already drawn, so a decal
                 // wins its pixel where it covers. It writes depth too, so two
@@ -198,9 +204,24 @@ function makeDefinition(name, kind)
     };
 }
 
+// WHICH ADDRESS MODE IS PER DECAL TYPE, and it is not cosmetic - it decides how
+// far a decal's coverage reaches. Read off the shipped shaders' own texture
+// declarations rather than assumed:
+//
+//   decalv5                 DecalTransparencyMap_SamplerBorder
+//   decalcounterv5          DecalTransparencyMap_SamplerWrap      <- tiles
+//   decalcylindricv5        DecalTransparencyMap_SamplerBorder
+//   decalglowv5             both; the BORDER one carries the coverage at the
+//                           base UV, the wrap one an animated glow overlay
+//   decalglowcylindricv5    DecalTransparencyMap_SamplerWrap      <- tiles
+//   decalholev5             DecalTransparencyMap_SamplerBorder
+//
+// A killmark counter is a strip of digits meant to repeat. Clamping it, as one
+// shared decal shader did, cuts its coverage at the first tile and reports the
+// hull everywhere else on it.
 export const decalPickingV5 = makeDefinition("cjspickingdecalv5", PickingShaderKind.DECAL);
-export const decalCounterPickingV5 = makeDefinition("cjspickingdecalcounterv5", PickingShaderKind.DECAL_COUNTER);
+export const decalCounterPickingV5 = makeDefinition("cjspickingdecalcounterv5", PickingShaderKind.DECAL_COUNTER, true);
 export const decalCylindricPickingV5 = makeDefinition("cjspickingdecalcylindricv5", PickingShaderKind.DECAL_CYLINDRIC);
 export const decalGlowPickingV5 = makeDefinition("cjspickingdecalglowv5", PickingShaderKind.DECAL_GLOW);
-export const decalGlowCylindricPickingV5 = makeDefinition("cjspickingdecalglowcylindricv5", PickingShaderKind.DECAL_GLOW_CYLINDRIC);
+export const decalGlowCylindricPickingV5 = makeDefinition("cjspickingdecalglowcylindricv5", PickingShaderKind.DECAL_GLOW_CYLINDRIC, true);
 export const decalHolePickingV5 = makeDefinition("cjspickingdecalholev5", PickingShaderKind.DECAL_HOLE);

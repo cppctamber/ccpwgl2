@@ -3,7 +3,7 @@ import {
     RS_ALPHABLENDENABLE, RS_ALPHATESTENABLE,
     CMP_LEQUAL, CULL_CW
 } from "constant";
-import { precision } from "../../toDeprecate/shaders/shared/func";
+import { precision, clampToBorder } from "../../toDeprecate/shaders/shared/func";
 import { GLSL_MATERIAL_RESOLVE, PickingShaderKind } from "./materialResolve";
 import {
     PickingThreshold, PatternBlendMode, PickingArea, PickingInclude,
@@ -266,6 +266,24 @@ const CB_MASK_TARGET_0 = "cb4[12]";
 const CB_MASK_TARGET_1 = "cb4[13]";
 
 /**
+ * `CustomMaskMaterialID0/1` - (material index, clampU, clampV, clampW).
+ *
+ * The `.yz` lanes are the clamp-to-BORDER flags, and the shipped quad shader
+ * samples both pattern masks through them:
+ *
+ *     r7 = clampToBorder(s9,  v6.xy, cb4[10].yz, c34.wwww);   // c34.w is 0
+ *     r9 = clampToBorder(s10, v6.zw, cb4[11].yz, c34.wwww);
+ *
+ * WebGL has no border address mode, so it is emulated in the shader: outside
+ * 0..1 the sample is the border colour, which is black - no coverage. Sampling
+ * raw instead lets the GL wrap mode decide, and REPEAT tiles the pattern across
+ * the whole hull. Picking would then report pattern coverage everywhere the
+ * projection runs off the edge of the mask.
+ */
+const CB_MASK_ID_0 = "cb4[10]";
+const CB_MASK_ID_1 = "cb4[11]";
+
+/**
  * @param {Number} kind
  * @param {Array<Object>} textures - declaration order, which is the s# order
  * @param {Boolean} hasPatterns
@@ -300,8 +318,8 @@ function makePs(kind, textures, hasPatterns, alphaClip)
     // The presence flag stays only for a texture the source effect does not
     // bind at all, where the sampler holds whatever was last in that unit.
     const patterns = hasPatterns
-        ? `    float p1 = texture2D(${reg("PatternMask1Map")}, patternUv.xy).x * ${CB_PRESENCE}.x;
-    float p2 = texture2D(${reg("PatternMask2Map")}, patternUv.zw).x * ${CB_PRESENCE}.x;`
+        ? `    float p1 = clampToBorder(${reg("PatternMask1Map")}, patternUv.xy, ${CB_MASK_ID_0}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;
+    float p2 = clampToBorder(${reg("PatternMask2Map")}, patternUv.zw, ${CB_MASK_ID_1}.yz, vec4(0.0)).x * ${CB_PRESENCE}.x;`
         : `    // This kind binds no pattern masks at all, so PMtl1 and PMtl2 cannot
     // occur. Sampling them would read textures the effect never binds.
     float p1 = 0.0;
@@ -329,6 +347,7 @@ ${hasPatterns ? "uniform vec4 cb4[14];      // per-object pixel block, for Custo
 varying vec4 texcoord;
 varying vec4 patternUv;
 
+${hasPatterns ? clampToBorder : ""}
 ${GLSL_MATERIAL_RESOLVE}
 
 void main()

@@ -131,9 +131,12 @@ float cjsResolveMaterial(float materialValue, float p1, float p2, float paint, f
     // keep landing on a rivet instead of the hull.
     vec2 pw = cjsPatternWeights(p1, p2, blendMode);
 
-    // Zeroed where this pattern does not target the material underneath.
-    pw.x *= step(0.5, dot(sel, target1));
-    pw.y *= step(0.5, dot(sel, target2));
+    // Scaled by how much this pattern targets the material underneath, which is
+    // what the shipped shader does: r7 = r7.xxxx * cb4[12] multiplies the mask
+    // value by the whole target vector. So the target is a per-material weight,
+    // not a boolean - and a zero target simply weighs nothing.
+    pw.x *= clamp(dot(sel, target1), 0.0, 1.0);
+    pw.y *= clamp(dot(sel, target2), 0.0, 1.0);
 
     if (include.x > 0.5 && max(pw.x, pw.y) > thresholds.y)
     {
