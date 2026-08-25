@@ -74,7 +74,8 @@
     "test:spherical-convention": "node scripts/test-spherical-convention.js",
     "test:eve-effect-root2": "node scripts/test-eve-effect-root2.js",
     "test:planet-scale-and-lod": "node scripts/test-planet-scale-and-lod.js",
-    "test:planet-template-adoption": "node scripts/test-planet-template-adoption.js"
+    "test:planet-template-adoption": "node scripts/test-planet-template-adoption.js",
+    "test:material-picking": "node scripts/test-material-picking.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

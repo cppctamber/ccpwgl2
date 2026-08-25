@@ -30,14 +30,20 @@ import { config } from "./config";
 import { tw2 } from "./global";
 import * as runtime from "./runtime";
 import { shaders as deprecatedShaders } from "./toDeprecate/shaders";
+import { pickingShaders } from "./picking";
 
 tw2.runtime = runtime;
 tw2.Register(config);
 tw2.Register({ shaders: deprecatedShaders });
 
+// Standalone material-picking shaders. None of them `replaces` anything, so
+// registering them cannot change how a ship ordinarily draws.
+tw2.Register({ shaders: pickingShaders });
+
 export { tny } from "./runtime";
 export { EveSOFDataHandler } from "./sof/EveSOFDataHandler";
 export { deprecatedShaders };
+export { Tw2MaterialPicker } from "./picking";
 export { tw2, tw2 as CCPWGL };
 
 // Carbon (translated DX11 shader path) support modules — exposed for the
