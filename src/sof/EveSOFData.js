@@ -1224,26 +1224,18 @@ export class EveSOFData extends meta.Model
         {
             const textureResFilePath = layer.textureResFilePath || EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
 
-            // A layer with no pattern binds BLACK - nothing to show - not white.
+            // A pattern texture is a MASK, so an empty layer is all black -
+            // nothing to show. It used to default to solid WHITE, which is full
+            // coverage: inert to the shipped shader, which ignores a mask whose
+            // target is zero, but not to anything reading the mask on its own
+            // terms. Material picking read it as a pattern covering the hull.
             //
-            // Both readings were inert to the shipped shader, which ignores a
-            // mask whose CustomMaskTarget is zero, so a white placeholder never
-            // showed. It is not inert to anything that reads the mask on its own
-            // terms: material picking sampled full coverage and reported the
-            // whole hull as pattern one. White means "everywhere", and an absent
-            // pattern is nowhere.
-            //
-            // `solid_white` stays recognised as an absent pattern because that
-            // is what some authored layers carry, but it is normalised to the
-            // empty texture rather than bound.
-            const isEmpty = textureResFilePath === EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH
-                || textureResFilePath.includes("solid_white");
-
-            mask.display = !isEmpty;
+            // Solid white is NOT treated as absent. A mask that covers
+            // everything is a thing an artist can author, and a name sniff for
+            // it was reading a placeholder's filename as though it were data.
+            mask.display = !EveSOFDataPatternLayer.IsEmptyTexture(textureResFilePath);
             mask.materialIndex = layer.materialSource;
-            mask.parameters.PatternMaskMap.SetValue(
-                isEmpty ? EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH : textureResFilePath
-            );
+            mask.parameters.PatternMaskMap.SetValue(textureResFilePath);
             vec4.set(mask.targetMaterials,
                 layer.isTargetMtl1 ? 1 : 0,
                 layer.isTargetMtl2 ? 1 : 0,

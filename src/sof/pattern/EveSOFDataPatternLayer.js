@@ -146,9 +146,32 @@ export class EveSOFDataPatternLayer extends meta.Model
     }
 
     /**
-     * Empty texture res file path
-     * @type {string}
+     * The texture an empty pattern layer binds.
+     *
+     * A pattern layer's texture is a MASK, so black is no coverage and an empty
+     * layer is all black. Generated rather than loaded: it costs no request and
+     * cannot 404, and it says what it is at the call site.
+     *
+     * It used to be `res:/texture/global/black.dds`, which is still recognised
+     * as empty by {@link IsEmptyTexture} so existing data keeps working.
+     * @type {String}
      */
-    static EMPTY_TEXTURE_RES_FILE_PATH = "res:/texture/global/black.dds";
+    static EMPTY_TEXTURE_RES_FILE_PATH = "dynamic:/color/0,0,0,1";
+
+    /**
+     * Whether a pattern texture path means "no pattern".
+     *
+     * Only black counts. Solid WHITE is not absent - it is a mask covering
+     * everything, which is a thing an artist can legitimately author - and
+     * treating it as empty was a bug here.
+     *
+     * @param {String} path
+     * @returns {Boolean}
+     */
+    static IsEmptyTexture(path)
+    {
+        if (!path) return true;
+        return path === this.EMPTY_TEXTURE_RES_FILE_PATH || path === "res:/texture/global/black.dds";
+    }
 
 }

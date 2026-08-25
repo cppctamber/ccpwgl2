@@ -234210,10 +234210,32 @@
 	  }
 
 	  /**
-	   * Empty texture res file path
-	   * @type {string}
+	   * The texture an empty pattern layer binds.
+	   *
+	   * A pattern layer's texture is a MASK, so black is no coverage and an empty
+	   * layer is all black. Generated rather than loaded: it costs no request and
+	   * cannot 404, and it says what it is at the call site.
+	   *
+	   * It used to be `res:/texture/global/black.dds`, which is still recognised
+	   * as empty by {@link IsEmptyTexture} so existing data keeps working.
+	   * @type {String}
 	   */
-	}, _EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH = "res:/texture/global/black.dds", _EveSOFDataPatternLayer), _descriptor$1S = _applyDecoratedDescriptor(_class2$1T.prototype, "isTargetMtl1", [_dec2$1Z], {
+
+	  /**
+	   * Whether a pattern texture path means "no pattern".
+	   *
+	   * Only black counts. Solid WHITE is not absent - it is a mask covering
+	   * everything, which is a thing an artist can legitimately author - and
+	   * treating it as empty was a bug here.
+	   *
+	   * @param {String} path
+	   * @returns {Boolean}
+	   */
+	  static IsEmptyTexture(path) {
+	    if (!path) return true;
+	    return path === this.EMPTY_TEXTURE_RES_FILE_PATH || path === "res:/texture/global/black.dds";
+	  }
+	}, _EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH = "dynamic:/color/0,0,0,1", _EveSOFDataPatternLayer), _descriptor$1S = _applyDecoratedDescriptor(_class2$1T.prototype, "isTargetMtl1", [_dec2$1Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -236461,22 +236483,18 @@
 	    if (layer) {
 	      var textureResFilePath = layer.textureResFilePath || EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH;
 
-	      // A layer with no pattern binds BLACK - nothing to show - not white.
+	      // A pattern texture is a MASK, so an empty layer is all black -
+	      // nothing to show. It used to default to solid WHITE, which is full
+	      // coverage: inert to the shipped shader, which ignores a mask whose
+	      // target is zero, but not to anything reading the mask on its own
+	      // terms. Material picking read it as a pattern covering the hull.
 	      //
-	      // Both readings were inert to the shipped shader, which ignores a
-	      // mask whose CustomMaskTarget is zero, so a white placeholder never
-	      // showed. It is not inert to anything that reads the mask on its own
-	      // terms: material picking sampled full coverage and reported the
-	      // whole hull as pattern one. White means "everywhere", and an absent
-	      // pattern is nowhere.
-	      //
-	      // `solid_white` stays recognised as an absent pattern because that
-	      // is what some authored layers carry, but it is normalised to the
-	      // empty texture rather than bound.
-	      var isEmpty = textureResFilePath === EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH || textureResFilePath.includes("solid_white");
-	      mask.display = !isEmpty;
+	      // Solid white is NOT treated as absent. A mask that covers
+	      // everything is a thing an artist can author, and a name sniff for
+	      // it was reading a placeholder's filename as though it were data.
+	      mask.display = !EveSOFDataPatternLayer.IsEmptyTexture(textureResFilePath);
 	      mask.materialIndex = layer.materialSource;
-	      mask.parameters.PatternMaskMap.SetValue(isEmpty ? EveSOFDataPatternLayer.EMPTY_TEXTURE_RES_FILE_PATH : textureResFilePath);
+	      mask.parameters.PatternMaskMap.SetValue(textureResFilePath);
 	      vec4$1.set(mask.targetMaterials, layer.isTargetMtl1 ? 1 : 0, layer.isTargetMtl2 ? 1 : 0, layer.isTargetMtl3 ? 1 : 0, layer.isTargetMtl4 ? 1 : 0);
 	      mask.blendMode = layer.blendMode || "overlay";
 	      pU = layer.projectionTypeU;
