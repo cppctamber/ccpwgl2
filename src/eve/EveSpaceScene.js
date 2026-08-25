@@ -1535,6 +1535,74 @@ export class EveSpaceScene extends meta.Model
             this._carbonShadowRenderer.RenderDebug();
         }
 
+        this.RunPendingTasks(dt);
+    }
+
+    /**
+     * Work to run once, after the scene has finished drawing and before the
+     * next frame begins.
+     *
+     * An offscreen pass that reads its own result - material picking, most of
+     * all - cannot run at an arbitrary moment: it needs the scene's state
+     * settled, and it needs to leave no trace behind. Running it HERE gives it
+     * both. Everything the frame was going to do is done, and the next frame
+     * has not started, so binding a render target and restoring it disturbs
+     * nothing.
+     *
+     * @type {Array<Function>}
+     */
+    _pendingTasks = [];
+
+    /**
+     * Queues work for the end of the current frame.
+     *
+     * The task is called with the frame's delta time and is DISCARDED after one
+     * run, whether it succeeded or threw - see {@link RunPendingTasks}. A task
+     * that wants to run again must queue itself again.
+     *
+     * @param {Function} task
+     * @returns {EveSpaceScene}
+     */
+    EnqueueTask(task)
+    {
+        if (typeof task === "function") this._pendingTasks.push(task);
+        return this;
+    }
+
+    /**
+     * Runs and clears the queued tasks.
+     *
+     * The list is taken and emptied BEFORE running anything, so a task that
+     * queues more work gets the next frame rather than extending this one into
+     * a loop that never ends.
+     *
+     * A task that throws is reported and dropped rather than taking the frame
+     * down with it: these are one-shot side jobs, and a failing one must not
+     * stop the scene from rendering.
+     *
+     * @param {Number} [dt]
+     */
+    RunPendingTasks(dt)
+    {
+        if (!this._pendingTasks.length) return;
+
+        const tasks = this._pendingTasks.splice(0);
+
+        for (let i = 0; i < tasks.length; i++)
+        {
+            try
+            {
+                tasks[i](dt);
+            }
+            catch (err)
+            {
+                tw2.Debug({
+                    name: "EveSpaceScene",
+                    message: "Pending task failed",
+                    data: { err }
+                });
+            }
+        }
     }
 
     /**

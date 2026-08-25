@@ -33,27 +33,37 @@ build when it does land.
 ## 1. The shape that fits your drag
 
 You said the ship cannot move while the user is dragging. That is exactly the
-right observation, and it makes this cheap:
+right observation, and the API is built around it: **one render answers the
+whole gesture**.
 
 ```js
-// once, when the drag STARTS
-picker.SetSize(canvas.width, canvas.height);
-picker.SetObject(ship);          // the raw EveShip2, not the Tny wrapper
-picker.Render();                 // one render, one frame
+picker.SetSize(width, height);
 
-// as often as you like, while dragging - no rendering, just a 1px read
-const hit = picker.Pick(x, y);
-
-// on drop, use the last hit. Nothing to tear down.
+// Renders once on the frame the scene next finishes, then answers every
+// coordinate from that one buffer. Settles when the image exists and has been
+// read, so there is no "render now" for you to call at the wrong moment.
+const results = await picker.PickAsync(scene, ship, [ [ x1, y1 ], [ x2, y2 ] ]);
 ```
 
-`Render()` draws the whole ship into an offscreen buffer. `Pick()` reads one
-pixel back. Do not call `Render()` per mouse-move — it is a full draw, and the
-buffer is still valid because nothing moved.
+One result per coordinate, in order. Cleanup is unconditional — the object
+reference is released whether the pick succeeds, finds nothing, or throws.
+
+It rides the **scene**, not a raw animation frame: queued through
+`scene.EnqueueTask` and run by `EveSpaceScene.RunPendingTasks` after the scene
+has finished drawing and before the next frame starts. An offscreen pass that
+reads its own result needs the frame's state settled and must leave no trace
+behind, and that hook gives it both.
+
+Each call costs one render, so batch the coordinates you care about into one
+call rather than calling per mouse-move.
+
+`Render()` and the synchronous `Pick(x, y)` still exist, but they are the sharp
+edges — `Pick` is only meaningful after a successful `Render` in the same frame.
+Use `PickAsync`.
 
 **Re-render if anything changes**: camera move, ship rotate, SKINR values
-change, LOD change. If in doubt, re-render on drag start only, and again if your
-own code moved something.
+change, LOD change. Each `PickAsync` call renders afresh, so this only matters
+if you cache results yourself.
 
 ## 2. Coordinates — Y IS FLIPPED
 

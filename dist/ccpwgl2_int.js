@@ -217184,6 +217184,20 @@
 	     * @type {Number}
 	     */
 	    this.mediumDetailThreshold = 400;
+	    /**
+	     * Work to run once, after the scene has finished drawing and before the
+	     * next frame begins.
+	     *
+	     * An offscreen pass that reads its own result - material picking, most of
+	     * all - cannot run at an arbitrary moment: it needs the scene's state
+	     * settled, and it needs to leave no trace behind. Running it HERE gives it
+	     * both. Everything the frame was going to do is done, and the next frame
+	     * has not started, so binding a render target and restoring it disturbs
+	     * nothing.
+	     *
+	     * @type {Array<Function>}
+	     */
+	    this._pendingTasks = [];
 	    Object.defineProperty(this.visible, "environment", {
 	      get: () => this.backgroundRenderingEnabled,
 	      set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0,
@@ -217934,6 +217948,52 @@
 	    // before the scene draws, so a blit there is painted over by the ship.
 	    if (this._carbonShadowRenderer) {
 	      this._carbonShadowRenderer.RenderDebug();
+	    }
+	    this.RunPendingTasks(dt);
+	  }
+	  /**
+	   * Queues work for the end of the current frame.
+	   *
+	   * The task is called with the frame's delta time and is DISCARDED after one
+	   * run, whether it succeeded or threw - see {@link RunPendingTasks}. A task
+	   * that wants to run again must queue itself again.
+	   *
+	   * @param {Function} task
+	   * @returns {EveSpaceScene}
+	   */
+	  EnqueueTask(task) {
+	    if (typeof task === "function") this._pendingTasks.push(task);
+	    return this;
+	  }
+
+	  /**
+	   * Runs and clears the queued tasks.
+	   *
+	   * The list is taken and emptied BEFORE running anything, so a task that
+	   * queues more work gets the next frame rather than extending this one into
+	   * a loop that never ends.
+	   *
+	   * A task that throws is reported and dropped rather than taking the frame
+	   * down with it: these are one-shot side jobs, and a failing one must not
+	   * stop the scene from rendering.
+	   *
+	   * @param {Number} [dt]
+	   */
+	  RunPendingTasks(dt) {
+	    if (!this._pendingTasks.length) return;
+	    var tasks = this._pendingTasks.splice(0);
+	    for (var i = 0; i < tasks.length; i++) {
+	      try {
+	        tasks[i](dt);
+	      } catch (err) {
+	        tw2.Debug({
+	          name: "EveSpaceScene",
+	          message: "Pending task failed",
+	          data: {
+	            err
+	          }
+	        });
+	      }
 	    }
 	  }
 
@@ -281940,7 +282000,64 @@
 	  }
 
 	  /**
+	   * Picks a list of coordinates, on the next frame the scene finishes.
+	   *
+	   * This is the API a consumer should use. It renders ONCE and answers every
+	   * coordinate from that one buffer, which is what makes a drag cheap: the
+	   * ship cannot move while the user is dragging, so one image serves the
+	   * whole gesture.
+	   *
+	   * It settles only once the buffer has actually been drawn and read. There
+	   * is no "render now" for a caller to get wrong, and no way to read a buffer
+	   * from a frame that never happened.
+	   *
+	   * Queued onto the SCENE rather than a raw animation frame, and run after
+	   * the scene has finished drawing (`EveSpaceScene.RunPendingTasks`). An
+	   * offscreen pass that reads its own result needs the frame's state settled
+	   * and must leave no trace; that hook gives it both.
+	   *
+	   * ```js
+	   * const [ a, b ] = await picker.PickAsync(scene, ship, [ [x1, y1], [x2, y2] ]);
+	   * ```
+	   *
+	   * @param {EveSpaceScene} scene   - the scene whose frame to ride
+	   * @param {*} object              - the one object to pick against
+	   * @param {Array<Array<Number>>} coords - `[ [x, y], ... ]`, buffer pixels
+	   * @returns {Promise<Array<?Object>>} one decoded result per coordinate, in order
+	   */
+	  PickAsync(scene, object, coords) {
+	    if (!scene || typeof scene.EnqueueTask !== "function") {
+	      return Promise.reject(new TypeError("Material picking requires a scene that can queue tasks"));
+	    }
+	    var list = Array.isArray(coords) ? coords : [];
+	    return new Promise((resolve, reject) => {
+	      scene.EnqueueTask(() => {
+	        // Cleanup is unconditional. The buffer is a render target and
+	        // the object reference pins a whole ship, so an early return or
+	        // a throw must not leave either held - a failed pick should
+	        // cost nothing but the answer.
+	        try {
+	          this.SetObject(object);
+	          if (!this.Render()) {
+	            resolve(list.map(() => null));
+	            return;
+	          }
+	          resolve(list.map(c => this.Pick(c[0], c[1])));
+	        } catch (err) {
+	          reject(err);
+	        } finally {
+	          this.SetObject(null);
+	        }
+	      });
+	    });
+	  }
+
+	  /**
 	   * Reads one pixel back and decodes it.
+	   *
+	   * Synchronous, and only meaningful after a successful {@link Render} in the
+	   * same frame. Prefer {@link PickAsync}, which cannot be called at the wrong
+	   * moment.
 	   *
 	   * @param {Number} x
 	   * @param {Number} y
