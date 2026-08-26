@@ -6,3 +6,4 @@
  */
 export * from "./particleUpdate";
 export * from "./particleDraw";
+export * from "./particleEmit";

@@ -121,9 +121,43 @@ export class Tw2GpuParticleState
             });
 
             this.Destroy();
+            return false;
         }
 
-        return !this._failed;
+        this.Kill();
+        return true;
+    }
+
+    /**
+     * Marks every slot DEAD, on both sides.
+     *
+     * A freshly allocated float texture holds whatever the driver left there.
+     * Read as particle state that is a field of particles at undefined
+     * positions with undefined lifetimes, which the simulation will happily
+     * integrate. Age is the only field that decides anything, so setting it
+     * negative everywhere is enough to make the state empty rather than
+     * arbitrary.
+     *
+     * @returns {Tw2GpuParticleState}
+     */
+    Kill()
+    {
+        if (!this.IsGood()) return this;
+
+        const gl = tw2.device.gl;
+
+        for (let i = 0; i < 2; i++)
+        {
+            this._sides[i].SetCallUnset(() =>
+            {
+                // Per attachment, because the two carry different meanings and
+                // a single clear colour would have to lie about one of them.
+                gl.clearBufferfv(gl.COLOR, 0, [ 0, 0, 0, -1 ]);
+                gl.clearBufferfv(gl.COLOR, 1, [ 0, 0, 0, 0 ]);
+            });
+        }
+
+        return this;
     }
 
     /**
@@ -163,6 +197,19 @@ export class Tw2GpuParticleState
     GetBack()
     {
         return this._sides[this._front ^ 1];
+    }
+
+    /**
+     * The front side as a TARGET, for a pass that writes what the next step
+     * will read.
+     *
+     * Emission is the case: it writes the side the simulation reads NEXT, so
+     * new particles survive the step instead of being overwritten by it.
+     * @returns {?Tw2MultiRenderTarget}
+     */
+    GetFrontTarget()
+    {
+        return this._sides[this._front];
     }
 
     /**

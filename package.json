@@ -79,7 +79,8 @@
     "test:scene-pending-tasks": "node scripts/test-scene-pending-tasks.js",
     "test:picking-shader-map": "node scripts/test-picking-shader-map.js",
     "test:gpu-emitters": "node scripts/test-gpu-emitters.js",
-    "test:gpu-particle-state": "node scripts/test-gpu-particle-state.js"
+    "test:gpu-particle-state": "node scripts/test-gpu-particle-state.js",
+    "test:gpu-emit-pass": "node scripts/test-gpu-emit-pass.js"
   },
   "homepage": "https://github.com/cppctamber/ccpwgl2#readme",
   "repository": {

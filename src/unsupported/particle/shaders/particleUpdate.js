@@ -1,6 +1,7 @@
 import { RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE } from "constant";
 import { createTex, TEX_2D, WidgetType } from "../../../toDeprecate/shaders/shared/util";
 import { Tw2GpuParticleDrawShader } from "./particleDraw";
+import { Tw2GpuParticleEmitShader } from "./particleEmit";
 
 
 /**
@@ -240,8 +241,14 @@ export class Tw2GpuParticleShaders
     /** The simulation step. @type {Object} */
     static Update = definition;
 
+    /** The emission pass. @type {Object} */
+    static Emit = Tw2GpuParticleEmitShader.Definition;
+
+    /** The draw pass. @type {Object} */
+    static Draw = Tw2GpuParticleDrawShader.Definition;
+
     /** Every definition, in the shape `tw2.Register({ shaders })` takes. @type {Array<Object>} */
-    static All = [ definition, Tw2GpuParticleDrawShader.Definition ];
+    static All = [ definition, Tw2GpuParticleEmitShader.Definition, Tw2GpuParticleDrawShader.Definition ];
 
     /**
      * The named inputs, for a caller that has to set them.

@@ -55,6 +55,7 @@ export { Tw2MaterialPicker, Tw2MaterialPickResult } from "./picking";
 // question and only a device can answer it.
 export { Tw2GpuParticleState } from "./unsupported/particle/Tw2GpuParticleState";
 export { Tw2MultiRenderTarget } from "./core/Tw2MultiRenderTarget";
+export { Tw2GpuParticleEmitPass } from "./unsupported/particle/Tw2GpuParticleEmitPass";
 
 // The material class itself. Anything driving a MANUAL shader - a picking pass,
 // a particle pass, a tool - has to build an effect around it, and until now the

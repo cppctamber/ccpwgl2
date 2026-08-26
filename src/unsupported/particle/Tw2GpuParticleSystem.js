@@ -171,10 +171,11 @@ export class Tr2GpuParticleSystem
     /**
      * Takes one batch of particles from an emitter.
      *
-     * Ported from Tr2GpuParticleSystem.cpp:716-730. This is the CPU half and it
-     * is complete: a request is recorded, and the compute dispatch that consumes
-     * it is not written yet - see the class header. So an emitter can be driven,
-     * and what it asked for can be inspected, without a device.
+     * Ported from Tr2GpuParticleSystem.cpp:716-730. A request is RECORDED here
+     * and expanded later by `Tw2GpuParticleEmitPass`, which drains the queue as
+     * it dispatches. Recording needs no device, so an emitter can be driven and
+     * what it asked for inspected without one - which is how the emitter rules
+     * are tested.
      *
      * @param {Object} emitter - the CPU-side emitter struct
      * @param {Number} id - the emitter's id; the unique bit says which kind
