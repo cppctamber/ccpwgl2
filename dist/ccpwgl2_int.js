@@ -253002,6 +253002,25 @@
 	  return out;
 	}
 
+	/**
+	 * Classes ONLY.
+	 *
+	 * `config.js` spreads this whole namespace into `constructors`, so every named
+	 * export here is registered as a class by its export name. That is what makes a
+	 * `.black` able to name one of these types and get it constructed, with no list
+	 * to maintain.
+	 *
+	 * It also means a plain object reaching this barrel is registered as a
+	 * constructor, and the store rejects it at LOAD with
+	 * "'Constructor' store value invalid" - taking the bundle down before anything
+	 * runs, without naming the file responsible.
+	 *
+	 * So an exposed helper belongs as a STATIC on the class it serves. Data that is
+	 * not a class at all - a shader definition, a lookup table - reaches its
+	 * consumer by direct import and is not re-exported here. See the note above
+	 * `constructors` in `config.js`.
+	 */
+
 	var unsupported = {
 		__proto__: null,
 		AudEmitter: AudEmitter,
@@ -253444,6 +253463,31 @@
 	    // Generated json artifacts (e.g. aud:/library.json)
 	    "json": Tw2JsonRes
 	  },
+	  // EVERY NAMED EXPORT OF THESE NAMESPACES IS REGISTERED AS A CLASS.
+	  //
+	  // The spread takes whatever the barrel exports, keyed by its export name,
+	  // and hands it to the constructor store. A `.black` naming any of those keys
+	  // gets that constructor - which is what makes registration automatic and
+	  // means nothing has to maintain a list.
+	  //
+	  // The price is that these barrels may export CLASSES ONLY. A plain object
+	  // reaching one is registered as a constructor and the store rejects it with
+	  // "'Constructor' store value invalid", at load, taking the whole bundle
+	  // down - not at the point of use, and not naming the file that did it.
+	  //
+	  // So:
+	  //
+	  //   - anything a barrel below re-exports must be a class;
+	  //   - a shared helper belongs as a STATIC on the class it serves, not as a
+	  //     loose exported function;
+	  //   - data that is genuinely not a class - a shader definition, a lookup
+	  //     table - must reach its consumer by direct import and must not be
+	  //     re-exported through these barrels.
+	  //
+	  // This has cost twice: once for particle shader inputs exported through
+	  // `unsupported/particle`, and it is why `src/picking` and
+	  // `unsupported/particle/shaders` are imported directly by `src/index.js`
+	  // rather than being folded into a namespace here.
 	  constructors: [_objectSpread2({}, core), _objectSpread2({}, curve), _objectSpread2({}, eve), _objectSpread2({}, interior), _objectSpread2({}, particle), _objectSpread2({}, sof), _objectSpread2({}, state), _objectSpread2({}, unsupported)],
 	  variableTypes: {
 	    "float": Tw2FloatParameter,
@@ -284664,12 +284708,7 @@
 	var CB_FORCES = "cb7[1]";
 	var vs = "#version 300 es\n\n// The full-screen quad the device supplies: POSITION with four elements then\n// TEXCOORD with two, stride 24.\nin vec4 attr0;\nin vec2 attr1;\n\nout vec2 particleUv;\n\nvoid main()\n{\n    particleUv = attr1;\n    gl_Position = attr0;\n}\n";
 	var ps = "#version 300 es\n\nprecision highp float;\n\n// highp is not a preference here. State is positions in world space and ages in\n// seconds; at mediump a particle's position quantises visibly and its age stops\n// advancing once it is large enough relative to the step.\n\nuniform sampler2D s0;            // ParticlePositionMap\nuniform sampler2D s1;            // ParticleVelocityMap\n\nuniform vec4 cb7[".concat(CONSTANTS.length, "];\n\nin vec2 particleUv;\n\nlayout(location = 0) out vec4 outPosition;\nlayout(location = 1) out vec4 outVelocity;\n\nvoid main()\n{\n    vec4 p = texture(s0, particleUv);\n    vec4 v = texture(s1, particleUv);\n\n    float dt = ").concat(CB_TIME, ".x;\n    vec3 gravity = ").concat(CB_FORCES, ".xyz;\n    float drag = ").concat(CB_FORCES, ".w;\n\n    float age = p.w;\n    float lifetime = v.w;\n\n    // DEAD PARTICLES ARE COPIED, not skipped. Every texel is written every\n    // frame: the pass writes the other side of the ping-pong, so a texel left\n    // alone keeps whatever that side held two frames ago rather than what it\n    // held last frame.\n    if (age < 0.0)\n    {\n        outPosition = p;\n        outVelocity = v;\n        return;\n    }\n\n    float aged = age + dt;\n\n    if (aged >= lifetime)\n    {\n        // Killed by writing a negative age. The position is kept as it was so a\n        // reader can still see where the particle died, and nothing has to be\n        // cleared.\n        outPosition = vec4(p.xyz, -1.0);\n        outVelocity = v;\n        return;\n    }\n\n    // Drag opposes motion proportionally, so it is a force on the velocity\n    // rather than a scale of it - which keeps it summing with the others\n    // instead of ordering against them.\n    vec3 accel = gravity - v.xyz * drag;\n\n    // Semi-implicit Euler: velocity first, then position from the NEW velocity.\n    // Explicit Euler with the old velocity loses energy on every step, which\n    // shows up as particles falling short over a long life.\n    vec3 velocity = v.xyz + accel * dt;\n    vec3 position = p.xyz + velocity * dt;\n\n    outPosition = vec4(position, aged);\n    outVelocity = vec4(velocity, lifetime);\n}\n");
-
-	/**
-	 * The manual shader definition, in the shape `tw2.Register({ shaders })` takes.
-	 * @type {Object}
-	 */
-	var particleUpdate = {
+	var definition = {
 	  name: "tw2particleupdate",
 	  description: "GPU particle simulation step",
 	  techniques: {
@@ -284706,17 +284745,40 @@
 	};
 
 	/**
-	 * The GPU particle shaders, in the shape `tw2.Register({ shaders })` takes.
+	 * The GPU particle shaders, and the inputs they bind.
 	 *
-	 * Hand written rather than translated. The shipped legacy set for this profile
-	 * does not compile - see `/docs/contracts/gles2-gpu-particles.md` - and the
-	 * current DX11 set is compute, which WebGL2 has no form of.
-	 *
-	 * None of them `replaces` anything, so registering them changes nothing about
-	 * how anything else draws.
-	 * @type {Array<Object>}
+	 * A CLASS with statics rather than a set of exported objects, and not for
+	 * tidiness: `config.js` spreads whole namespaces into `constructors`, so a
+	 * plain object that reaches one of those barrels is registered as a class and
+	 * rejected at load. Exposing these as statics means they can be re-exported
+	 * anywhere without that risk. See the note above `constructors` in
+	 * `config.js`.
 	 */
-	var particleShaders = [particleUpdate];
+	class Tw2GpuParticleShaders {}
+	/** The simulation step. @type {Object} */
+	Tw2GpuParticleShaders.Update = definition;
+	/** Every definition, in the shape `tw2.Register({ shaders })` takes. @type {Array<Object>} */
+	Tw2GpuParticleShaders.All = [definition];
+	/**
+	 * The named inputs, for a caller that has to set them.
+	 *
+	 * Grouped rather than loose so a consumer reads `Inputs.Time.name` instead
+	 * of importing four objects and hoping the names still match the shader.
+	 * @type {Object}
+	 */
+	Tw2GpuParticleShaders.Inputs = {
+	  Time: ParticleTime,
+	  Forces: ParticleForces,
+	  PositionMap: ParticlePositionMap,
+	  VelocityMap: ParticleVelocityMap
+	};
+
+	/**
+	 * Classes only, for the reason given in `src/unsupported/index.js`.
+	 *
+	 * The shader definitions themselves are not classes, so they are reached
+	 * through `Tw2GpuParticleShaders` statics rather than exported loose.
+	 */
 
 	tw2.runtime = runtime;
 	tw2.Register(config);
@@ -284733,7 +284795,7 @@
 	// Hand written GPU particle shaders. The shipped set for this profile does not
 	// compile and the DX11 set is compute; neither is reachable here.
 	tw2.Register({
-	  shaders: particleShaders
+	  shaders: Tw2GpuParticleShaders.All
 	});
 
 	exports.CCPWGL = tw2;

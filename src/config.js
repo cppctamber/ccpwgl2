@@ -419,6 +419,31 @@ export const config = {
         "json": core.Tw2JsonRes,
     },
 
+    // EVERY NAMED EXPORT OF THESE NAMESPACES IS REGISTERED AS A CLASS.
+    //
+    // The spread takes whatever the barrel exports, keyed by its export name,
+    // and hands it to the constructor store. A `.black` naming any of those keys
+    // gets that constructor - which is what makes registration automatic and
+    // means nothing has to maintain a list.
+    //
+    // The price is that these barrels may export CLASSES ONLY. A plain object
+    // reaching one is registered as a constructor and the store rejects it with
+    // "'Constructor' store value invalid", at load, taking the whole bundle
+    // down - not at the point of use, and not naming the file that did it.
+    //
+    // So:
+    //
+    //   - anything a barrel below re-exports must be a class;
+    //   - a shared helper belongs as a STATIC on the class it serves, not as a
+    //     loose exported function;
+    //   - data that is genuinely not a class - a shader definition, a lookup
+    //     table - must reach its consumer by direct import and must not be
+    //     re-exported through these barrels.
+    //
+    // This has cost twice: once for particle shader inputs exported through
+    // `unsupported/particle`, and it is why `src/picking` and
+    // `unsupported/particle/shaders` are imported directly by `src/index.js`
+    // rather than being folded into a namespace here.
     constructors: [
         { ...core },
         { ...curve },

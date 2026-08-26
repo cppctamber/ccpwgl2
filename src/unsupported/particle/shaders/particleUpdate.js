@@ -65,7 +65,7 @@ function constant(name, components, value)
  * place rather than in both.
  * @type {Object}
  */
-export const ParticleTime = constant(
+const ParticleTime = constant(
     "ParticleTime",
     [ "delta time", "unused", "unused", "unused" ],
     [ 0, 0, 0, 0 ]
@@ -80,19 +80,19 @@ export const ParticleTime = constant(
  * of assumption that is expensive to find later.
  * @type {Object}
  */
-export const ParticleForces = constant(
+const ParticleForces = constant(
     "ParticleForces",
     [ "gravity x", "gravity y", "gravity z", "drag" ],
     [ 0, 0, 0, 0 ]
 );
 
 /** The front position texture: xyz position, w age. @type {Object} */
-export const ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
+const ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
     ui: { components: [ "x", "y", "z", "age" ] }
 });
 
 /** The front velocity texture: xyz velocity, w lifetime. @type {Object} */
-export const ParticleVelocityMap = createTex("ParticleVelocityMap", TEX_2D, {
+const ParticleVelocityMap = createTex("ParticleVelocityMap", TEX_2D, {
     ui: { components: [ "x", "y", "z", "lifetime" ] }
 });
 
@@ -191,11 +191,7 @@ void main()
 `;
 
 
-/**
- * The manual shader definition, in the shape `tw2.Register({ shaders })` takes.
- * @type {Object}
- */
-export const particleUpdate = {
+const definition = {
     name: "tw2particleupdate",
     description: "GPU particle simulation step",
     techniques: {
@@ -225,3 +221,39 @@ export const particleUpdate = {
         }
     }
 };
+
+
+/**
+ * The GPU particle shaders, and the inputs they bind.
+ *
+ * A CLASS with statics rather than a set of exported objects, and not for
+ * tidiness: `config.js` spreads whole namespaces into `constructors`, so a
+ * plain object that reaches one of those barrels is registered as a class and
+ * rejected at load. Exposing these as statics means they can be re-exported
+ * anywhere without that risk. See the note above `constructors` in
+ * `config.js`.
+ */
+export class Tw2GpuParticleShaders
+{
+
+    /** The simulation step. @type {Object} */
+    static Update = definition;
+
+    /** Every definition, in the shape `tw2.Register({ shaders })` takes. @type {Array<Object>} */
+    static All = [ definition ];
+
+    /**
+     * The named inputs, for a caller that has to set them.
+     *
+     * Grouped rather than loose so a consumer reads `Inputs.Time.name` instead
+     * of importing four objects and hoping the names still match the shader.
+     * @type {Object}
+     */
+    static Inputs = {
+        Time: ParticleTime,
+        Forces: ParticleForces,
+        PositionMap: ParticlePositionMap,
+        VelocityMap: ParticleVelocityMap
+    };
+
+}
