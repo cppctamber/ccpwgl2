@@ -657,7 +657,25 @@ export class Tw2ShaderStage
         }
         else
         {
-            let source = shaderName + prefix + (isString(shaderCode) ? shaderCode : BytesToString(shaderCode));
+            const body = isString(shaderCode) ? shaderCode : BytesToString(shaderCode);
+
+            // `#version` MUST be the first line. Not "before anything but
+            // comments" as the desktop GLSL spec allows - measured against
+            // ANGLE, a leading `//name` comment gets
+            // "#version directive must occur on the first line of the shader"
+            // and every ES 3.00 construct after it then fails too.
+            //
+            // So the name comment and any prefix go AFTER the version line
+            // rather than before it. Without this a hand-written `sm_json`
+            // shader cannot be ES 3.00 at all, which rules out dynamic array
+            // indexing and multiple outputs - the two things ES 1.00 refuses
+            // and a translated shader most often needs.
+            const version = /^\s*#version[^\n]*\n/.exec(body);
+
+            let source = version
+                ? body.slice(0, version[0].length) + shaderName + prefix + body.slice(version[0].length)
+                : shaderName + prefix + body;
+
             source = source.substr(0, source.length - 1);
             gl.shaderSource(shader, source);
             gl.compileShader(shader);
