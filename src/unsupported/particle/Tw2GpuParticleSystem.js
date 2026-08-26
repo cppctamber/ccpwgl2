@@ -156,8 +156,52 @@ export class Tr2GpuParticleSystem
         this.visibleCount = 0;
     }
 
-    Emit()
+    /**
+     * Takes one batch of particles from an emitter.
+     *
+     * Ported from Tr2GpuParticleSystem.cpp:716-730. This is the CPU half and it
+     * is complete: a request is recorded, and the compute dispatch that consumes
+     * it is not written yet - see the class header. So an emitter can be driven,
+     * and what it asked for can be inspected, without a device.
+     *
+     * @param {Object} emitter - the CPU-side emitter struct
+     * @param {Number} id - the emitter's id; the unique bit says which kind
+     * @param {Number} hash - the params hash, which is what pools them
+     * @param {Object} params - the persistent parameters
+     * @returns {?Object} the recorded request, or null if emission is off
+     */
+    Emit(emitter, id, hash, params)
     {
+        if (!this.enableEmit) return null;
+
+        const request = {
+            emitter: Object.assign({}, emitter),
+            id,
+            hash,
+            params: Object.assign({}, params)
+        };
+
+        // Clamped to the whole system's capacity, not to what is free. Carbon
+        // clamps the same way: a single emitter cannot ask for more than the
+        // system could ever hold, and what happens when the pool is already
+        // full is the update stage's problem rather than the emitter's.
+        request.emitter.count = Math.min(emitter.count, this.maxParticles);
+
+        // A per batch seed, shifted into the high bits so the low bits are left
+        // for the particle index the shader adds (Tr2GpuParticleSystem.cpp:725).
+        request.emitter.emitterSeed = (Math.floor(Math.random() * 0x10000) << 16) >>> 0;
+
+        this._emitRequests.push(request);
+        return request;
+    }
+
+    /**
+     * The batches taken this frame and not yet dispatched.
+     * @returns {Array<Object>}
+     */
+    GetEmitRequests()
+    {
+        return this._emitRequests;
     }
 
     HasParticles()
