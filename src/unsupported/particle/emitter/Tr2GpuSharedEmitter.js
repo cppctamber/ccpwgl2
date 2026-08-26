@@ -13,6 +13,18 @@ const HASH_FLOATS = new Float32Array(33);
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
 {
 
+    /**
+     * Says this emitter takes an ARGUMENTS OBJECT rather than a `dt`.
+     *
+     * A GPU and a CPU emitter sit in the same `particleEmitters` list and are
+     * told apart by their update contract, not by their position. A caller that
+     * hands this one a bare number silently resets its clock instead of
+     * emitting - which is what every call site in the engine did before the
+     * check existed.
+     * @type {Boolean}
+     */
+    isGpuEmitter = true;
+
     @meta.string
     name = "";
 

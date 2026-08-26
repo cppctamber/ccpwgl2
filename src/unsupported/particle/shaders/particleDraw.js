@@ -294,8 +294,11 @@ void main()
     }
 
     // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb
-    // AND alpha (quads.sm_hi, `r0 = texture2D(s0, uv) * colour`). The fade
-    // therefore rides on alpha and the blend applies it.
+    // AND alpha - quads.sm_hi does r0 = texture2D(s0, uv) * colour and writes
+    // both. The fade therefore rides on alpha and the blend applies it.
+    //
+    // (No backticks in here: this GLSL is a JS template literal, and one would
+    // end the string.)
     //
     // NOT reproduced: that shader then encodes rgb to sRGB with the scene
     // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and

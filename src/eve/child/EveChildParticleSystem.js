@@ -2,6 +2,7 @@ import { meta } from "utils";
 import { mat4, quat, vec3 } from "math";
 import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
+import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
 
 
 @meta.define("EveChildParticleSystem", true)
@@ -131,6 +132,18 @@ export class EveChildParticleSystem extends EveChild
 
 
     /**
+     * Scratch for the GPU emitter arguments.
+     *
+     * Reused: the emitter reads it during the call and retains nothing, so one
+     * object serves every emitter in the scene rather than allocating per
+     * emitter per frame.
+     * @type {Object}
+     */
+    static global = {
+        emitArguments: { system: null, time: 0, parentTransform: null }
+    };
+
+    /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
@@ -156,7 +169,29 @@ export class EveChildParticleSystem extends EveChild
 
         for (let i = 0; i < this.particleEmitters.length; ++i)
         {
-            this.particleEmitters[i].Update(dt);
+            const emitter = this.particleEmitters[i];
+
+            // TWO KINDS OF EMITTER SHARE THIS LIST, and they take different
+            // arguments. A CPU emitter takes `dt`; a GPU emitter takes an
+            // arguments object, because it needs the system to hand its batch
+            // to and the transform that places it in the world.
+            //
+            // It cannot get the system from here: this holder's own
+            // `particleSystems` list is EMPTY for GPU emitters in the shipped
+            // data - checked across `res:/fisfx/**` - which matches Carbon,
+            // where the system belongs to the scene. So it comes from the one
+            // renderer. See Tw2GpuParticleRenderer for why there is one.
+            if (emitter.isGpuEmitter)
+            {
+                emitter.Update(Tw2GpuParticleRenderer.Get().GetEmitArguments(
+                    EveChildParticleSystem.global.emitArguments,
+                    this._worldTransform
+                ));
+            }
+            else
+            {
+                emitter.Update(dt);
+            }
         }
 
         for (let i = 0; i < this.particleSystems.length; ++i)

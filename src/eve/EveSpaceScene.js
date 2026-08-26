@@ -4,6 +4,7 @@ import { vec3, vec4, quat, mat4 } from "math";
 import { Tw2CarbonLightCollector } from "core/carbon/Tw2CarbonLightCollector";
 import { Tw2CarbonResourceBinder } from "core/carbon/Tw2CarbonResourceBinder";
 import { Tw2CarbonShadowRenderer } from "core/carbon/Tw2CarbonShadowRenderer";
+import { Tw2GpuParticleRenderer } from "unsupported/particle/Tw2GpuParticleRenderer";
 import { EveSpaceSceneShadowHandler } from "./EveSpaceSceneShadowHandler";
 import { EveSpaceSceneDepthHandler } from "./EveSpaceSceneDepthHandler";
 import { ComputeAutoNearFar, GetSceneBoundingSphere } from "./EveSceneNearFar";
@@ -883,6 +884,17 @@ export class EveSpaceScene extends meta.Model
 
         this.PerChildObject("Update", dt);
 
+        // AFTER the children, because their emitters have just queued this
+        // frame's emit requests and this is what expands them. Running it
+        // first would expand last frame's and leave this frame's waiting.
+        //
+        // Only when something has actually built it: no GPU emitter in the
+        // scene means no renderer and no cost.
+        if (Tw2GpuParticleRenderer.IsActive())
+        {
+            Tw2GpuParticleRenderer.Get().Update(dt);
+        }
+
         this.UpdateCarbonLights(dt);
         this.UpdateShLighting();
 
@@ -1473,6 +1485,23 @@ export class EveSpaceScene extends meta.Model
         }
 
         this.RenderCollectedBatches(mainAccumulator);
+
+        // GPU PARTICLES, drawn after the collected batches and before the
+        // scene is resolved, so they land on the scene image the way any other
+        // additive geometry does.
+        //
+        // Not a render batch: one draw covers every particle in every emitter
+        // at once, and there is nothing to sort or bin. It is additive and
+        // depth-read-only, which is also why it does not need sorting - the
+        // shipped system's five sorting stages are all stubs for the same
+        // reason.
+        //
+        // IsActive rather than Get, so a scene with no GPU emitters in it
+        // never builds the state textures at all.
+        if (Tw2GpuParticleRenderer.IsActive())
+        {
+            Tw2GpuParticleRenderer.Get().Render();
+        }
 
         // Resolve before the lensflare, post process, depth and distortion steps
         // below, all of which expect to find the drawn scene on the canvas.
