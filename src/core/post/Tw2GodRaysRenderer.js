@@ -4,6 +4,7 @@ import { RM_ADDITIVE, RM_FULLSCREEN } from "constant";
 import { mat4 } from "math";
 import { Tw2Effect } from "../mesh/Tw2Effect";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
+import { Tw2MultiRenderTarget } from "../Tw2MultiRenderTarget";
 import { Tw2TextureParameter } from "../parameter";
 
 

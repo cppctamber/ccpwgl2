@@ -229,6 +229,29 @@ export class Tw2MultiRenderTarget
     }
 
     /**
+     * The first attachment, under the name `Tw2RenderTarget` uses.
+     *
+     * So a single-attachment consumer can move to this target without changing
+     * how it reads the result - which matters, because the reason to move is
+     * usually that it is holding data and wants the filters set properly, not
+     * that it wants more attachments.
+     * @returns {?Tw2TextureRes}
+     */
+    get texture()
+    {
+        return this._textures[0] || null;
+    }
+
+    /**
+     * The first attachment's gl texture, under `Tw2RenderTarget`'s name.
+     * @returns {?WebGLTexture}
+     */
+    get glTexture()
+    {
+        return this._textures[0] ? this._textures[0].texture : null;
+    }
+
+    /**
      * Binds the target and sizes the viewport to it.
      *
      * `drawBuffers` is FRAMEBUFFER state, so it is restored by binding, and

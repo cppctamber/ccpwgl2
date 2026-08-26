@@ -164490,7 +164490,341 @@
 	  }
 	}) || _class$6j);
 
-	var _dec$6i, _class$6i;
+	var _dec$6i, _dec2$5U, _dec3$5t, _dec4$4R, _dec5$4j, _dec6$3N, _dec7$3e, _class$6i, _class2$5L, _descriptor$5N, _descriptor2$5h, _descriptor3$4F, _descriptor4$42, _descriptor5$3t, _descriptor6$2V;
+
+	/**
+	 * A render target with more than one colour attachment.
+	 *
+	 * `Tw2RenderTarget` attaches exactly one texture, which is right for almost
+	 * everything the engine draws: a pass produces a picture. Some passes produce
+	 * SEVERAL quantities from one set of inputs, and splitting them into separate
+	 * passes means reading those inputs again for every output.
+	 *
+	 * The GPU particle simulation is the case in hand. It reads a particle's
+	 * position and velocity and produces both a new position and a new velocity —
+	 * so with one attachment it costs two passes over the same texels, and with two
+	 * it costs one.
+	 *
+	 * A SEPARATE class rather than an option on `Tw2RenderTarget`, deliberately.
+	 * That target is used by nearly every pass in the engine and its single
+	 * attachment is load bearing for all of them; a second attachment reached
+	 * through the same object is a way for an unrelated pass to end up with a draw
+	 * buffer state it never asked for.
+	 *
+	 * ## WebGL2 only
+	 *
+	 * `drawBuffers` is core in WebGL2 and an extension in WebGL1, and this does not
+	 * take the extension path: a consumer that needs several outputs also needs
+	 * GLSL ES 3.00 to declare them, which is WebGL2 anyway. On WebGL1 this refuses
+	 * to create rather than half-working.
+	 */
+	var Tw2MultiRenderTarget = (_dec$6i = define("Tw2MultiRenderTarget"), _dec2$5U = string, _dec3$5t = uint, _dec4$4R = uint, _dec5$4j = uint, _dec6$3N = string, _dec7$3e = string, _dec$6i(_class$6i = (_class2$5L = class Tw2MultiRenderTarget {
+	  /**
+	   * @param {String} [name]
+	   * @param {Number} [width]
+	   * @param {Number} [height]
+	   * @param {Number} [count=2]
+	   * @param {String} [colorFormat]
+	   * @param {String} [filter="nearest"]
+	   */
+	  constructor() {
+	    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	    var width = arguments.length > 1 ? arguments[1] : undefined;
+	    var height = arguments.length > 2 ? arguments[2] : undefined;
+	    var count = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 2;
+	    var colorFormat = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+	    var filter = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "nearest";
+	    _initializerDefineProperty(this, "name", _descriptor$5N, this);
+	    _initializerDefineProperty(this, "width", _descriptor2$5h, this);
+	    _initializerDefineProperty(this, "height", _descriptor3$4F, this);
+	    /**
+	     * How many colour attachments, and so how many outputs a shader writing to
+	     * this must declare.
+	     * @type {Number}
+	     */
+	    _initializerDefineProperty(this, "count", _descriptor4$42, this);
+	    _initializerDefineProperty(this, "colorFormat", _descriptor5$3t, this);
+	    /**
+	     * "nearest" or "linear", applied at CREATION.
+	     *
+	     * Defaults to nearest, unlike `Tw2RenderTarget`, and deliberately. A target
+	     * with several outputs is nearly always carrying DATA rather than a
+	     * picture, where filtering averages two unrelated values. It also avoids a
+	     * completeness trap: a float texture with LINEAR filtering needs
+	     * `OES_texture_float_linear`, which is not guaranteed, and a device without
+	     * it can reject the texture rather than merely filtering differently.
+	     * @type {String}
+	     */
+	    _initializerDefineProperty(this, "filter", _descriptor6$2V, this);
+	    this._textures = [];
+	    this._frameBuffer = null;
+	    this._renderBuffer = null;
+	    this._isComplete = false;
+	    this._prevViewport = null;
+	    this._prevFramebuffer = null;
+	    this.name = name;
+	    this.colorFormat = colorFormat;
+	    this.filter = filter;
+	    if (width && height) this.Create(width, height, count, colorFormat, filter);
+	  }
+
+	  /**
+	   * Creates the attachments.
+	   *
+	   * @param {Number} width
+	   * @param {Number} height
+	   * @param {Number} [count=2]
+	   * @param {String} [colorFormat=this.colorFormat]
+	   * @param {String} [filter=this.filter]
+	   * @returns {Boolean} true if the target is usable
+	   */
+	  Create(width, height) {
+	    var count = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+	    var colorFormat = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.colorFormat;
+	    var filter = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.filter;
+	    var gl = tw2.gl,
+	      device = tw2.device;
+	    this.Destroy();
+	    if (device.glVersion < 2) {
+	      tw2.Warning({
+	        name: "Multi render target",
+	        description: "Requires WebGL2 - a consumer needing several outputs needs GLSL ES 3.00 to declare them"
+	      });
+	      return false;
+	    }
+	    var max = Math.min(gl.getParameter(gl.MAX_DRAW_BUFFERS), gl.getParameter(gl.MAX_COLOR_ATTACHMENTS));
+	    if (count < 1 || count > max) {
+	      tw2.Warning({
+	        name: "Multi render target",
+	        description: "".concat(count, " attachments requested but this device allows ").concat(max)
+	      });
+	      return false;
+	    }
+
+	    // The same resolver the single target uses, so a format means the same
+	    // thing in both and cannot drift.
+	    var _Tw2RenderTarget$Reso = Tw2RenderTarget.ResolveColorFormat(colorFormat),
+	      internalFormat = _Tw2RenderTarget$Reso.internalFormat,
+	      format = _Tw2RenderTarget$Reso.format,
+	      type = _Tw2RenderTarget$Reso.type;
+	    this.width = width;
+	    this.height = height;
+	    this.count = count;
+	    this.colorFormat = colorFormat;
+	    this.filter = filter;
+	    var glFilter = filter === "linear" ? gl.LINEAR : gl.NEAREST;
+	    this._frameBuffer = gl.createFramebuffer();
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+	    var buffers = [];
+	    for (var i = 0; i < count; i++) {
+	      var res = new Tw2TextureRes();
+	      res.suppressLogging = true;
+	      res.Attach(gl.createTexture());
+	      res._target = gl.TEXTURE_2D;
+	      res._internalFormat = internalFormat;
+	      res._format = format;
+	      res._type = type;
+	      res._hasMipMaps = false;
+	      res._forceMipMaps = false;
+	      res._width = width;
+	      res._height = height;
+	      gl.bindTexture(gl.TEXTURE_2D, res.texture);
+	      gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
+	      // BOTH filters, set here rather than left to a default. The single
+	      // target leaves MAG alone, which is survivable for a picture and not
+	      // for data.
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, glFilter);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, glFilter);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+	      // And again for the effect-bound path: Tw2TextureRes re-applies an
+	      // effect's sampler when it binds, which would put LINEAR back.
+	      res._forceNearest = glFilter === gl.NEAREST;
+	      gl.bindTexture(gl.TEXTURE_2D, null);
+	      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, res.texture, 0);
+	      this._textures.push(res);
+	      buffers.push(gl.COLOR_ATTACHMENT0 + i);
+	    }
+
+	    // Without this only attachment zero is written, whatever the shader
+	    // declares - and the other outputs are dropped in silence rather than
+	    // raising anything.
+	    gl.drawBuffers(buffers);
+	    this._isComplete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	    if (!this._isComplete) {
+	      // Fail soft, like the single target: incompleteness can be
+	      // transient, and an owner should be able to disable itself through
+	      // IsGood rather than take the frame down.
+	      this.Destroy();
+	      return false;
+	    }
+	    return true;
+	  }
+
+	  /**
+	   * @returns {Boolean}
+	   */
+	  IsGood() {
+	    if (!this._isComplete || !this._frameBuffer || this._textures.length !== this.count) return false;
+	    for (var i = 0; i < this._textures.length; i++) {
+	      if (!this._textures[i] || !this._textures[i].IsGood()) return false;
+	    }
+	    return true;
+	  }
+
+	  /**
+	   * The texture resource behind one attachment.
+	   * @param {Number} index
+	   * @returns {?Tw2TextureRes}
+	   */
+	  GetTexture(index) {
+	    return this._textures[index] || null;
+	  }
+
+	  /**
+	   * The first attachment, under the name `Tw2RenderTarget` uses.
+	   *
+	   * So a single-attachment consumer can move to this target without changing
+	   * how it reads the result - which matters, because the reason to move is
+	   * usually that it is holding data and wants the filters set properly, not
+	   * that it wants more attachments.
+	   * @returns {?Tw2TextureRes}
+	   */
+	  get texture() {
+	    return this._textures[0] || null;
+	  }
+
+	  /**
+	   * The first attachment's gl texture, under `Tw2RenderTarget`'s name.
+	   * @returns {?WebGLTexture}
+	   */
+	  get glTexture() {
+	    return this._textures[0] ? this._textures[0].texture : null;
+	  }
+
+	  /**
+	   * Binds the target and sizes the viewport to it.
+	   *
+	   * `drawBuffers` is FRAMEBUFFER state, so it is restored by binding, and
+	   * does not have to be set again here.
+	   *
+	   * @param {Object} [clearOptions]
+	   */
+	  Set(clearOptions) {
+	    if (!this.IsGood()) throw new Error("Invalid frame buffer");
+	    var gl = tw2.gl;
+	    this._prevViewport = gl.getParameter(gl.VIEWPORT);
+	    this._prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+	    gl.viewport(0, 0, this.width, this.height);
+	    if (clearOptions) {
+	      if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
+	      tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
+	    }
+	  }
+
+	  /**
+	   * Restores what was bound before {@link Set}.
+	   */
+	  Unset() {
+	    var gl = tw2.gl;
+	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._prevFramebuffer);
+	    if (this._prevViewport) {
+	      gl.viewport(this._prevViewport[0], this._prevViewport[1], this._prevViewport[2], this._prevViewport[3]);
+	    }
+	    this._prevFramebuffer = null;
+	    this._prevViewport = null;
+	  }
+
+	  /**
+	   * Sets, calls, and unsets even if the call throws.
+	   * @param {Function} func
+	   * @returns {Boolean} true if it ran
+	   */
+	  SetCallUnset(func) {
+	    if (!this.IsGood()) return false;
+	    this.Set();
+	    try {
+	      func(this);
+	    } finally {
+	      this.Unset();
+	    }
+	    return true;
+	  }
+
+	  /**
+	   * @returns {Tw2MultiRenderTarget}
+	   */
+	  Destroy() {
+	    var gl = tw2.gl;
+
+	    // DeleteGL, not Unload. These textures are OWNED by the target and have
+	    // no resource lifecycle of their own - Unload runs the resource path,
+	    // which is for things the resource manager loaded. Tw2DepthRenderTarget
+	    // is the one that gets this right.
+	    for (var i = 0; i < this._textures.length; i++) {
+	      if (this._textures[i]) this._textures[i].DeleteGL();
+	    }
+	    this._textures = [];
+	    if (this._renderBuffer) {
+	      gl.deleteRenderbuffer(this._renderBuffer);
+	      this._renderBuffer = null;
+	    }
+	    if (this._frameBuffer) {
+	      gl.deleteFramebuffer(this._frameBuffer);
+	      this._frameBuffer = null;
+	    }
+	    this._isComplete = false;
+	    this.count = 0;
+	    return this;
+	  }
+	}, _descriptor$5N = _applyDecoratedDescriptor(_class2$5L.prototype, "name", [_dec2$5U], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "";
+	  }
+	}), _descriptor2$5h = _applyDecoratedDescriptor(_class2$5L.prototype, "width", [_dec3$5t], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return 0;
+	  }
+	}), _descriptor3$4F = _applyDecoratedDescriptor(_class2$5L.prototype, "height", [_dec4$4R], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return 0;
+	  }
+	}), _descriptor4$42 = _applyDecoratedDescriptor(_class2$5L.prototype, "count", [_dec5$4j], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return 0;
+	  }
+	}), _descriptor5$3t = _applyDecoratedDescriptor(_class2$5L.prototype, "colorFormat", [_dec6$3N], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return null;
+	  }
+	}), _descriptor6$2V = _applyDecoratedDescriptor(_class2$5L.prototype, "filter", [_dec7$3e], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "nearest";
+	  }
+	}), _class2$5L)) || _class$6i);
+
+	var _dec$6h, _class$6h;
 
 	// Authored `.fx` paths, NOT compiled ones. `Tw2Device.ToEffectPath` substitutes
 	// the profile directory and appends the quality tier, so the same path resolves
@@ -164542,7 +164876,7 @@
 	 *    defaults the buffer to white so the rays draw unoccluded; black there
 	 *    multiplies the whole pass away with nothing to attribute it to.
 	 */
-	var Tw2GodRaysRenderer = (_dec$6i = define("Tw2GodRaysRenderer"), _dec$6i(_class$6i = class Tw2GodRaysRenderer {
+	var Tw2GodRaysRenderer = (_dec$6h = define("Tw2GodRaysRenderer"), _dec$6h(_class$6h = class Tw2GodRaysRenderer {
 	  constructor() {
 	    this._downsampleEffect = null;
 	    this._godRayEffect = null;
@@ -164904,24 +165238,24 @@
 	    this._width = 0;
 	    this._height = 0;
 	  }
-	}) || _class$6i);
+	}) || _class$6h);
 
-	var _dec$6h, _dec2$5U, _class$6h, _class2$5L, _descriptor$5N;
-	var Tw2Float = (_dec$6h = define("Tw2Float", "TriFloat"), _dec2$5U = float, _dec$6h(_class$6h = (_class2$5L = class Tw2Float extends Model {
+	var _dec$6g, _dec2$5T, _class$6g, _class2$5K, _descriptor$5M;
+	var Tw2Float = (_dec$6g = define("Tw2Float", "TriFloat"), _dec2$5T = float, _dec$6g(_class$6g = (_class2$5K = class Tw2Float extends Model {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "value", _descriptor$5N, this);
+	    _initializerDefineProperty(this, "value", _descriptor$5M, this);
 	  }
-	}, _descriptor$5N = _applyDecoratedDescriptor(_class2$5L.prototype, "value", [_dec2$5U], {
+	}, _descriptor$5M = _applyDecoratedDescriptor(_class2$5K.prototype, "value", [_dec2$5T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _class2$5L)) || _class$6h);
+	}), _class2$5K)) || _class$6g);
 
-	var _dec$6g, _dec2$5T, _dec3$5t, _class$6g, _class2$5K, _descriptor$5M, _descriptor2$5h;
+	var _dec$6f, _dec2$5S, _dec3$5s, _class$6f, _class2$5J, _descriptor$5L, _descriptor2$5g;
 
 	/**
 	 * The sibling of {@link Tw2RuntimeInstanceData}: an instance-data provider that
@@ -164941,13 +165275,13 @@
 	 * `Float32Array` and uploads it as is, because the producer (a distribution's
 	 * placement list) already has the data in that shape.
 	 */
-	var Tw2DirectInstanceData = (_dec$6g = define("Tw2DirectInstanceData", "Tr2DirectInstanceData"), _dec2$5T = vector3, _dec3$5t = vector3, _dec$6g(_class$6g = (_class2$5K = class Tw2DirectInstanceData extends Model {
+	var Tw2DirectInstanceData = (_dec$6f = define("Tw2DirectInstanceData", "Tr2DirectInstanceData"), _dec2$5S = vector3, _dec3$5s = vector3, _dec$6f(_class$6f = (_class2$5J = class Tw2DirectInstanceData extends Model {
 	  constructor() {
 	    super(...arguments);
 	    /** m_aabb.m_min (Vector3) [READ] */
-	    _initializerDefineProperty(this, "aabbMin", _descriptor$5M, this);
+	    _initializerDefineProperty(this, "aabbMin", _descriptor$5L, this);
 	    /** m_aabb.m_max (Vector3) [READ] */
-	    _initializerDefineProperty(this, "aabbMax", _descriptor2$5h, this);
+	    _initializerDefineProperty(this, "aabbMax", _descriptor2$5g, this);
 	    this._count = 0;
 	    this._stride = 0;
 	    this._declaration = null;
@@ -165126,23 +165460,23 @@
 	    var out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	    return out;
 	  }
-	}, _descriptor$5M = _applyDecoratedDescriptor(_class2$5K.prototype, "aabbMin", [_dec2$5T], {
+	}, _descriptor$5L = _applyDecoratedDescriptor(_class2$5J.prototype, "aabbMin", [_dec2$5S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor2$5h = _applyDecoratedDescriptor(_class2$5K.prototype, "aabbMax", [_dec3$5t], {
+	}), _descriptor2$5g = _applyDecoratedDescriptor(_class2$5J.prototype, "aabbMax", [_dec3$5s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _class2$5K)) || _class$6g);
+	}), _class2$5J)) || _class$6f);
 
-	var _dec$6f, _dec2$5S, _dec3$5s, _dec4$4R, _dec5$4j, _dec6$3N, _dec7$3e, _dec8$2N, _dec9$2s, _dec0$2i, _dec1$26, _dec10$1R, _class$6f, _class2$5J, _descriptor$5L, _descriptor2$5g, _descriptor3$4F, _descriptor4$42, _descriptor5$3t, _descriptor6$2V, _descriptor7$2r, _descriptor8$2c, _descriptor9$21, _descriptor0$1Q, _Tw2ParticleElement;
+	var _dec$6e, _dec2$5R, _dec3$5r, _dec4$4Q, _dec5$4i, _dec6$3M, _dec7$3d, _dec8$2N, _dec9$2s, _dec0$2i, _dec1$26, _dec10$1R, _class$6e, _class2$5I, _descriptor$5K, _descriptor2$5f, _descriptor3$4E, _descriptor4$41, _descriptor5$3s, _descriptor6$2U, _descriptor7$2r, _descriptor8$2c, _descriptor9$21, _descriptor0$1Q, _Tw2ParticleElement;
 	var ParticleType = {
 	  LIFETIME: 0,
 	  POSITION: 1,
@@ -165150,15 +165484,15 @@
 	  MASS: 3,
 	  CUSTOM: 4
 	};
-	var Tw2ParticleElement = (_dec$6f = define("Tw2ParticleElement"), _dec2$5S = enums(ParticleType), _dec3$5s = string, _dec4$4R = uint, _dec5$4j = uint, _dec6$3N = boolean, _dec7$3e = uint, _dec8$2N = uint, _dec9$2s = uint, _dec0$2i = uint, _dec1$26 = boolean, _dec10$1R = isPrivate, _dec$6f(_class$6f = (_class2$5J = (_Tw2ParticleElement = class Tw2ParticleElement {
+	var Tw2ParticleElement = (_dec$6e = define("Tw2ParticleElement"), _dec2$5R = enums(ParticleType), _dec3$5r = string, _dec4$4Q = uint, _dec5$4i = uint, _dec6$3M = boolean, _dec7$3d = uint, _dec8$2N = uint, _dec9$2s = uint, _dec0$2i = uint, _dec1$26 = boolean, _dec10$1R = isPrivate, _dec$6e(_class$6e = (_class2$5I = (_Tw2ParticleElement = class Tw2ParticleElement {
 	  constructor() {
-	    _initializerDefineProperty(this, "elementType", _descriptor$5L, this);
-	    _initializerDefineProperty(this, "customName", _descriptor2$5g, this);
-	    _initializerDefineProperty(this, "dimension", _descriptor3$4F, this);
-	    _initializerDefineProperty(this, "usageIndex", _descriptor4$42, this);
-	    _initializerDefineProperty(this, "usedByGPU", _descriptor5$3t, this);
+	    _initializerDefineProperty(this, "elementType", _descriptor$5K, this);
+	    _initializerDefineProperty(this, "customName", _descriptor2$5f, this);
+	    _initializerDefineProperty(this, "dimension", _descriptor3$4E, this);
+	    _initializerDefineProperty(this, "usageIndex", _descriptor4$41, this);
+	    _initializerDefineProperty(this, "usedByGPU", _descriptor5$3s, this);
 	    this.buffer = null;
-	    _initializerDefineProperty(this, "startOffset", _descriptor6$2V, this);
+	    _initializerDefineProperty(this, "startOffset", _descriptor6$2U, this);
 	    _initializerDefineProperty(this, "offset", _descriptor7$2r, this);
 	    _initializerDefineProperty(this, "instanceStride", _descriptor8$2c, this);
 	    _initializerDefineProperty(this, "vertexStride", _descriptor9$21, this);
@@ -165209,87 +165543,87 @@
 	   * Particle element types
 	   * @type {{LIFETIME: number, POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number}}
 	   */
-	}, _Tw2ParticleElement.Type = ParticleType, _Tw2ParticleElement), _descriptor$5L = _applyDecoratedDescriptor(_class2$5J.prototype, "elementType", [_dec2$5S], {
+	}, _Tw2ParticleElement.Type = ParticleType, _Tw2ParticleElement), _descriptor$5K = _applyDecoratedDescriptor(_class2$5I.prototype, "elementType", [_dec2$5R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor2$5g = _applyDecoratedDescriptor(_class2$5J.prototype, "customName", [_dec3$5s], {
+	}), _descriptor2$5f = _applyDecoratedDescriptor(_class2$5I.prototype, "customName", [_dec3$5r], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor3$4F = _applyDecoratedDescriptor(_class2$5J.prototype, "dimension", [_dec4$4R], {
+	}), _descriptor3$4E = _applyDecoratedDescriptor(_class2$5I.prototype, "dimension", [_dec4$4Q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor4$42 = _applyDecoratedDescriptor(_class2$5J.prototype, "usageIndex", [_dec5$4j], {
+	}), _descriptor4$41 = _applyDecoratedDescriptor(_class2$5I.prototype, "usageIndex", [_dec5$4i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor5$3t = _applyDecoratedDescriptor(_class2$5J.prototype, "usedByGPU", [_dec6$3N], {
+	}), _descriptor5$3s = _applyDecoratedDescriptor(_class2$5I.prototype, "usedByGPU", [_dec6$3M], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor6$2V = _applyDecoratedDescriptor(_class2$5J.prototype, "startOffset", [_dec7$3e], {
+	}), _descriptor6$2U = _applyDecoratedDescriptor(_class2$5I.prototype, "startOffset", [_dec7$3d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor7$2r = _applyDecoratedDescriptor(_class2$5J.prototype, "offset", [_dec8$2N], {
+	}), _descriptor7$2r = _applyDecoratedDescriptor(_class2$5I.prototype, "offset", [_dec8$2N], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$2c = _applyDecoratedDescriptor(_class2$5J.prototype, "instanceStride", [_dec9$2s], {
+	}), _descriptor8$2c = _applyDecoratedDescriptor(_class2$5I.prototype, "instanceStride", [_dec9$2s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor9$21 = _applyDecoratedDescriptor(_class2$5J.prototype, "vertexStride", [_dec0$2i], {
+	}), _descriptor9$21 = _applyDecoratedDescriptor(_class2$5I.prototype, "vertexStride", [_dec0$2i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor0$1Q = _applyDecoratedDescriptor(_class2$5J.prototype, "dirty", [_dec1$26, _dec10$1R], {
+	}), _descriptor0$1Q = _applyDecoratedDescriptor(_class2$5I.prototype, "dirty", [_dec1$26, _dec10$1R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _class2$5J)) || _class$6f);
+	}), _class2$5I)) || _class$6e);
 
-	var _dec$6e, _dec2$5R, _dec3$5r, _dec4$4Q, _dec5$4i, _dec6$3M, _dec7$3d, _class$6e, _class2$5I, _descriptor$5K, _descriptor2$5f, _descriptor3$4E, _descriptor4$41, _descriptor5$3s;
-	var Tw2ParticleElementDeclaration = (_dec$6e = define("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2$5R = string, _dec3$5r = uint, _dec4$4Q = uint, _dec5$4i = enums(Tw2ParticleElement.Type), _dec6$3M = uint, _dec7$3d = boolean, _dec$6e(_class$6e = (_class2$5I = class Tw2ParticleElementDeclaration extends Model {
+	var _dec$6d, _dec2$5Q, _dec3$5q, _dec4$4P, _dec5$4h, _dec6$3L, _dec7$3c, _class$6d, _class2$5H, _descriptor$5J, _descriptor2$5e, _descriptor3$4D, _descriptor4$40, _descriptor5$3r;
+	var Tw2ParticleElementDeclaration = (_dec$6d = define("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2$5Q = string, _dec3$5q = uint, _dec4$4P = uint, _dec5$4h = enums(Tw2ParticleElement.Type), _dec6$3L = uint, _dec7$3c = boolean, _dec$6d(_class$6d = (_class2$5H = class Tw2ParticleElementDeclaration extends Model {
 	  constructor() {
 	    super(...arguments);
-	    _initializerDefineProperty(this, "customName", _descriptor$5K, this);
-	    _initializerDefineProperty(this, "dimension", _descriptor2$5f, this);
-	    _initializerDefineProperty(this, "elementType", _descriptor3$4E, this);
-	    _initializerDefineProperty(this, "usageIndex", _descriptor4$41, this);
-	    _initializerDefineProperty(this, "usedByGPU", _descriptor5$3s, this);
+	    _initializerDefineProperty(this, "customName", _descriptor$5J, this);
+	    _initializerDefineProperty(this, "dimension", _descriptor2$5e, this);
+	    _initializerDefineProperty(this, "elementType", _descriptor3$4D, this);
+	    _initializerDefineProperty(this, "usageIndex", _descriptor4$40, this);
+	    _initializerDefineProperty(this, "usedByGPU", _descriptor5$3r, this);
 	  }
 	  /**
 	   * Gets the element's dimension
@@ -165337,45 +165671,45 @@
 	      elements: this.GetDimension()
 	    });
 	  }
-	}, _descriptor$5K = _applyDecoratedDescriptor(_class2$5I.prototype, "customName", [_dec2$5R], {
+	}, _descriptor$5J = _applyDecoratedDescriptor(_class2$5H.prototype, "customName", [_dec2$5Q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor2$5f = _applyDecoratedDescriptor(_class2$5I.prototype, "dimension", [_dec3$5r], {
+	}), _descriptor2$5e = _applyDecoratedDescriptor(_class2$5H.prototype, "dimension", [_dec3$5q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor3$4E = _applyDecoratedDescriptor(_class2$5I.prototype, "elementType", [_dec4$4Q, _dec5$4i], {
+	}), _descriptor3$4D = _applyDecoratedDescriptor(_class2$5H.prototype, "elementType", [_dec4$4P, _dec5$4h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return Tw2ParticleElement.Type.CUSTOM;
 	  }
-	}), _descriptor4$41 = _applyDecoratedDescriptor(_class2$5I.prototype, "usageIndex", [_dec6$3M], {
+	}), _descriptor4$40 = _applyDecoratedDescriptor(_class2$5H.prototype, "usageIndex", [_dec6$3L], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor5$3s = _applyDecoratedDescriptor(_class2$5I.prototype, "usedByGPU", [_dec7$3d], {
+	}), _descriptor5$3r = _applyDecoratedDescriptor(_class2$5H.prototype, "usedByGPU", [_dec7$3c], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _class2$5I)) || _class$6e);
+	}), _class2$5H)) || _class$6d);
 
-	var _dec$6d, _class$6d;
-	var Tw2RuntimeInstanceData = (_dec$6d = define("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec$6d(_class$6d = class Tw2RuntimeInstanceData extends Model {
+	var _dec$6c, _class$6c;
+	var Tw2RuntimeInstanceData = (_dec$6c = define("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec$6c(_class$6c = class Tw2RuntimeInstanceData extends Model {
 	  constructor() {
 	    super(...arguments);
 	    this._count = 0;
@@ -165542,10 +165876,10 @@
 	  GetInstanceCount() {
 	    return this._count;
 	  }
-	}) || _class$6d);
+	}) || _class$6c);
 
-	var _dec$6c, _class$6c, _Tw2Frustum;
-	var Tw2Frustum = (_dec$6c = define("Tw2Frustum"), _dec$6c(_class$6c = (_Tw2Frustum = class Tw2Frustum {
+	var _dec$6b, _class$6b, _Tw2Frustum;
+	var Tw2Frustum = (_dec$6b = define("Tw2Frustum"), _dec$6b(_class$6b = (_Tw2Frustum = class Tw2Frustum {
 	  constructor() {
 	    this._halfWidthProjection = 1;
 	    this._viewPos = null;
@@ -165810,320 +166144,7 @@
 	  mat4_0: mat4$1.create(),
 	  cornerXY: [[-1, -1], [1, -1], [1, 1], [-1, 1]],
 	  cornerCache: [vec3$3.create(), vec3$3.create(), vec3$3.create(), vec3$3.create(), vec3$3.create(), vec3$3.create(), vec3$3.create(), vec3$3.create()]
-	}, _Tw2Frustum)) || _class$6c);
-
-	var _dec$6b, _dec2$5Q, _dec3$5q, _dec4$4P, _dec5$4h, _dec6$3L, _dec7$3c, _class$6b, _class2$5H, _descriptor$5J, _descriptor2$5e, _descriptor3$4D, _descriptor4$40, _descriptor5$3r, _descriptor6$2U;
-
-	/**
-	 * A render target with more than one colour attachment.
-	 *
-	 * `Tw2RenderTarget` attaches exactly one texture, which is right for almost
-	 * everything the engine draws: a pass produces a picture. Some passes produce
-	 * SEVERAL quantities from one set of inputs, and splitting them into separate
-	 * passes means reading those inputs again for every output.
-	 *
-	 * The GPU particle simulation is the case in hand. It reads a particle's
-	 * position and velocity and produces both a new position and a new velocity —
-	 * so with one attachment it costs two passes over the same texels, and with two
-	 * it costs one.
-	 *
-	 * A SEPARATE class rather than an option on `Tw2RenderTarget`, deliberately.
-	 * That target is used by nearly every pass in the engine and its single
-	 * attachment is load bearing for all of them; a second attachment reached
-	 * through the same object is a way for an unrelated pass to end up with a draw
-	 * buffer state it never asked for.
-	 *
-	 * ## WebGL2 only
-	 *
-	 * `drawBuffers` is core in WebGL2 and an extension in WebGL1, and this does not
-	 * take the extension path: a consumer that needs several outputs also needs
-	 * GLSL ES 3.00 to declare them, which is WebGL2 anyway. On WebGL1 this refuses
-	 * to create rather than half-working.
-	 */
-	var Tw2MultiRenderTarget = (_dec$6b = define("Tw2MultiRenderTarget"), _dec2$5Q = string, _dec3$5q = uint, _dec4$4P = uint, _dec5$4h = uint, _dec6$3L = string, _dec7$3c = string, _dec$6b(_class$6b = (_class2$5H = class Tw2MultiRenderTarget {
-	  /**
-	   * @param {String} [name]
-	   * @param {Number} [width]
-	   * @param {Number} [height]
-	   * @param {Number} [count=2]
-	   * @param {String} [colorFormat]
-	   * @param {String} [filter="nearest"]
-	   */
-	  constructor() {
-	    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-	    var width = arguments.length > 1 ? arguments[1] : undefined;
-	    var height = arguments.length > 2 ? arguments[2] : undefined;
-	    var count = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 2;
-	    var colorFormat = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
-	    var filter = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : "nearest";
-	    _initializerDefineProperty(this, "name", _descriptor$5J, this);
-	    _initializerDefineProperty(this, "width", _descriptor2$5e, this);
-	    _initializerDefineProperty(this, "height", _descriptor3$4D, this);
-	    /**
-	     * How many colour attachments, and so how many outputs a shader writing to
-	     * this must declare.
-	     * @type {Number}
-	     */
-	    _initializerDefineProperty(this, "count", _descriptor4$40, this);
-	    _initializerDefineProperty(this, "colorFormat", _descriptor5$3r, this);
-	    /**
-	     * "nearest" or "linear", applied at CREATION.
-	     *
-	     * Defaults to nearest, unlike `Tw2RenderTarget`, and deliberately. A target
-	     * with several outputs is nearly always carrying DATA rather than a
-	     * picture, where filtering averages two unrelated values. It also avoids a
-	     * completeness trap: a float texture with LINEAR filtering needs
-	     * `OES_texture_float_linear`, which is not guaranteed, and a device without
-	     * it can reject the texture rather than merely filtering differently.
-	     * @type {String}
-	     */
-	    _initializerDefineProperty(this, "filter", _descriptor6$2U, this);
-	    this._textures = [];
-	    this._frameBuffer = null;
-	    this._renderBuffer = null;
-	    this._isComplete = false;
-	    this._prevViewport = null;
-	    this._prevFramebuffer = null;
-	    this.name = name;
-	    this.colorFormat = colorFormat;
-	    this.filter = filter;
-	    if (width && height) this.Create(width, height, count, colorFormat, filter);
-	  }
-
-	  /**
-	   * Creates the attachments.
-	   *
-	   * @param {Number} width
-	   * @param {Number} height
-	   * @param {Number} [count=2]
-	   * @param {String} [colorFormat=this.colorFormat]
-	   * @param {String} [filter=this.filter]
-	   * @returns {Boolean} true if the target is usable
-	   */
-	  Create(width, height) {
-	    var count = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
-	    var colorFormat = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.colorFormat;
-	    var filter = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.filter;
-	    var gl = tw2.gl,
-	      device = tw2.device;
-	    this.Destroy();
-	    if (device.glVersion < 2) {
-	      tw2.Warning({
-	        name: "Multi render target",
-	        description: "Requires WebGL2 - a consumer needing several outputs needs GLSL ES 3.00 to declare them"
-	      });
-	      return false;
-	    }
-	    var max = Math.min(gl.getParameter(gl.MAX_DRAW_BUFFERS), gl.getParameter(gl.MAX_COLOR_ATTACHMENTS));
-	    if (count < 1 || count > max) {
-	      tw2.Warning({
-	        name: "Multi render target",
-	        description: "".concat(count, " attachments requested but this device allows ").concat(max)
-	      });
-	      return false;
-	    }
-
-	    // The same resolver the single target uses, so a format means the same
-	    // thing in both and cannot drift.
-	    var _Tw2RenderTarget$Reso = Tw2RenderTarget.ResolveColorFormat(colorFormat),
-	      internalFormat = _Tw2RenderTarget$Reso.internalFormat,
-	      format = _Tw2RenderTarget$Reso.format,
-	      type = _Tw2RenderTarget$Reso.type;
-	    this.width = width;
-	    this.height = height;
-	    this.count = count;
-	    this.colorFormat = colorFormat;
-	    this.filter = filter;
-	    var glFilter = filter === "linear" ? gl.LINEAR : gl.NEAREST;
-	    this._frameBuffer = gl.createFramebuffer();
-	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
-	    var buffers = [];
-	    for (var i = 0; i < count; i++) {
-	      var res = new Tw2TextureRes();
-	      res.suppressLogging = true;
-	      res.Attach(gl.createTexture());
-	      res._target = gl.TEXTURE_2D;
-	      res._internalFormat = internalFormat;
-	      res._format = format;
-	      res._type = type;
-	      res._hasMipMaps = false;
-	      res._forceMipMaps = false;
-	      res._width = width;
-	      res._height = height;
-	      gl.bindTexture(gl.TEXTURE_2D, res.texture);
-	      gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
-	      // BOTH filters, set here rather than left to a default. The single
-	      // target leaves MAG alone, which is survivable for a picture and not
-	      // for data.
-	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, glFilter);
-	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, glFilter);
-	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-	      // And again for the effect-bound path: Tw2TextureRes re-applies an
-	      // effect's sampler when it binds, which would put LINEAR back.
-	      res._forceNearest = glFilter === gl.NEAREST;
-	      gl.bindTexture(gl.TEXTURE_2D, null);
-	      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, res.texture, 0);
-	      this._textures.push(res);
-	      buffers.push(gl.COLOR_ATTACHMENT0 + i);
-	    }
-
-	    // Without this only attachment zero is written, whatever the shader
-	    // declares - and the other outputs are dropped in silence rather than
-	    // raising anything.
-	    gl.drawBuffers(buffers);
-	    this._isComplete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
-	    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	    if (!this._isComplete) {
-	      // Fail soft, like the single target: incompleteness can be
-	      // transient, and an owner should be able to disable itself through
-	      // IsGood rather than take the frame down.
-	      this.Destroy();
-	      return false;
-	    }
-	    return true;
-	  }
-
-	  /**
-	   * @returns {Boolean}
-	   */
-	  IsGood() {
-	    if (!this._isComplete || !this._frameBuffer || this._textures.length !== this.count) return false;
-	    for (var i = 0; i < this._textures.length; i++) {
-	      if (!this._textures[i] || !this._textures[i].IsGood()) return false;
-	    }
-	    return true;
-	  }
-
-	  /**
-	   * The texture resource behind one attachment.
-	   * @param {Number} index
-	   * @returns {?Tw2TextureRes}
-	   */
-	  GetTexture(index) {
-	    return this._textures[index] || null;
-	  }
-
-	  /**
-	   * Binds the target and sizes the viewport to it.
-	   *
-	   * `drawBuffers` is FRAMEBUFFER state, so it is restored by binding, and
-	   * does not have to be set again here.
-	   *
-	   * @param {Object} [clearOptions]
-	   */
-	  Set(clearOptions) {
-	    if (!this.IsGood()) throw new Error("Invalid frame buffer");
-	    var gl = tw2.gl;
-	    this._prevViewport = gl.getParameter(gl.VIEWPORT);
-	    this._prevFramebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
-	    gl.viewport(0, 0, this.width, this.height);
-	    if (clearOptions) {
-	      if (clearOptions.clearColor) tw2.SetClearColor(clearOptions.clearColor);
-	      tw2.ClearBufferBits(clearOptions.clearColorBit, clearOptions.clearDepthBit, clearOptions.clearStencilBit);
-	    }
-	  }
-
-	  /**
-	   * Restores what was bound before {@link Set}.
-	   */
-	  Unset() {
-	    var gl = tw2.gl;
-	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._prevFramebuffer);
-	    if (this._prevViewport) {
-	      gl.viewport(this._prevViewport[0], this._prevViewport[1], this._prevViewport[2], this._prevViewport[3]);
-	    }
-	    this._prevFramebuffer = null;
-	    this._prevViewport = null;
-	  }
-
-	  /**
-	   * Sets, calls, and unsets even if the call throws.
-	   * @param {Function} func
-	   * @returns {Boolean} true if it ran
-	   */
-	  SetCallUnset(func) {
-	    if (!this.IsGood()) return false;
-	    this.Set();
-	    try {
-	      func(this);
-	    } finally {
-	      this.Unset();
-	    }
-	    return true;
-	  }
-
-	  /**
-	   * @returns {Tw2MultiRenderTarget}
-	   */
-	  Destroy() {
-	    var gl = tw2.gl;
-
-	    // DeleteGL, not Unload. These textures are OWNED by the target and have
-	    // no resource lifecycle of their own - Unload runs the resource path,
-	    // which is for things the resource manager loaded. Tw2DepthRenderTarget
-	    // is the one that gets this right.
-	    for (var i = 0; i < this._textures.length; i++) {
-	      if (this._textures[i]) this._textures[i].DeleteGL();
-	    }
-	    this._textures = [];
-	    if (this._renderBuffer) {
-	      gl.deleteRenderbuffer(this._renderBuffer);
-	      this._renderBuffer = null;
-	    }
-	    if (this._frameBuffer) {
-	      gl.deleteFramebuffer(this._frameBuffer);
-	      this._frameBuffer = null;
-	    }
-	    this._isComplete = false;
-	    this.count = 0;
-	    return this;
-	  }
-	}, _descriptor$5J = _applyDecoratedDescriptor(_class2$5H.prototype, "name", [_dec2$5Q], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "";
-	  }
-	}), _descriptor2$5e = _applyDecoratedDescriptor(_class2$5H.prototype, "width", [_dec3$5q], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor3$4D = _applyDecoratedDescriptor(_class2$5H.prototype, "height", [_dec4$4P], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor4$40 = _applyDecoratedDescriptor(_class2$5H.prototype, "count", [_dec5$4h], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return 0;
-	  }
-	}), _descriptor5$3r = _applyDecoratedDescriptor(_class2$5H.prototype, "colorFormat", [_dec6$3L], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return null;
-	  }
-	}), _descriptor6$2U = _applyDecoratedDescriptor(_class2$5H.prototype, "filter", [_dec7$3c], {
-	  configurable: true,
-	  enumerable: true,
-	  writable: true,
-	  initializer: function () {
-	    return "nearest";
-	  }
-	}), _class2$5H)) || _class$6b);
+	}, _Tw2Frustum)) || _class$6b);
 
 	/**
 	 * Ray intersection
