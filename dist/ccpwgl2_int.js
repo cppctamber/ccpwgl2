@@ -184544,9 +184544,24 @@
 	        // to make tile 3 draw. That was backwards - it was fitting the
 	        // blend to one arbitrarily chosen tile, and it made tile 2
 	        // far too dim.
+	        // EVERY STATE THIS PASS DEPENDS ON IS NAMED, including the
+	        // ones whose value looks like a default.
+	        //
+	        // ccpwgl does not restore per-pass render states, so a state
+	        // left unset is not "the default" - it is whatever the last
+	        // thing to draw happened to leave. ZFUNC was the one that bit:
+	        // the pass enabled the depth test without saying how to
+	        // compare, so it inherited the comparison from the hull's last
+	        // pass and particles were occluded or not depending on which
+	        // way the scene had left it. It cannot show up in a sandbox
+	        // where nothing else draws.
 	        [RS_ZENABLE]: 1,
+	        [RS_ZFUNC]: CMP_LEQUAL,
 	        [RS_ZWRITEENABLE]: 0,
+	        [RS_ALPHATESTENABLE]: 0,
 	        [RS_ALPHABLENDENABLE]: 1,
+	        [RS_COLORWRITEENABLE]: 0xf,
+	        [RS_BLENDOP]: BLENDOP_ADD,
 	        [RS_SRCBLEND]: 5,
 	        [RS_DESTBLEND]: 2,
 	        [RS_CULLMODE]: 1
@@ -285914,9 +285929,21 @@
 	      states: {
 	        // The same reasoning as the simulation step: this is a
 	        // computation whose output happens to be a colour attachment.
+	        // EVERY STATE THIS PASS DEPENDS ON IS NAMED. ccpwgl does not
+	        // restore per-pass render states, so an unset state is not
+	        // "the default" - it is whatever the last thing to draw left.
+	        //
+	        // That matters more here than for a pass that draws a picture.
+	        // This one writes STATE: an inherited alpha test would discard
+	        // particles by their age, and an inherited colour write mask
+	        // would drop whole components of position or velocity. Either
+	        // corrupts the simulation silently and looks like a physics
+	        // bug.
 	        [RS_ZENABLE]: 0,
 	        [RS_ZWRITEENABLE]: 0,
+	        [RS_ALPHATESTENABLE]: 0,
 	        [RS_ALPHABLENDENABLE]: 0,
+	        [RS_COLORWRITEENABLE]: 0xf,
 	        [RS_CULLMODE]: 1
 	      }
 	    }
@@ -286115,9 +286142,21 @@
 	        // happens to be a colour attachment: a depth test would discard
 	        // particles by their texel position, and blending would mix the
 	        // new state with the old.
+	        // EVERY STATE THIS PASS DEPENDS ON IS NAMED. ccpwgl does not
+	        // restore per-pass render states, so an unset state is not
+	        // "the default" - it is whatever the last thing to draw left.
+	        //
+	        // That matters more here than for a pass that draws a picture.
+	        // This one writes STATE: an inherited alpha test would discard
+	        // particles by their age, and an inherited colour write mask
+	        // would drop whole components of position or velocity. Either
+	        // corrupts the simulation silently and looks like a physics
+	        // bug.
 	        [RS_ZENABLE]: 0,
 	        [RS_ZWRITEENABLE]: 0,
+	        [RS_ALPHATESTENABLE]: 0,
 	        [RS_ALPHABLENDENABLE]: 0,
+	        [RS_COLORWRITEENABLE]: 0xf,
 	        [RS_CULLMODE]: 1
 	      }
 	    }

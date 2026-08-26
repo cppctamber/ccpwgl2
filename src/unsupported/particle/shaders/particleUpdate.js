@@ -1,4 +1,7 @@
-import { RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE } from "constant";
+import {
+    RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE,
+    RS_ALPHATESTENABLE, RS_COLORWRITEENABLE
+} from "constant";
 import { createTex, TEX_2D, TEX_VOLUME, WidgetType } from "../../../toDeprecate/shaders/shared/util";
 import { Tw2GpuParticleDrawShader } from "./particleDraw";
 import { Tw2GpuParticleEmitShader } from "./particleEmit";
@@ -356,9 +359,21 @@ const definition = {
                 // happens to be a colour attachment: a depth test would discard
                 // particles by their texel position, and blending would mix the
                 // new state with the old.
+                // EVERY STATE THIS PASS DEPENDS ON IS NAMED. ccpwgl does not
+                // restore per-pass render states, so an unset state is not
+                // "the default" - it is whatever the last thing to draw left.
+                //
+                // That matters more here than for a pass that draws a picture.
+                // This one writes STATE: an inherited alpha test would discard
+                // particles by their age, and an inherited colour write mask
+                // would drop whole components of position or velocity. Either
+                // corrupts the simulation silently and looks like a physics
+                // bug.
                 [RS_ZENABLE]: 0,
                 [RS_ZWRITEENABLE]: 0,
+                [RS_ALPHATESTENABLE]: 0,
                 [RS_ALPHABLENDENABLE]: 0,
+                [RS_COLORWRITEENABLE]: 0xf,
                 [RS_CULLMODE]: 1
             }
         }

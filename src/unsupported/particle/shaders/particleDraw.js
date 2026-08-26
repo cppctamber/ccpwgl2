@@ -1,4 +1,8 @@
-import { RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE, RS_SRCBLEND, RS_DESTBLEND } from "constant";
+import {
+    RS_ZENABLE, RS_ZWRITEENABLE, RS_ZFUNC, RS_CULLMODE, RS_ALPHABLENDENABLE,
+    RS_ALPHATESTENABLE, RS_COLORWRITEENABLE, RS_SRCBLEND, RS_DESTBLEND, RS_BLENDOP,
+    CMP_LEQUAL, BLENDOP_ADD
+} from "constant";
 import { createTex, TEX_2D, WidgetType } from "../../../toDeprecate/shaders/shared/util";
 
 
@@ -346,9 +350,24 @@ const definition = {
                 // to make tile 3 draw. That was backwards - it was fitting the
                 // blend to one arbitrarily chosen tile, and it made tile 2
                 // far too dim.
+                // EVERY STATE THIS PASS DEPENDS ON IS NAMED, including the
+                // ones whose value looks like a default.
+                //
+                // ccpwgl does not restore per-pass render states, so a state
+                // left unset is not "the default" - it is whatever the last
+                // thing to draw happened to leave. ZFUNC was the one that bit:
+                // the pass enabled the depth test without saying how to
+                // compare, so it inherited the comparison from the hull's last
+                // pass and particles were occluded or not depending on which
+                // way the scene had left it. It cannot show up in a sandbox
+                // where nothing else draws.
                 [RS_ZENABLE]: 1,
+                [RS_ZFUNC]: CMP_LEQUAL,
                 [RS_ZWRITEENABLE]: 0,
+                [RS_ALPHATESTENABLE]: 0,
                 [RS_ALPHABLENDENABLE]: 1,
+                [RS_COLORWRITEENABLE]: 0xf,
+                [RS_BLENDOP]: BLENDOP_ADD,
                 [RS_SRCBLEND]: 5,
                 [RS_DESTBLEND]: 2,
                 [RS_CULLMODE]: 1
