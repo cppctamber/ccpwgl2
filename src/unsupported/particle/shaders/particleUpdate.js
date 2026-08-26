@@ -100,16 +100,26 @@ const ParticleWorld = constant(
 );
 
 /**
- * `(origin offset xyz, noise origin)`.
+ * `(origin offset xyz, noise ready)`.
  *
- * The offset shifts the whole field relative to the world, which is what lets a
- * scene rebase its origin without every particle's turbulence jumping. The
- * fourth is where in the volume the animation walk starts.
+ * The offset shifts the whole field relative to the world, which lets a scene
+ * rebase its origin without every particle's turbulence jumping.
+ *
+ * The fourth is a GATE, and it is not optional. Turbulence centres the noise on
+ * zero by subtracting a half, so an UNLOADED texture - which samples as zero -
+ * does not read as "no turbulence", it reads as -0.5 on every axis, every
+ * octave, for every particle. Against an authored amplitude of 30 that is a
+ * constant push of about 26 units per second squared along one fixed diagonal:
+ * the entire system drifts one way. A missing texture becomes maximum force
+ * rather than none, which is the worst possible failure mode and looks like a
+ * physics bug rather than a loading one.
+ *
+ * The caller sets this to 1 only once the volume has actually loaded.
  * @type {Object}
  */
 const ParticleNoise = constant(
     "ParticleNoise",
-    [ "origin x", "origin y", "origin z", "noise origin" ],
+    [ "origin x", "origin y", "origin z", "noise ready" ],
     [ 0, 0, 0, 0 ]
 );
 
@@ -242,7 +252,7 @@ void main()
     vec3 gravityAxis = cb7[1].xyz;
     float rows = cb7[1].w;
     vec3 originOffset = cb7[2].xyz;
-    vec3 noiseOrigin = vec3(cb7[2].w);
+    float noiseReady = cb7[2].w;
 
     float age = p.w;
     float lifetime = v.w;
@@ -304,11 +314,14 @@ void main()
         if (speed > 1e-4) accel -= (v.xyz / speed) * drag;
     }
 
-    if (turbulenceAmplitude != 0.0)
+    // GATED ON THE TEXTURE BEING THERE. See ParticleNoise: an unloaded volume
+    // samples as zero, and zero minus a half is a constant force, not an
+    // absent one.
+    if (turbulenceAmplitude != 0.0 && noiseReady > 0.0)
     {
         // The animation offset is a point in the volume that moves with time,
         // scaled the way Carbon scales it - 1/32, the volume's own resolution.
-        vec3 animation = noiseOrigin + time * (1.0 / 32.0);
+        vec3 animation = vec3(time * (1.0 / 32.0));
         accel += turbulence(p.xyz + originOffset, turbulenceFrequency, animation) * turbulenceAmplitude;
     }
 

@@ -100,6 +100,18 @@ export class Tw2GpuParticleRenderer
      */
     _atlasTiles = 0;
 
+    /**
+     * Whether the turbulence volume has loaded.
+     *
+     * Turbulence stays OFF until it has. An unloaded 3D texture samples as
+     * zero, and the field centres on zero by subtracting a half - so treating
+     * "not loaded yet" as "no turbulence" would instead apply a constant push
+     * along one diagonal to every particle in the scene.
+     * @type {Number}
+     * @private
+     */
+    _noiseReady = 0;
+
     /** @type {Boolean} @private */
     _failed = false;
 
@@ -209,7 +221,13 @@ export class Tw2GpuParticleRenderer
             Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleWorld", [
                 this.gravityAxis[0], this.gravityAxis[1], this.gravityAxis[2], rows
             ]);
-            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleNoise", [ 0, 0, 0, 0 ]);
+            if (!this._noiseReady)
+            {
+                const noise = tw2.GetResource(Tw2GpuParticleRenderer.NOISE);
+                if (noise && noise.IsGood() && noise._width) this._noiseReady = 1;
+            }
+
+            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleNoise", [ 0, 0, 0, this._noiseReady ]);
 
             Tw2GpuParticleRenderer.AttachTexture(effect, "ParticlePositionMap", front.position);
             Tw2GpuParticleRenderer.AttachTexture(effect, "ParticleVelocityMap", front.velocity);
@@ -293,6 +311,7 @@ export class Tw2GpuParticleRenderer
         this.drawEffect = null;
         this.system = null;
         this._atlasTiles = 0;
+        this._noiseReady = 0;
         this._failed = false;
         return this;
     }
