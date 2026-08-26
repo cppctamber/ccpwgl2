@@ -39245,8 +39245,8 @@
 	  }
 	}), _class2$76)) || _class$7S);
 
-	var _dec$7R, _dec2$7f, _dec3$6D, _dec4$5K, _dec5$52, _dec6$4o, _dec7$3M, _dec8$3e, _dec9$2Q, _dec0$2G, _dec1$2t, _dec10$29, _dec11$1_, _class$7R, _class2$75, _descriptor$78, _descriptor2$6r, _descriptor3$5v, _descriptor4$4K, _descriptor5$41, _descriptor6$3p, _descriptor7$2T, _descriptor8$2y, _descriptor9$2m, _descriptor0$26, _Tw2GeometryBone;
-	var Tw2GeometryBone = (_dec$7R = define("Tw2GeometryBone"), _dec2$7f = string, _dec3$6D = int32$1, _dec4$5K = vector3, _dec5$52 = quaternion, _dec6$4o = matrix4, _dec7$3M = matrix4, _dec8$3e = matrix4, _dec9$2Q = matrix4, _dec0$2G = float32Array, _dec1$2t = isPrivate, _dec10$29 = plain, _dec11$1_ = isPrivate, _dec$7R(_class$7R = (_class2$75 = (_Tw2GeometryBone = class Tw2GeometryBone {
+	var _dec$7R, _dec2$7f, _dec3$6D, _dec4$5K, _dec5$52, _dec6$4o, _dec7$3M, _dec8$3f, _dec9$2R, _dec0$2G, _dec1$2t, _dec10$29, _dec11$1_, _class$7R, _class2$75, _descriptor$78, _descriptor2$6r, _descriptor3$5v, _descriptor4$4K, _descriptor5$41, _descriptor6$3p, _descriptor7$2U, _descriptor8$2z, _descriptor9$2m, _descriptor0$26, _Tw2GeometryBone;
+	var Tw2GeometryBone = (_dec$7R = define("Tw2GeometryBone"), _dec2$7f = string, _dec3$6D = int32$1, _dec4$5K = vector3, _dec5$52 = quaternion, _dec6$4o = matrix4, _dec7$3M = matrix4, _dec8$3f = matrix4, _dec9$2R = matrix4, _dec0$2G = float32Array, _dec1$2t = isPrivate, _dec10$29 = plain, _dec11$1_ = isPrivate, _dec$7R(_class$7R = (_class2$75 = (_Tw2GeometryBone = class Tw2GeometryBone {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$78, this);
 	    _initializerDefineProperty(this, "parentIndex", _descriptor2$6r, this);
@@ -39254,8 +39254,8 @@
 	    _initializerDefineProperty(this, "orientation", _descriptor4$4K, this);
 	    _initializerDefineProperty(this, "scaleShear", _descriptor5$41, this);
 	    _initializerDefineProperty(this, "localTransform", _descriptor6$3p, this);
-	    _initializerDefineProperty(this, "worldTransform", _descriptor7$2T, this);
-	    _initializerDefineProperty(this, "worldTransformInv", _descriptor8$2y, this);
+	    _initializerDefineProperty(this, "worldTransform", _descriptor7$2U, this);
+	    _initializerDefineProperty(this, "worldTransformInv", _descriptor8$2z, this);
 	    _initializerDefineProperty(this, "boundingBox", _descriptor9$2m, this);
 	    _initializerDefineProperty(this, "extendedData", _descriptor0$26, this);
 	  }
@@ -39357,14 +39357,14 @@
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor7$2T = _applyDecoratedDescriptor(_class2$75.prototype, "worldTransform", [_dec8$3e], {
+	}), _descriptor7$2U = _applyDecoratedDescriptor(_class2$75.prototype, "worldTransform", [_dec8$3f], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return mat4$1.create();
 	  }
-	}), _descriptor8$2y = _applyDecoratedDescriptor(_class2$75.prototype, "worldTransformInv", [_dec9$2Q], {
+	}), _descriptor8$2z = _applyDecoratedDescriptor(_class2$75.prototype, "worldTransformInv", [_dec9$2R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -39425,8 +39425,8 @@
 	  }
 	}), _class2$74)) || _class$7Q);
 
-	var _dec$7P, _dec2$7d, _dec3$6B, _dec4$5I, _dec5$50, _dec6$4n, _dec7$3L, _dec8$3d, _class$7P, _class2$73, _descriptor$76, _descriptor2$6p, _descriptor3$5t, _descriptor4$4I, _descriptor5$40, _descriptor6$3o, _descriptor7$2S;
-	var Tw2GeometryMeshArea = (_dec$7P = define("Tw2GeometryMeshArea"), _dec2$7d = string, _dec3$6B = uint, _dec4$5I = uint, _dec5$50 = vector3, _dec6$4n = vector3, _dec7$3L = vector3, _dec8$3d = float, _dec$7P(_class$7P = (_class2$73 = class Tw2GeometryMeshArea {
+	var _dec$7P, _dec2$7d, _dec3$6B, _dec4$5I, _dec5$50, _dec6$4n, _dec7$3L, _dec8$3e, _class$7P, _class2$73, _descriptor$76, _descriptor2$6p, _descriptor3$5t, _descriptor4$4I, _descriptor5$40, _descriptor6$3o, _descriptor7$2T;
+	var Tw2GeometryMeshArea = (_dec$7P = define("Tw2GeometryMeshArea"), _dec2$7d = string, _dec3$6B = uint, _dec4$5I = uint, _dec5$50 = vector3, _dec6$4n = vector3, _dec7$3L = vector3, _dec8$3e = float, _dec$7P(_class$7P = (_class2$73 = class Tw2GeometryMeshArea {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$76, this);
 	    _initializerDefineProperty(this, "start", _descriptor2$6p, this);
@@ -39434,7 +39434,7 @@
 	    _initializerDefineProperty(this, "minBounds", _descriptor4$4I, this);
 	    _initializerDefineProperty(this, "maxBounds", _descriptor5$40, this);
 	    _initializerDefineProperty(this, "boundsSpherePosition", _descriptor6$3o, this);
-	    _initializerDefineProperty(this, "boundsSphereRadius", _descriptor7$2S, this);
+	    _initializerDefineProperty(this, "boundsSphereRadius", _descriptor7$2T, this);
 	  }
 	  /**
 	   * Gets the mesh area's bounding box
@@ -39495,7 +39495,7 @@
 	  initializer: function () {
 	    return vec3$3.create();
 	  }
-	}), _descriptor7$2S = _applyDecoratedDescriptor(_class2$73.prototype, "boundsSphereRadius", [_dec8$3d], {
+	}), _descriptor7$2T = _applyDecoratedDescriptor(_class2$73.prototype, "boundsSphereRadius", [_dec8$3e], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -39504,8 +39504,8 @@
 	  }
 	}), _class2$73)) || _class$7P);
 
-	var _dec$7O, _dec2$7c, _dec3$6A, _dec4$5H, _dec5$4$, _dec6$4m, _dec7$3K, _dec8$3c, _dec9$2P, _dec0$2F, _dec1$2s, _dec10$28, _dec11$1Z, _dec12$1J, _dec13$1v, _dec14$1k, _dec15$1g, _dec16$16, _dec17$11, _dec18$Y, _dec19$L, _dec20$J, _dec21$G, _dec22$C, _dec23$z, _dec24$v, _class$7O, _class2$72, _descriptor$75, _descriptor2$6o, _descriptor3$5s, _descriptor4$4H, _descriptor5$3$, _descriptor6$3n, _descriptor7$2R, _descriptor8$2x, _descriptor9$2l, _descriptor0$25, _descriptor1$1L, _descriptor10$1y, _descriptor11$1l, _descriptor12$1f, _descriptor13$19, _descriptor14$13, _descriptor15$P, _Tw2GeometryMesh;
-	var Tw2GeometryMesh = (_dec$7O = define("Tw2GeometryMesh"), _dec2$7c = string, _dec3$6A = struct("Tw2VertexDeclaration"), _dec4$5H = list("Tw2GeometryMeshArea"), _dec5$4$ = struct("WebGLBuffer"), _dec6$4m = isPrivate, _dec7$3K = uint, _dec8$3c = isPrivate, _dec9$2P = isPrivate, _dec0$2F = vector, _dec1$2s = todo("Make private"), _dec10$28 = struct("WebGLBuffer"), _dec11$1Z = isPrivate, _dec12$1J = vector, _dec13$1v = isPrivate, _dec14$1k = todo("Make private"), _dec15$1g = uint, _dec16$16 = isPrivate, _dec17$11 = vector3, _dec18$Y = vector3, _dec19$L = vector3, _dec20$J = float, _dec21$G = list("String"), _dec22$C = list(), _dec23$z = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7O(_class$7O = (_class2$72 = (_Tw2GeometryMesh = class Tw2GeometryMesh {
+	var _dec$7O, _dec2$7c, _dec3$6A, _dec4$5H, _dec5$4$, _dec6$4m, _dec7$3K, _dec8$3d, _dec9$2Q, _dec0$2F, _dec1$2s, _dec10$28, _dec11$1Z, _dec12$1J, _dec13$1v, _dec14$1k, _dec15$1g, _dec16$16, _dec17$11, _dec18$Y, _dec19$L, _dec20$J, _dec21$G, _dec22$C, _dec23$z, _dec24$v, _class$7O, _class2$72, _descriptor$75, _descriptor2$6o, _descriptor3$5s, _descriptor4$4H, _descriptor5$3$, _descriptor6$3n, _descriptor7$2S, _descriptor8$2y, _descriptor9$2l, _descriptor0$25, _descriptor1$1L, _descriptor10$1y, _descriptor11$1l, _descriptor12$1f, _descriptor13$19, _descriptor14$13, _descriptor15$P, _Tw2GeometryMesh;
+	var Tw2GeometryMesh = (_dec$7O = define("Tw2GeometryMesh"), _dec2$7c = string, _dec3$6A = struct("Tw2VertexDeclaration"), _dec4$5H = list("Tw2GeometryMeshArea"), _dec5$4$ = struct("WebGLBuffer"), _dec6$4m = isPrivate, _dec7$3K = uint, _dec8$3d = isPrivate, _dec9$2Q = isPrivate, _dec0$2F = vector, _dec1$2s = todo("Make private"), _dec10$28 = struct("WebGLBuffer"), _dec11$1Z = isPrivate, _dec12$1J = vector, _dec13$1v = isPrivate, _dec14$1k = todo("Make private"), _dec15$1g = uint, _dec16$16 = isPrivate, _dec17$11 = vector3, _dec18$Y = vector3, _dec19$L = vector3, _dec20$J = float, _dec21$G = list("String"), _dec22$C = list(), _dec23$z = list("Tw2BlendShapeData"), _dec24$v = boolean, _dec$7O(_class$7O = (_class2$72 = (_Tw2GeometryMesh = class Tw2GeometryMesh {
 	  constructor() {
 	    _initializerDefineProperty(this, "name", _descriptor$75, this);
 	    _initializerDefineProperty(this, "declaration", _descriptor2$6o, this);
@@ -39513,8 +39513,8 @@
 	    _initializerDefineProperty(this, "buffer", _descriptor4$4H, this);
 	    _initializerDefineProperty(this, "bufferLength", _descriptor5$3$, this);
 	    _initializerDefineProperty(this, "bufferData", _descriptor6$3n, this);
-	    _initializerDefineProperty(this, "indexes", _descriptor7$2R, this);
-	    _initializerDefineProperty(this, "indexData", _descriptor8$2x, this);
+	    _initializerDefineProperty(this, "indexes", _descriptor7$2S, this);
+	    _initializerDefineProperty(this, "indexData", _descriptor8$2y, this);
 	    _initializerDefineProperty(this, "indexType", _descriptor9$2l, this);
 	    _initializerDefineProperty(this, "minBounds", _descriptor0$25, this);
 	    _initializerDefineProperty(this, "maxBounds", _descriptor1$1L, this);
@@ -40374,28 +40374,28 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor5$3$ = _applyDecoratedDescriptor(_class2$72.prototype, "bufferLength", [_dec7$3K, _dec8$3c], {
+	}), _descriptor5$3$ = _applyDecoratedDescriptor(_class2$72.prototype, "bufferLength", [_dec7$3K, _dec8$3d], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor6$3n = _applyDecoratedDescriptor(_class2$72.prototype, "bufferData", [_dec9$2P, _dec0$2F, _dec1$2s], {
+	}), _descriptor6$3n = _applyDecoratedDescriptor(_class2$72.prototype, "bufferData", [_dec9$2Q, _dec0$2F, _dec1$2s], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$2R = _applyDecoratedDescriptor(_class2$72.prototype, "indexes", [_dec10$28, _dec11$1Z], {
+	}), _descriptor7$2S = _applyDecoratedDescriptor(_class2$72.prototype, "indexes", [_dec10$28, _dec11$1Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor8$2x = _applyDecoratedDescriptor(_class2$72.prototype, "indexData", [_dec12$1J, _dec13$1v, _dec14$1k], {
+	}), _descriptor8$2y = _applyDecoratedDescriptor(_class2$72.prototype, "indexData", [_dec12$1J, _dec13$1v, _dec14$1k], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -40665,7 +40665,7 @@
 	  }
 	}), _class2$6Z)) || _class$7J);
 
-	var _dec$7I, _dec2$76, _dec3$6u, _dec4$5C, _dec5$4Z, _dec6$4l, _dec7$3J, _dec8$3b, _dec9$2O, _dec0$2E, _dec1$2r, _dec10$27, _dec11$1Y, _dec12$1I, _dec13$1u, _dec14$1j, _dec15$1f, _dec16$15, _dec17$10, _class$7I, _class2$6Y, _descriptor$6$, _descriptor2$6i, _descriptor3$5o, _descriptor4$4F, _descriptor5$3_, _descriptor6$3m, _descriptor7$2Q, _descriptor8$2w, _descriptor9$2k, _descriptor0$24, _descriptor1$1K, _descriptor10$1x, _descriptor11$1k, _descriptor12$1e, _descriptor13$18, _descriptor14$12, _descriptor15$O, _Tw2SamplerState;
+	var _dec$7I, _dec2$76, _dec3$6u, _dec4$5C, _dec5$4Z, _dec6$4l, _dec7$3J, _dec8$3c, _dec9$2P, _dec0$2E, _dec1$2r, _dec10$27, _dec11$1Y, _dec12$1I, _dec13$1u, _dec14$1j, _dec15$1f, _dec16$15, _dec17$10, _class$7I, _class2$6Y, _descriptor$6$, _descriptor2$6i, _descriptor3$5o, _descriptor4$4F, _descriptor5$3_, _descriptor6$3m, _descriptor7$2R, _descriptor8$2x, _descriptor9$2k, _descriptor0$24, _descriptor1$1K, _descriptor10$1x, _descriptor11$1k, _descriptor12$1e, _descriptor13$18, _descriptor14$12, _descriptor15$O, _Tw2SamplerState;
 
 	// CLAMP_TO_BORDER_EXT from EXT_texture_border_clamp. Core WebGL2 has no border
 	// wrap; when the extension is present we bind this and rely on the default
@@ -40704,7 +40704,7 @@
 	  [GL_NEAREST]: 1,
 	  [GL_LINEAR]: 2
 	};
-	var Tw2SamplerState = (_dec$7I = define("Tw2SamplerState"), _dec2$76 = string, _dec3$6u = int32$1, _dec4$5C = uint, _dec5$4Z = uint, _dec6$4l = uint, _dec7$3J = uint, _dec8$3b = uint, _dec9$2O = uint, _dec0$2E = uint, _dec1$2r = uint, _dec10$27 = uint, _dec11$1Y = boolean, _dec12$1I = boolean, _dec13$1u = boolean, _dec14$1j = uint, _dec15$1f = uint, _dec16$15 = isPrivate, _dec17$10 = uint, _dec$7I(_class$7I = (_class2$6Y = (_Tw2SamplerState = class Tw2SamplerState extends Model {
+	var Tw2SamplerState = (_dec$7I = define("Tw2SamplerState"), _dec2$76 = string, _dec3$6u = int32$1, _dec4$5C = uint, _dec5$4Z = uint, _dec6$4l = uint, _dec7$3J = uint, _dec8$3c = uint, _dec9$2P = uint, _dec0$2E = uint, _dec1$2r = uint, _dec10$27 = uint, _dec11$1Y = boolean, _dec12$1I = boolean, _dec13$1u = boolean, _dec14$1j = uint, _dec15$1f = uint, _dec16$15 = isPrivate, _dec17$10 = uint, _dec$7I(_class$7I = (_class2$6Y = (_Tw2SamplerState = class Tw2SamplerState extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6$, this);
@@ -40713,8 +40713,8 @@
 	    _initializerDefineProperty(this, "maxFilter", _descriptor4$4F, this);
 	    _initializerDefineProperty(this, "magFilter", _descriptor5$3_, this);
 	    _initializerDefineProperty(this, "minFilterNoMips", _descriptor6$3m, this);
-	    _initializerDefineProperty(this, "addressU", _descriptor7$2Q, this);
-	    _initializerDefineProperty(this, "addressV", _descriptor8$2w, this);
+	    _initializerDefineProperty(this, "addressU", _descriptor7$2R, this);
+	    _initializerDefineProperty(this, "addressV", _descriptor8$2x, this);
 	    _initializerDefineProperty(this, "addressW", _descriptor9$2k, this);
 	    _initializerDefineProperty(this, "anisotropy", _descriptor0$24, this);
 	    _initializerDefineProperty(this, "samplerType", _descriptor1$1K, this);
@@ -41227,14 +41227,14 @@
 	  initializer: function () {
 	    return GL_LINEAR;
 	  }
-	}), _descriptor7$2Q = _applyDecoratedDescriptor(_class2$6Y.prototype, "addressU", [_dec8$3b], {
+	}), _descriptor7$2R = _applyDecoratedDescriptor(_class2$6Y.prototype, "addressU", [_dec8$3c], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return GL_REPEAT;
 	  }
-	}), _descriptor8$2w = _applyDecoratedDescriptor(_class2$6Y.prototype, "addressV", [_dec9$2O], {
+	}), _descriptor8$2x = _applyDecoratedDescriptor(_class2$6Y.prototype, "addressV", [_dec9$2P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -41306,7 +41306,7 @@
 	  }
 	}), _class2$6Y)) || _class$7I);
 
-	var _dec$7H, _dec2$75, _dec3$6t, _dec4$5B, _dec5$4Y, _dec6$4k, _dec7$3I, _dec8$3a, _dec9$2N, _dec0$2D, _dec1$2q, _dec10$26, _dec11$1X, _dec12$1H, _class$7H, _class2$6X, _descriptor$6_, _descriptor2$6h, _descriptor3$5n, _descriptor4$4E, _descriptor5$3Z, _descriptor6$3l, _descriptor7$2P, _descriptor8$2v, _descriptor9$2j, _descriptor0$23, _descriptor1$1J;
+	var _dec$7H, _dec2$75, _dec3$6t, _dec4$5B, _dec5$4Y, _dec6$4k, _dec7$3I, _dec8$3b, _dec9$2O, _dec0$2D, _dec1$2q, _dec10$26, _dec11$1X, _dec12$1H, _class$7H, _class2$6X, _descriptor$6_, _descriptor2$6h, _descriptor3$5n, _descriptor4$4E, _descriptor5$3Z, _descriptor6$3l, _descriptor7$2Q, _descriptor8$2w, _descriptor9$2j, _descriptor0$23, _descriptor1$1J;
 
 	/**
 	 * NAMING DRIFT vs carbonengine/trinity (align later; Carbon names win):
@@ -41317,7 +41317,7 @@
 	 * filter 3=anisotropic) — NOT D3D9's 1-based enums; check ResolveModes
 	 * interprets them correctly before relying on overrides at draw time.
 	 */
-	var Tw2SamplerOverride = (_dec$7H = define("Tw2SamplerOverride"), _dec2$75 = string, _dec3$6t = boolean, _dec4$5B = int32$1, _dec5$4Y = int32$1, _dec6$4k = int32$1, _dec7$3I = int32$1, _dec8$3a = int32$1, _dec9$2N = int32$1, _dec0$2D = notImplemented, _dec1$2q = int32$1, _dec10$26 = notImplemented, _dec11$1X = int32$1, _dec12$1H = int32$1, _dec$7H(_class$7H = (_class2$6X = class Tw2SamplerOverride extends Model {
+	var Tw2SamplerOverride = (_dec$7H = define("Tw2SamplerOverride"), _dec2$75 = string, _dec3$6t = boolean, _dec4$5B = int32$1, _dec5$4Y = int32$1, _dec6$4k = int32$1, _dec7$3I = int32$1, _dec8$3b = int32$1, _dec9$2O = int32$1, _dec0$2D = notImplemented, _dec1$2q = int32$1, _dec10$26 = notImplemented, _dec11$1X = int32$1, _dec12$1H = int32$1, _dec$7H(_class$7H = (_class2$6X = class Tw2SamplerOverride extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6_, this);
@@ -41326,8 +41326,8 @@
 	    _initializerDefineProperty(this, "addressVMode", _descriptor4$4E, this);
 	    _initializerDefineProperty(this, "addressWMode", _descriptor5$3Z, this);
 	    _initializerDefineProperty(this, "filterMode", _descriptor6$3l, this);
-	    _initializerDefineProperty(this, "mipFilterMode", _descriptor7$2P, this);
-	    _initializerDefineProperty(this, "magFilterMode", _descriptor8$2v, this);
+	    _initializerDefineProperty(this, "mipFilterMode", _descriptor7$2Q, this);
+	    _initializerDefineProperty(this, "magFilterMode", _descriptor8$2w, this);
 	    _initializerDefineProperty(this, "lodBias", _descriptor9$2j, this);
 	    _initializerDefineProperty(this, "maxMipLevel", _descriptor0$23, this);
 	    _initializerDefineProperty(this, "maxAnisotropy", _descriptor1$1J, this);
@@ -41457,14 +41457,14 @@
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor7$2P = _applyDecoratedDescriptor(_class2$6X.prototype, "mipFilterMode", [_dec8$3a], {
+	}), _descriptor7$2Q = _applyDecoratedDescriptor(_class2$6X.prototype, "mipFilterMode", [_dec8$3b], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor8$2v = _applyDecoratedDescriptor(_class2$6X.prototype, "magFilterMode", [_dec9$2N], {
+	}), _descriptor8$2w = _applyDecoratedDescriptor(_class2$6X.prototype, "magFilterMode", [_dec9$2O], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -43985,7 +43985,7 @@
 	var Tw2CarbonResourceBinderExports = requireTw2CarbonResourceBinder();
 	var Tw2CarbonResourceBinder = /*@__PURE__*/getDefaultExportFromCjs(Tw2CarbonResourceBinderExports);
 
-	var _dec$7C, _dec2$71, _dec3$6p, _dec4$5y, _dec5$4V, _dec6$4h, _dec7$3G, _dec8$39, _dec9$2M, _dec0$2C, _dec1$2p, _dec10$25, _dec11$1W, _dec12$1G, _class$7C, _class2$6U, _descriptor$6W, _descriptor2$6d, _descriptor3$5l, _descriptor4$4C, _descriptor5$3Y, _descriptor6$3k, _descriptor7$2O, _descriptor8$2u, _descriptor9$2i, _descriptor0$22, _Tw2Effect;
+	var _dec$7C, _dec2$71, _dec3$6p, _dec4$5y, _dec5$4V, _dec6$4h, _dec7$3G, _dec8$3a, _dec9$2N, _dec0$2C, _dec1$2p, _dec10$25, _dec11$1W, _dec12$1G, _class$7C, _class2$6U, _descriptor$6W, _descriptor2$6d, _descriptor3$5l, _descriptor4$4C, _descriptor5$3Y, _descriptor6$3k, _descriptor7$2P, _descriptor8$2v, _descriptor9$2i, _descriptor0$22, _Tw2Effect;
 	class TemporaryBinaryReader {
 	  static blackStruct(r) {
 	    console.dir(r);
@@ -44037,7 +44037,7 @@
 	    return item;
 	  }
 	}
-	var Tw2Effect = (_dec$7C = define("Tw2Effect", "Tr2Effect"), _dec2$71 = stage(1), _dec3$6p = string, _dec4$5y = path, _dec5$4V = struct("Tw2EffectRes"), _dec6$4h = isPrivate, _dec7$3G = isPrivate, _dec8$39 = notImplemented, _dec9$2M = notImplemented, _dec0$2C = struct("Tw2Shader"), _dec1$2p = isPrivate, _dec10$25 = boolean, _dec11$1W = string, _dec12$1G = boolean, _dec$7C(_class$7C = _dec2$71(_class$7C = (_class2$6U = (_Tw2Effect = class Tw2Effect extends Model {
+	var Tw2Effect = (_dec$7C = define("Tw2Effect", "Tr2Effect"), _dec2$71 = stage(1), _dec3$6p = string, _dec4$5y = path, _dec5$4V = struct("Tw2EffectRes"), _dec6$4h = isPrivate, _dec7$3G = isPrivate, _dec8$3a = notImplemented, _dec9$2N = notImplemented, _dec0$2C = struct("Tw2Shader"), _dec1$2p = isPrivate, _dec10$25 = boolean, _dec11$1W = string, _dec12$1G = boolean, _dec$7C(_class$7C = _dec2$71(_class$7C = (_class2$6U = (_Tw2Effect = class Tw2Effect extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6W, this);
@@ -44053,9 +44053,9 @@
 	    _initializerDefineProperty(this, "techniques", _descriptor4$4C, this);
 	    _initializerDefineProperty(this, "samplerOverrides", _descriptor5$3Y, this);
 	    _initializerDefineProperty(this, "options", _descriptor6$3k, this);
-	    _initializerDefineProperty(this, "shader", _descriptor7$2O, this);
+	    _initializerDefineProperty(this, "shader", _descriptor7$2P, this);
 	    // ccpwgl
-	    _initializerDefineProperty(this, "autoParameter", _descriptor8$2u, this);
+	    _initializerDefineProperty(this, "autoParameter", _descriptor8$2v, this);
 	    _initializerDefineProperty(this, "defaultTechnique", _descriptor9$2i, this);
 	    _initializerDefineProperty(this, "_isShadowEffect", _descriptor0$22, this);
 	    this._isAttached = false;
@@ -45810,28 +45810,28 @@
 	  initializer: function () {
 	    return {};
 	  }
-	}), _descriptor5$3Y = _applyDecoratedDescriptor(_class2$6U.prototype, "samplerOverrides", [_dec8$39], {
+	}), _descriptor5$3Y = _applyDecoratedDescriptor(_class2$6U.prototype, "samplerOverrides", [_dec8$3a], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return {};
 	  }
-	}), _descriptor6$3k = _applyDecoratedDescriptor(_class2$6U.prototype, "options", [_dec9$2M], {
+	}), _descriptor6$3k = _applyDecoratedDescriptor(_class2$6U.prototype, "options", [_dec9$2N], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return {};
 	  }
-	}), _descriptor7$2O = _applyDecoratedDescriptor(_class2$6U.prototype, "shader", [_dec0$2C, _dec1$2p], {
+	}), _descriptor7$2P = _applyDecoratedDescriptor(_class2$6U.prototype, "shader", [_dec0$2C, _dec1$2p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor8$2u = _applyDecoratedDescriptor(_class2$6U.prototype, "autoParameter", [_dec10$25], {
+	}), _descriptor8$2v = _applyDecoratedDescriptor(_class2$6U.prototype, "autoParameter", [_dec10$25], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -46036,8 +46036,8 @@
 	  }
 	}), _class2$6T)) || _class$7B);
 
-	var _dec$7A, _dec2$6$, _dec3$6n, _dec4$5w, _dec5$4T, _dec6$4f, _dec7$3E, _dec8$38, _dec9$2L, _dec0$2B, _dec1$2o, _class$7A, _class2$6S, _descriptor$6U, _descriptor2$6b, _descriptor3$5j, _descriptor4$4A, _descriptor5$3W, _descriptor6$3i, _descriptor7$2N, _descriptor8$2t, _descriptor9$2h, _Tw2ShaderStageConstant;
-	var Tw2ShaderStageConstant = (_dec$7A = define("Tw2ShaderStageConstant"), _dec2$6$ = string, _dec3$6n = uint, _dec4$5w = uint, _dec5$4T = uint, _dec6$4f = boolean, _dec7$3E = todo("Why is this here?"), _dec8$38 = int32$1, _dec9$2L = uint, _dec0$2B = uint, _dec1$2o = vector, _dec$7A(_class$7A = (_class2$6S = (_Tw2ShaderStageConstant = class Tw2ShaderStageConstant extends Model {
+	var _dec$7A, _dec2$6$, _dec3$6n, _dec4$5w, _dec5$4T, _dec6$4f, _dec7$3E, _dec8$39, _dec9$2M, _dec0$2B, _dec1$2o, _class$7A, _class2$6S, _descriptor$6U, _descriptor2$6b, _descriptor3$5j, _descriptor4$4A, _descriptor5$3W, _descriptor6$3i, _descriptor7$2O, _descriptor8$2u, _descriptor9$2h, _Tw2ShaderStageConstant;
+	var Tw2ShaderStageConstant = (_dec$7A = define("Tw2ShaderStageConstant"), _dec2$6$ = string, _dec3$6n = uint, _dec4$5w = uint, _dec5$4T = uint, _dec6$4f = boolean, _dec7$3E = todo("Why is this here?"), _dec8$39 = int32$1, _dec9$2M = uint, _dec0$2B = uint, _dec1$2o = vector, _dec$7A(_class$7A = (_class2$6S = (_Tw2ShaderStageConstant = class Tw2ShaderStageConstant extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6U, this);
@@ -46046,8 +46046,8 @@
 	    _initializerDefineProperty(this, "isAutoregister", _descriptor4$4A, this);
 	    _initializerDefineProperty(this, "isSRGB", _descriptor5$3W, this);
 	    _initializerDefineProperty(this, "offset", _descriptor6$3i, this);
-	    _initializerDefineProperty(this, "size", _descriptor7$2N, this);
-	    _initializerDefineProperty(this, "type", _descriptor8$2t, this);
+	    _initializerDefineProperty(this, "size", _descriptor7$2O, this);
+	    _initializerDefineProperty(this, "type", _descriptor8$2u, this);
 	    _initializerDefineProperty(this, "defaults", _descriptor9$2h, this);
 	  }
 	  /**
@@ -46185,21 +46185,21 @@
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor6$3i = _applyDecoratedDescriptor(_class2$6S.prototype, "offset", [_dec8$38], {
+	}), _descriptor6$3i = _applyDecoratedDescriptor(_class2$6S.prototype, "offset", [_dec8$39], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor7$2N = _applyDecoratedDescriptor(_class2$6S.prototype, "size", [_dec9$2L], {
+	}), _descriptor7$2O = _applyDecoratedDescriptor(_class2$6S.prototype, "size", [_dec9$2M], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$2t = _applyDecoratedDescriptor(_class2$6S.prototype, "type", [_dec0$2B], {
+	}), _descriptor8$2u = _applyDecoratedDescriptor(_class2$6S.prototype, "type", [_dec0$2B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -46432,7 +46432,7 @@
 	};
 
 	var _excluded$n = ["sampler", "ui"];
-	var _dec$7y, _dec2$6Z, _dec3$6l, _dec4$5u, _dec5$4R, _dec6$4d, _dec7$3D, _dec8$37, _dec9$2K, _dec0$2A, _dec1$2n, _dec10$24, _dec11$1V, _dec12$1F, _dec13$1t, _class$7y, _class2$6Q, _descriptor$6S, _descriptor2$69, _descriptor3$5h, _descriptor4$4y, _descriptor5$3U, _descriptor6$3h, _descriptor7$2M, _descriptor8$2s, _descriptor9$2g, _descriptor0$21, _descriptor1$1I, _Tw2ShaderStage;
+	var _dec$7y, _dec2$6Z, _dec3$6l, _dec4$5u, _dec5$4R, _dec6$4d, _dec7$3D, _dec8$38, _dec9$2L, _dec0$2A, _dec1$2n, _dec10$24, _dec11$1V, _dec12$1F, _dec13$1t, _class$7y, _class2$6Q, _descriptor$6S, _descriptor2$69, _descriptor3$5h, _descriptor4$4y, _descriptor5$3U, _descriptor6$3h, _descriptor7$2N, _descriptor8$2t, _descriptor9$2g, _descriptor0$21, _descriptor1$1I, _Tw2ShaderStage;
 	var CHAR_CODE_CHUNK_SIZE$1 = 0x8000;
 
 	/**
@@ -46447,7 +46447,7 @@
 	  }
 	  return out;
 	}
-	var Tw2ShaderStage = (_dec$7y = define("Tw2ShaderStage"), _dec2$6Z = uint, _dec3$6l = vector, _dec4$5u = list("Tw2ShaderStageConstant"), _dec5$4R = struct("Tw2VertexDeclaration"), _dec6$4d = list("Tw2SamplerState"), _dec7$3D = struct(WebGLShader), _dec8$37 = isPrivate, _dec9$2K = string, _dec0$2A = struct("WebGLShader"), _dec1$2n = isPrivate, _dec10$24 = string, _dec11$1V = uint, _dec12$1F = isPrivate, _dec13$1t = list("Tw2ShaderTexture"), _dec$7y(_class$7y = (_class2$6Q = (_Tw2ShaderStage = class Tw2ShaderStage {
+	var Tw2ShaderStage = (_dec$7y = define("Tw2ShaderStage"), _dec2$6Z = uint, _dec3$6l = vector, _dec4$5u = list("Tw2ShaderStageConstant"), _dec5$4R = struct("Tw2VertexDeclaration"), _dec6$4d = list("Tw2SamplerState"), _dec7$3D = struct(WebGLShader), _dec8$38 = isPrivate, _dec9$2L = string, _dec0$2A = struct("WebGLShader"), _dec1$2n = isPrivate, _dec10$24 = string, _dec11$1V = uint, _dec12$1F = isPrivate, _dec13$1t = list("Tw2ShaderTexture"), _dec$7y(_class$7y = (_class2$6Q = (_Tw2ShaderStage = class Tw2ShaderStage {
 	  constructor() {
 	    _initializerDefineProperty(this, "constantSize", _descriptor$6S, this);
 	    _initializerDefineProperty(this, "constantValues", _descriptor2$69, this);
@@ -46455,8 +46455,8 @@
 	    _initializerDefineProperty(this, "inputDefinition", _descriptor4$4y, this);
 	    _initializerDefineProperty(this, "samplers", _descriptor5$3U, this);
 	    _initializerDefineProperty(this, "shader", _descriptor6$3h, this);
-	    _initializerDefineProperty(this, "shaderCode", _descriptor7$2M, this);
-	    _initializerDefineProperty(this, "shadowShader", _descriptor8$2s, this);
+	    _initializerDefineProperty(this, "shaderCode", _descriptor7$2N, this);
+	    _initializerDefineProperty(this, "shadowShader", _descriptor8$2t, this);
 	    _initializerDefineProperty(this, "shadowShaderCode", _descriptor9$2g, this);
 	    _initializerDefineProperty(this, "type", _descriptor0$21, this);
 	    _initializerDefineProperty(this, "textures", _descriptor1$1I, this);
@@ -47118,21 +47118,21 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor6$3h = _applyDecoratedDescriptor(_class2$6Q.prototype, "shader", [_dec7$3D, _dec8$37], {
+	}), _descriptor6$3h = _applyDecoratedDescriptor(_class2$6Q.prototype, "shader", [_dec7$3D, _dec8$38], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$2M = _applyDecoratedDescriptor(_class2$6Q.prototype, "shaderCode", [_dec9$2K], {
+	}), _descriptor7$2N = _applyDecoratedDescriptor(_class2$6Q.prototype, "shaderCode", [_dec9$2L], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor8$2s = _applyDecoratedDescriptor(_class2$6Q.prototype, "shadowShader", [_dec0$2A, _dec1$2n], {
+	}), _descriptor8$2t = _applyDecoratedDescriptor(_class2$6Q.prototype, "shadowShader", [_dec0$2A, _dec1$2n], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -47209,7 +47209,7 @@
 	  }
 	}), _class2$6P)) || _class$7x);
 
-	var _dec$7w, _dec2$6X, _dec3$6j, _dec4$5t, _dec5$4Q, _dec6$4c, _dec7$3C, _dec8$36, _dec9$2J, _dec0$2z, _class$7w, _class2$6O, _descriptor$6Q, _descriptor2$67, _descriptor3$5g, _descriptor4$4x, _descriptor5$3T, _descriptor6$3g, _descriptor7$2L, _descriptor8$2r, _descriptor9$2f;
+	var _dec$7w, _dec2$6X, _dec3$6j, _dec4$5t, _dec5$4Q, _dec6$4c, _dec7$3C, _dec8$37, _dec9$2K, _dec0$2z, _class$7w, _class2$6O, _descriptor$6Q, _descriptor2$67, _descriptor3$5g, _descriptor4$4x, _descriptor5$3T, _descriptor6$3g, _descriptor7$2M, _descriptor8$2s, _descriptor9$2f;
 
 	/**
 	 * Highest constant-buffer register Carbon itself uses.
@@ -47218,7 +47218,7 @@
 	 * are 0-4, 6 and 7 only. Anything above this is an emitter-owned buffer.
 	 */
 	var CARBON_LAST_CB_REGISTER = 7;
-	var Tw2ShaderProgram = (_dec$7w = define("Tw2ShaderProgram"), _dec2$6X = list(WebGLUniformLocation), _dec3$6j = list(Number), _dec4$5t = struct("Tw2VertexDeclaration"), _dec5$4Q = list(WebGLUniformLocation), _dec6$4c = struct(WebGLUniformLocation), _dec7$3C = struct(WebGLUniformLocation), _dec8$36 = struct(WebGLUniformLocation), _dec9$2J = list(WebGLUniformLocation), _dec0$2z = array, _dec$7w(_class$7w = (_class2$6O = class Tw2ShaderProgram {
+	var Tw2ShaderProgram = (_dec$7w = define("Tw2ShaderProgram"), _dec2$6X = list(WebGLUniformLocation), _dec3$6j = list(Number), _dec4$5t = struct("Tw2VertexDeclaration"), _dec5$4Q = list(WebGLUniformLocation), _dec6$4c = struct(WebGLUniformLocation), _dec7$3C = struct(WebGLUniformLocation), _dec8$37 = struct(WebGLUniformLocation), _dec9$2K = list(WebGLUniformLocation), _dec0$2z = array, _dec$7w(_class$7w = (_class2$6O = class Tw2ShaderProgram {
 	  constructor() {
 	    _initializerDefineProperty(this, "constantBufferHandles", _descriptor$6Q, this);
 	    _initializerDefineProperty(this, "constantBufferSizes", _descriptor2$67, this);
@@ -47226,8 +47226,8 @@
 	    _initializerDefineProperty(this, "samplerHandles", _descriptor4$4x, this);
 	    _initializerDefineProperty(this, "shadowStateFloat", _descriptor5$3T, this);
 	    _initializerDefineProperty(this, "shadowStateInt", _descriptor6$3g, this);
-	    _initializerDefineProperty(this, "shadowStateYFlip", _descriptor7$2L, this);
-	    _initializerDefineProperty(this, "intConstantHandles", _descriptor8$2r, this);
+	    _initializerDefineProperty(this, "shadowStateYFlip", _descriptor7$2M, this);
+	    _initializerDefineProperty(this, "intConstantHandles", _descriptor8$2s, this);
 	    _initializerDefineProperty(this, "volumeSlices", _descriptor9$2f, this);
 	  }
 	  /**
@@ -47644,14 +47644,14 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$2L = _applyDecoratedDescriptor(_class2$6O.prototype, "shadowStateYFlip", [_dec8$36], {
+	}), _descriptor7$2M = _applyDecoratedDescriptor(_class2$6O.prototype, "shadowStateYFlip", [_dec8$37], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor8$2r = _applyDecoratedDescriptor(_class2$6O.prototype, "intConstantHandles", [_dec9$2J], {
+	}), _descriptor8$2s = _applyDecoratedDescriptor(_class2$6O.prototype, "intConstantHandles", [_dec9$2K], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -157407,7 +157407,7 @@
 	  return (ax + ay + az) / 3;
 	}
 
-	var _dec$6S, _dec2$6r, _dec3$5Z, _dec4$5f, _dec5$4G, _dec6$47, _dec7$3z, _dec8$35, _dec9$2I, _dec0$2y, _dec1$2m, _dec10$23, _dec11$1U, _dec12$1E, _dec13$1s, _dec14$1i, _dec15$1e, _dec16$14, _dec17$$, _dec18$X, _dec19$K, _dec20$I, _dec21$F, _dec22$B, _dec23$y, _class$6S, _class2$6i, _descriptor$6k, _descriptor2$5N, _descriptor3$53, _descriptor4$4n, _descriptor5$3O, _descriptor6$3d, _descriptor7$2K, _descriptor8$2q, _descriptor9$2e, _descriptor0$20, _descriptor1$1H, _descriptor10$1w, _descriptor11$1j, _descriptor12$1d, _descriptor13$17, _descriptor14$11, _descriptor15$N, _descriptor16$H;
+	var _dec$6S, _dec2$6r, _dec3$5Z, _dec4$5f, _dec5$4G, _dec6$47, _dec7$3z, _dec8$36, _dec9$2J, _dec0$2y, _dec1$2m, _dec10$23, _dec11$1U, _dec12$1E, _dec13$1s, _dec14$1i, _dec15$1e, _dec16$14, _dec17$$, _dec18$X, _dec19$K, _dec20$I, _dec21$F, _dec22$B, _dec23$y, _class$6S, _class2$6i, _descriptor$6k, _descriptor2$5N, _descriptor3$53, _descriptor4$4n, _descriptor5$3O, _descriptor6$3d, _descriptor7$2L, _descriptor8$2r, _descriptor9$2e, _descriptor0$20, _descriptor1$1H, _descriptor10$1w, _descriptor11$1j, _descriptor12$1d, _descriptor13$17, _descriptor14$11, _descriptor15$N, _descriptor16$H;
 
 	/**
 	 * Shared scratch for the light-direction composition below. Module scope
@@ -157427,7 +157427,7 @@
 	 * the abstract base `Tr2Light` (see Tr2PointLight.js for the shared-property
 	 * rationale - ccpwgl has no Tr2Light base class file).
 	 */
-	var Tr2SpotLight = (_dec$6S = notImplemented, _dec2$6r = define("Tr2SpotLight", true), _dec3$5Z = string, _dec4$5f = int32$1, _dec5$4G = float, _dec6$47 = notImplemented, _dec7$3z = int32$1, _dec8$35 = color, _dec9$2I = notImplemented, _dec0$2y = ushort, _dec1$2m = float, _dec10$23 = float, _dec11$1U = notImplemented, _dec12$1E = boolean, _dec13$1s = notImplemented, _dec14$1i = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec15$1e = struct(), _dec16$14 = path, _dec17$$ = float, _dec18$X = float, _dec19$K = uint, _dec20$I = float, _dec21$F = vector3, _dec22$B = float, _dec23$y = quaternion, _dec$6S(_class$6S = _dec2$6r(_class$6S = (_class2$6i = class Tr2SpotLight extends Model {
+	var Tr2SpotLight = (_dec$6S = notImplemented, _dec2$6r = define("Tr2SpotLight", true), _dec3$5Z = string, _dec4$5f = int32$1, _dec5$4G = float, _dec6$47 = notImplemented, _dec7$3z = int32$1, _dec8$36 = color, _dec9$2J = notImplemented, _dec0$2y = ushort, _dec1$2m = float, _dec10$23 = float, _dec11$1U = notImplemented, _dec12$1E = boolean, _dec13$1s = notImplemented, _dec14$1i = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec15$1e = struct(), _dec16$14 = path, _dec17$$ = float, _dec18$X = float, _dec19$K = uint, _dec20$I = float, _dec21$F = vector3, _dec22$B = float, _dec23$y = quaternion, _dec$6S(_class$6S = _dec2$6r(_class$6S = (_class2$6i = class Tr2SpotLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6k, this);
@@ -157460,8 +157460,8 @@
 	    // format-black schema. Gates which passes a light affects - not consumed
 	    // by the Carbon tile path yet.
 	    _initializerDefineProperty(this, "flags", _descriptor6$3d, this);
-	    _initializerDefineProperty(this, "innerAngle", _descriptor7$2K, this);
-	    _initializerDefineProperty(this, "innerRadius", _descriptor8$2q, this);
+	    _initializerDefineProperty(this, "innerAngle", _descriptor7$2L, this);
+	    _initializerDefineProperty(this, "innerRadius", _descriptor8$2r, this);
 	    _initializerDefineProperty(this, "isVolumetric", _descriptor9$2e, this);
 	    _initializerDefineProperty(this, "lightProfile", _descriptor0$20, this);
 	    _initializerDefineProperty(this, "lightProfilePath", _descriptor1$1H, this);
@@ -157621,28 +157621,28 @@
 	  initializer: function () {
 	    return PerLightShadowSetting.DISABLED;
 	  }
-	}), _descriptor5$3O = _applyDecoratedDescriptor(_class2$6i.prototype, "color", [_dec8$35], {
+	}), _descriptor5$3O = _applyDecoratedDescriptor(_class2$6i.prototype, "color", [_dec8$36], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.fromValues(0, 0, 0, 1);
 	  }
-	}), _descriptor6$3d = _applyDecoratedDescriptor(_class2$6i.prototype, "flags", [_dec9$2I, _dec0$2y], {
+	}), _descriptor6$3d = _applyDecoratedDescriptor(_class2$6i.prototype, "flags", [_dec9$2J, _dec0$2y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return LIGHT_FLAG_DEFAULT;
 	  }
-	}), _descriptor7$2K = _applyDecoratedDescriptor(_class2$6i.prototype, "innerAngle", [_dec1$2m], {
+	}), _descriptor7$2L = _applyDecoratedDescriptor(_class2$6i.prototype, "innerAngle", [_dec1$2m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$2q = _applyDecoratedDescriptor(_class2$6i.prototype, "innerRadius", [_dec10$23], {
+	}), _descriptor8$2r = _applyDecoratedDescriptor(_class2$6i.prototype, "innerRadius", [_dec10$23], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -157721,7 +157721,7 @@
 	  }
 	}), _class2$6i)) || _class$6S) || _class$6S);
 
-	var _dec$6R, _dec2$6q, _dec3$5Y, _dec4$5e, _dec5$4F, _dec6$46, _dec7$3y, _dec8$34, _dec9$2H, _dec0$2x, _dec1$2l, _dec10$22, _dec11$1T, _dec12$1D, _dec13$1r, _dec14$1h, _dec15$1d, _dec16$13, _dec17$_, _dec18$W, _dec19$J, _dec20$H, _dec21$E, _class$6R, _class2$6h, _descriptor$6j, _descriptor2$5M, _descriptor3$52, _descriptor4$4m, _descriptor5$3N, _descriptor6$3c, _descriptor7$2J, _descriptor8$2p, _descriptor9$2d, _descriptor0$1$, _descriptor1$1G, _descriptor10$1v, _descriptor11$1i, _descriptor12$1c, _descriptor13$16, _descriptor14$10, _Tr2PointLight;
+	var _dec$6R, _dec2$6q, _dec3$5Y, _dec4$5e, _dec5$4F, _dec6$46, _dec7$3y, _dec8$35, _dec9$2I, _dec0$2x, _dec1$2l, _dec10$22, _dec11$1T, _dec12$1D, _dec13$1r, _dec14$1h, _dec15$1d, _dec16$13, _dec17$_, _dec18$W, _dec19$J, _dec20$H, _dec21$E, _class$6R, _class2$6h, _descriptor$6j, _descriptor2$5M, _descriptor3$52, _descriptor4$4m, _descriptor5$3N, _descriptor6$3c, _descriptor7$2K, _descriptor8$2q, _descriptor9$2d, _descriptor0$1$, _descriptor1$1G, _descriptor10$1v, _descriptor11$1i, _descriptor12$1c, _descriptor13$16, _descriptor14$10, _Tr2PointLight;
 
 	/**
 	 * Shared scratch for the light-direction composition below. Module scope
@@ -157767,7 +157767,7 @@
 	 * this folder) the full LightData-derived property set is declared flatly
 	 * on each of Tr2PointLight/Tr2SpotLight/Tr2TexturedPointLight/Tr2FactionLight.
 	 */
-	var Tr2PointLight = (_dec$6R = notImplemented, _dec2$6q = define("Tr2PointLight", true), _dec3$5Y = string, _dec4$5e = int32$1, _dec5$4F = float, _dec6$46 = notImplemented, _dec7$3y = int32$1, _dec8$34 = color, _dec9$2H = notImplemented, _dec0$2x = ushort, _dec1$2l = float, _dec10$22 = notImplemented, _dec11$1T = boolean, _dec12$1D = notImplemented, _dec13$1r = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec14$1h = struct(), _dec15$1d = path, _dec16$13 = float, _dec17$_ = float, _dec18$W = uint, _dec19$J = vector3, _dec20$H = float, _dec21$E = quaternion, _dec$6R(_class$6R = _dec2$6q(_class$6R = (_class2$6h = (_Tr2PointLight = class Tr2PointLight extends Model {
+	var Tr2PointLight = (_dec$6R = notImplemented, _dec2$6q = define("Tr2PointLight", true), _dec3$5Y = string, _dec4$5e = int32$1, _dec5$4F = float, _dec6$46 = notImplemented, _dec7$3y = int32$1, _dec8$35 = color, _dec9$2I = notImplemented, _dec0$2x = ushort, _dec1$2l = float, _dec10$22 = notImplemented, _dec11$1T = boolean, _dec12$1D = notImplemented, _dec13$1r = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec14$1h = struct(), _dec15$1d = path, _dec16$13 = float, _dec17$_ = float, _dec18$W = uint, _dec19$J = vector3, _dec20$H = float, _dec21$E = quaternion, _dec$6R(_class$6R = _dec2$6q(_class$6R = (_class2$6h = (_Tr2PointLight = class Tr2PointLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6j, this);
@@ -157800,8 +157800,8 @@
 	    // format-black schema. Gates which passes a light affects - not consumed
 	    // by the Carbon tile path yet.
 	    _initializerDefineProperty(this, "flags", _descriptor6$3c, this);
-	    _initializerDefineProperty(this, "innerRadius", _descriptor7$2J, this);
-	    _initializerDefineProperty(this, "isVolumetric", _descriptor8$2p, this);
+	    _initializerDefineProperty(this, "innerRadius", _descriptor7$2K, this);
+	    _initializerDefineProperty(this, "isVolumetric", _descriptor8$2q, this);
 	    _initializerDefineProperty(this, "lightProfile", _descriptor9$2d, this);
 	    _initializerDefineProperty(this, "lightProfilePath", _descriptor0$1$, this);
 	    _initializerDefineProperty(this, "noiseAmplitude", _descriptor1$1G, this);
@@ -158057,28 +158057,28 @@
 	  initializer: function () {
 	    return PerLightShadowSetting.DISABLED;
 	  }
-	}), _descriptor5$3N = _applyDecoratedDescriptor(_class2$6h.prototype, "color", [_dec8$34], {
+	}), _descriptor5$3N = _applyDecoratedDescriptor(_class2$6h.prototype, "color", [_dec8$35], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.create();
 	  }
-	}), _descriptor6$3c = _applyDecoratedDescriptor(_class2$6h.prototype, "flags", [_dec9$2H, _dec0$2x], {
+	}), _descriptor6$3c = _applyDecoratedDescriptor(_class2$6h.prototype, "flags", [_dec9$2I, _dec0$2x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return LIGHT_FLAG_DEFAULT;
 	  }
-	}), _descriptor7$2J = _applyDecoratedDescriptor(_class2$6h.prototype, "innerRadius", [_dec1$2l], {
+	}), _descriptor7$2K = _applyDecoratedDescriptor(_class2$6h.prototype, "innerRadius", [_dec1$2l], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$2p = _applyDecoratedDescriptor(_class2$6h.prototype, "isVolumetric", [_dec10$22, _dec11$1T], {
+	}), _descriptor8$2q = _applyDecoratedDescriptor(_class2$6h.prototype, "isVolumetric", [_dec10$22, _dec11$1T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -158543,7 +158543,7 @@
 	  }
 	}), _class2$6g)) || _class$6Q);
 
-	var _dec$6P, _dec2$6o, _dec3$5W, _dec4$5c, _dec5$4D, _dec6$44, _dec7$3x, _dec8$33, _dec9$2G, _dec0$2w, _dec1$2k, _dec10$21, _dec11$1S, _dec12$1C, _dec13$1q, _dec14$1g, _dec15$1c, _dec16$12, _dec17$Z, _dec18$V, _dec19$I, _dec20$G, _dec21$D, _dec22$A, _dec23$x, _dec24$u, _dec25$r, _dec26$o, _dec27$k, _dec28$i, _dec29$g, _dec30$e, _dec31$d, _class$6P, _class2$6f, _descriptor$6h, _descriptor2$5K, _descriptor3$50, _descriptor4$4l, _descriptor5$3M, _descriptor6$3b, _descriptor7$2I, _descriptor8$2o, _descriptor9$2c, _descriptor0$1_, _descriptor1$1F, _descriptor10$1u, _descriptor11$1h, _descriptor12$1b, _descriptor13$15, _descriptor14$$, _descriptor15$M, _descriptor16$G, _descriptor17$D, _descriptor18$y;
+	var _dec$6P, _dec2$6o, _dec3$5W, _dec4$5c, _dec5$4D, _dec6$44, _dec7$3x, _dec8$34, _dec9$2H, _dec0$2w, _dec1$2k, _dec10$21, _dec11$1S, _dec12$1C, _dec13$1q, _dec14$1g, _dec15$1c, _dec16$12, _dec17$Z, _dec18$V, _dec19$I, _dec20$G, _dec21$D, _dec22$A, _dec23$x, _dec24$u, _dec25$r, _dec26$o, _dec27$k, _dec28$i, _dec29$g, _dec30$e, _dec31$d, _class$6P, _class2$6f, _descriptor$6h, _descriptor2$5K, _descriptor3$50, _descriptor4$4l, _descriptor5$3M, _descriptor6$3b, _descriptor7$2J, _descriptor8$2p, _descriptor9$2c, _descriptor0$1_, _descriptor1$1F, _descriptor10$1u, _descriptor11$1h, _descriptor12$1b, _descriptor13$15, _descriptor14$$, _descriptor15$M, _descriptor16$G, _descriptor17$D, _descriptor18$y;
 	// NOTE: `Saturate` (also exported from ./Tw2CarbonLightMath, ported 1:1 from
 	// carbonengine math/include/Color_inline.h:161-172) is what
 	// `UpdateColorFromTexture` below should use once a texture average-color
@@ -158563,7 +158563,7 @@
 	 * had them, and per the "do not touch black-reader property names" rule
 	 * they are left in place rather than removed.
 	 */
-	var Tr2TexturedPointLight = (_dec$6P = notImplemented, _dec2$6o = define("Tr2TexturedPointLight", true), _dec3$5W = string, _dec4$5c = int32$1, _dec5$4D = float, _dec6$44 = notImplemented, _dec7$3x = int32$1, _dec8$33 = vector4, _dec9$2G = notImplemented, _dec0$2w = ushort, _dec1$2k = notImplemented, _dec10$21 = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec11$1S = float, _dec12$1C = float, _dec13$1q = notImplemented, _dec14$1g = boolean, _dec15$1c = notImplemented, _dec16$12 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$Z = struct(), _dec18$V = path, _dec19$I = float, _dec20$G = float, _dec21$D = uint, _dec22$A = notImplemented, _dec23$x = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec24$u = float, _dec25$r = vector3, _dec26$o = float, _dec27$k = quaternion, _dec28$i = notImplemented, _dec29$g = desc("Texture resource whose average color drives `color` every Update() - ccpwgl has no equivalent Tw2TextureRes.GetAverageColor()/mip-average readback yet (carbonengine Resources/TriTextureRes, Tr2TexturedPointLight.cpp:51-56)."), _dec30$e = struct(), _dec31$d = path, _dec$6P(_class$6P = _dec2$6o(_class$6P = (_class2$6f = class Tr2TexturedPointLight extends Model {
+	var Tr2TexturedPointLight = (_dec$6P = notImplemented, _dec2$6o = define("Tr2TexturedPointLight", true), _dec3$5W = string, _dec4$5c = int32$1, _dec5$4D = float, _dec6$44 = notImplemented, _dec7$3x = int32$1, _dec8$34 = vector4, _dec9$2H = notImplemented, _dec0$2w = ushort, _dec1$2k = notImplemented, _dec10$21 = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec11$1S = float, _dec12$1C = float, _dec13$1q = notImplemented, _dec14$1g = boolean, _dec15$1c = notImplemented, _dec16$12 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$Z = struct(), _dec18$V = path, _dec19$I = float, _dec20$G = float, _dec21$D = uint, _dec22$A = notImplemented, _dec23$x = desc("Not exposed to Blue by Carbon's Tr2TexturedPointLight (see class doc) - kept for black-reader compatibility with ccpwgl's pre-existing stub, always 0 in practice."), _dec24$u = float, _dec25$r = vector3, _dec26$o = float, _dec27$k = quaternion, _dec28$i = notImplemented, _dec29$g = desc("Texture resource whose average color drives `color` every Update() - ccpwgl has no equivalent Tw2TextureRes.GetAverageColor()/mip-average readback yet (carbonengine Resources/TriTextureRes, Tr2TexturedPointLight.cpp:51-56)."), _dec30$e = struct(), _dec31$d = path, _dec$6P(_class$6P = _dec2$6o(_class$6P = (_class2$6f = class Tr2TexturedPointLight extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6h, this);
@@ -158598,8 +158598,8 @@
 	    // format-black schema. Gates which passes a light affects - not consumed
 	    // by the Carbon tile path yet.
 	    _initializerDefineProperty(this, "flags", _descriptor6$3b, this);
-	    _initializerDefineProperty(this, "innerAngle", _descriptor7$2I, this);
-	    _initializerDefineProperty(this, "innerRadius", _descriptor8$2o, this);
+	    _initializerDefineProperty(this, "innerAngle", _descriptor7$2J, this);
+	    _initializerDefineProperty(this, "innerRadius", _descriptor8$2p, this);
 	    _initializerDefineProperty(this, "isVolumetric", _descriptor9$2c, this);
 	    _initializerDefineProperty(this, "lightProfile", _descriptor0$1_, this);
 	    _initializerDefineProperty(this, "lightProfilePath", _descriptor1$1F, this);
@@ -158769,28 +158769,28 @@
 	  initializer: function () {
 	    return PerLightShadowSetting.DISABLED;
 	  }
-	}), _descriptor5$3M = _applyDecoratedDescriptor(_class2$6f.prototype, "color", [_dec8$33], {
+	}), _descriptor5$3M = _applyDecoratedDescriptor(_class2$6f.prototype, "color", [_dec8$34], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec4$1.fromValues(0, 0, 0, 1);
 	  }
-	}), _descriptor6$3b = _applyDecoratedDescriptor(_class2$6f.prototype, "flags", [_dec9$2G, _dec0$2w], {
+	}), _descriptor6$3b = _applyDecoratedDescriptor(_class2$6f.prototype, "flags", [_dec9$2H, _dec0$2w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return LIGHT_FLAG_DEFAULT;
 	  }
-	}), _descriptor7$2I = _applyDecoratedDescriptor(_class2$6f.prototype, "innerAngle", [_dec1$2k, _dec10$21, _dec11$1S], {
+	}), _descriptor7$2J = _applyDecoratedDescriptor(_class2$6f.prototype, "innerAngle", [_dec1$2k, _dec10$21, _dec11$1S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor8$2o = _applyDecoratedDescriptor(_class2$6f.prototype, "innerRadius", [_dec12$1C], {
+	}), _descriptor8$2p = _applyDecoratedDescriptor(_class2$6f.prototype, "innerRadius", [_dec12$1C], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -158883,7 +158883,7 @@
 	  }
 	}), _class2$6f)) || _class$6P) || _class$6P);
 
-	var _dec$6O, _dec2$6n, _dec3$5V, _dec4$5b, _dec5$4C, _dec6$43, _dec7$3w, _dec8$32, _dec9$2F, _dec0$2v, _dec1$2j, _dec10$20, _dec11$1R, _dec12$1B, _dec13$1p, _dec14$1f, _dec15$1b, _dec16$11, _dec17$Y, _dec18$U, _dec19$H, _dec20$F, _dec21$C, _dec22$z, _dec23$w, _dec24$t, _dec25$q, _class$6O, _class2$6e, _descriptor$6g, _descriptor2$5J, _descriptor3$4$, _descriptor4$4k, _descriptor5$3L, _descriptor6$3a, _descriptor7$2H, _descriptor8$2n, _descriptor9$2b, _descriptor0$1Z, _descriptor1$1E, _descriptor10$1t, _descriptor11$1g, _descriptor12$1a, _descriptor13$14, _descriptor14$_, _descriptor15$L, _descriptor16$F, _descriptor17$C, _descriptor18$x;
+	var _dec$6O, _dec2$6n, _dec3$5V, _dec4$5b, _dec5$4C, _dec6$43, _dec7$3w, _dec8$33, _dec9$2G, _dec0$2v, _dec1$2j, _dec10$20, _dec11$1R, _dec12$1B, _dec13$1p, _dec14$1f, _dec15$1b, _dec16$11, _dec17$Y, _dec18$U, _dec19$H, _dec20$F, _dec21$C, _dec22$z, _dec23$w, _dec24$t, _dec25$q, _class$6O, _class2$6e, _descriptor$6g, _descriptor2$5J, _descriptor3$4$, _descriptor4$4k, _descriptor5$3L, _descriptor6$3a, _descriptor7$2I, _descriptor8$2o, _descriptor9$2b, _descriptor0$1Z, _descriptor1$1E, _descriptor10$1t, _descriptor11$1g, _descriptor12$1a, _descriptor13$14, _descriptor14$_, _descriptor15$L, _descriptor16$F, _descriptor17$C, _descriptor18$x;
 
 	/**
 	 * Shared scratch for the light-direction composition below. Module scope
@@ -158927,7 +158927,7 @@
 	 * @property {null} radius - Carbon type: LightData; member: m_lightData.radius
 	 * @property {number} saturation - Carbon type: float; member: m_saturation
 	 */
-	var Tr2FactionLight = (_dec$6O = notImplemented, _dec2$6n = define("Tr2FactionLight", true), _dec3$5V = vector3, _dec4$5b = rotation, _dec5$4C = int32$1, _dec6$43 = float, _dec7$3w = notImplemented, _dec8$32 = int32$1, _dec9$2F = int32$1, _dec0$2v = notImplemented, _dec1$2j = ushort, _dec10$20 = float, _dec11$1R = float, _dec12$1B = boolean, _dec13$1p = notImplemented, _dec14$1f = boolean, _dec15$1b = notImplemented, _dec16$11 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$Y = struct(), _dec18$U = path, _dec19$H = string, _dec20$F = float, _dec21$C = float, _dec22$z = uint, _dec23$w = float, _dec24$t = float, _dec25$q = float, _dec$6O(_class$6O = _dec2$6n(_class$6O = (_class2$6e = class Tr2FactionLight {
+	var Tr2FactionLight = (_dec$6O = notImplemented, _dec2$6n = define("Tr2FactionLight", true), _dec3$5V = vector3, _dec4$5b = rotation, _dec5$4C = int32$1, _dec6$43 = float, _dec7$3w = notImplemented, _dec8$33 = int32$1, _dec9$2G = int32$1, _dec0$2v = notImplemented, _dec1$2j = ushort, _dec10$20 = float, _dec11$1R = float, _dec12$1B = boolean, _dec13$1p = notImplemented, _dec14$1f = boolean, _dec15$1b = notImplemented, _dec16$11 = desc("Tr2LightProfileResPtr - resolved from lightProfilePath. ccpwgl has no Tr2LightProfileRes resource class yet (carbonengine Resources/Tr2LightProfileRes.h). Read-only in Carbon (Be::READ)."), _dec17$Y = struct(), _dec18$U = path, _dec19$H = string, _dec20$F = float, _dec21$C = float, _dec22$z = uint, _dec23$w = float, _dec24$t = float, _dec25$q = float, _dec$6O(_class$6O = _dec2$6n(_class$6O = (_class2$6e = class Tr2FactionLight {
 	  constructor() {
 	    _initializerDefineProperty(this, "position", _descriptor$6g, this);
 	    _initializerDefineProperty(this, "rotation", _descriptor2$5J, this);
@@ -158959,8 +158959,8 @@
 	    // AFFECTS_PARTICLES=2, default 1); canonical width confirmed by the
 	    // format-black schema. Gates which passes a light affects - not consumed
 	    // by the Carbon tile path yet.
-	    _initializerDefineProperty(this, "flags", _descriptor7$2H, this);
-	    _initializerDefineProperty(this, "innerAngle", _descriptor8$2n, this);
+	    _initializerDefineProperty(this, "flags", _descriptor7$2I, this);
+	    _initializerDefineProperty(this, "innerAngle", _descriptor8$2o, this);
 	    _initializerDefineProperty(this, "innerRadius", _descriptor9$2b, this);
 	    _initializerDefineProperty(this, "isSpotlight", _descriptor0$1Z, this);
 	    _initializerDefineProperty(this, "isVolumetric", _descriptor1$1E, this);
@@ -159200,28 +159200,28 @@
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor5$3L = _applyDecoratedDescriptor(_class2$6e.prototype, "castsShadows", [_dec7$3w, _dec8$32], {
+	}), _descriptor5$3L = _applyDecoratedDescriptor(_class2$6e.prototype, "castsShadows", [_dec7$3w, _dec8$33], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return PerLightShadowSetting.DISABLED;
 	  }
-	}), _descriptor6$3a = _applyDecoratedDescriptor(_class2$6e.prototype, "factionColor", [_dec9$2F], {
+	}), _descriptor6$3a = _applyDecoratedDescriptor(_class2$6e.prototype, "factionColor", [_dec9$2G], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return -1;
 	  }
-	}), _descriptor7$2H = _applyDecoratedDescriptor(_class2$6e.prototype, "flags", [_dec0$2v, _dec1$2j], {
+	}), _descriptor7$2I = _applyDecoratedDescriptor(_class2$6e.prototype, "flags", [_dec0$2v, _dec1$2j], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return LIGHT_FLAG_DEFAULT;
 	  }
-	}), _descriptor8$2n = _applyDecoratedDescriptor(_class2$6e.prototype, "innerAngle", [_dec10$20], {
+	}), _descriptor8$2o = _applyDecoratedDescriptor(_class2$6e.prototype, "innerAngle", [_dec10$20], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -159318,8 +159318,8 @@
 	// exports feed tw2.Register's constructor store, which rejects its
 	// non-class members (constants/functions). Import it by path instead.
 
-	var _dec$6N, _dec2$6m, _dec3$5U, _dec4$5a, _dec5$4B, _dec6$42, _dec7$3v, _dec8$31, _dec9$2E, _dec0$2u, _dec1$2i, _dec10$1$, _dec11$1Q, _dec12$1A, _dec13$1o, _dec14$1e, _dec15$1a, _dec16$10, _dec17$X, _dec18$T, _dec19$G, _dec20$E, _dec21$B, _dec22$y, _dec23$v, _dec24$s, _dec25$p, _dec26$n, _class$6N, _class2$6d, _descriptor$6f, _descriptor2$5I, _descriptor3$4_, _descriptor4$4j, _descriptor5$3K, _descriptor6$39, _descriptor7$2G, _descriptor8$2m, _descriptor9$2a, _descriptor0$1Y, _descriptor1$1D, _descriptor10$1s, _descriptor11$1f, _descriptor12$19, _descriptor13$13, _descriptor14$Z, _descriptor15$K, _descriptor16$E, _descriptor17$B;
-	var Tw2Mesh = (_dec$6N = define("Tw2Mesh", "Tr2Mesh"), _dec2$6m = string, _dec3$5U = list("Tw2MeshArea"), _dec4$5a = list("Tw2MeshArea"), _dec5$4B = notImplemented, _dec6$42 = boolean, _dec7$3v = notImplemented, _dec8$31 = list("Tw2MeshArea"), _dec9$2E = notImplemented, _dec0$2u = list("Tw2MeshArea"), _dec1$2i = boolean, _dec10$1$ = list("Tw2MeshArea"), _dec11$1Q = path, _dec12$1A = uint, _dec13$1o = list("Tw2MeshArea"), _dec14$1e = notImplemented, _dec15$1a = list("Tw2MeshArea"), _dec16$10 = list("Tw2MeshArea"), _dec17$X = list("Tw2MeshArea"), _dec18$T = plain, _dec19$G = struct("Tw2GeometryRes"), _dec20$E = isPrivate, _dec21$B = float, _dec22$y = notImplemented, _dec23$v = boolean, _dec24$s = notImplemented, _dec25$p = float, _dec26$n = notImplemented, _dec$6N(_class$6N = (_class2$6d = class Tw2Mesh extends Model {
+	var _dec$6N, _dec2$6m, _dec3$5U, _dec4$5a, _dec5$4B, _dec6$42, _dec7$3v, _dec8$32, _dec9$2F, _dec0$2u, _dec1$2i, _dec10$1$, _dec11$1Q, _dec12$1A, _dec13$1o, _dec14$1e, _dec15$1a, _dec16$10, _dec17$X, _dec18$T, _dec19$G, _dec20$E, _dec21$B, _dec22$y, _dec23$v, _dec24$s, _dec25$p, _dec26$n, _class$6N, _class2$6d, _descriptor$6f, _descriptor2$5I, _descriptor3$4_, _descriptor4$4j, _descriptor5$3K, _descriptor6$39, _descriptor7$2H, _descriptor8$2n, _descriptor9$2a, _descriptor0$1Y, _descriptor1$1D, _descriptor10$1s, _descriptor11$1f, _descriptor12$19, _descriptor13$13, _descriptor14$Z, _descriptor15$K, _descriptor16$E, _descriptor17$B;
+	var Tw2Mesh = (_dec$6N = define("Tw2Mesh", "Tr2Mesh"), _dec2$6m = string, _dec3$5U = list("Tw2MeshArea"), _dec4$5a = list("Tw2MeshArea"), _dec5$4B = notImplemented, _dec6$42 = boolean, _dec7$3v = notImplemented, _dec8$32 = list("Tw2MeshArea"), _dec9$2F = notImplemented, _dec0$2u = list("Tw2MeshArea"), _dec1$2i = boolean, _dec10$1$ = list("Tw2MeshArea"), _dec11$1Q = path, _dec12$1A = uint, _dec13$1o = list("Tw2MeshArea"), _dec14$1e = notImplemented, _dec15$1a = list("Tw2MeshArea"), _dec16$10 = list("Tw2MeshArea"), _dec17$X = list("Tw2MeshArea"), _dec18$T = plain, _dec19$G = struct("Tw2GeometryRes"), _dec20$E = isPrivate, _dec21$B = float, _dec22$y = notImplemented, _dec23$v = boolean, _dec24$s = notImplemented, _dec25$p = float, _dec26$n = notImplemented, _dec$6N(_class$6N = (_class2$6d = class Tw2Mesh extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6f, this);
@@ -159328,8 +159328,8 @@
 	    _initializerDefineProperty(this, "deferGeometryLoad", _descriptor4$4j, this);
 	    _initializerDefineProperty(this, "depthAreas", _descriptor5$3K, this);
 	    _initializerDefineProperty(this, "depthNormalAreas", _descriptor6$39, this);
-	    _initializerDefineProperty(this, "display", _descriptor7$2G, this);
-	    _initializerDefineProperty(this, "distortionAreas", _descriptor8$2m, this);
+	    _initializerDefineProperty(this, "display", _descriptor7$2H, this);
+	    _initializerDefineProperty(this, "distortionAreas", _descriptor8$2n, this);
 	    _initializerDefineProperty(this, "geometryResPath", _descriptor9$2a, this);
 	    _initializerDefineProperty(this, "meshIndex", _descriptor0$1Y, this);
 	    _initializerDefineProperty(this, "opaqueAreas", _descriptor1$1D, this);
@@ -159781,28 +159781,28 @@
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor5$3K = _applyDecoratedDescriptor(_class2$6d.prototype, "depthAreas", [_dec7$3v, _dec8$31], {
+	}), _descriptor5$3K = _applyDecoratedDescriptor(_class2$6d.prototype, "depthAreas", [_dec7$3v, _dec8$32], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor6$39 = _applyDecoratedDescriptor(_class2$6d.prototype, "depthNormalAreas", [_dec9$2E, _dec0$2u], {
+	}), _descriptor6$39 = _applyDecoratedDescriptor(_class2$6d.prototype, "depthNormalAreas", [_dec9$2F, _dec0$2u], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor7$2G = _applyDecoratedDescriptor(_class2$6d.prototype, "display", [_dec1$2i], {
+	}), _descriptor7$2H = _applyDecoratedDescriptor(_class2$6d.prototype, "display", [_dec1$2i], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor8$2m = _applyDecoratedDescriptor(_class2$6d.prototype, "distortionAreas", [_dec10$1$], {
+	}), _descriptor8$2n = _applyDecoratedDescriptor(_class2$6d.prototype, "distortionAreas", [_dec10$1$], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -159898,8 +159898,8 @@
 	  }
 	}), _class2$6d)) || _class$6N);
 
-	var _dec$6M, _dec2$6l, _dec3$5T, _dec4$59, _dec5$4A, _dec6$41, _dec7$3u, _dec8$30, _dec9$2D, _dec0$2t, _dec1$2h, _dec10$1_, _dec11$1P, _dec12$1z, _dec13$1n, _dec14$1d, _dec15$19, _dec16$$, _dec17$W, _dec18$S, _dec19$F, _dec20$D, _dec21$A, _dec22$x, _dec23$u, _dec24$r, _class$6M, _class2$6c, _descriptor$6e, _descriptor2$5H, _descriptor3$4Z, _descriptor4$4i, _descriptor5$3J, _descriptor6$38, _descriptor7$2F, _descriptor8$2l, _descriptor9$29, _descriptor0$1X, _descriptor1$1C, _descriptor10$1r, _descriptor11$1e, _descriptor12$18, _descriptor13$12, _descriptor14$Y, _descriptor15$J, _descriptor16$D, _descriptor17$A, _descriptor18$w, _Tw2InstancedMesh;
-	var Tw2InstancedMesh = (_dec$6M = todo("Is this deprecated?"), _dec2$6l = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5T = string, _dec4$59 = boolean, _dec5$4A = list("Tw2MeshArea"), _dec6$41 = struct(), _dec7$3u = list("Tw2MeshArea"), _dec8$30 = notImplemented, _dec9$2D = list("Tw2MeshArea"), _dec0$2t = notImplemented, _dec1$2h = list("Tw2MeshArea"), _dec10$1_ = struct("Tw2GeometryResource"), _dec11$1P = isPrivate, _dec12$1z = path, _dec13$1n = struct(), _dec14$1d = path, _dec15$19 = uint, _dec16$$ = vector3, _dec17$W = notImplemented, _dec18$S = uint, _dec19$F = vector3, _dec20$D = list("Tw2MeshArea"), _dec21$A = list("Tw2MeshArea"), _dec22$x = list("Tw2MeshArea"), _dec23$u = list("Tw2MeshArea"), _dec24$r = plain, _dec$6M(_class$6M = _dec2$6l(_class$6M = (_class2$6c = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model {
+	var _dec$6M, _dec2$6l, _dec3$5T, _dec4$59, _dec5$4A, _dec6$41, _dec7$3u, _dec8$31, _dec9$2E, _dec0$2t, _dec1$2h, _dec10$1_, _dec11$1P, _dec12$1z, _dec13$1n, _dec14$1d, _dec15$19, _dec16$$, _dec17$W, _dec18$S, _dec19$F, _dec20$D, _dec21$A, _dec22$x, _dec23$u, _dec24$r, _class$6M, _class2$6c, _descriptor$6e, _descriptor2$5H, _descriptor3$4Z, _descriptor4$4i, _descriptor5$3J, _descriptor6$38, _descriptor7$2G, _descriptor8$2m, _descriptor9$29, _descriptor0$1X, _descriptor1$1C, _descriptor10$1r, _descriptor11$1e, _descriptor12$18, _descriptor13$12, _descriptor14$Y, _descriptor15$J, _descriptor16$D, _descriptor17$A, _descriptor18$w, _Tw2InstancedMesh;
+	var Tw2InstancedMesh = (_dec$6M = todo("Is this deprecated?"), _dec2$6l = define("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec3$5T = string, _dec4$59 = boolean, _dec5$4A = list("Tw2MeshArea"), _dec6$41 = struct(), _dec7$3u = list("Tw2MeshArea"), _dec8$31 = notImplemented, _dec9$2E = list("Tw2MeshArea"), _dec0$2t = notImplemented, _dec1$2h = list("Tw2MeshArea"), _dec10$1_ = struct("Tw2GeometryResource"), _dec11$1P = isPrivate, _dec12$1z = path, _dec13$1n = struct(), _dec14$1d = path, _dec15$19 = uint, _dec16$$ = vector3, _dec17$W = notImplemented, _dec18$S = uint, _dec19$F = vector3, _dec20$D = list("Tw2MeshArea"), _dec21$A = list("Tw2MeshArea"), _dec22$x = list("Tw2MeshArea"), _dec23$u = list("Tw2MeshArea"), _dec24$r = plain, _dec$6M(_class$6M = _dec2$6l(_class$6M = (_class2$6c = (_Tw2InstancedMesh = class Tw2InstancedMesh extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6e, this);
@@ -159908,8 +159908,8 @@
 	    _initializerDefineProperty(this, "boundsMethod", _descriptor4$4i, this);
 	    _initializerDefineProperty(this, "decalAreas", _descriptor5$3J, this);
 	    _initializerDefineProperty(this, "depthAreas", _descriptor6$38, this);
-	    _initializerDefineProperty(this, "distortionAreas", _descriptor7$2F, this);
-	    _initializerDefineProperty(this, "geometryResource", _descriptor8$2l, this);
+	    _initializerDefineProperty(this, "distortionAreas", _descriptor7$2G, this);
+	    _initializerDefineProperty(this, "geometryResource", _descriptor8$2m, this);
 	    _initializerDefineProperty(this, "geometryResPath", _descriptor9$29, this);
 	    _initializerDefineProperty(this, "instanceGeometryResource", _descriptor0$1X, this);
 	    _initializerDefineProperty(this, "instanceGeometryResPath", _descriptor1$1C, this);
@@ -160358,21 +160358,21 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor6$38 = _applyDecoratedDescriptor(_class2$6c.prototype, "depthAreas", [_dec8$30, _dec9$2D], {
+	}), _descriptor6$38 = _applyDecoratedDescriptor(_class2$6c.prototype, "depthAreas", [_dec8$31, _dec9$2E], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor7$2F = _applyDecoratedDescriptor(_class2$6c.prototype, "distortionAreas", [_dec0$2t, _dec1$2h], {
+	}), _descriptor7$2G = _applyDecoratedDescriptor(_class2$6c.prototype, "distortionAreas", [_dec0$2t, _dec1$2h], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor8$2l = _applyDecoratedDescriptor(_class2$6c.prototype, "geometryResource", [_dec10$1_, _dec11$1P], {
+	}), _descriptor8$2m = _applyDecoratedDescriptor(_class2$6c.prototype, "geometryResource", [_dec10$1_, _dec11$1P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -160474,8 +160474,8 @@
 	  }
 	}), _class2$6c)) || _class$6M) || _class$6M);
 
-	var _dec$6L, _dec2$6k, _dec3$5S, _dec4$58, _dec5$4z, _dec6$40, _dec7$3t, _dec8$2$, _dec9$2C, _dec0$2s, _dec1$2g, _dec10$1Z, _dec11$1O, _dec12$1y, _class$6L, _class2$6b, _descriptor$6d, _descriptor2$5G, _descriptor3$4Y, _descriptor4$4h, _descriptor5$3I, _descriptor6$37, _descriptor7$2E, _descriptor8$2k, _descriptor9$28, _Tw2MeshArea;
-	var Tw2MeshArea = (_dec$6L = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6k = stage(1), _dec3$5S = string, _dec4$58 = boolean, _dec5$4z = uint, _dec6$40 = struct("Tw2Effect"), _dec7$3t = uint, _dec8$2$ = notImplemented, _dec9$2C = boolean, _dec0$2s = notImplemented, _dec1$2g = boolean, _dec10$1Z = uint, _dec11$1O = plain, _dec12$1y = isPrivate, _dec$6L(_class$6L = _dec2$6k(_class$6L = (_class2$6b = (_Tw2MeshArea = class Tw2MeshArea extends Model {
+	var _dec$6L, _dec2$6k, _dec3$5S, _dec4$58, _dec5$4z, _dec6$40, _dec7$3t, _dec8$30, _dec9$2D, _dec0$2s, _dec1$2g, _dec10$1Z, _dec11$1O, _dec12$1y, _class$6L, _class2$6b, _descriptor$6d, _descriptor2$5G, _descriptor3$4Y, _descriptor4$4h, _descriptor5$3I, _descriptor6$37, _descriptor7$2F, _descriptor8$2l, _descriptor9$28, _Tw2MeshArea;
+	var Tw2MeshArea = (_dec$6L = define("Tw2MeshArea", "Tr2MeshArea"), _dec2$6k = stage(1), _dec3$5S = string, _dec4$58 = boolean, _dec5$4z = uint, _dec6$40 = struct("Tw2Effect"), _dec7$3t = uint, _dec8$30 = notImplemented, _dec9$2D = boolean, _dec0$2s = notImplemented, _dec1$2g = boolean, _dec10$1Z = uint, _dec11$1O = plain, _dec12$1y = isPrivate, _dec$6L(_class$6L = _dec2$6k(_class$6L = (_class2$6b = (_Tw2MeshArea = class Tw2MeshArea extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6d, this);
@@ -160484,8 +160484,8 @@
 	    _initializerDefineProperty(this, "effect", _descriptor4$4h, this);
 	    _initializerDefineProperty(this, "index", _descriptor5$3I, this);
 	    _initializerDefineProperty(this, "reversed", _descriptor6$37, this);
-	    _initializerDefineProperty(this, "useSHLighting", _descriptor7$2E, this);
-	    _initializerDefineProperty(this, "meshIndex", _descriptor8$2k, this);
+	    _initializerDefineProperty(this, "useSHLighting", _descriptor7$2F, this);
+	    _initializerDefineProperty(this, "meshIndex", _descriptor8$2l, this);
 	    // CCPWGL2 only
 	    _initializerDefineProperty(this, "_sofMeta", _descriptor9$28, this);
 	  }
@@ -160571,21 +160571,21 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor6$37 = _applyDecoratedDescriptor(_class2$6b.prototype, "reversed", [_dec8$2$, _dec9$2C], {
+	}), _descriptor6$37 = _applyDecoratedDescriptor(_class2$6b.prototype, "reversed", [_dec8$30, _dec9$2D], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor7$2E = _applyDecoratedDescriptor(_class2$6b.prototype, "useSHLighting", [_dec0$2s, _dec1$2g], {
+	}), _descriptor7$2F = _applyDecoratedDescriptor(_class2$6b.prototype, "useSHLighting", [_dec0$2s, _dec1$2g], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor8$2k = _applyDecoratedDescriptor(_class2$6b.prototype, "meshIndex", [_dec10$1Z], {
+	}), _descriptor8$2l = _applyDecoratedDescriptor(_class2$6b.prototype, "meshIndex", [_dec10$1Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -160601,8 +160601,8 @@
 	  }
 	}), _class2$6b)) || _class$6L) || _class$6L);
 
-	var _dec$6K, _dec2$6j, _dec3$5R, _dec4$57, _dec5$4y, _dec6$3$, _dec7$3s, _dec8$2_, _dec9$2B, _dec0$2r, _dec1$2f, _class$6K, _class2$6a, _descriptor$6c, _descriptor2$5F, _descriptor3$4X, _descriptor4$4g, _descriptor5$3H, _descriptor6$36, _descriptor7$2D, _Tw2MeshLineArea;
-	var Tw2MeshLineArea = (_dec$6K = define("Tw2MeshLineArea"), _dec2$6j = stage(1), _dec3$5R = string, _dec4$57 = boolean, _dec5$4y = uint, _dec6$3$ = struct("Tw2Effect"), _dec7$3s = uint, _dec8$2_ = notImplemented, _dec9$2B = boolean, _dec0$2r = notImplemented, _dec1$2f = boolean, _dec$6K(_class$6K = _dec2$6j(_class$6K = (_class2$6a = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
+	var _dec$6K, _dec2$6j, _dec3$5R, _dec4$57, _dec5$4y, _dec6$3$, _dec7$3s, _dec8$2$, _dec9$2C, _dec0$2r, _dec1$2f, _class$6K, _class2$6a, _descriptor$6c, _descriptor2$5F, _descriptor3$4X, _descriptor4$4g, _descriptor5$3H, _descriptor6$36, _descriptor7$2E, _Tw2MeshLineArea;
+	var Tw2MeshLineArea = (_dec$6K = define("Tw2MeshLineArea"), _dec2$6j = stage(1), _dec3$5R = string, _dec4$57 = boolean, _dec5$4y = uint, _dec6$3$ = struct("Tw2Effect"), _dec7$3s = uint, _dec8$2$ = notImplemented, _dec9$2C = boolean, _dec0$2r = notImplemented, _dec1$2f = boolean, _dec$6K(_class$6K = _dec2$6j(_class$6K = (_class2$6a = (_Tw2MeshLineArea = class Tw2MeshLineArea extends Tw2MeshArea {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$6c, this);
@@ -160611,7 +160611,7 @@
 	    _initializerDefineProperty(this, "effect", _descriptor4$4g, this);
 	    _initializerDefineProperty(this, "index", _descriptor5$3H, this);
 	    _initializerDefineProperty(this, "reversed", _descriptor6$36, this);
-	    _initializerDefineProperty(this, "useSHLighting", _descriptor7$2D, this);
+	    _initializerDefineProperty(this, "useSHLighting", _descriptor7$2E, this);
 	  }
 	}, _Tw2MeshLineArea.batchType = Tw2GeometryLineBatch, _Tw2MeshLineArea), _descriptor$6c = _applyDecoratedDescriptor(_class2$6a.prototype, "name", [_dec3$5R], {
 	  configurable: true,
@@ -160648,14 +160648,14 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor6$36 = _applyDecoratedDescriptor(_class2$6a.prototype, "reversed", [_dec8$2_, _dec9$2B], {
+	}), _descriptor6$36 = _applyDecoratedDescriptor(_class2$6a.prototype, "reversed", [_dec8$2$, _dec9$2C], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor7$2D = _applyDecoratedDescriptor(_class2$6a.prototype, "useSHLighting", [_dec0$2r, _dec1$2f], {
+	}), _descriptor7$2E = _applyDecoratedDescriptor(_class2$6a.prototype, "useSHLighting", [_dec0$2r, _dec1$2f], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -160664,8 +160664,8 @@
 	  }
 	}), _class2$6a)) || _class$6K) || _class$6K);
 
-	var _dec$6J, _dec2$6i, _dec3$5Q, _dec4$56, _dec5$4x, _dec6$3_, _dec7$3r, _dec8$2Z, _dec9$2A, _dec0$2q, _dec1$2e, _dec10$1Y, _dec11$1N, _dec12$1x, _dec13$1m, _class$6J, _class2$69, _descriptor$6b, _descriptor2$5E, _descriptor3$4W, _descriptor4$4f, _descriptor5$3G, _descriptor6$35, _descriptor7$2C, _descriptor8$2j, _Tw2Animation;
-	var Tw2Animation = (_dec$6J = define("Tw2Animation"), _dec2$6i = struct("Tw2GeometryAnimation"), _dec3$5Q = isPrivate, _dec4$56 = float, _dec5$4x = isPrivate, _dec6$3_ = float, _dec7$3r = boolean, _dec8$2Z = list("Tw2TrackGroup"), _dec9$2A = isPrivate, _dec0$2q = plain, _dec1$2e = isPrivate, _dec10$1Y = string, _dec11$1N = isPrivate, _dec12$1x = float, _dec13$1m = isPrivate, _dec$6J(_class$6J = (_class2$69 = (_Tw2Animation = class Tw2Animation extends Model {
+	var _dec$6J, _dec2$6i, _dec3$5Q, _dec4$56, _dec5$4x, _dec6$3_, _dec7$3r, _dec8$2_, _dec9$2B, _dec0$2q, _dec1$2e, _dec10$1Y, _dec11$1N, _dec12$1x, _dec13$1m, _class$6J, _class2$69, _descriptor$6b, _descriptor2$5E, _descriptor3$4W, _descriptor4$4f, _descriptor5$3G, _descriptor6$35, _descriptor7$2D, _descriptor8$2k, _Tw2Animation;
+	var Tw2Animation = (_dec$6J = define("Tw2Animation"), _dec2$6i = struct("Tw2GeometryAnimation"), _dec3$5Q = isPrivate, _dec4$56 = float, _dec5$4x = isPrivate, _dec6$3_ = float, _dec7$3r = boolean, _dec8$2_ = list("Tw2TrackGroup"), _dec9$2B = isPrivate, _dec0$2q = plain, _dec1$2e = isPrivate, _dec10$1Y = string, _dec11$1N = isPrivate, _dec12$1x = float, _dec13$1m = isPrivate, _dec$6J(_class$6J = (_class2$69 = (_Tw2Animation = class Tw2Animation extends Model {
 	  /**
 	   * Constructor
 	   * @param animationController
@@ -160683,9 +160683,9 @@
 	    // The requested mask/layer name (e.g. "TrackMaskStance"). Identifies the animation's layer
 	    // for one-at-a-time playback and for IsAnimationPlaying(layer) expression queries. Set even
 	    // when trackMask weights are absent, so the state machine still sequences correctly.
-	    _initializerDefineProperty(this, "trackMaskName", _descriptor7$2C, this);
+	    _initializerDefineProperty(this, "trackMaskName", _descriptor7$2D, this);
 	    // Current blend contribution [0..1], eased in/out by the controller for crossfades.
-	    _initializerDefineProperty(this, "weight", _descriptor8$2j, this);
+	    _initializerDefineProperty(this, "weight", _descriptor8$2k, this);
 	    this._callback = null;
 	    this._controller = null;
 	    this._state = Tw2Animation.State.FINISHED;
@@ -160963,7 +160963,7 @@
 	  initializer: function () {
 	    return false;
 	  }
-	}), _descriptor5$3G = _applyDecoratedDescriptor(_class2$69.prototype, "trackGroups", [_dec8$2Z, _dec9$2A], {
+	}), _descriptor5$3G = _applyDecoratedDescriptor(_class2$69.prototype, "trackGroups", [_dec8$2_, _dec9$2B], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -160977,14 +160977,14 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$2C = _applyDecoratedDescriptor(_class2$69.prototype, "trackMaskName", [_dec10$1Y, _dec11$1N], {
+	}), _descriptor7$2D = _applyDecoratedDescriptor(_class2$69.prototype, "trackMaskName", [_dec10$1Y, _dec11$1N], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return "";
 	  }
-	}), _descriptor8$2j = _applyDecoratedDescriptor(_class2$69.prototype, "weight", [_dec12$1x, _dec13$1m], {
+	}), _descriptor8$2k = _applyDecoratedDescriptor(_class2$69.prototype, "weight", [_dec12$1x, _dec13$1m], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -161190,8 +161190,8 @@
 	  }
 	}), _class2$63)) || _class$6D);
 
-	var _dec$6C, _dec2$6b, _dec3$5J, _dec4$52, _dec5$4u, _dec6$3Y, _dec7$3p, _dec8$2Y, _dec9$2z, _dec0$2p, _dec1$2d, _class$6C, _class2$62, _descriptor$64, _descriptor2$5x, _descriptor3$4S, _descriptor4$4d, _descriptor5$3E, _Tw2AnimationController;
-	var Tw2AnimationController = (_dec$6C = define("Tw2AnimationController"), _dec2$6b = todo("Handle rebuilding bounds in update function"), _dec3$5J = list("Tw2GeometryRes"), _dec4$52 = isPrivate, _dec5$4u = list("Tw2Model"), _dec6$3Y = isPrivate, _dec7$3p = list("Tw2Animation"), _dec8$2Y = isPrivate, _dec9$2z = list("Tw2MeshBinding"), _dec0$2p = isPrivate, _dec1$2d = boolean, _dec$6C(_class$6C = _dec2$6b(_class$6C = (_class2$62 = (_Tw2AnimationController = class Tw2AnimationController extends Model {
+	var _dec$6C, _dec2$6b, _dec3$5J, _dec4$52, _dec5$4u, _dec6$3Y, _dec7$3p, _dec8$2Z, _dec9$2A, _dec0$2p, _dec1$2d, _class$6C, _class2$62, _descriptor$64, _descriptor2$5x, _descriptor3$4S, _descriptor4$4d, _descriptor5$3E, _Tw2AnimationController;
+	var Tw2AnimationController = (_dec$6C = define("Tw2AnimationController"), _dec2$6b = todo("Handle rebuilding bounds in update function"), _dec3$5J = list("Tw2GeometryRes"), _dec4$52 = isPrivate, _dec5$4u = list("Tw2Model"), _dec6$3Y = isPrivate, _dec7$3p = list("Tw2Animation"), _dec8$2Z = isPrivate, _dec9$2A = list("Tw2MeshBinding"), _dec0$2p = isPrivate, _dec1$2d = boolean, _dec$6C(_class$6C = _dec2$6b(_class$6C = (_class2$62 = (_Tw2AnimationController = class Tw2AnimationController extends Model {
 	  /**
 	   * Constructor
 	   * @param {Tw2GeometryRes} [geometryResource]
@@ -162172,14 +162172,14 @@
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor3$4S = _applyDecoratedDescriptor(_class2$62.prototype, "animations", [_dec7$3p, _dec8$2Y], {
+	}), _descriptor3$4S = _applyDecoratedDescriptor(_class2$62.prototype, "animations", [_dec7$3p, _dec8$2Z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return [];
 	  }
-	}), _descriptor4$4d = _applyDecoratedDescriptor(_class2$62.prototype, "meshBindings", [_dec9$2z, _dec0$2p], {
+	}), _descriptor4$4d = _applyDecoratedDescriptor(_class2$62.prototype, "meshBindings", [_dec9$2A, _dec0$2p], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162228,7 +162228,7 @@
 	  }
 	}), _class2$61)) || _class$6B);
 
-	var _dec$6A, _dec2$69, _dec3$5I, _dec4$51, _dec5$4t, _dec6$3X, _dec7$3o, _dec8$2X, _dec9$2y, _dec0$2o, _dec1$2c, _dec10$1X, _dec11$1M, _dec12$1w, _dec13$1l, _dec14$1c, _dec15$18, _dec16$_, _dec17$V, _dec18$R, _dec19$E, _dec20$C, _class$6A, _class2$60, _descriptor$62, _descriptor2$5w, _descriptor3$4R, _descriptor4$4c, _descriptor5$3D, _descriptor6$33, _descriptor7$2B, _descriptor8$2i, _descriptor9$27, _descriptor0$1W, _descriptor1$1B, _descriptor10$1q, _descriptor11$1d, _descriptor12$17, _descriptor13$11, _descriptor14$X, _descriptor15$I, _descriptor16$C, _descriptor17$z, _descriptor18$v, _descriptor19$p;
+	var _dec$6A, _dec2$69, _dec3$5I, _dec4$51, _dec5$4t, _dec6$3X, _dec7$3o, _dec8$2Y, _dec9$2z, _dec0$2o, _dec1$2c, _dec10$1X, _dec11$1M, _dec12$1w, _dec13$1l, _dec14$1c, _dec15$18, _dec16$_, _dec17$V, _dec18$R, _dec19$E, _dec20$C, _class$6A, _class2$60, _descriptor$62, _descriptor2$5w, _descriptor3$4R, _descriptor4$4c, _descriptor5$3D, _descriptor6$33, _descriptor7$2C, _descriptor8$2j, _descriptor9$27, _descriptor0$1W, _descriptor1$1B, _descriptor10$1q, _descriptor11$1d, _descriptor12$17, _descriptor13$11, _descriptor14$X, _descriptor15$I, _descriptor16$C, _descriptor17$z, _descriptor18$v, _descriptor19$p;
 
 	/**
 	 * Six-step bloom, composited into the image before the tone curve
@@ -162246,7 +162246,7 @@
 	 *
 	 * @ccp Tr2PPBloomEffect
 	 */
-	var Tr2PPBloomEffect = (_dec$6A = define("Tr2PPBloomEffect", true), _dec2$69 = float, _dec3$5I = float, _dec4$51 = float, _dec5$4t = boolean, _dec6$3X = float, _dec7$3o = path, _dec8$2X = uint, _dec9$2y = float, _dec0$2o = float, _dec1$2c = float, _dec10$1X = float, _dec11$1M = float, _dec12$1w = float, _dec13$1l = float, _dec14$1c = float, _dec15$18 = color, _dec16$_ = color, _dec17$V = color, _dec18$R = color, _dec19$E = color, _dec20$C = color, _dec$6A(_class$6A = (_class2$60 = class Tr2PPBloomEffect extends Tr2PPEffect {
+	var Tr2PPBloomEffect = (_dec$6A = define("Tr2PPBloomEffect", true), _dec2$69 = float, _dec3$5I = float, _dec4$51 = float, _dec5$4t = boolean, _dec6$3X = float, _dec7$3o = path, _dec8$2Y = uint, _dec9$2z = float, _dec0$2o = float, _dec1$2c = float, _dec10$1X = float, _dec11$1M = float, _dec12$1w = float, _dec13$1l = float, _dec14$1c = float, _dec15$18 = color, _dec16$_ = color, _dec17$V = color, _dec18$R = color, _dec19$E = color, _dec20$C = color, _dec$6A(_class$6A = (_class2$60 = class Tr2PPBloomEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "luminanceThreshold", _descriptor$62, this);
@@ -162255,8 +162255,8 @@
 	    _initializerDefineProperty(this, "exposureDependency", _descriptor4$4c, this);
 	    _initializerDefineProperty(this, "grimeWeight", _descriptor5$3D, this);
 	    _initializerDefineProperty(this, "grimePath", _descriptor6$33, this);
-	    _initializerDefineProperty(this, "steps", _descriptor7$2B, this);
-	    _initializerDefineProperty(this, "sizeScale", _descriptor8$2i, this);
+	    _initializerDefineProperty(this, "steps", _descriptor7$2C, this);
+	    _initializerDefineProperty(this, "sizeScale", _descriptor8$2j, this);
 	    _initializerDefineProperty(this, "directionalWeight", _descriptor9$27, this);
 	    _initializerDefineProperty(this, "step1Size", _descriptor0$1W, this);
 	    _initializerDefineProperty(this, "step2Size", _descriptor1$1B, this);
@@ -162313,14 +162313,14 @@
 	  initializer: function () {
 	    return "res:/texture/global/black.dds";
 	  }
-	}), _descriptor7$2B = _applyDecoratedDescriptor(_class2$60.prototype, "steps", [_dec8$2X], {
+	}), _descriptor7$2C = _applyDecoratedDescriptor(_class2$60.prototype, "steps", [_dec8$2Y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 6;
 	  }
-	}), _descriptor8$2i = _applyDecoratedDescriptor(_class2$60.prototype, "sizeScale", [_dec9$2y], {
+	}), _descriptor8$2j = _applyDecoratedDescriptor(_class2$60.prototype, "sizeScale", [_dec9$2z], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162420,7 +162420,7 @@
 	  }
 	}), _class2$60)) || _class$6A);
 
-	var _dec$6z, _dec2$68, _dec3$5H, _dec4$50, _dec5$4s, _dec6$3W, _dec7$3n, _dec8$2W, _class$6z, _class2$5$, _descriptor$61, _descriptor2$5v, _descriptor3$4Q, _descriptor4$4b, _descriptor5$3C, _descriptor6$32, _descriptor7$2A;
+	var _dec$6z, _dec2$68, _dec3$5H, _dec4$50, _dec5$4s, _dec6$3W, _dec7$3n, _dec8$2X, _class$6z, _class2$5$, _descriptor$61, _descriptor2$5v, _descriptor3$4Q, _descriptor4$4b, _descriptor5$3C, _descriptor6$32, _descriptor7$2B;
 
 	/**
 	 * Colour correction applied inside the composite, before the tone curve
@@ -162434,7 +162434,7 @@
 	 *
 	 * @ccp Tr2PPColorCorrectionEffect
 	 */
-	var Tr2PPColorCorrectionEffect = (_dec$6z = define("Tr2PPColorCorrectionEffect", true), _dec2$68 = float, _dec3$5H = float, _dec4$50 = float, _dec5$4s = float, _dec6$3W = float, _dec7$3n = vector3, _dec8$2W = vector3, _dec$6z(_class$6z = (_class2$5$ = class Tr2PPColorCorrectionEffect extends Tr2PPEffect {
+	var Tr2PPColorCorrectionEffect = (_dec$6z = define("Tr2PPColorCorrectionEffect", true), _dec2$68 = float, _dec3$5H = float, _dec4$50 = float, _dec5$4s = float, _dec6$3W = float, _dec7$3n = vector3, _dec8$2X = vector3, _dec$6z(_class$6z = (_class2$5$ = class Tr2PPColorCorrectionEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "whiteTemperature", _descriptor$61, this);
@@ -162443,7 +162443,7 @@
 	    _initializerDefineProperty(this, "colorContrast", _descriptor4$4b, this);
 	    _initializerDefineProperty(this, "colorGamma", _descriptor5$3C, this);
 	    _initializerDefineProperty(this, "colorGain", _descriptor6$32, this);
-	    _initializerDefineProperty(this, "colorOffset", _descriptor7$2A, this);
+	    _initializerDefineProperty(this, "colorOffset", _descriptor7$2B, this);
 	  }
 	}, _descriptor$61 = _applyDecoratedDescriptor(_class2$5$.prototype, "whiteTemperature", [_dec2$68], {
 	  configurable: true,
@@ -162487,7 +162487,7 @@
 	  initializer: function () {
 	    return vec3$3.fromValues(1, 1, 1);
 	  }
-	}), _descriptor7$2A = _applyDecoratedDescriptor(_class2$5$.prototype, "colorOffset", [_dec8$2W], {
+	}), _descriptor7$2B = _applyDecoratedDescriptor(_class2$5$.prototype, "colorOffset", [_dec8$2X], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162496,7 +162496,7 @@
 	  }
 	}), _class2$5$)) || _class$6z);
 
-	var _dec$6y, _dec2$67, _dec3$5G, _dec4$4$, _dec5$4r, _dec6$3V, _dec7$3m, _dec8$2V, _class$6y, _class2$5_, _descriptor$60, _descriptor2$5u, _descriptor3$4P, _descriptor4$4a, _descriptor5$3B, _descriptor6$31, _descriptor7$2z, _Tr2PPDepthOfFieldEffect;
+	var _dec$6y, _dec2$67, _dec3$5G, _dec4$4$, _dec5$4r, _dec6$3V, _dec7$3m, _dec8$2W, _class$6y, _class2$5_, _descriptor$60, _descriptor2$5u, _descriptor3$4P, _descriptor4$4a, _descriptor5$3B, _descriptor6$31, _descriptor7$2A, _Tr2PPDepthOfFieldEffect;
 	var Shape = Object.freeze({
 	  DISK: 0,
 	  TRIANGLE: 1,
@@ -162516,7 +162516,7 @@
 	 *
 	 * @ccp Tr2PPDepthOfFieldEffect
 	 */
-	var Tr2PPDepthOfFieldEffect = (_dec$6y = define("Tr2PPDepthOfFieldEffect", true), _dec2$67 = float, _dec3$5G = float, _dec4$4$ = float, _dec5$4r = float, _dec6$3V = enums(Shape), _dec7$3m = boolean, _dec8$2V = boolean, _dec$6y(_class$6y = (_class2$5_ = (_Tr2PPDepthOfFieldEffect = class Tr2PPDepthOfFieldEffect extends Tr2PPEffect {
+	var Tr2PPDepthOfFieldEffect = (_dec$6y = define("Tr2PPDepthOfFieldEffect", true), _dec2$67 = float, _dec3$5G = float, _dec4$4$ = float, _dec5$4r = float, _dec6$3V = enums(Shape), _dec7$3m = boolean, _dec8$2W = boolean, _dec$6y(_class$6y = (_class2$5_ = (_Tr2PPDepthOfFieldEffect = class Tr2PPDepthOfFieldEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "scale", _descriptor$60, this);
@@ -162525,7 +162525,7 @@
 	    _initializerDefineProperty(this, "cocScale", _descriptor4$4a, this);
 	    _initializerDefineProperty(this, "bokehShape", _descriptor5$3B, this);
 	    _initializerDefineProperty(this, "foregroundBlurNeeded", _descriptor6$31, this);
-	    _initializerDefineProperty(this, "useTAAFriendlyBokeh", _descriptor7$2z, this);
+	    _initializerDefineProperty(this, "useTAAFriendlyBokeh", _descriptor7$2A, this);
 	  }
 	  /**
 	   * Identifies if the effect contributes anything
@@ -162576,7 +162576,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor7$2z = _applyDecoratedDescriptor(_class2$5_.prototype, "useTAAFriendlyBokeh", [_dec8$2V], {
+	}), _descriptor7$2A = _applyDecoratedDescriptor(_class2$5_.prototype, "useTAAFriendlyBokeh", [_dec8$2W], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162611,7 +162611,7 @@
 	  }
 	}), _class2$5Z)) || _class$6x);
 
-	var _dec$6w, _dec2$65, _dec3$5F, _dec4$4_, _dec5$4q, _dec6$3U, _dec7$3l, _dec8$2U, _dec9$2x, _dec0$2n, _dec1$2b, _dec10$1W, _dec11$1L, _class$6w, _class2$5Y, _descriptor$5_, _descriptor2$5t, _descriptor3$4O, _descriptor4$49, _descriptor5$3A, _descriptor6$30, _descriptor7$2y, _descriptor8$2h, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1p;
+	var _dec$6w, _dec2$65, _dec3$5F, _dec4$4_, _dec5$4q, _dec6$3U, _dec7$3l, _dec8$2V, _dec9$2y, _dec0$2n, _dec1$2b, _dec10$1W, _dec11$1L, _class$6w, _class2$5Y, _descriptor$5_, _descriptor2$5t, _descriptor3$4O, _descriptor4$49, _descriptor5$3A, _descriptor6$30, _descriptor7$2z, _descriptor8$2i, _descriptor9$26, _descriptor0$1V, _descriptor1$1A, _descriptor10$1p;
 
 	/**
 	 * Automatic exposure driven by a luminance histogram
@@ -162635,7 +162635,7 @@
 	 *
 	 * @ccp Tr2PPDynamicExposureEffect
 	 */
-	var Tr2PPDynamicExposureEffect = (_dec$6w = define("Tr2PPDynamicExposureEffect", true), _dec2$65 = float, _dec3$5F = float, _dec4$4_ = float, _dec5$4q = float, _dec6$3U = float, _dec7$3l = float, _dec8$2U = float, _dec9$2x = float, _dec0$2n = float, _dec1$2b = float, _dec10$1W = float, _dec11$1L = boolean, _dec$6w(_class$6w = (_class2$5Y = class Tr2PPDynamicExposureEffect extends Tr2PPEffect {
+	var Tr2PPDynamicExposureEffect = (_dec$6w = define("Tr2PPDynamicExposureEffect", true), _dec2$65 = float, _dec3$5F = float, _dec4$4_ = float, _dec5$4q = float, _dec6$3U = float, _dec7$3l = float, _dec8$2V = float, _dec9$2y = float, _dec0$2n = float, _dec1$2b = float, _dec10$1W = float, _dec11$1L = boolean, _dec$6w(_class$6w = (_class2$5Y = class Tr2PPDynamicExposureEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "influence", _descriptor$5_, this);
@@ -162644,8 +162644,8 @@
 	    _initializerDefineProperty(this, "minExposure", _descriptor4$49, this);
 	    _initializerDefineProperty(this, "maxExposure", _descriptor5$3A, this);
 	    _initializerDefineProperty(this, "minLuminance", _descriptor6$30, this);
-	    _initializerDefineProperty(this, "maxLuminance", _descriptor7$2y, this);
-	    _initializerDefineProperty(this, "minBrightness", _descriptor8$2h, this);
+	    _initializerDefineProperty(this, "maxLuminance", _descriptor7$2z, this);
+	    _initializerDefineProperty(this, "minBrightness", _descriptor8$2i, this);
 	    _initializerDefineProperty(this, "maxBrightness", _descriptor9$26, this);
 	    _initializerDefineProperty(this, "increaseSpeed", _descriptor0$1V, this);
 	    _initializerDefineProperty(this, "decreaseSpeed", _descriptor1$1A, this);
@@ -162693,14 +162693,14 @@
 	  initializer: function () {
 	    return 0.4649;
 	  }
-	}), _descriptor7$2y = _applyDecoratedDescriptor(_class2$5Y.prototype, "maxLuminance", [_dec8$2U], {
+	}), _descriptor7$2z = _applyDecoratedDescriptor(_class2$5Y.prototype, "maxLuminance", [_dec8$2V], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 10;
 	  }
-	}), _descriptor8$2h = _applyDecoratedDescriptor(_class2$5Y.prototype, "minBrightness", [_dec9$2x], {
+	}), _descriptor8$2i = _applyDecoratedDescriptor(_class2$5Y.prototype, "minBrightness", [_dec9$2y], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162782,7 +162782,7 @@
 	  }
 	}), _class2$5X)) || _class$6v);
 
-	var _dec$6u, _dec2$63, _dec3$5D, _dec4$4Z, _dec5$4p, _dec6$3T, _dec7$3k, _dec8$2T, _class$6u, _class2$5W, _descriptor$5Y, _descriptor2$5r, _descriptor3$4N, _descriptor4$48, _descriptor5$3z, _descriptor6$2$, _descriptor7$2x;
+	var _dec$6u, _dec2$63, _dec3$5D, _dec4$4Z, _dec5$4p, _dec6$3T, _dec7$3k, _dec8$2U, _class$6u, _class2$5W, _descriptor$5Y, _descriptor2$5r, _descriptor3$4N, _descriptor4$48, _descriptor5$3z, _descriptor6$2$, _descriptor7$2y;
 
 	/**
 	 * Film grain, applied after the composite rather than inside it
@@ -162793,7 +162793,7 @@
 	 *
 	 * @ccp Tr2PPFilmGrainEffect
 	 */
-	var Tr2PPFilmGrainEffect = (_dec$6u = define("Tr2PPFilmGrainEffect", true), _dec2$63 = float, _dec3$5D = float, _dec4$4Z = float, _dec5$4p = float, _dec6$3T = float, _dec7$3k = boolean, _dec8$2T = float, _dec$6u(_class$6u = (_class2$5W = class Tr2PPFilmGrainEffect extends Tr2PPEffect {
+	var Tr2PPFilmGrainEffect = (_dec$6u = define("Tr2PPFilmGrainEffect", true), _dec2$63 = float, _dec3$5D = float, _dec4$4Z = float, _dec5$4p = float, _dec6$3T = float, _dec7$3k = boolean, _dec8$2U = float, _dec$6u(_class$6u = (_class2$5W = class Tr2PPFilmGrainEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "intensity", _descriptor$5Y, this);
@@ -162802,7 +162802,7 @@
 	    _initializerDefineProperty(this, "grainContrast", _descriptor4$48, this);
 	    _initializerDefineProperty(this, "brightnessModifier", _descriptor5$3z, this);
 	    _initializerDefineProperty(this, "colored", _descriptor6$2$, this);
-	    _initializerDefineProperty(this, "colorAmount", _descriptor7$2x, this);
+	    _initializerDefineProperty(this, "colorAmount", _descriptor7$2y, this);
 	  }
 	  /**
 	   * Identifies if the effect contributes anything
@@ -162853,7 +162853,7 @@
 	  initializer: function () {
 	    return true;
 	  }
-	}), _descriptor7$2x = _applyDecoratedDescriptor(_class2$5W.prototype, "colorAmount", [_dec8$2T], {
+	}), _descriptor7$2y = _applyDecoratedDescriptor(_class2$5W.prototype, "colorAmount", [_dec8$2U], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -162862,7 +162862,7 @@
 	  }
 	}), _class2$5W)) || _class$6u);
 
-	var _dec$6t, _dec2$62, _dec3$5C, _dec4$4Y, _dec5$4o, _dec6$3S, _dec7$3j, _dec8$2S, _dec9$2w, _dec0$2m, _dec1$2a, _dec10$1V, _dec11$1K, _dec12$1v, _dec13$1k, _dec14$1b, _dec15$17, _dec16$Z, _dec17$U, _dec18$Q, _dec19$D, _dec20$B, _dec21$z, _dec22$w, _dec23$t, _dec24$q, _dec25$o, _dec26$m, _class$6t, _class2$5V, _descriptor$5X, _descriptor2$5q, _descriptor3$4M, _descriptor4$47, _descriptor5$3y, _descriptor6$2_, _descriptor7$2w, _descriptor8$2g, _descriptor9$25, _descriptor0$1U, _descriptor1$1z, _descriptor10$1o, _descriptor11$1c, _descriptor12$16, _descriptor13$10, _descriptor14$W, _descriptor15$H, _descriptor16$B, _descriptor17$y, _descriptor18$u, _descriptor19$o, _descriptor20$m, _descriptor21$l, _descriptor22$k, _descriptor23$j, _descriptor24$g, _descriptor25$g;
+	var _dec$6t, _dec2$62, _dec3$5C, _dec4$4Y, _dec5$4o, _dec6$3S, _dec7$3j, _dec8$2T, _dec9$2x, _dec0$2m, _dec1$2a, _dec10$1V, _dec11$1K, _dec12$1v, _dec13$1k, _dec14$1b, _dec15$17, _dec16$Z, _dec17$U, _dec18$Q, _dec19$D, _dec20$B, _dec21$z, _dec22$w, _dec23$t, _dec24$q, _dec25$o, _dec26$m, _class$6t, _class2$5V, _descriptor$5X, _descriptor2$5q, _descriptor3$4M, _descriptor4$47, _descriptor5$3y, _descriptor6$2_, _descriptor7$2x, _descriptor8$2h, _descriptor9$25, _descriptor0$1U, _descriptor1$1z, _descriptor10$1o, _descriptor11$1c, _descriptor12$16, _descriptor13$10, _descriptor14$W, _descriptor15$H, _descriptor16$B, _descriptor17$y, _descriptor18$u, _descriptor19$o, _descriptor20$m, _descriptor21$l, _descriptor22$k, _descriptor23$j, _descriptor24$g, _descriptor25$g;
 
 	/**
 	 * Environment fog, a separate two-effect pass rather than part of the composite
@@ -162876,7 +162876,7 @@
 	 *
 	 * @ccp Tr2PPFogEffect
 	 */
-	var Tr2PPFogEffect = (_dec$6t = define("Tr2PPFogEffect", true), _dec2$62 = float, _dec3$5C = float, _dec4$4Y = float, _dec5$4o = float, _dec6$3S = float, _dec7$3j = float, _dec8$2S = float, _dec9$2w = float, _dec0$2m = float, _dec1$2a = float, _dec10$1V = float, _dec11$1K = float, _dec12$1v = float, _dec13$1k = float, _dec14$1b = float, _dec15$17 = float, _dec16$Z = float, _dec17$U = float, _dec18$Q = float, _dec19$D = vector3, _dec20$B = vector2, _dec21$z = vector3, _dec22$w = float, _dec23$t = color, _dec24$q = float, _dec25$o = float, _dec26$m = float, _dec$6t(_class$6t = (_class2$5V = class Tr2PPFogEffect extends Tr2PPEffect {
+	var Tr2PPFogEffect = (_dec$6t = define("Tr2PPFogEffect", true), _dec2$62 = float, _dec3$5C = float, _dec4$4Y = float, _dec5$4o = float, _dec6$3S = float, _dec7$3j = float, _dec8$2T = float, _dec9$2x = float, _dec0$2m = float, _dec1$2a = float, _dec10$1V = float, _dec11$1K = float, _dec12$1v = float, _dec13$1k = float, _dec14$1b = float, _dec15$17 = float, _dec16$Z = float, _dec17$U = float, _dec18$Q = float, _dec19$D = vector3, _dec20$B = vector2, _dec21$z = vector3, _dec22$w = float, _dec23$t = color, _dec24$q = float, _dec25$o = float, _dec26$m = float, _dec$6t(_class$6t = (_class2$5V = class Tr2PPFogEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "intensity", _descriptor$5X, this);
@@ -162885,8 +162885,8 @@
 	    _initializerDefineProperty(this, "backgroundOcclusion", _descriptor4$47, this);
 	    _initializerDefineProperty(this, "brightnessThreshold0", _descriptor5$3y, this);
 	    _initializerDefineProperty(this, "brightnessThreshold1", _descriptor6$2_, this);
-	    _initializerDefineProperty(this, "brightnessAdjustmentAmount", _descriptor7$2w, this);
-	    _initializerDefineProperty(this, "blendDistance0", _descriptor8$2g, this);
+	    _initializerDefineProperty(this, "brightnessAdjustmentAmount", _descriptor7$2x, this);
+	    _initializerDefineProperty(this, "blendDistance0", _descriptor8$2h, this);
 	    _initializerDefineProperty(this, "blendBias0", _descriptor9$25, this);
 	    _initializerDefineProperty(this, "blendAmount0", _descriptor0$1U, this);
 	    _initializerDefineProperty(this, "blendPower0", _descriptor1$1z, this);
@@ -162956,14 +162956,14 @@
 	  initializer: function () {
 	    return 0.5;
 	  }
-	}), _descriptor7$2w = _applyDecoratedDescriptor(_class2$5V.prototype, "brightnessAdjustmentAmount", [_dec8$2S], {
+	}), _descriptor7$2x = _applyDecoratedDescriptor(_class2$5V.prototype, "brightnessAdjustmentAmount", [_dec8$2T], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor8$2g = _applyDecoratedDescriptor(_class2$5V.prototype, "blendDistance0", [_dec9$2w], {
+	}), _descriptor8$2h = _applyDecoratedDescriptor(_class2$5V.prototype, "blendDistance0", [_dec9$2x], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -163319,7 +163319,7 @@
 	  }
 	}), _class2$5Q)) || _class$6o);
 
-	var _dec$6n, _dec2$5Y, _dec3$5x, _dec4$4V, _dec5$4n, _dec6$3R, _dec7$3i, _dec8$2R, _dec9$2v, _dec0$2l, _dec1$29, _dec10$1U, _dec11$1J, _dec12$1u, _dec13$1j, _dec14$1a, _dec15$16, _class$6n, _class2$5P, _descriptor$5R, _descriptor2$5l, _descriptor3$4J, _descriptor4$46, _descriptor5$3x, _descriptor6$2Z, _descriptor7$2v, _descriptor8$2f, _descriptor9$24, _descriptor0$1T, _descriptor1$1y, _descriptor10$1n, _descriptor11$1b, _descriptor12$15, _descriptor13$$, _descriptor14$V, _Tr2PPTonemappingEffect;
+	var _dec$6n, _dec2$5Y, _dec3$5x, _dec4$4V, _dec5$4n, _dec6$3R, _dec7$3i, _dec8$2S, _dec9$2w, _dec0$2l, _dec1$29, _dec10$1U, _dec11$1J, _dec12$1u, _dec13$1j, _dec14$1a, _dec15$16, _class$6n, _class2$5P, _descriptor$5R, _descriptor2$5l, _descriptor3$4J, _descriptor4$46, _descriptor5$3x, _descriptor6$2Z, _descriptor7$2w, _descriptor8$2g, _descriptor9$24, _descriptor0$1T, _descriptor1$1y, _descriptor10$1n, _descriptor11$1b, _descriptor12$15, _descriptor13$$, _descriptor14$V, _Tr2PPTonemappingEffect;
 	var Method = Object.freeze({
 	  UNCHARTED2: 0,
 	  ACES: 1,
@@ -163341,7 +163341,7 @@
 	 *
 	 * @ccp Tr2PPTonemappingEffect
 	 */
-	var Tr2PPTonemappingEffect = (_dec$6n = define("Tr2PPTonemappingEffect", true), _dec2$5Y = enums(Method), _dec3$5x = float, _dec4$4V = float, _dec5$4n = float, _dec6$3R = float, _dec7$3i = float, _dec8$2R = float, _dec9$2v = float, _dec0$2l = boolean, _dec1$29 = float, _dec10$1U = float, _dec11$1J = float, _dec12$1u = float, _dec13$1j = float, _dec14$1a = float, _dec15$16 = float, _dec$6n(_class$6n = (_class2$5P = (_Tr2PPTonemappingEffect = class Tr2PPTonemappingEffect extends Tr2PPEffect {
+	var Tr2PPTonemappingEffect = (_dec$6n = define("Tr2PPTonemappingEffect", true), _dec2$5Y = enums(Method), _dec3$5x = float, _dec4$4V = float, _dec5$4n = float, _dec6$3R = float, _dec7$3i = float, _dec8$2S = float, _dec9$2w = float, _dec0$2l = boolean, _dec1$29 = float, _dec10$1U = float, _dec11$1J = float, _dec12$1u = float, _dec13$1j = float, _dec14$1a = float, _dec15$16 = float, _dec$6n(_class$6n = (_class2$5P = (_Tr2PPTonemappingEffect = class Tr2PPTonemappingEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "method", _descriptor$5R, this);
@@ -163351,8 +163351,8 @@
 	    _initializerDefineProperty(this, "shoulder", _descriptor4$46, this);
 	    _initializerDefineProperty(this, "blackClip", _descriptor5$3x, this);
 	    _initializerDefineProperty(this, "whiteClip", _descriptor6$2Z, this);
-	    _initializerDefineProperty(this, "scale", _descriptor7$2v, this);
-	    _initializerDefineProperty(this, "blueCorrection", _descriptor8$2f, this);
+	    _initializerDefineProperty(this, "scale", _descriptor7$2w, this);
+	    _initializerDefineProperty(this, "blueCorrection", _descriptor8$2g, this);
 	    _initializerDefineProperty(this, "useSweeteners", _descriptor9$24, this);
 	    // Uncharted 2 (Eve)
 	    _initializerDefineProperty(this, "shoulderStrength", _descriptor0$1T, this);
@@ -163405,14 +163405,14 @@
 	  initializer: function () {
 	    return 0.04;
 	  }
-	}), _descriptor7$2v = _applyDecoratedDescriptor(_class2$5P.prototype, "scale", [_dec8$2R], {
+	}), _descriptor7$2w = _applyDecoratedDescriptor(_class2$5P.prototype, "scale", [_dec8$2S], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return 1;
 	  }
-	}), _descriptor8$2f = _applyDecoratedDescriptor(_class2$5P.prototype, "blueCorrection", [_dec9$2v], {
+	}), _descriptor8$2g = _applyDecoratedDescriptor(_class2$5P.prototype, "blueCorrection", [_dec9$2w], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -163477,7 +163477,7 @@
 	  }
 	}), _class2$5P)) || _class$6n);
 
-	var _dec$6m, _dec2$5X, _dec3$5w, _dec4$4U, _dec5$4m, _dec6$3Q, _dec7$3h, _dec8$2Q, _dec9$2u, _dec0$2k, _dec1$28, _dec10$1T, _dec11$1I, _class$6m, _class2$5O, _descriptor$5Q, _descriptor2$5k, _descriptor3$4I, _descriptor4$45, _descriptor5$3w, _descriptor6$2Y, _descriptor7$2u, _descriptor8$2e, _descriptor9$23, _descriptor0$1S, _descriptor1$1x, _descriptor10$1m;
+	var _dec$6m, _dec2$5X, _dec3$5w, _dec4$4U, _dec5$4m, _dec6$3Q, _dec7$3h, _dec8$2R, _dec9$2v, _dec0$2k, _dec1$28, _dec10$1T, _dec11$1I, _class$6m, _class2$5O, _descriptor$5Q, _descriptor2$5k, _descriptor3$4I, _descriptor4$45, _descriptor5$3w, _descriptor6$2Y, _descriptor7$2v, _descriptor8$2f, _descriptor9$23, _descriptor0$1S, _descriptor1$1x, _descriptor10$1m;
 
 	/**
 	 * A vignette blended over the graded image
@@ -163491,7 +163491,7 @@
 	 *
 	 * @ccp Tr2PPVignetteEffect
 	 */
-	var Tr2PPVignetteEffect = (_dec$6m = define("Tr2PPVignetteEffect", true), _dec2$5X = float, _dec3$5w = float, _dec4$4U = color, _dec5$4m = path, _dec6$3Q = path, _dec7$3h = vector2, _dec8$2Q = vector2, _dec9$2u = vector2, _dec0$2k = vector2, _dec1$28 = float, _dec10$1T = float, _dec11$1I = float, _dec$6m(_class$6m = (_class2$5O = class Tr2PPVignetteEffect extends Tr2PPEffect {
+	var Tr2PPVignetteEffect = (_dec$6m = define("Tr2PPVignetteEffect", true), _dec2$5X = float, _dec3$5w = float, _dec4$4U = color, _dec5$4m = path, _dec6$3Q = path, _dec7$3h = vector2, _dec8$2R = vector2, _dec9$2v = vector2, _dec0$2k = vector2, _dec1$28 = float, _dec10$1T = float, _dec11$1I = float, _dec$6m(_class$6m = (_class2$5O = class Tr2PPVignetteEffect extends Tr2PPEffect {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "intensity", _descriptor$5Q, this);
@@ -163500,8 +163500,8 @@
 	    _initializerDefineProperty(this, "shapePath", _descriptor4$45, this);
 	    _initializerDefineProperty(this, "detailPath", _descriptor5$3w, this);
 	    _initializerDefineProperty(this, "detail1Size", _descriptor6$2Y, this);
-	    _initializerDefineProperty(this, "detail1Scroll", _descriptor7$2u, this);
-	    _initializerDefineProperty(this, "detail2Size", _descriptor8$2e, this);
+	    _initializerDefineProperty(this, "detail1Scroll", _descriptor7$2v, this);
+	    _initializerDefineProperty(this, "detail2Size", _descriptor8$2f, this);
 	    _initializerDefineProperty(this, "detail2Scroll", _descriptor9$23, this);
 	    _initializerDefineProperty(this, "sineFrequency", _descriptor0$1S, this);
 	    _initializerDefineProperty(this, "sineMinimum", _descriptor1$1x, this);
@@ -163556,14 +163556,14 @@
 	  initializer: function () {
 	    return vec2$1.fromValues(16, 16);
 	  }
-	}), _descriptor7$2u = _applyDecoratedDescriptor(_class2$5O.prototype, "detail1Scroll", [_dec8$2Q], {
+	}), _descriptor7$2v = _applyDecoratedDescriptor(_class2$5O.prototype, "detail1Scroll", [_dec8$2R], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return vec2$1.create();
 	  }
-	}), _descriptor8$2e = _applyDecoratedDescriptor(_class2$5O.prototype, "detail2Size", [_dec9$2u], {
+	}), _descriptor8$2f = _applyDecoratedDescriptor(_class2$5O.prototype, "detail2Size", [_dec9$2v], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -163600,8 +163600,8 @@
 	  }
 	}), _class2$5O)) || _class$6m);
 
-	var _dec$6l, _dec2$5W, _dec3$5v, _dec4$4T, _dec5$4l, _dec6$3P, _dec7$3g, _dec8$2P, _class$6l, _class2$5N, _descriptor$5P, _descriptor2$5j, _descriptor3$4H, _descriptor4$44, _descriptor5$3v, _descriptor6$2X, _descriptor7$2t;
-	var Tw2PostProcess = (_dec$6l = define("Tw2PostProcess", "Tr2PostProcess"), _dec2$5W = list("Tw2Effect"), _dec3$5v = boolean, _dec4$4T = string, _dec5$4l = float, _dec6$3P = boolean, _dec7$3g = uint, _dec8$2P = uint, _dec$6l(_class$6l = (_class2$5N = class Tw2PostProcess extends Model {
+	var _dec$6l, _dec2$5W, _dec3$5v, _dec4$4T, _dec5$4l, _dec6$3P, _dec7$3g, _dec8$2Q, _class$6l, _class2$5N, _descriptor$5P, _descriptor2$5j, _descriptor3$4H, _descriptor4$44, _descriptor5$3v, _descriptor6$2X, _descriptor7$2u;
+	var Tw2PostProcess = (_dec$6l = define("Tw2PostProcess", "Tr2PostProcess"), _dec2$5W = list("Tw2Effect"), _dec3$5v = boolean, _dec4$4T = string, _dec5$4l = float, _dec6$3P = boolean, _dec7$3g = uint, _dec8$2Q = uint, _dec$6l(_class$6l = (_class2$5N = class Tw2PostProcess extends Model {
 	  /**
 	   * Constructor
 	   * @param {String} name
@@ -163616,7 +163616,7 @@
 	    _initializerDefineProperty(this, "quality", _descriptor4$44, this);
 	    _initializerDefineProperty(this, "autoRebuild", _descriptor5$3v, this);
 	    _initializerDefineProperty(this, "depthMode", _descriptor6$2X, this);
-	    _initializerDefineProperty(this, "renderMode", _descriptor7$2t, this);
+	    _initializerDefineProperty(this, "renderMode", _descriptor7$2u, this);
 	    /**
 	     * Identifies if the post requires a rebuild
 	     * @type {boolean}
@@ -163963,7 +163963,7 @@
 	  initializer: function () {
 	    return 0;
 	  }
-	}), _descriptor7$2t = _applyDecoratedDescriptor(_class2$5N.prototype, "renderMode", [_dec8$2P], {
+	}), _descriptor7$2u = _applyDecoratedDescriptor(_class2$5N.prototype, "renderMode", [_dec8$2Q], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -163972,7 +163972,7 @@
 	  }
 	}), _class2$5N)) || _class$6l);
 
-	var _dec$6k, _dec2$5V, _dec3$5u, _dec4$4S, _dec5$4k, _dec6$3O, _dec7$3f, _dec8$2O, _dec9$2t, _dec0$2j, _dec1$27, _dec10$1S, _dec11$1H, _dec12$1t, _dec13$1i, _dec14$19, _dec15$15, _dec16$Y, _dec17$T, _dec18$P, _class$6k, _class2$5M, _descriptor$5O, _descriptor2$5i, _descriptor3$4G, _descriptor4$43, _descriptor5$3u, _descriptor6$2W, _descriptor7$2s, _descriptor8$2d, _descriptor9$22, _descriptor0$1R, _descriptor1$1w, _descriptor10$1l, _descriptor11$1a, _descriptor12$14, _descriptor13$_, _descriptor14$U, _descriptor15$G, _descriptor16$A, _descriptor17$x;
+	var _dec$6k, _dec2$5V, _dec3$5u, _dec4$4S, _dec5$4k, _dec6$3O, _dec7$3f, _dec8$2P, _dec9$2u, _dec0$2j, _dec1$27, _dec10$1S, _dec11$1H, _dec12$1t, _dec13$1i, _dec14$19, _dec15$15, _dec16$Y, _dec17$T, _dec18$P, _class$6k, _class2$5M, _descriptor$5O, _descriptor2$5i, _descriptor3$4G, _descriptor4$43, _descriptor5$3u, _descriptor6$2W, _descriptor7$2t, _descriptor8$2e, _descriptor9$22, _descriptor0$1R, _descriptor1$1w, _descriptor10$1l, _descriptor11$1a, _descriptor12$14, _descriptor13$_, _descriptor14$U, _descriptor15$G, _descriptor16$A, _descriptor17$x;
 
 	/**
 	 * Holds the post process effects a scene wants applied
@@ -164000,7 +164000,7 @@
 	 *
 	 * @ccp Tr2PostProcess2
 	 */
-	var Tw2PostProcess2 = (_dec$6k = define("Tw2PostProcess2", "Tr2PostProcess2"), _dec2$5V = string, _dec3$5u = boolean, _dec4$4S = struct("Tr2PPBloomEffect"), _dec5$4k = struct("Tr2PPColorCorrectionEffect"), _dec6$3O = struct("Tr2PPDepthOfFieldEffect"), _dec7$3f = struct("Tr2PPDesaturateEffect"), _dec8$2O = struct("Tr2PPDynamicExposureEffect"), _dec9$2t = struct("Tr2PPFadeEffect"), _dec0$2j = struct("Tr2PPFilmGrainEffect"), _dec1$27 = struct("Tr2PPFogEffect"), _dec10$1S = struct("Tr2PPGenericEffect"), _dec11$1H = struct("Tr2PPGodRaysEffect"), _dec12$1t = struct("Tr2PPLutEffect"), _dec13$1i = list("Tr2PPLutEffect"), _dec14$19 = struct("Tr2PPSignalLossEffect"), _dec15$15 = struct("Tr2PPTaaEffect"), _dec16$Y = struct("Tr2PPTonemappingEffect"), _dec17$T = struct("Tr2PPVignetteEffect"), _dec18$P = float, _dec$6k(_class$6k = (_class2$5M = class Tw2PostProcess2 extends Model {
+	var Tw2PostProcess2 = (_dec$6k = define("Tw2PostProcess2", "Tr2PostProcess2"), _dec2$5V = string, _dec3$5u = boolean, _dec4$4S = struct("Tr2PPBloomEffect"), _dec5$4k = struct("Tr2PPColorCorrectionEffect"), _dec6$3O = struct("Tr2PPDepthOfFieldEffect"), _dec7$3f = struct("Tr2PPDesaturateEffect"), _dec8$2P = struct("Tr2PPDynamicExposureEffect"), _dec9$2u = struct("Tr2PPFadeEffect"), _dec0$2j = struct("Tr2PPFilmGrainEffect"), _dec1$27 = struct("Tr2PPFogEffect"), _dec10$1S = struct("Tr2PPGenericEffect"), _dec11$1H = struct("Tr2PPGodRaysEffect"), _dec12$1t = struct("Tr2PPLutEffect"), _dec13$1i = list("Tr2PPLutEffect"), _dec14$19 = struct("Tr2PPSignalLossEffect"), _dec15$15 = struct("Tr2PPTaaEffect"), _dec16$Y = struct("Tr2PPTonemappingEffect"), _dec17$T = struct("Tr2PPVignetteEffect"), _dec18$P = float, _dec$6k(_class$6k = (_class2$5M = class Tw2PostProcess2 extends Model {
 	  constructor() {
 	    super(...arguments);
 	    _initializerDefineProperty(this, "name", _descriptor$5O, this);
@@ -164009,8 +164009,8 @@
 	    _initializerDefineProperty(this, "colorCorrection", _descriptor4$43, this);
 	    _initializerDefineProperty(this, "depthOfField", _descriptor5$3u, this);
 	    _initializerDefineProperty(this, "desaturate", _descriptor6$2W, this);
-	    _initializerDefineProperty(this, "dynamicExposure", _descriptor7$2s, this);
-	    _initializerDefineProperty(this, "fade", _descriptor8$2d, this);
+	    _initializerDefineProperty(this, "dynamicExposure", _descriptor7$2t, this);
+	    _initializerDefineProperty(this, "fade", _descriptor8$2e, this);
 	    _initializerDefineProperty(this, "filmGrain", _descriptor9$22, this);
 	    _initializerDefineProperty(this, "fog", _descriptor0$1R, this);
 	    _initializerDefineProperty(this, "genericEffect", _descriptor1$1w, this);
@@ -164102,14 +164102,14 @@
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor7$2s = _applyDecoratedDescriptor(_class2$5M.prototype, "dynamicExposure", [_dec8$2O], {
+	}), _descriptor7$2t = _applyDecoratedDescriptor(_class2$5M.prototype, "dynamicExposure", [_dec8$2P], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
 	  initializer: function () {
 	    return null;
 	  }
-	}), _descriptor8$2d = _applyDecoratedDescriptor(_class2$5M.prototype, "fade", [_dec9$2t], {
+	}), _descriptor8$2e = _applyDecoratedDescriptor(_class2$5M.prototype, "fade", [_dec9$2u], {
 	  configurable: true,
 	  enumerable: true,
 	  writable: true,
@@ -164490,7 +164490,7 @@
 	  }
 	}) || _class$6j);
 
-	var _dec$6i, _dec2$5U, _dec3$5t, _dec4$4R, _dec5$4j, _dec6$3N, _dec7$3e, _class$6i, _class2$5L, _descriptor$5N, _descriptor2$5h, _descriptor3$4F, _descriptor4$42, _descriptor5$3t, _descriptor6$2V;
+	var _dec$6i, _dec2$5U, _dec3$5t, _dec4$4R, _dec5$4j, _dec6$3N, _dec7$3e, _dec8$2O, _dec9$2t, _class$6i, _class2$5L, _descriptor$5N, _descriptor2$5h, _descriptor3$4F, _descriptor4$42, _descriptor5$3t, _descriptor6$2V, _descriptor7$2s, _descriptor8$2d;
 
 	/**
 	 * A render target with more than one colour attachment.
@@ -164518,7 +164518,7 @@
 	 * GLSL ES 3.00 to declare them, which is WebGL2 anyway. On WebGL1 this refuses
 	 * to create rather than half-working.
 	 */
-	var Tw2MultiRenderTarget = (_dec$6i = define("Tw2MultiRenderTarget"), _dec2$5U = string, _dec3$5t = uint, _dec4$4R = uint, _dec5$4j = uint, _dec6$3N = string, _dec7$3e = string, _dec$6i(_class$6i = (_class2$5L = class Tw2MultiRenderTarget {
+	var Tw2MultiRenderTarget = (_dec$6i = define("Tw2MultiRenderTarget"), _dec2$5U = string, _dec3$5t = uint, _dec4$4R = uint, _dec5$4j = uint, _dec6$3N = string, _dec7$3e = string, _dec8$2O = string, _dec9$2t = uint, _dec$6i(_class$6i = (_class2$5L = class Tw2MultiRenderTarget {
 	  /**
 	   * @param {String} [name]
 	   * @param {Number} [width]
@@ -164556,7 +164556,27 @@
 	     * @type {String}
 	     */
 	    _initializerDefineProperty(this, "filter", _descriptor6$2V, this);
+	    /**
+	     * How depth is attached, if at all.
+	     *
+	     * `"none"` no depth, `"buffer"` a renderbuffer, `"texture"` a depth
+	     * texture that can be SAMPLED afterwards.
+	     *
+	     * The distinction is the whole reason `Tw2DepthRenderTarget` exists
+	     * separately: a renderbuffer is cheaper and write-only, a texture can be
+	     * read back by a later pass. Which one you want is a property of what the
+	     * pass is FOR, so it is stated rather than inferred.
+	     * @type {String}
+	     */
+	    _initializerDefineProperty(this, "depthKind", _descriptor7$2s, this);
+	    /**
+	     * Depth texture bits: 16, 24 or 32. Ignored unless `depthKind` is
+	     * `"texture"`.
+	     * @type {Number}
+	     */
+	    _initializerDefineProperty(this, "precision", _descriptor8$2d, this);
 	    this._textures = [];
+	    this._depthTexture = null;
 	    this._frameBuffer = null;
 	    this._renderBuffer = null;
 	    this._isComplete = false;
@@ -164576,12 +164596,16 @@
 	   * @param {Number} [count=2]
 	   * @param {String} [colorFormat=this.colorFormat]
 	   * @param {String} [filter=this.filter]
+	   * @param {String} [depthKind=this.depthKind] - "none", "buffer" or "texture"
+	   * @param {Number} [precision=this.precision] - depth texture bits
 	   * @returns {Boolean} true if the target is usable
 	   */
 	  Create(width, height) {
 	    var count = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
 	    var colorFormat = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.colorFormat;
 	    var filter = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.filter;
+	    var depthKind = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : this.depthKind;
+	    var precision = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : this.precision;
 	    var gl = tw2.gl,
 	      device = tw2.device;
 	    this.Destroy();
@@ -164612,6 +164636,8 @@
 	    this.count = count;
 	    this.colorFormat = colorFormat;
 	    this.filter = filter;
+	    this.depthKind = depthKind;
+	    this.precision = precision;
 	    var glFilter = filter === "linear" ? gl.LINEAR : gl.NEAREST;
 	    this._frameBuffer = gl.createFramebuffer();
 	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
@@ -164651,6 +164677,46 @@
 	    // declares - and the other outputs are dropped in silence rather than
 	    // raising anything.
 	    gl.drawBuffers(buffers);
+	    if (depthKind === "buffer") {
+	      this._renderBuffer = gl.createRenderbuffer();
+	      gl.bindRenderbuffer(gl.RENDERBUFFER, this._renderBuffer);
+
+	      // 24 bits, matching Tw2RenderTarget's reasoning: the canvas's own
+	      // depth buffer is typically 24, so 16 is a downgrade rather than
+	      // parity, and a scene spanning kilometres to millions of kilometres
+	      // z-fights visibly at 16.
+	      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
+	      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._renderBuffer);
+	      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+	    } else if (depthKind === "texture") {
+	      var depth = Tw2MultiRenderTarget.ResolveDepthFormat(precision);
+	      this.precision = depth.precision;
+	      var _res = new Tw2TextureRes();
+	      _res.suppressLogging = true;
+	      _res.Attach(gl.createTexture());
+	      _res._target = gl.TEXTURE_2D;
+	      _res._internalFormat = depth.internalFormat;
+	      _res._type = depth.type;
+	      _res._hasMipMaps = false;
+	      _res._forceMipMaps = false;
+	      _res._width = width;
+	      _res._height = height;
+
+	      // Depth formats are NOT filterable. The res honours _isDepth when an
+	      // effect binds it and asks for LINEAR, which every authored sampler
+	      // does - so this is set as well as the creation-time filters, not
+	      // instead of them.
+	      _res._isDepth = true;
+	      gl.bindTexture(gl.TEXTURE_2D, _res.texture);
+	      gl.texImage2D(gl.TEXTURE_2D, 0, depth.internalFormat, width, height, 0, gl.DEPTH_COMPONENT, depth.type, null);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	      gl.bindTexture(gl.TEXTURE_2D, null);
+	      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, _res.texture, 0);
+	      this._depthTexture = _res;
+	    }
 	    this._isComplete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
 	    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	    if (!this._isComplete) {
@@ -164668,6 +164734,7 @@
 	   */
 	  IsGood() {
 	    if (!this._isComplete || !this._frameBuffer || this._textures.length !== this.count) return false;
+	    if (this.depthKind === "texture" && (!this._depthTexture || !this._depthTexture.IsGood())) return false;
 	    for (var i = 0; i < this._textures.length; i++) {
 	      if (!this._textures[i] || !this._textures[i].IsGood()) return false;
 	    }
@@ -164681,6 +164748,24 @@
 	   */
 	  GetTexture(index) {
 	    return this._textures[index] || null;
+	  }
+
+	  /**
+	   * The depth texture, when `depthKind` is `"texture"`.
+	   *
+	   * Null for the other two kinds - a renderbuffer cannot be sampled, and that
+	   * is the point of choosing one.
+	   * @returns {?Tw2TextureRes}
+	   */
+	  get depthTexture() {
+	    return this._depthTexture;
+	  }
+
+	  /**
+	   * @returns {Boolean}
+	   */
+	  get hasDepth() {
+	    return this.depthKind !== "none";
 	  }
 
 	  /**
@@ -164768,6 +164853,10 @@
 	      if (this._textures[i]) this._textures[i].DeleteGL();
 	    }
 	    this._textures = [];
+	    if (this._depthTexture) {
+	      this._depthTexture.DeleteGL();
+	      this._depthTexture = null;
+	    }
 	    if (this._renderBuffer) {
 	      gl.deleteRenderbuffer(this._renderBuffer);
 	      this._renderBuffer = null;
@@ -164779,6 +164868,46 @@
 	    this._isComplete = false;
 	    this.count = 0;
 	    return this;
+	  }
+
+	  /**
+	   * Depth texture bits to gl enums.
+	   *
+	   * Transcribed from `Tw2DepthRenderTarget`, which is where this behaviour
+	   * already lives, so the two cannot disagree about what 24 means. WebGL1 is
+	   * not offered a choice: it needs `WEBGL_depth_texture` and only has 16.
+	   *
+	   * @param {Number} precision - 16, 24 or 32
+	   * @returns {{internalFormat: Number, type: Number, precision: Number}}
+	   */
+	  static ResolveDepthFormat(precision) {
+	    var gl = tw2.gl;
+	    switch (precision) {
+	      case 32:
+	        return {
+	          internalFormat: gl.DEPTH_COMPONENT32F,
+	          type: gl.FLOAT,
+	          precision: 32
+	        };
+	      case 16:
+	        return {
+	          internalFormat: gl.DEPTH_COMPONENT16,
+	          type: gl.UNSIGNED_SHORT,
+	          precision: 16
+	        };
+	      default:
+	        if (precision !== 24) {
+	          tw2.Warning({
+	            name: "Multi render target",
+	            description: "Depth precision ".concat(precision, " is not 16, 24 or 32 - using 24")
+	          });
+	        }
+	        return {
+	          internalFormat: gl.DEPTH_COMPONENT24,
+	          type: gl.UNSIGNED_INT,
+	          precision: 24
+	        };
+	    }
 	  }
 	}, _descriptor$5N = _applyDecoratedDescriptor(_class2$5L.prototype, "name", [_dec2$5U], {
 	  configurable: true,
@@ -164821,6 +164950,20 @@
 	  writable: true,
 	  initializer: function () {
 	    return "nearest";
+	  }
+	}), _descriptor7$2s = _applyDecoratedDescriptor(_class2$5L.prototype, "depthKind", [_dec8$2O], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return "none";
+	  }
+	}), _descriptor8$2d = _applyDecoratedDescriptor(_class2$5L.prototype, "precision", [_dec9$2t], {
+	  configurable: true,
+	  enumerable: true,
+	  writable: true,
+	  initializer: function () {
+	    return 24;
 	  }
 	}), _class2$5L)) || _class$6i);
 

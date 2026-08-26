@@ -68,7 +68,31 @@ export class Tw2MultiRenderTarget
     @meta.string
     filter = "nearest";
 
+    /**
+     * How depth is attached, if at all.
+     *
+     * `"none"` no depth, `"buffer"` a renderbuffer, `"texture"` a depth
+     * texture that can be SAMPLED afterwards.
+     *
+     * The distinction is the whole reason `Tw2DepthRenderTarget` exists
+     * separately: a renderbuffer is cheaper and write-only, a texture can be
+     * read back by a later pass. Which one you want is a property of what the
+     * pass is FOR, so it is stated rather than inferred.
+     * @type {String}
+     */
+    @meta.string
+    depthKind = "none";
+
+    /**
+     * Depth texture bits: 16, 24 or 32. Ignored unless `depthKind` is
+     * `"texture"`.
+     * @type {Number}
+     */
+    @meta.uint
+    precision = 24;
+
     _textures = [];
+    _depthTexture = null;
     _frameBuffer = null;
     _renderBuffer = null;
     _isComplete = false;
@@ -100,9 +124,11 @@ export class Tw2MultiRenderTarget
      * @param {Number} [count=2]
      * @param {String} [colorFormat=this.colorFormat]
      * @param {String} [filter=this.filter]
+     * @param {String} [depthKind=this.depthKind] - "none", "buffer" or "texture"
+     * @param {Number} [precision=this.precision] - depth texture bits
      * @returns {Boolean} true if the target is usable
      */
-    Create(width, height, count = 2, colorFormat = this.colorFormat, filter = this.filter)
+    Create(width, height, count = 2, colorFormat = this.colorFormat, filter = this.filter, depthKind = this.depthKind, precision = this.precision)
     {
         const { gl, device } = tw2;
 
@@ -140,6 +166,8 @@ export class Tw2MultiRenderTarget
         this.count = count;
         this.colorFormat = colorFormat;
         this.filter = filter;
+        this.depthKind = depthKind;
+        this.precision = precision;
 
         const glFilter = filter === "linear" ? gl.LINEAR : gl.NEAREST;
 
@@ -189,6 +217,54 @@ export class Tw2MultiRenderTarget
         // raising anything.
         gl.drawBuffers(buffers);
 
+        if (depthKind === "buffer")
+        {
+            this._renderBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, this._renderBuffer);
+
+            // 24 bits, matching Tw2RenderTarget's reasoning: the canvas's own
+            // depth buffer is typically 24, so 16 is a downgrade rather than
+            // parity, and a scene spanning kilometres to millions of kilometres
+            // z-fights visibly at 16.
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._renderBuffer);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+        }
+        else if (depthKind === "texture")
+        {
+            const depth = Tw2MultiRenderTarget.ResolveDepthFormat(precision);
+            this.precision = depth.precision;
+
+            const res = new Tw2TextureRes();
+            res.suppressLogging = true;
+            res.Attach(gl.createTexture());
+
+            res._target = gl.TEXTURE_2D;
+            res._internalFormat = depth.internalFormat;
+            res._type = depth.type;
+            res._hasMipMaps = false;
+            res._forceMipMaps = false;
+            res._width = width;
+            res._height = height;
+
+            // Depth formats are NOT filterable. The res honours _isDepth when an
+            // effect binds it and asks for LINEAR, which every authored sampler
+            // does - so this is set as well as the creation-time filters, not
+            // instead of them.
+            res._isDepth = true;
+
+            gl.bindTexture(gl.TEXTURE_2D, res.texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, depth.internalFormat, width, height, 0, gl.DEPTH_COMPONENT, depth.type, null);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, res.texture, 0);
+            this._depthTexture = res;
+        }
+
         this._isComplete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -211,6 +287,7 @@ export class Tw2MultiRenderTarget
     IsGood()
     {
         if (!this._isComplete || !this._frameBuffer || this._textures.length !== this.count) return false;
+        if (this.depthKind === "texture" && (!this._depthTexture || !this._depthTexture.IsGood())) return false;
         for (let i = 0; i < this._textures.length; i++)
         {
             if (!this._textures[i] || !this._textures[i].IsGood()) return false;
@@ -226,6 +303,26 @@ export class Tw2MultiRenderTarget
     GetTexture(index)
     {
         return this._textures[index] || null;
+    }
+
+    /**
+     * The depth texture, when `depthKind` is `"texture"`.
+     *
+     * Null for the other two kinds - a renderbuffer cannot be sampled, and that
+     * is the point of choosing one.
+     * @returns {?Tw2TextureRes}
+     */
+    get depthTexture()
+    {
+        return this._depthTexture;
+    }
+
+    /**
+     * @returns {Boolean}
+     */
+    get hasDepth()
+    {
+        return this.depthKind !== "none";
     }
 
     /**
@@ -336,6 +433,12 @@ export class Tw2MultiRenderTarget
 
         this._textures = [];
 
+        if (this._depthTexture)
+        {
+            this._depthTexture.DeleteGL();
+            this._depthTexture = null;
+        }
+
         if (this._renderBuffer)
         {
             gl.deleteRenderbuffer(this._renderBuffer);
@@ -351,6 +454,40 @@ export class Tw2MultiRenderTarget
         this._isComplete = false;
         this.count = 0;
         return this;
+    }
+
+    /**
+     * Depth texture bits to gl enums.
+     *
+     * Transcribed from `Tw2DepthRenderTarget`, which is where this behaviour
+     * already lives, so the two cannot disagree about what 24 means. WebGL1 is
+     * not offered a choice: it needs `WEBGL_depth_texture` and only has 16.
+     *
+     * @param {Number} precision - 16, 24 or 32
+     * @returns {{internalFormat: Number, type: Number, precision: Number}}
+     */
+    static ResolveDepthFormat(precision)
+    {
+        const { gl } = tw2;
+
+        switch (precision)
+        {
+            case 32:
+                return { internalFormat: gl.DEPTH_COMPONENT32F, type: gl.FLOAT, precision: 32 };
+
+            case 16:
+                return { internalFormat: gl.DEPTH_COMPONENT16, type: gl.UNSIGNED_SHORT, precision: 16 };
+
+            default:
+                if (precision !== 24)
+                {
+                    tw2.Warning({
+                        name: "Multi render target",
+                        description: `Depth precision ${precision} is not 16, 24 or 32 - using 24`
+                    });
+                }
+                return { internalFormat: gl.DEPTH_COMPONENT24, type: gl.UNSIGNED_INT, precision: 24 };
+        }
     }
 
 }
