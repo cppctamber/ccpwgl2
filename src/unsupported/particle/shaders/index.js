@@ -5,3 +5,4 @@
  * through `Tw2GpuParticleShaders` statics rather than exported loose.
  */
 export * from "./particleUpdate";
+export * from "./particleDraw";

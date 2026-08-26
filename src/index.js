@@ -55,6 +55,11 @@ export { Tw2MaterialPicker, Tw2MaterialPickResult } from "./picking";
 // question and only a device can answer it.
 export { Tw2GpuParticleState } from "./unsupported/particle/Tw2GpuParticleState";
 export { Tw2MultiRenderTarget } from "./core/Tw2MultiRenderTarget";
+
+// The material class itself. Anything driving a MANUAL shader - a picking pass,
+// a particle pass, a tool - has to build an effect around it, and until now the
+// only way to get one was to borrow it off a hull that happened to be loaded.
+export { Tw2Effect } from "./core/mesh/Tw2Effect";
 export { tw2, tw2 as CCPWGL };
 
 // Carbon (translated DX11 shader path) support modules — exposed for the

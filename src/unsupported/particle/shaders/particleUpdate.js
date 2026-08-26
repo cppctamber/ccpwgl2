@@ -1,5 +1,6 @@
 import { RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE } from "constant";
 import { createTex, TEX_2D, WidgetType } from "../../../toDeprecate/shaders/shared/util";
+import { Tw2GpuParticleDrawShader } from "./particleDraw";
 
 
 /**
@@ -240,7 +241,7 @@ export class Tw2GpuParticleShaders
     static Update = definition;
 
     /** Every definition, in the shape `tw2.Register({ shaders })` takes. @type {Array<Object>} */
-    static All = [ definition ];
+    static All = [ definition, Tw2GpuParticleDrawShader.Definition ];
 
     /**
      * The named inputs, for a caller that has to set them.
