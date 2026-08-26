@@ -70,6 +70,21 @@ export class Tw2GpuParticleRenderer
     time = 0;
 
     /**
+     * Whether particles are hidden by scene geometry in front of them.
+     *
+     * Live, so it can be flipped from a console to tell "the particles are not
+     * there" apart from "the particles are there and depth is rejecting them" -
+     * two faults that look identical and have nothing in common.
+     *
+     * These emitters sit ON the hull, so a particle spends much of its life
+     * within a metre of a depth-writing surface. What Carbon does here is not
+     * yet established: its own quads pass could not be read, because the shipped
+     * gles2 container fails to compile and so never populates its states.
+     * @type {Boolean}
+     */
+    depthTest = true;
+
+    /**
      * The gravity axis. A world convention rather than an emitter's property -
      * Carbon stores gravity as a scalar and applies it downward.
      * @type {Array<Number>}
@@ -243,6 +258,10 @@ export class Tw2GpuParticleRenderer
         {
             effect.ApplyPass("Main", pass);
 
+            // AFTER ApplyPass, which is what sets the state from the pass
+            // definition - flipping it before would just be overwritten.
+            if (!this.depthTest) gl.disable(gl.DEPTH_TEST);
+
             // EVERY ATTRIBUTE ARRAY OFF. Whatever drew last leaves its arrays
             // enabled, and this draw asks for six vertices per particle with no
             // buffer bound - sourcing those from a previous draw's buffer is an
@@ -251,6 +270,12 @@ export class Tw2GpuParticleRenderer
             for (let i = 0; i < max; i++) gl.disableVertexAttribArray(i);
 
             gl.drawArrays(gl.TRIANGLES, 0, this.state.capacity * Tw2GpuParticleDrawShader.VERTICES_PER_PARTICLE);
+
+            // Put it back. ccpwgl does not restore per-pass states, so leaving
+            // the depth test off would silently disable it for whatever draws
+            // next - which is the exact class of bug this pass was just fixed
+            // for.
+            if (!this.depthTest) gl.enable(gl.DEPTH_TEST);
         }
 
         return this;
