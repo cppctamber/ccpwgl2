@@ -1,5 +1,5 @@
 import { RS_ZENABLE, RS_ZWRITEENABLE, RS_CULLMODE, RS_ALPHABLENDENABLE } from "constant";
-import { createTex, TEX_2D, WidgetType } from "../../../toDeprecate/shaders/shared/util";
+import { createTex, TEX_2D, TEX_VOLUME, WidgetType } from "../../../toDeprecate/shaders/shared/util";
 import { Tw2GpuParticleDrawShader } from "./particleDraw";
 import { Tw2GpuParticleEmitShader } from "./particleEmit";
 
@@ -96,6 +96,20 @@ const ParticleWorld = constant(
     [ 0, -1, 0, 64 ]
 );
 
+/**
+ * `(origin offset xyz, noise origin)`.
+ *
+ * The offset shifts the whole field relative to the world, which is what lets a
+ * scene rebase its origin without every particle's turbulence jumping. The
+ * fourth is where in the volume the animation walk starts.
+ * @type {Object}
+ */
+const ParticleNoise = constant(
+    "ParticleNoise",
+    [ "origin x", "origin y", "origin z", "noise origin" ],
+    [ 0, 0, 0, 0 ]
+);
+
 /** The front position texture: xyz position, w age. @type {Object} */
 const ParticlePositionMap = createTex("ParticlePositionMap", TEX_2D, {
     ui: { components: [ "x", "y", "z", "age" ] }
@@ -116,10 +130,22 @@ const ParticleParamsMap = createTex("ParticleParamsMap", TEX_2D, {
     ui: { components: [ "r", "g", "b", "a" ] }
 });
 
+/**
+ * Carbon's turbulence field: a 32 cubed noise VOLUME.
+ *
+ * EVE ships it at `res:/texture/global/noise32cube_volume.dds` and ccpwgl loads
+ * it as a real `TEXTURE_3D`. The shipped `update.sm_hi` binds it as `sampler3D`
+ * and samples it three times per particle.
+ * @type {Object}
+ */
+const ParticleNoiseMap = createTex("ParticleNoiseMap", TEX_VOLUME, {
+    ui: { components: [ "r", "g", "b", "a" ] }
+});
+
 
 // Positional binding: this order IS the s# order and the cb7 index order.
-const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap ];
-const CONSTANTS = [ ParticleTime, ParticleWorld ];
+const TEXTURES = [ ParticlePositionMap, ParticleVelocityMap, ParticleAttributeMap, ParticleParamsMap, ParticleNoiseMap ];
+const CONSTANTS = [ ParticleTime, ParticleWorld, ParticleNoise ];
 
 
 const vs = `#version 300 es
@@ -142,6 +168,11 @@ const ps = `#version 300 es
 
 precision highp float;
 
+// A 3D sampler has NO default precision in ES 3.00 the way a 2D one does, so
+// this is required rather than stylistic - without it the shader fails to
+// compile with "'sampler3D' : No precision specified".
+precision highp sampler3D;
+
 // highp is not a preference here. State is positions in world space and ages in
 // seconds; at mediump a particle's position quantises visibly and its age stops
 // advancing once it is large enough relative to the step.
@@ -150,6 +181,7 @@ uniform sampler2D s0;            // ParticlePositionMap
 uniform sampler2D s1;            // ParticleVelocityMap
 uniform sampler2D s2;            // ParticleAttributeMap
 uniform sampler2D s3;            // ParticleParamsMap
+uniform sampler3D s4;            // ParticleNoiseMap - Carbon's 32 cubed volume
 
 uniform vec4 cb7[${CONSTANTS.length}];
 
@@ -168,32 +200,32 @@ vec4 emitterParam(float row, float texel, float rows)
     return texture(s3, vec2((texel + 0.5) / 8.0, (row + 0.5) / rows));
 }
 
-// A stand-in turbulence field, and NOT Carbon's.
+// CARBON'S TURBULENCE, decoded from the shipped update.sm_hi rather than
+// invented. Three octaves of one 32 cubed noise volume at weights 1, 1/2 and
+// 1/4, centred on zero by subtracting a half - the volume stores [0,1] and a
+// force has to be able to push both ways.
 //
-// Carbon samples a noise volume, which has not been ported. This is a sum of
-// two sine octaves at frequencies that do not divide each other: cheap, and it
-// reads as drift rather than as a grid. Each component is driven by the OTHER
-// two axes, which makes the field divergence free - so it swirls particles
-// around instead of pumping them into and out of the same points.
-vec3 turbulence(vec3 p, float frequency, float time)
+// Two details that would not have been guessed, and were not:
+//
+//   - The field is ANIMATED BY ANOTHER NOISE SAMPLE. The lookup is offset by
+//     noise(time / 32) rather than scrolled linearly, so the structure drifts
+//     and deforms instead of sliding past in a straight line.
+//   - The second octave's coordinates are SWIZZLED to .zyx as well as doubled.
+//     Sampling the same volume at twice the frequency alone would repeat the
+//     first octave's own structure at a smaller scale; permuting the axes
+//     decorrelates them.
+//
+// The volume wraps, so no coordinate needs clamping - the sampler is REPEAT and
+// the field is continuous across the seam by construction.
+vec3 turbulence(vec3 position, float frequency, vec3 animation)
 {
-    vec3 q = p * frequency + time * 0.3;
+    vec3 base = position * frequency + texture(s4, animation).xyz;
 
-    vec3 a = vec3(
-        sin(q.y) + cos(q.z),
-        sin(q.z) + cos(q.x),
-        sin(q.x) + cos(q.y)
-    );
+    vec3 t = texture(s4, base).xyz - 0.5;
+    t += (texture(s4, base.zyx * 2.0).xyz - 0.5) * 0.5;
+    t += (texture(s4, base * 4.0).xyz - 0.5) * 0.25;
 
-    vec3 r = q * 2.17 + 11.3;
-
-    vec3 b = vec3(
-        sin(r.y) + cos(r.z),
-        sin(r.z) + cos(r.x),
-        sin(r.x) + cos(r.y)
-    );
-
-    return a + b * 0.5;
+    return t;
 }
 
 void main()
@@ -206,6 +238,8 @@ void main()
     float time = cb7[0].y;
     vec3 gravityAxis = cb7[1].xyz;
     float rows = cb7[1].w;
+    vec3 originOffset = cb7[2].xyz;
+    vec3 noiseOrigin = vec3(cb7[2].w);
 
     float age = p.w;
     float lifetime = v.w;
@@ -249,14 +283,30 @@ void main()
     float turbulenceFrequency = fields.y;
     float attractorStrength = fields.z;
 
-    // Drag opposes motion proportionally, so it is a force on the velocity
-    // rather than a scale of it - which keeps it summing with the others
-    // instead of ordering against them.
-    vec3 accel = gravityAxis * gravity - v.xyz * drag;
+    vec3 accel = gravityAxis * gravity;
+
+    // DRAG HAS TWO REGIMES, SELECTED BY ITS SIGN. Carbon branches on it: a
+    // positive coefficient is ordinary linear drag proportional to speed, and a
+    // NEGATIVE one is a constant deceleration along the direction of travel,
+    // independent of how fast the particle is going. A negative drag is
+    // therefore not "reverse drag", and treating it as one would make fast
+    // particles accelerate.
+    if (drag > 0.0)
+    {
+        accel -= v.xyz * drag;
+    }
+    else if (drag < 0.0)
+    {
+        float speed = length(v.xyz);
+        if (speed > 1e-4) accel -= (v.xyz / speed) * drag;
+    }
 
     if (turbulenceAmplitude != 0.0)
     {
-        accel += turbulence(p.xyz, turbulenceFrequency, time) * turbulenceAmplitude;
+        // The animation offset is a point in the volume that moves with time,
+        // scaled the way Carbon scales it - 1/32, the volume's own resolution.
+        vec3 animation = noiseOrigin + time * (1.0 / 32.0);
+        accel += turbulence(p.xyz + originOffset, turbulenceFrequency, animation) * turbulenceAmplitude;
     }
 
     if (attractorStrength != 0.0)
@@ -351,10 +401,18 @@ export class Tw2GpuParticleShaders
     static Inputs = {
         Time: ParticleTime,
         World: ParticleWorld,
+        Noise: ParticleNoise,
         PositionMap: ParticlePositionMap,
         VelocityMap: ParticleVelocityMap,
         AttributeMap: ParticleAttributeMap,
-        ParamsMap: ParticleParamsMap
+        ParamsMap: ParticleParamsMap,
+        NoiseMap: ParticleNoiseMap
     };
+
+    /**
+     * Carbon's turbulence volume, as the shipped system binds it.
+     * @type {String}
+     */
+    static NOISE = "res:/texture/global/noise32cube_volume.dds";
 
 }
