@@ -136,7 +136,7 @@ uniform sampler2D s1;            // ParticleVelocityMap
 uniform sampler2D s2;            // ParticleAttributeMap
 uniform sampler2D s3;            // ParticleParamsMap
 
-uniform vec4 cb1[24];            // per frame; rows 4-7 are the view-projection
+uniform vec4 cb1[24];            // per frame; 4-7 view-projection, 12-15 projection
 uniform vec4 cb7[${CONSTANTS.length}];
 
 out vec2 cornerUv;
@@ -214,10 +214,20 @@ void main()
     clip.w = dot(world, cb1[7]);
 
     // The offset goes on in CLIP space, so the quad faces the camera whatever
-    // the particle is doing. Not scaled by w, so the perspective divide shrinks
-    // distant particles - which is what makes the field read as three
-    // dimensional rather than as a flat spray of equal dots.
-    clip.xy += offset * size;
+    // the particle is doing, and is not scaled by w, so the perspective divide
+    // shrinks distant particles.
+    //
+    // SCALED BY THE PROJECTION, which it was not before. A world-space quad of
+    // half-size s lands at s * P / w in normalised coordinates, where P is the
+    // projection's scale - roughly 1/tan(fov/2). Adding the size raw made every
+    // particle P times too small: with a 1 radian field of view that is a
+    // factor of about 1.8, and it is why authored sizes came out sub-pixel on a
+    // hull hundreds of units across.
+    //
+    // Rows 12-15 are ProjectionMat (EveSpaceScene.perFrameData.vs). Only the
+    // diagonal is needed, and the diagonal is unaffected by the transpose the
+    // scene uploads.
+    clip.xy += offset * size * vec2(cb1[12].x, cb1[13].y);
 
     gl_Position = clip;
 }
