@@ -291,7 +291,10 @@ void main()
         sprite = vec4(1.0 - smoothstep(0.4, 1.0, r));
     }
 
-    outColor = color * sprite;
+    // PREMULTIPLIED, because the blend is ONE and alpha contributes nothing.
+    // The colour curve's alpha is the particle's fade, so it has to be folded
+    // into rgb or a particle would never fade out at all.
+    outColor = vec4(color.rgb * color.a * sprite.rgb, 1.0);
 }
 `;
 
@@ -317,10 +320,19 @@ const definition = {
                 // Additive and depth-read-only, which is what a particle system
                 // wants and also why the shipped gles2 set never needed a sort:
                 // additive blending is order independent.
+                //
+                // SRCBLEND is ONE, not SRCALPHA. The shipped atlas does not put
+                // the sprite in the alpha channel consistently - tile 0 carries
+                // the shape in BOTH rgb and alpha, and tile 3 carries it in rgb
+                // with alpha flat at ZERO across the whole tile. Weighting by
+                // source alpha therefore makes some tiles undrawable, which
+                // looks exactly like a broken particle system. With ONE the
+                // fade has to be folded into rgb instead, which the shader
+                // does.
                 [RS_ZENABLE]: 1,
                 [RS_ZWRITEENABLE]: 0,
                 [RS_ALPHABLENDENABLE]: 1,
-                [RS_SRCBLEND]: 5,
+                [RS_SRCBLEND]: 2,
                 [RS_DESTBLEND]: 2,
                 [RS_CULLMODE]: 1
             }
