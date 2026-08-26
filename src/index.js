@@ -44,6 +44,11 @@ export { tny } from "./runtime";
 export { EveSOFDataHandler } from "./sof/EveSOFDataHandler";
 export { deprecatedShaders };
 export { Tw2MaterialPicker, Tw2MaterialPickResult } from "./picking";
+
+// GPU particle state. Exported so it can be exercised directly - the arithmetic
+// is unit tested, but whether four rgba32f targets are real is a device
+// question and only a device can answer it.
+export { Tw2GpuParticleState } from "./unsupported/particle/Tw2GpuParticleState";
 export { tw2, tw2 as CCPWGL };
 
 // Carbon (translated DX11 shader path) support modules — exposed for the
