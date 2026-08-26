@@ -20,6 +20,7 @@ export * from "./Tw2RuntimeInstanceData";
 export * from "./Tw2Frustum";
 export * from "./Tw2DepthRenderTarget";
 export * from "./Tw2RenderTarget";
+export * from "./Tw2MultiRenderTarget";
 
 // Custom Class
 export * from "./Tw2Error";

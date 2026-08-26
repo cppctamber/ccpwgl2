@@ -1,6 +1,6 @@
 import { meta } from "utils";
 import { tw2, device } from "global";
-import { Tw2RenderTarget } from "core/Tw2RenderTarget";
+import { Tw2MultiRenderTarget } from "core/Tw2MultiRenderTarget";
 
 
 /**
@@ -17,22 +17,19 @@ import { Tw2RenderTarget } from "core/Tw2RenderTarget";
  *   velocity texture   xyz = velocity   w = packed lifetime + emitter index
  * ```
  *
- * ## Why four textures and not two
+ * ## Two sides, two attachments each
  *
- * A shader cannot read and write the same texture in one pass, so each quantity
+ * A shader cannot read and write the same texture in one pass, so the state
  * needs a front and a back, and {@link Swap} exchanges them once the frame's
  * passes are done. That is the ping-pong, and ccpwgl already does it inside a
  * frame for post-processing; what is new here is that the state has to survive
  * ACROSS frames, so these targets are owned and never recycled.
  *
- * ## Why two passes and not one
- *
- * The shipped shaders write both textures in one pass with two outputs -
- * multiple render targets. `Tw2RenderTarget` attaches a single colour
- * attachment, so this writes position and velocity in separate passes instead.
- * That is twice the passes and the same total work per texel, and it costs no
- * engine change. If MRT is added later, the two passes collapse into one
- * without anything else here changing.
+ * Each side is a {@link Tw2MultiRenderTarget} with TWO attachments, so one pass
+ * writes both position and velocity - which is what the shipped shaders do, and
+ * half the passes of writing them separately. Attachment 0 is position,
+ * attachment 1 is velocity, and a shader writing this must declare both
+ * outputs.
  *
  * ## Float, and NEAREST
  *
@@ -65,8 +62,7 @@ export class Tw2GpuParticleState
     @meta.uint
     capacity = 0;
 
-    _position = [ null, null ];
-    _velocity = [ null, null ];
+    _sides = [ null, null ];
     _front = 0;
     _failed = false;
 
@@ -80,7 +76,7 @@ export class Tw2GpuParticleState
     }
 
     /**
-     * Allocates the four targets for a capacity.
+     * Allocates the two sides for a capacity.
      *
      * Rounded UP to a whole number of rows: a partly used last row costs a few
      * texels and keeps the addressing a plain divide, where a ragged one would
@@ -113,11 +109,7 @@ export class Tw2GpuParticleState
         this.height = Math.max(1, Math.ceil(capacity / this.width));
         this.capacity = this.width * this.height;
 
-        for (let i = 0; i < 2; i++)
-        {
-            this._position[i] = this._CreateTarget(`particlePosition${i}`);
-            this._velocity[i] = this._CreateTarget(`particleVelocity${i}`);
-        }
+        for (let i = 0; i < 2; i++) this._sides[i] = this._CreateSide(i);
 
         this._failed = !this.IsGood();
 
@@ -141,30 +133,36 @@ export class Tw2GpuParticleState
     {
         for (let i = 0; i < 2; i++)
         {
-            if (!this._position[i] || !this._position[i].IsGood()) return false;
-            if (!this._velocity[i] || !this._velocity[i].IsGood()) return false;
+            if (!this._sides[i] || !this._sides[i].IsGood()) return false;
         }
 
         return true;
     }
 
     /**
-     * The textures the simulation READS this frame.
-     * @returns {{position: Tw2RenderTarget, velocity: Tw2RenderTarget}}
+     * What the simulation READS this frame.
+     *
+     * The two textures rather than the target, because a reader binds textures
+     * and only a writer binds a framebuffer.
+     * @returns {{position: ?Tw2TextureRes, velocity: ?Tw2TextureRes}}
      */
     GetFront()
     {
-        return { position: this._position[this._front], velocity: this._velocity[this._front] };
+        const side = this._sides[this._front];
+        if (!side) return { position: null, velocity: null };
+        return { position: side.GetTexture(0), velocity: side.GetTexture(1) };
     }
 
     /**
-     * The targets the simulation WRITES this frame.
-     * @returns {{position: Tw2RenderTarget, velocity: Tw2RenderTarget}}
+     * The TARGET the simulation writes this frame.
+     *
+     * One target with both attachments, so a single pass produces the new
+     * position and the new velocity together.
+     * @returns {?Tw2MultiRenderTarget}
      */
     GetBack()
     {
-        const back = this._front ^ 1;
-        return { position: this._position[back], velocity: this._velocity[back] };
+        return this._sides[this._front ^ 1];
     }
 
     /**
@@ -203,10 +201,8 @@ export class Tw2GpuParticleState
     {
         for (let i = 0; i < 2; i++)
         {
-            if (this._position[i]) this._position[i].Destroy();
-            if (this._velocity[i]) this._velocity[i].Destroy();
-            this._position[i] = null;
-            this._velocity[i] = null;
+            if (this._sides[i]) this._sides[i].Destroy();
+            this._sides[i] = null;
         }
 
         this._front = 0;
@@ -216,18 +212,24 @@ export class Tw2GpuParticleState
     }
 
     /**
-     * @param {String} name
-     * @returns {Tw2RenderTarget}
+     * One side: position on attachment 0, velocity on attachment 1.
+     * @param {Number} index
+     * @returns {Tw2MultiRenderTarget}
      * @private
      */
-    _CreateTarget(name)
+    _CreateSide(index)
     {
-        const target = new Tw2RenderTarget(name, this.width, this.height, false, "rgba32f");
+        const side = new Tw2MultiRenderTarget(`particleState${index}`, this.width, this.height, 2, "rgba32f");
 
-        // NEAREST, always. A filtered read averages two unrelated particles.
-        if (target.texture) target.texture._forceNearest = true;
+        // NEAREST, always. A filtered read averages two unrelated particles,
+        // which looks like a physics bug rather than a sampler one.
+        for (let i = 0; i < 2; i++)
+        {
+            const texture = side.GetTexture(i);
+            if (texture) texture._forceNearest = true;
+        }
 
-        return target;
+        return side;
     }
 
 }
