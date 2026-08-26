@@ -95,6 +95,19 @@ export class Tw2GpuParticleRenderer
     sizeScale = 1;
 
     /**
+     * Scales turbulence alone, on top of each emitter's authored amplitude.
+     *
+     * Live, and it exists because this is the one quantity in the system that
+     * has never been established against Carbon. The FIELD is Carbon's, decoded
+     * from the shipped update shader - three octaves, the noise-driven
+     * animation offset, the swizzled second octave. What its authored amplitude
+     * means in these units is not settled, and an amplitude of 30 as a raw
+     * acceleration moves particles a very long way.
+     * @type {Number}
+     */
+    turbulenceScale = 1;
+
+    /**
      * Scales every force - gravity, drag, turbulence and the attractor.
      *
      * Live, and a diagnostic rather than a setting. At zero each particle
@@ -247,7 +260,9 @@ export class Tw2GpuParticleRenderer
                 if (noise && noise.IsGood() && noise._width) this._noiseReady = 1;
             }
 
-            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleNoise", [ 0, 0, 0, this._noiseReady ]);
+            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleNoise", [
+                0, 0, 0, this._noiseReady ? this.turbulenceScale : 0
+            ]);
 
             Tw2GpuParticleRenderer.AttachTexture(effect, "ParticlePositionMap", front.position);
             Tw2GpuParticleRenderer.AttachTexture(effect, "ParticleVelocityMap", front.velocity);

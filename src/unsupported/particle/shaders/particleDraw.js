@@ -189,16 +189,30 @@ void main()
     vec4 sizeRow = emitterParam(emitterRow, 4.0, rows);      // sizes.xyz, colorMidpoint
     vec4 physics = emitterParam(emitterRow, 5.0, rows);      // sizeVariance drag gravity textureIndex
 
-    // Sizes are three keys over the particle's life, not one number: EVE
-    // particles grow as they are born and shrink as they die, and a single
-    // size makes a puff look like a swarm of identical dots.
-    float size = lifeFraction < 0.5
-        ? mix(sizeRow.x, sizeRow.y, lifeFraction * 2.0)
-        : mix(sizeRow.y, sizeRow.z, lifeFraction * 2.0 - 1.0);
+    // A QUADRATIC BEZIER over the three size keys, which is what Carbon does -
+    // decoded from the shipped quads.sm_hi vertex shader, where it appears as
+    // (1-t)^2*s0 + 2(1-t)t*s1 + t^2*s2 spelled out in registers.
+    //
+    // NOT linear interpolation through the keys. A Bezier does not pass through
+    // its middle control point, it only leans toward it: with keys of
+    // (1, 3, 0) a linear reading peaks at 3 and this peaks near 1.75. That
+    // difference is most of why authored sizes came out too large.
+    float t = lifeFraction;
+    float u = 1.0 - t;
+    float size = u * u * sizeRow.x + 2.0 * u * t * sizeRow.y + t * t * sizeRow.z;
 
+    // Variance is ONE-SIDED in Carbon - 1 + variance * phase, with the phase
+    // in [0,1) - so it only ever grows a particle. A symmetric spread would
+    // shrink half of them and halve the mean size.
+    //
     // The birth seed rather than a hash of the slot: a slot is reused, and
     // every particle born in it would otherwise be exactly the same size.
-    size *= 1.0 + (attributes.y * 2.0 - 1.0) * physics.x;
+    size *= 1.0 + physics.x * attributes.y;
+
+    // Carbon's flat quarter, applied right before the corner offsets. Its
+    // corners are +/-1 like these, so this is a straight factor of four and not
+    // a difference in how the quad is built.
+    size *= 0.25;
 
     size *= cb7[0].z;
 

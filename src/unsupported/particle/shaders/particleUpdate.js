@@ -114,7 +114,10 @@ const ParticleWorld = constant(
  * rather than none, which is the worst possible failure mode and looks like a
  * physics bug rather than a loading one.
  *
- * The caller sets this to 1 only once the volume has actually loaded.
+ * The caller sets this to zero until the volume has actually loaded, and to a
+ * scale factor thereafter - so it doubles as the dial for how strong the field
+ * is, which is the one number in this system still not established against
+ * Carbon.
  * @type {Object}
  */
 const ParticleNoise = constant(
@@ -253,7 +256,7 @@ void main()
     vec3 gravityAxis = cb7[1].xyz;
     float rows = cb7[1].w;
     vec3 originOffset = cb7[2].xyz;
-    float noiseReady = cb7[2].w;
+    float noiseScale = cb7[2].w;
 
     float age = p.w;
     float lifetime = v.w;
@@ -318,12 +321,12 @@ void main()
     // GATED ON THE TEXTURE BEING THERE. See ParticleNoise: an unloaded volume
     // samples as zero, and zero minus a half is a constant force, not an
     // absent one.
-    if (turbulenceAmplitude != 0.0 && noiseReady > 0.0)
+    if (turbulenceAmplitude != 0.0 && noiseScale > 0.0)
     {
         // The animation offset is a point in the volume that moves with time,
         // scaled the way Carbon scales it - 1/32, the volume's own resolution.
         vec3 animation = vec3(time * (1.0 / 32.0));
-        accel += turbulence(p.xyz + originOffset, turbulenceFrequency, animation) * turbulenceAmplitude;
+        accel += turbulence(p.xyz + originOffset, turbulenceFrequency, animation) * turbulenceAmplitude * noiseScale;
     }
 
     if (attractorStrength != 0.0)
