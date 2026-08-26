@@ -82,8 +82,8 @@ function constant(name, components, value)
  */
 const ParticleTime = constant(
     "ParticleTime",
-    [ "delta time", "time", "unused", "unused" ],
-    [ 0, 0, 0, 0 ]
+    [ "delta time", "time", "force scale", "unused" ],
+    [ 0, 0, 1, 0 ]
 );
 
 /**
@@ -249,6 +249,7 @@ void main()
 
     float dt = cb7[0].x;
     float time = cb7[0].y;
+    float forceScale = cb7[0].z;
     vec3 gravityAxis = cb7[1].xyz;
     float rows = cb7[1].w;
     vec3 originOffset = cb7[2].xyz;
@@ -336,6 +337,13 @@ void main()
         float distance = length(toAttractor);
         if (distance > 1e-4) accel += (toAttractor / distance) * attractorStrength;
     }
+
+    // A DIAGNOSTIC, and the reason it is worth a multiply: set the scale to
+    // zero and every force drops out, leaving each particle on the ballistic
+    // path its emitter gave it. That separates "emitted in the wrong
+    // direction" from "emitted correctly and then pushed", which look the same
+    // once a particle has moved.
+    accel *= forceScale;
 
     // Semi-implicit Euler: velocity first, then position from the NEW velocity.
     // Explicit Euler with the old velocity loses energy on every step, which

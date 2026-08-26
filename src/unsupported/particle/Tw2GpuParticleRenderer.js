@@ -85,6 +85,26 @@ export class Tw2GpuParticleRenderer
     depthTest = true;
 
     /**
+     * Multiplies every authored particle size.
+     *
+     * Live. Authored sizes are interpreted as a quad HALF-size in world units;
+     * if EVE means them as a diameter this wants to be 0.5, which is the first
+     * thing to try when everything looks uniformly too large.
+     * @type {Number}
+     */
+    sizeScale = 1;
+
+    /**
+     * Scales every force - gravity, drag, turbulence and the attractor.
+     *
+     * Live, and a diagnostic rather than a setting. At zero each particle
+     * follows the ballistic path its emitter gave it, which separates a bad
+     * emission direction from a force pushing a good one somewhere else.
+     * @type {Number}
+     */
+    forceScale = 1;
+
+    /**
      * The gravity axis. A world convention rather than an emitter's property -
      * Carbon stores gravity as a scalar and applies it downward.
      * @type {Array<Number>}
@@ -217,7 +237,7 @@ export class Tw2GpuParticleRenderer
                 front = this.state.GetFront(),
                 rows = this.emitPass.params.capacity;
 
-            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleTime", [ dt, this.time, 0, 0 ]);
+            Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleTime", [ dt, this.time, this.forceScale, 0 ]);
             Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleWorld", [
                 this.gravityAxis[0], this.gravityAxis[1], this.gravityAxis[2], rows
             ]);
@@ -262,7 +282,7 @@ export class Tw2GpuParticleRenderer
             if (res && res.IsGood() && res._width) this._atlasTiles = Tw2GpuParticleDrawShader.ATLAS.tiles;
         }
 
-        Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleDrawData", [ this.state.width, this.state.height, 1, 0 ]);
+        Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleDrawData", [ this.state.width, this.state.height, this.sizeScale, 0 ]);
         Tw2GpuParticleEmitPass.SetParameter(effect, "ParticleTable", [ this.emitPass.params.capacity, this._atlasTiles, 0, 0 ]);
 
         Tw2GpuParticleRenderer.AttachTexture(effect, "ParticlePositionMap", front.position);
