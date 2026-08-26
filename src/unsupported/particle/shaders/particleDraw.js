@@ -288,13 +288,19 @@ void main()
         // nothing to do with particles.
         float r = length(cornerUv);
         if (r > 1.0) discard;
-        sprite = vec4(1.0 - smoothstep(0.4, 1.0, r));
+        // Alpha as well as rgb, because the blend weights by alpha.
+        float falloff = 1.0 - smoothstep(0.4, 1.0, r);
+        sprite = vec4(falloff);
     }
 
-    // PREMULTIPLIED, because the blend is ONE and alpha contributes nothing.
-    // The colour curve's alpha is the particle's fade, so it has to be folded
-    // into rgb or a particle would never fade out at all.
-    outColor = vec4(color.rgb * color.a * sprite.rgb, 1.0);
+    // Carbon's own arithmetic: the atlas multiplies the particle colour on rgb
+    // AND alpha (quads.sm_hi, `r0 = texture2D(s0, uv) * colour`). The fade
+    // therefore rides on alpha and the blend applies it.
+    //
+    // NOT reproduced: that shader then encodes rgb to sRGB with the scene
+    // gamma from cb2[21].w. ccpwgl handles output transfer elsewhere, and
+    // adding a second encode here would double it.
+    outColor = color * sprite;
 }
 `;
 
@@ -321,18 +327,26 @@ const definition = {
                 // wants and also why the shipped gles2 set never needed a sort:
                 // additive blending is order independent.
                 //
-                // SRCBLEND is ONE, not SRCALPHA. The shipped atlas does not put
-                // the sprite in the alpha channel consistently - tile 0 carries
-                // the shape in BOTH rgb and alpha, and tile 3 carries it in rgb
-                // with alpha flat at ZERO across the whole tile. Weighting by
-                // source alpha therefore makes some tiles undrawable, which
-                // looks exactly like a broken particle system. With ONE the
-                // fade has to be folded into rgb instead, which the shader
-                // does.
+                // SRCALPHA over ONE, which is what Carbon's own quads shader
+                // implies: it computes `atlas * colour` on rgb AND alpha and
+                // writes both, so the alpha is meant to weight the result.
+                //
+                // Not every tile of the shipped atlas can be drawn this way.
+                // Decoding all eight: six are ordinary soft sprites with alpha,
+                // tile 2 is alpha-DOMINANT (6,849 fully opaque texels, rgb
+                // never above 140), and tile 3 has alpha of exactly ZERO across
+                // all 16,384 of its texels while carrying rgb content. Tile 3
+                // therefore cannot be an alpha-blended sprite, and is presumably
+                // not meant to be one.
+                //
+                // The earlier build here used ONE and took the shape from rgb
+                // to make tile 3 draw. That was backwards - it was fitting the
+                // blend to one arbitrarily chosen tile, and it made tile 2
+                // far too dim.
                 [RS_ZENABLE]: 1,
                 [RS_ZWRITEENABLE]: 0,
                 [RS_ALPHABLENDENABLE]: 1,
-                [RS_SRCBLEND]: 2,
+                [RS_SRCBLEND]: 5,
                 [RS_DESTBLEND]: 2,
                 [RS_CULLMODE]: 1
             }
