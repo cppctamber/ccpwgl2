@@ -154269,6 +154269,48 @@
 	var _transposed = mat4$1.create();
 
 	var _dec$6_, _dec2$6z, _dec3$65, _dec4$5i, _dec5$4J, _dec6$4a, _class$6_, _class2$6q, _descriptor$6s, _descriptor2$5V, _descriptor3$56, _descriptor4$4q, _descriptor5$3R;
+
+	/**
+	 * A single-attachment render target.
+	 *
+	 * ## WARNING: this target is built for PICTURES, not for data
+	 *
+	 * `Create` sets `TEXTURE_MIN_FILTER` to `LINEAR` unconditionally and leaves
+	 * `TEXTURE_MAG_FILTER` at its default, which is also `LINEAR`. That is right
+	 * for a colour buffer and wrong for anything holding values, in two separate
+	 * ways:
+	 *
+	 * **It averages neighbours.** A texture holding depth, positions, ids or any
+	 * per-texel quantity returns a blend of two unrelated entries when sampled off
+	 * centre. That reads as a physics or logic bug, not as a sampler one, which is
+	 * what makes it expensive to find.
+	 *
+	 * **A float target may not be filterable at all.** `canRenderToFloat` reports
+	 * `EXT_color_buffer_float`, which permits rendering INTO `rgba32f`. Filtering
+	 * it LINEARLY needs `OES_texture_float_linear`, a SEPARATE extension. On a
+	 * device without it the draw fails on a format/sampler mismatch rather than
+	 * merely looking softer - and a software rasteriser will happily accept it, so
+	 * this can pass every local check and fail on real hardware.
+	 *
+	 * This has already cost once: see `Tw2GodRaysRenderer` (~line 429), which pays
+	 * for it by setting `_forceNearest` on its `rgba32f` depth target and explains
+	 * why at the call site.
+	 *
+	 * **The default is deliberately NOT being changed.** Every existing caller
+	 * relies on LINEAR, and two of them are picking targets whose behaviour would
+	 * shift silently. If you are storing data:
+	 *
+	 * - set `texture._forceNearest = true` after creating, which `Tw2TextureRes`
+	 *   honours when an effect binds it - note this fixes the SAMPLED path only,
+	 *   not the texture's own creation-time filter state; or
+	 * - use {@link Tw2MultiRenderTarget}, which sets both filters at creation,
+	 *   defaults to `nearest`, and is the better starting point for any new target
+	 *   holding values rather than colour.
+	 *
+	 * `Tw2DepthRenderTarget` is also worth reading before copying this one - it
+	 * sets both filters explicitly and tears its textures down with `DeleteGL`
+	 * rather than the resource-lifecycle `Unload`.
+	 */
 	var Tw2RenderTarget = (_dec$6_ = define("Tw2RenderTarget"), _dec2$6z = string, _dec3$65 = float, _dec4$5i = float, _dec5$4J = boolean, _dec6$4a = string, _dec$6_(_class$6_ = (_class2$6q = class Tw2RenderTarget {
 	  /**
 	   * Gets the render target's texture res
@@ -154409,6 +154451,10 @@
 	    gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
 	    gl.bindTexture(gl.TEXTURE_2D, res.texture);
 	    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
+	    // LINEAR, unconditionally, and MAG left at its default - which is also
+	    // LINEAR. Wrong for any target holding DATA rather than colour, and for
+	    // a float target potentially fatal rather than merely soft. See the
+	    // warning in the class header before storing values in one of these.
 	    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
